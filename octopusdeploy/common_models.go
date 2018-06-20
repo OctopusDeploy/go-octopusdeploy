@@ -12,7 +12,7 @@ type PagedResults struct {
 
 type Links struct {
 	Self        string `json:"Self"`
-	Template    string `json:"Self"`
+	Template    string `json:"Template"`
 	PageAll     string `json:"Page.All"`
 	PageCurrent string `json:"Page.Current"`
 	PageLast    string `json:"Page.Last"`
@@ -31,7 +31,7 @@ type PropertyValueResource struct {
 }
 
 type DeploymentStepResource struct {
-	Id                 string                     `json:"Id"`
+	ID                 string                     `json:"Id"`
 	Name               string                     `json:"Name"`
 	PackageRequirement string                     `json:"PackageRequirement"` // may need its own model / enum
 	Properties         PropertyValueResource      `json:"Properties"`         // may need its own model
@@ -41,7 +41,7 @@ type DeploymentStepResource struct {
 }
 
 type DeploymentActionResource struct {
-	Id                            string                `json:"Id"`
+	ID                            string                `json:"Id"`
 	Name                          string                `json:"Name"`
 	ActionType                    string                `json:"ActionType"`
 	IsDisabled                    bool                  `json:"IsDisabled"`

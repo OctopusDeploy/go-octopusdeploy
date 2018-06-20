@@ -33,31 +33,31 @@ type DeploymentProcess struct {
 	Links          Links                    `json:"Links"`
 }
 
-func (d *DeploymentProcessService) Get(deploymentProcessId string) (DeploymentProcess, error) {
+func (d *DeploymentProcessService) Get(deploymentProcessID string) (DeploymentProcess, error) {
 	deploymentProcess := new(DeploymentProcess)
-	octopusDeployError := new(OctopusDeployError)
-	path := fmt.Sprintf("api/deploymentprocesses/%s", deploymentProcessId)
+	octopusDeployError := new(APIError)
+	path := fmt.Sprintf("api/deploymentprocesses/%s", deploymentProcessID)
 
 	resp, err := d.sling.New().Get(path).Receive(deploymentProcess, octopusDeployError)
 
 	if err != nil {
-		return *deploymentProcess, fmt.Errorf("cannot get deploymentprocess id %s from server. failure from http client %v", deploymentProcessId, err)
+		return *deploymentProcess, fmt.Errorf("cannot get deploymentprocess id %s from server. failure from http client %v", deploymentProcessID, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return *deploymentProcess, fmt.Errorf("cannot get deploymentprocess id %s from server. response from server %s", deploymentProcessId, resp.Status)
+		return *deploymentProcess, fmt.Errorf("cannot get deploymentprocess id %s from server. response from server %s", deploymentProcessID, resp.Status)
 	}
 
 	return *deploymentProcess, err
 }
 
 func (d *DeploymentProcessService) GetAll() ([]DeploymentProcess, error) {
-	var listOfDeloymentProcess []DeploymentProcess
+	var listOfDeploymentProcess []DeploymentProcess
 	path := fmt.Sprintf("api/deploymentprocesses")
 
 	for {
 		deploymentProcesses := new(DeploymentProcesses)
-		octopusDeployError := new(OctopusDeployError)
+		octopusDeployError := new(APIError)
 
 		resp, err := d.sling.New().Get(path).Receive(deploymentProcesses, octopusDeployError)
 		if err != nil {
@@ -68,7 +68,7 @@ func (d *DeploymentProcessService) GetAll() ([]DeploymentProcess, error) {
 		fmt.Printf("Total Results: %d", deploymentProcesses.NumberOfPages)
 
 		for _, deploymentProcess := range deploymentProcesses.Items {
-			listOfDeloymentProcess = append(listOfDeloymentProcess, deploymentProcess)
+			listOfDeploymentProcess = append(listOfDeploymentProcess, deploymentProcess)
 		}
 
 		if deploymentProcesses.PagedResults.Links.PageNext != "" {
@@ -79,5 +79,5 @@ func (d *DeploymentProcessService) GetAll() ([]DeploymentProcess, error) {
 		}
 	}
 
-	return listOfDeloymentProcess, nil // no more pages to go through
+	return listOfDeploymentProcess, nil // no more pages to go through
 }

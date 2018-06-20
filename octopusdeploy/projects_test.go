@@ -15,7 +15,7 @@ func TestProjectGet(t *testing.T) {
 		assert.Equal(t, "/api/projects/Projects-663", r.URL.Path)
 		return &http.Response{
 			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(getProjectResponseJson)),
+			Body:       ioutil.NopCloser(strings.NewReader(getProjectResponseJSON)),
 		}, nil
 	})
 
@@ -36,7 +36,7 @@ func getFakeOctopusClient(httpClient http.Client) *Client {
 	return NewClient(&httpClient, "http://octopusserver", "FakeAPIKey")
 }
 
-const getProjectResponseJson = `
+const getProjectResponseJSON = `
 {
   "Id": "Projects-663",
   "VariableSetId": "variableset-Projects-663",

@@ -46,7 +46,7 @@ type Project struct {
 
 func (s *ProjectsService) Get(projectid string) (Project, error) {
 	project := new(Project)
-	octopusDeployError := new(OctopusDeployError)
+	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("api/projects/%s", projectid)
 
 	resp, err := s.sling.New().Get(path).Receive(project, octopusDeployError)
@@ -68,7 +68,7 @@ func (s *ProjectsService) GetAll() ([]Project, error) {
 
 	for {
 		projects := new(Projects)
-		octopusDeployError := new(OctopusDeployError)
+		octopusDeployError := new(APIError)
 
 		resp, err := s.sling.New().Get(path).Receive(projects, octopusDeployError)
 		if err != nil {
