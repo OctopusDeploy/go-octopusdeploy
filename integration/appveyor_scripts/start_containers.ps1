@@ -1,4 +1,4 @@
-Push-Location -Path 'tests'
+Push-Location -Path 'integration\appveyor_scripts'
 Write-Output "Starting docker-compose. This may take a while..."
 Start-Process -FilePath 'docker-compose' -ArgumentList 'up -d' -Wait -NoNewWindow
 Pop-Location

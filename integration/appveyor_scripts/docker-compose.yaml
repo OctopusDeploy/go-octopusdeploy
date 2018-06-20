@@ -1,0 +1,11 @@
+version: '2.1'
+services:
+  octopus:
+    image: octopusdeploy/octopusdeploy
+    environment:
+      OctopusAdminUsername: "${TEST_OCTOPUS_USERNAME}"
+      OctopusAdminPassword: "${TEST_OCTOPUS_PASSWORD}"
+      sqlDbConnectionString: "Server=${LOCAL_MACHINE_IP},1433\\SQL2017;Database=master;User ID=sa;Password=Password12!;Initial Catalog=Octopus;Persist Security Info=False;MultipleActiveResultSets=False;Connection Timeout=5;"
+    ports:
+     - "81:81"
+    stdin_open: true #Process sits and waits for ReadLine
