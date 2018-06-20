@@ -1,0 +1,27 @@
+version: 1.0.{build}
+
+image: Visual Studio 2017
+
+services:
+  - mssql2017
+
+environment:
+  GOPATH: c:\gopath
+  LOCAL_MACHINE_IP: 172.25.16.1
+  TEST_OCTOPUS_PASSWORD: Octopus! # This password is for the Octopus Deploy server spun up in Appveyor.
+  TEST_OCTOPUS_USERNAME: AppveyorAdmin
+
+install:
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
+  - go version
+  - cinst octopustools
+  - ps: Invoke-Expression ".\integration\appveyor_scripts\configure_agent.ps1"
+
+before_test:
+  - ps: Invoke-Expression ".\integration\appveyor_scripts\start_containers.ps1"
+  - ps: Invoke-Expression ".\integration\appveyor_scripts\get_octopus_api_key.ps1"
+
+build: off
+
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

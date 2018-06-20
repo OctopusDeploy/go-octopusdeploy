@@ -10,3 +10,6 @@ build: fmt
 
 test: fmt
 	go test -v -timeout 30s ./...
+
+testacc:
+	go test integration/* -v -timeout 90m
