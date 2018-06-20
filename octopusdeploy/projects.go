@@ -2,8 +2,9 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 type ProjectsService struct {
@@ -98,13 +99,11 @@ func (s *ProjectsService) Add(project *Project) (Project, error) {
 	path := fmt.Sprintf("api/projects")
 	resp, err := s.sling.New().Post(path).BodyJSON(project).ReceiveSuccess(&created)
 
-	defer resp.Body.Close()
-
 	if err != nil {
 		return created, err
 	}
 
-	if resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode != http.StatusCreated {
 		return created, fmt.Errorf("cannot create project. response from server %s", resp.Status)
 	}
 

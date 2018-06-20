@@ -1,11 +1,12 @@
 package octopusdeploy
 
 import (
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestProjectGet(t *testing.T) {
