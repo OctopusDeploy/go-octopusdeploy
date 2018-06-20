@@ -12,7 +12,7 @@ $localMachineIP = Test-Connection -ComputerName (hostname) -Count 1  | Select IP
 do {
     try {
         Write-Output "Trying to connect to Octopus..."
-        $result = Invoke-WebRequest -UseBasicParsing -Uri "http://$($localMachineIP):81"
+        $result = Invoke-WebRequest -UseBasicParsing -Uri "http://$($ipV4.IPAddressToString):81"
         if ($result.StatusCode -eq 200) {
             $octopusReady = $true
         }
@@ -26,7 +26,7 @@ do {
 
 }until($retryCount -eq 10 -or $octopusReady)
 
-if ($retryCount -eq 5)
+if ($retryCount -eq 10)
 {
     Write-Error "Failed to bring up Octopus Deploy container correctly."
 }
