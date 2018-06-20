@@ -7,7 +7,6 @@ services:
 
 environment:
   GOPATH: c:\gopath
-  LOCAL_MACHINE_IP: 172.25.16.1
   TEST_OCTOPUS_PASSWORD: Octopus! # This password is for the Octopus Deploy server spun up in Appveyor.
   TEST_OCTOPUS_USERNAME: AppveyorAdmin
 
