@@ -2,8 +2,9 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"github.com/dghubble/sling"
 	"net/http"
+
+	"github.com/dghubble/sling"
 )
 
 type DeploymentProcessService struct {
@@ -63,15 +64,15 @@ func (d *DeploymentProcessService) GetAll() ([]DeploymentProcess, error) {
 			return nil, err
 		}
 
-		fmt.Println("Response: %s", resp.Status)
-		fmt.Println("Total Results: %d", deploymentProcesses.NumberOfPages)
+		fmt.Printf("Response: %v", resp.Status)
+		fmt.Printf("Total Results: %d", deploymentProcesses.NumberOfPages)
 
 		for _, deploymentProcess := range deploymentProcesses.Items {
 			listOfDeloymentProcess = append(listOfDeloymentProcess, deploymentProcess)
 		}
 
 		if deploymentProcesses.PagedResults.Links.PageNext != "" {
-			fmt.Println("More pages to go! Next link: %s", deploymentProcesses.PagedResults.Links.PageNext)
+			fmt.Printf("More pages to go! Next link: %s", deploymentProcesses.PagedResults.Links.PageNext)
 			path = deploymentProcesses.PagedResults.Links.PageNext
 		} else {
 			break

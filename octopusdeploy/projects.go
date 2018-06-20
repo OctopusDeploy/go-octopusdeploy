@@ -75,15 +75,15 @@ func (s *ProjectsService) GetAll() ([]Project, error) {
 			return nil, err
 		}
 
-		fmt.Println("Response: %s", resp.Status)
-		fmt.Println("Total Results: %d", projects.NumberOfPages)
+		fmt.Printf("Response: %s", resp.Status)
+		fmt.Printf("Total Results: %d", projects.NumberOfPages)
 
 		for _, project := range projects.Items {
 			listOfProjects = append(listOfProjects, project)
 		}
 
 		if projects.PagedResults.Links.PageNext != "" {
-			fmt.Println("More pages to go! Next link: %s", projects.PagedResults.Links.PageNext)
+			fmt.Printf("More pages to go! Next link: %s", projects.PagedResults.Links.PageNext)
 			path = projects.PagedResults.Links.PageNext
 		} else {
 			break
