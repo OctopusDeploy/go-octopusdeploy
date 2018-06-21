@@ -1,7 +1,8 @@
 version: 1.0.{build}
 
 image: Visual Studio 2017
-
+build: off
+clone_folder: c:\gopath\src\github.com\$username\$project
 services:
   - mssql2017
 
@@ -19,8 +20,9 @@ install:
 before_test:
   - ps: Invoke-Expression ".\integration\appveyor_scripts\start_containers.ps1"
   - ps: Invoke-Expression ".\integration\appveyor_scripts\get_octopus_api_key.ps1"
+  - ps: Invoke-Expression ".\integration\appveyor_scripts\start_go_integration_tests.ps1
 
-build: off
+
 
 on_finish:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
