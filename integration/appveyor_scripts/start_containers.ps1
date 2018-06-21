@@ -7,7 +7,7 @@ Pop-Location
 $octopusReady = $false
 $retryCount
 
-$localMachineIP = (Test-Connection -ComputerName (hostname) -Count 1  | Select IPV4Address).IPAddressToString
+$localMachineIP = (Test-Connection -ComputerName (hostname) -Count 1  | Select IPV4Address).IPV4Address
 
 Write-Output "Machine IP Address: $($localMachineIP)"
 

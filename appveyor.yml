@@ -16,9 +16,9 @@ install:
   - cinst octopustools
   - ps: Invoke-Expression ".\integration\appveyor_scripts\configure_agent.ps1"
 
-before_test:
-  - ps: Invoke-Expression ".\integration\appveyor_scripts\start_containers.ps1"
-  - ps: Invoke-Expression ".\integration\appveyor_scripts\get_octopus_api_key.ps1"
+# before_test:
+#   - ps: Invoke-Expression ".\integration\appveyor_scripts\start_containers.ps1"
+#   - ps: Invoke-Expression ".\integration\appveyor_scripts\get_octopus_api_key.ps1"
 
 build: off
 
