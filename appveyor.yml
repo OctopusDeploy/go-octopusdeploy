@@ -9,7 +9,7 @@ services:
 environment:
   GOPATH: c:\gopath
   TEST_OCTOPUS_PASSWORD: Octopus! # This password is for the Octopus Deploy server spun up in Appveyor.
-  TEST_OCTOPUS_USERNAME: AppveyorAdmin
+  TEST_OCTOPUS_USERNAME: Administrator
 
 install:
   - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%

@@ -1,5 +1,9 @@
 $ErrorActionPreference = 'Stop'
 
+# Load Functions
+$functionFolder = Get-ChildItem -Path (Join-Path -Path $PWD -ChildPath 'integrations\appveyor_scripts\functions')
+foreach ($function in $functionFolder) { . $function.FullName }
+
 # Copy Files from Image
 
 Write-Output "Grabbing required files from Octopus Server"
@@ -18,13 +22,7 @@ foreach ($item in $filesFromOctopusServer) {
     }
 }
 
-$localMachineIP = Get-NetAdapter | Where-Object { $_.Name -like "*DockerNAT*" } | Get-NetIPAddress | Where-Object { $_.AddressFamily -eq 'IPv4' }
-$localMachineIP = $localMachineIP.IPAddress
-
-if ([string]::IsNullOrEmpty($localMachineIP)) {
-    Write-Error "Cannot get Docker Adapaters IP Address"
-}
-
+$localMachineIP = Get-DockerAdapterIP
 Write-Output "Machine IP Address: $($localMachineIP)"
 
 $OctopusURI = "http://$($localMachineIP):81" #Octopus URL
