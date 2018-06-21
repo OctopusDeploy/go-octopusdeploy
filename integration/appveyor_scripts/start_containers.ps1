@@ -7,12 +7,15 @@ Pop-Location
 $octopusReady = $false
 $retryCount
 
-$localMachineIP = Test-Connection -ComputerName (hostname) -Count 1  | Select IPV4Address
+$localMachineIP = (Test-Connection -ComputerName (hostname) -Count 1  | Select IPV4Address).IPAddressToString
+
+Write-Output "Machine IP Address: $($localMachineIP)"
+
 
 do {
     try {
         Write-Output "Trying to connect to Octopus..."
-        $result = Invoke-WebRequest -UseBasicParsing -Uri "http://$($ipV4.IPAddressToString):81"
+        $result = Invoke-WebRequest -UseBasicParsing -Uri "http://$($localMachineIP):81"
         if ($result.StatusCode -eq 200) {
             $octopusReady = $true
         }
