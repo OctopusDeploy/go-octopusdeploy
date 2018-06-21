@@ -18,7 +18,16 @@ foreach ($item in $filesFromOctopusServer) {
     }
 }
 
-$OctopusURI = "http://$($env:LOCAL_MACHINE_IP):81" #Octopus URL
+$localMachineIP = Get-NetAdapter | Where-Object { $_.Name -like "*DockerNAT*" } | Get-NetIPAddress | Where-Object { $_.AddressFamily -eq 'IPv4' }
+$localMachineIP = $localMachineIP.IPAddress
+
+if ([string]::IsNullOrEmpty($localMachineIP)) {
+    Write-Error "Cannot get Docker Adapaters IP Address"
+}
+
+Write-Output "Machine IP Address: $($localMachineIP)"
+
+$OctopusURI = "http://$($localMachineIP):81" #Octopus URL
 
 $APIKeyPurpose = "PowerShell" #Brief text to describe the purpose of your API Key.
 
