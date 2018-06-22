@@ -15,9 +15,9 @@ function Install-OctopusDeployInAppveyor
     )
 
     # INSTALL PACKAGES
-    choco install octopusdeploy -y
-    choco install octopusdeploy.tentacle -y
-    choco install octopustools -y
+    choco install octopusdeploy -y --no-progress
+    choco install octopusdeploy.tentacle -y --no-progress
+    choco install octopustools -y --no-progress
 
     # Enable Firewall Rules
     New-NetFirewallRule -DisplayName 'Allow Access to MSSQL' -Direction Inbound -LocalPort 1433 -Protocol TCP -Action Allow
@@ -38,7 +38,7 @@ function Install-OctopusDeployInAppveyor
 
     foreach ($command in $installCommands) {
         Write-Output "Running $($OctoExe) $($command)"
-        Start-Process -FilePath $OctoExe -ArgumentList $command -Wait -NoNewWindow -ErrorAction Stop
+        Start-ProcessAdvanced -FilePath $OctoExe -ArgumentList $command
     }
 
 

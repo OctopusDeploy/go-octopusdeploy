@@ -16,6 +16,7 @@ install:
   - go version
   - ps: >-
       . ".\integration\appveyor_scripts\functions\Install-OctopusDeployInAppveyor.ps1" ;
+      . ".\integration\appveyor_scripts\functions\Start-ProcessAdvanced.ps1" ;
       Install-OctopusDeployInAppveyor -OctopusAdministartorUser $env:TEST_OCTOPUS_USERNAME -OctopusAdministartorPassword $env:TEST_OCTOPUS_PASSWORD
 
 before_test:
