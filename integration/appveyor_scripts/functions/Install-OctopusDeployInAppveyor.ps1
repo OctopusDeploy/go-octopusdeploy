@@ -31,7 +31,7 @@ function Install-OctopusDeployInAppveyor
         "database --instance `"OctopusServer`" --connectionString `"Data Source=localhost,1433\SQL2017;Initial Catalog=Octopus;Integrated Security=True`" --create --grant `"NT AUTHORITY\SYSTEM`""
         "configure --instance `"OctopusServer`" --upgradeCheck `"False`" --upgradeCheckWithStatistics `"False`" --webForceSSL `"False`" --webListenPrefixes `"http://localhost:80/`" --commsListenPort `"10943`" --serverNodeName `"$($env:COMPUTERNAME)`" --usernamePasswordIsEnabled `"True`""
         "service --instance `"OctopusServer`" --stop"
-        "admin --instance `"OctopusServer`" --username `"$($OctopusUsername)`" --email `"email@vagrant.com`" --password `"$($OctopusPassword)`""
+        "admin --instance `"OctopusServer`" --username `"$($OctopusAdministartorUser)`" --email `"admin@octo.com`" --password `"$($OctopusAdministartorPassword)`""
         "license --instance `"OctopusServer`" --licenseBase64 `"PExpY2Vuc2UgU2lnbmF0dXJlPSJDd0R1YUh2L2JveVBiS2tISnRqdjVBdmRWUjFWdG1zdktrSlZJQTJyM3ZhbDQ4d0lObThLbm1pUHlQRG1TYXNTKzl2OTlGUERNNlc0ZE92SjYvd2IzZz09Ij4KICA8TGljZW5zZWRUbz5WYWdyYW50PC9MaWNlbnNlZFRvPgogIDxMaWNlbnNlS2V5PjI2MDgwLTQ1MDc1LTU1NDIyLTI5NDU3PC9MaWNlbnNlS2V5PgogIDxWZXJzaW9uPjIuMDwhLS0gTGljZW5zZSBTY2hlbWEgVmVyc2lvbiAtLT48L1ZlcnNpb24+CiAgPFZhbGlkRnJvbT4yMDE3LTEyLTAzPC9WYWxpZEZyb20+CiAgPFZhbGlkVG8+MjAxOC0wMS0xNzwvVmFsaWRUbz4KICA8UHJvamVjdExpbWl0PlVubGltaXRlZDwvUHJvamVjdExpbWl0PgogIDxNYWNoaW5lTGltaXQ+VW5saW1pdGVkPC9NYWNoaW5lTGltaXQ+CiAgPFVzZXJMaW1pdD5VbmxpbWl0ZWQ8L1VzZXJMaW1pdD4KPC9MaWNlbnNlPg==`""
         "service --instance `"OctopusServer`" --install --reconfigure --start --dependOn `"MSSQL`$SQL2017`""
     )
