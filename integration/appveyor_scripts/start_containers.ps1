@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 # Load Functions
-$functionFolder = Get-ChildItem -Path (Join-Path -Path $PWD -ChildPath 'integrations\appveyor_scripts\functions')
+$functionFolder = Get-ChildItem -Path (Join-Path -Path $PWD -ChildPath 'integration\appveyor_scripts\functions')
 foreach ($function in $functionFolder) { . $function.FullName }
 
 Write-Output "Starting docker-compose. This may take several minutes"

@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 # Load Functions
-$functionFolder = Get-ChildItem -Path (Join-Path -Path $PWD -ChildPath 'integrations\appveyor_scripts\functions')
+$functionFolder = Get-ChildItem -Path (Join-Path -Path $PWD -ChildPath 'integration\appveyor_scripts\functions')
 foreach ($function in $functionFolder) { . $function.FullName }
 
 # Copy Files from Image
@@ -25,7 +25,7 @@ foreach ($item in $filesFromOctopusServer) {
 $localMachineIP = Get-DockerAdapterIP
 Write-Output "Machine IP Address: $($localMachineIP)"
 
-$OctopusURI = "http://$($localMachineIP):81" #Octopus URL
+$OctopusURI = "http://localhost" #Octopus URL
 
 $APIKeyPurpose = "PowerShell" #Brief text to describe the purpose of your API Key.
 
