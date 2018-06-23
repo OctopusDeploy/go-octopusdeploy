@@ -93,5 +93,5 @@ function Start-ProcessAdvanced
     $OutEvent.Name, $ErrEvent.Name |
 		ForEach-Object {Unregister-Event -SourceIdentifier $_}
 
-	exit($Process.ExitCode)
+	Write-Verbose $Process.ExitCode
 }
