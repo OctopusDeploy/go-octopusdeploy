@@ -94,6 +94,24 @@ func (s *ProjectsService) GetAll() ([]Project, error) {
 	return listOfProjects, nil // no more pages to go through
 }
 
+func (s *ProjectsService) GetByName(projectName string) (Project, error) {
+	var foundProject Project
+	projects, err := s.GetAll()
+
+	if err != nil {
+		return foundProject, err
+	}
+
+	for _, project := range projects {
+		if project.Name == projectName {
+			return project, nil
+		}
+	}
+
+	return foundProject, nil
+
+}
+
 func (s *ProjectsService) Add(project *Project) (Project, error) {
 	var created Project
 	path := fmt.Sprintf("api/projects")
@@ -108,4 +126,25 @@ func (s *ProjectsService) Add(project *Project) (Project, error) {
 	}
 
 	return created, nil
+}
+
+func (s *ProjectsService) Delete(projectid string) error {
+	path := fmt.Sprintf("api/projects/%s", projectid)
+	req, err := s.sling.New().Delete(path).Request()
+
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("cannot delete project. response from server %s", resp.Status)
+	}
+
+	return nil
 }

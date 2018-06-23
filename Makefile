@@ -12,4 +12,4 @@ test: fmt
 	go test -v -timeout 30s ./...
 
 testacc:
-	go test integration/* -v -timeout 90m
+	go test integration/*.go -v -timeout 90m
