@@ -3,6 +3,7 @@ package octopusdeploy
 import (
 	"fmt"
 	"net/http"
+	"errors"
 
 	"github.com/dghubble/sling"
 )
@@ -141,9 +142,15 @@ func (s *ProjectsService) Delete(projectid string) error {
 		return err
 	}
 
+	if resp.StatusCode == http.StatusNotFound {
+		return ErrItemNotFound
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("cannot delete project. response from server %s", resp.Status)
 	}
 
 	return nil
 }
+
+var ErrItemNotFound = errors.New("cannot find the item")
