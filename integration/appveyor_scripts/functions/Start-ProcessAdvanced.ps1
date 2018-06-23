@@ -91,5 +91,9 @@ function Start-ProcessAdvanced
 
     # Unregister events
     $OutEvent.Name, $ErrEvent.Name |
-        ForEach-Object {Unregister-Event -SourceIdentifier $_}
+		ForEach-Object {Unregister-Event -SourceIdentifier $_}
+
+	if ($Process.ExitCode > 0) {
+		Write-Error "Process exited with $($Process.ExitCode)"
+	}
 }
