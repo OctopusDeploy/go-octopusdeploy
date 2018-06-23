@@ -108,8 +108,7 @@ func (s *ProjectsService) GetByName(projectName string) (Project, error) {
 		}
 	}
 
-	return foundProject, nil
-
+	return foundProject, fmt.Errorf("no project found with project name %s", projectName)
 }
 
 func (s *ProjectsService) Add(project *Project) (Project, error) {
