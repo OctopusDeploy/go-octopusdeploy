@@ -93,9 +93,5 @@ function Start-ProcessAdvanced
     $OutEvent.Name, $ErrEvent.Name |
 		ForEach-Object {Unregister-Event -SourceIdentifier $_}
 
-	$Process.WaitForExit()
-	Write-Verbose "Exit Code: $($Process.ExitCode)"
-	if ($Process.ExitCode > 0) {
-		Write-Error "Process exited with $($Process.ExitCode)"
-	}
+	exit($Process.ExitCode)
 }
