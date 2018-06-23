@@ -1,9 +1,9 @@
 package octopusdeploy
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
-	"errors"
 
 	"github.com/dghubble/sling"
 )
@@ -151,6 +151,22 @@ func (s *ProjectsService) Delete(projectid string) error {
 	}
 
 	return nil
+}
+
+func (s *ProjectsService) Update(project Project) (Project, error) {
+	var updated Project
+	path := fmt.Sprintf("api/projects/%s", project.ID)
+	resp, err := s.sling.Put(path).BodyJSON(project).ReceiveSuccess(&updated)
+
+	if err != nil {
+		return updated, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return updated, fmt.Errorf("cannot update project. response from server %s", resp.Status)
+	}
+
+	return updated, nil
 }
 
 var ErrItemNotFound = errors.New("cannot find the item")
