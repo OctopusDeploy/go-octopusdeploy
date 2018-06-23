@@ -114,7 +114,7 @@ func cleanProject(t *testing.T, projectID string) {
 }
 
 func getRandomProjectName() string {
-	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.Must(uuid.NewV4()))
+	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.NewV4())
 
 	return fullName
 }
