@@ -84,7 +84,7 @@ function Start-ProcessAdvanced
     {
         Start-Sleep -Seconds $SleepTime
         if ($EnableWaitMessage) {
-            Write-Output "Currently waited $($stopwatch.Elapsed.Minutes) minutes for docker-compose to finish.."
+            Write-Output "Currently waited $($stopwatch.Elapsed.Minutes) minutes for $($FilePath) to finish"
         }
     }
     while (!$Process.HasExited)
@@ -94,4 +94,8 @@ function Start-ProcessAdvanced
 		ForEach-Object {Unregister-Event -SourceIdentifier $_}
 
 	Write-Verbose $Process.ExitCode
+	
+	if ($Process.ExitCode > 0){
+		exit($Process.ExitCode)
+	}
 }
