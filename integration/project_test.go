@@ -26,6 +26,29 @@ func TestProjectAddAndDelete(t *testing.T) {
 	assert.NotEmpty(t, actual.ID, "project doesn't contain an ID from the octopus server")
 }
 
+func TestProjectGetAll(t *testing.T) {
+	project := createTestProject(t, getRandomProjectName())
+	defer cleanProject(t, project.ID)
+
+	allProjects, err := client.Projects.GetAll()
+	if err != nil {
+		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
+	}
+
+	numberOfProjects := len(*allProjects)
+
+	additionalProject := createTestProject(t, getRandomProjectName())
+	defer cleanProject(t, additionalProject.ID)
+
+	allProjectsAfterCreatingAdditional, err := client.Projects.GetAll()
+	if err != nil {
+		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
+	}
+
+	assert.Nil(t, err, "error when looking for project when not expected")
+	assert.Equal(t, len(*allProjectsAfterCreatingAdditional), numberOfProjects+1, "created an additional project and expected number of projects to increase by 1")
+}
+
 func TestProjectUpdate(t *testing.T) {
 	project := createTestProject(t, getRandomProjectName())
 	defer cleanProject(t, project.ID)
@@ -54,47 +77,24 @@ func TestProjectGetByName(t *testing.T) {
 	assert.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
 }
 
-func TestProjectGetAll(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
-	defer cleanProject(t, project.ID)
-
-	allProjects, err := client.Projects.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
-	}
-
-	numberOfProjects := len(allProjects)
-
-	additionalProject := createTestProject(t, getRandomProjectName())
-	defer cleanProject(t, additionalProject.ID)
-
-	allProjectsAfterCreatingAdditional, err := client.Projects.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
-	}
-
-	assert.Nil(t, err, "error when looking for project when not expected")
-	assert.Len(t, allProjectsAfterCreatingAdditional, numberOfProjects+1, "created an additional project and expected number of projects to increase by 1")
-}
-
 func createTestProject(t *testing.T, projectName string) octopusdeploy.Project {
 	p := getTestProject(projectName)
-	createdProject, err := client.Projects.Add(p)
+	createdProject, err := client.Projects.Add(&p)
 
 	if err != nil {
-		t.Fatalf("Creating a project failed when it shouldn't: %s", err)
+		t.Fatalf("creating project %s failed when it shouldn't: %s", projectName, err)
 	}
 
-	return createdProject
+	return *createdProject
 }
 
-func getTestProject(projectName string) *octopusdeploy.Project {
+func getTestProject(projectName string) octopusdeploy.Project {
 	p := &octopusdeploy.Project{}
 	p.LifecycleID = "Lifecycles-1"
 	p.Name = projectName
 	p.ProjectGroupID = "ProjectGroups-1"
 
-	return p
+	return *p
 }
 
 func cleanProject(t *testing.T, projectID string) {

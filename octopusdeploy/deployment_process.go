@@ -36,7 +36,7 @@ type DeploymentProcess struct {
 func (d *DeploymentProcessService) Get(deploymentProcessID string) (DeploymentProcess, error) {
 	deploymentProcess := new(DeploymentProcess)
 	octopusDeployError := new(APIError)
-	path := fmt.Sprintf("api/deploymentprocesses/%s", deploymentProcessID)
+	path := fmt.Sprintf("deploymentprocesses/%s", deploymentProcessID)
 
 	resp, err := d.sling.New().Get(path).Receive(deploymentProcess, octopusDeployError)
 
@@ -53,7 +53,7 @@ func (d *DeploymentProcessService) Get(deploymentProcessID string) (DeploymentPr
 
 func (d *DeploymentProcessService) GetAll() ([]DeploymentProcess, error) {
 	var listOfDeploymentProcess []DeploymentProcess
-	path := fmt.Sprintf("api/deploymentprocesses")
+	path := fmt.Sprintf("deploymentprocesses")
 
 	for {
 		deploymentProcesses := new(DeploymentProcesses)
