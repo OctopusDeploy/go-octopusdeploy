@@ -26,6 +26,16 @@ func TestProjectAddAndDelete(t *testing.T) {
 	assert.NotEmpty(t, actual.ID, "project doesn't contain an ID from the octopus server")
 }
 
+func TestProjectGetThatDoesNotExist(t *testing.T) {
+	projectID := "there-is-no-way-this-project-id-exists-i-hope"
+	expected := octopusdeploy.ErrItemNotFound
+	project, err := client.Projects.Get(projectID)
+
+	assert.Error(t, err, "there should have been an error raised as this project shoudln't be found")
+	assert.Equal(t, expected, err, "a item not found error should have been raised")
+	assert.Nil(t, project, "no project should have been returned")
+}
+
 func TestProjectGetAll(t *testing.T) {
 	project := createTestProject(t, getRandomProjectName())
 	defer cleanProject(t, project.ID)

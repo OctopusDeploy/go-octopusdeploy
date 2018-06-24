@@ -59,8 +59,12 @@ func (s *ProjectsService) Get(projectid string) (*Project, error) {
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, ErrItemNotFound
+	}
+
 	if resp.StatusCode != http.StatusOK {
-		return &project, fmt.Errorf("cannot get project id %s from server. response from server %s", projectid, resp.Status)
+		return nil, fmt.Errorf("cannot get project id %s from server. response from server %s", projectid, resp.Status)
 	}
 
 	return &project, err
