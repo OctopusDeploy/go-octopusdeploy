@@ -1,9 +1,9 @@
 package octopusdeploy
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
-	"errors"
 
 	"github.com/dghubble/sling"
 )
@@ -46,90 +46,94 @@ type Project struct {
 	VersioningStrategy              VersioningStrategyResource          `json:"VersioningStrategy"`
 }
 
-func (s *ProjectsService) Get(projectid string) (Project, error) {
-	project := new(Project)
+func (s *ProjectsService) Get(projectid string) (*Project, error) {
+	var project Project
 	octopusDeployError := new(APIError)
-	path := fmt.Sprintf("api/projects/%s", projectid)
+	path := fmt.Sprintf("projects/%s", projectid)
 
 	resp, err := s.sling.New().Get(path).Receive(project, octopusDeployError)
 
 	if err != nil {
-		return *project, fmt.Errorf("cannot get project id %s from server. failure from http client %v", projectid, err)
+		return &project, fmt.Errorf("cannot get project id %s from server. failure from http client %v", projectid, err)
 	}
+
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return *project, fmt.Errorf("cannot get project id %s from server. response from server %s", projectid, resp.Status)
+		return &project, fmt.Errorf("cannot get project id %s from server. response from server %s", projectid, resp.Status)
 	}
 
-	return *project, err
+	return &project, err
 }
 
-func (s *ProjectsService) GetAll() ([]Project, error) {
+func (s *ProjectsService) GetAll() (*[]Project, error) {
 	var listOfProjects []Project
-	path := fmt.Sprintf("api/projects")
+	path := fmt.Sprintf("projects")
 
 	for {
 		projects := new(Projects)
 		octopusDeployError := new(APIError)
 
 		resp, err := s.sling.New().Get(path).Receive(projects, octopusDeployError)
+
 		if err != nil {
 			return nil, err
 		}
 
-		fmt.Printf("Response: %s", resp.Status)
-		fmt.Printf("Total Results: %d", projects.NumberOfPages)
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			return &listOfProjects, fmt.Errorf("cannot get all projects. response from server %s", resp.Status)
+		}
 
 		for _, project := range projects.Items {
 			listOfProjects = append(listOfProjects, project)
 		}
 
 		if projects.PagedResults.Links.PageNext != "" {
-			fmt.Printf("More pages to go! Next link: %s", projects.PagedResults.Links.PageNext)
 			path = projects.PagedResults.Links.PageNext
 		} else {
 			break
 		}
 	}
 
-	return listOfProjects, nil // no more pages to go through
+	return &listOfProjects, nil // no more pages to go through
 }
 
-func (s *ProjectsService) GetByName(projectName string) (Project, error) {
+func (s *ProjectsService) GetByName(projectName string) (*Project, error) {
 	var foundProject Project
 	projects, err := s.GetAll()
 
 	if err != nil {
-		return foundProject, err
+		return &foundProject, err
 	}
 
-	for _, project := range projects {
+	for _, project := range *projects {
 		if project.Name == projectName {
-			return project, nil
+			return &project, nil
 		}
 	}
 
-	return foundProject, fmt.Errorf("no project found with project name %s", projectName)
+	return &foundProject, fmt.Errorf("no project found with project name %s", projectName)
 }
 
-func (s *ProjectsService) Add(project *Project) (Project, error) {
-	var created Project
-	path := fmt.Sprintf("api/projects")
-	resp, err := s.sling.New().Post(path).BodyJSON(project).ReceiveSuccess(&created)
+func (s *ProjectsService) Add(project *Project) (*Project, error) {
+	created := new(Project)
+	resp, err := s.sling.New().Post("projects").BodyJSON(project).ReceiveSuccess(created)
 
 	if err != nil {
-		return created, err
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return created, fmt.Errorf("cannot create project. response from server %s", resp.Status)
+		return nil, fmt.Errorf("cannot create project. response from server %s, req %s", resp.Status, resp.Request.URL)
 	}
 
 	return created, nil
 }
 
 func (s *ProjectsService) Delete(projectid string) error {
-	path := fmt.Sprintf("api/projects/%s", projectid)
+	path := fmt.Sprintf("projects/%s", projectid)
 	req, err := s.sling.New().Delete(path).Request()
 
 	if err != nil {
@@ -142,6 +146,8 @@ func (s *ProjectsService) Delete(projectid string) error {
 		return err
 	}
 
+	defer resp.Body.Close()
+
 	if resp.StatusCode == http.StatusNotFound {
 		return ErrItemNotFound
 	}
@@ -151,6 +157,24 @@ func (s *ProjectsService) Delete(projectid string) error {
 	}
 
 	return nil
+}
+
+func (s *ProjectsService) Update(project Project) (Project, error) {
+	var updated Project
+	path := fmt.Sprintf("projects/%s", project.ID)
+	resp, err := s.sling.New().Put(path).BodyJSON(project).ReceiveSuccess(&updated)
+
+	if err != nil {
+		return updated, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return updated, fmt.Errorf("cannot update project at url %s. response from server %s", resp.Request.URL, resp.Status)
+	}
+
+	return updated, nil
 }
 
 var ErrItemNotFound = errors.New("cannot find the item")

@@ -1,7 +1,9 @@
 package octopusdeploy
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/dghubble/sling"
 )
@@ -16,7 +18,10 @@ type Client struct {
 
 // NewClient returns a new Client.
 func NewClient(httpClient *http.Client, octopusURL, octopusAPIKey string) *Client {
-	base := sling.New().Client(httpClient).Base(octopusURL).Set("X-Octopus-ApiKey", octopusAPIKey)
+	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
+	baseURLWithAPI = fmt.Sprintf("%s/api/", baseURLWithAPI)
+	fmt.Println(baseURLWithAPI)
+	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", octopusAPIKey)
 	return &Client{
 		sling:             base,
 		Projects:          NewProjectService(base.New()),

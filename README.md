@@ -8,6 +8,11 @@ A Go wrapper for the Octopus Deploy REST API.
 # Go Dependencies
 * Dependencies are managed using [dep](https://golang.github.io/dep/docs/new-project.html)
 
+```bash
+# Vendor new modules
+dep ensure
+```
+
 # Using the main.go Example
 
 ```bash
