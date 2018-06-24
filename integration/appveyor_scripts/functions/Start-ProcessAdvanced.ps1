@@ -93,9 +93,11 @@ function Start-ProcessAdvanced
     $OutEvent.Name, $ErrEvent.Name |
 		ForEach-Object {Unregister-Event -SourceIdentifier $_}
 
-	Write-Verbose $Process.ExitCode
-	
-	if ($Process.ExitCode > 0){
-		exit($Process.ExitCode)
+    [int]$exitCode = $Process.ExitCode
+	Write-Verbose "Last Exit Code: $exitCode"
+
+	if ($exitCode -gt 0){
+        Write-Error "Exiting using the exit code: $($exitCode)"
+		exit($exitCode)
 	}
 }
