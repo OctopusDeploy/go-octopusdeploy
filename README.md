@@ -21,3 +21,7 @@ export OCTOPUS_APIKEY=API-FAKEAPIKEYFAKEAPIKEY
 
 go run main.go # creates a project
 ```
+
+# Links
+* Octopus Deploy API Examples: https://github.com/OctopusDeploy/OctopusDeploy-Api
+* Octopus Deploy Clients: https://github.com/OctopusDeploy/OctopusClients

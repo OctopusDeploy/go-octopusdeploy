@@ -98,7 +98,7 @@ func (s *ProjectsService) GetAll() (*[]Project, error) {
 		defer resp.Body.Close()
 
 		if octopusDeployError.Errors != nil {
-			return nil, fmt.Errorf("cannot add project. response from octopus deploy %s: ", octopusDeployError.Errors)
+			return nil, fmt.Errorf("cannot get all projects. response from octopusdeploy %s: ", octopusDeployError.Errors)
 		}
 
 		if resp.StatusCode != http.StatusOK {
