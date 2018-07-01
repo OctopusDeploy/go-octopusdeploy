@@ -106,3 +106,27 @@ func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcessResource, error
 
 	return &listOfDeploymentProcess, nil // no more pages to go through
 }
+
+func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcessResource) (*DeploymentProcessResource, error) {
+	var updated DeploymentProcessResource
+	var octopusDeployError APIError
+
+	path := fmt.Sprintf("deploymentprocesses/%s", deploymentProcess.ID)
+	resp, err := s.sling.New().Put(path).BodyJSON(deploymentProcess).Receive(&updated, &octopusDeployError)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	if octopusDeployError.Errors != nil {
+		return nil, fmt.Errorf("cannot update deployment process. response from octopusdeploy %s: ", octopusDeployError.Errors)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("cannot update deployment process at url %s. response from server %s", resp.Request.URL, resp.Status)
+	}
+
+	return &updated, nil
+}
