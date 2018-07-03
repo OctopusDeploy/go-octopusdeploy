@@ -185,22 +185,22 @@ func (s *ProjectsService) Delete(projectid string) error {
 	return nil
 }
 
-func (s *ProjectsService) Update(project Project) (Project, error) {
+func (s *ProjectsService) Update(project *Project) (*Project, error) {
 	var updated Project
 	path := fmt.Sprintf("projects/%s", project.ID)
 	resp, err := s.sling.New().Put(path).BodyJSON(project).ReceiveSuccess(&updated)
 
 	if err != nil {
-		return updated, err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return updated, fmt.Errorf("cannot update project at url %s. response from server %s", resp.Request.URL, resp.Status)
+		return nil, fmt.Errorf("cannot update project at url %s. response from server %s", resp.Request.URL, resp.Status)
 	}
 
-	return updated, nil
+	return &updated, nil
 }
 
 var ErrItemNotFound = errors.New("cannot find the item")
