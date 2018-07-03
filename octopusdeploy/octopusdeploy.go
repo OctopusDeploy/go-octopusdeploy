@@ -12,8 +12,9 @@ import (
 type Client struct {
 	sling *sling.Sling
 	// Octopus Deploy API Services
-	Projects          *ProjectsService
 	DeploymentProcess *DeploymentProcessService
+	ProjectGroup      *ProjectGroupService
+	Projects          *ProjectsService
 }
 
 // NewClient returns a new Client.
@@ -24,7 +25,8 @@ func NewClient(httpClient *http.Client, octopusURL, octopusAPIKey string) *Clien
 	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", octopusAPIKey)
 	return &Client{
 		sling:             base,
-		Projects:          NewProjectService(base.New()),
 		DeploymentProcess: NewDeploymentProcessService(base.New()),
+		ProjectGroup:      NewProjectGroupService(base.New()),
+		Projects:          NewProjectService(base.New()),
 	}
 }
