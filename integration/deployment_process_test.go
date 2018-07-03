@@ -13,7 +13,7 @@ func init() {
 }
 
 func TestDeploymentProcessGet(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
+	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	deploymentProcess, err := client.DeploymentProcess.Get(project.DeploymentProcessID)
@@ -23,7 +23,7 @@ func TestDeploymentProcessGet(t *testing.T) {
 }
 
 func TestDeploymentProcessGetAll(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
+	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	allDeploymentProcess, err := client.DeploymentProcess.GetAll()
@@ -33,7 +33,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 
 	numberOfDeploymentProcesses := len(*allDeploymentProcess)
 
-	additionalProject := createTestProject(t, getRandomProjectName())
+	additionalProject := createTestProject(t, getRandomName())
 	defer cleanProject(t, additionalProject.ID)
 
 	allDeploymentProcessAfterCreatingAdditional, err := client.Projects.GetAll()
@@ -46,7 +46,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 }
 
 func TestDeploymentProcessUpdate(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
+	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	deploymentProcess, err := client.DeploymentProcess.Get(project.DeploymentProcessID)

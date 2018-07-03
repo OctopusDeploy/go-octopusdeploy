@@ -1,10 +1,7 @@
 package integration
 
 import (
-	"fmt"
 	"testing"
-
-	"github.com/satori/go.uuid"
 
 	"github.com/stretchr/testify/assert"
 
@@ -16,7 +13,7 @@ func init() {
 }
 
 func TestProjectAddAndDelete(t *testing.T) {
-	projectName := getRandomProjectName()
+	projectName := getRandomName()
 	expected := getTestProject(projectName)
 	actual := createTestProject(t, projectName)
 
@@ -27,12 +24,12 @@ func TestProjectAddAndDelete(t *testing.T) {
 }
 
 func TestProjectAddGetAndDelete(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
+	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	getProject, err := client.Projects.Get(project.ID)
-	assert.Nil(t, err, "there was an error raised getting project when there shoudln't be")
-	assert.Equal(t, project.Name, getProject.Name,)
+	assert.Nil(t, err, "there was an error raised getting project when there should not be")
+	assert.Equal(t, project.Name, getProject.Name)
 }
 
 func TestProjectGetThatDoesNotExist(t *testing.T) {
@@ -40,13 +37,13 @@ func TestProjectGetThatDoesNotExist(t *testing.T) {
 	expected := octopusdeploy.ErrItemNotFound
 	project, err := client.Projects.Get(projectID)
 
-	assert.Error(t, err, "there should have been an error raised as this project shoudln't be found")
+	assert.Error(t, err, "there should have been an error raised as this project should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
 	assert.Nil(t, project, "no project should have been returned")
 }
 
 func TestProjectGetAll(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
+	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	allProjects, err := client.Projects.GetAll()
@@ -56,7 +53,7 @@ func TestProjectGetAll(t *testing.T) {
 
 	numberOfProjects := len(*allProjects)
 
-	additionalProject := createTestProject(t, getRandomProjectName())
+	additionalProject := createTestProject(t, getRandomName())
 	defer cleanProject(t, additionalProject.ID)
 
 	allProjectsAfterCreatingAdditional, err := client.Projects.GetAll()
@@ -69,10 +66,10 @@ func TestProjectGetAll(t *testing.T) {
 }
 
 func TestProjectUpdate(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
+	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
-	newProjectName := getRandomProjectName()
+	newProjectName := getRandomName()
 	const newDescription = "this should be updated"
 	const newSkipMachineBehavior = "SkipUnavailableMachines"
 
@@ -80,15 +77,15 @@ func TestProjectUpdate(t *testing.T) {
 	project.Description = newDescription
 	project.ProjectConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 
-	updatedProject, err := client.Projects.Update(project)
+	updatedProject, err := client.Projects.Update(&project)
 	assert.Nil(t, err, "error when updating project")
-	assert.Equal(t, newProjectName, updatedProject.Name, "project name wasn't updated")
-	assert.Equal(t, newDescription, updatedProject.Description, "project description wasn't updated")
-	assert.Equal(t, newSkipMachineBehavior, project.ProjectConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name wasn't updated")
+	assert.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
+	assert.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
+	assert.Equal(t, newSkipMachineBehavior, project.ProjectConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name was not updated")
 }
 
 func TestProjectGetByName(t *testing.T) {
-	project := createTestProject(t, getRandomProjectName())
+	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	foundProject, err := client.Projects.GetByName(project.Name)
@@ -127,10 +124,4 @@ func cleanProject(t *testing.T, projectID string) {
 	if err != nil {
 		t.Fatalf("deleting project failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
 	}
-}
-
-func getRandomProjectName() string {
-	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.NewV4())
-
-	return fullName
 }

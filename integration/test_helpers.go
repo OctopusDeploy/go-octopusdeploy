@@ -1,11 +1,13 @@
 package integration
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/MattHodge/go-octopusdeploy/octopusdeploy"
+	"github.com/satori/go.uuid"
 )
 
 var (
@@ -26,4 +28,10 @@ func initTest() *octopusdeploy.Client {
 	client := octopusdeploy.NewClient(&httpClient, octopusURL, octopusAPIKey)
 
 	return client
+}
+
+func getRandomName() string {
+	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.NewV4())
+
+	return fullName
 }
