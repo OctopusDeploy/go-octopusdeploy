@@ -14,7 +14,7 @@ type Client struct {
 	// Octopus Deploy API Services
 	DeploymentProcess *DeploymentProcessService
 	ProjectGroup      *ProjectGroupService
-	Projects          *ProjectsService
+	Projects          *ProjectService
 }
 
 // NewClient returns a new Client.

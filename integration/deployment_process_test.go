@@ -55,10 +55,10 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 		t.Fatalf("Retrieving deployment processes failed when it shouldn't: %s", err)
 	}
 
-	deploymentActionWindowsService := &octopusdeploy.DeploymentActionResource{
+	deploymentActionWindowsService := &octopusdeploy.DeploymentAction{
 		Name:       "Install Windows Service",
 		ActionType: "Octopus.WindowsService",
-		Properties: map[string]octopusdeploy.PropertyValueResource{
+		Properties: map[string]octopusdeploy.PropertyValue{
 			"Octopus.Action.WindowsService.CreateOrUpdateService":                       "True",
 			"Octopus.Action.WindowsService.ServiceAccount":                              "LocalSystem",
 			"Octopus.Action.WindowsService.StartMode":                                   "auto",
@@ -77,9 +77,9 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 		},
 	}
 
-	step1 := &octopusdeploy.DeploymentStepResource{
+	step1 := &octopusdeploy.DeploymentStep{
 		Name: "My First Step",
-		Properties: map[string]octopusdeploy.PropertyValueResource{
+		Properties: map[string]octopusdeploy.PropertyValue{
 			"Octopus.Action.TargetRoles": "octopus-server",
 		},
 	}

@@ -18,11 +18,11 @@ func NewDeploymentProcessService(sling *sling.Sling) *DeploymentProcessService {
 }
 
 type DeploymentProcesses struct {
-	Items []DeploymentProcessResource `json:"Items"`
+	Items []DeploymentProcess `json:"Items"`
 	PagedResults
 }
 
-type DeploymentProcessResource struct {
+type DeploymentProcess struct {
 
 	// Id
 	ID string `json:"Id,omitempty"`
@@ -44,15 +44,15 @@ type DeploymentProcessResource struct {
 	ProjectID string `json:"ProjectId,omitempty"`
 
 	// steps
-	Steps []DeploymentStepResource `json:"Steps"`
+	Steps []DeploymentStep `json:"Steps"`
 
 	// version
 	// Required: true
 	Version *int32 `json:"Version"`
 }
 
-func (d *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentProcessResource, error) {
-	var deploymentProcess DeploymentProcessResource
+func (d *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentProcess, error) {
+	var deploymentProcess DeploymentProcess
 	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("deploymentprocesses/%s", deploymentProcessID)
 
@@ -75,8 +75,8 @@ func (d *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentP
 	return &deploymentProcess, err
 }
 
-func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcessResource, error) {
-	var listOfDeploymentProcess []DeploymentProcessResource
+func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
+	var listOfDeploymentProcess []DeploymentProcess
 	path := fmt.Sprintf("deploymentprocesses")
 
 	for {
@@ -113,8 +113,8 @@ func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcessResource, error
 	return &listOfDeploymentProcess, nil // no more pages to go through
 }
 
-func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcessResource) (*DeploymentProcessResource, error) {
-	var updated DeploymentProcessResource
+func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcess) (*DeploymentProcess, error) {
+	var updated DeploymentProcess
 	var octopusDeployError APIError
 
 	path := fmt.Sprintf("deploymentprocesses/%s", deploymentProcess.ID)

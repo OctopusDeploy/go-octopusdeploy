@@ -8,12 +8,12 @@ import (
 	"github.com/dghubble/sling"
 )
 
-type ProjectsService struct {
+type ProjectService struct {
 	sling *sling.Sling
 }
 
-func NewProjectService(sling *sling.Sling) *ProjectsService {
-	return &ProjectsService{
+func NewProjectService(sling *sling.Sling) *ProjectService {
+	return &ProjectService{
 		sling: sling,
 	}
 }
@@ -24,26 +24,26 @@ type Projects struct {
 }
 
 type Project struct {
-	AutoCreateRelease               bool                                `json:"AutoCreateRelease"`
-	AutoDeployReleaseOverrides      []AutoDeployReleaseOverrideResource `json:"AutoDeployReleaseOverrides"`
-	DefaultGuidedFailureMode        string                              `json:"DefaultGuidedFailureMode,omitempty"`
-	DefaultToSkipIfAlreadyInstalled bool                                `json:"DefaultToSkipIfAlreadyInstalled"`
-	DeploymentProcessID             string                              `json:"DeploymentProcessId"`
-	Description                     string                              `json:"Description"`
-	DiscreteChannelRelease          bool                                `json:"DiscreteChannelRelease"`
-	ID                              string                              `json:"Id,omitempty"`
-	IncludedLibraryVariableSetIds   []string                            `json:"IncludedLibraryVariableSetIds"`
-	IsDisabled                      bool                                `json:"IsDisabled"`
-	LifecycleID                     string                              `json:"LifecycleId"`
-	Name                            string                              `json:"Name"`
-	ProjectConnectivityPolicy       ProjectConnectivityPolicy           `json:"ProjectConnectivityPolicy"`
-	ProjectGroupID                  string                              `json:"ProjectGroupId"`
-	ReleaseCreationStrategy         ReleaseCreationStrategyResource     `json:"ReleaseCreationStrategy"`
-	Slug                            string                              `json:"Slug"`
-	Templates                       []ActionTemplateParameterResource   `json:"Templates,omitempty"`
-	TenantedDeploymentMode          string                              `json:"TenantedDeploymentMode,omitempty"`
-	VariableSetID                   string                              `json:"VariableSetId"`
-	VersioningStrategy              VersioningStrategyResource          `json:"VersioningStrategy"`
+	AutoCreateRelease               bool                        `json:"AutoCreateRelease"`
+	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides"`
+	DefaultGuidedFailureMode        string                      `json:"DefaultGuidedFailureMode,omitempty"`
+	DefaultToSkipIfAlreadyInstalled bool                        `json:"DefaultToSkipIfAlreadyInstalled"`
+	DeploymentProcessID             string                      `json:"DeploymentProcessId"`
+	Description                     string                      `json:"Description"`
+	DiscreteChannelRelease          bool                        `json:"DiscreteChannelRelease"`
+	ID                              string                      `json:"Id,omitempty"`
+	IncludedLibraryVariableSetIds   []string                    `json:"IncludedLibraryVariableSetIds"`
+	IsDisabled                      bool                        `json:"IsDisabled"`
+	LifecycleID                     string                      `json:"LifecycleId"`
+	Name                            string                      `json:"Name"`
+	ProjectConnectivityPolicy       ProjectConnectivityPolicy   `json:"ProjectConnectivityPolicy"`
+	ProjectGroupID                  string                      `json:"ProjectGroupId"`
+	ReleaseCreationStrategy         ReleaseCreationStrategy     `json:"ReleaseCreationStrategy"`
+	Slug                            string                      `json:"Slug"`
+	Templates                       []ActionTemplateParameter   `json:"Templates,omitempty"`
+	TenantedDeploymentMode          string                      `json:"TenantedDeploymentMode,omitempty"`
+	VariableSetID                   string                      `json:"VariableSetId"`
+	VersioningStrategy              VersioningStrategy          `json:"VersioningStrategy"`
 }
 
 func NewProject(name, lifeCycleID, projectGroupID string) *Project {
@@ -51,13 +51,13 @@ func NewProject(name, lifeCycleID, projectGroupID string) *Project {
 		Name:           name,
 		LifecycleID:    lifeCycleID,
 		ProjectGroupID: projectGroupID,
-		VersioningStrategy: VersioningStrategyResource{
+		VersioningStrategy: VersioningStrategy{
 			Template: "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
 		},
 	}
 }
 
-func (s *ProjectsService) Get(projectid string) (*Project, error) {
+func (s *ProjectService) Get(projectid string) (*Project, error) {
 	var project Project
 	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projects/%s", projectid)
@@ -81,7 +81,7 @@ func (s *ProjectsService) Get(projectid string) (*Project, error) {
 	return &project, err
 }
 
-func (s *ProjectsService) GetAll() (*[]Project, error) {
+func (s *ProjectService) GetAll() (*[]Project, error) {
 	var listOfProjects []Project
 	path := fmt.Sprintf("projects")
 
@@ -119,7 +119,7 @@ func (s *ProjectsService) GetAll() (*[]Project, error) {
 	return &listOfProjects, nil // no more pages to go through
 }
 
-func (s *ProjectsService) GetByName(projectName string) (*Project, error) {
+func (s *ProjectService) GetByName(projectName string) (*Project, error) {
 	var foundProject Project
 	projects, err := s.GetAll()
 
@@ -136,7 +136,7 @@ func (s *ProjectsService) GetByName(projectName string) (*Project, error) {
 	return &foundProject, fmt.Errorf("no project found with project name %s", projectName)
 }
 
-func (s *ProjectsService) Add(project *Project) (*Project, error) {
+func (s *ProjectService) Add(project *Project) (*Project, error) {
 	var created Project
 	var octopusDeployError APIError
 	resp, err := s.sling.New().Post("projects").BodyJSON(project).Receive(&created, &octopusDeployError)
@@ -158,7 +158,7 @@ func (s *ProjectsService) Add(project *Project) (*Project, error) {
 	return &created, nil
 }
 
-func (s *ProjectsService) Delete(projectid string) error {
+func (s *ProjectService) Delete(projectid string) error {
 	path := fmt.Sprintf("projects/%s", projectid)
 	req, err := s.sling.New().Delete(path).Request()
 
@@ -185,7 +185,7 @@ func (s *ProjectsService) Delete(projectid string) error {
 	return nil
 }
 
-func (s *ProjectsService) Update(project *Project) (*Project, error) {
+func (s *ProjectService) Update(project *Project) (*Project, error) {
 	var updated Project
 	path := fmt.Sprintf("projects/%s", project.ID)
 	resp, err := s.sling.New().Put(path).BodyJSON(project).ReceiveSuccess(&updated)
