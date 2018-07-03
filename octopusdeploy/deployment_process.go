@@ -62,8 +62,14 @@ func (d *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentP
 		return nil, fmt.Errorf("cannot get deploymentprocess id %s from server. failure from http client %v", deploymentProcessID, err)
 	}
 
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, ErrItemNotFound
+	}
+
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("cannot get deploymentprocess id %s from server. response from server %s", deploymentProcessID, resp.Status)
+		return nil, fmt.Errorf("cannot get project id %s from server. response from server %s", deploymentProcessID, resp.Status)
 	}
 
 	return &deploymentProcess, err

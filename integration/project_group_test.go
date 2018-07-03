@@ -57,7 +57,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 	additionalProjectGroup := createTestProjectGroup(t, getRandomName())
 	defer cleanProjectGroup(t, additionalProjectGroup.ID)
 
-	allProjectGroupsAfterCreatingAdditional, err := client.Projects.GetAll()
+	allProjectGroupsAfterCreatingAdditional, err := client.ProjectGroup.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
