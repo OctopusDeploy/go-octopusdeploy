@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dghubble/sling"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type ProjectGroupService struct {
@@ -23,36 +24,31 @@ type ProjectGroups struct {
 }
 
 type ProjectGroup struct {
+	Description       string   `json:"Description,omitempty"`
+	EnvironmentIds    []string `json:"EnvironmentIds"`
+	ID                string   `json:"Id,omitempty"`
+	LastModifiedBy    string   `json:"LastModifiedBy,omitempty"`
+	LastModifiedOn    string   `json:"LastModifiedOn,omitempty"`
+	Links             Links    `json:"Links,omitempty"`
+	Name              string   `json:"Name,omitempty" validate:"required"`
+	RetentionPolicyID string   `json:"RetentionPolicyId,omitempty"`
+}
 
-	// description
-	Description string `json:"Description,omitempty"`
+func (p *ProjectGroup) Validate() error {
+	validate := validator.New()
 
-	// environment ids
-	EnvironmentIds []string `json:"EnvironmentIds"`
+	err := validate.Struct(p)
 
-	// Id
-	ID string `json:"Id,omitempty"`
+	if err != nil {
+		return err
+	}
 
-	// last modified by
-	LastModifiedBy string `json:"LastModifiedBy,omitempty"`
-
-	// last modified on
-	// Format: date-time
-	LastModifiedOn string `json:"LastModifiedOn,omitempty"`
-
-	// links
-	Links Links `json:"Links,omitempty"`
-
-	// name
-	Name string `json:"Name,omitempty"`
-
-	// retention policy Id
-	RetentionPolicyID string `json:"RetentionPolicyId,omitempty"`
+	return nil
 }
 
 func NewProjectGroup(name string) *ProjectGroup {
 	return &ProjectGroup{
-		Name:           name,
+		Name: name,
 	}
 }
 
@@ -103,6 +99,12 @@ func (p *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
 }
 
 func (p *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {
+	err := projectGroup.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var created ProjectGroup
 	octopusDeployError := new(APIError)
 	path := "projectgroups"
@@ -132,6 +134,12 @@ func (p *ProjectGroupService) Delete(projectGroupID string) error {
 }
 
 func (p *ProjectGroupService) Update(projectGroup *ProjectGroup) (*ProjectGroup, error) {
+	err := projectGroup.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var updated ProjectGroup
 	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projectgroups/%s", projectGroup.ID)

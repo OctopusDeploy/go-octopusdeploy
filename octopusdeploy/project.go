@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dghubble/sling"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type ProjectService struct {
@@ -25,7 +26,7 @@ type Projects struct {
 type Project struct {
 	AutoCreateRelease               bool                        `json:"AutoCreateRelease"`
 	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides"`
-	DefaultGuidedFailureMode        string                      `json:"DefaultGuidedFailureMode,omitempty"`
+	DefaultGuidedFailureMode        string                      `json:"DefaultGuidedFailureMode,omitempty" validate:"oneof=EnvironmentDefault Off On"`
 	DefaultToSkipIfAlreadyInstalled bool                        `json:"DefaultToSkipIfAlreadyInstalled"`
 	DeploymentProcessID             string                      `json:"DeploymentProcessId"`
 	Description                     string                      `json:"Description"`
@@ -33,10 +34,10 @@ type Project struct {
 	ID                              string                      `json:"Id,omitempty"`
 	IncludedLibraryVariableSetIds   []string                    `json:"IncludedLibraryVariableSetIds"`
 	IsDisabled                      bool                        `json:"IsDisabled"`
-	LifecycleID                     string                      `json:"LifecycleId"`
-	Name                            string                      `json:"Name"`
+	LifecycleID                     string                      `json:"LifecycleId" validate:"required"`
+	Name                            string                      `json:"Name" validate:"required"`
 	ProjectConnectivityPolicy       ProjectConnectivityPolicy   `json:"ProjectConnectivityPolicy"`
-	ProjectGroupID                  string                      `json:"ProjectGroupId"`
+	ProjectGroupID                  string                      `json:"ProjectGroupId" validate:"required"`
 	ReleaseCreationStrategy         ReleaseCreationStrategy     `json:"ReleaseCreationStrategy"`
 	Slug                            string                      `json:"Slug"`
 	Templates                       []ActionTemplateParameter   `json:"Templates,omitempty"`
@@ -45,13 +46,30 @@ type Project struct {
 	VersioningStrategy              VersioningStrategy          `json:"VersioningStrategy"`
 }
 
+func (t *Project) Validate() error {
+	validate := validator.New()
+
+	err := validate.Struct(t)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func NewProject(name, lifeCycleID, projectGroupID string) *Project {
 	return &Project{
-		Name:           name,
-		LifecycleID:    lifeCycleID,
-		ProjectGroupID: projectGroupID,
+		Name: name,
+		DefaultGuidedFailureMode: "EnvironmentDefault",
+		LifecycleID:              lifeCycleID,
+		ProjectGroupID:           projectGroupID,
 		VersioningStrategy: VersioningStrategy{
 			Template: "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
+		},
+		ProjectConnectivityPolicy: ProjectConnectivityPolicy{
+			AllowDeploymentsToNoTargets: false,
+			SkipMachineBehavior:         "None",
 		},
 	}
 }
@@ -120,6 +138,12 @@ func (s *ProjectService) GetByName(projectName string) (*Project, error) {
 }
 
 func (s *ProjectService) Add(project *Project) (*Project, error) {
+	err := project.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var created Project
 	octopusDeployError := new(APIError)
 	path := "projects"
@@ -150,6 +174,12 @@ func (s *ProjectService) Delete(projectid string) error {
 }
 
 func (s *ProjectService) Update(project *Project) (*Project, error) {
+	err := project.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var updated Project
 	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projects/%s", project.ID)
@@ -164,5 +194,3 @@ func (s *ProjectService) Update(project *Project) (*Project, error) {
 
 	return &updated, nil
 }
-
-
