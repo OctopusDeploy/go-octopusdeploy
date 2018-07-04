@@ -1,9 +1,5 @@
 package octopusdeploy
 
-import (
-	"fmt"
-)
-
 type PagedResults struct {
 	ItemType       string `json:"ItemType"`
 	TotalResults   int    `json:"TotalResults"`
@@ -102,14 +98,4 @@ type DeploymentAction struct {
 	LastModifiedOn                string                   `json:"LastModifiedOn"` // datetime
 	LastModifiedBy                string                   `json:"LastModifiedBy"`
 	Links                         Links                    `json:"Links"` // may be wrong
-}
-
-type APIError struct {
-	ErrorMessage  string   `json:"ErrorMessage"`
-	Errors        []string `json:"Errors"`
-	FullException string   `json:"FullException"`
-}
-
-func (e APIError) Error() string {
-	return fmt.Sprintf("Octopus Deploy Error Response: %v %+v %v", e.ErrorMessage, e.Errors, e.FullException)
 }

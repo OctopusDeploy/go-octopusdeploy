@@ -1,7 +1,6 @@
 package octopusdeploy
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -64,21 +63,13 @@ func (s *ProjectService) Get(projectid string) (*Project, error) {
 
 	resp, err := s.sling.New().Get(path).Receive(&project, &octopusDeployError)
 
-	if err != nil {
-		return nil, fmt.Errorf("cannot get project id %s from server. failure from http client %v", projectid, err)
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
+
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, ErrItemNotFound
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("cannot get project id %s from server. response from server %s", projectid, resp.Status)
-	}
-
-	return &project, err
+	return &project, nil
 }
 
 func (s *ProjectService) GetAll() (*[]Project, error) {
@@ -87,22 +78,14 @@ func (s *ProjectService) GetAll() (*[]Project, error) {
 
 	for {
 		var projects Projects
-		var octopusDeployError APIError
+		octopusDeployError := new(APIError)
 
 		resp, err := s.sling.New().Get(path).Receive(&projects, &octopusDeployError)
 
-		if err != nil {
-			return nil, err
-		}
+		apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-		defer resp.Body.Close()
-
-		if octopusDeployError.Errors != nil {
-			return nil, fmt.Errorf("cannot get all projects. response from octopusdeploy %s: ", octopusDeployError.Errors)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			return &listOfProjects, fmt.Errorf("cannot get all projects. response from server %s", resp.Status)
+		if apiErrorCheck != nil {
+			return nil, apiErrorCheck
 		}
 
 		for _, project := range projects.Items {
@@ -138,48 +121,29 @@ func (s *ProjectService) GetByName(projectName string) (*Project, error) {
 
 func (s *ProjectService) Add(project *Project) (*Project, error) {
 	var created Project
-	var octopusDeployError APIError
-	resp, err := s.sling.New().Post("projects").BodyJSON(project).Receive(&created, &octopusDeployError)
+	octopusDeployError := new(APIError)
+	path := "projects"
 
-	if err != nil {
-		return nil, err
-	}
+	resp, err := s.sling.New().Post(path).BodyJSON(project).Receive(&created, &octopusDeployError)
 
-	defer resp.Body.Close()
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
 
-	if octopusDeployError.Errors != nil {
-		return nil, fmt.Errorf("cannot add project. response from octopus deploy %s: ", octopusDeployError.Errors)
-	}
-
-	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("cannot add project. response from server %s, req %s", resp.Status, resp.Request.URL)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
 	return &created, nil
 }
 
 func (s *ProjectService) Delete(projectid string) error {
+	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projects/%s", projectid)
-	req, err := s.sling.New().Delete(path).Request()
+	resp, err := s.sling.New().Delete(path).Receive(nil, &octopusDeployError)
 
-	if err != nil {
-		return err
-	}
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-	resp, err := http.DefaultClient.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return ErrItemNotFound
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("cannot delete project. response from server %s", resp.Status)
+	if apiErrorCheck != nil {
+		return apiErrorCheck
 	}
 
 	return nil
@@ -187,20 +151,18 @@ func (s *ProjectService) Delete(projectid string) error {
 
 func (s *ProjectService) Update(project *Project) (*Project, error) {
 	var updated Project
+	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projects/%s", project.ID)
-	resp, err := s.sling.New().Put(path).BodyJSON(project).ReceiveSuccess(&updated)
 
-	if err != nil {
-		return nil, err
-	}
+	resp, err := s.sling.New().Put(path).BodyJSON(project).Receive(&updated, &octopusDeployError)
 
-	defer resp.Body.Close()
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("cannot update project at url %s. response from server %s", resp.Request.URL, resp.Status)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
 	return &updated, nil
 }
 
-var ErrItemNotFound = errors.New("cannot find the item")
+
