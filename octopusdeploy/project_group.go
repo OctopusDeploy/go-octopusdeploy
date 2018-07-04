@@ -63,18 +63,10 @@ func (p *ProjectGroupService) Get(projectGroupID string) (*ProjectGroup, error) 
 
 	resp, err := p.sling.New().Get(path).Receive(&projectGroup, &octopusDeployError)
 
-	if err != nil {
-		return nil, fmt.Errorf("cannot get projectgroup id %s from server. failure from http client %v", projectGroupID, err)
-	}
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, ErrItemNotFound
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("cannot get projectgroup id %s from server. response from server %s", projectGroupID, resp.Status)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
 	return &projectGroup, err
@@ -86,22 +78,14 @@ func (p *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
 
 	for {
 		var projectGroups ProjectGroups
-		var octopusDeployError APIError
+		octopusDeployError := new(APIError)
 
 		resp, err := p.sling.New().Get(path).Receive(&projectGroups, &octopusDeployError)
 
-		if err != nil {
-			return nil, err
-		}
+		apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-		defer resp.Body.Close()
-
-		if octopusDeployError.Errors != nil {
-			return nil, fmt.Errorf("cannot get all projectgroups. response from octopusdeploy %s: ", octopusDeployError.Errors)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("cannot get all projectgroups. response from server %s", resp.Status)
+		if apiErrorCheck != nil {
+			return nil, apiErrorCheck
 		}
 
 		for _, projectGroup := range projectGroups.Items {
@@ -120,48 +104,28 @@ func (p *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
 
 func (p *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {
 	var created ProjectGroup
-	var octopusDeployError APIError
-	resp, err := p.sling.New().Post("projectgroups").BodyJSON(projectGroup).Receive(&created, &octopusDeployError)
+	octopusDeployError := new(APIError)
+	path := "projectgroups"
+	resp, err := p.sling.New().Post(path).BodyJSON(projectGroup).Receive(&created, &octopusDeployError)
 
-	if err != nil {
-		return nil, err
-	}
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
 
-	defer resp.Body.Close()
-
-	if octopusDeployError.Errors != nil {
-		return nil, fmt.Errorf("cannot add projectgroup. response from octopus deploy %s: ", octopusDeployError.Errors)
-	}
-
-	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("cannot add projectgroup. response from server %s, req %s", resp.Status, resp.Request.URL)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
 	return &created, nil
 }
 
 func (p *ProjectGroupService) Delete(projectGroupID string) error {
+	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projectgroups/%s", projectGroupID)
-	req, err := p.sling.New().Delete(path).Request()
+	resp, err := p.sling.New().Delete(path).Receive(nil, &octopusDeployError)
 
-	if err != nil {
-		return err
-	}
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-	resp, err := http.DefaultClient.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return ErrItemNotFound
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("cannot delete projectgroup. response from server %s", resp.Status)
+	if apiErrorCheck != nil {
+		return apiErrorCheck
 	}
 
 	return nil
@@ -169,23 +133,15 @@ func (p *ProjectGroupService) Delete(projectGroupID string) error {
 
 func (p *ProjectGroupService) Update(projectGroup *ProjectGroup) (*ProjectGroup, error) {
 	var updated ProjectGroup
-	var octopusDeployError APIError
-
+	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projectgroups/%s", projectGroup.ID)
+
 	resp, err := p.sling.New().Put(path).BodyJSON(projectGroup).Receive(&updated, &octopusDeployError)
 
-	if err != nil {
-		return nil, err
-	}
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-	defer resp.Body.Close()
-
-	if octopusDeployError.Errors != nil {
-		return nil, fmt.Errorf("cannot update projectgroup. response from octopusdeploy %s: ", octopusDeployError.Errors)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("cannot update projectgroup at url %s. response from server %s", resp.Request.URL, resp.Status)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
 	return &updated, nil

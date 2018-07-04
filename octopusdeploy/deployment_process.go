@@ -58,18 +58,10 @@ func (d *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentP
 
 	resp, err := d.sling.New().Get(path).Receive(&deploymentProcess, &octopusDeployError)
 
-	if err != nil {
-		return nil, fmt.Errorf("cannot get deploymentprocess id %s from server. failure from http client %v", deploymentProcessID, err)
-	}
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, ErrItemNotFound
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("cannot get project id %s from server. response from server %s", deploymentProcessID, resp.Status)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
 	return &deploymentProcess, err
@@ -81,22 +73,14 @@ func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
 
 	for {
 		var deploymentProcesses DeploymentProcesses
-		var octopusDeployError APIError
+		octopusDeployError := new(APIError)
 
 		resp, err := d.sling.New().Get(path).Receive(&deploymentProcesses, &octopusDeployError)
 
-		if err != nil {
-			return nil, err
-		}
+		apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-		defer resp.Body.Close()
-
-		if octopusDeployError.Errors != nil {
-			return nil, fmt.Errorf("cannot get all deployment processes. response from octopusdeploy %s: ", octopusDeployError.Errors)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("cannot get all projects. response from server %s", resp.Status)
+		if apiErrorCheck != nil {
+			return nil, apiErrorCheck
 		}
 
 		for _, deploymentProcess := range deploymentProcesses.Items {
@@ -115,23 +99,15 @@ func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
 
 func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcess) (*DeploymentProcess, error) {
 	var updated DeploymentProcess
-	var octopusDeployError APIError
-
+	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("deploymentprocesses/%s", deploymentProcess.ID)
+
 	resp, err := s.sling.New().Put(path).BodyJSON(deploymentProcess).Receive(&updated, &octopusDeployError)
 
-	if err != nil {
-		return nil, err
-	}
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
-	defer resp.Body.Close()
-
-	if octopusDeployError.Errors != nil {
-		return nil, fmt.Errorf("cannot update deployment process. response from octopusdeploy %s: ", octopusDeployError.Errors)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("cannot update deployment process at url %s. response from server %s", resp.Request.URL, resp.Status)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
 	}
 
 	return &updated, nil
