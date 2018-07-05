@@ -17,8 +17,13 @@ func main() {
 	client := octopusdeploy.NewClient(&httpClient, octopusURL, octopusAPIKey)
 
 	p := octopusdeploy.NewProject("Test Project GoLang2", "Lifecycles-1", "ProjectGroups-1")
+	err := p.Validate()
 
-	createdProject, err := client.Projects.Add(p)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	createdProject, err := client.Project.Add(p)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -26,7 +31,7 @@ func main() {
 
 	fmt.Printf("Created Project ID %s", createdProject.ID)
 
-	project, err := client.Projects.Get(createdProject.ID)
+	project, err := client.Project.Get(createdProject.ID)
 
 	if err != nil {
 		fmt.Println(err.Error())

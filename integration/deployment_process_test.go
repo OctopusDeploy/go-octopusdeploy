@@ -36,7 +36,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	additionalProject := createTestProject(t, getRandomName())
 	defer cleanProject(t, additionalProject.ID)
 
-	allDeploymentProcessAfterCreatingAdditional, err := client.Projects.GetAll()
+	allDeploymentProcessAfterCreatingAdditional, err := client.Project.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all deployment processes failed when it shouldn't: %s", err)
 	}
