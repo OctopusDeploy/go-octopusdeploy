@@ -21,7 +21,7 @@ func TestProjectGet(t *testing.T) {
 	})
 
 	client := getFakeOctopusClient(httpClient)
-	project, err := client.Projects.Get("Projects-663")
+	project, err := client.Project.Get("Projects-663")
 
 	assert.Nil(t, err)
 	assert.Equal(t, "Canary .NET Core 2.0", project.Name)

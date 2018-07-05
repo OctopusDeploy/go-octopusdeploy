@@ -15,7 +15,7 @@ type Client struct {
 	// Octopus Deploy API Services
 	DeploymentProcess *DeploymentProcessService
 	ProjectGroup      *ProjectGroupService
-	Projects          *ProjectService
+	Project          *ProjectService
 }
 
 // NewClient returns a new Client.
@@ -28,7 +28,7 @@ func NewClient(httpClient *http.Client, octopusURL, octopusAPIKey string) *Clien
 		sling:             base,
 		DeploymentProcess: NewDeploymentProcessService(base.New()),
 		ProjectGroup:      NewProjectGroupService(base.New()),
-		Projects:          NewProjectService(base.New()),
+		Project:          NewProjectService(base.New()),
 	}
 }
 
