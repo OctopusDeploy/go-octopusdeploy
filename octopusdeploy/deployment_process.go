@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dghubble/sling"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type DeploymentProcessService struct {
@@ -23,32 +24,26 @@ type DeploymentProcesses struct {
 }
 
 type DeploymentProcess struct {
+	ID             string           `json:"Id,omitempty"`
+	LastModifiedBy string           `json:"LastModifiedBy,omitempty"`
+	LastModifiedOn string           `json:"LastModifiedOn,omitempty"`
+	LastSnapshotID string           `json:"LastSnapshotId,omitempty"`
+	Links          Links            `json:"Links,omitempty"`
+	ProjectID      string           `json:"ProjectId,omitempty"`
+	Steps          []DeploymentStep `json:"Steps"`
+	Version        *int32           `json:"Version"`
+}
 
-	// Id
-	ID string `json:"Id,omitempty"`
+func (d *DeploymentProcess) Validate() error {
+	validate := validator.New()
 
-	// last modified by
-	LastModifiedBy string `json:"LastModifiedBy,omitempty"`
+	err := validate.Struct(d)
 
-	// last modified on
-	// Format: date-time
-	LastModifiedOn string `json:"LastModifiedOn,omitempty"`
+	if err != nil {
+		return err
+	}
 
-	// last snapshot Id
-	LastSnapshotID string `json:"LastSnapshotId,omitempty"`
-
-	// links
-	Links Links `json:"Links,omitempty"`
-
-	// project Id
-	ProjectID string `json:"ProjectId,omitempty"`
-
-	// steps
-	Steps []DeploymentStep `json:"Steps"`
-
-	// version
-	// Required: true
-	Version *int32 `json:"Version"`
+	return nil
 }
 
 func (d *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentProcess, error) {
