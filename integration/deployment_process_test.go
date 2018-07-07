@@ -58,7 +58,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	deploymentActionWindowsService := &octopusdeploy.DeploymentAction{
 		Name:       "Install Windows Service",
 		ActionType: "Octopus.WindowsService",
-		Properties: map[string]octopusdeploy.PropertyValue{
+		Properties: map[string]string{
 			"Octopus.Action.WindowsService.CreateOrUpdateService":                       "True",
 			"Octopus.Action.WindowsService.ServiceAccount":                              "LocalSystem",
 			"Octopus.Action.WindowsService.StartMode":                                   "auto",
@@ -79,7 +79,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 
 	step1 := &octopusdeploy.DeploymentStep{
 		Name: "My First Step",
-		Properties: map[string]octopusdeploy.PropertyValue{
+		Properties: map[string]string{
 			"Octopus.Action.TargetRoles": "octopus-server",
 		},
 	}
