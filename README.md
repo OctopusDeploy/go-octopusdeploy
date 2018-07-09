@@ -1,6 +1,8 @@
 # go-octopusdeploy
 A Go wrapper for the Octopus Deploy REST API.
 
+Written to be used in the [Octopus Deploy Terraform Provider](https://github.com/MattHodge/terraform-provider-octopusdeploy).
+
 [![Build status](https://ci.appveyor.com/api/projects/status/5t5gbqjyl8hpou52?svg=true)](https://ci.appveyor.com/project/MattHodge/go-octopusdeploy)
 
 > :warning: The Octopus Deploy REST Client is in heavy development.
