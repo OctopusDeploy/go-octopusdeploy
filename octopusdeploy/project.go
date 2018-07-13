@@ -125,7 +125,7 @@ func (s *ProjectService) GetByName(projectName string) (*Project, error) {
 	projects, err := s.GetAll()
 
 	if err != nil {
-		return &foundProject, err
+		return nil, err
 	}
 
 	for _, project := range *projects {
