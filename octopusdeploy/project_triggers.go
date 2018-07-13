@@ -32,16 +32,24 @@ type ProjectTrigger struct {
 }
 
 type ProjectTriggerFilter struct {
-	EnvironmentIds  []string `json:"EnvironmentIds,omitempty"`
-	EventGroups     []string `json:"EventGroups,omitempty"`
-	FilterType      string   `json:"FilterType"`
-	EventCategories []string `json:"EventCategories,omitempty"`
-	Roles           []string `json:"Roles"`
+	DateOfMonth         string   `json:"DateOfMonth"`
+	DayNumberOfMonth    string   `json:"DayNumberOfMonth"`
+	DayOfWeek           string   `json:"DayOfWeek"`
+	EnvironmentIds      []string `json:"EnvironmentIds,omitempty"`
+	EventCategories     []string `json:"EventCategories,omitempty"`
+	EventGroups         []string `json:"EventGroups,omitempty"`
+	FilterType          string   `json:"FilterType"`
+	MonthlyScheduleType string   `json:"MonthlyScheduleType"`
+	Roles               []string `json:"Roles"`
+	StartTime           string   `json:"StartTime"`
+	Timezone            string   `json:"Timezone"`
 }
 
 type ProjectTriggerAction struct {
 	ActionType                                 string `json:"ActionType"`
+	DestinationEnvironmentID                   string `json:"DestinationEnvironmentId"`
 	ShouldRedeployWhenMachineHasBeenDeployedTo bool   `json:"ShouldRedeployWhenMachineHasBeenDeployedTo"`
+	SourceEnvironmentID                        string `json:"SourceEnvironmentId"`
 }
 
 func (t *ProjectTrigger) AddEventGroups(eventGroups []string) {
