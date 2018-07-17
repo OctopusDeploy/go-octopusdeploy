@@ -75,19 +75,14 @@ func NewProject(name, lifeCycleID, projectGroupID string) *Project {
 }
 
 func (s *ProjectService) Get(projectid string) (*Project, error) {
-	var project Project
-	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projects/%s", projectid)
+	resp, err := apiGet(s.sling, new(Project), path)
 
-	resp, err := s.sling.New().Get(path).Receive(&project, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
+	if err != nil {
+		return nil, err
 	}
 
-	return &project, nil
+	return resp.(*Project), nil
 }
 
 func (s *ProjectService) GetAll() (*[]Project, error) {

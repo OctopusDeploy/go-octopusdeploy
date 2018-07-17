@@ -72,23 +72,18 @@ func (d *DeploymentProcess) Validate() error {
 	return nil
 }
 
-func (d *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentProcess, error) {
-	var deploymentProcess DeploymentProcess
-	octopusDeployError := new(APIError)
+func (s *DeploymentProcessService) Get(deploymentProcessID string) (*DeploymentProcess, error) {
 	path := fmt.Sprintf("deploymentprocesses/%s", deploymentProcessID)
+	resp, err := apiGet(s.sling, new(DeploymentProcess), path)
 
-	resp, err := d.sling.New().Get(path).Receive(&deploymentProcess, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
+	if err != nil {
+		return nil, err
 	}
 
-	return &deploymentProcess, err
+	return resp.(*DeploymentProcess), nil
 }
 
-func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
+func (s *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
 	var listOfDeploymentProcess []DeploymentProcess
 	path := fmt.Sprintf("deploymentprocesses")
 
@@ -96,7 +91,7 @@ func (d *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
 		var deploymentProcesses DeploymentProcesses
 		octopusDeployError := new(APIError)
 
-		resp, err := d.sling.New().Get(path).Receive(&deploymentProcesses, &octopusDeployError)
+		resp, err := s.sling.New().Get(path).Receive(&deploymentProcesses, &octopusDeployError)
 
 		apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
