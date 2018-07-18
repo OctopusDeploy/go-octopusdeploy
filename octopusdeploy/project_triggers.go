@@ -140,19 +140,13 @@ func (s *ProjectTriggerService) GetAll() (*[]ProjectTrigger, error) {
 }
 
 func (s *ProjectTriggerService) Add(projectTrigger *ProjectTrigger) (*ProjectTrigger, error) {
-	var created ProjectTrigger
-	octopusDeployError := new(APIError)
-	path := "projecttriggers"
+	resp, err := apiAdd(s.sling, projectTrigger, new(ProjectTrigger), "projecttriggers")
 
-	resp, err := s.sling.New().Post(path).BodyJSON(projectTrigger).Receive(&created, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
+	if err != nil {
+		return nil, err
 	}
 
-	return &created, nil
+	return resp.(*ProjectTrigger), nil
 }
 
 func (s *ProjectTriggerService) Delete(projectTriggerID string) error {

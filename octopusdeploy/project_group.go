@@ -94,24 +94,13 @@ func (s *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
 }
 
 func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {
-	err := projectGroup.Validate()
+	resp, err := apiAdd(s.sling, projectGroup, new(ProjectGroup), "projectgroups")
 
 	if err != nil {
 		return nil, err
 	}
 
-	var created ProjectGroup
-	octopusDeployError := new(APIError)
-	path := "projectgroups"
-	resp, err := s.sling.New().Post(path).BodyJSON(projectGroup).Receive(&created, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
-	}
-
-	return &created, nil
+	return resp.(*ProjectGroup), nil
 }
 
 func (s *ProjectGroupService) Delete(projectGroupID string) error {
