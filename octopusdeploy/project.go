@@ -154,23 +154,12 @@ func (s *ProjectService) Delete(projectid string) error {
 }
 
 func (s *ProjectService) Update(project *Project) (*Project, error) {
-	err := project.Validate()
+	path := fmt.Sprintf("projects/%s", project.ID)
+	resp, err := apiUpdate(s.sling, project, new(Project), path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var updated Project
-	octopusDeployError := new(APIError)
-	path := fmt.Sprintf("projects/%s", project.ID)
-
-	resp, err := s.sling.New().Put(path).BodyJSON(project).Receive(&updated, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
-	}
-
-	return &updated, nil
+	return resp.(*Project), nil
 }

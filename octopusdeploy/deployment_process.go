@@ -114,17 +114,12 @@ func (s *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
 }
 
 func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcess) (*DeploymentProcess, error) {
-	var updated DeploymentProcess
-	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("deploymentprocesses/%s", deploymentProcess.ID)
+	resp, err := apiUpdate(s.sling, deploymentProcess, new(DeploymentProcess), path)
 
-	resp, err := s.sling.New().Put(path).BodyJSON(deploymentProcess).Receive(&updated, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
+	if err != nil {
+		return nil, err
 	}
 
-	return &updated, nil
+	return resp.(*DeploymentProcess), nil
 }

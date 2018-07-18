@@ -96,6 +96,21 @@ func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path stri
 	return returnStruct, nil
 }
 
+// Generic OctopusDeploy API Add Function
+func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
+	octopusDeployError := new(APIError)
+
+	resp, err := sling.New().Put(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
+
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
+
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
+	}
+
+	return returnStruct, nil
+}
+
 // Generic OctopusDeploy API Delete Function
 func apiDelete(sling *sling.Sling, path string) (error) {
 	octopusDeployError := new(APIError)

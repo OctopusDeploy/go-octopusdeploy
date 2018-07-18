@@ -115,23 +115,12 @@ func (s *ProjectGroupService) Delete(projectGroupID string) error {
 }
 
 func (s *ProjectGroupService) Update(projectGroup *ProjectGroup) (*ProjectGroup, error) {
-	err := projectGroup.Validate()
+	path := fmt.Sprintf("projectgroups/%s", projectGroup.ID)
+	resp, err := apiUpdate(s.sling, projectGroup, new(ProjectGroup), path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	var updated ProjectGroup
-	octopusDeployError := new(APIError)
-	path := fmt.Sprintf("projectgroups/%s", projectGroup.ID)
-
-	resp, err := s.sling.New().Put(path).BodyJSON(projectGroup).Receive(&updated, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
-	}
-
-	return &updated, nil
+	return resp.(*ProjectGroup), nil
 }
