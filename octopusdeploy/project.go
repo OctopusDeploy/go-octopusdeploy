@@ -143,14 +143,11 @@ func (s *ProjectService) Add(project *Project) (*Project, error) {
 }
 
 func (s *ProjectService) Delete(projectid string) error {
-	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projects/%s", projectid)
-	resp, err := s.sling.New().Delete(path).Receive(nil, &octopusDeployError)
+	err := apiDelete(s.sling, path)
 
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return apiErrorCheck
+	if err != nil {
+		return err
 	}
 
 	return nil
