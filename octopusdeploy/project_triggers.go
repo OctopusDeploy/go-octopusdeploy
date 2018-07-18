@@ -82,19 +82,15 @@ func NewProjectTrigger(name, projectID string, shouldRedeploy bool, roles, event
 }
 
 func (s *ProjectTriggerService) Get(projectTriggerID string) (*ProjectTrigger, error) {
-	var projectTrigger ProjectTrigger
-	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projecttriggers/%s", projectTriggerID)
 
-	resp, err := s.sling.New().Get(path).Receive(&projectTrigger, &octopusDeployError)
+	resp, err := apiGet(s.sling, new(ProjectTrigger), path)
 
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
+	if err != nil {
+		return nil, err
 	}
 
-	return &projectTrigger, nil
+	return resp.(*ProjectTrigger), nil
 }
 
 func (s *ProjectTriggerService) GetByProjectID(projectID string) (*[]ProjectTrigger, error) {

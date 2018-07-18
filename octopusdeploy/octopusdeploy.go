@@ -66,4 +66,19 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	return nil
 }
 
+// Generic OctopusDeploy API Get Function
+func apiGet(sling *sling.Sling, octopusStruct interface{}, path string) (interface{}, error) {
+	octopusDeployError := new(APIError)
+
+	resp, err := sling.New().Get(path).Receive(octopusStruct, &octopusDeployError)
+
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
+
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
+	}
+
+	return octopusStruct, nil
+}
+
 var ErrItemNotFound = errors.New("cannot find the item")

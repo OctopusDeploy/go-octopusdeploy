@@ -52,23 +52,18 @@ func NewProjectGroup(name string) *ProjectGroup {
 	}
 }
 
-func (p *ProjectGroupService) Get(projectGroupID string) (*ProjectGroup, error) {
-	var projectGroup ProjectGroup
-	octopusDeployError := new(APIError)
+func (s *ProjectGroupService) Get(projectGroupID string) (*ProjectGroup, error) {
 	path := fmt.Sprintf("projectgroups/%s", projectGroupID)
+	resp, err := apiGet(s.sling, new(ProjectGroup), path)
 
-	resp, err := p.sling.New().Get(path).Receive(&projectGroup, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
+	if err != nil {
+		return nil, err
 	}
 
-	return &projectGroup, err
+	return resp.(*ProjectGroup), nil
 }
 
-func (p *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
+func (s *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
 	var listOfProjectGroups []ProjectGroup
 	path := fmt.Sprintf("projectgroups")
 
@@ -76,7 +71,7 @@ func (p *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
 		var projectGroups ProjectGroups
 		octopusDeployError := new(APIError)
 
-		resp, err := p.sling.New().Get(path).Receive(&projectGroups, &octopusDeployError)
+		resp, err := s.sling.New().Get(path).Receive(&projectGroups, &octopusDeployError)
 
 		apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
@@ -98,7 +93,7 @@ func (p *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
 	return &listOfProjectGroups, nil // no more pages to go through
 }
 
-func (p *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {
+func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {
 	err := projectGroup.Validate()
 
 	if err != nil {
@@ -108,7 +103,7 @@ func (p *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, er
 	var created ProjectGroup
 	octopusDeployError := new(APIError)
 	path := "projectgroups"
-	resp, err := p.sling.New().Post(path).BodyJSON(projectGroup).Receive(&created, &octopusDeployError)
+	resp, err := s.sling.New().Post(path).BodyJSON(projectGroup).Receive(&created, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
 
@@ -119,10 +114,10 @@ func (p *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, er
 	return &created, nil
 }
 
-func (p *ProjectGroupService) Delete(projectGroupID string) error {
+func (s *ProjectGroupService) Delete(projectGroupID string) error {
 	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projectgroups/%s", projectGroupID)
-	resp, err := p.sling.New().Delete(path).Receive(nil, &octopusDeployError)
+	resp, err := s.sling.New().Delete(path).Receive(nil, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
@@ -133,7 +128,7 @@ func (p *ProjectGroupService) Delete(projectGroupID string) error {
 	return nil
 }
 
-func (p *ProjectGroupService) Update(projectGroup *ProjectGroup) (*ProjectGroup, error) {
+func (s *ProjectGroupService) Update(projectGroup *ProjectGroup) (*ProjectGroup, error) {
 	err := projectGroup.Validate()
 
 	if err != nil {
@@ -144,7 +139,7 @@ func (p *ProjectGroupService) Update(projectGroup *ProjectGroup) (*ProjectGroup,
 	octopusDeployError := new(APIError)
 	path := fmt.Sprintf("projectgroups/%s", projectGroup.ID)
 
-	resp, err := p.sling.New().Put(path).BodyJSON(projectGroup).Receive(&updated, &octopusDeployError)
+	resp, err := s.sling.New().Put(path).BodyJSON(projectGroup).Receive(&updated, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
