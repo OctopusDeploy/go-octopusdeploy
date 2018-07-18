@@ -133,25 +133,13 @@ func (s *ProjectService) GetByName(projectName string) (*Project, error) {
 }
 
 func (s *ProjectService) Add(project *Project) (*Project, error) {
-	err := project.Validate()
+	resp, err := apiAdd(s.sling, project, new(Project), "projects")
 
 	if err != nil {
 		return nil, err
 	}
 
-	var created Project
-	octopusDeployError := new(APIError)
-	path := "projects"
-
-	resp, err := s.sling.New().Post(path).BodyJSON(project).Receive(&created, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
-
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
-	}
-
-	return &created, nil
+	return resp.(*Project), nil
 }
 
 func (s *ProjectService) Delete(projectid string) error {

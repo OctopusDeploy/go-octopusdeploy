@@ -81,4 +81,19 @@ func apiGet(sling *sling.Sling, octopusStruct interface{}, path string) (interfa
 	return octopusStruct, nil
 }
 
+// Generic OctopusDeploy API Add Function
+func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
+	octopusDeployError := new(APIError)
+
+	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
+
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
+
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
+	}
+
+	return returnStruct, nil
+}
+
 var ErrItemNotFound = errors.New("cannot find the item")
