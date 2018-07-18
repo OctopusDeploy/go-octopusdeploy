@@ -67,10 +67,10 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 }
 
 // Generic OctopusDeploy API Get Function
-func apiGet(sling *sling.Sling, octopusStruct interface{}, path string) (interface{}, error) {
+func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
 
-	resp, err := sling.New().Get(path).Receive(octopusStruct, &octopusDeployError)
+	resp, err := sling.New().Get(path).Receive(inputStruct, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
@@ -78,7 +78,7 @@ func apiGet(sling *sling.Sling, octopusStruct interface{}, path string) (interfa
 		return nil, apiErrorCheck
 	}
 
-	return octopusStruct, nil
+	return inputStruct, nil
 }
 
 // Generic OctopusDeploy API Add Function
@@ -94,6 +94,21 @@ func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path stri
 	}
 
 	return returnStruct, nil
+}
+
+// Generic OctopusDeploy API Delete Function
+func apiDelete(sling *sling.Sling, path string) (error) {
+	octopusDeployError := new(APIError)
+
+	resp, err := sling.New().Delete(path).Receive(nil, &octopusDeployError)
+
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
+
+	if apiErrorCheck != nil {
+		return apiErrorCheck
+	}
+
+	return nil
 }
 
 var ErrItemNotFound = errors.New("cannot find the item")
