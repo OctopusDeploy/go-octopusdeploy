@@ -66,6 +66,15 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	return nil
 }
 
+// Checks if the next page should be loaded from the API. Returns the new path and a bool if the next page should be checked.
+func LoadNextPage(pagedResults PagedResults) (string, bool) {
+	if pagedResults.Links.PageNext != "" {
+		return pagedResults.Links.PageNext, true
+	}
+
+	return "", false
+}
+
 // Generic OctopusDeploy API Get Function
 func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
@@ -112,7 +121,7 @@ func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path s
 }
 
 // Generic OctopusDeploy API Delete Function
-func apiDelete(sling *sling.Sling, path string) (error) {
+func apiDelete(sling *sling.Sling, path string) error {
 	octopusDeployError := new(APIError)
 
 	resp, err := sling.New().Delete(path).Receive(nil, &octopusDeployError)

@@ -44,8 +44,14 @@ func TestProjectGroupGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestProjectGroupGetAll(t *testing.T) {
-	projectGroup := createTestProjectGroup(t, getRandomName())
-	defer cleanProjectGroup(t, projectGroup.ID)
+	// create many projects to test pagination
+	projectsGroupsToCreate := 32
+	sum := 0
+	for i := 0; i < projectsGroupsToCreate; i++ {
+		projectGroup := createTestProjectGroup(t, getRandomName())
+		defer cleanProjectGroup(t, projectGroup.ID)
+		sum += i
+	}
 
 	allProjectGroups, err := client.ProjectGroup.GetAll()
 	if err != nil {
@@ -53,6 +59,11 @@ func TestProjectGroupGetAll(t *testing.T) {
 	}
 
 	numberOfProjectGroups := len(*allProjectGroups)
+
+	// check there are greater than or equal to the amount of projects requested to be created, otherwise pagination isn't working
+	if numberOfProjectGroups < projectsGroupsToCreate {
+		t.Fatalf("There should be at least %d project groups created but there was only %d. Pagination is likely not working.", projectsGroupsToCreate, numberOfProjectGroups)
+	}
 
 	additionalProjectGroup := createTestProjectGroup(t, getRandomName())
 	defer cleanProjectGroup(t, additionalProjectGroup.ID)

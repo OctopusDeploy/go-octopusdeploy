@@ -43,8 +43,14 @@ func TestProjectGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestProjectGetAll(t *testing.T) {
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	// create many projects to test pagination
+	projectsToCreate := 32
+	sum := 0
+	for i := 0; i < projectsToCreate; i++ {
+		project := createTestProject(t, getRandomName())
+		defer cleanProject(t, project.ID)
+		sum += i
+	}
 
 	allProjects, err := client.Project.GetAll()
 	if err != nil {
@@ -52,6 +58,11 @@ func TestProjectGetAll(t *testing.T) {
 	}
 
 	numberOfProjects := len(*allProjects)
+
+	// check there are greater than or equal to the amount of projects requested to be created, otherwise pagination isn't working
+	if numberOfProjects < projectsToCreate {
+		t.Fatalf("There should be at least %d projects created but there was only %d. Pagination is likely not working.", projectsToCreate, numberOfProjects)
+	}
 
 	additionalProject := createTestProject(t, getRandomName())
 	defer cleanProject(t, additionalProject.ID)

@@ -2,7 +2,6 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/dghubble/sling"
 	"gopkg.in/go-playground/validator.v9"
@@ -64,33 +63,29 @@ func (s *ProjectGroupService) Get(projectGroupID string) (*ProjectGroup, error) 
 }
 
 func (s *ProjectGroupService) GetAll() (*[]ProjectGroup, error) {
-	var listOfProjectGroups []ProjectGroup
-	path := fmt.Sprintf("projectgroups")
+	var pg []ProjectGroup
 
-	for {
-		var projectGroups ProjectGroups
-		octopusDeployError := new(APIError)
+	path := "projectgroups"
 
-		resp, err := s.sling.New().Get(path).Receive(&projectGroups, &octopusDeployError)
+	loadNextPage := true
 
-		apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
+	for loadNextPage {
+		resp, err := apiGet(s.sling, new(ProjectGroups), path)
 
-		if apiErrorCheck != nil {
-			return nil, apiErrorCheck
+		if err != nil {
+			return nil, err
 		}
 
-		for _, projectGroup := range projectGroups.Items {
-			listOfProjectGroups = append(listOfProjectGroups, projectGroup)
+		r := resp.(*ProjectGroups)
+
+		for _, item := range r.Items {
+			pg = append(pg, item)
 		}
 
-		if projectGroups.PagedResults.Links.PageNext != "" {
-			path = projectGroups.PagedResults.Links.PageNext
-		} else {
-			break
-		}
+		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
 
-	return &listOfProjectGroups, nil // no more pages to go through
+	return &pg, nil
 }
 
 func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {

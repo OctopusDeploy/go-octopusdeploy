@@ -2,7 +2,6 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/dghubble/sling"
 )
@@ -110,33 +109,29 @@ func (s *ProjectTriggerService) GetByProjectID(projectID string) (*[]ProjectTrig
 }
 
 func (s *ProjectTriggerService) GetAll() (*[]ProjectTrigger, error) {
-	var listOfProjectTriggers []ProjectTrigger
-	path := fmt.Sprintf("projecttriggers")
+	var pt []ProjectTrigger
 
-	for {
-		var projectTriggers ProjectTriggers
-		octopusDeployError := new(APIError)
+	path := "projecttriggers"
 
-		resp, err := s.sling.New().Get(path).Receive(&projectTriggers, &octopusDeployError)
+	loadNextPage := true
 
-		apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
+	for loadNextPage {
+		resp, err := apiGet(s.sling, new(ProjectTriggers), path)
 
-		if apiErrorCheck != nil {
-			return nil, apiErrorCheck
+		if err != nil {
+			return nil, err
 		}
 
-		for _, projectTrigger := range projectTriggers.Items {
-			listOfProjectTriggers = append(listOfProjectTriggers, projectTrigger)
+		r := resp.(*ProjectTriggers)
+
+		for _, item := range r.Items {
+			pt = append(pt, item)
 		}
 
-		if projectTriggers.PagedResults.Links.PageNext != "" {
-			path = projectTriggers.PagedResults.Links.PageNext
-		} else {
-			break
-		}
+		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
 
-	return &listOfProjectTriggers, nil // no more pages to go through
+	return &pt, nil
 }
 
 func (s *ProjectTriggerService) Add(projectTrigger *ProjectTrigger) (*ProjectTrigger, error) {
