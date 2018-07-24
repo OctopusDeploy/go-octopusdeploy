@@ -63,7 +63,7 @@ func (t *ProjectTrigger) AddEventCategories(eventCategories []string) {
 	}
 }
 
-func NewProjectTrigger(name, projectID string, shouldRedeploy bool, roles, eventGroups, eventCategories []string) *ProjectTrigger {
+func NewProjectDeploymentTargetTrigger(name, projectID string, shouldRedeploy bool, roles, eventGroups, eventCategories []string) *ProjectTrigger {
 	return &ProjectTrigger{
 		Action: ProjectTriggerAction{
 			ActionType: "AutoDeploy",
