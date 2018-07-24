@@ -9,7 +9,7 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// Client is a Twitter client for making Twitter API requests.
+// Client is an OctopusDeploy for making OctpusDeploy API requests.
 type Client struct {
 	sling *sling.Sling
 	// Octopus Deploy API Services
@@ -44,13 +44,14 @@ func (e APIError) Error() string {
 	return fmt.Sprintf("Octopus Deploy Error Response: %v %+v %v", e.ErrorMessage, e.Errors, e.FullException)
 }
 
+// APIErrorChecker is a generic error handler for the OctopusDeploy API.
 func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int, slingError error, octopusDeployError *APIError) error {
 	if octopusDeployError.Errors != nil {
-		return fmt.Errorf("cannot get all projects. response from octopusdeploy %s: ", octopusDeployError.Errors)
+		return fmt.Errorf("octopus deploy api returned an error on endpoint %s - %s", urlPath, octopusDeployError.Errors)
 	}
 
 	if slingError != nil {
-		return fmt.Errorf("cannot get path %s from server. failure from http client %v", urlPath, slingError)
+		return fmt.Errorf("cannot get endpoint %s from server. failure from http client %v", urlPath, slingError)
 	}
 
 	defer resp.Body.Close()
@@ -60,13 +61,13 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	}
 
 	if resp.StatusCode != wantedResponseCode {
-		return fmt.Errorf("cannot get item from %s from server. response from server %s", urlPath, resp.Status)
+		return fmt.Errorf("cannot get item from endpoint %s. response from server %s", urlPath, resp.Status)
 	}
 
 	return nil
 }
 
-// Checks if the next page should be loaded from the API. Returns the new path and a bool if the next page should be checked.
+// LoadNextPage checks if the next page should be loaded from the API. Returns the new path and a bool if the next page should be checked.
 func LoadNextPage(pagedResults PagedResults) (string, bool) {
 	if pagedResults.Links.PageNext != "" {
 		return pagedResults.Links.PageNext, true
@@ -75,7 +76,7 @@ func LoadNextPage(pagedResults PagedResults) (string, bool) {
 	return "", false
 }
 
-// Generic OctopusDeploy API Get Function
+// Generic OctopusDeploy API Get Function.
 func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
 
@@ -90,7 +91,7 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 	return inputStruct, nil
 }
 
-// Generic OctopusDeploy API Add Function
+// Generic OctopusDeploy API Add Function.
 func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
 
@@ -105,7 +106,7 @@ func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path stri
 	return returnStruct, nil
 }
 
-// Generic OctopusDeploy API Add Function
+// Generic OctopusDeploy API Add Function.
 func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
 
@@ -120,7 +121,7 @@ func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path s
 	return returnStruct, nil
 }
 
-// Generic OctopusDeploy API Delete Function
+// Generic OctopusDeploy API Delete Function.
 func apiDelete(sling *sling.Sling, path string) error {
 	octopusDeployError := new(APIError)
 
@@ -135,4 +136,5 @@ func apiDelete(sling *sling.Sling, path string) error {
 	return nil
 }
 
+// ErrItemNotFound is an OctopusDeploy error returned an item cannot be found.
 var ErrItemNotFound = errors.New("cannot find the item")
