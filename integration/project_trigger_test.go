@@ -12,7 +12,6 @@ func init() {
 	client = initTest()
 }
 
-
 func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 	// need a project to add a trigger to
 	project := createTestProject(t, getRandomName())
@@ -107,7 +106,7 @@ func createTestProjectTrigger(t *testing.T, trigger *octopusdeploy.ProjectTrigge
 }
 
 func getTestProjectTrigger(projectID string) *octopusdeploy.ProjectTrigger {
-	return octopusdeploy.NewProjectTrigger(getRandomName(), projectID, false, []string{"Role1", "Role2"}, []string{"Machine"}, []string{"MachineCleanupFailed"})
+	return octopusdeploy.NewProjectDeploymentTargetTrigger(getRandomName(), projectID, false, []string{"Role1", "Role2"}, []string{"Machine"}, []string{"MachineCleanupFailed"})
 }
 
 func cleanProjectTrigger(t *testing.T, projectTriggerID string) {
