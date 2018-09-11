@@ -32,6 +32,6 @@ func initTest() *octopusdeploy.Client {
 
 func getRandomName() string {
 	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.NewV4())
-
+	fullName = fullName[0:49] //Some names in Octopus have a max limit of 50 characters (such as Environment Name)
 	return fullName
 }

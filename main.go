@@ -27,15 +27,38 @@ func main() {
 
 	if err != nil {
 		fmt.Println(err.Error())
+	} else { //This isn't idomatic go, but it allows the demo to continue if the create fails
+		fmt.Printf("Created Project ID %s", createdProject.ID)
+
+		project, err := client.Project.Get(createdProject.ID)
+
+		if err != nil {
+			fmt.Println(err.Error())
+		} else { //This isn't idomatic go, but it allows the demo to continue if the create fails
+			fmt.Println(project.Name)
+		}
 	}
 
-	fmt.Printf("Created Project ID %s", createdProject.ID)
-
-	project, err := client.Project.Get(createdProject.ID)
+	e := octopusdeploy.NewEnvironment("Test Environment GoLang", "Test environment created by go-octopusdeploy", false)
+	err = e.Validate()
 
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println(project.Name)
+	createdEnvironment, err := client.Environment.Add(e)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Printf("Created Project ID %s", createdEnvironment.ID)
+
+	environment, err := client.Environment.Get(createdEnvironment.ID)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	} else { //This isn't idomatic go, but it allows the demo to continue if the create fails
+		fmt.Println(environment.Name)
+	}
 }
