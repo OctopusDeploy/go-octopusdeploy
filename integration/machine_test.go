@@ -16,10 +16,13 @@ func init() {
 }
 
 func TestMachineAddAndDelete(t *testing.T) {
-	machineName := strings.Split(getRandomName(), " ")[1]
-	expected := getTestMachine("TestMachineAddAndDelete", machineName)
-	actual := createTestMachine(t, "TestMachineAddAndDelete", machineName)
+	testName := "TestMachineAddAndDelete"
+	testEnvironment := createTestEnvironment(t, testName)
+	defer cleanEnvironment(t, testEnvironment.ID)
 
+	machineName := strings.Split(getRandomName(), " ")[1]
+	expected := getTestMachine(testEnvironment.ID, machineName)
+	actual := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, actual.ID)
 
 	assert.Equal(t, expected.Name, actual.Name, "machine name doesn't match expected")
@@ -27,8 +30,12 @@ func TestMachineAddAndDelete(t *testing.T) {
 }
 
 func TestMachineAddGetAndDelete(t *testing.T) {
+	testName := "TestMachineAddGetAndDelete"
+	testEnvironment := createTestEnvironment(t, testName)
+	defer cleanEnvironment(t, testEnvironment.ID)
+
 	machineName := strings.Split(getRandomName(), " ")[1]
-	machine := createTestMachine(t, "TestMachineAddGetAndDelete", machineName)
+	machine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, machine.ID)
 
 	getMachine, err := client.Machine.Get(machine.ID)
@@ -49,12 +56,16 @@ func TestMachineGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestMachineGetAll(t *testing.T) {
+	testName := "TestMachineGetAll"
+	testEnvironment := createTestEnvironment(t, testName)
+	defer cleanEnvironment(t, testEnvironment.ID)
+
 	// create many machines to test pagination
 	machinesToCreate := 32
 	sum := 0
 	for i := 0; i < machinesToCreate; i++ {
 		machineName := strings.Split(getRandomName(), " ")[1]
-		machine := createTestMachine(t, "TestMachineGetAll", machineName)
+		machine := createTestMachine(t, testEnvironment.ID, machineName)
 		defer cleanMachine(t, machine.ID)
 		sum += i
 	}
@@ -72,7 +83,7 @@ func TestMachineGetAll(t *testing.T) {
 	}
 
 	machineName := strings.Split(getRandomName(), " ")[1]
-	additionalMachine := createTestMachine(t, "TestMachineGetAll", machineName)
+	additionalMachine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, additionalMachine.ID)
 
 	allMachinesAfterCreatingAdditional, err := client.Machine.GetAll()
@@ -85,8 +96,12 @@ func TestMachineGetAll(t *testing.T) {
 }
 
 func TestMachineUpdate(t *testing.T) {
+	testName := "TestMachineUpdate"
+	testEnvironment := createTestEnvironment(t, testName)
+	defer cleanEnvironment(t, testEnvironment.ID)
+
 	machineName := strings.Split(getRandomName(), " ")[1]
-	machine := createTestMachine(t, "TestMachineUpdate", machineName)
+	machine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, machine.ID)
 
 	const newURI = "https://127.0.0.1/"
@@ -101,17 +116,17 @@ func TestMachineUpdate(t *testing.T) {
 	assert.Equal(t, newURI, updatedMachine.URI, "machine uri was not updated")
 }
 
-func getTestMachine(testName, machineName string) octopusdeploy.Machine {
+func getTestMachine(environmentID, machineName string) octopusdeploy.Machine {
 	// Thumbprints have to be unique, so accept a testName string so we can pass through a fixed ID
 	// with the name machine that will be consistent through the same test, but different for different
 	// tests
 	h := md5.New()
 	io.WriteString(h, machineName)
-	io.WriteString(h, testName)
+	io.WriteString(h, environmentID)
 	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
 
 	e := octopusdeploy.Machine{
-		EnvironmentIDs:                  []string{"Environments-101"},
+		EnvironmentIDs:                  []string{environmentID},
 		IsDisabled:                      true,
 		MachinePolicyID:                 "MachinePolicies-1",
 		Name:                            machineName,
@@ -126,8 +141,8 @@ func getTestMachine(testName, machineName string) octopusdeploy.Machine {
 	return e
 }
 
-func createTestMachine(t *testing.T, testName, machineName string) octopusdeploy.Machine {
-	e := getTestMachine(testName, machineName)
+func createTestMachine(t *testing.T, environmentID, machineName string) octopusdeploy.Machine {
+	e := getTestMachine(environmentID, machineName)
 	createdMachine, err := client.Machine.Add(&e)
 
 	if err != nil {

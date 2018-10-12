@@ -12,18 +12,18 @@ func init() {
 }
 
 func TestMachinePolicyGetThatDoesNotExist(t *testing.T) {
-	machineID := "there-is-no-way-this-environment-id-exists-i-hope"
+	machinePolicyID := "there-is-no-way-this-machinepolicy-id-exists-i-hope"
 	expected := octopusdeploy.ErrItemNotFound
-	machine, err := client.Environment.Get(machineID)
-	assert.Error(t, err, "there should have been an error raised as this environment should not be found")
+	machinePolicy, err := client.MachinePolicy.Get(machinePolicyID)
+	assert.Error(t, err, "there should have been an error raised as this machinepolicy should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, machine, "no environment should have been returned")
+	assert.Nil(t, machinePolicy, "no machinepolicy should have been returned")
 }
 
 func TestMachinePolicyGetAll(t *testing.T) {
 	allMachinePolicies, err := client.MachinePolicy.GetAll()
 	if err != nil {
-		t.Fatalf("Retrieving all environments failed when it shouldn't: %s", err)
+		t.Fatalf("Retrieving all machinepolicies failed when it shouldn't: %s", err)
 	}
 	numberOfMachinePolicies := len(*allMachinePolicies)
 
