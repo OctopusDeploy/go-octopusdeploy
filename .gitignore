@@ -19,3 +19,6 @@ debug
 .atom/
 .idea/
 .vscode/
+
+# Env Files
+.env
