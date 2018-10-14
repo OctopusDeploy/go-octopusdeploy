@@ -44,3 +44,12 @@ func ValidateMultipleProperties(validatePropertyErrors []error) error {
 
 	return nil
 }
+
+// ValidatePropertiesMatch checks two values against each other
+func ValidatePropertiesMatch(firstProperty, firstPropertyName, secondProperty, secondPropertyName string) error {
+	if firstProperty != secondProperty {
+		return fmt.Errorf("%s and %s must match. They are currently %s and %s", firstPropertyName, secondPropertyName, firstProperty, secondProperty)
+	}
+
+	return nil
+}
