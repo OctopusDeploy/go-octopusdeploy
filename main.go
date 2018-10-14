@@ -17,11 +17,6 @@ func main() {
 	client := octopusdeploy.NewClient(&httpClient, octopusURL, octopusAPIKey)
 
 	p := octopusdeploy.NewProject("Test Project GoLang2", "Lifecycles-1", "ProjectGroups-1")
-	err := p.Validate()
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}
 
 	createdProject, err := client.Project.Add(p)
 
