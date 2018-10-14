@@ -34,6 +34,6 @@ You can now run integration tests.
 
 * If you are trying to work out the API calls for something, use Chrome Developer Tools (or similar) to do them in the Octopus Web interface. You can then find out the data that was sent and which endpoints it was sent to.
 
-![Chrome Developer Tools](docs/images/chrome_dev_tools.gif)
+![Chrome Developer Tools](https://i.imgur.com/TniEjnw.gif)
 
 * It can be useful poking around the [Octopus Client built in .NET](https://github.com/OctopusDeploy/OctopusClients) to work out how things work. There are also some [API examples](https://github.com/OctopusDeploy/OctopusDeploy-Api) available.
