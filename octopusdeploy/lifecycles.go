@@ -35,8 +35,8 @@ type Lifecycle struct {
 type RetentionUnit string
 
 const (
-	RetentionUnit_Days = "Days"
-	RetentionUnit_Items = "Items"
+	RetentionUnit_Days = RetentionUnit("Days")
+	RetentionUnit_Items = RetentionUnit("Items")
 )
 
 type RetentionPeriod struct {

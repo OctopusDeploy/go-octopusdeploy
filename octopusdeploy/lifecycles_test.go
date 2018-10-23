@@ -42,8 +42,8 @@ func TestLifecycleGet(t *testing.T) {
 	assert.Equal(t, int32(0), phase0.TentacleRetentionPolicy.QuantityToKeep)
 	assert.Equal(t, true, phase0.TentacleRetentionPolicy.ShouldKeepForever)
 
-	assert.Equal(t, nil, lifecycle.Phases[1].ReleaseRetentionPolicy)
-	assert.Equal(t, nil, lifecycle.Phases[1].TentacleRetentionPolicy)
+	assert.Equal(t, (*RetentionPeriod)(nil), lifecycle.Phases[1].ReleaseRetentionPolicy)
+	assert.Equal(t, (*RetentionPeriod)(nil), lifecycle.Phases[1].TentacleRetentionPolicy)
 
 	assert.Equal(t, RetentionUnit_Days, lifecycle.ReleaseRetentionPolicy.Unit)
 	assert.Equal(t, int32(3), lifecycle.ReleaseRetentionPolicy.QuantityToKeep)
