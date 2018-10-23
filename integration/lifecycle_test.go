@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go-octopusdeploy/octopusdeploy"
+	"github.com/MattHodge/go-octopusdeploy/octopusdeploy"
 )
 
 func init() {
