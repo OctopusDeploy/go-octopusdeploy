@@ -27,8 +27,8 @@ type Lifecycle struct {
 	ID                      string          `json:"Id,omitempty"`
 	Name                    string          `json:"Name" validate:"required"`
 	Description             string          `json:"Description,omitempty"`
-	ReleaseRetentionPolicy  RetentionPeriod `json:"ReleaseRetentionPolicy"`
-	TentacleRetentionPolicy RetentionPeriod `json:"TentacleRetentionPolicy"`
+	ReleaseRetentionPolicy  RetentionPeriod `json:"ReleaseRetentionPolicy,omitempty"`
+	TentacleRetentionPolicy RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
 	Phases                  []Phase         `json:"Phases"`
 }
 
