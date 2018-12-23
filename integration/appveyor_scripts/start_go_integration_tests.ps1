@@ -7,4 +7,4 @@ foreach ($function in $functionFolder) { . $function.FullName }
 $OCTOPUS_URL = "http://localhost"
 $OCTOPUS_APIKEY = Get-OctopusDeployApiKey -OctopusUrl $OCTOPUS_URL -Username $env:TEST_OCTOPUS_USERNAME -Password $env:TEST_OCTOPUS_PASSWORD
 
-Start-ProcessAdvanced -FilePath 'go' -ArgumentList "test -v -timeout 30s ./integration/..." -EnvironmentKeyValues @{ OCTOPUS_URL = $OCTOPUS_URL; OCTOPUS_APIKEY = $OCTOPUS_APIKEY } -Verbose
+Start-ProcessAdvanced -FilePath 'go' -ArgumentList "test -v -timeout 120s ./integration/..." -EnvironmentKeyValues @{ OCTOPUS_URL = $OCTOPUS_URL; OCTOPUS_APIKEY = $OCTOPUS_APIKEY } -Verbose
