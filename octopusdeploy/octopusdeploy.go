@@ -23,6 +23,7 @@ type Client struct {
 	Machine            *MachineService
 	Lifecycle          *LifecycleService
 	LibraryVariableSet *LibraryVariableSetService
+	Interruption       *InterruptionsService
 }
 
 // NewClient returns a new Client.
@@ -43,6 +44,7 @@ func NewClient(httpClient *http.Client, octopusURL, octopusAPIKey string) *Clien
 		Machine:            NewMachineService(base.New()),
 		Lifecycle:          NewLifecycleService(base.New()),
 		LibraryVariableSet: NewLibraryVariableSetService(base.New()),
+		Interruption:       NewInterruptionService(base.New()),
 	}
 }
 
@@ -103,7 +105,7 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 	return inputStruct, nil
 }
 
-// Generic OctopusDeploy API Add Function.
+// Generic OctopusDeploy API Add Function. Expects a 201 response.
 func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
 
@@ -118,7 +120,22 @@ func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path stri
 	return returnStruct, nil
 }
 
-// Generic OctopusDeploy API Add Function.
+// apiPost post to octopus and expect a 200 response code.
+func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
+	octopusDeployError := new(APIError)
+
+	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
+
+	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
+
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
+	}
+
+	return returnStruct, nil
+}
+
+// Generic OctopusDeploy API Update Function.
 func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
 	resp, err := sling.New().Put(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
