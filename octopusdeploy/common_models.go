@@ -26,6 +26,23 @@ type SensitivePropertyValue struct {
 
 type PropertyValue string
 
+type User struct {
+	ID                  string `json:"Id"`
+	Username            string `json:"Username"`
+	DisplayName         string `json:"DisplayName"`
+	IsActive            bool   `json:"IsActive"`
+	IsService           bool   `json:"IsService"`
+	EmailAddress        string `json:"EmailAddress"`
+	CanPasswordBeEdited bool   `json:"CanPasswordBeEdited"`
+	IsRequestor         bool   `json:"IsRequestor"`
+	Links               struct {
+		Self        string `json:"Self"`
+		Permissions string `json:"Permissions"`
+		APIKeys     string `json:"ApiKeys"`
+		Avatar      string `json:"Avatar"`
+	} `json:"Links"`
+}
+
 // TODO: refactor to use the PropertyValueResource for handling sensitive values - https://blog.gopheracademy.com/advent-2016/advanced-encoding-decoding/
 // type PropertyValueResource struct {
 // 	IsSensitive    bool           `json:"IsSensitive,omitempty"`
