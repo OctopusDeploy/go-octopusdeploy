@@ -134,8 +134,7 @@ func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
 
 func TestValidateLifecycleValuesMissingNameFails(t *testing.T) {
 
-	lifecycle := &Lifecycle{
-	}
+	lifecycle := &Lifecycle{}
 
 	assert.Error(t, ValidateLifecycleValues(lifecycle))
 }
@@ -145,11 +144,9 @@ func TestValidateLifecycleValuesPhaseWithMissingNameFails(t *testing.T) {
 	lifecycle := &Lifecycle{
 		Name: "My Lifecycle",
 		Phases: []Phase{
-			Phase{
-			},
+			Phase{},
 		},
 	}
 
 	assert.Error(t, ValidateLifecycleValues(lifecycle))
 }
-
