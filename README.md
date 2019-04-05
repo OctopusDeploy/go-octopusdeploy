@@ -2,7 +2,7 @@
 
 A Go wrapper for the [Octopus Deploy](https://octopus.com/) REST API.
 
-This exists to be used in the [Octopus Deploy Terraform Provider](https://github.com/MattHodge/terraform-provider-octopusdeploy).
+This exists to be used in the [Octopus Deploy Terraform Provider](https://github.com/OctopusDeploy/terraform-provider-octopusdeploy).
 
 > :warning: The Octopus Deploy REST Client is in heavy development.
 
