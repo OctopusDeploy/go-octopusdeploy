@@ -8,12 +8,7 @@ This exists to be used in the [Octopus Deploy Terraform Provider](https://github
 
 ## Go Dependencies
 
-* Dependencies are managed using [dep](https://golang.github.io/dep/docs/new-project.html)
-
-```bash
-# Vendor new modules
-dep ensure
-```
+* Dependencies are managed using [Go Modules](https://github.com/golang/go/wiki/Modules#daily-workflow)
 
 ## Using the main.go Example
 
