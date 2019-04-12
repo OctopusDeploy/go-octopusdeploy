@@ -26,6 +26,7 @@ type Client struct {
 	Lifecycle          *LifecycleService
 	LibraryVariableSet *LibraryVariableSetService
 	Interruption       *InterruptionsService
+	TagSet 				*TagSetService
 }
 
 // NewClient returns a new Client.
@@ -49,6 +50,7 @@ func NewClient(httpClient *http.Client, octopusURL, octopusAPIKey string) *Clien
 		Lifecycle:          NewLifecycleService(base.New()),
 		LibraryVariableSet: NewLibraryVariableSetService(base.New()),
 		Interruption:       NewInterruptionService(base.New()),
+		TagSet:				NewTagSetService(base.New()),
 	}
 }
 
