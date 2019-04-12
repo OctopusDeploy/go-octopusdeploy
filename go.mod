@@ -1,9 +1,8 @@
-module github.com/octopusdeploy/go-octopusdeploy
+module github.com/OctopusDeploy/go-octopusdeploy
 
 go 1.12
 
 require (
-	github.com/OctopusDeploy/go-octopusdeploy v0.0.0-20190101071024-032701337fa6
 	github.com/davecgh/go-spew v1.1.0
 	github.com/dghubble/sling v1.1.0
 	github.com/go-playground/locales v0.12.1
