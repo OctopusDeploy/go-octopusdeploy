@@ -46,15 +46,14 @@ const getLibraryVariableSetResponseJSON = `
 
 func TestValidateLibraryVariableSetValuesJustANamePasses(t *testing.T) {
 
-	libraryVariableSet := NewLibraryVariableSet("My Set");
+	libraryVariableSet := NewLibraryVariableSet("My Set")
 
 	assert.Nil(t, ValidateLibraryVariableSetValues(libraryVariableSet))
 }
 
 func TestValidateLibraryVariableSetValuesMissingNameFails(t *testing.T) {
 
-	libraryVariableSet := &LibraryVariableSet{
-	}
+	libraryVariableSet := &LibraryVariableSet{}
 
 	assert.Error(t, ValidateLibraryVariableSetValues(libraryVariableSet))
 }

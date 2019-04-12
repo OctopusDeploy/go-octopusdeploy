@@ -2,18 +2,13 @@
 
 A Go wrapper for the [Octopus Deploy](https://octopus.com/) REST API.
 
-This exists to be used in the [Octopus Deploy Terraform Provider](https://github.com/MattHodge/terraform-provider-octopusdeploy).
+This exists to be used in the [Octopus Deploy Terraform Provider](https://github.com/OctopusDeploy/terraform-provider-octopusdeploy).
 
 > :warning: The Octopus Deploy REST Client is in heavy development.
 
 ## Go Dependencies
 
-* Dependencies are managed using [dep](https://golang.github.io/dep/docs/new-project.html)
-
-```bash
-# Vendor new modules
-dep ensure
-```
+* Dependencies are managed using [Go Modules](https://github.com/golang/go/wiki/Modules#daily-workflow)
 
 ## Using the main.go Example
 

@@ -22,3 +22,5 @@ debug
 
 # Env Files
 .env
+
+go-octopusdeploy

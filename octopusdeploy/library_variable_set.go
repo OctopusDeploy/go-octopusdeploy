@@ -34,10 +34,9 @@ type LibraryVariableSet struct {
 type VariableSetContentType string
 
 const (
-	VariableSetContentType_Variables = VariableSetContentType("Variables")
+	VariableSetContentType_Variables    = VariableSetContentType("Variables")
 	VariableSetContentType_ScriptModule = VariableSetContentType("ScriptModule")
 )
-
 
 func NewLibraryVariableSet(name string) *LibraryVariableSet {
 	return &LibraryVariableSet{
@@ -68,7 +67,7 @@ func (s *LibraryVariableSetService) Get(libraryVariableSetID string) (*LibraryVa
 
 // GetAll returns all libraryVariableSets in Octopus Deploy
 func (s *LibraryVariableSetService) GetAll() (*[]LibraryVariableSet, error) {
-	return s.get("");
+	return s.get("")
 }
 
 func (s *LibraryVariableSetService) get(query string) (*[]LibraryVariableSet, error) {

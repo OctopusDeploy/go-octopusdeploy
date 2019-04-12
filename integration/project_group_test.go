@@ -4,7 +4,7 @@ import (
 	// "fmt"
 	"testing"
 
-	"github.com/MattHodge/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 
 	"github.com/stretchr/testify/assert"
 )

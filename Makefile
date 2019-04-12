@@ -3,7 +3,7 @@ TEST?=$$(go list ./... |grep -v 'vendor')
 default: build test
 
 fmt:
-	go fmt github.com/MattHodge/go-octopusdeploy/...
+	go fmt github.com/OctopusDeploy/go-octopusdeploy/...
 
 build: fmt
 	go build
