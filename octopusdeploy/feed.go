@@ -23,15 +23,15 @@ type Feeds struct {
 }
 
 type Feed struct {
-	ID               				string `json:"Id"`
-	Name             				string `json:"Name"`
-	FeedType      	 				string `json:"FeedType"`
-	DownloadAttempts  				int `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds  	int `json:"DownloadRetryBackoffSeconds"`
-	FeedUri  						string `json:"FeedUri"`
-	EnhancedMode   					bool `json:"EnhancedMode"`
-	Username                        string `json:"Username"`
-	Password                        SensitiveValue `json:"Password"`
+	ID                          string         `json:"Id"`
+	Name                        string         `json:"Name"`
+	FeedType                    string         `json:"FeedType"`
+	DownloadAttempts            int            `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds int            `json:"DownloadRetryBackoffSeconds"`
+	FeedUri                     string         `json:"FeedUri"`
+	EnhancedMode                bool           `json:"EnhancedMode"`
+	Username                    string         `json:"Username"`
+	Password                    SensitiveValue `json:"Password"`
 }
 
 func (t *Feed) Validate() error {
@@ -48,9 +48,9 @@ func (t *Feed) Validate() error {
 
 func NewFeed(name, feedType string, feedUri string) *Feed {
 	return &Feed{
-		Name:             name,
-		FeedType:      	  feedType,
-		FeedUri:      	  feedUri,
+		Name:     name,
+		FeedType: feedType,
+		FeedUri:  feedUri,
 	}
 }
 

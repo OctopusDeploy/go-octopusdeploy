@@ -39,8 +39,8 @@ type Variable struct {
 }
 
 type SensitiveValue struct {
-	HasValue  bool    `json:"HasValue"`
-	NewValue  string  `json:"NewValue"`
+	HasValue bool   `json:"HasValue"`
+	NewValue string `json:"NewValue"`
 }
 
 type VariableScope struct {

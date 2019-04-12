@@ -23,15 +23,15 @@ type Accounts struct {
 }
 
 type Account struct {
-	ID               				string 			`json:"Id"`
-	Name             				string 			`json:"Name"`
-	AccountType      				string 			`json:"AccountType"`
-	SubscriptionNumber  			string 			`json:"SubscriptionNumber"`
-	ClientId  						string 			`json:"ClientId"`
-	TenantId  						string 		 	`json:"TenantId"`
-	Password  						SensitiveValue	`json:"Password"`
-	TenantTags          			[]string		`json:"TenantTags,omitempty"`
-	TenantedDeploymentParticipation string          `json:"TenantedDeploymentParticipation"`
+	ID                              string         `json:"Id"`
+	Name                            string         `json:"Name"`
+	AccountType                     string         `json:"AccountType"`
+	SubscriptionNumber              string         `json:"SubscriptionNumber"`
+	ClientId                        string         `json:"ClientId"`
+	TenantId                        string         `json:"TenantId"`
+	Password                        SensitiveValue `json:"Password"`
+	TenantTags                      []string       `json:"TenantTags,omitempty"`
+	TenantedDeploymentParticipation string         `json:"TenantedDeploymentParticipation"`
 }
 
 func (t *Account) Validate() error {
@@ -48,8 +48,8 @@ func (t *Account) Validate() error {
 
 func NewAccount(name, accountType string) *Account {
 	return &Account{
-		Name:             name,
-		AccountType:      	  accountType,
+		Name:        name,
+		AccountType: accountType,
 	}
 }
 
