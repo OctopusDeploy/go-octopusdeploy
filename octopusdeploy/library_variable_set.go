@@ -24,11 +24,12 @@ type LibraryVariableSets struct {
 }
 
 type LibraryVariableSet struct {
-	ID            string                 `json:"Id,omitempty"`
-	Name          string                 `json:"Name" validate:"required"`
-	Description   string                 `json:"Description,omitempty"`
-	VariableSetId string                 `json:"VariableSetId,omitempty"`
-	ContentType   VariableSetContentType `json:"ContentType" validate:"required"`
+	ID            string                    `json:"Id,omitempty"`
+	Name          string                    `json:"Name" validate:"required"`
+	Description   string                    `json:"Description,omitempty"`
+	VariableSetId string                    `json:"VariableSetId,omitempty"`
+	ContentType   VariableSetContentType    `json:"ContentType" validate:"required"`
+	Templates     []ActionTemplateParameter `json:"Templates,omitempty"`
 }
 
 type VariableSetContentType string
