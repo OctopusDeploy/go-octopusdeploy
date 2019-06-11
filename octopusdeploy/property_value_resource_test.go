@@ -7,6 +7,7 @@ import (
 
 const (
 	plainJsonValue       = `"blah"`
+	emptyJsonValue       = `""`
 	secretJsonValue      = `{"HasValue":true,"NewValue":""}`
 	secretFalseJsonValue = `{"HasValue":false,"NewValue":""}`
 	secretJsonNewValue   = `{"HasValue":true,"NewValue":"blah"}`
@@ -30,6 +31,7 @@ func TestPropertyValueResource_MarshalJSON(t *testing.T) {
 		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, want: []byte(secretJsonValue)},
 		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, want: []byte(secretFalseJsonValue)},
 		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: "blah"}}, want: []byte(secretJsonNewValue)},
+		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: nil}, want: []byte(emptyJsonValue)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -46,6 +48,8 @@ func TestPropertyValueResource_MarshalJSON(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(got, tt.want) {
+				json, _ := PrettyJson(got)
+				t.Log(json)
 				t.Errorf("PropertyValueResource.MarshalJSON() = %v, want %v", got, tt.want)
 			}
 		})
@@ -62,6 +66,7 @@ func TestPropertyValueResource_UnmarshalJSON(t *testing.T) {
 	}
 
 	plain := PropertyValue(`blah`)
+	empty := PropertyValue(``)
 
 	tests := []struct {
 		name    string
@@ -73,6 +78,7 @@ func TestPropertyValueResource_UnmarshalJSON(t *testing.T) {
 		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, args: args{data: []byte(secretJsonValue)}},
 		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, args: args{data: []byte(secretFalseJsonValue)}},
 		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: "blah"}}, args: args{data: []byte(secretJsonNewValue)}},
+		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: &empty}, args: args{data: []byte(emptyJsonValue)}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

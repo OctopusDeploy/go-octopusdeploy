@@ -21,8 +21,11 @@ func (d PropertyValueResource) MarshalJSON() ([]byte, error) {
 		return json.Marshal(d.SensitiveValue)
 	}
 
-	val := d.PropertyValue
-	return json.Marshal(val)
+	if d.PropertyValue != nil {
+		return json.Marshal(d.PropertyValue)
+	}
+
+	return json.Marshal(``)
 }
 
 func (d *PropertyValueResource) UnmarshalJSON(data []byte) error {
