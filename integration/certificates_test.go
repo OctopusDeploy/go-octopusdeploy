@@ -41,7 +41,6 @@ func getTestCert(certName string) octopusdeploy.Certificate {
 	return *v
 }
 
-
 func cleanCert(t *testing.T, certId string) {
 	err := client.Certificate.Delete(certId)
 	if err == nil {
