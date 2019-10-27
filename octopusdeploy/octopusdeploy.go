@@ -101,10 +101,6 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 		return fmt.Errorf("octopus deploy api returned an error on endpoint %s - %s", urlPath, octopusDeployError.Errors)
 	}
 
-	if octopusDeployError.ErrorMessage != "" {
-		return fmt.Errorf("octopus deploy api returned an error on endpoint %s - %s", urlPath, octopusDeployError.ErrorMessage)
-	}
-
 	if slingError != nil {
 		return fmt.Errorf("cannot get endpoint %s from server. failure from http client %v", urlPath, slingError)
 	}
