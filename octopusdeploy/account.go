@@ -26,7 +26,7 @@ type Account struct {
 	ID                              string                 `json:"Id"`
 	EnvironmentIDs                  []string               `json:"EnvironmentIds"`
 	Name                            string                 `json:"Name"`
-	AccountType                     string                 `json:"AccountType"`
+	AccountType                     AccountType            `json:"AccountType"`
 	SubscriptionNumber              string                 `json:"SubscriptionNumber"`
 	ClientId                        string                 `json:"ClientId"`
 	TenantId                        string                 `json:"TenantId"`
@@ -48,7 +48,7 @@ func (t *Account) Validate() error {
 	return nil
 }
 
-func NewAccount(name, accountType string) *Account {
+func NewAccount(name string, accountType AccountType) *Account {
 	return &Account{
 		Name:        name,
 		AccountType: accountType,

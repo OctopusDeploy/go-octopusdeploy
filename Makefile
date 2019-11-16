@@ -15,4 +15,5 @@ testacc:
 enums:
 	# add additional files to be enum-ified with addtional -f <file-path> args
 	go-enum --noprefix --lower --marshal --names \
-		-f octopusdeploy/tenanted_deployment_mode.go
+		-f octopusdeploy/tenanted_deployment_mode.go \
+		-f octopusdeploy/account_type.go
