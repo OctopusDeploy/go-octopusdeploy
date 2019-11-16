@@ -132,7 +132,7 @@ func getTestMachine(environmentID, machineName string) octopusdeploy.Machine {
 		Name:                            machineName,
 		Roles:                           []string{"Prod"},
 		Status:                          "Disabled",
-		TenantedDeploymentParticipation: "Untenanted",
+		TenantedDeploymentParticipation: octopusdeploy.Untenanted,
 		TenantIDs:                       []string{},
 		TenantTags:                      []string{},
 		Thumbprint:                      strings.ToUpper(thumbprint[:16]),

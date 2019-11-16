@@ -23,17 +23,17 @@ type Accounts struct {
 }
 
 type Account struct {
-	ID                              string         `json:"Id"`
-	EnvironmentIDs                  []string       `json:"EnvironmentIds"`
-	Name                            string         `json:"Name"`
-	AccountType                     string         `json:"AccountType"`
-	SubscriptionNumber              string         `json:"SubscriptionNumber"`
-	ClientId                        string         `json:"ClientId"`
-	TenantId                        string         `json:"TenantId"`
-	Password                        SensitiveValue `json:"Password"`
-	TenantTags                      []string       `json:"TenantTags,omitempty"`
-	TenantedDeploymentParticipation string         `json:"TenantedDeploymentParticipation"`
-	Token                           SensitiveValue `json:"Token,omitempty"`
+	ID                              string                 `json:"Id"`
+	EnvironmentIDs                  []string               `json:"EnvironmentIds"`
+	Name                            string                 `json:"Name"`
+	AccountType                     string                 `json:"AccountType"`
+	SubscriptionNumber              string                 `json:"SubscriptionNumber"`
+	ClientId                        string                 `json:"ClientId"`
+	TenantId                        string                 `json:"TenantId"`
+	Password                        SensitiveValue         `json:"Password"`
+	TenantTags                      []string               `json:"TenantTags,omitempty"`
+	TenantedDeploymentParticipation TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
+	Token                           SensitiveValue         `json:"Token,omitempty"`
 }
 
 func (t *Account) Validate() error {

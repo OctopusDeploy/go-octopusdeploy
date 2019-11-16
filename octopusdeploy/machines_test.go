@@ -14,7 +14,7 @@ func TestValidateMachineValues(t *testing.T) {
 			URI:        "x",
 			Thumbprint: "1",
 		},
-		TenantedDeploymentParticipation: "Untenanted",
+		TenantedDeploymentParticipation: Untenanted,
 		Status:                          "Unknown",
 		Thumbprint:                      "1",
 	}
@@ -26,7 +26,7 @@ func TestValidateMachineValues(t *testing.T) {
 		Endpoint: &MachineEndpoint{
 			URI: "y",
 		},
-		TenantedDeploymentParticipation: "Untenanted",
+		TenantedDeploymentParticipation: Untenanted,
 		Status:                          "Unknown",
 	}
 
@@ -37,7 +37,7 @@ func TestValidateMachineValues(t *testing.T) {
 		Endpoint: &MachineEndpoint{
 			URI: "y",
 		},
-		TenantedDeploymentParticipation: "Bad",
+		TenantedDeploymentParticipation: 5,
 		Status:                          "Unknown",
 	}
 
@@ -49,7 +49,7 @@ func TestValidateMachineValues(t *testing.T) {
 			URI:        "y",
 			Thumbprint: "1",
 		},
-		TenantedDeploymentParticipation: "Bad",
+		TenantedDeploymentParticipation: 5,
 		Status:                          "Unknown",
 		Thumbprint:                      "2",
 	}
