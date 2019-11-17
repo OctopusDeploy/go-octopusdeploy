@@ -1,26 +1,14 @@
 package octopusdeploy
 
 import (
-	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLifecycleGet(t *testing.T) {
-
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/lifecycles/Lifecycles-41", r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(getLifecycleResponseJSON)),
-		}, nil
-	})
-
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
 	lifecycle, err := client.Lifecycle.Get("Lifecycles-41")
 
 	assert.Nil(t, err)
