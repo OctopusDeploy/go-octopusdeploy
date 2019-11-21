@@ -15,5 +15,7 @@ github.com/pmezard/go-difflib/difflib
 github.com/satori/go.uuid
 # github.com/stretchr/testify v1.2.2
 github.com/stretchr/testify/assert
+# gopkg.in/go-playground/assert.v1 v1.2.1
+gopkg.in/go-playground/assert.v1
 # gopkg.in/go-playground/validator.v9 v9.19.0
 gopkg.in/go-playground/validator.v9

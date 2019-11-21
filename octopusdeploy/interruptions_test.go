@@ -3,24 +3,14 @@ package octopusdeploy
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInterruptionsGetAll(t *testing.T) {
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/interruptions", r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(getInterruptionsResponseJSON)),
-		}, nil
-	})
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/interruptions", http.StatusOK, getInterruptionsResponseJSON)
 	interruptions, err := client.Interruption.GetAll()
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(interruptions))
@@ -34,15 +24,7 @@ func TestInterruptionsGetAll(t *testing.T) {
 
 func TestInterruptionsGet(t *testing.T) {
 	interruptionID := "Interruptions-1"
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/interruptions/"+interruptionID, r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(interruptionJSON)),
-		}, nil
-	})
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/interruptions/"+interruptionID, http.StatusOK, interruptionJSON)
 	interruption, err := client.Interruption.Get(interruptionID)
 	assert.Nil(t, err)
 	assert.Equal(t, "InterruptionTitle", interruption.Title)
@@ -55,15 +37,7 @@ func TestInterruptionsGet(t *testing.T) {
 
 func TestInterruptionsTakeResponsibility(t *testing.T) {
 	interruptionID := "Interruptions-1"
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/interruptions/"+interruptionID+"/responsible", r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(interruptionUserJSON)),
-		}, nil
-	})
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
 	interruption, err := getInterruptonFromJSON(interruptionJSON)
 	assert.Nil(t, err)
 	user, err := client.Interruption.TakeResponsability(interruption)
@@ -76,15 +50,7 @@ func TestInterruptionsTakeResponsibility(t *testing.T) {
 
 func TestInterruptionsGetResponsibilities(t *testing.T) {
 	interruptionID := "Interruptions-1"
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/interruptions/"+interruptionID+"/responsible", r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(interruptionUserJSON)),
-		}, nil
-	})
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
 	interruption, err := getInterruptonFromJSON(interruptionJSON)
 	assert.Nil(t, err)
 	user, err := client.Interruption.GetResponsability(interruption)
@@ -97,15 +63,7 @@ func TestInterruptionsGetResponsibilities(t *testing.T) {
 
 func TestInterruptionsSubmit(t *testing.T) {
 	interruptionID := "Interruptions-1"
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/interruptions/"+interruptionID+"/submit", r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(interruptionSubmittedJSON)),
-		}, nil
-	})
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/submit", http.StatusOK, interruptionSubmittedJSON)
 	interruption, err := getInterruptonFromJSON(interruptionJSON)
 	assert.Nil(t, err)
 	submitRequest := InterruptionSubmitRequest{

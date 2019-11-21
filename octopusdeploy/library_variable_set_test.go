@@ -1,26 +1,14 @@
 package octopusdeploy
 
 import (
-	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLibraryVariableSetGet(t *testing.T) {
-
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/libraryVariableSets/LibraryVariableSets-41", r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(getLibraryVariableSetResponseJSON)),
-		}, nil
-	})
-
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/libraryVariableSets/LibraryVariableSets-41", http.StatusOK, getLibraryVariableSetResponseJSON)
 	libraryVariableSet, err := client.LibraryVariableSet.Get("LibraryVariableSets-41")
 
 	assert.Nil(t, err)

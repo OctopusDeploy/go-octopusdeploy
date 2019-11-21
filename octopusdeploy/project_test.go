@@ -1,40 +1,18 @@
 package octopusdeploy
 
 import (
-	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestProjectGet(t *testing.T) {
-
-	httpClient := http.Client{}
-	httpClient.Transport = roundTripFunc(func(r *http.Request) (*http.Response, error) {
-		assert.Equal(t, "/api/projects/Projects-663", r.URL.Path)
-		return &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(strings.NewReader(getProjectResponseJSON)),
-		}, nil
-	})
-
-	client := getFakeOctopusClient(httpClient)
+	client := getFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
 	project, err := client.Project.Get("Projects-663")
 
 	assert.Nil(t, err)
 	assert.Equal(t, "Canary .NET Core 2.0", project.Name)
-}
-
-type roundTripFunc func(r *http.Request) (*http.Response, error)
-
-func (s roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
-	return s(r)
-}
-
-func getFakeOctopusClient(httpClient http.Client) *Client {
-	return NewClient(&httpClient, "http://octopusserver", "FakeAPIKey")
 }
 
 const getProjectResponseJSON = `
