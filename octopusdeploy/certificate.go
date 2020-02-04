@@ -22,6 +22,11 @@ type Certificates struct {
 	PagedResults
 }
 
+type CertificateReplace struct {
+	CertificateData                 string	`json:"CertificateData,omitempty"`
+	Password                        string	`json:"Password,omitempty"`
+}
+
 type Certificate struct {
 	ID                              string                 `json:"Id,omitempty"`
 	Name                            string                 `json:"Name,omitempty"`
@@ -161,7 +166,10 @@ func (s *CertificateService) Update(certificate *Certificate) (*Certificate, err
 
 func (s *CertificateService) Replace(certificate *Certificate) (*Certificate, error) {
 	path := fmt.Sprintf("certificates/%s/replace", certificate.ID)
-	resp, err := apiPost(s.sling, certificate, new(Certificate), path)
+
+	certificateReplace := CertificateReplace{CertificateData: certificate.CertificateData.NewValue, Password: certificate.Password.NewValue}
+
+	resp, err := apiPost(s.sling, certificateReplace, new(Certificate), path)
 
 	if err != nil {
 		return nil, err
