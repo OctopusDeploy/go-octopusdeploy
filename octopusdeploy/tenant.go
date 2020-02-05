@@ -2,8 +2,9 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"github.com/dghubble/sling"
 	"time"
+
+	"github.com/dghubble/sling"
 )
 
 type TenantService struct {
@@ -24,8 +25,8 @@ type Tenants struct {
 type Tenant struct {
 	ID                  string              `json:"Id"`
 	Name                string              `json:"Name"`
-	TenantTags          []string            `json:"TenantTags"`
-	ProjectEnvironments map[string][]string `json:"ProjectEnvironments"`
+	TenantTags          []string            `json:"TenantTags,omitempty"`
+	ProjectEnvironments map[string][]string `json:"ProjectEnvironments,omitempty"`
 	SpaceID             string              `json:"SpaceId"`
 	ClonedFromTenantID  string              `json:"ClonedFromTenantId"`
 	Description         string              `json:"Description"`
@@ -47,6 +48,7 @@ func ValidateTenantValues(tenant *Tenant) error {
 	})
 }
 
+// Get returns a single tenant by its tenantid in Octopus Deploy
 func (s *TenantService) Get(tenantId string) (*Tenant, error) {
 	path := fmt.Sprintf("tenants/%s", tenantId)
 	resp, err := apiGet(s.sling, new(Tenant), path)
@@ -58,7 +60,8 @@ func (s *TenantService) Get(tenantId string) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
-func (s *TenantService) GetAll() ([]Tenant, error) {
+// GetAll returns all tenants in Octopus Deploy
+func (s *TenantService) GetAll() (*[]Tenant, error) {
 	var t []Tenant
 
 	path := "tenants"
@@ -78,9 +81,28 @@ func (s *TenantService) GetAll() ([]Tenant, error) {
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
 
-	return t, nil
+	return &t, nil
 }
 
+// GetByName gets an existing Tenant by its name in Octopus Deploy
+func (s *TenantService) GetByName(tenantName string) (*Tenant, error) {
+	var foundTenant Tenant
+	tenants, err := s.GetAll()
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, tenant := range *tenants {
+		if tenant.Name == tenantName {
+			return &tenant, nil
+		}
+	}
+
+	return &foundTenant, fmt.Errorf("no tenant found with tenant name %s", tenantName)
+}
+
+// Add adds an new tenant in Octopus Deploy
 func (s *TenantService) Add(tenant *Tenant) (*Tenant, error) {
 	err := ValidateTenantValues(tenant)
 	if err != nil {
@@ -96,6 +118,7 @@ func (s *TenantService) Add(tenant *Tenant) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
+// Delete deletes an existing tenant in Octopus Deploy
 func (s *TenantService) Delete(tenantId string) error {
 	path := fmt.Sprintf("tenants/%s", tenantId)
 	err := apiDelete(s.sling, path)
@@ -107,6 +130,7 @@ func (s *TenantService) Delete(tenantId string) error {
 	return nil
 }
 
+// Update updates an existing tenant in Octopus Deploy
 func (s *TenantService) Update(tenant *Tenant) (*Tenant, error) {
 	err := ValidateTenantValues(tenant)
 	if err != nil {
