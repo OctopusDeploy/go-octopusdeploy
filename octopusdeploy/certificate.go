@@ -22,6 +22,11 @@ type Certificates struct {
 	PagedResults
 }
 
+type CertificateReplace struct {
+	CertificateData                 string	`json:"CertificateData,omitempty"`
+	Password                        string	`json:"Password,omitempty"`
+}
+
 type Certificate struct {
 	ID                              string                 `json:"Id,omitempty"`
 	Name                            string                 `json:"Name,omitempty"`
@@ -68,6 +73,13 @@ func (t *Certificate) Validate() error {
 func NewCertificate(name string, certificateData SensitiveValue, password SensitiveValue) *Certificate {
 	return &Certificate{
 		Name:            name,
+		CertificateData: certificateData,
+		Password:        password,
+	}
+}
+
+func NewCertificateReplace(certificateData string, password string) *CertificateReplace {
+	return &CertificateReplace{
 		CertificateData: certificateData,
 		Password:        password,
 	}
@@ -159,13 +171,14 @@ func (s *CertificateService) Update(certificate *Certificate) (*Certificate, err
 	return resp.(*Certificate), nil
 }
 
-func (s *CertificateService) Replace(certificate *Certificate) (*Certificate, error) {
-	path := fmt.Sprintf("certificates/%s/replace", certificate.ID)
-	resp, err := apiPost(s.sling, certificate, new(Certificate), path)
+func (s *CertificateService) Replace(certificateId string, certificateReplace *CertificateReplace) (*Certificate, error) {
+	path := fmt.Sprintf("certificates/%s/replace", certificateId)
+	_, err := apiPost(s.sling, certificateReplace, new(Certificate), path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*Certificate), nil
+	//The API endpoint /certificates/id/replace returns the old cert, we need to re-query to get the updated one.
+	return s.Get(certificateId)
 }
