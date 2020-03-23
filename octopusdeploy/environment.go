@@ -96,9 +96,9 @@ func (s *EnvironmentService) GetByName(environmentName string) (*Environment, er
 		return nil, err
 	}
 
-	for _, project := range *environments {
-		if project.Name == environmentName {
-			return &project, nil
+	for _, env := range *environments {
+		if env.Name == environmentName {
+			return &env, nil
 		}
 	}
 

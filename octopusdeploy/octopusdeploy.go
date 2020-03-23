@@ -13,24 +13,26 @@ import (
 type Client struct {
 	sling *sling.Sling
 	// Octopus Deploy API Services
-	Account            *AccountService
-	Certificate        *CertificateService
-	DeploymentProcess  *DeploymentProcessService
-	ProjectGroup       *ProjectGroupService
-	Project            *ProjectService
-	ProjectTrigger     *ProjectTriggerService
-	Environment        *EnvironmentService
-	Feed               *FeedService
-	Variable           *VariableService
-	MachinePolicy      *MachinePolicyService
-	Machine            *MachineService
-	Lifecycle          *LifecycleService
-	LibraryVariableSet *LibraryVariableSetService
-	Interruption       *InterruptionsService
-	TagSet             *TagSetService
-	Tenant             *TenantService
-	Space              *SpaceService
-	Channel            *ChannelService
+	Account                 *AccountService
+	ActionTemplate          *ActionTemplateService
+	Certificate             *CertificateService
+	CommunityActionTemplate *CommunityActionTemplateService
+	DeploymentProcess       *DeploymentProcessService
+	ProjectGroup            *ProjectGroupService
+	Project                 *ProjectService
+	ProjectTrigger          *ProjectTriggerService
+	Environment             *EnvironmentService
+	Feed                    *FeedService
+	Variable                *VariableService
+	MachinePolicy           *MachinePolicyService
+	Machine                 *MachineService
+	Lifecycle               *LifecycleService
+	LibraryVariableSet      *LibraryVariableSetService
+	Interruption            *InterruptionsService
+	TagSet                  *TagSetService
+	Tenant                  *TenantService
+	Space                   *SpaceService
+	Channel                 *ChannelService
 }
 
 // NewClient returns a new Client.
@@ -39,50 +41,60 @@ func NewClient(httpClient *http.Client, octopusURL, octopusAPIKey string) *Clien
 	baseURLWithAPI = fmt.Sprintf("%s/api/", baseURLWithAPI)
 	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", octopusAPIKey)
 	return &Client{
-		sling:              base,
-		Account:            NewAccountService(base.New()),
-		Certificate:        NewCertificateService(base.New()),
-		DeploymentProcess:  NewDeploymentProcessService(base.New()),
-		ProjectGroup:       NewProjectGroupService(base.New()),
-		Project:            NewProjectService(base.New()),
-		ProjectTrigger:     NewProjectTriggerService(base.New()),
-		Environment:        NewEnvironmentService(base.New()),
-		Feed:               NewFeedService(base.New()),
-		Variable:           NewVariableService(base.New()),
-		MachinePolicy:      NewMachinePolicyService(base.New()),
-		Machine:            NewMachineService(base.New()),
-		Lifecycle:          NewLifecycleService(base.New()),
-		LibraryVariableSet: NewLibraryVariableSetService(base.New()),
-		Interruption:       NewInterruptionService(base.New()),
-		TagSet:             NewTagSetService(base.New()),
-		Tenant:             NewTenantService(base.New()),
-		Space:              NewSpaceService(base.New()),
-		Channel:            NewChannelService(base.New()),
+		sling:                   base,
+		Account:                 NewAccountService(base.New()),
+		ActionTemplate:          NewActionTemplateService(base.New()),
+		Certificate:             NewCertificateService(base.New()),
+		CommunityActionTemplate: NewCommunityActionTemplateService(base.New(), ""),
+		DeploymentProcess:       NewDeploymentProcessService(base.New()),
+		ProjectGroup:            NewProjectGroupService(base.New()),
+		Project:                 NewProjectService(base.New()),
+		ProjectTrigger:          NewProjectTriggerService(base.New()),
+		Environment:             NewEnvironmentService(base.New()),
+		Feed:                    NewFeedService(base.New()),
+		Variable:                NewVariableService(base.New()),
+		MachinePolicy:           NewMachinePolicyService(base.New()),
+		Machine:                 NewMachineService(base.New()),
+		Lifecycle:               NewLifecycleService(base.New()),
+		LibraryVariableSet:      NewLibraryVariableSetService(base.New()),
+		Interruption:            NewInterruptionService(base.New()),
+		TagSet:                  NewTagSetService(base.New()),
+		Tenant:                  NewTenantService(base.New()),
+		Space:                   NewSpaceService(base.New()),
+		Channel:                 NewChannelService(base.New()),
 	}
 }
 
 func ForSpace(httpClient *http.Client, octopusURL, octopusAPIKey string, space *Space) *Client {
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
-	baseURLWithAPI = fmt.Sprintf("%s/api/%s/", baseURLWithAPI, space.ID)
-	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", octopusAPIKey)
+	baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
+	fmt.Println(baseURLWithAPI)
+	base := sling.New().Client(httpClient).Base(baseURLWithAPI+"/").Set("X-Octopus-ApiKey", octopusAPIKey)
+
+	baseURLWithAPI = fmt.Sprintf("%s/%s/", baseURLWithAPI, space.ID)
+	fmt.Println(baseURLWithAPI)
+	basespace := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", octopusAPIKey)
+
 	return &Client{
-		sling:              base,
-		Account:            NewAccountService(base.New()),
-		Certificate:        NewCertificateService(base.New()),
-		DeploymentProcess:  NewDeploymentProcessService(base.New()),
-		ProjectGroup:       NewProjectGroupService(base.New()),
-		Project:            NewProjectService(base.New()),
-		ProjectTrigger:     NewProjectTriggerService(base.New()),
-		Environment:        NewEnvironmentService(base.New()),
-		Feed:               NewFeedService(base.New()),
-		Variable:           NewVariableService(base.New()),
-		MachinePolicy:      NewMachinePolicyService(base.New()),
-		Machine:            NewMachineService(base.New()),
-		Lifecycle:          NewLifecycleService(base.New()),
-		LibraryVariableSet: NewLibraryVariableSetService(base.New()),
-		TagSet:             NewTagSetService(base.New()),
-		Tenant:             NewTenantService(base.New()),
-		Channel:            NewChannelService(base.New()),
+		sling:                   base,
+		Account:                 NewAccountService(basespace.New()),
+		ActionTemplate:          NewActionTemplateService(basespace.New()),
+		Certificate:             NewCertificateService(basespace.New()),
+		CommunityActionTemplate: NewCommunityActionTemplateService(base.New(), space.ID),
+		DeploymentProcess:       NewDeploymentProcessService(basespace.New()),
+		ProjectGroup:            NewProjectGroupService(basespace.New()),
+		Project:                 NewProjectService(basespace.New()),
+		ProjectTrigger:          NewProjectTriggerService(basespace.New()),
+		Environment:             NewEnvironmentService(basespace.New()),
+		Feed:                    NewFeedService(basespace.New()),
+		Variable:                NewVariableService(basespace.New()),
+		MachinePolicy:           NewMachinePolicyService(basespace.New()),
+		Machine:                 NewMachineService(basespace.New()),
+		Lifecycle:               NewLifecycleService(basespace.New()),
+		LibraryVariableSet:      NewLibraryVariableSetService(basespace.New()),
+		TagSet:                  NewTagSetService(basespace.New()),
+		Tenant:                  NewTenantService(basespace.New()),
+		Channel:                 NewChannelService(basespace.New()),
 	}
 }
 
