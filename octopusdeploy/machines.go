@@ -51,7 +51,7 @@ type MachineEndpointAuthentication struct {
 type MachineEndpoint struct {
 	ID                     string                         `json:"Id"`
 	CommunicationStyle     string                         `json:"CommunicationStyle"`
-	ProxyID                *string                        `json:"ProxyId"`
+	ProxyID                string                         `json:"ProxyId,omitempty"`
 	Thumbprint             string                         `json:"Thumbprint"`
 	TentacleVersionDetails MachineTentacleVersionDetails  `json:"TentacleVersionDetails"`
 	LastModifiedOn         *string                        `json:"LastModifiedOn,omitempty"`
