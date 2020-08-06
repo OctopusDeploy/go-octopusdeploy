@@ -24,7 +24,7 @@ type Users struct {
 type User struct {
 	ID                  string `json:"Id"`
 	Username            string `json:"Username"`
-	DisplayName         string `json:"DisplayName"`
+	Displayname         string `json:"Displayname"`
 	IsActive            bool   `json:"IsActive"`
 	IsService           bool   `json:"IsService"`
 	EmailAddress        string `json:"EmailAddress"`
@@ -40,8 +40,8 @@ type User struct {
 
 func NewUser(Username, DisplayName string) *User {
 	return &User{
-		Username:    username,
-		DisplayName: displaydame,
+		Username:    Username,
+		Displayname: DisplayName,
 	}
 }
 
@@ -83,7 +83,7 @@ func (s *UserService) GetAll() (*[]User, error) {
 }
 
 func (s *UserService) GetByName(Username string) (*User, error) {
-	var foundUser Username
+	var foundUser User
 	Users, err := s.GetAll()
 
 	if err != nil {
@@ -91,12 +91,12 @@ func (s *UserService) GetByName(Username string) (*User, error) {
 	}
 
 	for _, project := range *Users {
-		if project.Username == UserName {
+		if project.Username == Username {
 			return &project, nil
 		}
 	}
 
-	return &foundUser, fmt.Errorf("no User found with User name %s", UserName)
+	return &foundUser, fmt.Errorf("no User found with User name %s", Username)
 }
 
 func (s *UserService) Add(user *User) (*User, error) {
@@ -110,7 +110,7 @@ func (s *UserService) Add(user *User) (*User, error) {
 }
 
 func (s *UserService) Delete(userid string) error {
-	path := fmt.Sprintf("Users/%s", Userid)
+	path := fmt.Sprintf("Users/%s", userid)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {
