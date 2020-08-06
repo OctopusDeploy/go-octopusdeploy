@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/dghubble/sling"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 type UserService struct {
@@ -31,29 +30,23 @@ type User struct {
 	EmailAddress        string `json:"EmailAddress"`
 	CanPasswordBeEdited bool   `json:"CanPasswordBeEdited"`
 	IsRequestor         bool   `json:"IsRequestor"`
-}
-
-func (t *User) Validate() error {
-	validate := validator.New()
-
-	err := validate.Struct(t)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	Links               struct {
+		Self        string `json:"Self"`
+		Permissions string `json:"Permissions"`
+		APIKeys     string `json:"ApiKeys"`
+		Avatar      string `json:"Avatar"`
+	} `json:"Links"`
 }
 
 func NewUser(Username, DisplayName string) *User {
 	return &User{
-		Username:    Username,
-		DisplayName: DisplayName,
+		Username:    username,
+		DisplayName: displaydame,
 	}
 }
 
-func (s *UserService) Get(UserID string) (*User, error) {
-	path := fmt.Sprintf("Users/%s", UserID)
+func (s *UserService) Get(userid string) (*User, error) {
+	path := fmt.Sprintf("Users/%s", userid)
 	resp, err := apiGet(s.sling, new(User), path)
 
 	if err != nil {
@@ -89,8 +82,8 @@ func (s *UserService) GetAll() (*[]User, error) {
 	return &p, nil
 }
 
-func (s *UserService) GetByName(UserName string) (*User, error) {
-	var foundUser User
+func (s *UserService) GetByName(Username string) (*User, error) {
+	var foundUser Username
 	Users, err := s.GetAll()
 
 	if err != nil {
@@ -116,7 +109,7 @@ func (s *UserService) Add(user *User) (*User, error) {
 	return resp.(*User), nil
 }
 
-func (s *UserService) Delete(Userid string) error {
+func (s *UserService) Delete(userid string) error {
 	path := fmt.Sprintf("Users/%s", Userid)
 	err := apiDelete(s.sling, path)
 
@@ -129,7 +122,7 @@ func (s *UserService) Delete(Userid string) error {
 
 func (s *UserService) Update(user *User) (*User, error) {
 	path := fmt.Sprintf("Users/%s", user.ID)
-	resp, err := apiUpdate(s.sling, user, new(user), path)
+	resp, err := apiUpdate(s.sling, user, new(User), path)
 
 	if err != nil {
 		return nil, err
