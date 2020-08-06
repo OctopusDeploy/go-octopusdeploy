@@ -31,12 +31,6 @@ type User struct {
 	EmailAddress        string `json:"EmailAddress"`
 	CanPasswordBeEdited bool   `json:"CanPasswordBeEdited"`
 	IsRequestor         bool   `json:"IsRequestor"`
-	Links               struct {
-		Self        string `json:"Self"`
-		Permissions string `json:"Permissions"`
-		APIKeys     string `json:"ApiKeys"`
-		Avatar      string `json:"Avatar"`
-	} `json:"Links"`
 }
 
 func (t *User) Validate() error {
