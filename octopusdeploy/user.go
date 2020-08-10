@@ -103,9 +103,9 @@ func (s *UserService) GetByName(username string) (*User, error) {
 		return nil, err
 	}
 
-	for _, project := range *Users {
-		if project.Username == username {
-			return &project, nil
+	for _, user := range *Users {
+		if user.Username == username {
+			return &user, nil
 		}
 	}
 
