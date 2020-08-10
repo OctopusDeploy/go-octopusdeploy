@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dghubble/sling"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type UserService struct {
@@ -36,6 +37,18 @@ type User struct {
 		APIKeys     string `json:"ApiKeys"`
 		Avatar      string `json:"Avatar"`
 	} `json:"Links"`
+}
+
+func (t *User) Validate() error {
+	validate := validator.New()
+
+	err := validate.Struct(t)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewUser(username, displayname string) *User {
