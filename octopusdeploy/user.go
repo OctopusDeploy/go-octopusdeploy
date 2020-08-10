@@ -38,10 +38,10 @@ type User struct {
 	} `json:"Links"`
 }
 
-func NewUser(Username, DisplayName string) *User {
+func NewUser(username, displayname string) *User {
 	return &User{
-		Username:    Username,
-		Displayname: DisplayName,
+		Username:    username,
+		Displayname: displayname,
 	}
 }
 
@@ -82,7 +82,7 @@ func (s *UserService) GetAll() (*[]User, error) {
 	return &p, nil
 }
 
-func (s *UserService) GetByName(Username string) (*User, error) {
+func (s *UserService) GetByName(username string) (*User, error) {
 	var foundUser User
 	Users, err := s.GetAll()
 
@@ -91,12 +91,12 @@ func (s *UserService) GetByName(Username string) (*User, error) {
 	}
 
 	for _, project := range *Users {
-		if project.Username == Username {
+		if project.Username == username {
 			return &project, nil
 		}
 	}
 
-	return &foundUser, fmt.Errorf("no User found with User name %s", Username)
+	return &foundUser, fmt.Errorf("no User found with User name %s", username)
 }
 
 func (s *UserService) Add(user *User) (*User, error) {
