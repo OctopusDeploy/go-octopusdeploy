@@ -23,20 +23,11 @@ type Users struct {
 }
 
 type User struct {
-	ID                  string `json:"Id"`
-	Username            string `json:"Username"`
-	Displayname         string `json:"Displayname"`
-	IsActive            bool   `json:"IsActive"`
-	IsService           bool   `json:"IsService"`
-	EmailAddress        string `json:"EmailAddress"`
-	CanPasswordBeEdited bool   `json:"CanPasswordBeEdited"`
-	IsRequestor         bool   `json:"IsRequestor"`
-	Links               struct {
-		Self        string `json:"Self"`
-		Permissions string `json:"Permissions"`
-		APIKeys     string `json:"ApiKeys"`
-		Avatar      string `json:"Avatar"`
-	} `json:"Links"`
+	ID          string `json:"Id"`
+	Username    string `json:"Username"`
+	Displayname string `json:"Displayname"`
+	IsActive    bool   `json:"IsActive"`
+	IsService   bool   `json:"IsService"`
 }
 
 func (t *User) Validate() error {
