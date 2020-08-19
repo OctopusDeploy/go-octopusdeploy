@@ -47,7 +47,6 @@ type Account struct {
 	// AWS Service Principal fields
 	AccessKey string         `json:"AccessKey,omitempty"`
 	Secretkey SensitiveValue `json:"SecretKey,omitempty"`
-	//
 }
 
 func (t *Account) Validate() error {
