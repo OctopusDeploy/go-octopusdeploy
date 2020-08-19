@@ -45,8 +45,8 @@ type Account struct {
 	TenantID                          string         `json:"TenantId,omitempty"`
 
 	// AWS Service Principal fields
-	AccessKey string         `json:"AccessKey,omitempty"`
-	Secretkey SensitiveValue `json:"SecretKey,omitempty"`
+	AccessKey string `json:"AccessKey,omitempty"`
+	Secretkey string `json:"SecretKey,omitempty"`
 }
 
 func (t *Account) Validate() error {
