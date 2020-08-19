@@ -46,7 +46,7 @@ type Account struct {
 
 	// AWS Service Principal fields
 	AccessKey string         `json:"AccessKey,omitempty"`
-	Secretkey SensitiveValue `json:"SecretKey,omitempty"`
+	SecretKey SensitiveValue `json:"SecretKey,omitempty"`
 	//
 }
 
