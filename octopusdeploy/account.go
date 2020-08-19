@@ -43,6 +43,10 @@ type Account struct {
 	ResourceManagementEndpointBaseURI string         `json:"ResourceManagementEndpointBaseUri,omitempty"`
 	SubscriptionNumber                string         `json:"SubscriptionNumber,omitempty"`
 	TenantID                          string         `json:"TenantId,omitempty"`
+
+	// AWS Service Principal fields
+	AccountKey string `json:"AccountKey,omitempty"`
+	SecretKey  string `json:"SecretKey,omitempty"`
 }
 
 func (t *Account) Validate() error {
