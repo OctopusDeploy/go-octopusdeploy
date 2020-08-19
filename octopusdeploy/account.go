@@ -45,8 +45,7 @@ type Account struct {
 	TenantID                          string         `json:"TenantId,omitempty"`
 
 	// AWS Service Principal fields
-	AccessKey string         `json:"AccessKey,omitempty"`
-	SecretKey SensitiveValue `json:"SecretKey,omitempty"`
+	AccessKey string `json:"AccessKey,omitempty"`
 	//
 }
 
