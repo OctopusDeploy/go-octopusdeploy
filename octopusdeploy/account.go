@@ -33,6 +33,7 @@ type Account struct {
 	TenantedDeploymentParticipation TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
 	TenantTags                      []string               `json:"TenantTags,omitempty"`
 	Token                           SensitiveValue         `json:"Token,omitempty"`
+	Secretkey                       SensitiveValue         `json:"SecretKey,omitempty"`
 
 	// Azure Service Principal fields
 
