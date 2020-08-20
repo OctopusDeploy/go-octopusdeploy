@@ -26,7 +26,6 @@ type Project struct {
 	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides"`
 	DefaultGuidedFailureMode        string                      `json:"DefaultGuidedFailureMode,omitempty"`
 	DefaultToSkipIfAlreadyInstalled bool                        `json:"DefaultToSkipIfAlreadyInstalled"`
-	DeploymentProcessID             string                      `json:"DeploymentProcessId"`
 	Description                     string                      `json:"Description"`
 	DiscreteChannelRelease          bool                        `json:"DiscreteChannelRelease"`
 	ID                              string                      `json:"Id,omitempty"`
