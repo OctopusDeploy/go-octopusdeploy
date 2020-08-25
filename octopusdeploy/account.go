@@ -71,6 +71,13 @@ func (t *Account) Validate() error {
 	default:
 		return nil
 	}
+
+	switch t.AccountType {
+	case SshKeyPair:
+		return validateSSHKeyAccount(t)
+	default:
+		return nil
+	}
 }
 
 func validateAzureServicePrincipalAccount(acc *Account) error {
@@ -88,6 +95,14 @@ func validateAzureServicePrincipalAccount(acc *Account) error {
 }
 
 func validateUsernamePasswordAccount(acc *Account) error {
+	validations := []error{
+		ValidateRequiredPropertyValue("username", acc.Name),
+	}
+
+	return ValidateMultipleProperties(validations)
+}
+
+func validateSSHKeyAccount(acc *Account) error {
 	validations := []error{
 		ValidateRequiredPropertyValue("name", acc.Name),
 	}
