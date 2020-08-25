@@ -10,6 +10,7 @@ ENUM(
 	AzureServicePrincipal
 	AmazonWebServicesAccount
 	AmazonWebServicesRoleAccount
+	Token
 )
 */
 type AccountType int
