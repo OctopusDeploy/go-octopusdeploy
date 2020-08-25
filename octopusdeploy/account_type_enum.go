@@ -23,9 +23,11 @@ const (
 	AmazonWebServicesAccount
 	// AmazonWebServicesRoleAccount is a AccountType of type AmazonWebServicesRoleAccount
 	AmazonWebServicesRoleAccount
+	// Token is a AccountType of type Token
+	Token
 )
 
-const _AccountTypeName = "NoneUsernamePasswordSshKeyPairAzureSubscriptionAzureServicePrincipalAmazonWebServicesAccountAmazonWebServicesRoleAccount"
+const _AccountTypeName = "NoneUsernamePasswordSshKeyPairAzureSubscriptionAzureServicePrincipalAmazonWebServicesAccountAmazonWebServicesRoleAccountToken"
 
 var _AccountTypeNames = []string{
 	_AccountTypeName[0:4],
@@ -35,6 +37,7 @@ var _AccountTypeNames = []string{
 	_AccountTypeName[47:68],
 	_AccountTypeName[68:92],
 	_AccountTypeName[92:120],
+	_AccountTypeName[120:125],
 }
 
 // AccountTypeNames returns a list of possible string values of AccountType.
@@ -52,6 +55,7 @@ var _AccountTypeMap = map[AccountType]string{
 	4: _AccountTypeName[47:68],
 	5: _AccountTypeName[68:92],
 	6: _AccountTypeName[92:120],
+	7: _AccountTypeName[120:125],
 }
 
 // String implements the Stringer interface.
@@ -63,20 +67,22 @@ func (x AccountType) String() string {
 }
 
 var _AccountTypeValue = map[string]AccountType{
-	_AccountTypeName[0:4]:                     0,
-	strings.ToLower(_AccountTypeName[0:4]):    0,
-	_AccountTypeName[4:20]:                    1,
-	strings.ToLower(_AccountTypeName[4:20]):   1,
-	_AccountTypeName[20:30]:                   2,
-	strings.ToLower(_AccountTypeName[20:30]):  2,
-	_AccountTypeName[30:47]:                   3,
-	strings.ToLower(_AccountTypeName[30:47]):  3,
-	_AccountTypeName[47:68]:                   4,
-	strings.ToLower(_AccountTypeName[47:68]):  4,
-	_AccountTypeName[68:92]:                   5,
-	strings.ToLower(_AccountTypeName[68:92]):  5,
-	_AccountTypeName[92:120]:                  6,
-	strings.ToLower(_AccountTypeName[92:120]): 6,
+	_AccountTypeName[0:4]:                      0,
+	strings.ToLower(_AccountTypeName[0:4]):     0,
+	_AccountTypeName[4:20]:                     1,
+	strings.ToLower(_AccountTypeName[4:20]):    1,
+	_AccountTypeName[20:30]:                    2,
+	strings.ToLower(_AccountTypeName[20:30]):   2,
+	_AccountTypeName[30:47]:                    3,
+	strings.ToLower(_AccountTypeName[30:47]):   3,
+	_AccountTypeName[47:68]:                    4,
+	strings.ToLower(_AccountTypeName[47:68]):   4,
+	_AccountTypeName[68:92]:                    5,
+	strings.ToLower(_AccountTypeName[68:92]):   5,
+	_AccountTypeName[92:120]:                   6,
+	strings.ToLower(_AccountTypeName[92:120]):  6,
+	_AccountTypeName[120:125]:                  7,
+	strings.ToLower(_AccountTypeName[120:125]): 7,
 }
 
 // ParseAccountType attempts to convert a string to a AccountType
@@ -88,7 +94,7 @@ func ParseAccountType(name string) (AccountType, error) {
 }
 
 // MarshalText implements the text marshaller method
-func (x *AccountType) MarshalText() ([]byte, error) {
+func (x AccountType) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
 
