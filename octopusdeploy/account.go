@@ -59,8 +59,54 @@ func (t *Account) Validate() error {
 			fmt.Printf(`%s failed validation. Validation type: %s Field type: %s`, err.Namespace(), err.Tag(), err.Type())
 			fmt.Println()
 		}
+		return err
+	}
+
+	switch t.AccountType {
+	case AzureServicePrincipal:
+		return validateAzureServicePrincipalAccount(t)
+	default:
+		return nil
+	}
+
+	switch t.AccountType {
+	case UsernamePassword:
+		return validateUsernamePasswordAccount(t)
+	default:
+		return nil
+	}
+
+	switch t.AccountType {
+	case SshKeyPair:
+		return validateSSHKeyAccount(t)
+	default:
+		return nil
+	}
+}
+
+func validateAzureServicePrincipalAccount(acc *Account) error {
+	validations := []error{
+		ValidateRequiredPropertyValue("ClientID", acc.ClientID),
+		ValidateRequiredPropertyValue("TenantID", acc.TenantID),
+		ValidateRequiredPropertyValue("SubscriptionNumber", acc.SubscriptionNumber),
 	}
 	return err
+}
+
+func validateUsernamePasswordAccount(acc *Account) error {
+	validations := []error{
+		ValidateRequiredPropertyValue("username", acc.Name),
+	}
+
+	return ValidateMultipleProperties(validations)
+}
+
+func validateSSHKeyAccount(acc *Account) error {
+	validations := []error{
+		ValidateRequiredPropertyValue("name", acc.Name),
+	}
+
+	return ValidateMultipleProperties(validations)
 }
 
 func NewAccount(name string, accountType AccountType) *Account {
