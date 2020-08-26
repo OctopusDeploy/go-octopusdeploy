@@ -43,6 +43,10 @@ type Account struct {
 	ResourceManagementEndpointBaseURI string         `json:"ResourceManagementEndpointBaseUri,omitempty"`
 	SubscriptionNumber                string         `json:"SubscriptionNumber,omitempty"`
 	TenantID                          string         `json:"TenantId,omitempty"`
+
+	// AWS Service Principal fields
+	AccessKey string         `json:"AccessKey,omitempty"`
+	SecretKey SensitiveValue `json:"SecretKey,omitempty"`
 }
 
 func (t *Account) Validate() error {
@@ -86,12 +90,7 @@ func validateAzureServicePrincipalAccount(acc *Account) error {
 		ValidateRequiredPropertyValue("TenantID", acc.TenantID),
 		ValidateRequiredPropertyValue("SubscriptionNumber", acc.SubscriptionNumber),
 	}
-
-	if acc.Password.HasValue {
-		validations = append(validations, ValidateRequiredPropertyValue("Password", acc.Password.NewValue))
-	}
-
-	return ValidateMultipleProperties(validations)
+	return err
 }
 
 func validateUsernamePasswordAccount(acc *Account) error {
