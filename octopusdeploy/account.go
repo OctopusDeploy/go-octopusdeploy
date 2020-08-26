@@ -90,7 +90,7 @@ func validateAzureServicePrincipalAccount(acc *Account) error {
 		ValidateRequiredPropertyValue("TenantID", acc.TenantID),
 		ValidateRequiredPropertyValue("SubscriptionNumber", acc.SubscriptionNumber),
 	}
-	return err
+	return ValidateMultipleProperties(validations)
 }
 
 func validateUsernamePasswordAccount(acc *Account) error {
