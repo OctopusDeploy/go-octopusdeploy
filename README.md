@@ -1,4 +1,4 @@
-# go-octopusdeploy [![Build status](https://ci.appveyor.com/api/projects/status/5t5gbqjyl8hpou52?svg=true)](https://ci.appveyor.com/project/MattHodge/go-octopusdeploy)
+# go-octopusdeploy [![Build status](https://ci.appveyor.com/api/projects/status/5t5gbqjyl8hpou52?svg=true)](https://ci.appveyor.com/project/MattHodge/go-octopusdeploy) ![](https://github.com/OctopusDeploy/go-octopusdeploy/workflows/Go/badge.svg)
 
 A Go wrapper for the [Octopus Deploy](https://octopus.com/) REST API.
 
@@ -21,4 +21,4 @@ go run main.go # creates a project
 
 ## Contributing
 
-💻 Want to help me out? Check out [CONTRIBUTING.md](CONTRIBUTING.md) and hit me up [@MattHodge](https://twitter.com/matthodge).
+💻 Want to out? Check out [CONTRIBUTING.md](CONTRIBUTING.md).
