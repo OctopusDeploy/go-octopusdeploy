@@ -25,7 +25,7 @@ type Users struct {
 type User struct {
 	ID          string `json:"Id"`
 	Username    string `json:"Username"`
-	Displayname string `json:"Displayname"`
+	DisplayName string `json:"DisplayName"`
 	IsActive    bool   `json:"IsActive"`
 	IsService   bool   `json:"IsService"`
 }
@@ -42,10 +42,10 @@ func (t *User) Validate() error {
 	return nil
 }
 
-func NewUser(username, displayname string) *User {
+func NewUser(username, displayName string) *User {
 	return &User{
 		Username:    username,
-		Displayname: displayname,
+		DisplayName: displayName,
 	}
 }
 
