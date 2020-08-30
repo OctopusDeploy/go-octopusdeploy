@@ -82,7 +82,7 @@ func TestTenantUpdate(t *testing.T) {
 
 	newTenantName := getRandomName()
 	const newDescription = "this should be updated"
-	const newSkipMachineBehavior = "SkipUnavailableMachines"
+	// const newSkipMachineBehavior = "SkipUnavailableMachines"
 
 	tenant.Name = newTenantName
 	tenant.Description = newDescription
