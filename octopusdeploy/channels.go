@@ -87,9 +87,7 @@ func (s *ChannelService) GetAll() (*[]Channel, error) {
 
 		r := resp.(*Channels)
 
-		for _, item := range r.Items {
-			ch = append(ch, item)
-		}
+		ch = append(ch, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
