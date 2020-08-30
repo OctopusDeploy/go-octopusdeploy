@@ -2,8 +2,9 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"gopkg.in/go-playground/validator.v9"
 	"net/url"
+
+	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/dghubble/sling"
 )
@@ -35,8 +36,8 @@ type Lifecycle struct {
 type RetentionUnit string
 
 const (
-	RetentionUnit_Days  = RetentionUnit("Days")
-	RetentionUnit_Items = RetentionUnit("Items")
+	RetentionUnitDays  = RetentionUnit("Days")
+	RetentionUnitItems = RetentionUnit("Items")
 )
 
 type RetentionPeriod struct {
@@ -61,10 +62,10 @@ func NewLifecycle(name string) *Lifecycle {
 		Name:   name,
 		Phases: []Phase{},
 		TentacleRetentionPolicy: RetentionPeriod{
-			Unit: RetentionUnit_Days,
+			Unit: RetentionUnitDays,
 		},
 		ReleaseRetentionPolicy: RetentionPeriod{
-			Unit: RetentionUnit_Days,
+			Unit: RetentionUnitDays,
 		},
 	}
 }
@@ -129,9 +130,7 @@ func (s *LifecycleService) get(query string) (*[]Lifecycle, error) {
 
 		r := resp.(*Lifecycles)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
