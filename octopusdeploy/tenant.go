@@ -49,8 +49,8 @@ func ValidateTenantValues(tenant *Tenant) error {
 }
 
 // Get returns a single tenant by its tenantid in Octopus Deploy
-func (s *TenantService) Get(tenantId string) (*Tenant, error) {
-	path := fmt.Sprintf("tenants/%s", tenantId)
+func (s *TenantService) Get(tenantID string) (*Tenant, error) {
+	path := fmt.Sprintf("tenants/%s", tenantID)
 	resp, err := apiGet(s.sling, new(Tenant), path)
 
 	if err != nil {
