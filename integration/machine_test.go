@@ -121,8 +121,17 @@ func getTestMachine(environmentID, machineName string) octopusdeploy.Machine {
 	// with the name machine that will be consistent through the same test, but different for different
 	// tests
 	h := md5.New()
-	io.WriteString(h, machineName)
-	io.WriteString(h, environmentID)
+
+	_, err := io.WriteString(h, machineName)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = io.WriteString(h, environmentID)
+	if err != nil {
+		panic(err)
+	}
+
 	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
 
 	e := octopusdeploy.Machine{
