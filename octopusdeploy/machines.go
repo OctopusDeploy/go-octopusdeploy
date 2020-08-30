@@ -72,13 +72,13 @@ type MachineTentacleVersionDetails struct {
 	UpgradeRequired  bool   `json:"UpgradeRequired"`
 }
 
-func NewMachine(Name string, Disabled bool, EnvironmentIDs []string, Roles []string, MachinePolicyId string, TenantedDeploymentParticipation TenantedDeploymentMode, TenantIDs, TenantTags []string) *Machine {
+func NewMachine(Name string, Disabled bool, EnvironmentIDs []string, Roles []string, MachinePolicyID string, TenantedDeploymentParticipation TenantedDeploymentMode, TenantIDs, TenantTags []string) *Machine {
 	return &Machine{
 		Name:                            Name,
 		IsDisabled:                      Disabled,
 		EnvironmentIDs:                  EnvironmentIDs,
 		Roles:                           Roles,
-		MachinePolicyID:                 MachinePolicyId,
+		MachinePolicyID:                 MachinePolicyID,
 		TenantedDeploymentParticipation: TenantedDeploymentParticipation,
 		TenantIDs:                       TenantIDs,
 		TenantTags:                      TenantTags,
@@ -133,9 +133,8 @@ func (s *MachineService) GetAll() (*[]Machine, error) {
 		}
 
 		r := resp.(*Machines)
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
