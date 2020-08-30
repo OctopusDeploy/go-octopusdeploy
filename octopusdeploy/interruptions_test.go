@@ -9,13 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	interruptionID    = "Interruptions-1"
+	interruptionTitle = "InterruptionTitle"
+)
+
 func TestInterruptionsGetAll(t *testing.T) {
 	client := getFakeOctopusClient(t, "/api/interruptions", http.StatusOK, getInterruptionsResponseJSON)
 	interruptions, err := client.Interruption.GetAll()
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(interruptions))
-	assert.Equal(t, "InterruptionTitle", interruptions[0].Title)
-	assert.Equal(t, "Interruptions-1", interruptions[0].ID)
+	assert.Equal(t, interruptionTitle, interruptions[0].Title)
+	assert.Equal(t, interruptionID, interruptions[0].ID)
 	assert.Equal(t, true, interruptions[0].IsPending)
 	assert.Equal(t, "/api/interruptions/Interruptions-1", interruptions[0].Links.Self)
 	assert.Equal(t, "/api/interruptions/Interruptions-1/submit", interruptions[0].Links.Submit)
@@ -23,12 +28,12 @@ func TestInterruptionsGetAll(t *testing.T) {
 }
 
 func TestInterruptionsGet(t *testing.T) {
-	interruptionID := "Interruptions-1"
+	interruptionID := interruptionID
 	client := getFakeOctopusClient(t, "/api/interruptions/"+interruptionID, http.StatusOK, interruptionJSON)
 	interruption, err := client.Interruption.Get(interruptionID)
 	assert.Nil(t, err)
-	assert.Equal(t, "InterruptionTitle", interruption.Title)
-	assert.Equal(t, "Interruptions-1", interruption.ID)
+	assert.Equal(t, interruptionTitle, interruption.Title)
+	assert.Equal(t, interruptionID, interruption.ID)
 	assert.Equal(t, true, interruption.IsPending)
 	assert.Equal(t, "/api/interruptions/Interruptions-1", interruption.Links.Self)
 	assert.Equal(t, "/api/interruptions/Interruptions-1/submit", interruption.Links.Submit)
@@ -36,7 +41,7 @@ func TestInterruptionsGet(t *testing.T) {
 }
 
 func TestInterruptionsTakeResponsibility(t *testing.T) {
-	interruptionID := "Interruptions-1"
+	interruptionID := interruptionID
 	client := getFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
 	interruption, err := getInterruptonFromJSON(interruptionJSON)
 	assert.Nil(t, err)
