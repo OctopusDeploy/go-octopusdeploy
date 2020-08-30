@@ -67,7 +67,7 @@ func ParseTenantedDeploymentMode(name string) (TenantedDeploymentMode, error) {
 }
 
 // MarshalText implements the text marshaller method
-func (x *TenantedDeploymentMode) MarshalText() ([]byte, error) {
+func (x TenantedDeploymentMode) MarshalText() ([]byte, error) {
 	return []byte(x.String()), nil
 }
 
