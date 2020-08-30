@@ -2,8 +2,9 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"gopkg.in/go-playground/validator.v9"
 	"net/url"
+
+	"gopkg.in/go-playground/validator.v9"
 
 	"github.com/dghubble/sling"
 )
@@ -27,7 +28,7 @@ type LibraryVariableSet struct {
 	ID            string                    `json:"Id,omitempty"`
 	Name          string                    `json:"Name" validate:"required"`
 	Description   string                    `json:"Description,omitempty"`
-	VariableSetId string                    `json:"VariableSetId,omitempty"`
+	VariableSetID string                    `json:"VariableSetID,omitempty"`
 	ContentType   VariableSetContentType    `json:"ContentType" validate:"required"`
 	Templates     []ActionTemplateParameter `json:"Templates,omitempty"`
 }
@@ -35,14 +36,14 @@ type LibraryVariableSet struct {
 type VariableSetContentType string
 
 const (
-	VariableSetContentType_Variables    = VariableSetContentType("Variables")
-	VariableSetContentType_ScriptModule = VariableSetContentType("ScriptModule")
+	VariableSetContentTypeVariables    = VariableSetContentType("Variables")
+	VariableSetContentTypeScriptModule = VariableSetContentType("ScriptModule")
 )
 
 func NewLibraryVariableSet(name string) *LibraryVariableSet {
 	return &LibraryVariableSet{
 		Name:        name,
-		ContentType: VariableSetContentType_Variables,
+		ContentType: VariableSetContentTypeVariables,
 	}
 }
 
@@ -90,9 +91,7 @@ func (s *LibraryVariableSetService) get(query string) (*[]LibraryVariableSet, er
 
 		r := resp.(*LibraryVariableSets)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
@@ -135,8 +134,8 @@ func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) 
 }
 
 // Delete deletes an existing libraryVariableSet in Octopus Deploy
-func (s *LibraryVariableSetService) Delete(libraryVariableSetid string) error {
-	path := fmt.Sprintf("libraryVariableSets/%s", libraryVariableSetid)
+func (s *LibraryVariableSetService) Delete(libraryVariableSetID string) error {
+	path := fmt.Sprintf("libraryVariableSets/%s", libraryVariableSetID)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {
