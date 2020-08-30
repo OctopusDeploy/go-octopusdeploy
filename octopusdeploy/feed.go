@@ -81,9 +81,7 @@ func (s *FeedService) GetAll() (*[]Feed, error) {
 
 		r := resp.(*Feeds)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
@@ -118,8 +116,8 @@ func (s *FeedService) Add(feed *Feed) (*Feed, error) {
 	return resp.(*Feed), nil
 }
 
-func (s *FeedService) Delete(feedId string) error {
-	path := fmt.Sprintf("feeds/%s", feedId)
+func (s *FeedService) Delete(feedID string) error {
+	path := fmt.Sprintf("feeds/%s", feedID)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {
