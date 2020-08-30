@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dghubble/sling"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/go-playground/validator"
 )
 
 type UserService struct {
@@ -23,11 +23,16 @@ type Users struct {
 }
 
 type User struct {
-	ID          string `json:"Id"`
-	Username    string `json:"Username"`
-	DisplayName string `json:"DisplayName"`
-	IsActive    bool   `json:"IsActive"`
-	IsService   bool   `json:"IsService"`
+	Username            string     `json:"Username,omitempty"`
+	DisplayName         string     `json:"DisplayName"`
+	IsActive            bool       `json:"IsActive"`
+	IsService           bool       `json:"IsService"`
+	EmailAddress        string     `json:"EmailAddress,omitempty"`
+	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited"`
+	IsRequestor         bool       `json:"IsRequestor"`
+	Password            string     `json:"Password,omitempty"`
+	Identities          []Identity `json:"Identities,omitempty"`
+	Resource
 }
 
 func (t *User) Validate() error {
