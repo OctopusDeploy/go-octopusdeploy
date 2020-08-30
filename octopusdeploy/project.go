@@ -101,9 +101,7 @@ func (s *ProjectService) GetAll() (*[]Project, error) {
 
 		r := resp.(*Projects)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
