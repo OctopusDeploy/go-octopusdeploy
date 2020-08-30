@@ -8,8 +8,8 @@ import (
 const (
 	plainJsonValue       = `"blah"`
 	emptyJsonValue       = `""`
-	secretJsonValue      = `{"HasValue":true,"NewValue":""}`
-	secretFalseJsonValue = `{"HasValue":false,"NewValue":""}`
+	secretJsonValue      = `{"HasValue":true,"NewValue":null}`
+	secretFalseJsonValue = `{"HasValue":false,"NewValue":null}`
 	secretJsonNewValue   = `{"HasValue":true,"NewValue":"blah"}`
 )
 
