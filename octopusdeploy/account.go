@@ -44,8 +44,9 @@ func NewAccount(name string, accountType AccountType) (*Account, error) {
 	}, nil
 }
 
-func (s *AccountService) Get(accountId string) (*Account, error) {
-	path := fmt.Sprintf("accounts/%s", accountId)
+// Get returns an Account that matches the input ID.
+func (s *AccountService) Get(accountID string) (*Account, error) {
+	path := fmt.Sprintf("accounts/%s", accountID)
 	resp, err := apiGet(s.sling, new(Account), path)
 
 	if err != nil {
@@ -55,6 +56,7 @@ func (s *AccountService) Get(accountId string) (*Account, error) {
 	return resp.(*Account), nil
 }
 
+// GetAll returns all of the Accounts for a Space.
 func (s *AccountService) GetAll() (*[]Account, error) {
 	var p []Account
 
@@ -71,9 +73,7 @@ func (s *AccountService) GetAll() (*[]Account, error) {
 
 		r := resp.(*Accounts)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
@@ -81,6 +81,7 @@ func (s *AccountService) GetAll() (*[]Account, error) {
 	return &p, nil
 }
 
+// GetByName returns an Account that matches the input name.
 func (s *AccountService) GetByName(accountName string) (*Account, error) {
 	var foundAccount Account
 	accounts, err := s.GetAll()
@@ -98,6 +99,7 @@ func (s *AccountService) GetByName(accountName string) (*Account, error) {
 	return &foundAccount, fmt.Errorf("no account found with account name %s", accountName)
 }
 
+// Add creates a new Account.
 func (s *AccountService) Add(account *Account) (*Account, error) {
 	resp, err := apiAdd(s.sling, account, new(Account), "accounts")
 
@@ -108,6 +110,7 @@ func (s *AccountService) Add(account *Account) (*Account, error) {
 	return resp.(*Account), nil
 }
 
+// Delete removes the Account that matches the input ID.
 func (s *AccountService) Delete(accountID string) error {
 	path := fmt.Sprintf("accounts/%s", accountID)
 	err := apiDelete(s.sling, path)
@@ -119,6 +122,7 @@ func (s *AccountService) Delete(accountID string) error {
 	return nil
 }
 
+// Update modifies an Account based on the one provided as input.
 func (s *AccountService) Update(account *Account) (*Account, error) {
 	path := fmt.Sprintf("accounts/%s", account.ID)
 	resp, err := apiUpdate(s.sling, account, new(Account), path)
