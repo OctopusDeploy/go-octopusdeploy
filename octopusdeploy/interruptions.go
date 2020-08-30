@@ -97,9 +97,7 @@ func (s *InterruptionsService) GetAll() ([]Interruption, error) {
 
 		r := resp.(*Interruptions)
 
-		for _, item := range r.Items {
-			interruptions = append(interruptions, item)
-		}
+		interruptions = append(interruptions, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
