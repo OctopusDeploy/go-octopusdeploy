@@ -16,8 +16,8 @@ const testCert2Data = `MIIOSQIBAzCCDg8GCSqGSIb3DQEHAaCCDgAEgg38MIIN+DCCCK8GCSqGS
 const testCert2Thumbprint = `0454EAD1FC6F3F60F22AE82230165C14C4FD7FA7`
 const testCert2Password = `HCWVMo7u`
 
-var testCert1 = octopusdeploy.SensitiveValue{NewValue: testCert1Data}
-var testCert2 = octopusdeploy.SensitiveValue{NewValue: testCert2Data}
+var testCert1 = octopusdeploy.SensitiveValue{NewValue: &testCert1Data}
+var testCert2 = octopusdeploy.SensitiveValue{NewValue: &testCert2Data}
 
 func TestCertAddAndDelete(t *testing.T) {
 	certName := getRandomName()
@@ -77,8 +77,8 @@ func getTestCertReplace() octopusdeploy.CertificateReplace {
 	return *v
 }
 
-func cleanCert(t *testing.T, certId string) {
-	err := client.Certificate.Delete(certId)
+func cleanCert(t *testing.T, certID string) {
+	err := client.Certificate.Delete(certID)
 	if err == nil {
 		return
 	}
