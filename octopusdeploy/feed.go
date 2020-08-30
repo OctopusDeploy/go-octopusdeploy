@@ -28,7 +28,7 @@ type Feed struct {
 	FeedType                    string         `json:"FeedType"`
 	DownloadAttempts            int            `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds int            `json:"DownloadRetryBackoffSeconds"`
-	FeedUri                     string         `json:"FeedUri"`
+	FeedURI                     string         `json:"FeedUri"`
 	EnhancedMode                bool           `json:"EnhancedMode"`
 	Username                    string         `json:"Username"`
 	Password                    SensitiveValue `json:"Password"`
@@ -46,16 +46,16 @@ func (t *Feed) Validate() error {
 	return nil
 }
 
-func NewFeed(name, feedType string, feedUri string) *Feed {
+func NewFeed(name, feedType string, feedURI string) *Feed {
 	return &Feed{
 		Name:     name,
 		FeedType: feedType,
-		FeedUri:  feedUri,
+		FeedURI:  feedURI,
 	}
 }
 
-func (s *FeedService) Get(feedId string) (*Feed, error) {
-	path := fmt.Sprintf("feeds/%s", feedId)
+func (s *FeedService) Get(feedID string) (*Feed, error) {
+	path := fmt.Sprintf("feeds/%s", feedID)
 	resp, err := apiGet(s.sling, new(Feed), path)
 
 	if err != nil {
