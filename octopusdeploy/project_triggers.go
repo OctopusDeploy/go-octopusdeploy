@@ -52,15 +52,11 @@ type ProjectTriggerAction struct {
 }
 
 func (t *ProjectTrigger) AddEventGroups(eventGroups []string) {
-	for _, e := range eventGroups {
-		t.Filter.EventGroups = append(t.Filter.EventGroups, e)
-	}
+	t.Filter.EventGroups = append(t.Filter.EventGroups, eventGroups...)
 }
 
 func (t *ProjectTrigger) AddEventCategories(eventCategories []string) {
-	for _, e := range eventCategories {
-		t.Filter.EventCategories = append(t.Filter.EventCategories, e)
-	}
+	t.Filter.EventCategories = append(t.Filter.EventCategories, eventCategories...)
 }
 
 func NewProjectDeploymentTargetTrigger(name, projectID string, shouldRedeploy bool, roles, eventGroups, eventCategories []string) *ProjectTrigger {
@@ -101,9 +97,7 @@ func (s *ProjectTriggerService) GetByProjectID(projectID string) (*[]ProjectTrig
 		return nil, err
 	}
 
-	for _, pt := range *triggers {
-		triggersByProject = append(triggersByProject, pt)
-	}
+	triggersByProject = append(triggersByProject, *triggers...)
 
 	return &triggersByProject, nil
 }
@@ -124,9 +118,7 @@ func (s *ProjectTriggerService) GetAll() (*[]ProjectTrigger, error) {
 
 		r := resp.(*ProjectTriggers)
 
-		for _, item := range r.Items {
-			pt = append(pt, item)
-		}
+		pt = append(pt, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
