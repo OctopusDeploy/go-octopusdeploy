@@ -49,8 +49,8 @@ func NewSpace(name string) *Space {
 	}
 }
 
-func (s *SpaceService) Get(spaceId string) (*Space, error) {
-	path := fmt.Sprintf("spaces/%s", spaceId)
+func (s *SpaceService) Get(spaceID string) (*Space, error) {
+	path := fmt.Sprintf("spaces/%s", spaceID)
 	resp, err := apiGet(s.sling, new(Space), path)
 
 	if err != nil {
@@ -76,9 +76,7 @@ func (s *SpaceService) GetAll() (*[]Space, error) {
 
 		r := resp.(*Spaces)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
@@ -113,8 +111,8 @@ func (s *SpaceService) Add(space *Space) (*Space, error) {
 	return resp.(*Space), nil
 }
 
-func (s *SpaceService) Delete(spaceId string) error {
-	path := fmt.Sprintf("spaces/%s", spaceId)
+func (s *SpaceService) Delete(spaceID string) error {
+	path := fmt.Sprintf("spaces/%s", spaceID)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {
