@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/satori/go.uuid"
+	uuid "github.com/google/uuid"
 )
 
 var (
@@ -32,7 +32,7 @@ func initTest() *octopusdeploy.Client {
 }
 
 func getRandomName() string {
-	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.NewV4())
+	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.New())
 	fullName = fullName[0:49] //Some names in Octopus have a max limit of 50 characters (such as Environment Name)
 	return fullName
 }
