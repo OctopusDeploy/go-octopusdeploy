@@ -7,10 +7,14 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
+// CertificateService handles communication with Certificate-related methods of
+// the Octopus API.
 type CertificateService struct {
 	sling *sling.Sling
 }
 
+// NewCertificateService returns an CertificateService with a preconfigured
+// client.
 func NewCertificateService(sling *sling.Sling) *CertificateService {
 	return &CertificateService{
 		sling: sling,
@@ -23,8 +27,8 @@ type Certificates struct {
 }
 
 type CertificateReplace struct {
-	CertificateData                 string	`json:"CertificateData,omitempty"`
-	Password                        string	`json:"Password,omitempty"`
+	CertificateData string `json:"CertificateData,omitempty"`
+	Password        string `json:"Password,omitempty"`
 }
 
 type Certificate struct {
@@ -35,8 +39,8 @@ type Certificate struct {
 	Password                        SensitiveValue         `json:"Password,omitempty"`
 	EnvironmentIds                  []string               `json:"EnvironmentIds,omitempty"`
 	TenantedDeploymentParticipation TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
-	TenantIds                       []string               `json:"TenantIds,omitempty,omitempty"`
-	TenantTags                      []string               `json:"TenantTags,omitempty,omitempty"`
+	TenantIds                       []string               `json:"TenantIds,omitempty"`
+	TenantTags                      []string               `json:"TenantTags,omitempty"`
 	CertificateDataFormat           string                 `json:"CertificateDataFormat,omitempty"`
 	Archived                        string                 `json:"Archived,omitempty"`
 	ReplacedBy                      string                 `json:"ReplacedBy,omitempty"`
@@ -85,8 +89,8 @@ func NewCertificateReplace(certificateData string, password string) *Certificate
 	}
 }
 
-func (s *CertificateService) Get(certificateId string) (*Certificate, error) {
-	path := fmt.Sprintf("certificates/%s", certificateId)
+func (s *CertificateService) Get(certificateID string) (*Certificate, error) {
+	path := fmt.Sprintf("certificates/%s", certificateID)
 	resp, err := apiGet(s.sling, new(Certificate), path)
 
 	if err != nil {
@@ -112,9 +116,7 @@ func (s *CertificateService) GetAll() (*[]Certificate, error) {
 
 		r := resp.(*Certificates)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
@@ -149,8 +151,8 @@ func (s *CertificateService) Add(certificate *Certificate) (*Certificate, error)
 	return resp.(*Certificate), nil
 }
 
-func (s *CertificateService) Delete(certificateId string) error {
-	path := fmt.Sprintf("certificates/%s", certificateId)
+func (s *CertificateService) Delete(certificateID string) error {
+	path := fmt.Sprintf("certificates/%s", certificateID)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {
@@ -171,8 +173,8 @@ func (s *CertificateService) Update(certificate *Certificate) (*Certificate, err
 	return resp.(*Certificate), nil
 }
 
-func (s *CertificateService) Replace(certificateId string, certificateReplace *CertificateReplace) (*Certificate, error) {
-	path := fmt.Sprintf("certificates/%s/replace", certificateId)
+func (s *CertificateService) Replace(certificateID string, certificateReplace *CertificateReplace) (*Certificate, error) {
+	path := fmt.Sprintf("certificates/%s/replace", certificateID)
 	_, err := apiPost(s.sling, certificateReplace, new(Certificate), path)
 
 	if err != nil {
@@ -180,5 +182,5 @@ func (s *CertificateService) Replace(certificateId string, certificateReplace *C
 	}
 
 	//The API endpoint /certificates/id/replace returns the old cert, we need to re-query to get the updated one.
-	return s.Get(certificateId)
+	return s.Get(certificateID)
 }
