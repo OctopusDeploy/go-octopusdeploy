@@ -2,118 +2,46 @@ package octopusdeploy
 
 import (
 	"fmt"
-
-	"github.com/dghubble/sling"
-	"gopkg.in/go-playground/validator.v9"
+	"strings"
 )
 
-type AccountService struct {
-	sling *sling.Sling
-}
-
-func NewAccountService(sling *sling.Sling) *AccountService {
-	return &AccountService{
-		sling: sling,
-	}
-}
-
+// Accounts defines a collection of Account types with built-in support for
+// paged results from the API
 type Accounts struct {
 	Items []Account `json:"Items"`
 	PagedResults
 }
 
+// Account represents account details used for deployments, including
+// username/password, tokens, Azure and AWS credentials, and SSH key pairs
 type Account struct {
-	// Common Account fields
-
-	ID                              string                 `json:"Id"`
 	AccountType                     AccountType            `json:"AccountType"`
 	Description                     string                 `json:"Description,omitempty"`
-	EnvironmentIDs                  []string               `json:"EnvironmentIds,omitempty"`
-	Name                            string                 `json:"Name" validate:"required"`
+	EnvironmentIDs                  []string               `json:"EnvironmentIds"`
+	Name                            string                 `json:"Name"`
 	TenantedDeploymentParticipation TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
-	TenantTags                      []string               `json:"TenantTags,omitempty"`
-	Token                           SensitiveValue         `json:"Token,omitempty"`
+	TenantTags                      []string               `json:"TenantTags"`
+	TenantIds                       []string               `json:"TenantIds"`
+	SpaceID                         string                 `json:"SpaceId,omitempty"`
+	Token                           *SensitiveValue        `json:"Token,omitempty"`
+	Resource
+	AzureServicePrincipalResource
+	AwsServicePrincipalResource
 
-	// Azure Service Principal fields
-
-	AzureEnvironment                  string         `json:"AzureEnvironment,omitempty"`
-	ActiveDirectoryEndpointBaseURI    string         `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
-	ClientID                          string         `json:"ClientId,omitempty"`
-	Password                          SensitiveValue `json:"Password,omitempty"`
-	ResourceManagementEndpointBaseURI string         `json:"ResourceManagementEndpointBaseUri,omitempty"`
-	SubscriptionNumber                string         `json:"SubscriptionNumber,omitempty"`
-	TenantID                          string         `json:"TenantId,omitempty"`
-
-	// AWS Service Principal fields
-	AccessKey string         `json:"AccessKey,omitempty"`
-	SecretKey SensitiveValue `json:"SecretKey,omitempty"`
+	Username string          `json:"Username,omitempty"`
+	Password *SensitiveValue `json:"Password,omitempty"`
 }
 
-func (t *Account) Validate() error {
-	validate := validator.New()
-
-	err := validate.Struct(t)
-
-	if err != nil {
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Printf(`%s failed validation. Validation type: %s Field type: %s`, err.Namespace(), err.Tag(), err.Type())
-			fmt.Println()
-		}
-		return err
+// NewAccount initializes an Account with a name and account type
+func NewAccount(name string, accountType AccountType) (*Account, error) {
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, fmt.Errorf("Invalid account name")
 	}
 
-	switch t.AccountType {
-	case AzureServicePrincipal:
-		return validateAzureServicePrincipalAccount(t)
-	default:
-		return nil
-	}
-
-	switch t.AccountType {
-	case UsernamePassword:
-		return validateUsernamePasswordAccount(t)
-	default:
-		return nil
-	}
-
-	switch t.AccountType {
-	case SshKeyPair:
-		return validateSSHKeyAccount(t)
-	default:
-		return nil
-	}
-}
-
-func validateAzureServicePrincipalAccount(acc *Account) error {
-	validations := []error{
-		ValidateRequiredPropertyValue("ClientID", acc.ClientID),
-		ValidateRequiredPropertyValue("TenantID", acc.TenantID),
-		ValidateRequiredPropertyValue("SubscriptionNumber", acc.SubscriptionNumber),
-	}
-	return ValidateMultipleProperties(validations)
-}
-
-func validateUsernamePasswordAccount(acc *Account) error {
-	validations := []error{
-		ValidateRequiredPropertyValue("username", acc.Name),
-	}
-
-	return ValidateMultipleProperties(validations)
-}
-
-func validateSSHKeyAccount(acc *Account) error {
-	validations := []error{
-		ValidateRequiredPropertyValue("name", acc.Name),
-	}
-
-	return ValidateMultipleProperties(validations)
-}
-
-func NewAccount(name string, accountType AccountType) *Account {
 	return &Account{
 		Name:        name,
 		AccountType: accountType,
-	}
+	}, nil
 }
 
 func (s *AccountService) Get(accountId string) (*Account, error) {
@@ -180,8 +108,8 @@ func (s *AccountService) Add(account *Account) (*Account, error) {
 	return resp.(*Account), nil
 }
 
-func (s *AccountService) Delete(accountId string) error {
-	path := fmt.Sprintf("accounts/%s", accountId)
+func (s *AccountService) Delete(accountID string) error {
+	path := fmt.Sprintf("accounts/%s", accountID)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {

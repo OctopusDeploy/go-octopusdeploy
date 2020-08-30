@@ -21,6 +21,8 @@ func TestPropertyValueResource_MarshalJSON(t *testing.T) {
 
 	plain := PropertyValue("blah")
 
+	newValue := "blah"
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -30,7 +32,7 @@ func TestPropertyValueResource_MarshalJSON(t *testing.T) {
 		{name: "Plain", fields: fields{PropertyValue: &plain}, want: []byte(plainJsonValue)},
 		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, want: []byte(secretJsonValue)},
 		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, want: []byte(secretFalseJsonValue)},
-		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: "blah"}}, want: []byte(secretJsonNewValue)},
+		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: &newValue}}, want: []byte(secretJsonNewValue)},
 		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: nil}, want: []byte(emptyJsonValue)},
 	}
 	for _, tt := range tests {
@@ -68,6 +70,8 @@ func TestPropertyValueResource_UnmarshalJSON(t *testing.T) {
 	plain := PropertyValue(`blah`)
 	empty := PropertyValue(``)
 
+	newValue := "blah"
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -77,7 +81,7 @@ func TestPropertyValueResource_UnmarshalJSON(t *testing.T) {
 		{name: "Plain", fields: fields{PropertyValue: &plain}, args: args{data: []byte(plainJsonValue)}},
 		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, args: args{data: []byte(secretJsonValue)}},
 		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, args: args{data: []byte(secretFalseJsonValue)}},
-		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: "blah"}}, args: args{data: []byte(secretJsonNewValue)}},
+		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: &newValue}}, args: args{data: []byte(secretJsonNewValue)}},
 		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: &empty}, args: args{data: []byte(emptyJsonValue)}},
 	}
 	for _, tt := range tests {

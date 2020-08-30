@@ -2,65 +2,86 @@ package octopusdeploy
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-func TestValidateAccountValues(t *testing.T) {
-	baseAccountValid := &Account{
-		Name:        "AccountName",
-		Description: "AccountDescription",
+var accountName = "Account Name"
+var accountType = UsernamePassword
+
+func TestEmptyAccount(t *testing.T) {
+	account := &Account{}
+
+	if account.Name != "" {
+		t.Error("Name should be empty")
 	}
 
-	assert.Nil(t, baseAccountValid.Validate())
+	if account.AccountType != None {
+		t.Errorf("AccountType should be %s", None)
+	}
+}
 
-	baseAccountInvalid := &Account{}
+func TestAccountWithName(t *testing.T) {
+	account := &Account{Name: accountName}
 
-	assert.Error(t, baseAccountInvalid.Validate())
-
-	passwordWithValueValid := SensitiveValue{
-		HasValue: true,
-		NewValue: "blah",
+	if account.Name != accountName {
+		t.Errorf("Name should be %s", accountName)
 	}
 
-	passwordWithValueInvalid := SensitiveValue{
-		HasValue: true,
+	if account.AccountType != None {
+		t.Errorf("AccountType should be %s", None)
+	}
+}
+
+func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
+	account := &Account{
+		AccountType: UsernamePassword,
+		Name:        accountName,
 	}
 
-	passwordNoValueValid := SensitiveValue{
-		HasValue: false,
+	if account.Name != accountName {
+		t.Errorf("Name should be %s", accountName)
 	}
 
-	azureServicePrincipalAccountValid := &Account{
-		AccountType:        AzureServicePrincipal,
-		Name:               "AzureServicePrincipalAccount",
-		ClientID:           "blah",
-		TenantID:           "blah",
-		SubscriptionNumber: "blah",
-		Password:           passwordWithValueValid,
+	if account.AccountType != UsernamePassword {
+		t.Errorf("AccountType should be %s", UsernamePassword)
+	}
+}
+
+func TestNewAccountWithValidParameters(t *testing.T) {
+	account, err := NewAccount(accountName, accountType)
+
+	if err != nil {
+		t.Errorf("NewAccount() generated an unexpected error: %s", err)
 	}
 
-	assert.Nil(t, azureServicePrincipalAccountValid.Validate())
-
-	azureServicePrincipalAccountPasswordInvalid := &Account{
-		AccountType:        AzureServicePrincipal,
-		Name:               "AzureServicePrincipalAccount",
-		ClientID:           "blah",
-		TenantID:           "blah",
-		SubscriptionNumber: "blah",
-		Password:           passwordWithValueInvalid,
+	if account.Name != accountName {
+		t.Errorf("Name should be %s", accountName)
 	}
 
-	assert.Error(t, azureServicePrincipalAccountPasswordInvalid.Validate())
+	if account.AccountType != accountType {
+		t.Errorf("AccountType should be %s", accountType)
+	}
+}
 
-	azureServicePrincipalAccountPasswordNoValue := &Account{
-		AccountType:        AzureServicePrincipal,
-		Name:               "AzureServicePrincipalAccount",
-		ClientID:           "blah",
-		TenantID:           "blah",
-		SubscriptionNumber: "blah",
-		Password:           passwordNoValueValid,
+func TestNewAccountWithEmptyName(t *testing.T) {
+	account, err := NewAccount(" ", accountType)
+
+	if account != nil {
+		t.Error("NewAccount() returned an account, which was unexpected")
 	}
 
-	assert.Nil(t, azureServicePrincipalAccountPasswordNoValue.Validate())
+	if err == nil {
+		t.Error("NewAccount() was expected to generate an error")
+	}
+}
+
+func TestNewAccountWithLongEmptyName(t *testing.T) {
+	account, err := NewAccount("       ", accountType)
+
+	if account != nil {
+		t.Error("NewAccount() returned an account, which was unexpected")
+	}
+
+	if err == nil {
+		t.Error("NewAccount() was expected to generate an error")
+	}
 }
