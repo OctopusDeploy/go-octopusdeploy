@@ -81,9 +81,7 @@ func (s *UserService) GetAll() (*[]User, error) {
 
 		r := resp.(*Users)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
