@@ -82,7 +82,7 @@ func TestLifecycleUpdate(t *testing.T) {
 
 	newLifecycleName := getRandomName()
 	const newDescription = "this should be updated"
-	const newSkipMachineBehavior = "SkipUnavailableMachines"
+	// const newSkipMachineBehavior = "SkipUnavailableMachines"
 
 	lifecycle.Name = newLifecycleName
 	lifecycle.Description = newDescription
