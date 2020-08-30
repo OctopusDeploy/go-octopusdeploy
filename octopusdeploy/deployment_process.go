@@ -49,7 +49,7 @@ type DeploymentAction struct {
 	ActionType                    string             `json:"ActionType"`
 	IsDisabled                    bool               `json:"IsDisabled"`
 	IsRequired                    bool               `json:"IsRequired"`
-	WorkerPoolId                  string             `json:"WorkerPoolId,omitempty"`
+	WorkerPoolID                  string             `json:"WorkerPoolId,omitempty"`
 	CanBeUsedForProjectVersioning bool               `json:"CanBeUsedForProjectVersioning"`
 	Environments                  []string           `json:"Environments,omitempty"`
 	ExcludedEnvironments          []string           `json:"ExcludedEnvironments,omitempty"`
@@ -86,8 +86,8 @@ const (
 type PackageReference struct {
 	ID                  string            `json:"Id,omitempty"`
 	Name                string            `json:"Name,omitempty"`
-	PackageId           string            `json:"PackageId,omitempty"`
-	FeedId              string            `json:"FeedId"`
+	PackageID           string            `json:"PackageId,omitempty"`
+	FeedID              string            `json:"FeedId"`
 	AcquisitionLocation string            `json:"AcquisitionLocation"` // This can be an expression
 	Properties          map[string]string `json:"Properties"`
 }
