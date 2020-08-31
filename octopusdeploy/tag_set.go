@@ -55,8 +55,8 @@ func NewTagSet(name string) *TagSet {
 	}
 }
 
-func (s *TagSetService) Get(tagSetId string) (*TagSet, error) {
-	path := fmt.Sprintf("tagSets/%s", tagSetId)
+func (s *TagSetService) Get(tagSetID string) (*TagSet, error) {
+	path := fmt.Sprintf("tagSets/%s", tagSetID)
 	resp, err := apiGet(s.sling, new(TagSet), path)
 
 	if err != nil {
@@ -82,9 +82,7 @@ func (s *TagSetService) GetAll() (*[]TagSet, error) {
 
 		r := resp.(*TagSets)
 
-		for _, item := range r.Items {
-			p = append(p, item)
-		}
+		p = append(p, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
@@ -119,8 +117,8 @@ func (s *TagSetService) Add(tagSet *TagSet) (*TagSet, error) {
 	return resp.(*TagSet), nil
 }
 
-func (s *TagSetService) Delete(tagSetId string) error {
-	path := fmt.Sprintf("tagSets/%s", tagSetId)
+func (s *TagSetService) Delete(tagSetID string) error {
+	path := fmt.Sprintf("tagSets/%s", tagSetID)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {
