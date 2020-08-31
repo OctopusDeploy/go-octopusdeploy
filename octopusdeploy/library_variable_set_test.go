@@ -14,8 +14,8 @@ func TestLibraryVariableSetGet(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "MySet", libraryVariableSet.Name)
 	assert.Equal(t, "The Description", libraryVariableSet.Description)
-	assert.Equal(t, "variableset-LibraryVariableSets-41", libraryVariableSet.VariableSetId)
-	assert.Equal(t, VariableSetContentType_Variables, libraryVariableSet.ContentType)
+	assert.Equal(t, "variableset-LibraryVariableSets-41", libraryVariableSet.VariableSetID)
+	assert.Equal(t, VariableSetContentTypeVariables, libraryVariableSet.ContentType)
 }
 
 const getLibraryVariableSetResponseJSON = `
