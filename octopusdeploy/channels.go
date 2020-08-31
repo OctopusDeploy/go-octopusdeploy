@@ -74,7 +74,7 @@ func (s *ChannelService) Get(channelID string) (*Channel, error) {
 func (s *ChannelService) GetAll() (*[]Channel, error) {
 	var ch []Channel
 
-	path := "channel"
+	path := "channels"
 
 	loadNextPage := true
 
