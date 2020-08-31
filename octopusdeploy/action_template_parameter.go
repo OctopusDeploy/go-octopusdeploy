@@ -1,22 +1,12 @@
 package octopusdeploy
 
 type ActionTemplateParameter struct {
-
-	// default value
-	DefaultValue PropertyValueResource `json:"DefaultValue,omitempty"`
-
-	// display settings
-	DisplaySettings map[string]string `json:"DisplaySettings,omitempty"`
-
-	// help text
-	HelpText string `json:"HelpText,omitempty"`
-
-	// Id
-	ID string `json:"Id,omitempty"`
-
-	// label
-	Label string `json:"Label,omitempty"`
-
+	DefaultValue    *PropertyValueResource `json:"DefaultValue,omitempty"`
+	DisplaySettings map[string]string      `json:"DisplaySettings,omitempty"`
+	HelpText        string                 `json:"HelpText,omitempty"`
+	ID              string                 `json:"Id,omitempty"`
+	Label           string                 `json:"Label,omitempty"`
+	Name            string                 `json:"Name,omitempty"`
 	// last modified by
 	LastModifiedBy string `json:"LastModifiedBy,omitempty"`
 
@@ -26,7 +16,4 @@ type ActionTemplateParameter struct {
 
 	// links
 	Links Links `json:"Links,omitempty"`
-
-	// name
-	Name string `json:"Name,omitempty"`
 }
