@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	plainJsonValue       = `"blah"`
-	emptyJsonValue       = `""`
-	secretJsonValue      = `{"HasValue":true,"NewValue":null}`
-	secretFalseJsonValue = `{"HasValue":false,"NewValue":null}`
-	secretJsonNewValue   = `{"HasValue":true,"NewValue":"blah"}`
+	plainJSONValue       = `"blah"`
+	emptyJSONValue       = `""`
+	secretJSONValue      = `{"HasValue":true,"NewValue":null}`
+	secretFalseJSONValue = `{"HasValue":false,"NewValue":null}`
+	secretJSONNewValue   = `{"HasValue":true,"NewValue":"blah"}`
 )
 
 func TestPropertyValueResource_MarshalJSON(t *testing.T) {
@@ -29,11 +29,11 @@ func TestPropertyValueResource_MarshalJSON(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		{name: "Plain", fields: fields{PropertyValue: &plain}, want: []byte(plainJsonValue)},
-		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, want: []byte(secretJsonValue)},
-		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, want: []byte(secretFalseJsonValue)},
-		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: &newValue}}, want: []byte(secretJsonNewValue)},
-		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: nil}, want: []byte(emptyJsonValue)},
+		{name: "Plain", fields: fields{PropertyValue: &plain}, want: []byte(plainJSONValue)},
+		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, want: []byte(secretJSONValue)},
+		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, want: []byte(secretFalseJSONValue)},
+		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: &newValue}}, want: []byte(secretJSONNewValue)},
+		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: nil}, want: []byte(emptyJSONValue)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -50,7 +50,7 @@ func TestPropertyValueResource_MarshalJSON(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(got, tt.want) {
-				json, _ := PrettyJson(got)
+				json, _ := PrettyJSON(got)
 				t.Log(json)
 				t.Errorf("PropertyValueResource.MarshalJSON() = %v, want %v", got, tt.want)
 			}
@@ -78,11 +78,11 @@ func TestPropertyValueResource_UnmarshalJSON(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{name: "Plain", fields: fields{PropertyValue: &plain}, args: args{data: []byte(plainJsonValue)}},
-		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, args: args{data: []byte(secretJsonValue)}},
-		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, args: args{data: []byte(secretFalseJsonValue)}},
-		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: &newValue}}, args: args{data: []byte(secretJsonNewValue)}},
-		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: &empty}, args: args{data: []byte(emptyJsonValue)}},
+		{name: "Plain", fields: fields{PropertyValue: &plain}, args: args{data: []byte(plainJSONValue)}},
+		{name: "Secret HasValue true", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true}}, args: args{data: []byte(secretJSONValue)}},
+		{name: "Secret HasValue false", fields: fields{SensitiveValue: &SensitiveValue{HasValue: false}}, args: args{data: []byte(secretFalseJSONValue)}},
+		{name: "Secret with new value", fields: fields{SensitiveValue: &SensitiveValue{HasValue: true, NewValue: &newValue}}, args: args{data: []byte(secretJSONNewValue)}},
+		{name: "Null", fields: fields{SensitiveValue: nil, PropertyValue: &empty}, args: args{data: []byte(emptyJSONValue)}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
