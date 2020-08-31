@@ -23,12 +23,13 @@ type Spaces struct {
 }
 
 type Space struct {
-	ID                 string   `json:"Id"`
-	Name               string   `json:"Name"`
-	Description        string   `json:"Description"`
-	IsDefault          bool     `json:"IsDefault"`
-	TaskQueueStopped   bool     `json:"TaskQueueStopped"`
-	SpaceManagersTeams []string `json:"SpaceManagersTeams"`
+	Description              string   `json:"Description,omitempty"`
+	IsDefault                bool     `json:"IsDefault,omitempty"`
+	Name                     string   `json:"Name"`
+	SpaceManagersTeamMembers []string `json:"SpaceManagersTeamMembers"`
+	SpaceManagersTeams       []string `json:"SpaceManagersTeams"`
+	TaskQueueStopped         bool     `json:"TaskQueueStopped,omitempty"`
+	Resource
 }
 
 func (t *Space) Validate() error {
