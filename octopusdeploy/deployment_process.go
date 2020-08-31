@@ -62,25 +62,25 @@ type DeploymentAction struct {
 type DeploymentStepPackageRequirement string
 
 const (
-	DeploymentStepPackageRequirement_LetOctopusDecide         = DeploymentStepPackageRequirement("LetOctopusDecide")
-	DeploymentStepPackageRequirement_BeforePackageAcquisition = DeploymentStepPackageRequirement("BeforePackageAcquisition")
-	DeploymentStepPackageRequirement_AfterPackageAcquisition  = DeploymentStepPackageRequirement("AfterPackageAcquisition")
+	DeploymentStepPackageRequirementLetOctopusDecide         = DeploymentStepPackageRequirement("LetOctopusDecide")
+	DeploymentStepPackageRequirementBeforePackageAcquisition = DeploymentStepPackageRequirement("BeforePackageAcquisition")
+	DeploymentStepPackageRequirementAfterPackageAcquisition  = DeploymentStepPackageRequirement("AfterPackageAcquisition")
 )
 
 type DeploymentStepCondition string
 
 const (
-	DeploymentStepCondition_Success  = DeploymentStepCondition("Success")
-	DeploymentStepCondition_Failure  = DeploymentStepCondition("Failure")
-	DeploymentStepCondition_Always   = DeploymentStepCondition("Always")
-	DeploymentStepCondition_Variable = DeploymentStepCondition("Variable")
+	DeploymentStepConditionSuccess  = DeploymentStepCondition("Success")
+	DeploymentStepConditionFailure  = DeploymentStepCondition("Failure")
+	DeploymentStepConditionAlways   = DeploymentStepCondition("Always")
+	DeploymentStepConditionVariable = DeploymentStepCondition("Variable")
 )
 
 type DeploymentStepStartTrigger string
 
 const (
-	DeploymentStepStartTrigger_StartAfterPrevious = DeploymentStepStartTrigger("StartAfterPrevious")
-	DeploymentStepStartTrigger_StartWithPrevious  = DeploymentStepStartTrigger("StartWithPrevious")
+	DeploymentStepStartTriggerStartAfterPrevious = DeploymentStepStartTrigger("StartAfterPrevious")
+	DeploymentStepStartTriggerStartWithPrevious  = DeploymentStepStartTrigger("StartWithPrevious")
 )
 
 type PackageReference struct {
@@ -93,9 +93,9 @@ type PackageReference struct {
 }
 
 const (
-	PackageAcquisitionLocation_Server          = "Server"
-	PackageAcquisitionLocation_ExecutionTarget = "ExecutionTarget"
-	PackageAcquisitionLocation_NotAcquired     = "NotAcquired"
+	PackageAcquisitionLocationServer          = "Server"
+	PackageAcquisitionLocationExecutionTarget = "ExecutionTarget"
+	PackageAcquisitionLocationNotAcquired     = "NotAcquired"
 )
 
 func (d *DeploymentProcess) Validate() error {
@@ -137,9 +137,7 @@ func (s *DeploymentProcessService) GetAll() (*[]DeploymentProcess, error) {
 
 		r := resp.(*DeploymentProcesses)
 
-		for _, item := range r.Items {
-			dp = append(dp, item)
-		}
+		dp = append(dp, r.Items...)
 
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
