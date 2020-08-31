@@ -115,6 +115,10 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 		return ErrItemNotFound
 	}
 
+	if resp.StatusCode == http.StatusCreated {
+		return nil
+	}
+
 	if resp.StatusCode != wantedResponseCode {
 		return fmt.Errorf("cannot get item from endpoint %s. response from server %s", urlPath, resp.Status)
 	}
