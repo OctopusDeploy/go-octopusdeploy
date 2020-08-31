@@ -12,7 +12,7 @@ const (
 	tab   = "\t"
 )
 
-func PrettyJson(data interface{}) (string, error) {
+func PrettyJSON(data interface{}) (string, error) {
 	buffer := new(bytes.Buffer)
 	encoder := json.NewEncoder(buffer)
 	encoder.SetIndent(empty, tab)
