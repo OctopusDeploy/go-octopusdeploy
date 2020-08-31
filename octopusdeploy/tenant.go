@@ -119,8 +119,8 @@ func (s *TenantService) Add(tenant *Tenant) (*Tenant, error) {
 }
 
 // Delete deletes an existing tenant in Octopus Deploy
-func (s *TenantService) Delete(tenantId string) error {
-	path := fmt.Sprintf("tenants/%s", tenantId)
+func (s *TenantService) Delete(tenantID string) error {
+	path := fmt.Sprintf("tenants/%s", tenantID)
 	err := apiDelete(s.sling, path)
 
 	if err != nil {
