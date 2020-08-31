@@ -1,6 +1,6 @@
 package octopusdeploy
 
 type ReleaseCreationStrategy struct {
-	ReleaseCreationPackageStepID string `json:"ReleaseCreationPackageStepId"`
-	ChannelID                    string `json:"ChannelId"`
+	ChannelID              string                   `json:"ChannelId,omitempty"`
+	ReleaseCreationPackage *DeploymentActionPackage `json:"ReleaseCreationPackage,omitempty"`
 }
