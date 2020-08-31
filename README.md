@@ -1,4 +1,4 @@
-# go-octopusdeploy [![Build status](https://ci.appveyor.com/api/projects/status/5t5gbqjyl8hpou52?svg=true)](https://ci.appveyor.com/project/MattHodge/go-octopusdeploy) ![](https://github.com/OctopusDeploy/go-octopusdeploy/workflows/Go/badge.svg)
+# go-octopusdeploy [![Build status](https://ci.appveyor.com/api/projects/status/5t5gbqjyl8hpou52?svg=true)](https://ci.appveyor.com/project/MattHodge/go-octopusdeploy) ![Build Status](https://github.com/OctopusDeploy/go-octopusdeploy/workflows/Go/badge.svg)
 
 A Go wrapper for the [Octopus Deploy](https://octopus.com/) REST API.
 
