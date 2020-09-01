@@ -30,8 +30,14 @@ jobs:
             dep ensure
         fi
 
-    - name: Build
-      run: go build -v -a ./...
+    - name: Build Client
+      run: go build client/
+    
+    - name: Build Enum
+      run: go build enum/
+
+    - name: Build model
+      run: go build model/
 
     - name: Test
-      run: go test -v ./octopusdeploy
+      run: go test -v ./integration/...
