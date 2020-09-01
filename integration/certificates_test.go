@@ -1,8 +1,11 @@
 package integration
 
 import (
+	"models"
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,7 +20,7 @@ var testCert2Data = `MIIOSQIBAzCCDg8GCSqGSIb3DQEHAaCCDgAEgg38MIIN+DCCCK8GCSqGSIb
 const testCert2Thumbprint = `0454EAD1FC6F3F60F22AE82230165C14C4FD7FA7`
 const testCert2Password = `HCWVMo7u`
 
-var testCert1 = octopusdeploy.SensitiveValue{NewValue: &testCert1Data}
+var testCert1 = models.SensitiveValue{NewValue: &testCert1Data}
 
 // var testCert2 = octopusdeploy.SensitiveValue{NewValue: &testCert2Data}
 
@@ -46,7 +49,7 @@ func TestCertAddAndReplace(t *testing.T) {
 	assert.NotEmpty(t, actualCert2.ID, "certificate doesn't contain an ID from the octopus server")
 }
 
-func createTestCert(t *testing.T, certName string) octopusdeploy.Certificate {
+func createTestCert(t *testing.T, certName string) client.CertificateService {
 	c := getTestCert1(certName)
 	cert, err := client.Certificate.Add(&c)
 	if err != nil {
@@ -56,7 +59,7 @@ func createTestCert(t *testing.T, certName string) octopusdeploy.Certificate {
 	return *cert
 }
 
-func replaceCert(t *testing.T, originalCert *octopusdeploy.Certificate) octopusdeploy.Certificate {
+func replaceCert(t *testing.T, originalCert *client.CertificateService) client.CertificateService {
 	certificateReplace := getTestCertReplace()
 
 	cert, err := client.Certificate.Replace(originalCert.ID, &certificateReplace)
@@ -67,13 +70,13 @@ func replaceCert(t *testing.T, originalCert *octopusdeploy.Certificate) octopusd
 	return *cert
 }
 
-func getTestCert1(certName string) octopusdeploy.Certificate {
-	v := octopusdeploy.NewCertificate(certName, testCert1, octopusdeploy.SensitiveValue{})
+func getTestCert1(certName string) client.CertificateService {
+	v := octopusdeploy.NewCertificate(certName, testCert1, model.SensitiveValue{})
 
 	return *v
 }
 
-func getTestCertReplace() octopusdeploy.CertificateReplace {
+func getTestCertReplace() client.CertificateReplace {
 	v := octopusdeploy.NewCertificateReplace(testCert2Data, testCert2Password)
 
 	return *v

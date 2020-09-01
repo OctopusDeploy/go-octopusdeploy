@@ -7,9 +7,10 @@ import (
 	"net/url"
 	"os"
 
-	"./model"
-
-	"./client"
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	//"./client"
+	//./model"
 )
 
 var serviceUrl = os.Getenv("OCTOPUS_URL")
