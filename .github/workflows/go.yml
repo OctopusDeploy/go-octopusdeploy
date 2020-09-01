@@ -40,4 +40,4 @@ jobs:
       run: go build ./model/
 
     - name: Test
-      run: go test -v ./integration/...
+      run: go test -v ./integration/.
