@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GOPATH: '/home/runner/work/go-octopusdeploy/go-octopusdeploy'
+      #GOPATH: '/home/runner/work/go-octopusdeploy/go-octopusdeploy'
       GO111MODULE: off
       
     steps:
