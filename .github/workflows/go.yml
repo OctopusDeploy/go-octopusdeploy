@@ -8,7 +8,7 @@ jobs:
 
     env:
       GOPATH: ${{ github.workspace }}
-      GO111MODULE: off
+      GO111MODULE: on
       
     steps:
 
