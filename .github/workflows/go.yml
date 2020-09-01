@@ -20,7 +20,6 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-        
 
 #    - name: Get dependencies
 #      run: |
@@ -30,14 +29,14 @@ jobs:
 #            dep ensure
 #        fi
 
-    - name: Build Client
+    - name: Build client module
       run: go build -v ./client/
     
-    - name: Build Enum
-      run: go build ./enum/
+    - name: Build enum module
+      run: go build -v ./enum/
 
-    - name: Build model
-      run: go build ./model/
+    - name: Build model module
+      run: go build -v ./model/
 
-    - name: Test
+    - name: Run integration tests
       run: go test -v ./integration/.
