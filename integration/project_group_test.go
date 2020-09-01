@@ -4,13 +4,14 @@ import (
 	// "fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 func TestProjectGroupAddAndDelete(t *testing.T) {
@@ -28,15 +29,15 @@ func TestProjectGroupAddGetAndDelete(t *testing.T) {
 	projectGroup := createTestProjectGroup(t, getRandomName())
 	defer cleanProjectGroup(t, projectGroup.ID)
 
-	getProjectGroup, err := client.ProjectGroup.Get(projectGroup.ID)
+	getProjectGroup, err := octopusClient.ProjectGroups.Get(projectGroup.ID)
 	assert.Nil(t, err, "there was an error raised getting projectgroup when there should not be")
 	assert.Equal(t, projectGroup.Name, getProjectGroup.Name)
 }
 
 func TestProjectGroupGetThatDoesNotExist(t *testing.T) {
 	projectGroupID := "there-is-no-way-this-projectgroup-id-exists-i-hope"
-	expected := octopusdeploy.ErrItemNotFound
-	projectGroup, err := client.ProjectGroup.Get(projectGroupID)
+	expected := client.ErrItemNotFound
+	projectGroup, err := octopusClient.ProjectGroups.Get(projectGroupID)
 
 	assert.Error(t, err, "there should have been an error raised as this projectgroup should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -53,7 +54,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 		sum += i
 	}
 
-	allProjectGroups, err := client.ProjectGroup.GetAll()
+	allProjectGroups, err := octopusClient.ProjectGroups.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
@@ -68,7 +69,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 	additionalProjectGroup := createTestProjectGroup(t, getRandomName())
 	defer cleanProjectGroup(t, additionalProjectGroup.ID)
 
-	allProjectGroupsAfterCreatingAdditional, err := client.ProjectGroup.GetAll()
+	allProjectGroupsAfterCreatingAdditional, err := octopusClient.ProjectGroups.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
@@ -87,15 +88,15 @@ func TestProjectGroupUpdate(t *testing.T) {
 	projectGroup.Name = newProjectGroupName
 	projectGroup.Description = newDescription
 
-	updatedProjectGroup, err := client.ProjectGroup.Update(&projectGroup)
+	updatedProjectGroup, err := octopusClient.ProjectGroups.Update(&projectGroup)
 	assert.Nil(t, err, "error when updating projectgroup")
 	assert.Equal(t, newProjectGroupName, updatedProjectGroup.Name, "projectgroup name was not updated")
 	assert.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")
 }
 
-func createTestProjectGroup(t *testing.T, projectGroupName string) octopusdeploy.ProjectGroup {
+func createTestProjectGroup(t *testing.T, projectGroupName string) model.ProjectGroup {
 	p := getTestProjectGroup(projectGroupName)
-	createdProjectGroup, err := client.ProjectGroup.Add(&p)
+	createdProjectGroup, err := octopusClient.ProjectGroups.Add(&p)
 
 	if err != nil {
 		t.Fatalf("creating projectgroup %s failed when it shouldn't: %s", projectGroupName, err)
@@ -104,20 +105,20 @@ func createTestProjectGroup(t *testing.T, projectGroupName string) octopusdeploy
 	return *createdProjectGroup
 }
 
-func getTestProjectGroup(projectGroupName string) octopusdeploy.ProjectGroup {
-	p := octopusdeploy.NewProjectGroup(projectGroupName)
+func getTestProjectGroup(projectGroupName string) model.ProjectGroup {
+	p := model.NewProjectGroup(projectGroupName)
 
 	return *p
 }
 
 func cleanProjectGroup(t *testing.T, projectGroupID string) {
-	err := client.ProjectGroup.Delete(projectGroupID)
+	err := octopusClient.ProjectGroups.Delete(projectGroupID)
 
 	if err == nil {
 		return
 	}
 
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 

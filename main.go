@@ -9,11 +9,9 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	//"./client"
-	//./model"
 )
 
-var serviceUrl = os.Getenv("OCTOPUS_URL")
+var serviceURL = os.Getenv("OCTOPUS_URL")
 var apiKey = os.Getenv("OCTOPUS_APIKEY")
 var testSpaceName = "Test Space"
 var projectName = "Test Project"
@@ -132,7 +130,7 @@ func main() {
 
 	Initialize()
 
-	client, err := client.NewClient(&httpClient, serviceUrl, apiKey)
+	client, err := client.NewClient(&httpClient, serviceURL, apiKey)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

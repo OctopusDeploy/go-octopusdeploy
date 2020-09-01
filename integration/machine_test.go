@@ -7,12 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 func TestMachineAddAndDelete(t *testing.T) {
@@ -38,7 +40,7 @@ func TestMachineAddGetAndDelete(t *testing.T) {
 	machine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, machine.ID)
 
-	getMachine, err := client.Machine.Get(machine.ID)
+	getMachine, err := octopusClient.Machines.Get(machine.ID)
 	assert.Nil(t, err, "there was an error raised getting machine when there should not be")
 	assert.Equal(t, machine.Name, getMachine.Name)
 	assert.Equal(t, machine.Thumbprint, getMachine.Thumbprint)
@@ -47,8 +49,8 @@ func TestMachineAddGetAndDelete(t *testing.T) {
 
 func TestMachineGetThatDoesNotExist(t *testing.T) {
 	machineID := "there-is-no-way-this-machine-id-exists-i-hope"
-	expected := octopusdeploy.ErrItemNotFound
-	machine, err := client.Machine.Get(machineID)
+	expected := client.ErrItemNotFound
+	machine, err := octopusClient.Machines.Get(machineID)
 
 	assert.Error(t, err, "there should have been an error raised as this machine should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -70,7 +72,7 @@ func TestMachineGetAll(t *testing.T) {
 		sum += i
 	}
 
-	allMachines, err := client.Machine.GetAll()
+	allMachines, err := octopusClient.Machines.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all machines failed when it shouldn't: %s", err)
 	}
@@ -86,7 +88,7 @@ func TestMachineGetAll(t *testing.T) {
 	additionalMachine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, additionalMachine.ID)
 
-	allMachinesAfterCreatingAdditional, err := client.Machine.GetAll()
+	allMachinesAfterCreatingAdditional, err := octopusClient.Machines.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all machines failed when it shouldn't: %s", err)
 	}
@@ -110,13 +112,13 @@ func TestMachineUpdate(t *testing.T) {
 	machine.Endpoint.URI = newURI
 	machine.Name = newMachineName
 
-	updatedMachine, err := client.Machine.Update(&machine)
+	updatedMachine, err := octopusClient.Machines.Update(&machine)
 	assert.Nil(t, err, "error when updating machine")
 	assert.Equal(t, newMachineName, updatedMachine.Name, "machine name was not updated")
 	assert.Equal(t, newURI, updatedMachine.URI, "machine uri was not updated")
 }
 
-func getTestMachine(environmentID, machineName string) octopusdeploy.Machine {
+func getTestMachine(environmentID, machineName string) model.Machine {
 	// Thumbprints have to be unique, so accept a testName string so we can pass through a fixed ID
 	// with the name machine that will be consistent through the same test, but different for different
 	// tests
@@ -134,14 +136,14 @@ func getTestMachine(environmentID, machineName string) octopusdeploy.Machine {
 
 	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
 
-	e := octopusdeploy.Machine{
+	e := model.Machine{
 		EnvironmentIDs:                  []string{environmentID},
 		IsDisabled:                      true,
 		MachinePolicyID:                 "MachinePolicies-1",
 		Name:                            machineName,
 		Roles:                           []string{"Prod"},
 		Status:                          "Disabled",
-		TenantedDeploymentParticipation: octopusdeploy.Untenanted,
+		TenantedDeploymentParticipation: enum.Untenanted,
 		TenantIDs:                       []string{},
 		TenantTags:                      []string{},
 		Thumbprint:                      strings.ToUpper(thumbprint[:16]),
@@ -150,9 +152,9 @@ func getTestMachine(environmentID, machineName string) octopusdeploy.Machine {
 	return e
 }
 
-func createTestMachine(t *testing.T, environmentID, machineName string) octopusdeploy.Machine {
+func createTestMachine(t *testing.T, environmentID, machineName string) model.Machine {
 	e := getTestMachine(environmentID, machineName)
-	createdMachine, err := client.Machine.Add(&e)
+	createdMachine, err := octopusClient.Machines.Add(&e)
 
 	if err != nil {
 		t.Fatalf("creating machine %s failed when it shouldn't: %s", machineName, err)
@@ -162,12 +164,12 @@ func createTestMachine(t *testing.T, environmentID, machineName string) octopusd
 }
 
 func cleanMachine(t *testing.T, machineID string) {
-	err := client.Machine.Delete(machineID)
+	err := octopusClient.Machines.Delete(machineID)
 	if err == nil {
 		return
 	}
 
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 

@@ -3,13 +3,13 @@ package integration
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 func TestTenantAddAndDelete(t *testing.T) {
@@ -27,15 +27,15 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	tenant := createTestTenant(t, getRandomName())
 	defer cleanTenant(t, tenant.ID)
 
-	getTenant, err := client.Tenant.Get(tenant.ID)
+	getTenant, err := octopusClient.Tenants.Get(tenant.ID)
 	assert.Nil(t, err, "there was an error raised getting tenant when there should not be")
 	assert.Equal(t, tenant.Name, getTenant.Name)
 }
 
 func TestTenantGetThatDoesNotExist(t *testing.T) {
 	tenantID := "there-is-no-way-this-tenant-id-exists-i-hope"
-	expected := octopusdeploy.ErrItemNotFound
-	tenant, err := client.Tenant.Get(tenantID)
+	expected := client.ErrItemNotFound
+	tenant, err := octopusClient.Tenants.Get(tenantID)
 
 	assert.Error(t, err, "there should have been an error raised as this tenant should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -52,7 +52,7 @@ func TestTenantGetAll(t *testing.T) {
 		sum += i
 	}
 
-	allTenants, err := client.Tenant.GetAll()
+	allTenants, err := octopusClient.Tenants.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all tenants failed when it shouldn't: %s", err)
 	}
@@ -67,7 +67,7 @@ func TestTenantGetAll(t *testing.T) {
 	additionalTenant := createTestTenant(t, getRandomName())
 	defer cleanTenant(t, additionalTenant.ID)
 
-	allTenantsAfterCreatingAdditional, err := client.Tenant.GetAll()
+	allTenantsAfterCreatingAdditional, err := octopusClient.Tenants.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all tenants failed when it shouldn't: %s", err)
 	}
@@ -87,7 +87,7 @@ func TestTenantUpdate(t *testing.T) {
 	tenant.Name = newTenantName
 	tenant.Description = newDescription
 
-	updatedTenant, err := client.Tenant.Update(&tenant)
+	updatedTenant, err := octopusClient.Tenants.Update(&tenant)
 	assert.Nil(t, err, "error when updating tenant")
 	assert.Equal(t, newTenantName, updatedTenant.Name, "tenant name was not updated")
 	assert.Equal(t, newDescription, updatedTenant.Description, "tenant description was not updated")
@@ -97,14 +97,14 @@ func TestTenantGetByName(t *testing.T) {
 	tenant := createTestTenant(t, getRandomName())
 	defer cleanTenant(t, tenant.ID)
 
-	foundTenant, err := client.Tenant.GetByName(tenant.Name)
+	foundTenant, err := octopusClient.Tenants.GetByName(tenant.Name)
 	assert.Nil(t, err, "error when looking for tenant when not expected")
 	assert.Equal(t, tenant.Name, foundTenant.Name, "tenant not found when searching by its name")
 }
 
-func createTestTenant(t *testing.T, tenantName string) octopusdeploy.Tenant {
+func createTestTenant(t *testing.T, tenantName string) model.Tenant {
 	p := getTestTenant(tenantName)
-	createdTenant, err := client.Tenant.Add(&p)
+	createdTenant, err := octopusClient.Tenants.Add(&p)
 
 	if err != nil {
 		t.Fatalf("creating tenant %s failed when it shouldn't: %s", tenantName, err)
@@ -113,20 +113,20 @@ func createTestTenant(t *testing.T, tenantName string) octopusdeploy.Tenant {
 	return *createdTenant
 }
 
-func getTestTenant(tenantName string) octopusdeploy.Tenant {
-	p := octopusdeploy.NewTenant(tenantName, "Lifecycles-1")
+func getTestTenant(tenantName string) model.Tenant {
+	p := model.NewTenant(tenantName, "Lifecycles-1")
 
 	return *p
 }
 
 func cleanTenant(t *testing.T, tenantID string) {
-	err := client.Tenant.Delete(tenantID)
+	err := octopusClient.Tenants.Delete(tenantID)
 
 	if err == nil {
 		return
 	}
 
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 

@@ -3,12 +3,13 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 func TestVarAddAndDelete(t *testing.T) {
@@ -23,9 +24,9 @@ func TestVarAddAndDelete(t *testing.T) {
 	assert.NotEmpty(t, actual.ID, "variable doesn't contain an ID from the octopus server")
 }
 
-func createTestVariable(t *testing.T, projectID, variableName string) octopusdeploy.Variable {
+func createTestVariable(t *testing.T, projectID, variableName string) model.Variable {
 	v := getTestVariable(variableName)
-	variableSet, err := client.Variable.AddSingle(projectID, &v)
+	variableSet, err := octopusClient.Variables.AddSingle(projectID, &v)
 	if err != nil {
 		t.Fatalf("creating variable %s failed when it shouldn't: %s", variableName, err)
 	}
@@ -37,18 +38,18 @@ func createTestVariable(t *testing.T, projectID, variableName string) octopusdep
 	}
 
 	t.Fatalf("Unable to locate variable named %s after creationg", variableName)
-	return octopusdeploy.Variable{} //Blank variable to return
+	return model.Variable{} //Blank variable to return
 }
 
-func getTestVariable(variableName string) octopusdeploy.Variable {
-	v := octopusdeploy.NewVariable(variableName, "string", "octo-test value", "octo-test description", nil, false)
+func getTestVariable(variableName string) model.Variable {
+	v := model.NewVariable(variableName, "string", "octo-test value", "octo-test description", nil, false)
 
 	return *v
 }
 
-func createVarTestProject(t *testing.T, projectName string) octopusdeploy.Project {
-	p := octopusdeploy.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
-	createdProject, err := client.Project.Add(p)
+func createVarTestProject(t *testing.T, projectName string) model.Project {
+	p := model.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
+	createdProject, err := octopusClient.Projects.Add(p)
 
 	if err != nil {
 		t.Fatalf("creating project %s failed when it shouldn't: %s", projectName, err)
@@ -57,11 +58,11 @@ func createVarTestProject(t *testing.T, projectName string) octopusdeploy.Projec
 	return *createdProject
 }
 func cleanVar(t *testing.T, varID string, projID string) {
-	_, err := client.Variable.DeleteSingle(projID, varID)
+	_, err := octopusClient.Variables.DeleteSingle(projID, varID)
 	if err == nil {
 		return
 	}
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 	if err != nil {

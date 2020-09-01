@@ -3,13 +3,13 @@ package integration
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 func TestLifecycleAddAndDelete(t *testing.T) {
@@ -27,15 +27,15 @@ func TestLifecycleAddGetAndDelete(t *testing.T) {
 	lifecycle := createTestLifecycle(t, getRandomName())
 	defer cleanLifecycle(t, lifecycle.ID)
 
-	getLifecycle, err := client.Lifecycle.Get(lifecycle.ID)
+	getLifecycle, err := octopusClient.Lifecycles.Get(lifecycle.ID)
 	assert.Nil(t, err, "there was an error raised getting lifecycle when there should not be")
 	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
 }
 
 func TestLifecycleGetThatDoesNotExist(t *testing.T) {
 	lifecycleID := "there-is-no-way-this-lifecycle-id-exists-i-hope"
-	expected := octopusdeploy.ErrItemNotFound
-	lifecycle, err := client.Lifecycle.Get(lifecycleID)
+	expected := client.ErrItemNotFound
+	lifecycle, err := octopusClient.Lifecycles.Get(lifecycleID)
 
 	assert.Error(t, err, "there should have been an error raised as this lifecycle should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -52,7 +52,7 @@ func TestLifecycleGetAll(t *testing.T) {
 		sum += i
 	}
 
-	allLifecycles, err := client.Lifecycle.GetAll()
+	allLifecycles, err := octopusClient.Lifecycles.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all lifecycles failed when it shouldn't: %s", err)
 	}
@@ -67,7 +67,7 @@ func TestLifecycleGetAll(t *testing.T) {
 	additionalLifecycle := createTestLifecycle(t, getRandomName())
 	defer cleanLifecycle(t, additionalLifecycle.ID)
 
-	allLifecyclesAfterCreatingAdditional, err := client.Lifecycle.GetAll()
+	allLifecyclesAfterCreatingAdditional, err := octopusClient.Lifecycles.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all lifecycles failed when it shouldn't: %s", err)
 	}
@@ -87,7 +87,7 @@ func TestLifecycleUpdate(t *testing.T) {
 	lifecycle.Name = newLifecycleName
 	lifecycle.Description = newDescription
 
-	updatedLifecycle, err := client.Lifecycle.Update(&lifecycle)
+	updatedLifecycle, err := octopusClient.Lifecycles.Update(&lifecycle)
 	assert.Nil(t, err, "error when updating lifecycle")
 	assert.Equal(t, newLifecycleName, updatedLifecycle.Name, "lifecycle name was not updated")
 	assert.Equal(t, newDescription, updatedLifecycle.Description, "lifecycle description was not updated")
@@ -97,14 +97,14 @@ func TestLifecycleGetByName(t *testing.T) {
 	lifecycle := createTestLifecycle(t, getRandomName())
 	defer cleanLifecycle(t, lifecycle.ID)
 
-	foundLifecycle, err := client.Lifecycle.GetByName(lifecycle.Name)
+	foundLifecycle, err := octopusClient.Lifecycles.GetByName(lifecycle.Name)
 	assert.Nil(t, err, "error when looking for lifecycle when not expected")
 	assert.Equal(t, lifecycle.Name, foundLifecycle.Name, "lifecycle not found when searching by its name")
 }
 
-func createTestLifecycle(t *testing.T, lifecycleName string) octopusdeploy.Lifecycle {
+func createTestLifecycle(t *testing.T, lifecycleName string) model.Lifecycle {
 	p := getTestLifecycle(lifecycleName)
-	createdLifecycle, err := client.Lifecycle.Add(&p)
+	createdLifecycle, err := octopusClient.Lifecycles.Add(&p)
 
 	if err != nil {
 		t.Fatalf("creating lifecycle %s failed when it shouldn't: %s", lifecycleName, err)
@@ -113,20 +113,20 @@ func createTestLifecycle(t *testing.T, lifecycleName string) octopusdeploy.Lifec
 	return *createdLifecycle
 }
 
-func getTestLifecycle(lifecycleName string) octopusdeploy.Lifecycle {
-	p := octopusdeploy.NewLifecycle(lifecycleName)
+func getTestLifecycle(lifecycleName string) model.Lifecycle {
+	p := model.NewLifecycle(lifecycleName)
 
 	return *p
 }
 
 func cleanLifecycle(t *testing.T, lifecycleID string) {
-	err := client.Lifecycle.Delete(lifecycleID)
+	err := octopusClient.Lifecycles.Delete(lifecycleID)
 
 	if err == nil {
 		return
 	}
 
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 

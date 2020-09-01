@@ -1,17 +1,15 @@
 package integration
 
 import (
-	"models"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 var testCert1Data = `MIIDiDCCAnACCQDXHofnqz05ITANBgkqhkiG9w0BAQsFADCBhTELMAkGA1UEBhMCVVMxETAPBgNVBAgMCE9rbGFob21hMQ8wDQYDVQQHDAZOb3JtYW4xEzARBgNVBAoMCk1vb25zd2l0Y2gxGTAXBgNVBAMMEGRlbW8ub2N0b3B1cy5jb20xIjAgBgkqhkiG9w0BCQEWE2plZmZAbW9vbnN3aXRjaC5jb20wHhcNMTkwNjE0MjExMzI1WhcNMjAwNjEzMjExMzI1WjCBhTELMAkGA1UEBhMCVVMxETAPBgNVBAgMCE9rbGFob21hMQ8wDQYDVQQHDAZOb3JtYW4xEzARBgNVBAoMCk1vb25zd2l0Y2gxGTAXBgNVBAMMEGRlbW8ub2N0b3B1cy5jb20xIjAgBgkqhkiG9w0BCQEWE2plZmZAbW9vbnN3aXRjaC5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDSTiD0OHyFDMH9O+d/h3AiqcuvpvUgRkKjf+whZ6mVlQnGkvPddRTUY48xCEaQ4QD1MAVJcGaJ2PU4NxwhrQgHqWW8TQkAZESL4wfzSwIKO2NX/I2tWqyv7a0uA/WdtlWQye+2oPV5rCnS0kM75X+gjEwOTpFh/ryS6KhMPFDb0zeNGREdg6564FdxWSvN4ppUZMqhvMpfzM7rsDWqEzYsMaQ4CNJDFdWkG89D4j5qk4b4Qb4m+l7QINdmYIXf4qO/0LE1WcfIkCpAS65tjc/hefIHmYtj/E/ijoNJbWKZDK3WLZg3zq99Ipqv/9DFvSiMQFBhZT0jO2B5d5zBUuIHAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAKsa4gaW7GhByu8aq56h99DaIl1LauI5WMVH8Q9Qpapho2VLRIpfwGeI5eENFoXwuKrnJp1ncsCqGnMQnugQHS+SrruS3Yyl0Uog4Zak9GbbK6qn+olx7GNJbsckmD371lqQOaKITLqYzK6kTc7/v8Cv0BwHFCBda1OCrmeVBSaarucPxZhGxzLAielzHHdlkZFQT/oO2VR3thhURIqtni7jVQ2MoeZF1ccvmAfVbzr/QnlNe/jrcmyPYymuF2JyrezzIjlKuiDhalKqwqkCHpOOgzV4y6BFuS+0w3DS8pa07nUudZ6E0kZzvhjjiyAx/sBdX6ZDdUjP9TDJMM4f5YA=`
@@ -20,9 +18,9 @@ var testCert2Data = `MIIOSQIBAzCCDg8GCSqGSIb3DQEHAaCCDgAEgg38MIIN+DCCCK8GCSqGSIb
 const testCert2Thumbprint = `0454EAD1FC6F3F60F22AE82230165C14C4FD7FA7`
 const testCert2Password = `HCWVMo7u`
 
-var testCert1 = models.SensitiveValue{NewValue: &testCert1Data}
+var testCert1 = model.SensitiveValue{NewValue: &testCert1Data}
 
-// var testCert2 = octopusdeploy.SensitiveValue{NewValue: &testCert2Data}
+// var testCert2 = model.SensitiveValue{NewValue: &testCert2Data}
 
 func TestCertAddAndDelete(t *testing.T) {
 	certName := getRandomName()
@@ -49,9 +47,9 @@ func TestCertAddAndReplace(t *testing.T) {
 	assert.NotEmpty(t, actualCert2.ID, "certificate doesn't contain an ID from the octopus server")
 }
 
-func createTestCert(t *testing.T, certName string) client.CertificateService {
+func createTestCert(t *testing.T, certName string) model.Certificate {
 	c := getTestCert1(certName)
-	cert, err := client.Certificate.Add(&c)
+	cert, err := octopusClient.Certificates.Add(&c)
 	if err != nil {
 		t.Fatalf("creating certificate %s failed when it shouldn't: %s", certName, err)
 	}
@@ -59,10 +57,10 @@ func createTestCert(t *testing.T, certName string) client.CertificateService {
 	return *cert
 }
 
-func replaceCert(t *testing.T, originalCert *client.CertificateService) client.CertificateService {
+func replaceCert(t *testing.T, originalCert *model.Certificate) model.Certificate {
 	certificateReplace := getTestCertReplace()
 
-	cert, err := client.Certificate.Replace(originalCert.ID, &certificateReplace)
+	cert, err := octopusClient.Certificates.Replace(originalCert.ID, &certificateReplace)
 	if err != nil {
 		t.Fatalf("replacing a certificate %s failed when it shouldn't: %s", originalCert.ID, err)
 	}
@@ -70,24 +68,24 @@ func replaceCert(t *testing.T, originalCert *client.CertificateService) client.C
 	return *cert
 }
 
-func getTestCert1(certName string) client.CertificateService {
-	v := octopusdeploy.NewCertificate(certName, testCert1, model.SensitiveValue{})
+func getTestCert1(certName string) model.Certificate {
+	v := model.NewCertificate(certName, testCert1, model.SensitiveValue{})
 
 	return *v
 }
 
-func getTestCertReplace() client.CertificateReplace {
-	v := octopusdeploy.NewCertificateReplace(testCert2Data, testCert2Password)
+func getTestCertReplace() model.CertificateReplace {
+	v := model.NewCertificateReplace(testCert2Data, testCert2Password)
 
 	return *v
 }
 
 func cleanCert(t *testing.T, certID string) {
-	err := client.Certificate.Delete(certID)
+	err := octopusClient.Certificates.Delete(certID)
 	if err == nil {
 		return
 	}
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 	if err != nil {

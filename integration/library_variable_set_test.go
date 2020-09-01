@@ -5,11 +5,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 func TestLibraryVariableSetAddAndDelete(t *testing.T) {
@@ -27,15 +28,15 @@ func TestLibraryVariableSetAddGetAndDelete(t *testing.T) {
 	libraryVariableSet := createTestLibraryVariableSet(t, getRandomName())
 	defer cleanLibraryVariableSet(t, libraryVariableSet.ID)
 
-	getLibraryVariableSet, err := client.LibraryVariableSet.Get(libraryVariableSet.ID)
+	getLibraryVariableSet, err := octopusClient.LibraryVariableSets.Get(libraryVariableSet.ID)
 	assert.Nil(t, err, "there was an error raised getting libraryVariableSet when there should not be")
 	assert.Equal(t, libraryVariableSet.Name, getLibraryVariableSet.Name)
 }
 
 func TestLibraryVariableSetGetThatDoesNotExist(t *testing.T) {
 	libraryVariableSetID := "there-is-no-way-this-libraryVariableSet-id-exists-i-hope"
-	expected := octopusdeploy.ErrItemNotFound
-	libraryVariableSet, err := client.LibraryVariableSet.Get(libraryVariableSetID)
+	expected := client.ErrItemNotFound
+	libraryVariableSet, err := octopusClient.LibraryVariableSets.Get(libraryVariableSetID)
 
 	assert.Error(t, err, "there should have been an error raised as this libraryVariableSet should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -52,7 +53,7 @@ func TestLibraryVariableSetGetAll(t *testing.T) {
 		sum += i
 	}
 
-	allLibraryVariableSets, err := client.LibraryVariableSet.GetAll()
+	allLibraryVariableSets, err := octopusClient.LibraryVariableSets.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all libraryVariableSets failed when it shouldn't: %s", err)
 	}
@@ -67,7 +68,7 @@ func TestLibraryVariableSetGetAll(t *testing.T) {
 	additionalLibraryVariableSet := createTestLibraryVariableSet(t, getRandomName())
 	defer cleanLibraryVariableSet(t, additionalLibraryVariableSet.ID)
 
-	allLibraryVariableSetsAfterCreatingAdditional, err := client.LibraryVariableSet.GetAll()
+	allLibraryVariableSetsAfterCreatingAdditional, err := octopusClient.LibraryVariableSets.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all libraryVariableSets failed when it shouldn't: %s", err)
 	}
@@ -86,7 +87,7 @@ func TestLibraryVariableSetUpdate(t *testing.T) {
 	libraryVariableSet.Name = newLibraryVariableSetName
 	libraryVariableSet.Description = newDescription
 
-	updatedLibraryVariableSet, err := client.LibraryVariableSet.Update(&libraryVariableSet)
+	updatedLibraryVariableSet, err := octopusClient.LibraryVariableSets.Update(&libraryVariableSet)
 	assert.Nil(t, err, "error when updating libraryVariableSet")
 	assert.Equal(t, newLibraryVariableSetName, updatedLibraryVariableSet.Name, "libraryVariableSet name was not updated")
 	assert.Equal(t, newDescription, updatedLibraryVariableSet.Description, "libraryVariableSet description was not updated")
@@ -96,14 +97,14 @@ func TestLibraryVariableSetGetByName(t *testing.T) {
 	libraryVariableSet := createTestLibraryVariableSet(t, getRandomName())
 	defer cleanLibraryVariableSet(t, libraryVariableSet.ID)
 
-	foundLibraryVariableSet, err := client.LibraryVariableSet.GetByName(libraryVariableSet.Name)
+	foundLibraryVariableSet, err := octopusClient.LibraryVariableSets.GetByName(libraryVariableSet.Name)
 	assert.Nil(t, err, "error when looking for libraryVariableSet when not expected")
 	assert.Equal(t, libraryVariableSet.Name, foundLibraryVariableSet.Name, "libraryVariableSet not found when searching by its name")
 }
 
-func createTestLibraryVariableSet(t *testing.T, libraryVariableSetName string) octopusdeploy.LibraryVariableSet {
+func createTestLibraryVariableSet(t *testing.T, libraryVariableSetName string) model.LibraryVariableSet {
 	p := getTestLibraryVariableSet(libraryVariableSetName)
-	createdLibraryVariableSet, err := client.LibraryVariableSet.Add(&p)
+	createdLibraryVariableSet, err := octopusClient.LibraryVariableSets.Add(&p)
 
 	if err != nil {
 		t.Fatalf("creating libraryVariableSet %s failed when it shouldn't: %s", libraryVariableSetName, err)
@@ -112,20 +113,20 @@ func createTestLibraryVariableSet(t *testing.T, libraryVariableSetName string) o
 	return *createdLibraryVariableSet
 }
 
-func getTestLibraryVariableSet(libraryVariableSetName string) octopusdeploy.LibraryVariableSet {
-	p := octopusdeploy.NewLibraryVariableSet(libraryVariableSetName)
+func getTestLibraryVariableSet(libraryVariableSetName string) model.LibraryVariableSet {
+	p := model.NewLibraryVariableSet(libraryVariableSetName)
 
 	return *p
 }
 
 func cleanLibraryVariableSet(t *testing.T, libraryVariableSetID string) {
-	err := client.LibraryVariableSet.Delete(libraryVariableSetID)
+	err := octopusClient.LibraryVariableSets.Delete(libraryVariableSetID)
 
 	if err == nil {
 		return
 	}
 
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 

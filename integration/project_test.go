@@ -3,13 +3,13 @@ package integration
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func init() {
-	client = initTest()
+	octopusClient = initTest()
 }
 
 func TestProjectAddAndDelete(t *testing.T) {
@@ -27,15 +27,15 @@ func TestProjectAddGetAndDelete(t *testing.T) {
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
-	getProject, err := client.Project.Get(project.ID)
+	getProject, err := octopusClient.Projects.Get(project.ID)
 	assert.Nil(t, err, "there was an error raised getting project when there should not be")
 	assert.Equal(t, project.Name, getProject.Name)
 }
 
 func TestProjectGetThatDoesNotExist(t *testing.T) {
 	projectID := "there-is-no-way-this-project-id-exists-i-hope"
-	expected := octopusdeploy.ErrItemNotFound
-	project, err := client.Project.Get(projectID)
+	expected := client.ErrItemNotFound
+	project, err := octopusClient.Projects.Get(projectID)
 
 	assert.Error(t, err, "there should have been an error raised as this project should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -52,7 +52,7 @@ func TestProjectGetAll(t *testing.T) {
 		sum += i
 	}
 
-	allProjects, err := client.Project.GetAll()
+	allProjects, err := octopusClient.Projects.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
@@ -67,7 +67,7 @@ func TestProjectGetAll(t *testing.T) {
 	additionalProject := createTestProject(t, getRandomName())
 	defer cleanProject(t, additionalProject.ID)
 
-	allProjectsAfterCreatingAdditional, err := client.Project.GetAll()
+	allProjectsAfterCreatingAdditional, err := octopusClient.Projects.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
@@ -88,7 +88,7 @@ func TestProjectUpdate(t *testing.T) {
 	project.Description = newDescription
 	project.ProjectConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 
-	updatedProject, err := client.Project.Update(&project)
+	updatedProject, err := octopusClient.Projects.Update(&project)
 	assert.Nil(t, err, "error when updating project")
 	assert.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
 	assert.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
@@ -99,14 +99,14 @@ func TestProjectGetByName(t *testing.T) {
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
-	foundProject, err := client.Project.GetByName(project.Name)
+	foundProject, err := octopusClient.Projects.GetByName(project.Name)
 	assert.Nil(t, err, "error when looking for project when not expected")
 	assert.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
 }
 
-func createTestProject(t *testing.T, projectName string) octopusdeploy.Project {
+func createTestProject(t *testing.T, projectName string) model.Project {
 	p := getTestProject(projectName)
-	createdProject, err := client.Project.Add(&p)
+	createdProject, err := octopusClient.Projects.Add(&p)
 
 	if err != nil {
 		t.Fatalf("creating project %s failed when it shouldn't: %s", projectName, err)
@@ -115,20 +115,20 @@ func createTestProject(t *testing.T, projectName string) octopusdeploy.Project {
 	return *createdProject
 }
 
-func getTestProject(projectName string) octopusdeploy.Project {
-	p := octopusdeploy.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
+func getTestProject(projectName string) model.Project {
+	p := model.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
 
 	return *p
 }
 
 func cleanProject(t *testing.T, projectID string) {
-	err := client.Project.Delete(projectID)
+	err := octopusClient.Projects.Delete(projectID)
 
 	if err == nil {
 		return
 	}
 
-	if err == octopusdeploy.ErrItemNotFound {
+	if err == client.ErrItemNotFound {
 		return
 	}
 
