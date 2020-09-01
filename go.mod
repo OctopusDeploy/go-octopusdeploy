@@ -3,16 +3,16 @@ module github.com/OctopusDeploy/go-octopusdeploy
 go 1.12
 
 require (
-	github.com/davecgh/go-spew v1.1.0 // indirect
-	github.com/dghubble/sling v1.1.0
-	github.com/go-playground/locales v0.12.1 // indirect
-	github.com/go-playground/universal-translator v0.16.0 // indirect
-	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
-	github.com/kr/pretty v0.1.0 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/satori/go.uuid v1.2.0
-	github.com/stretchr/testify v1.2.2
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1
-	gopkg.in/go-playground/validator.v9 v9.19.0
+	github.com/aws/aws-sdk-go v1.34.13 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dghubble/sling v1.3.0
+	github.com/go-openapi/strfmt v0.19.5 // indirect
+	github.com/go-playground/assert/v2 v2.0.1 // indirect
+	github.com/go-playground/validator/v10 v10.3.0
+	github.com/google/uuid v1.1.2
+	github.com/kr/text v0.2.0 // indirect
+	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/stretchr/testify v1.6.1
+	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c // indirect
 )
