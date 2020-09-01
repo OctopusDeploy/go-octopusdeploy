@@ -31,7 +31,7 @@ jobs:
 #        fi
 
     - name: Build Client
-      run: go build -v ./
+      run: go build -v ../client/
     
     - name: Build Enum
       run: go build enum/
