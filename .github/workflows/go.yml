@@ -5,6 +5,10 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      GOPATH: '/home/runner/work/go-octopusdeploy/go-octopusdeploy'
+      GO111MODULE: off
       
     steps:
 
@@ -16,8 +20,6 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-      with:
-        path: '/opt/hostedtoolcache/go/1.15.0/x64/src/client'
         
 
 #    - name: Get dependencies
