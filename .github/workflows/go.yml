@@ -16,6 +16,9 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
+      with:
+        path: '/opt/hostedtoolcache/go/1.15.0/x64/src/client'
+        
 
 #    - name: Get dependencies
 #      run: |
