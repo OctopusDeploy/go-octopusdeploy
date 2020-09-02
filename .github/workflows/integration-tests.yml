@@ -17,14 +17,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Start the Octopus container
-        run: cd ./tests && docker-compose up --detach
-
-      - name: Generate an API key
-        run: ./tests/Create-ApiKey.ps1
-        shell: pwsh
-
+      
       - name: Build client module
         run: go build -v ./client
     
@@ -33,6 +26,13 @@ jobs:
 
       - name: Build model module
         run: go build -v ./model
+
+      - name: Start the Octopus container
+        run: cd ./tests && docker-compose up --detach
+
+      - name: Generate an API key
+        run: ./tests/Create-ApiKey.ps1
+        shell: pwsh
 
       - name: Run tests
         run: go test -v ./...
