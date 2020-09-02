@@ -161,6 +161,7 @@ func getTestMachine(environmentID string, machineName string, destination string
 		TenantTags:      []string{},
 		Thumbprint:      strings.ToUpper(thumbprint[:16]),
 		URI:             "https://localhost/",
+		Destination:     destination,
 	}
 
 	return e
