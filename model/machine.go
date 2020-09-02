@@ -6,11 +6,14 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// Machines defines a collection of machines with built-in support for paged
+// results from the API.
 type Machines struct {
 	Items []Machine `json:"Items"`
 	PagedResults
 }
 
+// Machine represents deployment targets (or machine).
 type Machine struct {
 	Name              string           `json:"Name,omitempty"`
 	Thumbprint        string           `json:"Thumbprint,omitempty"`
@@ -28,12 +31,14 @@ type Machine struct {
 	StatusSummary     string           `json:"StatusSummary,omitempty"`
 	IsInProcess       bool             `json:"IsInProcess"`
 	Endpoint          *MachineEndpoint `json:"Endpoint" validate:"required"`
-	OperatingSystem   string           `json:OperatingSystem,omitempty`
-	ShellName         string           `json:ShellName,omitempty`
-	ShellVersion      string           `json:ShellVersion,omitempty`
+	OperatingSystem   string           `json:"OperatingSystem,omitempty"`
+	ShellName         string           `json:"ShellName,omitempty"`
+	ShellVersion      string           `json:"ShellVersion,omitempty"`
 	Resource
 }
 
+// Validate returns a collection of validation errors against the machine's
+// internal values.
 func (machine *Machine) Validate() error {
 	validate := validator.New()
 	err := validate.Struct(machine)
