@@ -20,7 +20,7 @@ type Machine struct {
 	Roles             []string         `json:"Roles"`
 	MachinePolicyID   string           `json:"MachinePolicyId,omitempty"`
 	DeploymentMode    string           `json:"TenantedDeploymentParticipation,omitempty" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
-	TenantIDs         []string         `json:"TenantIDs"`
+	TenantIDs         []string         `json:"TenantIds"`
 	TenantTags        []string         `json:"TenantTags"`
 	Status            string           `json:"Status,omitempty"`
 	HealthStatus      string           `json:"HealthStatus,omitempty"`
