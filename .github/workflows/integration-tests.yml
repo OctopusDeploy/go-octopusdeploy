@@ -1,0 +1,38 @@
+name: Run Integration Tests
+
+on: push
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    env:
+      GO111MODULE: on
+      OCTOPUS_VERSION: "2020.2.7"
+      OCTOPUS_URL: "http://localhost:8080"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Start the Octopus container
+        run: ./tests/start-octopus.sh
+
+      - name: Generate an API key
+        run: ./tests/Create-ApiKey.ps1
+        shell: pwsh
+
+        - name: Build client module
+        run: go build -v ./client/
+      
+        - name: Build enum module
+        run: go build -v ./enum/
+  
+        - name: Build model module
+        run: go build -v ./model/
+  
+        - name: Run tests
+        run: go test -v ./...
