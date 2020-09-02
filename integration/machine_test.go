@@ -26,7 +26,7 @@ func TestMachineAddAndDelete(t *testing.T) {
 	actual := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, actual.ID)
 
-	assert.Equal(t, expected.Name, actual.Name, expected.Destination, "machine name doesn't match expected")
+	assert.Equal(t, expected.Name, actual.Name, "machine name doesn't match expected")
 	assert.NotEmpty(t, actual.ID, "machine doesn't contain an ID from the octopus server")
 }
 

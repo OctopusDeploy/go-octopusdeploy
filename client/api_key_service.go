@@ -15,6 +15,11 @@ type APIKeyService struct {
 
 // NewAPIKeyService returns an APIKeyService with a preconfigured client.
 func NewAPIKeyService(sling *sling.Sling) *APIKeyService {
+	if sling == nil {
+		fmt.Println(fmt.Errorf("APIKeyService: input parameter (sling) is nil"))
+		return nil
+	}
+
 	return &APIKeyService{
 		sling: sling,
 	}

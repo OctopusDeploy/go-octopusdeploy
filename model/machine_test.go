@@ -7,92 +7,79 @@ import (
 )
 
 func TestEmptyMachine(t *testing.T) {
-	machineValid := &Machine{}
-	assert.Error(t, machineValid.Validate())
+	machine := &Machine{}
+
+	assert.NotNil(t, machine)
+	assert.Error(t, machine.Validate())
 }
 
 func TestMissingDeploymentModeAndEmptyEndpoint(t *testing.T) {
-	machineValid := &Machine{
+	machine := &Machine{
 		Endpoint: &MachineEndpoint{},
 	}
-	assert.Error(t, machineValid.Validate())
+
+	assert.NotNil(t, machine)
+	assert.Error(t, machine.Validate())
 }
 
 func TestEmptyEndpoint(t *testing.T) {
-	machineValid := &Machine{
+	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint:       &MachineEndpoint{},
 	}
-	assert.Error(t, machineValid.Validate())
+
+	assert.NotNil(t, machine)
+	assert.Error(t, machine.Validate())
 }
 
 func TestValidEndpointAndInvalidDeploymentMode(t *testing.T) {
-	machineValid := &Machine{
+	machine := &Machine{
 		DeploymentMode: "invalid",
 		Endpoint: &MachineEndpoint{
 			CommunicationStyle: "None",
 		},
 	}
-	assert.Error(t, machineValid.Validate())
+
+	assert.NotNil(t, machine)
+	assert.Error(t, machine.Validate())
 }
 
 func TestValidDeploymentModeAndEndpoint(t *testing.T) {
-	machineValid := &Machine{
+	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
 			CommunicationStyle: "None",
 		},
 	}
-	assert.Nil(t, machineValid.Validate())
+
+	assert.NotNil(t, machine)
+	assert.NoError(t, machine.Validate())
 }
 
-func TestValidateMachineValues(t *testing.T) {
-
-	machineValid := &Machine{
+func TestInvalidMachineURI(t *testing.T) {
+	machineURI := "x"
+	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
 			CommunicationStyle: "None",
-			Thumbprint:         "1",
-			URI:                "x",
 		},
-		Status:     "Unknown",
-		Thumbprint: "1",
-		URI:        "x",
+		URI: machineURI,
 	}
 
-	assert.Nil(t, machineValid.Validate())
+	assert.NotNil(t, machine)
+	assert.Error(t, machine.Validate())
+}
 
-	machineInvalidBadURL := &Machine{
-		URI: "x",
-		Endpoint: &MachineEndpoint{
-			URI: "y",
-		},
+func TestValidMachineURI(t *testing.T) {
+	machineURI := "http://localhost"
+	machine := &Machine{
 		DeploymentMode: "Untenanted",
-		Status:         "Unknown",
-	}
-
-	assert.Error(t, machineInvalidBadURL.Validate())
-
-	machineInvalidBadTenantedDeployment := &Machine{
-		URI: "x",
 		Endpoint: &MachineEndpoint{
-			URI: "y",
+			CommunicationStyle: "None",
 		},
-		DeploymentMode: "invalid mode",
-		Status:         "Unknown",
+		URI: machineURI,
 	}
 
-	assert.Error(t, machineInvalidBadTenantedDeployment.Validate())
-
-	machineInvalidNonMatchingThumbprint := &Machine{
-		URI: "x",
-		Endpoint: &MachineEndpoint{
-			URI:        "y",
-			Thumbprint: "1",
-		},
-		Status:     "Unknown",
-		Thumbprint: "2",
-	}
-
-	assert.Error(t, machineInvalidNonMatchingThumbprint.Validate())
+	assert.NotNil(t, machine)
+	assert.NoError(t, machine.Validate())
 }

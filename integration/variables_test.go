@@ -57,6 +57,7 @@ func createVarTestProject(t *testing.T, projectName string) model.Project {
 
 	return *createdProject
 }
+
 func cleanVar(t *testing.T, varID string, projID string) {
 	_, err := octopusClient.Variables.DeleteSingle(projID, varID)
 	if err == nil {
