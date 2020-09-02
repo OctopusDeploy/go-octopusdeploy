@@ -27,6 +27,7 @@ type Machine struct {
 	StatusSummary     string           `json:"StatusSummary"`
 	IsInProcess       bool             `json:"IsInProcess"`
 	Endpoint          *MachineEndpoint `json:"Endpoint" validate:"required"`
+	Destination       string           `json:"Destination"`
 	Resource
 }
 
