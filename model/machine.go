@@ -37,6 +37,19 @@ type Machine struct {
 	Resource
 }
 
+func NewMachine(name string, isDisabled bool, environments []string, roles []string, machinePolicy string, deploymentMode string, tenantIDs []string, tenantTags []string) (*Machine, error) {
+	return &Machine{
+		Name:            name,
+		IsDisabled:      isDisabled,
+		EnvironmentIDs:  environments,
+		Roles:           roles,
+		MachinePolicyID: machinePolicy,
+		DeploymentMode:  deploymentMode,
+		TenantIDs:       tenantIDs,
+		TenantTags:      tenantTags,
+	}, nil
+}
+
 // Validate returns a collection of validation errors against the machine's
 // internal values.
 func (machine *Machine) Validate() error {
