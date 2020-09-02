@@ -5,7 +5,6 @@ go 1.12
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dghubble/sling v1.3.0
-	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/google/uuid v1.1.2
 	github.com/kr/text v0.2.0 // indirect
