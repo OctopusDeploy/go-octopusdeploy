@@ -26,13 +26,13 @@ jobs:
         shell: pwsh
 
       - name: Build client module
-      run: go build -v ./client
+        run: go build -v ./client
     
       - name: Build enum module
-      run: go build -v ./enum
+        run: go build -v ./enum
 
       - name: Build model module
-      run: go build -v ./model
+        run: go build -v ./model
 
       - name: Run tests
-      run: go test -v ./...
+        run: go test -v ./...
