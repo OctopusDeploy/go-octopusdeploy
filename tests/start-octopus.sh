@@ -1,5 +1,5 @@
 pushd tests
 
-sudo docker-compose up --detach
+docker-compose up --detach
 
 popd
