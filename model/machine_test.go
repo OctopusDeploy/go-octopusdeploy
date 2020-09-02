@@ -13,7 +13,7 @@ func TestEmptyMachine(t *testing.T) {
 
 func TestMissingDeploymentModeAndEmptyEndpoint(t *testing.T) {
 	machineValid := &Machine{
-		Endpoint: MachineEndpoint{},
+		Endpoint: &MachineEndpoint{},
 	}
 	assert.Error(t, machineValid.Validate())
 }
@@ -21,7 +21,7 @@ func TestMissingDeploymentModeAndEmptyEndpoint(t *testing.T) {
 func TestEmptyEndpoint(t *testing.T) {
 	machineValid := &Machine{
 		DeploymentMode: "Untenanted",
-		Endpoint:       MachineEndpoint{},
+		Endpoint:       &MachineEndpoint{},
 	}
 	assert.Error(t, machineValid.Validate())
 }
@@ -29,7 +29,7 @@ func TestEmptyEndpoint(t *testing.T) {
 func TestValidEndpointAndInvalidDeploymentMode(t *testing.T) {
 	machineValid := &Machine{
 		DeploymentMode: "invalid",
-		Endpoint: MachineEndpoint{
+		Endpoint: &MachineEndpoint{
 			CommunicationStyle: "None",
 		},
 	}
@@ -39,7 +39,7 @@ func TestValidEndpointAndInvalidDeploymentMode(t *testing.T) {
 func TestValidDeploymentModeAndEndpoint(t *testing.T) {
 	machineValid := &Machine{
 		DeploymentMode: "Untenanted",
-		Endpoint: MachineEndpoint{
+		Endpoint: &MachineEndpoint{
 			CommunicationStyle: "None",
 		},
 	}
@@ -50,7 +50,7 @@ func TestValidateMachineValues(t *testing.T) {
 
 	machineValid := &Machine{
 		DeploymentMode: "Untenanted",
-		Endpoint: MachineEndpoint{
+		Endpoint: &MachineEndpoint{
 			CommunicationStyle: "None",
 			Thumbprint:         "1",
 			URI:                "x",
@@ -64,7 +64,7 @@ func TestValidateMachineValues(t *testing.T) {
 
 	machineInvalidBadURL := &Machine{
 		URI: "x",
-		Endpoint: MachineEndpoint{
+		Endpoint: &MachineEndpoint{
 			URI: "y",
 		},
 		DeploymentMode: "Untenanted",
@@ -75,7 +75,7 @@ func TestValidateMachineValues(t *testing.T) {
 
 	machineInvalidBadTenantedDeployment := &Machine{
 		URI: "x",
-		Endpoint: MachineEndpoint{
+		Endpoint: &MachineEndpoint{
 			URI: "y",
 		},
 		DeploymentMode: "invalid mode",
@@ -86,7 +86,7 @@ func TestValidateMachineValues(t *testing.T) {
 
 	machineInvalidNonMatchingThumbprint := &Machine{
 		URI: "x",
-		Endpoint: MachineEndpoint{
+		Endpoint: &MachineEndpoint{
 			URI:        "y",
 			Thumbprint: "1",
 		},
