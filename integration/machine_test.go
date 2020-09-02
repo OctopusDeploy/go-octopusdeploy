@@ -21,9 +21,10 @@ func TestMachineAddAndDelete(t *testing.T) {
 	testEnvironment := createTestEnvironment(t, testName)
 	defer cleanEnvironment(t, testEnvironment.ID)
 
+	destination := "AWS"
 	machineName := strings.Split(getRandomName(), " ")[1]
-	expected := getTestMachine(testEnvironment.ID, machineName)
-	actual := createTestMachine(t, testEnvironment.ID, machineName)
+	expected := getTestMachine(testEnvironment.ID, machineName, destination)
+	actual := createTestMachine(t, testEnvironment.ID, machineName, destination)
 	defer cleanMachine(t, actual.ID)
 
 	assert.Equal(t, expected.Name, actual.Name, "machine name doesn't match expected")
@@ -35,8 +36,9 @@ func TestMachineAddGetAndDelete(t *testing.T) {
 	testEnvironment := createTestEnvironment(t, testName)
 	defer cleanEnvironment(t, testEnvironment.ID)
 
+	destination := "AWS"
 	machineName := strings.Split(getRandomName(), " ")[1]
-	machine := createTestMachine(t, testEnvironment.ID, machineName)
+	machine := createTestMachine(t, testEnvironment.ID, machineName, destination)
 	defer cleanMachine(t, machine.ID)
 
 	getMachine, err := octopusClient.Machines.Get(machine.ID)
@@ -65,8 +67,9 @@ func TestMachineGetAll(t *testing.T) {
 	machinesToCreate := 32
 	sum := 0
 	for i := 0; i < machinesToCreate; i++ {
+		destination := "AWS"
 		machineName := strings.Split(getRandomName(), " ")[1]
-		machine := createTestMachine(t, testEnvironment.ID, machineName)
+		machine := createTestMachine(t, testEnvironment.ID, machineName, destination)
 		defer cleanMachine(t, machine.ID)
 		sum += i
 	}
@@ -83,8 +86,9 @@ func TestMachineGetAll(t *testing.T) {
 		t.Fatalf("There should be at least %d machines created but there was only %d. Pagination is likely not working.", machinesToCreate, numberOfMachines)
 	}
 
+	destination := "AWS"
 	machineName := strings.Split(getRandomName(), " ")[1]
-	additionalMachine := createTestMachine(t, testEnvironment.ID, machineName)
+	additionalMachine := createTestMachine(t, testEnvironment.ID, machineName, destination)
 	defer cleanMachine(t, additionalMachine.ID)
 
 	allMachinesAfterCreatingAdditional, err := octopusClient.Machines.GetAll()
@@ -101,8 +105,9 @@ func TestMachineUpdate(t *testing.T) {
 	testEnvironment := createTestEnvironment(t, testName)
 	defer cleanEnvironment(t, testEnvironment.ID)
 
+	destination := "AWS"
 	machineName := strings.Split(getRandomName(), " ")[1]
-	machine := createTestMachine(t, testEnvironment.ID, machineName)
+	machine := createTestMachine(t, testEnvironment.ID, machineName, destination)
 	defer cleanMachine(t, machine.ID)
 
 	newApplicationsDirectory := "C:\\New-Applications-Directory"
@@ -120,7 +125,7 @@ func TestMachineUpdate(t *testing.T) {
 	assert.Equal(t, newWorkingDirectory, updatedMachine.Endpoint.WorkingDirectory, "machine endpoint's working Directory was not updated")
 }
 
-func getTestMachine(environmentID string, machineName string) model.Machine {
+func getTestMachine(environmentID string, machineName string, destination string) model.Machine {
 	// Thumbprints have to be unique, so accept a testName string so we can pass through a fixed ID
 	// with the name machine that will be consistent through the same test, but different for different
 	// tests
@@ -161,8 +166,8 @@ func getTestMachine(environmentID string, machineName string) model.Machine {
 	return e
 }
 
-func createTestMachine(t *testing.T, environmentID string, machineName string) model.Machine {
-	e := getTestMachine(environmentID, machineName)
+func createTestMachine(t *testing.T, environmentID string, machineName string, destination string) model.Machine {
+	e := getTestMachine(environmentID, machineName, destination)
 	createdMachine, err := octopusClient.Machines.Add(&e)
 
 	if err != nil {
