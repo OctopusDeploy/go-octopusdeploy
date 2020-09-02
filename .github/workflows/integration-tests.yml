@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Start the Octopus container
-        run: ./tests/start-octopus.sh
+        run: sudo ./tests/start-octopus.sh
 
       - name: Generate an API key
         run: ./tests/Create-ApiKey.ps1
