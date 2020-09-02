@@ -6,12 +6,13 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-
 	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	octopusClient = initTest()
+	if octopusClient == nil {
+		octopusClient = initTest()
+	}
 }
 
 func TestProjectGroupAddAndDelete(t *testing.T) {

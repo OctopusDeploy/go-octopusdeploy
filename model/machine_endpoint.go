@@ -7,14 +7,14 @@ import (
 )
 
 type MachineEndpoint struct {
-	AccountID                     string                        `json:AccountId`
+	AccountID                     string                        `json:"AccountId,omitempty"`
 	CommunicationStyle            string                        `json:"CommunicationStyle" validate:"required,oneof=None TentaclePassive TentacleActive Ssh OfflineDrop AzureWebApp Ftp AzureCloudService AzureServiceFabricCluster Kubernetes"`
-	DefaultWorkerPoolID           string                        `json:DefaultWorkerPoolId`
+	DefaultWorkerPoolID           string                        `json:"DefaultWorkerPoolId,omitempty"`
 	ProxyID                       *string                       `json:"ProxyId"`
-	Thumbprint                    string                        `json:"Thumbprint"`
+	Thumbprint                    string                        `json:"Thumbprint,omitempty"`
 	TentacleVersionDetails        MachineTentacleVersionDetails `json:"TentacleVersionDetails"`
-	CertificateSignatureAlgorithm string                        `json:CertificateSignatureAlgorithm`
-	URI                           string                        `json:"Uri" validate:"omitempty,uri"` // This is not in the spec doc, but it shows up and needs to be kept in sync
+	CertificateSignatureAlgorithm string                        `json:"CertificateSignatureAlgorithm,omitempty"`
+	URI                           string                        `json:"Uri,omitempty" validate:"omitempty,uri"` // This is not in the spec doc, but it shows up and needs to be kept in sync
 	AzureWebAppMachineEndpoint
 	CloudRegionMachineEndpoint
 	CloudServiceMachineEndpoint

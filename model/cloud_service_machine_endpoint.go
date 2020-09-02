@@ -1,9 +1,9 @@
 package model
 
 type CloudServiceMachineEndpoint struct {
-	CloudServiceName        string `json:CloudServiceName`
-	Slot                    string `json:Slot`
-	StorageAccountName      string `json:StorageAccountName`
-	SwapIfPossible          bool   `json:SwapIfPossible`
-	UseCurrentInstanceCount bool   `json:UseCurrentInstanceCount`
+	CloudServiceName        string `json:"CloudServiceName,omitempty"`
+	Slot                    string `json:"Slot,omitempty"`
+	StorageAccountName      string `json:"StorageAccountName,omitempty"`
+	SwapIfPossible          bool   `json:"SwapIfPossible"`
+	UseCurrentInstanceCount bool   `json:"UseCurrentInstanceCount"`
 }

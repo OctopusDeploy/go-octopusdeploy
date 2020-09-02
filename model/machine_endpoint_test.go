@@ -21,3 +21,14 @@ func TestInvalidEndpointURI(t *testing.T) {
 	assert.NotNil(t, endpoint)
 	assert.Error(t, endpoint.Validate())
 }
+
+func TestValidSshEndpointPort(t *testing.T) {
+	var port uint16 = 22
+	endpoint := &MachineEndpoint{
+		CommunicationStyle: "None",
+	}
+	endpoint.Port = &port
+
+	assert.NotNil(t, endpoint)
+	assert.NoError(t, endpoint.Validate())
+}

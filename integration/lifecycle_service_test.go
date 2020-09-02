@@ -9,7 +9,9 @@ import (
 )
 
 func init() {
-	octopusClient = initTest()
+	if octopusClient == nil {
+		octopusClient = initTest()
+	}
 }
 
 func TestLifecycleAddAndDelete(t *testing.T) {

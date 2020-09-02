@@ -3,14 +3,15 @@ package integration
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func init() {
-	octopusClient = initTest()
+	if octopusClient == nil {
+		octopusClient = initTest()
+	}
 }
 
 func TestProjectTriggerAddGetAndDelete(t *testing.T) {

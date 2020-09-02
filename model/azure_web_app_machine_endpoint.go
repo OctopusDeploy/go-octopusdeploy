@@ -1,7 +1,7 @@
 package model
 
 type AzureWebAppMachineEndpoint struct {
-	ResourceGroupName string `json:ResourceGroupName`
-	WebAppName        string `json:WebAppName`
-	WebAppSlotName    int    `json:WebAppSlotName`
+	ResourceGroupName string `json:"ResourceGroupName,omitempty"`
+	WebAppName        string `json:"WebAppName,omitempty"`
+	WebAppSlotName    int    `json:"WebAppSlotName"`
 }

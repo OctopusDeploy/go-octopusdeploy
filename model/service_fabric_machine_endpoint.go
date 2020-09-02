@@ -1,14 +1,14 @@
 package model
 
 type ServiceFabricMachineEndpoint struct {
-	ConnectionEndpoint        string         `json:ConnectionEndpoint`
-	SecurityMode              string         `json:SecurityMode validate:"oneof=Unsecure SecureClientCertificate SecureAzureAD"`
-	ServerCertThumbprint      string         `json:ServerCertThumbprint`
-	ClientCertVariable        string         `json:ClientCertVariable`
-	CertificateStoreLocation  string         `json:CertificateStoreLocation`
-	CertificateStoreName      string         `json:CertificateStoreName`
-	AadCredentialType         string         `json:AadCredentialType validate:"oneof=ClientCredential UserCredential"`
-	AadClientCredentialSecret string         `json:AadClientCredentialSecret`
-	AadUserCredentialUsername string         `json:AadUserCredentialUsername`
-	AadUserCredentialPassword SensitiveValue `json:AadUserCredentialPassword`
+	ConnectionEndpoint        string         `json:"ConnectionEndpoint,omitempty"`
+	SecurityMode              string         `json:"SecurityMode,omitempty" validate:"omitempty,oneof=Unsecure SecureClientCertificate SecureAzureAD"`
+	ServerCertThumbprint      string         `json:"ServerCertThumbprint,omitempty"`
+	ClientCertVariable        string         `json:"ClientCertVariable,omitempty"`
+	CertificateStoreLocation  string         `json:"CertificateStoreLocation,omitempty"`
+	CertificateStoreName      string         `json:"CertificateStoreName,omitempty"`
+	AadCredentialType         string         `json:"AadCredentialType,omitempty" validate:"omitempty,oneof=ClientCredential UserCredential"`
+	AadClientCredentialSecret string         `json:"AadClientCredentialSecret,omitempty"`
+	AadUserCredentialUsername string         `json:"AadUserCredentialUsername,omitempty"`
+	AadUserCredentialPassword SensitiveValue `json:"AadUserCredentialPassword,omitempty"`
 }
