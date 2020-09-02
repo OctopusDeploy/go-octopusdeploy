@@ -14,6 +14,11 @@ type ActionTemplateService struct {
 }
 
 func NewActionTemplateService(sling *sling.Sling) *ActionTemplateService {
+	if sling == nil {
+		fmt.Println(fmt.Errorf("ActionTemplateService: input parameter (sling) is nil"))
+		return nil
+	}
+
 	return &ActionTemplateService{
 		sling: sling,
 		path:  "actiontemplates",

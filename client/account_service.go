@@ -18,6 +18,11 @@ type AccountService struct {
 
 // NewAccountService returns an AccountService with a preconfigured client.
 func NewAccountService(sling *sling.Sling) *AccountService {
+	if sling == nil {
+		fmt.Println(fmt.Errorf("AccountService: input parameter (sling) is nil"))
+		return nil
+	}
+
 	return &AccountService{
 		sling: sling,
 		path:  "accounts",
