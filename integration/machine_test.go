@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
 )
@@ -106,19 +105,22 @@ func TestMachineUpdate(t *testing.T) {
 	machine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, machine.ID)
 
-	const newURI = "https://127.0.0.1/"
+	newApplicationsDirectory := "C:\\New-Applications-Directory"
+	newWorkingDirectory := "C:\\New-WorkingDirectory"
+
 	newMachineName := strings.Split(getRandomName(), " ")[1]
-	machine.URI = newURI
-	machine.Endpoint.URI = newURI
 	machine.Name = newMachineName
+	machine.Endpoint.ApplicationsDirectory = newApplicationsDirectory
+	machine.Endpoint.WorkingDirectory = newWorkingDirectory
 
 	updatedMachine, err := octopusClient.Machines.Update(&machine)
 	assert.Nil(t, err, "error when updating machine")
 	assert.Equal(t, newMachineName, updatedMachine.Name, "machine name was not updated")
-	assert.Equal(t, newURI, updatedMachine.URI, "machine uri was not updated")
+	assert.Equal(t, newApplicationsDirectory, updatedMachine.Endpoint.ApplicationsDirectory, "machine endpoint's applications Directory was not updated")
+	assert.Equal(t, newWorkingDirectory, updatedMachine.Endpoint.WorkingDirectory, "machine endpoint's working Directory was not updated")
 }
 
-func getTestMachine(environmentID, machineName string) model.Machine {
+func getTestMachine(environmentID string, machineName string) model.Machine {
 	// Thumbprints have to be unique, so accept a testName string so we can pass through a fixed ID
 	// with the name machine that will be consistent through the same test, but different for different
 	// tests
@@ -136,23 +138,30 @@ func getTestMachine(environmentID, machineName string) model.Machine {
 
 	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
 
+	endpoint, err := model.NewMachineEndpoint()
+	endpoint.ApplicationsDirectory = "C:\\Applications"
+	endpoint.CommunicationStyle = "OfflineDrop"
+	endpoint.WorkingDirectory = "C:\\Octopus"
+
 	e := model.Machine{
-		EnvironmentIDs:                  []string{environmentID},
-		IsDisabled:                      true,
-		MachinePolicyID:                 "MachinePolicies-1",
-		Name:                            machineName,
-		Roles:                           []string{"Prod"},
-		Status:                          "Disabled",
-		TenantedDeploymentParticipation: enum.Untenanted,
-		TenantIDs:                       []string{},
-		TenantTags:                      []string{},
-		Thumbprint:                      strings.ToUpper(thumbprint[:16]),
-		URI:                             "https://localhost/",
+		DeploymentMode:  "Untenanted",
+		EnvironmentIDs:  []string{environmentID},
+		Endpoint:        endpoint,
+		IsDisabled:      true,
+		MachinePolicyID: "MachinePolicies-1",
+		Name:            machineName,
+		Roles:           []string{"Prod"},
+		Status:          "Disabled",
+		TenantIDs:       []string{},
+		TenantTags:      []string{},
+		Thumbprint:      strings.ToUpper(thumbprint[:16]),
+		URI:             "https://localhost/",
 	}
+
 	return e
 }
 
-func createTestMachine(t *testing.T, environmentID, machineName string) model.Machine {
+func createTestMachine(t *testing.T, environmentID string, machineName string) model.Machine {
 	e := getTestMachine(environmentID, machineName)
 	createdMachine, err := octopusClient.Machines.Add(&e)
 

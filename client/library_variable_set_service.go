@@ -110,7 +110,7 @@ func (s *LibraryVariableSetService) Update(resource *model.LibraryVariableSet) (
 		return nil, err
 	}
 
-	path := fmt.Sprintf("libraryVariableSets/%s", resource.ID)
+	path := fmt.Sprintf(s.path+"/%s", resource.ID)
 	resp, err := apiUpdate(s.sling, resource, new(model.LibraryVariableSet), path)
 
 	if err != nil {

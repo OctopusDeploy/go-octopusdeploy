@@ -1,16 +1,51 @@
 package model
 
+import (
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
+)
+
 type MachineEndpoint struct {
-	CommunicationStyle     string                         `json:"CommunicationStyle"`
-	ProxyID                *string                        `json:"ProxyId"`
-	Thumbprint             string                         `json:"Thumbprint"`
-	TentacleVersionDetails MachineTentacleVersionDetails  `json:"TentacleVersionDetails"`
-	URI                    string                         `json:"Uri"`                 // This is not in the spec doc, but it shows up and needs to be kept in sync
-	ClusterCertificate     string                         `json:"ClusterCertificate"`  // Kubernetes (not in spec doc)
-	ClusterURL             string                         `json:"ClusterUrl"`          // Kubernetes (not in spec doc)
-	Namespace              string                         `json:"Namespace"`           // Kubernetes (not in spec doc)
-	SkipTLSVerification    string                         `json:"SkipTlsVerification"` // Kubernetes (not in spec doc)
-	DefaultWorkerPoolID    string                         `json:"DefaultWorkerPoolId"`
-	Authentication         *MachineEndpointAuthentication `json:"Authentication"`
+	AccountID              string                        `json:AccountId`
+	CommunicationStyle     string                        `json:"CommunicationStyle" validate:"required,oneof=None TentaclePassive TentacleActive Ssh OfflineDrop AzureWebApp Ftp AzureCloudService AzureServiceFabricCluster Kubernetes"`
+	DefaultWorkerPoolID    string                        `json:DefaultWorkerPoolId`
+	ProxyID                *string                       `json:"ProxyId"`
+	Thumbprint             string                        `json:"Thumbprint"`
+	TentacleVersionDetails MachineTentacleVersionDetails `json:"TentacleVersionDetails"`
+	URI                    string                        `json:"Uri"` // This is not in the spec doc, but it shows up and needs to be kept in sync
+	AzureWebAppMachineEndpoint
+	CloudRegionMachineEndpoint
+	CloudServiceMachineEndpoint
+	KubernetesMachineEndpoint
+	ListeningTentacleMachineEndpoint
+	OfflineDropMachineEndpoint
+	PollingTentacleMachineEndpoint
+	ServiceFabricMachineEndpoint
+	SshMachineEndpoint
 	Resource
+}
+
+func NewMachineEndpoint() (*MachineEndpoint, error) {
+	return &MachineEndpoint{}, nil
+}
+
+func (t *MachineEndpoint) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(t)
+
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			fmt.Println(err)
+			return nil
+		}
+
+		for _, err := range err.(validator.ValidationErrors) {
+			fmt.Println(err)
+		}
+
+		return err
+	}
+
+	return nil
 }

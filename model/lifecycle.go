@@ -28,10 +28,12 @@ func NewLifecycle(name string) *Lifecycle {
 		Name:   name,
 		Phases: []Phase{},
 		TentacleRetentionPolicy: RetentionPeriod{
-			Unit: RetentionUnitDays,
+			Unit:           RetentionUnitDays,
+			QuantityToKeep: 30,
 		},
 		ReleaseRetentionPolicy: RetentionPeriod{
-			Unit: RetentionUnitDays,
+			Unit:           RetentionUnitDays,
+			QuantityToKeep: 30,
 		},
 	}
 }

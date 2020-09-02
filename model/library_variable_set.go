@@ -15,7 +15,7 @@ type LibraryVariableSet struct {
 	Description   string                      `json:"Description,omitempty"`
 	Name          string                      `json:"Name" validate:"required"`
 	SpaceID       string                      `json:"SpaceId,omitempty"`
-	Templates     []*ActionTemplateParameter  `json:"Templates"`
+	Templates     []*ActionTemplateParameter  `json:"Templates,omitempty"`
 	VariableSetID string                      `json:"VariableSetId,omitempty"`
 	Resource
 }

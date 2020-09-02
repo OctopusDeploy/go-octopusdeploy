@@ -71,7 +71,7 @@ func (s *MachineService) GetByName(name string) (*model.Machine, error) {
 
 // Add creates a new machine in Octopus Deploy
 func (s *MachineService) Add(resource *model.Machine) (*model.Machine, error) {
-	err := model.ValidateMachineValues(resource)
+	err := resource.Validate()
 	if err != nil {
 		return nil, err
 	}
@@ -89,9 +89,9 @@ func (s *MachineService) Delete(id string) error {
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-// Delete updates an existing machine in Octopus Deploy
+// Update updates an existing machine in Octopus Deploy
 func (s *MachineService) Update(resource *model.Machine) (*model.Machine, error) {
-	err := model.ValidateMachineValues(resource)
+	err := resource.Validate()
 	if err != nil {
 		return nil, err
 	}
