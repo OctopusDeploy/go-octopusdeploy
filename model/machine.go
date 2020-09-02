@@ -12,25 +12,25 @@ type Machines struct {
 }
 
 type Machine struct {
-	Name              string           `json:"Name"`
-	Thumbprint        string           `json:"Thumbprint"`
-	URI               string           `json:"Uri" validate:"omitempty,uri"`
+	Name              string           `json:"Name,omitempty"`
+	Thumbprint        string           `json:"Thumbprint,omitempty"`
+	URI               string           `json:"Uri,omitempty" validate:"omitempty,uri"`
 	IsDisabled        bool             `json:"IsDisabled"`
 	EnvironmentIDs    []string         `json:"EnvironmentIds"`
 	Roles             []string         `json:"Roles"`
-	MachinePolicyID   string           `json:"MachinePolicyId"`
-	DeploymentMode    string           `json:"TenantedDeploymentParticipation" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
+	MachinePolicyID   string           `json:"MachinePolicyId,omitempty"`
+	DeploymentMode    string           `json:"TenantedDeploymentParticipation,omitempty" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
 	TenantIDs         []string         `json:"TenantIDs"`
 	TenantTags        []string         `json:"TenantTags"`
-	Status            string           `json:"Status"`
-	HealthStatus      string           `json:HealthStatus`
+	Status            string           `json:"Status,omitempty"`
+	HealthStatus      string           `json:"HealthStatus,omitempty"`
 	HasLatestCalamari bool             `json:"HasLatestCalamari"`
-	StatusSummary     string           `json:"StatusSummary"`
+	StatusSummary     string           `json:"StatusSummary,omitempty"`
 	IsInProcess       bool             `json:"IsInProcess"`
 	Endpoint          *MachineEndpoint `json:"Endpoint" validate:"required"`
-	OperatingSystem   string           `json:OperatingSystem`
-	ShellName         string           `json:ShellName`
-	ShellVersion      string           `json:ShellVersion`
+	OperatingSystem   string           `json:OperatingSystem,omitempty`
+	ShellName         string           `json:ShellName,omitempty`
+	ShellVersion      string           `json:ShellVersion,omitempty`
 	Resource
 }
 

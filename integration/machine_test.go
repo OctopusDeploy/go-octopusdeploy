@@ -13,7 +13,9 @@ import (
 )
 
 func init() {
-	octopusClient = initTest()
+	if octopusClient == nil {
+		octopusClient = initTest()
+	}
 }
 
 func TestMachineAddAndDelete(t *testing.T) {
