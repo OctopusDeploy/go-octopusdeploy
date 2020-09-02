@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Start the Octopus container
-        run: sudo cd ./tests && docker-compose up --detach
+        run: cd ./tests && docker-compose up --detach
         #run: ./tests/start-octopus.sh
 
       - name: Generate an API key
