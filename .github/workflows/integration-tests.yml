@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Start the Octopus container
-        run: sudo ./tests/start-octopus.sh
+        run: ./tests/start-octopus.sh
 
       - name: Generate an API key
         run: ./tests/Create-ApiKey.ps1
