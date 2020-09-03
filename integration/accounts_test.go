@@ -105,6 +105,8 @@ func TestCreateAndDeleteAndGetMinimalAzureSubscriptionAccount(t *testing.T) {
 	account, err := model.NewAccount(name, enum.AzureSubscription)
 	subscriptionNumber := uuid.New()
 	account.SubscriptionNumber = &subscriptionNumber
+	clientID := uuid.New()
+	account.ClientID = &clientID
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
