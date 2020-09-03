@@ -32,6 +32,7 @@ func NewMachineEndpoint() (*MachineEndpoint, error) {
 }
 
 func (t *MachineEndpoint) Validate() error {
+
 	validate := validator.New()
 	err := validate.Struct(t)
 
