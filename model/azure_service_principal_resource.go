@@ -8,4 +8,5 @@ type AzureServicePrincipalResource struct {
 	ClientID                       *uuid.UUID `json:"ClientId,omitempty"`
 	ResourceManagementEndpointBase string     `json:"ResourceManagementEndpointBaseUri,omitempty"`
 	SubscriptionNumber             *uuid.UUID `json:"SubscriptionNumber,omitempty"`
+	TenantID                       *uuid.UUID `json:"TenantId,omitempty"`
 }
