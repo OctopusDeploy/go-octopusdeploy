@@ -4,33 +4,31 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+	uuid "github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
-var accountName = "Account Name"
-var accountType = enum.UsernamePassword
+var accountName = "Name"
 
 func TestEmptyAccount(t *testing.T) {
 	account := &Account{}
 
-	if account.Name != "" {
-		t.Error("Name should be empty")
-	}
-
-	if account.AccountType != enum.None {
-		t.Errorf("AccountType should be %s", enum.None)
-	}
+	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
 }
 
 func TestAccountWithName(t *testing.T) {
 	account := &Account{Name: accountName}
 
-	if account.Name != accountName {
-		t.Errorf("Name should be %s", accountName)
-	}
+	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
+}
 
-	if account.AccountType != enum.None {
-		t.Errorf("AccountType should be %s", enum.None)
-	}
+func TestAccountWithAccountType(t *testing.T) {
+	account := &Account{AccountType: enum.UsernamePassword}
+
+	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
 }
 
 func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
@@ -39,51 +37,71 @@ func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
 		Name:        accountName,
 	}
 
-	if account.Name != accountName {
-		t.Errorf("Name should be %s", accountName)
-	}
-
-	if account.AccountType != enum.UsernamePassword {
-		t.Errorf("AccountType should be %s", enum.UsernamePassword)
-	}
+	assert.NotNil(t, account)
+	assert.NoError(t, account.Validate())
 }
 
-func TestNewAccountWithValidParameters(t *testing.T) {
-	account, err := NewAccount(accountName, accountType)
+func TestNewAccountForUsernamePasswordWithValidParameters(t *testing.T) {
+	account, err := NewAccount(accountName, enum.UsernamePassword)
 
-	if err != nil {
-		t.Errorf("NewAccount() generated an unexpected error: %s", err)
-	}
+	assert.NoError(t, err)
+	assert.NotNil(t, account)
+	assert.NoError(t, account.Validate())
+}
 
-	if account.Name != accountName {
-		t.Errorf("Name should be %s", accountName)
-	}
+func TestNewAccountForAzureServicePrincipalAccountWithInvalidParameters(t *testing.T) {
+	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
 
-	if account.AccountType != accountType {
-		t.Errorf("AccountType should be %s", accountType)
-	}
+	assert.NoError(t, err)
+	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
+}
+
+func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidSubscriptionNumber(t *testing.T) {
+	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
+	subscriptionNumber := uuid.New()
+	account.SubscriptionNumber = &subscriptionNumber
+
+	assert.NoError(t, err)
+	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
+}
+
+func TestNewAccountForAzureServicePrincipalAccountWithInvalidClientID(t *testing.T) {
+	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
+	subscriptionNumber := uuid.New()
+	account.SubscriptionNumber = &subscriptionNumber
+	clientID := uuid.Nil
+	account.ClientID = &clientID
+
+	assert.NoError(t, err)
+	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
+}
+
+func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidProperties(t *testing.T) {
+	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
+	subscriptionNumber := uuid.New()
+	account.SubscriptionNumber = &subscriptionNumber
+	clientID := uuid.New()
+	account.ClientID = &clientID
+	account.TenantIDs = append(account.TenantIDs, "foo")
+
+	assert.NoError(t, err)
+	assert.NotNil(t, account)
+	assert.NoError(t, account.Validate())
 }
 
 func TestNewAccountWithEmptyName(t *testing.T) {
-	account, err := NewAccount(" ", accountType)
+	account, err := NewAccount(" ", enum.UsernamePassword)
 
-	if account != nil {
-		t.Error("NewAccount() returned an account, which was unexpected")
-	}
-
-	if err == nil {
-		t.Error("NewAccount() was expected to generate an error")
-	}
+	assert.Error(t, err)
+	assert.Nil(t, account)
 }
 
 func TestNewAccountWithLongEmptyName(t *testing.T) {
-	account, err := NewAccount("       ", accountType)
+	account, err := NewAccount("       ", enum.UsernamePassword)
 
-	if account != nil {
-		t.Error("NewAccount() returned an account, which was unexpected")
-	}
-
-	if err == nil {
-		t.Error("NewAccount() was expected to generate an error")
-	}
+	assert.Error(t, err)
+	assert.Nil(t, account)
 }

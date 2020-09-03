@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -51,6 +53,18 @@ func ValidateRequiredPropertyValue(propertyName string, propertyValue string) er
 	}
 
 	return fmt.Errorf("%s is a required property and cannot be empty", propertyName)
+}
+
+func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
+	if id == nil {
+		return fmt.Errorf("%s is a required property; its value is empty", propertyName)
+	}
+
+	if *id == uuid.Nil {
+		return fmt.Errorf("%s is a required property; its value is an empty UUID", propertyName)
+	}
+
+	return nil
 }
 
 // ValidateMultipleProperties returns the first error in a list of property validations
