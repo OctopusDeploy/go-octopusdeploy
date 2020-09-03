@@ -1,5 +1,7 @@
 package model
 
+// ActionTemplates defines a collection of action templates with built-in
+// support for paged results.
 type ActionTemplates struct {
 	Items []ActionTemplate `json:"Items"`
 	PagedResults
