@@ -63,25 +63,48 @@ func (account *Account) Validate() error {
 	}
 
 	switch account.AccountType {
+	case enum.UsernamePassword:
+		return validateUsernamePasswordAccount(account)
 	case enum.AzureSubscription:
 		return validateAzureSubscriptionAccount(account)
 	case enum.AzureServicePrincipal:
 		return validateAzureServicePrincipalAccount(account)
+	case enum.SshKeyPair:
+		return validateSSHKeyAccount(account)
 	}
 
 	return nil
+}
+
+func validateUsernamePasswordAccount(account *Account) error {
+	validations := []error{
+		ValidateRequiredPropertyValue("username", account.Username),
+	}
+
+	return ValidateMultipleProperties(validations)
+}
+
+func validateSSHKeyAccount(account *Account) error {
+	validations := []error{
+		ValidateRequiredPropertyValue("name", account.Name),
+	}
+
+	return ValidateMultipleProperties(validations)
 }
 
 func validateAzureServicePrincipalAccount(account *Account) error {
 	validations := []error{
 		ValidateRequiredUUID("ClientID", account.ClientID),
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
+		ValidateRequiredUUID("TenantID", account.TenantID),
 	}
+
 	return ValidateMultipleProperties(validations)
 }
 
 func validateAzureSubscriptionAccount(account *Account) error {
 	validations := []error{
+		ValidateRequiredUUID("ClientID", account.ClientID),
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
 	}
 	return ValidateMultipleProperties(validations)
