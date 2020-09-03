@@ -8,7 +8,9 @@ import (
 )
 
 func init() {
-	octopusClient = initTest()
+	if octopusClient == nil {
+		octopusClient = initTest()
+	}
 }
 
 func TestGetByID(t *testing.T) {
