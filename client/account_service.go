@@ -31,8 +31,13 @@ func NewAccountService(sling *sling.Sling) *AccountService {
 
 // Get returns an Account that matches the input ID.
 func (s *AccountService) Get(id string) (*model.Account, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
 	if len(strings.Trim(id, " ")) == 0 {
-		return nil, errors.New("client: invalid ID")
+		return nil, errors.New("AccountService: invalid parameter, ID")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -47,6 +52,11 @@ func (s *AccountService) Get(id string) (*model.Account, error) {
 
 // GetAll returns all of the Accounts for a Space.
 func (s *AccountService) GetAll() (*[]model.Account, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
 	var p []model.Account
 	path := s.path
 	loadNextPage := true
@@ -68,6 +78,15 @@ func (s *AccountService) GetAll() (*[]model.Account, error) {
 
 // GetByName returns an Account that matches the input name.
 func (s *AccountService) GetByName(name string) (*model.Account, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, errors.New("AccountService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -80,11 +99,25 @@ func (s *AccountService) GetByName(name string) (*model.Account, error) {
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, errors.New("AccountService: item not found")
 }
 
 // Add creates a new Account.
 func (s *AccountService) Add(resource *model.Account) (*model.Account, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if resource == nil {
+		return nil, errors.New("AccountService: invalid parameter, resource")
+	}
+
+	err = resource.Validate()
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := apiAdd(s.sling, resource, new(model.Account), s.path)
 
 	if err != nil {
@@ -96,11 +129,29 @@ func (s *AccountService) Add(resource *model.Account) (*model.Account, error) {
 
 // Delete removes the Account that matches the input ID.
 func (s *AccountService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("AccountService: invalid parameter, ID")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 // Update modifies an Account based on the one provided as input.
 func (s *AccountService) Update(resource *model.Account) (*model.Account, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if resource == nil {
+		return nil, errors.New("AccountService: invalid parameter, resource")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", resource.ID)
 	resp, err := apiUpdate(s.sling, resource, new(model.Account), path)
 
@@ -109,4 +160,16 @@ func (s *AccountService) Update(resource *model.Account) (*model.Account, error)
 	}
 
 	return resp.(*model.Account), nil
+}
+
+func (s *AccountService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("AccountService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("AccountService: the internal path is not set")
+	}
+
+	return nil
 }
