@@ -15,7 +15,9 @@ func init() {
 
 func TestGetAPIKeys(t *testing.T) {
 
-	user, err := createUser(t)
+	user := model.NewUser(getRandomName(), getRandomName())
+	user.IsService = true
+	user, err := octopusClient.Users.Add(user)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
@@ -30,12 +32,14 @@ func TestGetAPIKeys(t *testing.T) {
 		assert.NotNil(t, apiKey.ID)
 	}
 
-	deleteUser(t, *user)
+	octopusClient.Users.Delete(user.ID)
 }
 
 func TestGetByID(t *testing.T) {
 
-	user, err := createUser(t)
+	user := model.NewUser(getRandomName(), getRandomName())
+	user.IsService = true
+	user, err := octopusClient.Users.Add(user)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
@@ -50,7 +54,7 @@ func TestGetByID(t *testing.T) {
 		assert.NotNil(t, key)
 	}
 
-	deleteUser(t, *user)
+	octopusClient.Users.Delete(user.ID)
 }
 
 func TestCreateAPIKey(t *testing.T) {
@@ -60,7 +64,9 @@ func TestCreateAPIKey(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, apiKey)
 
-	user, err := createUser(t)
+	user := model.NewUser(getRandomName(), getRandomName())
+	user.IsService = true
+	user, err = octopusClient.Users.Add(user)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
@@ -70,14 +76,6 @@ func TestCreateAPIKey(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, createdAPIKey)
-}
 
-func createUser(t *testing.T) (*model.User, error) {
-	user := model.NewUser(getRandomName(), getRandomName())
-	user.IsService = true
-	return octopusClient.Users.Add(user)
-}
-
-func deleteUser(t *testing.T, user model.User) error {
-	return octopusClient.Users.Delete(user.ID)
+	octopusClient.Users.Delete(user.ID)
 }
