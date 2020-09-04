@@ -1,6 +1,7 @@
 package client
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -26,8 +27,39 @@ func NewAPIKeyService(sling *sling.Sling) *APIKeyService {
 }
 
 // Get lists all API keys for a user, returning the most recent results first.
-func (s *APIKeyService) Get(userID string) (*model.APIKey, error) {
+func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	var p []model.APIKey
 	path := fmt.Sprintf("users/%s/apikeys", userID)
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.sling, new(model.APIKeys), path)
+
+		if err != nil {
+			return nil, err
+		}
+
+		r := resp.(*model.APIKeys)
+		p = append(p, r.Items...)
+		path, loadNextPage = LoadNextPage(r.PagedResults)
+	}
+
+	return &p, nil
+}
+
+// GetByID the API key that belongs to the user by its ID.
+func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("users/%s/apikeys/%s", userID, apiKeyID)
 	resp, err := apiGet(s.sling, new(model.APIKey), path)
 
 	if err != nil {
@@ -35,4 +67,35 @@ func (s *APIKeyService) Get(userID string) (*model.APIKey, error) {
 	}
 
 	return resp.(*model.APIKey), nil
+}
+
+// Create generates a new API key for the specified user ID. The API key
+// returned in the result must be saved by the caller, as it cannot be
+// retrieved subsequently from the Octopus server.
+func (s *APIKeyService) Create(apiKey *model.APIKey, userID string) (*model.APIKey, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if apiKey == nil {
+		return nil, errors.New("APIKeyService: invalid parameter, apiKey")
+	}
+
+	path := fmt.Sprintf("users/%s/apikeys", userID)
+	resp, err := apiPost(s.sling, apiKey, new(model.APIKey), path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.APIKey), nil
+}
+
+func (s *APIKeyService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("APIKeyService: the internal client is nil")
+	}
+
+	return nil
 }

@@ -2,6 +2,10 @@ package model
 
 import "time"
 
+type ResourceInterface interface {
+	Validate() error
+}
+
 type Resource struct {
 	ID             string            `json:"Id,omitempty"`
 	LastModifiedBy string            `json:"LastModifiedBy,omitempty"`

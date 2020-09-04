@@ -13,24 +13,65 @@ func init() {
 	}
 }
 
+func TestGetAPIKeys(t *testing.T) {
+
+	user, err := createUser(t)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, user)
+
+	apiKeys, err := octopusClient.APIKeys.Get(user.ID)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, apiKeys)
+
+	for _, apiKey := range *apiKeys {
+		assert.NotNil(t, apiKey)
+		assert.NotNil(t, apiKey.ID)
+	}
+
+	deleteUser(t, *user)
+}
+
 func TestGetByID(t *testing.T) {
-	apiKey, user := createAPIKey(t)
+
+	user, err := createUser(t)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, user)
+
+	apiKeys, err := octopusClient.APIKeys.Get(user.ID)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, apiKeys)
+
+	for _, apiKey := range *apiKeys {
+		key, _ := octopusClient.APIKeys.GetByID(user.ID, apiKey.ID)
+		assert.NotNil(t, key)
+	}
+
+	deleteUser(t, *user)
+}
+
+func TestCreateAPIKey(t *testing.T) {
+
+	apiKey, err := model.NewAPIKey("Random Purpose")
+
+	assert.NoError(t, err)
 	assert.NotNil(t, apiKey)
-	deleteUser(*user, t)
+
+	user, _ := octopusClient.Users.GetByName("john.bristowe@octopus.com")
+	createdAPIKey, _ := octopusClient.APIKeys.Create(apiKey, user.ID)
+
+	assert.NotNil(t, createdAPIKey)
 }
 
 func createUser(t *testing.T) (*model.User, error) {
 	user := model.NewUser(getRandomName(), getRandomName())
-	user.Password = getRandomName()
+	user.IsService = true
 	return octopusClient.Users.Add(user)
 }
 
-func deleteUser(user model.User, t *testing.T) error {
+func deleteUser(t *testing.T, user model.User) error {
 	return octopusClient.Users.Delete(user.ID)
-}
-
-func createAPIKey(t *testing.T) (*model.APIKey, *model.User) {
-	user, _ := createUser(t)
-	apiKey, _ := octopusClient.APIKeys.Get(user.ID)
-	return apiKey, user
 }
