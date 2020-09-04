@@ -50,9 +50,6 @@ func TestCreateAndDeleteAndGetUsernamePasswordAccount(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, verificationAccount)
 
-	t.Log(verificationAccount)
-	t.Log(account)
-
 	assert.Equal(t, account.Name, verificationAccount.Name)
 	assert.Equal(t, account.TenantedDeploymentParticipation, verificationAccount.TenantedDeploymentParticipation)
 	assert.Equal(t, account.Description, verificationAccount.Description)
@@ -81,8 +78,6 @@ func TestCreateInvalidAzureServicePrincipalAccount(t *testing.T) {
 
 	account, err = octopusClient.Accounts.Add(account)
 
-	t.Log(err)
-
 	assert.Error(t, err)
 	assert.Nil(t, account)
 }
@@ -94,8 +89,6 @@ func TestCreateInvalidAzureSubscriptionAccount(t *testing.T) {
 	assert.NotNil(t, account)
 
 	account, err = octopusClient.Accounts.Add(account)
-
-	t.Log(err)
 
 	assert.Error(t, err)
 	assert.Nil(t, account)
