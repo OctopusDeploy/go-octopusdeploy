@@ -55,14 +55,20 @@ func TestGetByID(t *testing.T) {
 
 func TestCreateAPIKey(t *testing.T) {
 
-	apiKey, err := model.NewAPIKey("Random Purpose")
+	apiKey, err := model.NewAPIKey(getRandomName())
 
 	assert.NoError(t, err)
 	assert.NotNil(t, apiKey)
 
-	user, _ := octopusClient.Users.GetByName("john.bristowe@octopus.com")
-	createdAPIKey, _ := octopusClient.APIKeys.Create(apiKey, user.ID)
+	user, err := createUser(t)
 
+	assert.NoError(t, err)
+	assert.NotNil(t, user)
+
+	apiKey.UserID = &user.ID
+	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)
+
+	assert.NoError(t, err)
 	assert.NotNil(t, createdAPIKey)
 }
 

@@ -72,7 +72,7 @@ func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, 
 // Create generates a new API key for the specified user ID. The API key
 // returned in the result must be saved by the caller, as it cannot be
 // retrieved subsequently from the Octopus server.
-func (s *APIKeyService) Create(apiKey *model.APIKey, userID string) (*model.APIKey, error) {
+func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func (s *APIKeyService) Create(apiKey *model.APIKey, userID string) (*model.APIK
 		return nil, errors.New("APIKeyService: invalid parameter, apiKey")
 	}
 
-	path := fmt.Sprintf("users/%s/apikeys", userID)
+	path := fmt.Sprintf("users/%s/apikeys", *apiKey.UserID)
 	resp, err := apiPost(s.sling, apiKey, new(model.APIKey), path)
 
 	if err != nil {
