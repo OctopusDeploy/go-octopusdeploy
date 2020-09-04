@@ -109,3 +109,5 @@ func validateAzureSubscriptionAccount(account *Account) error {
 	}
 	return ValidateMultipleProperties(validations)
 }
+
+var _ ResourceInterface = &Account{}
