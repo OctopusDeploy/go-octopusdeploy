@@ -11,12 +11,12 @@ type Users struct {
 
 type User struct {
 	Username            string     `json:"Username,omitempty"`
-	DisplayName         string     `json:"DisplayName"`
-	IsActive            bool       `json:"IsActive"`
-	IsService           bool       `json:"IsService"`
+	DisplayName         string     `json:"DisplayName,omitempty"`
+	IsActive            bool       `json:"IsActive,omitempty"`
+	IsService           bool       `json:"IsService,omitempty"`
 	EmailAddress        string     `json:"EmailAddress,omitempty"`
-	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited"`
-	IsRequestor         bool       `json:"IsRequestor"`
+	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited,omitempty"`
+	IsRequestor         bool       `json:"IsRequestor,omitempty"`
 	Password            string     `json:"Password,omitempty"`
 	Identities          []Identity `json:"Identities,omitempty"`
 	Resource
