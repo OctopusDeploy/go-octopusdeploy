@@ -35,7 +35,7 @@ func TestGetAPIKeys(t *testing.T) {
 	octopusClient.Users.Delete(user.ID)
 }
 
-func TestGetByID(t *testing.T) {
+func TestGetAPIKeyByID(t *testing.T) {
 
 	user := model.NewUser(getRandomName(), getRandomName())
 	user.IsService = true
