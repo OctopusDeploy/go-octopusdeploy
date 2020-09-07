@@ -1,7 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -20,6 +22,15 @@ func NewChannelService(sling *sling.Sling) *ChannelService {
 }
 
 func (s *ChannelService) Get(id string) (*model.Channel, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("ChannelService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Channel), path)
 
@@ -32,28 +43,32 @@ func (s *ChannelService) Get(id string) (*model.Channel, error) {
 
 // GetAll returns all Channels.
 func (s *ChannelService) GetAll() (*[]model.Channel, error) {
-	var p []model.Channel
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Channels), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.Channels)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.Channel), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.Channel), nil
 }
 
 // Add creates a new Channel.
 func (s *ChannelService) Add(resource *model.Channel) (*model.Channel, error) {
-	err := model.ValidateChannelValues(resource)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if resource == nil {
+		return nil, errors.New("ChannelService: invalid parameter, resource")
+	}
+
+	err = resource.Validate()
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +89,16 @@ func (s *ChannelService) Delete(id string) error {
 
 // Update modifies an Channel based on the one provided as input.
 func (s *ChannelService) Update(resource *model.Channel) (*model.Channel, error) {
-	err := model.ValidateChannelValues(resource)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
 
+	if resource == nil {
+		return nil, errors.New("ChannelService: invalid parameter, resource")
+	}
+
+	err = resource.Validate()
 	if err != nil {
 		return nil, err
 	}
@@ -89,3 +112,17 @@ func (s *ChannelService) Update(resource *model.Channel) (*model.Channel, error)
 
 	return resp.(*model.Channel), nil
 }
+
+func (s *ChannelService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("ChannelService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("ChannelService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &ChannelService{}

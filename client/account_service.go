@@ -37,7 +37,7 @@ func (s *AccountService) Get(id string) (*model.Account, error) {
 	}
 
 	if len(strings.Trim(id, " ")) == 0 {
-		return nil, errors.New("AccountService: invalid parameter, ID")
+		return nil, errors.New("AccountService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -138,11 +138,12 @@ func (s *AccountService) Update(resource *model.Account) (*model.Account, error)
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("AccountService: invalid parameter, resource")
+	err = resource.Validate()
+	if err != nil {
+		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
+	path := fmt.Sprintf(s.path+"/%s", resource.GetID())
 	resp, err := apiUpdate(s.sling, resource, new(model.Account), path)
 
 	if err != nil {
@@ -163,3 +164,5 @@ func (s *AccountService) validateInternalState() error {
 
 	return nil
 }
+
+var _ ServiceInterface = &AccountService{}

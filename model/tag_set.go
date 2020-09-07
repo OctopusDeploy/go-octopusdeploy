@@ -15,9 +15,12 @@ type TagSet struct {
 	Tags []Tag  `json:"Tags,omitempty"`
 }
 
+func (t *TagSet) GetID() string {
+	return t.ID
+}
+
 func (t *TagSet) Validate() error {
 	validate := validator.New()
-
 	err := validate.Struct(t)
 
 	if err != nil {
@@ -32,3 +35,5 @@ func NewTagSet(name string) *TagSet {
 		Name: name,
 	}
 }
+
+var _ ResourceInterface = &TagSet{}

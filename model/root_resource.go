@@ -15,6 +15,10 @@ type RootResource struct {
 	Resource
 }
 
+func (r *RootResource) GetID() string {
+	return r.ID
+}
+
 func (r *RootResource) Validate() error {
 	validate := validator.New()
 	err := validate.Struct(r)

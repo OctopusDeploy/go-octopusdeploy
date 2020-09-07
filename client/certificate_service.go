@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -24,8 +25,17 @@ func NewCertificateService(sling *sling.Sling) *CertificateService {
 	}
 }
 
-func (s *CertificateService) Get(certificateID string) (*model.Certificate, error) {
-	path := fmt.Sprintf(s.path+"/%s", certificateID)
+func (s *CertificateService) Get(id string) (*model.Certificate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("CertificateService: invalid parameter, id")
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Certificate), path)
 
 	if err != nil {
@@ -36,23 +46,18 @@ func (s *CertificateService) Get(certificateID string) (*model.Certificate, erro
 }
 
 func (s *CertificateService) GetAll() (*[]model.Certificate, error) {
-	var p []model.Certificate
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Certificates), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.Certificates)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.Certificate), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.Certificate), nil
 }
 
 func (s *CertificateService) GetByName(name string) (*model.Certificate, error) {
@@ -108,3 +113,17 @@ func (s *CertificateService) Replace(certificateID string, certificateReplace *m
 	//The API endpoint /certificates/id/replace returns the old cert, we need to re-query to get the updated one.
 	return s.Get(certificateID)
 }
+
+func (s *CertificateService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("CertificateService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("CertificateService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &CertificateService{}

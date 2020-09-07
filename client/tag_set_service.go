@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -21,6 +22,15 @@ func NewTagSetService(sling *sling.Sling) *TagSetService {
 }
 
 func (s *TagSetService) Get(id string) (*model.TagSet, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("TagSetService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.TagSet), path)
 
@@ -32,23 +42,18 @@ func (s *TagSetService) Get(id string) (*model.TagSet, error) {
 }
 
 func (s *TagSetService) GetAll() (*[]model.TagSet, error) {
-	var p []model.TagSet
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.TagSets), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.TagSets)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.TagSet), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.TagSet), nil
 }
 
 func (s *TagSetService) GetByName(name string) (*model.TagSet, error) {
@@ -91,3 +96,17 @@ func (s *TagSetService) Update(resource *model.TagSet) (*model.TagSet, error) {
 
 	return resp.(*model.TagSet), nil
 }
+
+func (s *TagSetService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("TagSetService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("TagSetService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &TagSetService{}

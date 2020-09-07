@@ -1,6 +1,8 @@
 package model
 
-import "github.com/OctopusDeploy/go-octopusdeploy/enum"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+)
 
 type MachineCleanupPolicy struct {
 	DeleteMachinesBehavior        enum.DeleteMachinesBehavior `json:"DeleteMachinesBehavior,omitempty"`

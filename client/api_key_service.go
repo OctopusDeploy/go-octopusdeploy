@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -31,6 +32,10 @@ func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
+	}
+
+	if len(strings.Trim(userID, " ")) == 0 {
+		return nil, errors.New("APIKeyService: invalid parameter, userID")
 	}
 
 	var p []model.APIKey
@@ -99,3 +104,5 @@ func (s *APIKeyService) validateInternalState() error {
 
 	return nil
 }
+
+var _ ServiceInterface = &APIKeyService{}

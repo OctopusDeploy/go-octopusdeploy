@@ -3,6 +3,7 @@ package model
 import "time"
 
 type ResourceInterface interface {
+	GetID() string
 	Validate() error
 }
 

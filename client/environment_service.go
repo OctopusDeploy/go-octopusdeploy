@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -21,6 +22,15 @@ func NewEnvironmentService(sling *sling.Sling) *EnvironmentService {
 }
 
 func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("EnvironmentService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Environment), path)
 
@@ -32,23 +42,18 @@ func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
 }
 
 func (s *EnvironmentService) GetAll() (*[]model.Environment, error) {
-	var p []model.Environment
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Environments), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.Environments)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.Environment), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.Environment), nil
 }
 
 func (s *EnvironmentService) GetByName(name string) (*model.Environment, error) {
@@ -91,3 +96,17 @@ func (s *EnvironmentService) Update(resource *model.Environment) (*model.Environ
 
 	return resp.(*model.Environment), nil
 }
+
+func (s *EnvironmentService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("EnvironmentService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("EnvironmentService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &EnvironmentService{}

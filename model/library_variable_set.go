@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -34,3 +36,31 @@ func ValidateLibraryVariableSetValues(LibraryVariableSet *LibraryVariableSet) er
 	err := validate.Struct(LibraryVariableSet)
 	return err
 }
+
+func (l *LibraryVariableSet) GetID() string {
+	return l.ID
+}
+
+// Validate returns a collection of validation errors against the library
+// variable set's internal values.
+func (l *LibraryVariableSet) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(l)
+
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			fmt.Println(err)
+			return nil
+		}
+
+		for _, err := range err.(validator.ValidationErrors) {
+			fmt.Println(err)
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+var _ ResourceInterface = &LibraryVariableSet{}

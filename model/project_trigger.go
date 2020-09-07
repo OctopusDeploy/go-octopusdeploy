@@ -1,5 +1,7 @@
 package model
 
+import "github.com/go-playground/validator/v10"
+
 type ProjectTriggers struct {
 	Items []ProjectTrigger `json:"Items"`
 	PagedResults
@@ -38,3 +40,21 @@ func NewProjectDeploymentTargetTrigger(name, projectID string, shouldRedeploy bo
 		ProjectID: projectID,
 	}
 }
+
+func (p *ProjectTrigger) GetID() string {
+	return p.ID
+}
+
+func (p *ProjectTrigger) Validate() error {
+	validate := validator.New()
+
+	err := validate.Struct(p)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var _ ResourceInterface = &ProjectTrigger{}

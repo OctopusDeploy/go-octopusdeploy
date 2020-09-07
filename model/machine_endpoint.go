@@ -31,10 +31,14 @@ func NewMachineEndpoint() (*MachineEndpoint, error) {
 	return &MachineEndpoint{}, nil
 }
 
-func (t *MachineEndpoint) Validate() error {
+func (m *MachineEndpoint) GetID() string {
+	return m.ID
+}
+
+func (m *MachineEndpoint) Validate() error {
 
 	validate := validator.New()
-	err := validate.Struct(t)
+	err := validate.Struct(m)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
@@ -51,3 +55,5 @@ func (t *MachineEndpoint) Validate() error {
 
 	return nil
 }
+
+var _ ResourceInterface = &MachineEndpoint{}

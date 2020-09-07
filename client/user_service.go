@@ -27,6 +27,10 @@ func (s *UserService) Get(id string) (*model.User, error) {
 		return nil, err
 	}
 
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("UserService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.User), path)
 
@@ -186,3 +190,5 @@ func (s *UserService) validateInternalState() error {
 
 	return nil
 }
+
+var _ ServiceInterface = &UserService{}

@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -21,6 +22,15 @@ func NewFeedService(sling *sling.Sling) *FeedService {
 }
 
 func (s *FeedService) Get(id string) (*model.Feed, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("FeedService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Feed), path)
 
@@ -32,23 +42,18 @@ func (s *FeedService) Get(id string) (*model.Feed, error) {
 }
 
 func (s *FeedService) GetAll() (*[]model.Feed, error) {
-	var p []model.Feed
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Feeds), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.Feeds)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.Feed), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.Feed), nil
 }
 
 func (s *FeedService) GetByName(name string) (*model.Feed, error) {
@@ -91,3 +96,17 @@ func (s *FeedService) Update(resource *model.Feed) (*model.Feed, error) {
 
 	return resp.(*model.Feed), nil
 }
+
+func (s *FeedService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("FeedService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("FeedService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &FeedService{}

@@ -1,7 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -238,3 +240,17 @@ func (s *VariableService) MatchesScope(variableScope *model.VariableScope, defin
 
 	return matched, &matchedScopes, nil
 }
+
+func (s *VariableService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("VariableService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("VariableService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &VariableService{}

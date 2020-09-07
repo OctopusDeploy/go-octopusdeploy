@@ -1,5 +1,11 @@
 package model
 
+import (
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
+)
+
 // ActionTemplates defines a collection of action templates with built-in
 // support for paged results.
 type ActionTemplates struct {
@@ -19,3 +25,27 @@ type ActionTemplate struct {
 	Version                   int32                      `json:"Version,omitempty"`
 	Resource
 }
+
+func (a *ActionTemplate) GetID() string {
+	return a.ID
+}
+
+func (a *ActionTemplate) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(a)
+
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			fmt.Println(err)
+			return nil
+		}
+		for _, err := range err.(validator.ValidationErrors) {
+			fmt.Println(err)
+		}
+		return err
+	}
+
+	return nil
+}
+
+var _ ResourceInterface = &ActionTemplate{}

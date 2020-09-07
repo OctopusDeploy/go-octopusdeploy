@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -22,6 +23,15 @@ func NewMachineService(sling *sling.Sling) *MachineService {
 
 // Get returns a single machine with a given ID.
 func (s *MachineService) Get(id string) (*model.Machine, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("MachineService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Machine), path)
 
@@ -105,3 +115,17 @@ func (s *MachineService) Update(resource *model.Machine) (*model.Machine, error)
 
 	return resp.(*model.Machine), nil
 }
+
+func (s *MachineService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("MachineService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("MachineService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &MachineService{}

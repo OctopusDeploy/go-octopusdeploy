@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -21,6 +22,15 @@ func NewSpaceService(sling *sling.Sling) *SpaceService {
 }
 
 func (s *SpaceService) Get(id string) (*model.Space, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("SpaceService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Space), path)
 
@@ -32,23 +42,18 @@ func (s *SpaceService) Get(id string) (*model.Space, error) {
 }
 
 func (s *SpaceService) GetAll() (*[]model.Space, error) {
-	var p []model.Space
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Spaces), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.Spaces)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.Space), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.Space), nil
 }
 
 func (s *SpaceService) GetByName(name string) (*model.Space, error) {
@@ -91,3 +96,17 @@ func (s *SpaceService) Update(resource *model.Space) (*model.Space, error) {
 
 	return resp.(*model.Space), nil
 }
+
+func (s *SpaceService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("SpaceService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("SpaceService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &SpaceService{}

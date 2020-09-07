@@ -22,10 +22,13 @@ type User struct {
 	Resource
 }
 
-func (t *User) Validate() error {
-	validate := validator.New()
+func (u *User) GetID() string {
+	return u.ID
+}
 
-	err := validate.Struct(t)
+func (u *User) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(u)
 
 	if err != nil {
 		return err
@@ -40,3 +43,5 @@ func NewUser(username, displayName string) *User {
 		DisplayName: displayName,
 	}
 }
+
+var _ ResourceInterface = &User{}

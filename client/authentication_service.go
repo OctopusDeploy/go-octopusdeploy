@@ -1,6 +1,10 @@
 package client
 
 import (
+	"errors"
+	"fmt"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 )
@@ -30,3 +34,17 @@ func (s *AuthenticationService) Get() (*model.Authentication, error) {
 
 	return resp.(*model.Authentication), nil
 }
+
+func (s *AuthenticationService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("AuthenticationService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("AuthenticationService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &AuthenticationService{}

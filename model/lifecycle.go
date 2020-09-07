@@ -61,3 +61,33 @@ func ValidateLifecycleValues(Lifecycle *Lifecycle) error {
 
 	return nil
 }
+
+func (l *Lifecycle) GetID() string {
+	return l.ID
+}
+
+// ValidateLifecycleValues checks the values of a Lifecycle object to see
+// if they are suitable for sending to Octopus Deploy. Used when adding or
+// updating lifecycles.
+func (l *Lifecycle) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(l)
+
+	if err != nil {
+		return err
+	}
+
+	if l.Phases != nil {
+		for _, phase := range l.Phases {
+			phaseErr := validate.Struct(phase)
+
+			if phaseErr != nil {
+				return phaseErr
+			}
+		}
+	}
+
+	return nil
+}
+
+var _ ResourceInterface = &Lifecycle{}

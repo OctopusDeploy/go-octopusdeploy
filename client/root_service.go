@@ -41,3 +41,5 @@ func (s *RootService) validateInternalState() error {
 
 	return nil
 }
+
+var _ ServiceInterface = &RootService{}

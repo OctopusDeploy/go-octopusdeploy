@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -23,6 +24,15 @@ func NewLifecycleService(sling *sling.Sling) *LifecycleService {
 
 // Get returns a single lifecycle by its lifecycleid in Octopus Deploy
 func (s *LifecycleService) Get(id string) (*model.Lifecycle, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("LifecycleService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Lifecycle), path)
 
@@ -119,3 +129,17 @@ func (s *LifecycleService) Update(resource *model.Lifecycle) (*model.Lifecycle, 
 
 	return resp.(*model.Lifecycle), nil
 }
+
+func (s *LifecycleService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("LifecycleService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("LifecycleService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &LifecycleService{}

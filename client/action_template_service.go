@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -25,8 +26,17 @@ func NewActionTemplateService(sling *sling.Sling) *ActionTemplateService {
 	}
 }
 
-func (s *ActionTemplateService) Get(actionTemplateID string) (*model.ActionTemplate, error) {
-	path := fmt.Sprintf(s.path+"/%s", actionTemplateID)
+func (s *ActionTemplateService) Get(id string) (*model.ActionTemplate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("ActionTemplateService: invalid parameter, ID")
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.ActionTemplate), path)
 
 	if err != nil {
@@ -37,23 +47,18 @@ func (s *ActionTemplateService) Get(actionTemplateID string) (*model.ActionTempl
 }
 
 func (s *ActionTemplateService) GetAll() (*[]model.ActionTemplate, error) {
-	var p []model.ActionTemplate
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.ActionTemplates), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.ActionTemplates)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.ActionTemplate), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.ActionTemplate), nil
 }
 
 func (s *ActionTemplateService) GetByName(name string) (*model.ActionTemplate, error) {
@@ -87,7 +92,7 @@ func (s *ActionTemplateService) Delete(id string) error {
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *ActionTemplateService) Update(resource *model.ActionTemplate) (*model.ActionTemplate, error) {
+func (s *ActionTemplateService) Update(resource model.ActionTemplate) (*model.ActionTemplate, error) {
 	path := fmt.Sprintf(s.path+"/%s", resource.ID)
 	resp, err := apiUpdate(s.sling, resource, new(model.ActionTemplate), path)
 
@@ -97,3 +102,17 @@ func (s *ActionTemplateService) Update(resource *model.ActionTemplate) (*model.A
 
 	return resp.(*model.ActionTemplate), nil
 }
+
+func (s *ActionTemplateService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("ActionTemplateService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("ActionTemplateService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &ActionTemplateService{}

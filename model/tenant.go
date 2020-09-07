@@ -1,12 +1,14 @@
 package model
 
+import "github.com/go-playground/validator/v10"
+
 type Tenants struct {
 	Items []Tenant `json:"Items"`
 	PagedResults
 }
 
 type Tenant struct {
-	Name                string              `json:"Name"`
+	Name                string              `json:"Name" validate:"required"`
 	TenantTags          []string            `json:"TenantTags,omitempty"`
 	ProjectEnvironments map[string][]string `json:"ProjectEnvironments,omitempty"`
 	SpaceID             string              `json:"SpaceId"`
@@ -22,8 +24,19 @@ func NewTenant(name, description string) *Tenant {
 	}
 }
 
-func ValidateTenantValues(tenant *Tenant) error {
-	return ValidateMultipleProperties([]error{
-		ValidateRequiredPropertyValue("Name", tenant.Name),
-	})
+func (t *Tenant) GetID() string {
+	return t.ID
 }
+
+func (t *Tenant) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(t)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var _ ResourceInterface = &Tenant{}

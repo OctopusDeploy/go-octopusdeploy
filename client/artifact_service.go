@@ -1,7 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -24,6 +26,15 @@ func NewArtifactService(sling *sling.Sling) *ArtifactService {
 
 // Get returns an Artifact that matches the input ID.
 func (s *ArtifactService) Get(id string) (*model.Artifact, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("ArtifactService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Artifact), path)
 
@@ -82,3 +93,17 @@ func (s *ArtifactService) Update(resource *model.Artifact) (*model.Artifact, err
 
 	return resp.(*model.Artifact), nil
 }
+
+func (s *ArtifactService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("ArtifactService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("ArtifactService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &ArtifactService{}

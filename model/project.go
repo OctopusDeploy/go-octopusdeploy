@@ -1,6 +1,11 @@
 package model
 
-import "github.com/OctopusDeploy/go-octopusdeploy/enum"
+import (
+	"fmt"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+	"github.com/go-playground/validator/v10"
+)
 
 type Projects struct {
 	Items []Project `json:"Items"`
@@ -53,14 +58,37 @@ func NewProject(name, lifeCycleID, projectGroupID string) *Project {
 	}
 }
 
-// ValidateProjectValues checks the values of a Project object to see if they are suitable for
-// sending to Octopus Deploy. Used when adding or updating projects.
-func ValidateProjectValues(Project *Project) error {
-	return ValidateMultipleProperties([]error{
-		ValidatePropertyValues("SkipMachineBehavior", Project.ProjectConnectivityPolicy.SkipMachineBehavior, ValidProjectConnectivityPolicySkipMachineBehaviors),
-		ValidatePropertyValues("DefaultGuidedFailureMode", Project.DefaultGuidedFailureMode, ValidProjectDefaultGuidedFailureModes),
-		ValidateRequiredPropertyValue("LifecycleID", Project.LifecycleID),
-		ValidateRequiredPropertyValue("Name", Project.Name),
-		ValidateRequiredPropertyValue("ProjectGroupID", Project.ProjectGroupID),
-	})
+func (p *Project) GetID() string {
+	return p.ID
 }
+
+// Validate returns a collection of validation errors against the project's
+// internal values.
+func (p *Project) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(p)
+
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			fmt.Println(err)
+			return nil
+		}
+
+		for _, err := range err.(validator.ValidationErrors) {
+			fmt.Println(err)
+		}
+
+		return err
+	}
+
+	return ValidateMultipleProperties([]error{
+		ValidatePropertyValues("SkipMachineBehavior", p.ProjectConnectivityPolicy.SkipMachineBehavior, ValidProjectConnectivityPolicySkipMachineBehaviors),
+		ValidatePropertyValues("DefaultGuidedFailureMode", p.DefaultGuidedFailureMode, ValidProjectDefaultGuidedFailureModes),
+		ValidateRequiredPropertyValue("LifecycleID", p.LifecycleID),
+		ValidateRequiredPropertyValue("Name", p.Name),
+		ValidateRequiredPropertyValue("ProjectGroupID", p.ProjectGroupID),
+	})
+
+}
+
+var _ ResourceInterface = &Project{}

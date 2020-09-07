@@ -1,7 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -20,6 +22,15 @@ func NewDeploymentProcessService(sling *sling.Sling) *DeploymentProcessService {
 }
 
 func (s *DeploymentProcessService) Get(id string) (*model.DeploymentProcess, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("DeploymentProcessService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.DeploymentProcess), path)
 
@@ -60,3 +71,17 @@ func (s *DeploymentProcessService) Update(resource *model.DeploymentProcess) (*m
 
 	return resp.(*model.DeploymentProcess), nil
 }
+
+func (s *DeploymentProcessService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("DeploymentProcessService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("DeploymentProcessService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &DeploymentProcessService{}

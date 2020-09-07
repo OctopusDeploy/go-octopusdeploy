@@ -17,6 +17,10 @@ type ProjectGroup struct {
 	Resource
 }
 
+func (p *ProjectGroup) GetID() string {
+	return p.ID
+}
+
 func (p *ProjectGroup) Validate() error {
 	validate := validator.New()
 
@@ -34,3 +38,5 @@ func NewProjectGroup(name string) *ProjectGroup {
 		Name: name,
 	}
 }
+
+var _ ResourceInterface = &Project{}

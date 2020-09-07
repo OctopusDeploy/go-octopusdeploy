@@ -18,10 +18,13 @@ type Environment struct {
 	AllowDynamicInfrastructure bool   `json:"AllowDynamicInfrastructure"`
 }
 
-func (t *Environment) Validate() error {
-	validate := validator.New()
+func (e *Environment) GetID() string {
+	return e.ID
+}
 
-	err := validate.Struct(t)
+func (e *Environment) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(e)
 
 	if err != nil {
 		return err
@@ -37,3 +40,5 @@ func NewEnvironment(name, description string, useguidedfailure bool) *Environmen
 		UseGuidedFailure: useguidedfailure,
 	}
 }
+
+var _ ResourceInterface = &Environment{}

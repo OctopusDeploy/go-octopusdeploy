@@ -1,7 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -20,6 +22,15 @@ func NewProjectGroupService(sling *sling.Sling) *ProjectGroupService {
 }
 
 func (s *ProjectGroupService) Get(id string) (*model.ProjectGroup, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("ProjectGroupService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.ProjectGroup), path)
 
@@ -31,23 +42,18 @@ func (s *ProjectGroupService) Get(id string) (*model.ProjectGroup, error) {
 }
 
 func (s *ProjectGroupService) GetAll() (*[]model.ProjectGroup, error) {
-	var p []model.ProjectGroup
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.ProjectGroups), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.ProjectGroups)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	resp, err := apiGet(s.sling, new([]model.ProjectGroup), s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*[]model.ProjectGroup), nil
 }
 
 func (s *ProjectGroupService) Add(resource *model.ProjectGroup) (*model.ProjectGroup, error) {
@@ -64,8 +70,8 @@ func (s *ProjectGroupService) Delete(id string) error {
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *ProjectGroupService) Update(resource *model.ProjectGroup) (*model.ProjectGroup, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
+func (s *ProjectGroupService) Update(resource model.ProjectGroup) (*model.ProjectGroup, error) {
+	path := fmt.Sprintf(s.path+"/%s", resource.GetID())
 	resp, err := apiUpdate(s.sling, resource, new(model.ProjectGroup), path)
 
 	if err != nil {
@@ -74,3 +80,17 @@ func (s *ProjectGroupService) Update(resource *model.ProjectGroup) (*model.Proje
 
 	return resp.(*model.ProjectGroup), nil
 }
+
+func (s *ProjectGroupService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("ProjectGroupService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("ProjectGroupService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &ProjectGroupService{}

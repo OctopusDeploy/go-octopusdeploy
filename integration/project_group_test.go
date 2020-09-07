@@ -89,7 +89,7 @@ func TestProjectGroupUpdate(t *testing.T) {
 	projectGroup.Name = newProjectGroupName
 	projectGroup.Description = newDescription
 
-	updatedProjectGroup, err := octopusClient.ProjectGroups.Update(&projectGroup)
+	updatedProjectGroup, err := octopusClient.ProjectGroups.Update(projectGroup)
 	assert.Nil(t, err, "error when updating projectgroup")
 	assert.Equal(t, newProjectGroupName, updatedProjectGroup.Name, "projectgroup name was not updated")
 	assert.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")

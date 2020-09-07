@@ -1,7 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -21,6 +23,15 @@ func NewInterruptionService(sling *sling.Sling) *InterruptionsService {
 
 // Get returns the interruption matching the id
 func (s *InterruptionsService) Get(id string) (*model.Interruption, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("InterruptionsService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.Interruption), path)
 
@@ -86,3 +97,17 @@ func (s *InterruptionsService) TakeResponsability(i *model.Interruption) (*model
 	}
 	return resp.(*model.User), nil
 }
+
+func (s *InterruptionsService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("InterruptionsService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("InterruptionsService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &InterruptionsService{}

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -23,6 +24,15 @@ func NewLibraryVariableSetService(sling *sling.Sling) *LibraryVariableSetService
 
 // Get returns a single LibraryVariableSet by its Id in Octopus Deploy
 func (s *LibraryVariableSetService) Get(id string) (*model.LibraryVariableSet, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("LibraryVariableSetService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.LibraryVariableSet), path)
 
@@ -119,3 +129,17 @@ func (s *LibraryVariableSetService) Update(resource *model.LibraryVariableSet) (
 
 	return resp.(*model.LibraryVariableSet), nil
 }
+
+func (s *LibraryVariableSetService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("LibraryVariableSetService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("LibraryVariableSetService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &LibraryVariableSetService{}

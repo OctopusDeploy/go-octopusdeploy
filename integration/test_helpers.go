@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -28,19 +29,19 @@ func initTest() *client.Client {
 	// NOTE: You can direct traffic through a proxy trace like Fiddler
 	// Everywhere by preconfiguring the client to route traffic through a
 	// proxy.
-	//
-	// proxyStr := "http://127.0.0.1:5555"
-	// proxyURL, err := url.Parse(proxyStr)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
 
-	// tr := &http.Transport{
-	// 	Proxy: http.ProxyURL(proxyURL),
-	// }
-	// httpClient := http.Client{Transport: tr}
+	proxyStr := "http://127.0.0.1:5555"
+	proxyURL, err := url.Parse(proxyStr)
+	if err != nil {
+		log.Println(err)
+	}
 
-	httpClient := http.Client{}
+	tr := &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+	}
+	httpClient := http.Client{Transport: tr}
+
+	// httpClient := http.Client{}
 	octopusClient, err := client.NewClient(&httpClient, octopusURL, octopusAPIKey)
 	if err != nil {
 		log.Fatal(err)

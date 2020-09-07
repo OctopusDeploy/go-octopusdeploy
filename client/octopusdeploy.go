@@ -20,6 +20,7 @@ type Client struct {
 	Authentication      *AuthenticationService
 	Certificates        *CertificateService
 	Channels            *ChannelService
+	Configuration       *ConfigurationService
 	DeploymentProcesses *DeploymentProcessService
 	Environments        *EnvironmentService
 	Feeds               *FeedService
@@ -57,6 +58,7 @@ func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, err
 		Authentication:      NewAuthenticationService(base.New()),
 		Certificates:        NewCertificateService(base.New()),
 		Channels:            NewChannelService(base.New()),
+		Configuration:       NewConfigurationService(base.New()),
 		DeploymentProcesses: NewDeploymentProcessService(base.New()),
 		Environments:        NewEnvironmentService(base.New()),
 		Feeds:               NewFeedService(base.New()),
@@ -94,6 +96,7 @@ func ForSpace(httpClient *http.Client, octopusURL string, apiKey string, space *
 		Authentication:      NewAuthenticationService(base.New()),
 		Certificates:        NewCertificateService(base.New()),
 		Channels:            NewChannelService(base.New()),
+		Configuration:       NewConfigurationService(base.New()),
 		DeploymentProcesses: NewDeploymentProcessService(base.New()),
 		Environments:        NewEnvironmentService(base.New()),
 		Feeds:               NewFeedService(base.New()),
@@ -174,10 +177,10 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 }
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
-func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
+func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, path string) (interface{}, error) {
 	octopusDeployError := new(APIError)
 
-	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
+	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(resource, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
 
@@ -185,7 +188,7 @@ func apiAdd(sling *sling.Sling, inputStruct, returnStruct interface{}, path stri
 		return nil, apiErrorCheck
 	}
 
-	return returnStruct, nil
+	return resource, nil
 }
 
 // apiPost post to octopus and expect a 200 response code.

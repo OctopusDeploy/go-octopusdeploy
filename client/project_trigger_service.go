@@ -1,7 +1,9 @@
 package client
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -20,8 +22,16 @@ func NewProjectTriggerService(sling *sling.Sling) *ProjectTriggerService {
 }
 
 func (s *ProjectTriggerService) Get(id string) (*model.ProjectTrigger, error) {
-	path := fmt.Sprintf(s.path+"/%s", id)
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
 
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("ProjectTriggerService: invalid parameter, id")
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.ProjectTrigger), path)
 
 	if err != nil {
@@ -80,6 +90,20 @@ func (s *ProjectTriggerService) Delete(id string) error {
 }
 
 func (s *ProjectTriggerService) Update(resource *model.ProjectTrigger) (*model.ProjectTrigger, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if resource == nil {
+		return nil, errors.New("ProjectTriggerService: invalid parameter, resource")
+	}
+
+	err = resource.Validate()
+	if err != nil {
+		return nil, err
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", resource.ID)
 	resp, err := apiUpdate(s.sling, resource, new(model.ProjectTrigger), path)
 
@@ -89,3 +113,17 @@ func (s *ProjectTriggerService) Update(resource *model.ProjectTrigger) (*model.P
 
 	return resp.(*model.ProjectTrigger), nil
 }
+
+func (s *ProjectTriggerService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("ProjectTriggerService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("ProjectTriggerService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &ProjectTriggerService{}

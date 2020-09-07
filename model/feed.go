@@ -19,10 +19,13 @@ type Feed struct {
 	Password                    SensitiveValue `json:"Password"`
 }
 
-func (t *Feed) Validate() error {
-	validate := validator.New()
+func (f *Feed) GetID() string {
+	return f.ID
+}
 
-	err := validate.Struct(t)
+func (f *Feed) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(f)
 
 	if err != nil {
 		return err
@@ -38,3 +41,5 @@ func NewFeed(name, feedType string, feedURI string) *Feed {
 		FeedURI:  feedURI,
 	}
 }
+
+var _ ResourceInterface = &Feed{}

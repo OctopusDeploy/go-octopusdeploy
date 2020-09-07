@@ -50,11 +50,15 @@ func NewMachine(name string, isDisabled bool, environments []string, roles []str
 	}, nil
 }
 
+func (m *Machine) GetID() string {
+	return m.ID
+}
+
 // Validate returns a collection of validation errors against the machine's
 // internal values.
-func (machine *Machine) Validate() error {
+func (m *Machine) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(machine)
+	err := validate.Struct(m)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
@@ -71,3 +75,5 @@ func (machine *Machine) Validate() error {
 
 	return nil
 }
+
+var _ ResourceInterface = &Machine{}

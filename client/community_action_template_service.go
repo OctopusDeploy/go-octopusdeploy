@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -25,6 +26,15 @@ func NewCommunityActionTemplateService(sling *sling.Sling) *CommunityActionTempl
 
 // Get returns an Account that matches the input ID.
 func (s *CommunityActionTemplateService) Get(id string) (*model.CommunityActionTemplate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return nil, errors.New("CommunityActionTemplateService: invalid parameter, id")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s", id)
 	resp, err := apiGet(s.sling, new(model.CommunityActionTemplate), path)
 
@@ -100,3 +110,17 @@ func (s *CommunityActionTemplateService) Update(resource *model.CommunityActionT
 
 	return resp.(*model.CommunityActionTemplate), nil
 }
+
+func (s *CommunityActionTemplateService) validateInternalState() error {
+	if s.sling == nil {
+		return fmt.Errorf("CommunityActionTemplateService: the internal client is nil")
+	}
+
+	if len(strings.Trim(s.path, " ")) == 0 {
+		return errors.New("CommunityActionTemplateService: the internal path is not set")
+	}
+
+	return nil
+}
+
+var _ ServiceInterface = &CommunityActionTemplateService{}

@@ -19,10 +19,13 @@ type Space struct {
 	Resource
 }
 
-func (t *Space) Validate() error {
-	validate := validator.New()
+func (s *Space) GetID() string {
+	return s.ID
+}
 
-	err := validate.Struct(t)
+func (s *Space) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(s)
 
 	if err != nil {
 		return err
@@ -36,3 +39,5 @@ func NewSpace(name string) *Space {
 		Name: name,
 	}
 }
+
+var _ ResourceInterface = &Space{}

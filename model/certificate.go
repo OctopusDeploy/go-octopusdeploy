@@ -16,7 +16,6 @@ type CertificateReplace struct {
 }
 
 type Certificate struct {
-	ID                              string                      `json:"Id,omitempty"`
 	Name                            string                      `json:"Name,omitempty"`
 	Notes                           string                      `json:"Notes,omitempty"`
 	CertificateData                 SensitiveValue              `json:"CertificateData,omitempty"`
@@ -44,12 +43,17 @@ type Certificate struct {
 	SerialNumber                    string                      `json:"SerialNumber,omitempty"`
 	SignatureAlgorithmName          string                      `json:"SignatureAlgorithmName,omitempty"`
 	SubjectAlternativeNames         []string                    `json:"SubjectAlternativeNames,omitempty"`
+	Resource
 }
 
-func (t *Certificate) Validate() error {
+func (c *Certificate) GetID() string {
+	return c.ID
+}
+
+func (c *Certificate) Validate() error {
 	validate := validator.New()
 
-	err := validate.Struct(t)
+	err := validate.Struct(c)
 
 	if err != nil {
 		return err
@@ -72,3 +76,5 @@ func NewCertificateReplace(certificateData string, password string) *Certificate
 		Password:        password,
 	}
 }
+
+var _ ResourceInterface = &Certificate{}

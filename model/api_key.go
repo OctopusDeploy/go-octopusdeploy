@@ -29,9 +29,13 @@ type APIKey struct {
 	Resource
 }
 
-func (apiKey *APIKey) Validate() error {
+func (a *APIKey) GetID() string {
+	return a.ID
+}
+
+func (a *APIKey) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(apiKey)
+	err := validate.Struct(a)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
