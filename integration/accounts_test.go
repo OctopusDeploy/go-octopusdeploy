@@ -44,11 +44,13 @@ func TestCreateAndDeleteAndGetUsernamePasswordAccount(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
+	assert.NoError(t, account.Validate())
 
 	verificationAccount, err := octopusClient.Accounts.Get(account.ID)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, verificationAccount)
+	assert.NoError(t, verificationAccount.Validate())
 
 	assert.Equal(t, account.Name, verificationAccount.Name)
 	assert.Equal(t, account.TenantedDeploymentParticipation, verificationAccount.TenantedDeploymentParticipation)
@@ -68,6 +70,7 @@ func TestCreateAndDeleteAndGetUsernamePasswordAccount(t *testing.T) {
 	account, err = octopusClient.Accounts.Get(account.ID)
 
 	assert.Error(t, err)
+	assert.Nil(t, account)
 }
 
 func TestCreateInvalidAzureServicePrincipalAccount(t *testing.T) {
@@ -75,6 +78,7 @@ func TestCreateInvalidAzureServicePrincipalAccount(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
 
 	account, err = octopusClient.Accounts.Add(account)
 
@@ -87,6 +91,7 @@ func TestCreateInvalidAzureSubscriptionAccount(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
+	assert.Error(t, account.Validate())
 
 	account, err = octopusClient.Accounts.Add(account)
 
@@ -109,6 +114,7 @@ func TestCreateAndDeleteAndGetMinimalAzureSubscriptionAccount(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
+	assert.NoError(t, account.Validate())
 	assert.NotEmpty(t, account.ID)
 	assert.Len(t, account.EnvironmentIDs, 0)
 	assert.Len(t, account.TenantIDs, 0)
@@ -126,4 +132,12 @@ func TestCreateAndDeleteAndGetMinimalAzureSubscriptionAccount(t *testing.T) {
 	account, err = octopusClient.Accounts.Get(account.ID)
 
 	assert.Error(t, err)
+	assert.Nil(t, account)
+}
+
+func TestGetAll(t *testing.T) {
+	accounts, err := octopusClient.Accounts.GetAll()
+
+	assert.NoError(t, err)
+	assert.NotNil(t, accounts)
 }

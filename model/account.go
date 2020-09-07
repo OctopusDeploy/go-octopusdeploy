@@ -47,7 +47,7 @@ func NewAccount(name string, accountType enum.AccountType) (*Account, error) {
 	}, nil
 }
 
-func (account *Account) Validate() error {
+func (account Account) Validate() error {
 	validate := validator.New()
 	err := validate.Struct(account)
 
@@ -76,7 +76,7 @@ func (account *Account) Validate() error {
 	return nil
 }
 
-func validateUsernamePasswordAccount(account *Account) error {
+func validateUsernamePasswordAccount(account Account) error {
 	validations := []error{
 		ValidateRequiredPropertyValue("username", account.Username),
 	}
@@ -84,7 +84,7 @@ func validateUsernamePasswordAccount(account *Account) error {
 	return ValidateMultipleProperties(validations)
 }
 
-func validateSSHKeyAccount(account *Account) error {
+func validateSSHKeyAccount(account Account) error {
 	validations := []error{
 		ValidateRequiredPropertyValue("name", account.Name),
 	}
@@ -92,7 +92,7 @@ func validateSSHKeyAccount(account *Account) error {
 	return ValidateMultipleProperties(validations)
 }
 
-func validateAzureServicePrincipalAccount(account *Account) error {
+func validateAzureServicePrincipalAccount(account Account) error {
 	validations := []error{
 		ValidateRequiredUUID("ClientID", account.ClientID),
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
@@ -102,9 +102,8 @@ func validateAzureServicePrincipalAccount(account *Account) error {
 	return ValidateMultipleProperties(validations)
 }
 
-func validateAzureSubscriptionAccount(account *Account) error {
+func validateAzureSubscriptionAccount(account Account) error {
 	validations := []error{
-		ValidateRequiredUUID("ClientID", account.ClientID),
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
 	}
 	return ValidateMultipleProperties(validations)
