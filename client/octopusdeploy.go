@@ -31,6 +31,7 @@ type Client struct {
 	Projects            *ProjectService
 	ProjectGroups       *ProjectGroupService
 	ProjectTriggers     *ProjectTriggerService
+	Root                *RootService
 	Spaces              *SpaceService
 	TagSets             *TagSetService
 	Tenants             *TenantService
@@ -67,6 +68,7 @@ func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, err
 		Projects:            NewProjectService(base.New()),
 		ProjectGroups:       NewProjectGroupService(base.New()),
 		ProjectTriggers:     NewProjectTriggerService(base.New()),
+		Root:                NewRootService(base.New()),
 		Spaces:              NewSpaceService(base.New()),
 		TagSets:             NewTagSetService(base.New()),
 		Tenants:             NewTenantService(base.New()),
@@ -75,7 +77,7 @@ func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, err
 	}, nil
 }
 
-func ForSpace(httpClient *http.Client, octopusURL, apiKey string, space *model.Space) (*Client, error) {
+func ForSpace(httpClient *http.Client, octopusURL string, apiKey string, space *model.Space) (*Client, error) {
 	if apiKey == "" {
 		return nil, errors.New("client: API key missing")
 	}
@@ -102,6 +104,7 @@ func ForSpace(httpClient *http.Client, octopusURL, apiKey string, space *model.S
 		Projects:            NewProjectService(base.New()),
 		ProjectGroups:       NewProjectGroupService(base.New()),
 		ProjectTriggers:     NewProjectTriggerService(base.New()),
+		Root:                NewRootService(base.New()),
 		TagSets:             NewTagSetService(base.New()),
 		Tenants:             NewTenantService(base.New()),
 		Users:               NewUserService(base.New()),
