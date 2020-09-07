@@ -29,5 +29,4 @@ func TestGet(t *testing.T) {
 	assert.NotEmpty(t, root.APIVersion)
 	assert.NotEqual(t, root.InstallationID, uuid.Nil)
 	assert.NotEmpty(t, root.Links)
-	assert.Len(t, root.Links, 137)
 }
