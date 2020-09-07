@@ -39,6 +39,28 @@ func TestGetMe(t *testing.T) {
 	assert.NotEmpty(t, user.EmailAddress)
 }
 
+func TestGetUserByID(t *testing.T) {
+	user, err := octopusClient.Users.GetMe()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, user)
+
+	if user == nil {
+		return
+	}
+
+	userToVerify, err := octopusClient.Users.Get(user.ID)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, userToVerify)
+
+	if userToVerify == nil {
+		return
+	}
+
+	// TODO: add more asserts here
+}
+
 func TestGetSpaces(t *testing.T) {
 	user, err := octopusClient.Users.GetMe()
 
@@ -55,6 +77,41 @@ func TestGetSpaces(t *testing.T) {
 	assert.NotEmpty(t, user)
 
 	if spaces == nil {
+		return
+	}
+
+	// TODO: add more asserts here
+}
+
+func TestGetAuthenticationForUser(t *testing.T) {
+	user, err := octopusClient.Users.GetMe()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, user)
+
+	if user == nil {
+		return
+	}
+
+	authentication, err := octopusClient.Users.GetAuthenticationForUser(*user)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, authentication)
+
+	if authentication == nil {
+		return
+	}
+
+	// TODO: add more asserts here
+}
+
+func TestGetAuthentication(t *testing.T) {
+	authentication, err := octopusClient.Users.GetAuthentication()
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, authentication)
+
+	if authentication == nil {
 		return
 	}
 
