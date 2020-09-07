@@ -47,9 +47,13 @@ func NewAccount(name string, accountType enum.AccountType) (*Account, error) {
 	}, nil
 }
 
-func (account Account) Validate() error {
+func (a *Account) GetID() string {
+	return a.ID
+}
+
+func (a *Account) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(account)
+	err := validate.Struct(a)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
@@ -62,21 +66,21 @@ func (account Account) Validate() error {
 		return err
 	}
 
-	switch account.AccountType {
+	switch a.AccountType {
 	case enum.UsernamePassword:
-		return validateUsernamePasswordAccount(account)
+		return validateUsernamePasswordAccount(a)
 	case enum.AzureSubscription:
-		return validateAzureSubscriptionAccount(account)
+		return validateAzureSubscriptionAccount(a)
 	case enum.AzureServicePrincipal:
-		return validateAzureServicePrincipalAccount(account)
+		return validateAzureServicePrincipalAccount(a)
 	case enum.SshKeyPair:
-		return validateSSHKeyAccount(account)
+		return validateSSHKeyAccount(a)
 	}
 
 	return nil
 }
 
-func validateUsernamePasswordAccount(account Account) error {
+func validateUsernamePasswordAccount(account *Account) error {
 	validations := []error{
 		ValidateRequiredPropertyValue("username", account.Username),
 	}
@@ -84,7 +88,7 @@ func validateUsernamePasswordAccount(account Account) error {
 	return ValidateMultipleProperties(validations)
 }
 
-func validateSSHKeyAccount(account Account) error {
+func validateSSHKeyAccount(account *Account) error {
 	validations := []error{
 		ValidateRequiredPropertyValue("name", account.Name),
 	}
@@ -92,7 +96,7 @@ func validateSSHKeyAccount(account Account) error {
 	return ValidateMultipleProperties(validations)
 }
 
-func validateAzureServicePrincipalAccount(account Account) error {
+func validateAzureServicePrincipalAccount(account *Account) error {
 	validations := []error{
 		ValidateRequiredUUID("ClientID", account.ClientID),
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
@@ -102,7 +106,7 @@ func validateAzureServicePrincipalAccount(account Account) error {
 	return ValidateMultipleProperties(validations)
 }
 
-func validateAzureSubscriptionAccount(account Account) error {
+func validateAzureSubscriptionAccount(account *Account) error {
 	validations := []error{
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
 	}
