@@ -32,7 +32,9 @@ func TestGetAPIKeys(t *testing.T) {
 		assert.NotNil(t, apiKey.ID)
 	}
 
-	octopusClient.Users.Delete(user.ID)
+	err = octopusClient.Users.Delete(user.ID)
+
+	assert.NoError(t, err)
 }
 
 func TestGetAPIKeyByID(t *testing.T) {
@@ -54,7 +56,9 @@ func TestGetAPIKeyByID(t *testing.T) {
 		assert.NotNil(t, key)
 	}
 
-	octopusClient.Users.Delete(user.ID)
+	err = octopusClient.Users.Delete(user.ID)
+
+	assert.NoError(t, err)
 }
 
 func TestCreateAPIKey(t *testing.T) {
@@ -77,5 +81,7 @@ func TestCreateAPIKey(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, createdAPIKey)
 
-	octopusClient.Users.Delete(user.ID)
+	err = octopusClient.Users.Delete(user.ID)
+
+	assert.NoError(t, err)
 }
