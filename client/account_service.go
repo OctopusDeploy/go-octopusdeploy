@@ -57,23 +57,13 @@ func (s *AccountService) GetAll() (*[]model.Account, error) {
 		return nil, err
 	}
 
-	var p []model.Account
-	path := s.path
-	loadNextPage := true
+	resp, err := apiGet(s.sling, new([]model.Account), s.path+"/all")
 
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Accounts), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.Accounts)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+	if err != nil {
+		return nil, err
 	}
 
-	return &p, nil
+	return resp.(*[]model.Account), nil
 }
 
 // GetByName returns an Account that matches the input name.
