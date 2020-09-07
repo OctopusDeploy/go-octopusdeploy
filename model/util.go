@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/google/uuid"
@@ -85,4 +86,13 @@ func ValidatePropertiesMatch(firstProperty, firstPropertyName, secondProperty, s
 	}
 
 	return nil
+}
+
+func ValidateSemanticVersion(propertyName string, version string) error {
+	re := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
+	if re.MatchString(version) {
+		return nil
+	}
+
+	return fmt.Errorf("%s is must be a semantic version string", propertyName)
 }
