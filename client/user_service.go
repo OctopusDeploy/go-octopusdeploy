@@ -67,6 +67,37 @@ func (s *UserService) GetAll() (*[]model.User, error) {
 	return resp.(*[]model.User), nil
 }
 
+func (s *UserService) GetAuthentication() (*model.UserAuthentication, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.sling, new(model.UserAuthentication), s.path+"/authentication")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.UserAuthentication), nil
+}
+
+func (s *UserService) GetAuthenticationForUser(user model.User) (*model.UserAuthentication, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/authentication/%s", user.ID)
+	resp, err := apiGet(s.sling, new(model.UserAuthentication), path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.UserAuthentication), nil
+}
+
 func (s *UserService) GetSpaces(user model.User) (*[]model.Spaces, error) {
 	err := s.validateInternalState()
 	if err != nil {
