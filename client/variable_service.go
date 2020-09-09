@@ -9,6 +9,14 @@ import (
 	"github.com/dghubble/sling"
 )
 
+type errInvalidVariableServiceParameter struct {
+	parameterName string
+}
+
+func (e errInvalidVariableServiceParameter) Error() string {
+	return fmt.Sprintf("VariableService: invalid parameter, %s", e.parameterName)
+}
+
 type VariableService struct {
 	sling *sling.Sling `validate:"required"`
 	path  string       `validate:"required"`
@@ -33,7 +41,7 @@ func (s *VariableService) GetAll(projectID string) (*model.Variables, error) {
 	}
 
 	if len(strings.Trim(projectID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, projectID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
 	path := fmt.Sprintf(s.path+"/variableset-%s", projectID)
@@ -54,11 +62,11 @@ func (s *VariableService) GetByID(projectID string, variableID string) (*model.V
 	}
 
 	if len(strings.Trim(projectID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, projectID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
 	if len(strings.Trim(variableID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, variableID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "variableID"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -85,15 +93,15 @@ func (s *VariableService) GetByName(projectID string, name string, scope *model.
 	}
 
 	if len(strings.Trim(projectID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, projectID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
 	if len(strings.Trim(name, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, name")
+		return nil, errInvalidVariableServiceParameter{parameterName: "name"}
 	}
 
 	if scope == nil {
-		return nil, errors.New("VariableService: invalid parameter, scope")
+		return nil, errInvalidVariableServiceParameter{parameterName: "scope"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -127,11 +135,11 @@ func (s *VariableService) AddSingle(projectID string, variable *model.Variable) 
 	}
 
 	if len(strings.Trim(projectID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, projectID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
 	if variable == nil {
-		return nil, errors.New("VariableService: invalid parameter, variable")
+		return nil, errInvalidVariableServiceParameter{parameterName: "variable"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -153,11 +161,11 @@ func (s *VariableService) UpdateSingle(projectID string, variable *model.Variabl
 	}
 
 	if len(strings.Trim(projectID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, projectID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
 	if variable == nil {
-		return nil, errors.New("VariableService: invalid parameter, variable")
+		return nil, errInvalidVariableServiceParameter{parameterName: "variable"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -190,11 +198,11 @@ func (s *VariableService) DeleteSingle(projectID string, variableID string) (*mo
 	}
 
 	if len(strings.Trim(projectID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, projectID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
 	if len(strings.Trim(variableID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, variableID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "variableID"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -226,11 +234,11 @@ func (s *VariableService) Update(projectID string, variableSet *model.Variables)
 	}
 
 	if len(strings.Trim(projectID, " ")) == 0 {
-		return nil, errors.New("VariableService: invalid parameter, projectID")
+		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
 	if variableSet == nil {
-		return nil, errors.New("VariableService: invalid parameter, variableSet")
+		return nil, errInvalidVariableServiceParameter{parameterName: "variableSet"}
 	}
 
 	path := fmt.Sprintf(s.path+"/variableset-%s", projectID)
@@ -254,7 +262,7 @@ func (s *VariableService) MatchesScope(variableScope *model.VariableScope, defin
 	}
 
 	if variableScope == nil {
-		return false, nil, errors.New("VariableService: invalid parameter, variableScope")
+		return false, nil, errInvalidVariableServiceParameter{parameterName: "variableScope"}
 	}
 
 	//If the scope supplied is nil then match everything
