@@ -10,11 +10,15 @@ import (
 )
 
 type UserService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewUserService(sling *sling.Sling) *UserService {
+	if sling == nil {
+		return nil
+	}
+
 	return &UserService{
 		sling: sling,
 		path:  "users",
@@ -86,10 +90,14 @@ func (s *UserService) GetAuthentication() (*model.UserAuthentication, error) {
 	return resp.(*model.UserAuthentication), nil
 }
 
-func (s *UserService) GetAuthenticationForUser(user model.User) (*model.UserAuthentication, error) {
+func (s *UserService) GetAuthenticationForUser(user *model.User) (*model.UserAuthentication, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
+	}
+
+	if user == nil {
+		return nil, errors.New("UserService: invalid parameter, user")
 	}
 
 	path := fmt.Sprintf(s.path+"/authentication/%s", user.ID)
@@ -102,10 +110,14 @@ func (s *UserService) GetAuthenticationForUser(user model.User) (*model.UserAuth
 	return resp.(*model.UserAuthentication), nil
 }
 
-func (s *UserService) GetSpaces(user model.User) (*[]model.Spaces, error) {
+func (s *UserService) GetSpaces(user *model.User) (*[]model.Spaces, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
+	}
+
+	if user == nil {
+		return nil, errors.New("UserService: invalid parameter, user")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s/spaces", user.ID)
@@ -124,6 +136,10 @@ func (s *UserService) GetByName(name string) (*model.User, error) {
 		return nil, err
 	}
 
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, errors.New("UserService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -139,13 +155,17 @@ func (s *UserService) GetByName(name string) (*model.User, error) {
 	return nil, errors.New("client: item not found")
 }
 
-func (s *UserService) Add(resource *model.User) (*model.User, error) {
+func (s *UserService) Add(user *model.User) (*model.User, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.User), s.path)
+	if user == nil {
+		return nil, errors.New("UserService: invalid parameter, user")
+	}
+
+	resp, err := apiAdd(s.sling, user, new(model.User), s.path)
 
 	if err != nil {
 		return nil, err
@@ -160,17 +180,25 @@ func (s *UserService) Delete(id string) error {
 		return err
 	}
 
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("UserService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *UserService) Update(resource *model.User) (*model.User, error) {
+func (s *UserService) Update(user *model.User) (*model.User, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.User), path)
+	if user == nil {
+		return nil, errors.New("UserService: invalid parameter, user")
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", user.ID)
+	resp, err := apiUpdate(s.sling, user, new(model.User), path)
 
 	if err != nil {
 		return nil, err

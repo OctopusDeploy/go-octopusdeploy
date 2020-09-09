@@ -1,6 +1,9 @@
 package model
 
 import (
+	"errors"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -16,11 +19,11 @@ type CertificateReplace struct {
 }
 
 type Certificate struct {
-	Name                            string                      `json:"Name,omitempty"`
+	Name                            string                      `json:"Name,omitempty" validate:"required"`
 	Notes                           string                      `json:"Notes,omitempty"`
-	CertificateData                 SensitiveValue              `json:"CertificateData,omitempty"`
-	Password                        SensitiveValue              `json:"Password,omitempty"`
-	EnvironmentIds                  []string                    `json:"EnvironmentIds,omitempty"`
+	CertificateData                 *SensitiveValue             `json:"CertificateData,omitempty" validate:"required"`
+	Password                        *SensitiveValue             `json:"Password,omitempty"`
+	EnvironmentIDs                  []string                    `json:"EnvironmentIds,omitempty"`
 	TenantedDeploymentParticipation enum.TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 	TenantIds                       []string                    `json:"TenantIds,omitempty"`
 	TenantTags                      []string                    `json:"TenantTags,omitempty"`
@@ -52,7 +55,6 @@ func (c *Certificate) GetID() string {
 
 func (c *Certificate) Validate() error {
 	validate := validator.New()
-
 	err := validate.Struct(c)
 
 	if err != nil {
@@ -62,19 +64,31 @@ func (c *Certificate) Validate() error {
 	return nil
 }
 
-func NewCertificate(name string, certificateData SensitiveValue, password SensitiveValue) *Certificate {
+func NewCertificate(name string, certificateData SensitiveValue, password SensitiveValue) (*Certificate, error) {
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, errors.New("NewCertificate: invalid name")
+	}
+
 	return &Certificate{
 		Name:            name,
-		CertificateData: certificateData,
-		Password:        password,
-	}
+		CertificateData: &certificateData,
+		Password:        &password,
+	}, nil
 }
 
-func NewCertificateReplace(certificateData string, password string) *CertificateReplace {
+func NewCertificateReplace(certificateData string, password string) (*CertificateReplace, error) {
+	if len(strings.Trim(certificateData, " ")) == 0 {
+		return nil, errors.New("NewCertificateReplace: invalid certificateData")
+	}
+
+	if len(strings.Trim(password, " ")) == 0 {
+		return nil, errors.New("NewCertificateReplace: invalid password")
+	}
+
 	return &CertificateReplace{
 		CertificateData: certificateData,
 		Password:        password,
-	}
+	}, nil
 }
 
 var _ ResourceInterface = &Certificate{}

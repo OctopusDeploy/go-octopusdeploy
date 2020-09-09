@@ -10,11 +10,15 @@ import (
 )
 
 type ProjectService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewProjectService(sling *sling.Sling) *ProjectService {
+	if sling == nil {
+		return nil
+	}
+
 	return &ProjectService{
 		sling: sling,
 		path:  "projects",
@@ -102,6 +106,15 @@ func (s *ProjectService) Add(resource *model.Project) (*model.Project, error) {
 
 // Delete deletes an existing project in Octopus Deploy
 func (s *ProjectService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("ProjectService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 

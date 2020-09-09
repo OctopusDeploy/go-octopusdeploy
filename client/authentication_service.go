@@ -12,13 +12,17 @@ import (
 // AuthenticationService handles communication with Authentication-related
 // methods of the Octopus API.
 type AuthenticationService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 // NewAuthenticationService returns an AuthenticationService with a
 // preconfigured client.
 func NewAuthenticationService(sling *sling.Sling) *AuthenticationService {
+	if sling == nil {
+		return nil
+	}
+
 	return &AuthenticationService{
 		sling: sling,
 		path:  "authentication",

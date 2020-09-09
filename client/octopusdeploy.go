@@ -42,8 +42,16 @@ type Client struct {
 
 // NewClient returns a new
 func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, error) {
-	if apiKey == "" {
-		return nil, errors.New("client: API key missing")
+	if httpClient == nil {
+		return nil, errors.New("Client: invalid parameter, httpClient")
+	}
+
+	if len(strings.Trim(octopusURL, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, octopusURL")
+	}
+
+	if len(strings.Trim(apiKey, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, apiKey")
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
@@ -62,7 +70,7 @@ func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, err
 		DeploymentProcesses: NewDeploymentProcessService(base.New()),
 		Environments:        NewEnvironmentService(base.New()),
 		Feeds:               NewFeedService(base.New()),
-		Interruptions:       NewInterruptionService(base.New()),
+		Interruptions:       NewInterruptionsService(base.New()),
 		Machines:            NewMachineService(base.New()),
 		MachinePolicies:     NewMachinePolicyService(base.New()),
 		LibraryVariableSets: NewLibraryVariableSetService(base.New()),
@@ -80,8 +88,20 @@ func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, err
 }
 
 func ForSpace(httpClient *http.Client, octopusURL string, apiKey string, space *model.Space) (*Client, error) {
-	if apiKey == "" {
-		return nil, errors.New("client: API key missing")
+	if httpClient == nil {
+		return nil, errors.New("Client: invalid parameter, httpClient")
+	}
+
+	if len(strings.Trim(octopusURL, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, octopusURL")
+	}
+
+	if len(strings.Trim(apiKey, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, apiKey")
+	}
+
+	if space == nil {
+		return nil, errors.New("Client: invalid parameter, space")
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
@@ -163,6 +183,14 @@ func LoadNextPage(pagedResults model.PagedResults) (string, bool) {
 
 // Generic OctopusDeploy API Get Function.
 func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
+	if sling == nil {
+		return nil, errors.New("Client: invalid parameter, sling")
+	}
+
+	if len(strings.Trim(path, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, path")
+	}
+
 	octopusDeployError := new(APIError)
 
 	resp, err := sling.New().Get(path).Receive(inputStruct, &octopusDeployError)
@@ -178,6 +206,14 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
 func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, path string) (interface{}, error) {
+	if sling == nil {
+		return nil, errors.New("Client: invalid parameter, sling")
+	}
+
+	if len(strings.Trim(path, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, path")
+	}
+
 	octopusDeployError := new(APIError)
 
 	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(resource, &octopusDeployError)
@@ -193,6 +229,14 @@ func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, p
 
 // apiPost post to octopus and expect a 200 response code.
 func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
+	if sling == nil {
+		return nil, errors.New("Client: invalid parameter, sling")
+	}
+
+	if len(strings.Trim(path, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, path")
+	}
+
 	octopusDeployError := new(APIError)
 
 	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
@@ -208,6 +252,14 @@ func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path str
 
 // Generic OctopusDeploy API Update Function.
 func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
+	if sling == nil {
+		return nil, errors.New("Client: invalid parameter, sling")
+	}
+
+	if len(strings.Trim(path, " ")) == 0 {
+		return nil, errors.New("Client: invalid parameter, path")
+	}
+
 	octopusDeployError := new(APIError)
 
 	resp, err := sling.New().Put(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
@@ -223,6 +275,14 @@ func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path s
 
 // Generic OctopusDeploy API Delete Function.
 func apiDelete(sling *sling.Sling, path string) error {
+	if sling == nil {
+		return errors.New("Client: invalid parameter, sling")
+	}
+
+	if len(strings.Trim(path, " ")) == 0 {
+		return errors.New("Client: invalid parameter, path")
+	}
+
 	octopusDeployError := new(APIError)
 
 	resp, err := sling.New().Delete(path).Receive(nil, &octopusDeployError)

@@ -10,11 +10,15 @@ import (
 )
 
 type DeploymentProcessService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewDeploymentProcessService(sling *sling.Sling) *DeploymentProcessService {
+	if sling == nil {
+		return nil
+	}
+
 	return &DeploymentProcessService{
 		sling: sling,
 		path:  "deploymentprocesses",
@@ -61,9 +65,19 @@ func (s *DeploymentProcessService) GetAll() (*[]model.DeploymentProcess, error) 
 	return &p, nil
 }
 
-func (s *DeploymentProcessService) Update(resource *model.DeploymentProcess) (*model.DeploymentProcess, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.DeploymentProcess), path)
+func (s *DeploymentProcessService) Update(deploymentProcess *model.DeploymentProcess) (*model.DeploymentProcess, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = deploymentProcess.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", deploymentProcess.ID)
+	resp, err := apiUpdate(s.sling, deploymentProcess, new(model.DeploymentProcess), path)
 
 	if err != nil {
 		return nil, err

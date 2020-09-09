@@ -7,17 +7,22 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
+	"github.com/go-playground/validator"
 )
 
 // ArtifactService handles communication with Account-related methods of the
 // Octopus API.
 type ArtifactService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 // NewArtifactService returns an ArtifactService with a preconfigured client.
 func NewArtifactService(sling *sling.Sling) *ArtifactService {
+	if sling == nil {
+		return nil
+	}
+
 	return &ArtifactService{
 		sling: sling,
 		path:  "artifacts",
@@ -45,8 +50,12 @@ func (s *ArtifactService) Get(id string) (*model.Artifact, error) {
 	return resp.(*model.Artifact), nil
 }
 
-// GetAll returns all of the Accounts for a Space.
 func (s *ArtifactService) GetAll() (*[]model.Artifact, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
 	var p []model.Artifact
 	path := s.path
 	loadNextPage := true
@@ -68,6 +77,20 @@ func (s *ArtifactService) GetAll() (*[]model.Artifact, error) {
 
 // Add creates a new Artifact.
 func (s *ArtifactService) Add(resource *model.Artifact) (*model.Artifact, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if resource == nil {
+		return nil, errors.New("ArtifactService: invalid parameter, resource")
+	}
+
+	err = resource.Validate()
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := apiAdd(s.sling, resource, new(model.Artifact), s.path)
 
 	if err != nil {
@@ -79,13 +102,32 @@ func (s *ArtifactService) Add(resource *model.Artifact) (*model.Artifact, error)
 
 // Delete removes the Artifact that matches the input ID.
 func (s *ArtifactService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("ArtifactService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 // Update modifies an Artifact based on the one provided as input.
-func (s *ArtifactService) Update(resource *model.Artifact) (*model.Artifact, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Artifact), path)
+func (s *ArtifactService) Update(artifact model.Artifact) (*model.Artifact, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = artifact.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", artifact.ID)
+	resp, err := apiUpdate(s.sling, artifact, new(model.Artifact), path)
 
 	if err != nil {
 		return nil, err
@@ -95,12 +137,14 @@ func (s *ArtifactService) Update(resource *model.Artifact) (*model.Artifact, err
 }
 
 func (s *ArtifactService) validateInternalState() error {
-	if s.sling == nil {
-		return fmt.Errorf("ArtifactService: the internal client is nil")
-	}
+	validate := validator.New()
+	err := validate.Struct(s)
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("ArtifactService: the internal path is not set")
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			return nil
+		}
+		return err
 	}
 
 	return nil

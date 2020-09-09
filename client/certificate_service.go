@@ -12,13 +12,17 @@ import (
 // CertificateService handles communication with Certificate-related methods of
 // the Octopus API.
 type CertificateService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 // NewCertificateService returns an CertificateService with a preconfigured
 // client.
 func NewCertificateService(sling *sling.Sling) *CertificateService {
+	if sling == nil {
+		return nil
+	}
+
 	return &CertificateService{
 		sling: sling,
 		path:  "certificates",
@@ -61,6 +65,15 @@ func (s *CertificateService) GetAll() (*[]model.Certificate, error) {
 }
 
 func (s *CertificateService) GetByName(name string) (*model.Certificate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, errors.New("CertificateService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -76,8 +89,18 @@ func (s *CertificateService) GetByName(name string) (*model.Certificate, error) 
 	return nil, errors.New("client: item not found")
 }
 
-func (s *CertificateService) Add(resource *model.Certificate) (*model.Certificate, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.Certificate), s.path)
+func (s *CertificateService) Add(certificate *model.Certificate) (*model.Certificate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = certificate.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, certificate, new(model.Certificate), s.path)
 
 	if err != nil {
 		return nil, err
@@ -88,12 +111,31 @@ func (s *CertificateService) Add(resource *model.Certificate) (*model.Certificat
 
 // Delete removes the Certificate that matches the input ID.
 func (s *CertificateService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("CertificateService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *CertificateService) Update(resource *model.Certificate) (*model.Certificate, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Certificate), path)
+func (s *CertificateService) Update(certificate model.Certificate) (*model.Certificate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = certificate.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", certificate.ID)
+	resp, err := apiUpdate(s.sling, certificate, new(model.Certificate), path)
 
 	if err != nil {
 		return nil, err
@@ -102,9 +144,22 @@ func (s *CertificateService) Update(resource *model.Certificate) (*model.Certifi
 	return resp.(*model.Certificate), nil
 }
 
-func (s *CertificateService) Replace(certificateID string, certificateReplace *model.CertificateReplace) (*model.Certificate, error) {
+func (s *CertificateService) Replace(certificateID string, certificate *model.CertificateReplace) (*model.Certificate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(certificateID, " ")) == 0 {
+		return nil, errors.New("CertificateService: invalid parameter, certificateID")
+	}
+
+	if certificate == nil {
+		return nil, errors.New("CertificateService: invalid parameter, certificate")
+	}
+
 	path := fmt.Sprintf(s.path+"/%s/replace", certificateID)
-	_, err := apiPost(s.sling, certificateReplace, new(model.Certificate), path)
+	_, err = apiPost(s.sling, certificate, new(model.Certificate), path)
 
 	if err != nil {
 		return nil, err

@@ -11,11 +11,15 @@ import (
 )
 
 type LibraryVariableSetService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewLibraryVariableSetService(sling *sling.Sling) *LibraryVariableSetService {
+	if sling == nil {
+		return nil
+	}
+
 	return &LibraryVariableSetService{
 		sling: sling,
 		path:  "libraryvariablesets",
@@ -110,6 +114,15 @@ func (s *LibraryVariableSetService) Add(resource *model.LibraryVariableSet) (*mo
 
 // Delete deletes an existing libraryVariableSet in Octopus Deploy
 func (s *LibraryVariableSetService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("LibraryVariableSetService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 

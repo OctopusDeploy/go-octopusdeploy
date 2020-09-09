@@ -10,11 +10,15 @@ import (
 )
 
 type InterruptionsService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
-func NewInterruptionService(sling *sling.Sling) *InterruptionsService {
+func NewInterruptionsService(sling *sling.Sling) *InterruptionsService {
+	if sling == nil {
+		return nil
+	}
+
 	return &InterruptionsService{
 		sling: sling,
 		path:  "interruptions",

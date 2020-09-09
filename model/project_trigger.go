@@ -47,7 +47,6 @@ func (p *ProjectTrigger) GetID() string {
 
 func (p *ProjectTrigger) Validate() error {
 	validate := validator.New()
-
 	err := validate.Struct(p)
 
 	if err != nil {

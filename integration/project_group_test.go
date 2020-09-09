@@ -95,7 +95,7 @@ func TestProjectGroupUpdate(t *testing.T) {
 	assert.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")
 }
 
-func createTestProjectGroup(t *testing.T, projectGroupName string) model.ProjectGroup {
+func createTestProjectGroup(t *testing.T, projectGroupName string) *model.ProjectGroup {
 	p := getTestProjectGroup(projectGroupName)
 	createdProjectGroup, err := octopusClient.ProjectGroups.Add(&p)
 
@@ -103,7 +103,7 @@ func createTestProjectGroup(t *testing.T, projectGroupName string) model.Project
 		t.Fatalf("creating projectgroup %s failed when it shouldn't: %s", projectGroupName, err)
 	}
 
-	return *createdProjectGroup
+	return createdProjectGroup
 }
 
 func getTestProjectGroup(projectGroupName string) model.ProjectGroup {

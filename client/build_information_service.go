@@ -9,13 +9,12 @@ import (
 )
 
 type BuildInformationService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewBuildInformationService(sling *sling.Sling) *BuildInformationService {
 	if sling == nil {
-		fmt.Println(fmt.Errorf("BuildInformationService: input parameter (sling) is nil"))
 		return nil
 	}
 

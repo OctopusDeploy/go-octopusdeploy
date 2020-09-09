@@ -10,11 +10,15 @@ import (
 )
 
 type TenantService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewTenantService(sling *sling.Sling) *TenantService {
+	if sling == nil {
+		return nil
+	}
+
 	return &TenantService{
 		sling: sling,
 		path:  "tenants",

@@ -8,11 +8,15 @@ import (
 )
 
 type RootService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewRootService(sling *sling.Sling) *RootService {
+	if sling == nil {
+		return nil
+	}
+
 	return &RootService{
 		sling: sling,
 		path:  "",

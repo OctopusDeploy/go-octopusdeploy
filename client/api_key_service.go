@@ -7,18 +7,18 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
+	"github.com/go-playground/validator"
 )
 
 // APIKeyService handles communication with API key-related methods of the
 // Octopus API.
 type APIKeyService struct {
-	sling *sling.Sling
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewAPIKeyService returns an APIKeyService with a preconfigured client.
 func NewAPIKeyService(sling *sling.Sling) *APIKeyService {
 	if sling == nil {
-		fmt.Println(fmt.Errorf("APIKeyService: input parameter (sling) is nil"))
 		return nil
 	}
 
@@ -64,6 +64,14 @@ func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, 
 		return nil, err
 	}
 
+	if len(strings.Trim(userID, " ")) == 0 {
+		return nil, errors.New("APIKeyService: invalid parameter, userID")
+	}
+
+	if len(strings.Trim(apiKeyID, " ")) == 0 {
+		return nil, errors.New("APIKeyService: invalid parameter, apiKeyID")
+	}
+
 	path := fmt.Sprintf("users/%s/apikeys/%s", userID, apiKeyID)
 	resp, err := apiGet(s.sling, new(model.APIKey), path)
 
@@ -83,8 +91,9 @@ func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 		return nil, err
 	}
 
-	if apiKey == nil {
-		return nil, errors.New("APIKeyService: invalid parameter, apiKey")
+	err = apiKey.Validate()
+	if err != nil {
+		return nil, err
 	}
 
 	path := fmt.Sprintf("users/%s/apikeys", *apiKey.UserID)
@@ -98,8 +107,14 @@ func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 }
 
 func (s *APIKeyService) validateInternalState() error {
-	if s.sling == nil {
-		return fmt.Errorf("APIKeyService: the internal client is nil")
+	validate := validator.New()
+	err := validate.Struct(s)
+
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			return nil
+		}
+		return err
 	}
 
 	return nil

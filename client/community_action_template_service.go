@@ -12,12 +12,16 @@ import (
 // CommunityActionTemplateService handles communication with Account-related methods of the
 // Octopus API.
 type CommunityActionTemplateService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 // NewCommunityActionTemplateService returns an CommunityActionTemplateService with a preconfigured client.
 func NewCommunityActionTemplateService(sling *sling.Sling) *CommunityActionTemplateService {
+	if sling == nil {
+		return nil
+	}
+
 	return &CommunityActionTemplateService{
 		sling: sling,
 		path:  "communityactiontemplates",
@@ -96,13 +100,32 @@ func (s *CommunityActionTemplateService) Add(resource *model.CommunityActionTemp
 
 // Delete removes the CommunityActionTemplate that matches the input ID.
 func (s *CommunityActionTemplateService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("CommunityActionTemplateService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 // Update modifies an CommunityActionTemplate based on the one provided as input.
-func (s *CommunityActionTemplateService) Update(resource *model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.CommunityActionTemplate), path)
+func (s *CommunityActionTemplateService) Update(communityActionTemplate model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = communityActionTemplate.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", communityActionTemplate.ID)
+	resp, err := apiUpdate(s.sling, communityActionTemplate, new(model.CommunityActionTemplate), path)
 
 	if err != nil {
 		return nil, err

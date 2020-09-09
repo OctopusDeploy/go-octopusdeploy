@@ -10,11 +10,15 @@ import (
 )
 
 type TagSetService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewTagSetService(sling *sling.Sling) *TagSetService {
+	if sling == nil {
+		return nil
+	}
+
 	return &TagSetService{
 		sling: sling,
 		path:  "tagsets",
@@ -83,6 +87,15 @@ func (s *TagSetService) Add(resource *model.TagSet) (*model.TagSet, error) {
 }
 
 func (s *TagSetService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("TagSetService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 

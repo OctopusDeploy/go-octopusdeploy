@@ -10,11 +10,15 @@ import (
 )
 
 type ProjectTriggerService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewProjectTriggerService(sling *sling.Sling) *ProjectTriggerService {
+	if sling == nil {
+		return nil
+	}
+
 	return &ProjectTriggerService{
 		sling: sling,
 		path:  "projecttriggers",
@@ -86,6 +90,15 @@ func (s *ProjectTriggerService) Add(resource *model.ProjectTrigger) (*model.Proj
 }
 
 func (s *ProjectTriggerService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("ProjectTriggerService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 

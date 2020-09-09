@@ -10,11 +10,15 @@ import (
 )
 
 type ProjectGroupService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewProjectGroupService(sling *sling.Sling) *ProjectGroupService {
+	if sling == nil {
+		return nil
+	}
+
 	return &ProjectGroupService{
 		sling: sling,
 		path:  "projectgroups",
@@ -56,8 +60,22 @@ func (s *ProjectGroupService) GetAll() (*[]model.ProjectGroup, error) {
 	return resp.(*[]model.ProjectGroup), nil
 }
 
-func (s *ProjectGroupService) Add(resource *model.ProjectGroup) (*model.ProjectGroup, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.ProjectGroup), s.path)
+func (s *ProjectGroupService) Add(projectGroup *model.ProjectGroup) (*model.ProjectGroup, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if projectGroup == nil {
+		return nil, errors.New("ProjectGroupService: invalid parameter, projectGroup")
+	}
+
+	err = projectGroup.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, projectGroup, new(model.ProjectGroup), s.path)
 
 	if err != nil {
 		return nil, err
@@ -67,12 +85,35 @@ func (s *ProjectGroupService) Add(resource *model.ProjectGroup) (*model.ProjectG
 }
 
 func (s *ProjectGroupService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("ProjectGroupService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *ProjectGroupService) Update(resource model.ProjectGroup) (*model.ProjectGroup, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.GetID())
-	resp, err := apiUpdate(s.sling, resource, new(model.ProjectGroup), path)
+func (s *ProjectGroupService) Update(projectGroup *model.ProjectGroup) (*model.ProjectGroup, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if projectGroup == nil {
+		return nil, errors.New("ProjectGroupService: invalid parameter, projectGroup")
+	}
+
+	err = projectGroup.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", projectGroup.ID)
+	resp, err := apiUpdate(s.sling, projectGroup, new(model.ProjectGroup), path)
 
 	if err != nil {
 		return nil, err

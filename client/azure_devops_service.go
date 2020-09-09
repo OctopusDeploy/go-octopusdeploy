@@ -9,13 +9,12 @@ import (
 )
 
 type AzureDevOpsService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewAzureDevOpsService(sling *sling.Sling) *AzureDevOpsService {
 	if sling == nil {
-		fmt.Println(fmt.Errorf("AzureDevOpsService: input parameter (sling) is nil"))
 		return nil
 	}
 

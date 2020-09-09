@@ -10,11 +10,15 @@ import (
 )
 
 type EnvironmentService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewEnvironmentService(sling *sling.Sling) *EnvironmentService {
+	if sling == nil {
+		return nil
+	}
+
 	return &EnvironmentService{
 		sling: sling,
 		path:  "environments",
@@ -83,12 +87,31 @@ func (s *EnvironmentService) Add(resource *model.Environment) (*model.Environmen
 }
 
 func (s *EnvironmentService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("EnvironmentService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *EnvironmentService) Update(resource *model.Environment) (*model.Environment, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Environment), path)
+func (s *EnvironmentService) Update(environment *model.Environment) (*model.Environment, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = environment.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", environment.ID)
+	resp, err := apiUpdate(s.sling, environment, new(model.Environment), path)
 
 	if err != nil {
 		return nil, err

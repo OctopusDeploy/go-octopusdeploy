@@ -26,7 +26,17 @@ var testCert1 = model.SensitiveValue{NewValue: &testCert1Data}
 
 func TestCertAddAndDelete(t *testing.T) {
 	certName := getRandomName()
-	expected := getTestCert1(certName)
+
+	expected, err := getTestCert1(t, certName)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, expected)
+	assert.NoError(t, expected.Validate())
+
+	if err != nil {
+		return
+	}
+
 	actual := createTestCert(t, certName)
 	defer cleanCert(t, actual.ID)
 
@@ -36,7 +46,17 @@ func TestCertAddAndDelete(t *testing.T) {
 
 func TestCertAddAndReplace(t *testing.T) {
 	certName := getRandomName()
-	expectedCert1 := getTestCert1(certName)
+
+	expectedCert1, err := getTestCert1(t, certName)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, expectedCert1)
+	assert.NoError(t, expectedCert1.Validate())
+
+	if err != nil {
+		return
+	}
+
 	actualCert1 := createTestCert(t, certName)
 
 	assert.Equal(t, expectedCert1.Name, actualCert1.Name, "certificate name doesn't match expected")
@@ -50,8 +70,8 @@ func TestCertAddAndReplace(t *testing.T) {
 }
 
 func createTestCert(t *testing.T, certName string) model.Certificate {
-	c := getTestCert1(certName)
-	cert, err := octopusClient.Certificates.Add(&c)
+	c, err := getTestCert1(t, certName)
+	cert, err := octopusClient.Certificates.Add(c)
 	if err != nil {
 		t.Fatalf("creating certificate %s failed when it shouldn't: %s", certName, err)
 	}
@@ -60,9 +80,12 @@ func createTestCert(t *testing.T, certName string) model.Certificate {
 }
 
 func replaceCert(t *testing.T, originalCert *model.Certificate) model.Certificate {
-	certificateReplace := getTestCertReplace()
+	certificateReplace, err := getTestCertReplace(t)
 
-	cert, err := octopusClient.Certificates.Replace(originalCert.ID, &certificateReplace)
+	assert.NoError(t, err)
+	assert.NotNil(t, certificateReplace)
+
+	cert, err := octopusClient.Certificates.Replace(originalCert.ID, certificateReplace)
 	if err != nil {
 		t.Fatalf("replacing a certificate %s failed when it shouldn't: %s", originalCert.ID, err)
 	}
@@ -70,16 +93,31 @@ func replaceCert(t *testing.T, originalCert *model.Certificate) model.Certificat
 	return *cert
 }
 
-func getTestCert1(certName string) model.Certificate {
-	v := model.NewCertificate(certName, testCert1, model.SensitiveValue{})
+func getTestCert1(t *testing.T, certName string) (*model.Certificate, error) {
+	certificate, err := model.NewCertificate(certName, testCert1, model.SensitiveValue{})
 
-	return *v
+	assert.NoError(t, err)
+	assert.NotNil(t, certificate)
+	assert.NoError(t, certificate.Validate())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return certificate, nil
 }
 
-func getTestCertReplace() model.CertificateReplace {
-	v := model.NewCertificateReplace(testCert2Data, testCert2Password)
+func getTestCertReplace(t *testing.T) (*model.CertificateReplace, error) {
+	certificateReplace, err := model.NewCertificateReplace(testCert2Data, testCert2Password)
 
-	return *v
+	assert.NoError(t, err)
+	assert.NotNil(t, certificateReplace)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return certificateReplace, nil
 }
 
 func cleanCert(t *testing.T, certID string) {

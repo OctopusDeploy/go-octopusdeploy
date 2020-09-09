@@ -10,11 +10,15 @@ import (
 )
 
 type FeedService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewFeedService(sling *sling.Sling) *FeedService {
+	if sling == nil {
+		return nil
+	}
+
 	return &FeedService{
 		sling: sling,
 		path:  "feeds",
@@ -57,6 +61,15 @@ func (s *FeedService) GetAll() (*[]model.Feed, error) {
 }
 
 func (s *FeedService) GetByName(name string) (*model.Feed, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, errors.New("FeedService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -72,8 +85,17 @@ func (s *FeedService) GetByName(name string) (*model.Feed, error) {
 	return nil, errors.New("client: item not found")
 }
 
-func (s *FeedService) Add(resource *model.Feed) (*model.Feed, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.Feed), "feeds")
+func (s *FeedService) Add(feed *model.Feed) (*model.Feed, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if feed == nil {
+		return nil, errors.New("FeedService: invalid parameter, feed")
+	}
+
+	resp, err := apiAdd(s.sling, feed, new(model.Feed), "feeds")
 
 	if err != nil {
 		return nil, err
@@ -83,12 +105,31 @@ func (s *FeedService) Add(resource *model.Feed) (*model.Feed, error) {
 }
 
 func (s *FeedService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("FeedService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *FeedService) Update(resource *model.Feed) (*model.Feed, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Feed), path)
+func (s *FeedService) Update(feed model.Feed) (*model.Feed, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = feed.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", feed.ID)
+	resp, err := apiUpdate(s.sling, feed, new(model.Feed), path)
 
 	if err != nil {
 		return nil, err

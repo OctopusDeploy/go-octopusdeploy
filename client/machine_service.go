@@ -10,11 +10,15 @@ import (
 )
 
 type MachineService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewMachineService(sling *sling.Sling) *MachineService {
+	if sling == nil {
+		return nil
+	}
+
 	return &MachineService{
 		sling: sling,
 		path:  "machines",
@@ -96,18 +100,32 @@ func (s *MachineService) Add(resource *model.Machine) (*model.Machine, error) {
 
 // Delete deletes an existing machine in Octopus Deploy
 func (s *MachineService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("MachineService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 // Update updates an existing machine in Octopus Deploy
-func (s *MachineService) Update(resource *model.Machine) (*model.Machine, error) {
-	err := resource.Validate()
+func (s *MachineService) Update(machine *model.Machine) (*model.Machine, error) {
+	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Machine), path)
+	err = machine.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", machine.ID)
+	resp, err := apiUpdate(s.sling, machine, new(model.Machine), path)
 
 	if err != nil {
 		return nil, err

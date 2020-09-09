@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
@@ -38,7 +37,7 @@ type Account struct {
 // NewAccount initializes an account with a name and account type.
 func NewAccount(name string, accountType enum.AccountType) (*Account, error) {
 	if len(strings.Trim(name, " ")) == 0 {
-		return nil, errors.New("client: invalid account name")
+		return nil, errors.New("NewAccount: invalid name")
 	}
 
 	return &Account{
@@ -57,11 +56,7 @@ func (a *Account) Validate() error {
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
 			return nil
-		}
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Println(err)
 		}
 		return err
 	}
@@ -81,6 +76,10 @@ func (a *Account) Validate() error {
 }
 
 func validateUsernamePasswordAccount(account *Account) error {
+	if account == nil {
+		return errors.New("validateUsernamePasswordAccount: invalid parameter, account")
+	}
+
 	validations := []error{
 		ValidateRequiredPropertyValue("username", account.Username),
 	}
@@ -89,6 +88,10 @@ func validateUsernamePasswordAccount(account *Account) error {
 }
 
 func validateSSHKeyAccount(account *Account) error {
+	if account == nil {
+		return errors.New("validateSSHKeyAccount: invalid parameter, account")
+	}
+
 	validations := []error{
 		ValidateRequiredPropertyValue("name", account.Name),
 	}
@@ -97,6 +100,10 @@ func validateSSHKeyAccount(account *Account) error {
 }
 
 func validateAzureServicePrincipalAccount(account *Account) error {
+	if account == nil {
+		return errors.New("validateAzureServicePrincipalAccount: invalid parameter, account")
+	}
+
 	validations := []error{
 		ValidateRequiredUUID("ClientID", account.ClientID),
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
@@ -107,6 +114,10 @@ func validateAzureServicePrincipalAccount(account *Account) error {
 }
 
 func validateAzureSubscriptionAccount(account *Account) error {
+	if account == nil {
+		return errors.New("validateAzureSubscriptionAccount: invalid parameter, account")
+	}
+
 	validations := []error{
 		ValidateRequiredUUID("SubscriptionNumber", account.SubscriptionNumber),
 	}

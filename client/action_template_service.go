@@ -7,16 +7,16 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
+	"github.com/go-playground/validator"
 )
 
 type ActionTemplateService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewActionTemplateService(sling *sling.Sling) *ActionTemplateService {
 	if sling == nil {
-		fmt.Println(fmt.Errorf("ActionTemplateService: input parameter (sling) is nil"))
 		return nil
 	}
 
@@ -89,12 +89,31 @@ func (s *ActionTemplateService) Add(resource *model.ActionTemplate) (*model.Acti
 
 // Delete removes the ActionTemplate that matches the input ID.
 func (s *ActionTemplateService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("ActionTemplateService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *ActionTemplateService) Update(resource model.ActionTemplate) (*model.ActionTemplate, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.ActionTemplate), path)
+func (s *ActionTemplateService) Update(actionTemplate model.ActionTemplate) (*model.ActionTemplate, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	err = actionTemplate.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", actionTemplate.ID)
+	resp, err := apiUpdate(s.sling, actionTemplate, new(model.ActionTemplate), path)
 
 	if err != nil {
 		return nil, err
@@ -104,12 +123,14 @@ func (s *ActionTemplateService) Update(resource model.ActionTemplate) (*model.Ac
 }
 
 func (s *ActionTemplateService) validateInternalState() error {
-	if s.sling == nil {
-		return fmt.Errorf("ActionTemplateService: the internal client is nil")
-	}
+	validate := validator.New()
+	err := validate.Struct(s)
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("ActionTemplateService: the internal path is not set")
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			return nil
+		}
+		return err
 	}
 
 	return nil

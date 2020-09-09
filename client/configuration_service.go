@@ -10,13 +10,12 @@ import (
 )
 
 type ConfigurationService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewConfigurationService(sling *sling.Sling) *ConfigurationService {
 	if sling == nil {
-		fmt.Println(fmt.Errorf("ConfigurationService: input parameter (sling) is nil"))
 		return nil
 	}
 

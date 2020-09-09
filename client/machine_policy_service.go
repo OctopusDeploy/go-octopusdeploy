@@ -10,11 +10,15 @@ import (
 )
 
 type MachinePolicyService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewMachinePolicyService(sling *sling.Sling) *MachinePolicyService {
+	if sling == nil {
+		return nil
+	}
+
 	return &MachinePolicyService{
 		sling: sling,
 		path:  "machinepolicies",

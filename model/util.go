@@ -3,6 +3,7 @@ package model
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -40,6 +41,10 @@ func ValidateStringInSlice(str string, list []string) bool {
 
 // ValidatePropertyValues returns an error if the given string is not in a slice of strings
 func ValidatePropertyValues(propertyName string, propertyValue string, validValues []string) error {
+	if len(strings.Trim(propertyName, " ")) == 0 {
+		return errors.New("ValidateRequiredPropertyValue: invalid parameter, propertyName")
+	}
+
 	if ValidateStringInSlice(propertyValue, validValues) {
 		return nil
 	}
@@ -49,6 +54,10 @@ func ValidatePropertyValues(propertyName string, propertyValue string, validValu
 
 // ValidateRequiredPropertyValue returns an error if the property value is empty
 func ValidateRequiredPropertyValue(propertyName string, propertyValue string) error {
+	if len(strings.Trim(propertyName, " ")) == 0 {
+		return errors.New("ValidateRequiredPropertyValue: invalid parameter, propertyName")
+	}
+
 	if len(propertyValue) > 0 {
 		return nil
 	}
@@ -57,8 +66,12 @@ func ValidateRequiredPropertyValue(propertyName string, propertyValue string) er
 }
 
 func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
+	if len(strings.Trim(propertyName, " ")) == 0 {
+		return errors.New("ValidateRequiredUUID: invalid parameter, propertyName")
+	}
+
 	if id == nil {
-		return fmt.Errorf("%s is a required property; its value is empty", propertyName)
+		return errors.New("ValidateRequiredUUID: invalid parameter, id")
 	}
 
 	if *id == uuid.Nil {
@@ -89,6 +102,10 @@ func ValidatePropertiesMatch(firstProperty, firstPropertyName, secondProperty, s
 }
 
 func ValidateSemanticVersion(propertyName string, version string) error {
+	if len(strings.Trim(propertyName, " ")) == 0 {
+		return errors.New("ValidateRequiredPropertyValue: invalid parameter, propertyName")
+	}
+
 	re := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
 	if re.MatchString(version) {
 		return nil

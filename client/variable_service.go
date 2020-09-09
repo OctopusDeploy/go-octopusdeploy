@@ -10,11 +10,15 @@ import (
 )
 
 type VariableService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewVariableService(sling *sling.Sling) *VariableService {
+	if sling == nil {
+		return nil
+	}
+
 	return &VariableService{
 		sling: sling,
 		path:  "variables",
@@ -23,8 +27,13 @@ func NewVariableService(sling *sling.Sling) *VariableService {
 
 // GetAll fetches an entire VariableSet from Octopus Deploy for a given Project ID.
 func (s *VariableService) GetAll(projectID string) (*model.Variables, error) {
-	if projectID == "" { //Not specifying the Project ID can return thousands of entries consuming hundreds of megs of memory
-		return nil, fmt.Errorf("projectID must be specified")
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(projectID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, projectID")
 	}
 
 	path := fmt.Sprintf(s.path+"/variableset-%s", projectID)
@@ -39,6 +48,19 @@ func (s *VariableService) GetAll(projectID string) (*model.Variables, error) {
 
 // GetByID fetches a single variable, located by its ID, from Octopus Deploy for a given Project ID.
 func (s *VariableService) GetByID(projectID string, variableID string) (*model.Variable, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(projectID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, projectID")
+	}
+
+	if len(strings.Trim(variableID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, variableID")
+	}
+
 	variables, err := s.GetAll(projectID)
 	if err != nil {
 		return nil, err
@@ -57,6 +79,23 @@ func (s *VariableService) GetByID(projectID string, variableID string) (*model.V
 // names can appear more than once under different scopes, a VariableScope must also be provided, which will
 // be used to locate the appropriate variables.
 func (s *VariableService) GetByName(projectID string, name string, scope *model.VariableScope) ([]model.Variable, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(projectID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, projectID")
+	}
+
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, name")
+	}
+
+	if scope == nil {
+		return nil, errors.New("VariableService: invalid parameter, scope")
+	}
+
 	variables, err := s.GetAll(projectID)
 	if err != nil {
 		return nil, err
@@ -82,10 +121,25 @@ func (s *VariableService) GetByName(projectID string, name string, scope *model.
 // AddSingle adds a single variable to a project ID. This automates the act of fetching
 // the variable set, adding a new item to it, and posting back to Octopus
 func (s *VariableService) AddSingle(projectID string, variable *model.Variable) (*model.Variables, error) {
-	variables, err := s.GetAll(projectID)
+	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
 	}
+
+	if len(strings.Trim(projectID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, projectID")
+	}
+
+	if variable == nil {
+		return nil, errors.New("VariableService: invalid parameter, variable")
+	}
+
+	variables, err := s.GetAll(projectID)
+
+	if err != nil {
+		return nil, err
+	}
+
 	variables.Variables = append(variables.Variables, *variable)
 	return s.Update(projectID, variables)
 }
@@ -93,7 +147,21 @@ func (s *VariableService) AddSingle(projectID string, variable *model.Variable) 
 // UpdateSingle adds a single variable to a project ID. This automates the act of fetching
 // the variable set, updating the existing item, and posting back to Octopus
 func (s *VariableService) UpdateSingle(projectID string, variable *model.Variable) (*model.Variables, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(projectID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, projectID")
+	}
+
+	if variable == nil {
+		return nil, errors.New("VariableService: invalid parameter, variable")
+	}
+
 	variables, err := s.GetAll(projectID)
+
 	if err != nil {
 		return nil, err
 	}
@@ -116,6 +184,19 @@ func (s *VariableService) UpdateSingle(projectID string, variable *model.Variabl
 // DeleteSingle removes a single variable from a project ID. This automates the act of fetching
 // the variable set, removing the existing item, and posting back to Octopus
 func (s *VariableService) DeleteSingle(projectID string, variableID string) (*model.Variables, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(projectID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, projectID")
+	}
+
+	if len(strings.Trim(variableID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, variableID")
+	}
+
 	variables, err := s.GetAll(projectID)
 	if err != nil {
 		return nil, err
@@ -139,6 +220,19 @@ func (s *VariableService) DeleteSingle(projectID string, variableID string) (*mo
 // Update takes an entire variable set and posts the entire set back to Octopus Deploy. There are individual
 // functions like AddSingle and UpdateSingle that can make this process more of a "typical" CRUD Octopus command.
 func (s *VariableService) Update(projectID string, variableSet *model.Variables) (*model.Variables, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(projectID, " ")) == 0 {
+		return nil, errors.New("VariableService: invalid parameter, projectID")
+	}
+
+	if variableSet == nil {
+		return nil, errors.New("VariableService: invalid parameter, variableSet")
+	}
+
 	path := fmt.Sprintf(s.path+"/variableset-%s", projectID)
 	resp, err := apiUpdate(s.sling, variableSet, new(model.Variables), path)
 
@@ -154,12 +248,18 @@ func (s *VariableService) Update(projectID string, variableSet *model.Variables)
 // for scope options. Returns true if definedScope is nil or all elements are empty. Also returns a VariableScope
 // of all the scopes that were matched
 func (s *VariableService) MatchesScope(variableScope *model.VariableScope, definedScope *model.VariableScope) (bool, *model.VariableScope, error) {
-	var matchedScopes model.VariableScope
-	var matched bool
+	err := s.validateInternalState()
+	if err != nil {
+		return false, nil, err
+	}
+
+	if variableScope == nil {
+		return false, nil, errors.New("VariableService: invalid parameter, variableScope")
+	}
 
 	//If the scope supplied is nil then match everything
 	if definedScope == nil {
-		return true, &matchedScopes, nil
+		return true, &model.VariableScope{}, nil
 	}
 
 	//Unsupported scopes
@@ -179,9 +279,12 @@ func (s *VariableService) MatchesScope(variableScope *model.VariableScope, defin
 		return false, nil, fmt.Errorf("User is not a supported scope for variable matching")
 	}
 
+	var matchedScopes model.VariableScope
+	var matched bool
+
 	//If there is no scope to filter on return all the results
 	if len(definedScope.Environment) > 0 && len(definedScope.Role) > 0 && len(definedScope.Machine) > 0 && len(definedScope.Action) > 0 && len(definedScope.Channel) > 0 && len(definedScope.TenantTag) > 0 {
-		return true, &matchedScopes, nil
+		return true, &model.VariableScope{}, nil
 	}
 
 	for _, e1 := range definedScope.Environment {

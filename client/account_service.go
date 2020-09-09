@@ -7,19 +7,19 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
+	"github.com/go-playground/validator"
 )
 
 // AccountService handles communication with Account-related methods of the
 // Octopus API.
 type AccountService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 // NewAccountService returns an AccountService with a preconfigured client.
 func NewAccountService(sling *sling.Sling) *AccountService {
 	if sling == nil {
-		fmt.Println(fmt.Errorf("AccountService: input parameter (sling) is nil"))
 		return nil
 	}
 
@@ -93,22 +93,18 @@ func (s *AccountService) GetByName(name string) (*model.Account, error) {
 }
 
 // Add creates a new Account.
-func (s *AccountService) Add(resource *model.Account) (*model.Account, error) {
+func (s *AccountService) Add(account *model.Account) (*model.Account, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("AccountService: invalid parameter, resource")
-	}
-
-	err = resource.Validate()
+	err = account.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.Account), s.path)
+	resp, err := apiAdd(s.sling, account, new(model.Account), s.path)
 
 	if err != nil {
 		return nil, err
@@ -132,19 +128,19 @@ func (s *AccountService) Delete(id string) error {
 }
 
 // Update modifies an Account based on the one provided as input.
-func (s *AccountService) Update(resource *model.Account) (*model.Account, error) {
+func (s *AccountService) Update(account model.Account) (*model.Account, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
 	}
 
-	err = resource.Validate()
+	err = account.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.GetID())
-	resp, err := apiUpdate(s.sling, resource, new(model.Account), path)
+	path := fmt.Sprintf(s.path+"/%s", account.ID)
+	resp, err := apiUpdate(s.sling, account, new(model.Account), path)
 
 	if err != nil {
 		return nil, err
@@ -154,12 +150,14 @@ func (s *AccountService) Update(resource *model.Account) (*model.Account, error)
 }
 
 func (s *AccountService) validateInternalState() error {
-	if s.sling == nil {
-		return fmt.Errorf("AccountService: the internal client is nil")
-	}
+	validate := validator.New()
+	err := validate.Struct(s)
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("AccountService: the internal path is not set")
+	if err != nil {
+		if _, ok := err.(*validator.InvalidValidationError); ok {
+			return nil
+		}
+		return err
 	}
 
 	return nil

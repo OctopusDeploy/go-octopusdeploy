@@ -10,11 +10,15 @@ import (
 )
 
 type ChannelService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewChannelService(sling *sling.Sling) *ChannelService {
+	if sling == nil {
+		return nil
+	}
+
 	return &ChannelService{
 		sling: sling,
 		path:  "channels",
@@ -82,29 +86,34 @@ func (s *ChannelService) Add(resource *model.Channel) (*model.Channel, error) {
 	return resp.(*model.Channel), nil
 }
 
-// Delete removes the Account that matches the input ID.
+// Delete removes the Channel that matches the input ID.
 func (s *ChannelService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("ChannelService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 // Update modifies an Channel based on the one provided as input.
-func (s *ChannelService) Update(resource *model.Channel) (*model.Channel, error) {
+func (s *ChannelService) Update(channel *model.Channel) (*model.Channel, error) {
 	err := s.validateInternalState()
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("ChannelService: invalid parameter, resource")
-	}
-
-	err = resource.Validate()
+	err = channel.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Channel), path)
+	path := fmt.Sprintf(s.path+"/%s", channel.ID)
+	resp, err := apiUpdate(s.sling, channel, new(model.Channel), path)
 
 	if err != nil {
 		return nil, err

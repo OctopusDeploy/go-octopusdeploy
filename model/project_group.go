@@ -23,7 +23,6 @@ func (p *ProjectGroup) GetID() string {
 
 func (p *ProjectGroup) Validate() error {
 	validate := validator.New()
-
 	err := validate.Struct(p)
 
 	if err != nil {

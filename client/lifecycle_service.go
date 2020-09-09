@@ -11,11 +11,15 @@ import (
 )
 
 type LifecycleService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewLifecycleService(sling *sling.Sling) *LifecycleService {
+	if sling == nil {
+		return nil
+	}
+
 	return &LifecycleService{
 		sling: sling,
 		path:  "lifecycles",
@@ -110,6 +114,15 @@ func (s *LifecycleService) Add(resource *model.Lifecycle) (*model.Lifecycle, err
 
 // Delete deletes an existing lifecycle in Octopus Deploy
 func (s *LifecycleService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("LifecycleService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 

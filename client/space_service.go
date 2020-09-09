@@ -10,11 +10,15 @@ import (
 )
 
 type SpaceService struct {
-	sling *sling.Sling
-	path  string
+	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 func NewSpaceService(sling *sling.Sling) *SpaceService {
+	if sling == nil {
+		return nil
+	}
+
 	return &SpaceService{
 		sling: sling,
 		path:  "spaces",
@@ -57,6 +61,15 @@ func (s *SpaceService) GetAll() (*[]model.Space, error) {
 }
 
 func (s *SpaceService) GetByName(name string) (*model.Space, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(strings.Trim(name, " ")) == 0 {
+		return nil, errors.New("SpaceService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -72,8 +85,17 @@ func (s *SpaceService) GetByName(name string) (*model.Space, error) {
 	return nil, errors.New("client: item not found")
 }
 
-func (s *SpaceService) Add(resource *model.Space) (*model.Space, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.Space), s.path)
+func (s *SpaceService) Add(space *model.Space) (*model.Space, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if space == nil {
+		return nil, errors.New("SpaceService: invalid parameter, space")
+	}
+
+	resp, err := apiAdd(s.sling, space, new(model.Space), s.path)
 
 	if err != nil {
 		return nil, err
@@ -83,12 +105,30 @@ func (s *SpaceService) Add(resource *model.Space) (*model.Space, error) {
 }
 
 func (s *SpaceService) Delete(id string) error {
+	err := s.validateInternalState()
+	if err != nil {
+		return err
+	}
+
+	if len(strings.Trim(id, " ")) == 0 {
+		return errors.New("SpaceService: invalid parameter, id")
+	}
+
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
-func (s *SpaceService) Update(resource *model.Space) (*model.Space, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Space), path)
+func (s *SpaceService) Update(space *model.Space) (*model.Space, error) {
+	err := s.validateInternalState()
+	if err != nil {
+		return nil, err
+	}
+
+	if space == nil {
+		return nil, errors.New("SpaceService: invalid parameter, space")
+	}
+
+	path := fmt.Sprintf(s.path+"/%s", space.ID)
+	resp, err := apiUpdate(s.sling, space, new(model.Space), path)
 
 	if err != nil {
 		return nil, err
