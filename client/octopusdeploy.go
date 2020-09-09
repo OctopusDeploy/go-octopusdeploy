@@ -10,6 +10,18 @@ import (
 	"github.com/dghubble/sling"
 )
 
+var (
+	errUnableToInitializeClient = errors.New("Client: unable to initialize internal client")
+)
+
+type errInvalidClientParameter struct {
+	parameterName string
+}
+
+func (e errInvalidClientParameter) Error() string {
+	return fmt.Sprintf("Client: invalid parameter, %s", e.parameterName)
+}
+
 // Client is an OctopusDeploy for making OctpusDeploy API requests.
 type Client struct {
 	sling *sling.Sling
@@ -43,15 +55,15 @@ type Client struct {
 // NewClient returns a new
 func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, error) {
 	if httpClient == nil {
-		return nil, errors.New("Client: invalid parameter, httpClient")
+		return nil, errInvalidClientParameter{parameterName: "httpClient"}
 	}
 
 	if len(strings.Trim(octopusURL, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, octopusURL")
+		return nil, errInvalidClientParameter{parameterName: "octopusURL"}
 	}
 
 	if len(strings.Trim(apiKey, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, apiKey")
+		return nil, errInvalidClientParameter{parameterName: "apiKey"}
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
@@ -89,19 +101,19 @@ func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, err
 
 func ForSpace(httpClient *http.Client, octopusURL string, apiKey string, space *model.Space) (*Client, error) {
 	if httpClient == nil {
-		return nil, errors.New("Client: invalid parameter, httpClient")
+		return nil, errInvalidClientParameter{parameterName: "httpClient"}
 	}
 
 	if len(strings.Trim(octopusURL, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, octopusURL")
+		return nil, errInvalidClientParameter{parameterName: "octopusURL"}
 	}
 
 	if len(strings.Trim(apiKey, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, apiKey")
+		return nil, errInvalidClientParameter{parameterName: "apiKey"}
 	}
 
 	if space == nil {
-		return nil, errors.New("Client: invalid parameter, space")
+		return nil, errInvalidClientParameter{parameterName: "space"}
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
@@ -184,17 +196,17 @@ func LoadNextPage(pagedResults model.PagedResults) (string, bool) {
 // Generic OctopusDeploy API Get Function.
 func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, errors.New("Client: invalid parameter, sling")
+		return nil, errInvalidClientParameter{parameterName: "sling"}
 	}
 
 	getClient := sling.New()
 	if getClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	getClient = getClient.Get(path)
 	if getClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	octopusDeployError := new(APIError)
@@ -212,21 +224,21 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
 func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, errors.New("Client: invalid parameter, sling")
+		return nil, errInvalidClientParameter{parameterName: "sling"}
 	}
 
 	if len(strings.Trim(path, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, path")
+		return nil, errInvalidClientParameter{parameterName: "path"}
 	}
 
 	postClient := sling.New()
 	if postClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	postClient = postClient.Post(path)
 	if postClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	octopusDeployError := new(APIError)
@@ -244,21 +256,21 @@ func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, p
 // apiPost post to octopus and expect a 200 response code.
 func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, errors.New("Client: invalid parameter, sling")
+		return nil, errInvalidClientParameter{parameterName: "sling"}
 	}
 
 	if len(strings.Trim(path, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, path")
+		return nil, errInvalidClientParameter{parameterName: "path"}
 	}
 
 	postClient := sling.New()
 	if postClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	postClient = postClient.Post(path)
 	if postClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	octopusDeployError := new(APIError)
@@ -276,21 +288,21 @@ func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path str
 // Generic OctopusDeploy API Update Function.
 func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, errors.New("Client: invalid parameter, sling")
+		return nil, errInvalidClientParameter{parameterName: "sling"}
 	}
 
 	if len(strings.Trim(path, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, path")
+		return nil, errInvalidClientParameter{parameterName: "path"}
 	}
 
 	putClient := sling.New()
 	if putClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	putClient = putClient.Put(path)
 	if putClient == nil {
-		return nil, errors.New("Client: unable to initialize client")
+		return nil, errUnableToInitializeClient
 	}
 
 	octopusDeployError := new(APIError)
@@ -308,21 +320,21 @@ func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path s
 // Generic OctopusDeploy API Delete Function.
 func apiDelete(sling *sling.Sling, path string) error {
 	if sling == nil {
-		return errors.New("Client: invalid parameter, sling")
+		return errInvalidClientParameter{parameterName: "sling"}
 	}
 
 	if len(strings.Trim(path, " ")) == 0 {
-		return errors.New("Client: invalid parameter, path")
+		return errInvalidClientParameter{parameterName: "path"}
 	}
 
 	deleteClient := sling.New()
 	if deleteClient == nil {
-		return errors.New("Client: unable to initialize client")
+		return errUnableToInitializeClient
 	}
 
 	deleteClient = deleteClient.Delete(path)
 	if deleteClient == nil {
-		return errors.New("Client: unable to initialize client")
+		return errUnableToInitializeClient
 	}
 
 	octopusDeployError := new(APIError)
