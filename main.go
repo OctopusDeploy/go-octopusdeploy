@@ -26,7 +26,7 @@ func OutputAsJSON(resource interface{}, err error) {
 	}
 
 	jsonData, err := model.PrettyJSON(resource)
-	fmt.Println(string(jsonData))
+	fmt.Println(jsonData)
 
 	fmt.Println()
 }
@@ -62,7 +62,7 @@ func CreateSpace(client *client.Client) (*model.Space, error) {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println(string(jsonData))
+	fmt.Println(jsonData)
 	fmt.Println()
 
 	return space, err
@@ -88,7 +88,7 @@ func CreateProject(client *client.Client) *model.Project {
 		}
 	} else {
 		jsonData, _ := model.PrettyJSON(project)
-		fmt.Println(string(jsonData))
+		fmt.Println(jsonData)
 	}
 
 	return project
@@ -109,7 +109,7 @@ func UpdateProject(client *client.Client, project *model.Project) *model.Project
 		fmt.Println(err.Error())
 	} else {
 		jsonData, _ := model.PrettyJSON(project)
-		fmt.Println(string(jsonData))
+		fmt.Println(jsonData)
 	}
 
 	return project
@@ -139,11 +139,11 @@ func main() {
 	user.Password = "asdaasdkhwjerlkqjh987123"
 	newUser, err := client.Users.Add(user)
 	jsonData, _ := model.PrettyJSON(newUser)
-	fmt.Println(string(jsonData))
+	fmt.Println(jsonData)
 
 	authentication, err := client.Authentication.Get()
 	jsonData, _ = model.PrettyJSON(authentication)
-	fmt.Println(string(jsonData))
+	fmt.Println(jsonData)
 
 	project := CreateProject(client)
 	project = UpdateProject(client, project)
