@@ -109,12 +109,12 @@ func TestGetWithEmptySling(t *testing.T) {
 
 func TestGetWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
-	resource, err := apiGet(&sling.Sling{}, input, "")
+	resource, err := apiGet(sling.New(), input, "")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiGet(&sling.Sling{}, input, " ")
+	resource, err = apiGet(sling.New(), input, " ")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -144,12 +144,12 @@ func TestAddWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiAdd(nil, input, response, "")
+	resource, err := apiAdd(sling.New(), input, response, "")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiAdd(nil, input, response, " ")
+	resource, err = apiAdd(sling.New(), input, response, " ")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -179,12 +179,12 @@ func TestPostWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiPost(nil, input, response, "")
+	resource, err := apiPost(sling.New(), input, response, "")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiPost(nil, input, response, " ")
+	resource, err = apiPost(sling.New(), input, response, " ")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -214,12 +214,12 @@ func TestUpdateWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiUpdate(nil, input, response, "")
+	resource, err := apiUpdate(sling.New(), input, response, "")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiUpdate(nil, input, response, " ")
+	resource, err = apiUpdate(sling.New(), input, response, " ")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)

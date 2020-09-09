@@ -187,9 +187,18 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 		return nil, errors.New("Client: invalid parameter, sling")
 	}
 
-	octopusDeployError := new(APIError)
+	getClient := sling.New()
+	if getClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
 
-	resp, err := sling.New().Get(path).Receive(inputStruct, &octopusDeployError)
+	getClient = getClient.Get(path)
+	if getClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
+
+	octopusDeployError := new(APIError)
+	resp, err := getClient.Receive(inputStruct, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
@@ -210,9 +219,18 @@ func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, p
 		return nil, errors.New("Client: invalid parameter, path")
 	}
 
-	octopusDeployError := new(APIError)
+	postClient := sling.New()
+	if postClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
 
-	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(resource, &octopusDeployError)
+	postClient = postClient.Post(path)
+	if postClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
+
+	octopusDeployError := new(APIError)
+	resp, err := postClient.BodyJSON(inputStruct).Receive(resource, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
 
@@ -233,9 +251,18 @@ func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path str
 		return nil, errors.New("Client: invalid parameter, path")
 	}
 
-	octopusDeployError := new(APIError)
+	postClient := sling.New()
+	if postClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
 
-	resp, err := sling.New().Post(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
+	postClient = postClient.Post(path)
+	if postClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
+
+	octopusDeployError := new(APIError)
+	resp, err := postClient.BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
@@ -256,9 +283,18 @@ func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path s
 		return nil, errors.New("Client: invalid parameter, path")
 	}
 
-	octopusDeployError := new(APIError)
+	putClient := sling.New()
+	if putClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
 
-	resp, err := sling.New().Put(path).BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
+	putClient = putClient.Put(path)
+	if putClient == nil {
+		return nil, errors.New("Client: unable to initialize client")
+	}
+
+	octopusDeployError := new(APIError)
+	resp, err := putClient.BodyJSON(inputStruct).Receive(returnStruct, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
@@ -279,9 +315,18 @@ func apiDelete(sling *sling.Sling, path string) error {
 		return errors.New("Client: invalid parameter, path")
 	}
 
-	octopusDeployError := new(APIError)
+	deleteClient := sling.New()
+	if deleteClient == nil {
+		return errors.New("Client: unable to initialize client")
+	}
 
-	resp, err := sling.New().Delete(path).Receive(nil, &octopusDeployError)
+	deleteClient = deleteClient.Delete(path)
+	if deleteClient == nil {
+		return errors.New("Client: unable to initialize client")
+	}
+
+	octopusDeployError := new(APIError)
+	resp, err := deleteClient.Receive(nil, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 
