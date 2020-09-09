@@ -67,7 +67,10 @@ func NewClient(httpClient *http.Client, octopusURL, apiKey string) (*Client, err
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
-	baseURLWithAPI = fmt.Sprintf("%s/api/", baseURLWithAPI)
+
+	const apiPath = "%s/api/"
+	baseURLWithAPI = fmt.Sprintf(apiPath, baseURLWithAPI)
+
 	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
 
 	return &Client{
@@ -117,7 +120,10 @@ func ForSpace(httpClient *http.Client, octopusURL string, apiKey string, space *
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
-	baseURLWithAPI = fmt.Sprintf("%s/api/%s/", baseURLWithAPI, space.ID)
+
+	const apiPath = "%s/api/%s/"
+	baseURLWithAPI = fmt.Sprintf(apiPath, baseURLWithAPI, space.ID)
+
 	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
 
 	return &Client{
