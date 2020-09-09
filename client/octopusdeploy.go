@@ -187,10 +187,6 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 		return nil, errors.New("Client: invalid parameter, sling")
 	}
 
-	if len(strings.Trim(path, " ")) == 0 {
-		return nil, errors.New("Client: invalid parameter, path")
-	}
-
 	octopusDeployError := new(APIError)
 
 	resp, err := sling.New().Get(path).Receive(inputStruct, &octopusDeployError)
