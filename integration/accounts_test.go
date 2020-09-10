@@ -9,19 +9,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var name string
-var description string
-var username string
-var password string
+var name string = getRandomName()
+var description string = getRandomName()
+var username string = getRandomName()
+var password string = getRandomName()
 
 func init() {
 	if octopusClient == nil {
 		octopusClient = initTest()
 	}
-	name = getRandomName()
-	description = getRandomName()
-	username = getRandomName()
-	password = getRandomName()
 }
 
 func TestEmptyAccount(t *testing.T) {
