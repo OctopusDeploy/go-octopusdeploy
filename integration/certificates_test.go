@@ -71,6 +71,10 @@ func TestCertAddAndReplace(t *testing.T) {
 
 func createTestCert(t *testing.T, certName string) model.Certificate {
 	c, err := getTestCert1(t, certName)
+	if err != nil {
+		t.Fatalf("getting certificate %s failed when it shouldn't: %s", certName, err)
+	}
+
 	cert, err := octopusClient.Certificates.Add(c)
 	if err != nil {
 		t.Fatalf("creating certificate %s failed when it shouldn't: %s", certName, err)

@@ -24,7 +24,7 @@ func TestMachineAddAndDelete(t *testing.T) {
 	defer cleanEnvironment(t, testEnvironment.ID)
 
 	machineName := strings.Split(getRandomName(), " ")[1]
-	expected := getTestMachine(testEnvironment.ID, machineName)
+	expected := getTestMachine(t, testEnvironment.ID, machineName)
 	actual := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, actual.ID)
 
@@ -122,7 +122,7 @@ func TestMachineUpdate(t *testing.T) {
 	assert.Equal(t, newWorkingDirectory, updatedMachine.Endpoint.WorkingDirectory, "machine endpoint's working Directory was not updated")
 }
 
-func getTestMachine(environmentID string, machineName string) model.Machine {
+func getTestMachine(t *testing.T, environmentID string, machineName string) model.Machine {
 	// Thumbprints have to be unique, so accept a testName string so we can pass through a fixed ID
 	// with the name machine that will be consistent through the same test, but different for different
 	// tests
@@ -141,6 +141,10 @@ func getTestMachine(environmentID string, machineName string) model.Machine {
 	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
 
 	endpoint, err := model.NewMachineEndpoint()
+
+	assert.NoError(t, err)
+	assert.NotNil(t, endpoint)
+
 	endpoint.ApplicationsDirectory = "C:\\Applications"
 	endpoint.CommunicationStyle = "OfflineDrop"
 	endpoint.WorkingDirectory = "C:\\Octopus"
@@ -164,7 +168,7 @@ func getTestMachine(environmentID string, machineName string) model.Machine {
 }
 
 func createTestMachine(t *testing.T, environmentID string, machineName string) model.Machine {
-	e := getTestMachine(environmentID, machineName)
+	e := getTestMachine(t, environmentID, machineName)
 	createdMachine, err := octopusClient.Machines.Add(&e)
 
 	if err != nil {

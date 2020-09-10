@@ -3,10 +3,9 @@ package integration
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func init() {

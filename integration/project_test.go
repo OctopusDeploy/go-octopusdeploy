@@ -10,9 +10,13 @@ import (
 
 func TestProjectGet(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, client)
+
 	project, err := client.Projects.Get("Projects-663")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "Canary .NET Core 2.0", project.Name)
 }
 

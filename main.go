@@ -26,9 +26,10 @@ func OutputAsJSON(resource interface{}, err error) {
 	}
 
 	jsonData, err := model.PrettyJSON(resource)
-	fmt.Println(jsonData)
-
-	fmt.Println()
+	if err == nil {
+		fmt.Println(jsonData)
+		fmt.Println()
+	}
 }
 
 // CreateSpace creates a test space and outputs the results to the console.
@@ -54,6 +55,11 @@ func CreateSpace(client *client.Client) (*model.Space, error) {
 	if err != nil {
 		fmt.Println(err.Error())
 		space, err = client.Spaces.GetByName(space.Name)
+
+		if err != nil {
+			return nil, err
+
+		}
 	}
 
 	jsonData, err := model.PrettyJSON(space)
@@ -137,11 +143,20 @@ func main() {
 
 	user := model.NewUser("askdhj", "aklsjd")
 	user.Password = "asdaasdkhwjerlkqjh987123"
+
 	newUser, err := client.Users.Add(user)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	jsonData, _ := model.PrettyJSON(newUser)
 	fmt.Println(jsonData)
 
 	authentication, err := client.Authentication.Get()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	jsonData, _ = model.PrettyJSON(authentication)
 	fmt.Println(jsonData)
 

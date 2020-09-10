@@ -12,6 +12,10 @@ import (
 
 func TestLibraryVariableSetGet(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariableSets-41", http.StatusOK, getLibraryVariableSetResponseJSON)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, client)
+
 	libraryVariableSet, err := client.LibraryVariableSets.Get("LibraryVariableSets-41")
 
 	assert.Nil(t, err)

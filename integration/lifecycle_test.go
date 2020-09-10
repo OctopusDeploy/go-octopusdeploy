@@ -11,9 +11,14 @@ import (
 
 func TestLifecycleGet(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, client)
+
 	lifecycle, err := client.Lifecycles.Get("Lifecycles-41")
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
+	assert.NotNil(t, lifecycle)
 	assert.Equal(t, "Test", lifecycle.Name)
 	assert.Equal(t, 2, len(lifecycle.Phases))
 
