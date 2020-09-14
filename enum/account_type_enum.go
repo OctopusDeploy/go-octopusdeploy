@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	// None is a AccountType of type None
-	None AccountType = iota
+	// NoAccountType is a AccountType of type NoAccountType
+	NoAccountType AccountType = iota
 	// UsernamePassword is a AccountType of type UsernamePassword
 	UsernamePassword
 	// SshKeyPair is a AccountType of type SshKeyPair
@@ -27,17 +27,17 @@ const (
 	Token
 )
 
-const _AccountTypeName = "NoneUsernamePasswordSshKeyPairAzureSubscriptionAzureServicePrincipalAmazonWebServicesAccountAmazonWebServicesRoleAccountToken"
+const _AccountTypeName = "NoAccountTypeUsernamePasswordSshKeyPairAzureSubscriptionAzureServicePrincipalAmazonWebServicesAccountAmazonWebServicesRoleAccountToken"
 
 var _AccountTypeNames = []string{
-	_AccountTypeName[0:4],
-	_AccountTypeName[4:20],
-	_AccountTypeName[20:30],
-	_AccountTypeName[30:47],
-	_AccountTypeName[47:68],
-	_AccountTypeName[68:92],
-	_AccountTypeName[92:120],
-	_AccountTypeName[120:125],
+	_AccountTypeName[0:13],
+	_AccountTypeName[13:29],
+	_AccountTypeName[29:39],
+	_AccountTypeName[39:56],
+	_AccountTypeName[56:77],
+	_AccountTypeName[77:101],
+	_AccountTypeName[101:129],
+	_AccountTypeName[129:134],
 }
 
 // AccountTypeNames returns a list of possible string values of AccountType.
@@ -48,14 +48,14 @@ func AccountTypeNames() []string {
 }
 
 var _AccountTypeMap = map[AccountType]string{
-	0: _AccountTypeName[0:4],
-	1: _AccountTypeName[4:20],
-	2: _AccountTypeName[20:30],
-	3: _AccountTypeName[30:47],
-	4: _AccountTypeName[47:68],
-	5: _AccountTypeName[68:92],
-	6: _AccountTypeName[92:120],
-	7: _AccountTypeName[120:125],
+	0: _AccountTypeName[0:13],
+	1: _AccountTypeName[13:29],
+	2: _AccountTypeName[29:39],
+	3: _AccountTypeName[39:56],
+	4: _AccountTypeName[56:77],
+	5: _AccountTypeName[77:101],
+	6: _AccountTypeName[101:129],
+	7: _AccountTypeName[129:134],
 }
 
 // String implements the Stringer interface.
@@ -67,22 +67,22 @@ func (x AccountType) String() string {
 }
 
 var _AccountTypeValue = map[string]AccountType{
-	_AccountTypeName[0:4]:                      0,
-	strings.ToLower(_AccountTypeName[0:4]):     0,
-	_AccountTypeName[4:20]:                     1,
-	strings.ToLower(_AccountTypeName[4:20]):    1,
-	_AccountTypeName[20:30]:                    2,
-	strings.ToLower(_AccountTypeName[20:30]):   2,
-	_AccountTypeName[30:47]:                    3,
-	strings.ToLower(_AccountTypeName[30:47]):   3,
-	_AccountTypeName[47:68]:                    4,
-	strings.ToLower(_AccountTypeName[47:68]):   4,
-	_AccountTypeName[68:92]:                    5,
-	strings.ToLower(_AccountTypeName[68:92]):   5,
-	_AccountTypeName[92:120]:                   6,
-	strings.ToLower(_AccountTypeName[92:120]):  6,
-	_AccountTypeName[120:125]:                  7,
-	strings.ToLower(_AccountTypeName[120:125]): 7,
+	_AccountTypeName[0:13]:                     0,
+	strings.ToLower(_AccountTypeName[0:13]):    0,
+	_AccountTypeName[13:29]:                    1,
+	strings.ToLower(_AccountTypeName[13:29]):   1,
+	_AccountTypeName[29:39]:                    2,
+	strings.ToLower(_AccountTypeName[29:39]):   2,
+	_AccountTypeName[39:56]:                    3,
+	strings.ToLower(_AccountTypeName[39:56]):   3,
+	_AccountTypeName[56:77]:                    4,
+	strings.ToLower(_AccountTypeName[56:77]):   4,
+	_AccountTypeName[77:101]:                   5,
+	strings.ToLower(_AccountTypeName[77:101]):  5,
+	_AccountTypeName[101:129]:                  6,
+	strings.ToLower(_AccountTypeName[101:129]): 6,
+	_AccountTypeName[129:134]:                  7,
+	strings.ToLower(_AccountTypeName[129:134]): 7,
 }
 
 // ParseAccountType attempts to convert a string to a AccountType

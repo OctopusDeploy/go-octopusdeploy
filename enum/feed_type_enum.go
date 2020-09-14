@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	// None is a FeedType of type None
-	None FeedType = iota
+	// NoFeedType is a FeedType of type NoFeedType
+	NoFeedType FeedType = iota
 	// NuGet is a FeedType of type NuGet
 	NuGet
 	// Docker is a FeedType of type Docker
@@ -29,18 +29,18 @@ const (
 	AwsElasticContainerRegistry
 )
 
-const _FeedTypeName = "NoneNuGetDockerMavenOctopusProjectGitHubBuiltInHelmAwsElasticContainerRegistry"
+const _FeedTypeName = "NoFeedTypeNuGetDockerMavenOctopusProjectGitHubBuiltInHelmAwsElasticContainerRegistry"
 
 var _FeedTypeNames = []string{
-	_FeedTypeName[0:4],
-	_FeedTypeName[4:9],
-	_FeedTypeName[9:15],
-	_FeedTypeName[15:20],
-	_FeedTypeName[20:34],
-	_FeedTypeName[34:40],
-	_FeedTypeName[40:47],
-	_FeedTypeName[47:51],
-	_FeedTypeName[51:78],
+	_FeedTypeName[0:10],
+	_FeedTypeName[10:15],
+	_FeedTypeName[15:21],
+	_FeedTypeName[21:26],
+	_FeedTypeName[26:40],
+	_FeedTypeName[40:46],
+	_FeedTypeName[46:53],
+	_FeedTypeName[53:57],
+	_FeedTypeName[57:84],
 }
 
 // FeedTypeNames returns a list of possible string values of FeedType.
@@ -51,15 +51,15 @@ func FeedTypeNames() []string {
 }
 
 var _FeedTypeMap = map[FeedType]string{
-	0: _FeedTypeName[0:4],
-	1: _FeedTypeName[4:9],
-	2: _FeedTypeName[9:15],
-	3: _FeedTypeName[15:20],
-	4: _FeedTypeName[20:34],
-	5: _FeedTypeName[34:40],
-	6: _FeedTypeName[40:47],
-	7: _FeedTypeName[47:51],
-	8: _FeedTypeName[51:78],
+	0: _FeedTypeName[0:10],
+	1: _FeedTypeName[10:15],
+	2: _FeedTypeName[15:21],
+	3: _FeedTypeName[21:26],
+	4: _FeedTypeName[26:40],
+	5: _FeedTypeName[40:46],
+	6: _FeedTypeName[46:53],
+	7: _FeedTypeName[53:57],
+	8: _FeedTypeName[57:84],
 }
 
 // String implements the Stringer interface.
@@ -71,24 +71,24 @@ func (x FeedType) String() string {
 }
 
 var _FeedTypeValue = map[string]FeedType{
-	_FeedTypeName[0:4]:                    0,
-	strings.ToLower(_FeedTypeName[0:4]):   0,
-	_FeedTypeName[4:9]:                    1,
-	strings.ToLower(_FeedTypeName[4:9]):   1,
-	_FeedTypeName[9:15]:                   2,
-	strings.ToLower(_FeedTypeName[9:15]):  2,
-	_FeedTypeName[15:20]:                  3,
-	strings.ToLower(_FeedTypeName[15:20]): 3,
-	_FeedTypeName[20:34]:                  4,
-	strings.ToLower(_FeedTypeName[20:34]): 4,
-	_FeedTypeName[34:40]:                  5,
-	strings.ToLower(_FeedTypeName[34:40]): 5,
-	_FeedTypeName[40:47]:                  6,
-	strings.ToLower(_FeedTypeName[40:47]): 6,
-	_FeedTypeName[47:51]:                  7,
-	strings.ToLower(_FeedTypeName[47:51]): 7,
-	_FeedTypeName[51:78]:                  8,
-	strings.ToLower(_FeedTypeName[51:78]): 8,
+	_FeedTypeName[0:10]:                   0,
+	strings.ToLower(_FeedTypeName[0:10]):  0,
+	_FeedTypeName[10:15]:                  1,
+	strings.ToLower(_FeedTypeName[10:15]): 1,
+	_FeedTypeName[15:21]:                  2,
+	strings.ToLower(_FeedTypeName[15:21]): 2,
+	_FeedTypeName[21:26]:                  3,
+	strings.ToLower(_FeedTypeName[21:26]): 3,
+	_FeedTypeName[26:40]:                  4,
+	strings.ToLower(_FeedTypeName[26:40]): 4,
+	_FeedTypeName[40:46]:                  5,
+	strings.ToLower(_FeedTypeName[40:46]): 5,
+	_FeedTypeName[46:53]:                  6,
+	strings.ToLower(_FeedTypeName[46:53]): 6,
+	_FeedTypeName[53:57]:                  7,
+	strings.ToLower(_FeedTypeName[53:57]): 7,
+	_FeedTypeName[57:84]:                  8,
+	strings.ToLower(_FeedTypeName[57:84]): 8,
 }
 
 // ParseFeedType attempts to convert a string to a FeedType

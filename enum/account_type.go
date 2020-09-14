@@ -3,7 +3,7 @@ package enum
 // AccountType indicates what type of account the Account object represents.
 /*
 ENUM(
-	None
+	NoAccountType
 	UsernamePassword
 	SshKeyPair
 	AzureSubscription

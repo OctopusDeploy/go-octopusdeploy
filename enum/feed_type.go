@@ -3,7 +3,7 @@ package enum
 // FeedType indicates what type of feed the Feed object represents.
 /*
 ENUM(
-	None
+	NoFeedType
 	NuGet
 	Docker
 	Maven
