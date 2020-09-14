@@ -39,7 +39,6 @@ func TestGetUsage(t *testing.T) {
 	accounts, err := octopusClient.Accounts.GetAll()
 
 	assert.NoError(t, err)
-	assert.NotEmpty(t, accounts)
 
 	for _, account := range accounts {
 		accountUsages, err := octopusClient.Accounts.GetUsage(account)
