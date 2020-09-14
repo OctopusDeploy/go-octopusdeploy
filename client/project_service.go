@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -28,11 +29,12 @@ func NewProjectService(sling *sling.Sling) *ProjectService {
 // Get returns a single project by its ID in Octopus Deploy
 func (s *ProjectService) Get(id string) (*model.Project, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("ProjectService: invalid parameter, id")
 	}
 
@@ -46,31 +48,43 @@ func (s *ProjectService) Get(id string) (*model.Project, error) {
 	return resp.(*model.Project), nil
 }
 
-// GetAll returns all projects in Octopus Deploy
-func (s *ProjectService) GetAll() (*[]model.Project, error) {
+// GetAll returns all instances of a Project.
+func (s *ProjectService) GetAll() ([]model.Project, error) {
 	err := s.validateInternalState()
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.Project), s.path+"/all")
 
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*[]model.Project), nil
+	projects := new([]model.Project)
+	_, err = apiGet(s.sling, projects, s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return *projects, nil
 }
 
-// GetByName gets an existing project by its project name in Octopus Deploy
+// GetByName performs a lookup and returns the Project with a matching name.
 func (s *ProjectService) GetByName(name string) (*model.Project, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}
@@ -79,23 +93,108 @@ func (s *ProjectService) GetByName(name string) (*model.Project, error) {
 	return nil, errors.New("client: item not found")
 }
 
-// Add adds an new project in Octopus Deploy
-func (s *ProjectService) Add(resource *model.Project) (*model.Project, error) {
+func (s *ProjectService) GetChannels(project model.Project) ([]model.Channel, error) {
+	channels := []model.Channel{}
+
 	err := s.validateInternalState()
+
+	if err != nil {
+		return channels, err
+	}
+
+	url, err := url.Parse(project.Links["Channels"])
+
+	if err != nil {
+		return channels, err
+	}
+
+	path := strings.Split(url.Path, "{")[0]
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.sling, new(model.Channels), path)
+
+		if err != nil {
+			return channels, err
+		}
+
+		r := resp.(*model.Channels)
+		channels = append(channels, r.Items...)
+		path, loadNextPage = LoadNextPage(r.PagedResults)
+	}
+
+	return channels, nil
+}
+
+func (s *ProjectService) GetSummary(project model.Project) (*model.ProjectSummary, error) {
+	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("ProjectService: invalid parameter, resource")
-	}
+	path := project.Links["Summary"]
+	resp, err := apiGet(s.sling, new(model.ProjectSummary), path)
 
-	err = resource.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.Project), s.path)
+	return resp.(*model.ProjectSummary), nil
+}
+
+func (s *ProjectService) GetReleases(project model.Project) ([]model.Release, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := url.Parse(project.Links["Releases"])
+
+	if err != nil {
+		return nil, err
+	}
+
+	path := strings.Split(url.Path, "{")[0]
+
+	p := []model.Release{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.sling, new(model.Releases), path)
+
+		if err != nil {
+			return nil, err
+		}
+
+		r := resp.(*model.Releases)
+		p = append(p, r.Items...)
+		path, loadNextPage = LoadNextPage(r.PagedResults)
+	}
+
+	return p, nil
+}
+
+// Add creates a new Project.
+func (s *ProjectService) Add(project *model.Project) (*model.Project, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if project == nil {
+		return nil, errors.New("ProjectService: invalid parameter, project")
+	}
+
+	err = project.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, project, new(model.Project), s.path)
 
 	if err != nil {
 		return nil, err
@@ -111,7 +210,7 @@ func (s *ProjectService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("ProjectService: invalid parameter, id")
 	}
 
@@ -121,6 +220,7 @@ func (s *ProjectService) Delete(id string) error {
 // Update updates an existing project in Octopus Deploy
 func (s *ProjectService) Update(resource *model.Project) (*model.Project, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -130,6 +230,7 @@ func (s *ProjectService) Update(resource *model.Project) (*model.Project, error)
 	}
 
 	err = resource.Validate()
+
 	if err != nil {
 		return nil, err
 	}

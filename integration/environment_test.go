@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestEnvironmentAddAndDelete(t *testing.T) {
 	environmentName := getRandomName()
 	expected := getTestEnvironment(environmentName)

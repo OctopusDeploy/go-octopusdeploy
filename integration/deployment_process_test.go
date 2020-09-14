@@ -7,12 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestDeploymentProcessGet(t *testing.T) {
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)

@@ -20,5 +20,6 @@ type MachinePolicy struct {
 	PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout,omitempty"`
 	PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout,omitempty"`
 	SpaceID                                       string                     `json:"SpaceId,omitempty"`
+
 	Resource
 }

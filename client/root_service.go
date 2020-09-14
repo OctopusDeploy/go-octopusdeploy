@@ -25,6 +25,7 @@ func NewRootService(sling *sling.Sling) *RootService {
 
 func (s *RootService) Get() (*model.RootResource, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}

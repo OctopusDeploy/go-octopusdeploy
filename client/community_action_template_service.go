@@ -31,11 +31,12 @@ func NewCommunityActionTemplateService(sling *sling.Sling) *CommunityActionTempl
 // Get returns an Account that matches the input ID.
 func (s *CommunityActionTemplateService) Get(id string) (*model.CommunityActionTemplate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("CommunityActionTemplateService: invalid parameter, id")
 	}
 
@@ -49,8 +50,14 @@ func (s *CommunityActionTemplateService) Get(id string) (*model.CommunityActionT
 	return resp.(*model.CommunityActionTemplate), nil
 }
 
-// GetAll returns all of the Accounts for a Space.
+// GetAll returns all instances of a CommunityActionTemplate.
 func (s *CommunityActionTemplateService) GetAll() (*[]model.CommunityActionTemplate, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var p []model.CommunityActionTemplate
 	path := s.path
 	loadNextPage := true
@@ -70,8 +77,18 @@ func (s *CommunityActionTemplateService) GetAll() (*[]model.CommunityActionTempl
 	return &p, nil
 }
 
-// GetByName returns an CommunityActionTemplate that matches the input name.
+// GetByName performs a lookup and returns the CommunityActionTemplate with a matching name.
 func (s *CommunityActionTemplateService) GetByName(name string) (*model.CommunityActionTemplate, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if isEmpty(name) {
+		return nil, errors.New("CommunityActionTemplateService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -87,9 +104,25 @@ func (s *CommunityActionTemplateService) GetByName(name string) (*model.Communit
 	return nil, errors.New("client: item not found")
 }
 
-// Add creates a new Account.
-func (s *CommunityActionTemplateService) Add(resource *model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.CommunityActionTemplate), s.path)
+// Add creates a new CommunityActionTemplate.
+func (s *CommunityActionTemplateService) Add(communityActionTemplate *model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if communityActionTemplate == nil {
+		return nil, errors.New("CommunityActionTemplateService: invalid parameter, communityActionTemplate")
+	}
+
+	err = communityActionTemplate.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, communityActionTemplate, new(model.CommunityActionTemplate), s.path)
 
 	if err != nil {
 		return nil, err
@@ -105,7 +138,7 @@ func (s *CommunityActionTemplateService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("CommunityActionTemplateService: invalid parameter, id")
 	}
 
@@ -115,11 +148,13 @@ func (s *CommunityActionTemplateService) Delete(id string) error {
 // Update modifies an CommunityActionTemplate based on the one provided as input.
 func (s *CommunityActionTemplateService) Update(communityActionTemplate model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = communityActionTemplate.Validate()
+
 	if err != nil {
 		return nil, err
 	}

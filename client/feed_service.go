@@ -27,11 +27,12 @@ func NewFeedService(sling *sling.Sling) *FeedService {
 
 func (s *FeedService) Get(id string) (*model.Feed, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("FeedService: invalid parameter, id")
 	}
 
@@ -45,8 +46,10 @@ func (s *FeedService) Get(id string) (*model.Feed, error) {
 	return resp.(*model.Feed), nil
 }
 
+// GetAll returns all instances of a Feed.
 func (s *FeedService) GetAll() (*[]model.Feed, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -60,13 +63,15 @@ func (s *FeedService) GetAll() (*[]model.Feed, error) {
 	return resp.(*[]model.Feed), nil
 }
 
+// GetByName performs a lookup and returns the Feed with a matching name.
 func (s *FeedService) GetByName(name string) (*model.Feed, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(name, " ")) == 0 {
+	if isEmpty(name) {
 		return nil, errors.New("FeedService: invalid parameter, name")
 	}
 
@@ -85,14 +90,22 @@ func (s *FeedService) GetByName(name string) (*model.Feed, error) {
 	return nil, errors.New("client: item not found")
 }
 
+// Add creates a new Feed.
 func (s *FeedService) Add(feed *model.Feed) (*model.Feed, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	if feed == nil {
 		return nil, errors.New("FeedService: invalid parameter, feed")
+	}
+
+	err = feed.Validate()
+
+	if err != nil {
+		return nil, err
 	}
 
 	resp, err := apiAdd(s.sling, feed, new(model.Feed), "feeds")
@@ -110,7 +123,7 @@ func (s *FeedService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("FeedService: invalid parameter, id")
 	}
 
@@ -119,11 +132,13 @@ func (s *FeedService) Delete(id string) error {
 
 func (s *FeedService) Update(feed model.Feed) (*model.Feed, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = feed.Validate()
+
 	if err != nil {
 		return nil, err
 	}

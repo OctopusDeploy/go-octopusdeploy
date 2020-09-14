@@ -12,12 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestMachineAddAndDelete(t *testing.T) {
 	testName := "TestMachineAddAndDelete"
 	testEnvironment := createTestEnvironment(t, testName)

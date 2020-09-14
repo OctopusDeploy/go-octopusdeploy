@@ -14,6 +14,7 @@ type ProjectGroup struct {
 	EnvironmentIds    []string `json:"EnvironmentIds"`
 	Name              string   `json:"Name,omitempty" validate:"required"`
 	RetentionPolicyID string   `json:"RetentionPolicyId,omitempty"`
+
 	Resource
 }
 

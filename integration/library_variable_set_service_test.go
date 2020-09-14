@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestLibraryVariableSetAddAndDelete(t *testing.T) {
 	name := getRandomName()
 	expected := getTestLibraryVariableSet(name)

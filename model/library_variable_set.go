@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -19,6 +17,7 @@ type LibraryVariableSet struct {
 	SpaceID       string                      `json:"SpaceId,omitempty"`
 	Templates     []*ActionTemplateParameter  `json:"Templates,omitempty"`
 	VariableSetID string                      `json:"VariableSetId,omitempty"`
+
 	Resource
 }
 
@@ -49,12 +48,7 @@ func (l *LibraryVariableSet) Validate() error {
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
 			return nil
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Println(err)
 		}
 
 		return err

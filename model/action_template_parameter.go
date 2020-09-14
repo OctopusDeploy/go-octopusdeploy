@@ -10,6 +10,7 @@ type ActionTemplateParameter struct {
 	HelpText        string                 `json:"HelpText,omitempty"`
 	Label           string                 `json:"Label,omitempty"`
 	Name            string                 `json:"Name,omitempty"`
+
 	Resource
 }
 

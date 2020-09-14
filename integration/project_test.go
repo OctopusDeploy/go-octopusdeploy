@@ -8,6 +8,77 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	projectName        = getRandomName()
+	projectDescription = getRandomName()
+)
+
+func init() {
+	if octopusClient == nil {
+		octopusClient = initTest()
+	}
+}
+
+func TestAddNilProject(t *testing.T) {
+	project, err := octopusClient.Projects.Add(nil)
+
+	assert.Error(t, err)
+	assert.Nil(t, project)
+}
+
+func TestGetSummary(t *testing.T) {
+	projects, err := octopusClient.Projects.GetAll()
+
+	assert.NoError(t, err)
+	assert.NotNil(t, projects)
+
+	if len(projects) == 0 {
+		return
+	}
+
+	for _, project := range projects {
+		summary, err := octopusClient.Projects.GetSummary(project)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, summary)
+	}
+}
+func TestGetReleasesForProject(t *testing.T) {
+	projects, err := octopusClient.Projects.GetAll()
+
+	assert.NoError(t, err)
+	assert.NotNil(t, projects)
+
+	if len(projects) == 0 {
+		return
+	}
+
+	for _, project := range projects {
+		releases, err := octopusClient.Projects.GetReleases(project)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, releases)
+	}
+}
+
+func TestGetChannelsForProject(t *testing.T) {
+	projects, err := octopusClient.Projects.GetAll()
+
+	assert.NoError(t, err)
+	assert.NotNil(t, projects)
+
+	if len(projects) == 0 {
+		return
+	}
+
+	for _, project := range projects {
+		channels, err := octopusClient.Projects.GetChannels(project)
+
+		assert.NoError(t, err)
+		assert.NotNil(t, channels)
+	}
+}
+
 func TestProjectGet(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
 

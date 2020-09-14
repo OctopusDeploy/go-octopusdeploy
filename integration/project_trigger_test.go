@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 	// need a project to add a trigger to
 	project := createTestProject(t, getRandomName())

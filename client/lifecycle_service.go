@@ -29,11 +29,12 @@ func NewLifecycleService(sling *sling.Sling) *LifecycleService {
 // Get returns a single lifecycle by its lifecycleid in Octopus Deploy
 func (s *LifecycleService) Get(id string) (*model.Lifecycle, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("LifecycleService: invalid parameter, id")
 	}
 
@@ -47,8 +48,14 @@ func (s *LifecycleService) Get(id string) (*model.Lifecycle, error) {
 	return resp.(*model.Lifecycle), nil
 }
 
-// GetAll returns all lifecycles in Octopus Deploy
+// GetAll returns all instances of a Lifecycle.
 func (s *LifecycleService) GetAll() (*[]model.Lifecycle, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	return s.get("")
 }
 
@@ -79,8 +86,18 @@ func (s *LifecycleService) get(query string) (*[]model.Lifecycle, error) {
 	return &p, nil
 }
 
-// GetByName gets an existing lifecycle by its lifecycle name in Octopus Deploy
+// GetByName performs a lookup and returns the Lifecycle with a matching name.
 func (s *LifecycleService) GetByName(name string) (*model.Lifecycle, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if isEmpty(name) {
+		return nil, errors.New("LifecycleService: invalid parameter, name")
+	}
+
 	collection, err := s.get(fmt.Sprintf("partialName=%s", url.PathEscape(name)))
 
 	if err != nil {
@@ -96,14 +113,24 @@ func (s *LifecycleService) GetByName(name string) (*model.Lifecycle, error) {
 	return nil, errors.New("client: item not found")
 }
 
-// Add adds an new lifecycle in Octopus Deploy
-func (s *LifecycleService) Add(resource *model.Lifecycle) (*model.Lifecycle, error) {
-	err := model.ValidateLifecycleValues(resource)
+// Add creates a new Lifecycle.
+func (s *LifecycleService) Add(lifecycle *model.Lifecycle) (*model.Lifecycle, error) {
+	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.Lifecycle), s.path)
+	if lifecycle == nil {
+		return nil, errors.New("LifecycleService: invalid parameter, lifecycle")
+	}
+
+	err = model.ValidateLifecycleValues(lifecycle)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, lifecycle, new(model.Lifecycle), s.path)
 
 	if err != nil {
 		return nil, err
@@ -119,7 +146,7 @@ func (s *LifecycleService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("LifecycleService: invalid parameter, id")
 	}
 

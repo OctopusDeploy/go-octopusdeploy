@@ -28,11 +28,12 @@ func NewTenantService(sling *sling.Sling) *TenantService {
 // Get returns a single tenant by its tenantid in Octopus Deploy
 func (s *TenantService) Get(id string) (*model.Tenant, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("TenantService: invalid parameter, id")
 	}
 
@@ -46,9 +47,10 @@ func (s *TenantService) Get(id string) (*model.Tenant, error) {
 	return resp.(*model.Tenant), nil
 }
 
-// GetAll returns all tenants in Octopus Deploy
+// GetAll returns all instances of a Tenant.
 func (s *TenantService) GetAll() (*[]model.Tenant, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -62,14 +64,15 @@ func (s *TenantService) GetAll() (*[]model.Tenant, error) {
 	return resp.(*[]model.Tenant), nil
 }
 
-// GetByName gets an existing Tenant by its name in Octopus Deploy
+// GetByName performs a lookup and returns the Tenant with a matching name.
 func (s *TenantService) GetByName(name string) (*model.Tenant, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(name, " ")) == 0 {
+	if isEmpty(name) {
 		return nil, errors.New("TenantService: invalid parameter, name")
 	}
 
@@ -88,23 +91,25 @@ func (s *TenantService) GetByName(name string) (*model.Tenant, error) {
 	return nil, errors.New("client: item not found")
 }
 
-// Add adds a new Tenant in Octopus Deploy
-func (s *TenantService) Add(resource *model.Tenant) (*model.Tenant, error) {
+// Add creates a new Tenant.
+func (s *TenantService) Add(tenant *model.Tenant) (*model.Tenant, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("TenantService: invalid parameter, resource")
+	if tenant == nil {
+		return nil, errors.New("TenantService: invalid parameter, tenant")
 	}
 
-	err = resource.Validate()
+	err = tenant.Validate()
+
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.Tenant), s.path)
+	resp, err := apiAdd(s.sling, tenant, new(model.Tenant), s.path)
 
 	if err != nil {
 		return nil, err
@@ -117,10 +122,10 @@ func (s *TenantService) Add(resource *model.Tenant) (*model.Tenant, error) {
 func (s *TenantService) Delete(id string) error {
 	err := s.validateInternalState()
 	if err != nil {
-		return nil
+		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("TenantService: invalid parameter, ID")
 	}
 
@@ -130,6 +135,7 @@ func (s *TenantService) Delete(id string) error {
 // Update updates an existing tenant in Octopus Deploy
 func (s *TenantService) Update(resource *model.Tenant) (*model.Tenant, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -139,6 +145,7 @@ func (s *TenantService) Update(resource *model.Tenant) (*model.Tenant, error) {
 	}
 
 	err = resource.Validate()
+
 	if err != nil {
 		return nil, err
 	}

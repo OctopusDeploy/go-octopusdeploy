@@ -3,7 +3,6 @@ package client
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -30,11 +29,12 @@ func NewAPIKeyService(sling *sling.Sling) *APIKeyService {
 // Get lists all API keys for a user, returning the most recent results first.
 func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(userID, " ")) == 0 {
+	if isEmpty(userID) {
 		return nil, errors.New("APIKeyService: invalid parameter, userID")
 	}
 
@@ -60,15 +60,16 @@ func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
 // GetByID the API key that belongs to the user by its ID.
 func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(userID, " ")) == 0 {
+	if isEmpty(userID) {
 		return nil, errors.New("APIKeyService: invalid parameter, userID")
 	}
 
-	if len(strings.Trim(apiKeyID, " ")) == 0 {
+	if isEmpty(apiKeyID) {
 		return nil, errors.New("APIKeyService: invalid parameter, apiKeyID")
 	}
 
@@ -87,11 +88,13 @@ func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, 
 // retrieved subsequently from the Octopus server.
 func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = apiKey.Validate()
+
 	if err != nil {
 		return nil, err
 	}

@@ -12,6 +12,7 @@ type ConfigurationSections struct {
 type ConfigurationSection struct {
 	Description string `json:"Description,omitempty"`
 	Name        string `json:"Name,omitempty"`
+
 	Resource
 }
 

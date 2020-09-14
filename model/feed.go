@@ -1,6 +1,9 @@
 package model
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+	"github.com/go-playground/validator/v10"
+)
 
 type Feeds struct {
 	Items []Feed `json:"Items"`
@@ -8,15 +11,16 @@ type Feeds struct {
 }
 
 type Feed struct {
-	ID                          string         `json:"Id"`
 	Name                        string         `json:"Name"`
-	FeedType                    string         `json:"FeedType"`
+	FeedType                    enum.FeedType  `json:"FeedType"`
 	DownloadAttempts            int            `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds int            `json:"DownloadRetryBackoffSeconds"`
 	FeedURI                     string         `json:"FeedUri"`
 	EnhancedMode                bool           `json:"EnhancedMode"`
 	Username                    string         `json:"Username"`
 	Password                    SensitiveValue `json:"Password"`
+
+	Resource
 }
 
 func (f *Feed) GetID() string {

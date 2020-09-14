@@ -136,7 +136,7 @@ func main() {
 
 	Initialize()
 
-	client, err := client.NewClient(&httpClient, serviceURL, apiKey)
+	client, err := client.NewClient(&httpClient, serviceURL, apiKey, nil)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -259,8 +259,8 @@ func main() {
 }
 
 func Initialize() {
-	proxyStr := "http://127.0.0.1:5555"
-	proxyURL, err := url.Parse(proxyStr)
+	proxy := "http://127.0.0.1:5555"
+	proxyURL, err := url.Parse(proxy)
 	if err != nil {
 		log.Println(err)
 	}

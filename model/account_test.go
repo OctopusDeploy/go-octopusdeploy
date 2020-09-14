@@ -38,33 +38,7 @@ func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
 	}
 
 	assert.NotNil(t, account)
-	assert.Error(t, account.Validate())
-}
-
-func TestAccountCreationWithInvalidUUIDs(t *testing.T) {
-	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
-	subscriptionNumber := uuid.New()
-	account.SubscriptionNumber = &subscriptionNumber
-	clientID := uuid.New()
-	account.ClientID = &clientID
-	tenantID := uuid.New()
-	account.TenantID = &tenantID
-
-	assert.NoError(t, err)
-	assert.NotNil(t, account)
 	assert.NoError(t, account.Validate())
-
-	account.ClientID = &uuid.Nil
-
-	assert.Error(t, account.Validate())
-}
-
-func TestNewAccountForUsernamePasswordWithValidParameters(t *testing.T) {
-	account, err := NewAccount(accountName, enum.UsernamePassword)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, account)
-	assert.Error(t, account.Validate())
 }
 
 func TestNewAccountForAzureServicePrincipalAccountWithInvalidParameters(t *testing.T) {
@@ -72,25 +46,35 @@ func TestNewAccountForAzureServicePrincipalAccountWithInvalidParameters(t *testi
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
+
+	if err != nil {
+		return
+	}
+
 	assert.Error(t, account.Validate())
 }
 
 func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidSubscriptionNumber(t *testing.T) {
 	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
-	subscriptionNumber := uuid.New()
-	account.SubscriptionNumber = &subscriptionNumber
+	subscriptionID := uuid.New()
+	account.SubscriptionID = &subscriptionID
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
+
+	if err != nil {
+		return
+	}
+
 	assert.Error(t, account.Validate())
 }
 
 func TestNewAccountForAzureServicePrincipalAccountWithInvalidClientID(t *testing.T) {
 	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
-	subscriptionNumber := uuid.New()
-	account.SubscriptionNumber = &subscriptionNumber
-	clientID := uuid.Nil
-	account.ClientID = &clientID
+	subscriptionID := uuid.New()
+	account.SubscriptionID = &subscriptionID
+	applicationID := uuid.Nil
+	account.ApplicationID = &applicationID
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)
@@ -99,10 +83,10 @@ func TestNewAccountForAzureServicePrincipalAccountWithInvalidClientID(t *testing
 
 func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidProperties(t *testing.T) {
 	account, err := NewAccount(accountName, enum.AzureServicePrincipal)
-	subscriptionNumber := uuid.New()
-	account.SubscriptionNumber = &subscriptionNumber
-	clientID := uuid.New()
-	account.ClientID = &clientID
+	subscriptionID := uuid.New()
+	account.SubscriptionID = &subscriptionID
+	applicationID := uuid.New()
+	account.ApplicationID = &applicationID
 	tenantID := uuid.New()
 	account.TenantID = &tenantID
 

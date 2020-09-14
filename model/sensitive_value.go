@@ -1,20 +1,13 @@
 package model
 
-import (
-	"errors"
-	"strings"
-)
-
 // NewSensitiveValue initializes a SensitiveValue
 func NewSensitiveValue(newValue string) (*SensitiveValue, error) {
-	if len(strings.Trim(newValue, " ")) == 0 {
-		return nil, errors.New("NewSensitiveValue: invalid newValue")
+	sensitiveValue := &SensitiveValue{
+		HasValue: len(newValue) > 0,
+		NewValue: &newValue,
 	}
 
-	return &SensitiveValue{
-		HasValue: false,
-		NewValue: &newValue,
-	}, nil
+	return sensitiveValue, nil
 }
 
 type SensitiveValue struct {

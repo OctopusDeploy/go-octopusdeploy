@@ -25,8 +25,10 @@ func NewConfigurationService(sling *sling.Sling) *ConfigurationService {
 	}
 }
 
+// GetAll returns all instances of a ConfigurationSections.
 func (s *ConfigurationService) GetAll() (*model.ConfigurationSections, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -43,11 +45,12 @@ func (s *ConfigurationService) GetAll() (*model.ConfigurationSections, error) {
 // Get returns a ConfigurationSection that matches the input ID.
 func (s *ConfigurationService) Get(id string) (*model.ConfigurationSection, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("ConfigurationService: invalid parameter, id")
 	}
 

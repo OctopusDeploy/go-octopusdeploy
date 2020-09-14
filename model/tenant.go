@@ -14,6 +14,7 @@ type Tenant struct {
 	SpaceID             string              `json:"SpaceId"`
 	ClonedFromTenantID  string              `json:"ClonedFromTenantId"`
 	Description         string              `json:"Description"`
+
 	Resource
 }
 

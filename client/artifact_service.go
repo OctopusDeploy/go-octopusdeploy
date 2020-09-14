@@ -3,7 +3,6 @@ package client
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -32,11 +31,12 @@ func NewArtifactService(sling *sling.Sling) *ArtifactService {
 // Get returns an Artifact that matches the input ID.
 func (s *ArtifactService) Get(id string) (*model.Artifact, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("ArtifactService: invalid parameter, id")
 	}
 
@@ -50,8 +50,10 @@ func (s *ArtifactService) Get(id string) (*model.Artifact, error) {
 	return resp.(*model.Artifact), nil
 }
 
+// GetAll returns all instances of an Artifact.
 func (s *ArtifactService) GetAll() (*[]model.Artifact, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -76,22 +78,24 @@ func (s *ArtifactService) GetAll() (*[]model.Artifact, error) {
 }
 
 // Add creates a new Artifact.
-func (s *ArtifactService) Add(resource *model.Artifact) (*model.Artifact, error) {
+func (s *ArtifactService) Add(artifact *model.Artifact) (*model.Artifact, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("ArtifactService: invalid parameter, resource")
+	if artifact == nil {
+		return nil, errors.New("ArtifactService: invalid parameter, artifact")
 	}
 
-	err = resource.Validate()
+	err = artifact.Validate()
+
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.Artifact), s.path)
+	resp, err := apiAdd(s.sling, artifact, new(model.Artifact), s.path)
 
 	if err != nil {
 		return nil, err
@@ -107,7 +111,7 @@ func (s *ArtifactService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("ArtifactService: invalid parameter, id")
 	}
 
@@ -117,11 +121,13 @@ func (s *ArtifactService) Delete(id string) error {
 // Update modifies an Artifact based on the one provided as input.
 func (s *ArtifactService) Update(artifact model.Artifact) (*model.Artifact, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = artifact.Validate()
+
 	if err != nil {
 		return nil, err
 	}

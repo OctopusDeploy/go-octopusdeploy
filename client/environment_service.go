@@ -27,11 +27,12 @@ func NewEnvironmentService(sling *sling.Sling) *EnvironmentService {
 
 func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("EnvironmentService: invalid parameter, id")
 	}
 
@@ -45,8 +46,10 @@ func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
 	return resp.(*model.Environment), nil
 }
 
+// GetAll returns all instances of an Environment.
 func (s *EnvironmentService) GetAll() (*[]model.Environment, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +63,18 @@ func (s *EnvironmentService) GetAll() (*[]model.Environment, error) {
 	return resp.(*[]model.Environment), nil
 }
 
+// GetByName performs a lookup and returns the Environment with a matching name.
 func (s *EnvironmentService) GetByName(name string) (*model.Environment, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if isEmpty(name) {
+		return nil, errors.New("EnvironmentService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -76,8 +90,25 @@ func (s *EnvironmentService) GetByName(name string) (*model.Environment, error) 
 	return nil, errors.New("client: item not found")
 }
 
-func (s *EnvironmentService) Add(resource *model.Environment) (*model.Environment, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.Environment), s.path)
+// Add creates a new Environment.
+func (s *EnvironmentService) Add(environment *model.Environment) (*model.Environment, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if environment == nil {
+		return nil, errors.New("EnvironmentService: invalid parameter, environment")
+	}
+
+	err = environment.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, environment, new(model.Environment), s.path)
 
 	if err != nil {
 		return nil, err
@@ -92,7 +123,7 @@ func (s *EnvironmentService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("EnvironmentService: invalid parameter, id")
 	}
 
@@ -101,11 +132,13 @@ func (s *EnvironmentService) Delete(id string) error {
 
 func (s *EnvironmentService) Update(environment *model.Environment) (*model.Environment, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = environment.Validate()
+
 	if err != nil {
 		return nil, err
 	}

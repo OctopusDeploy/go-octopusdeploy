@@ -7,12 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestMachinePolicyGetThatDoesNotExist(t *testing.T) {
 	machinePolicyID := "there-is-no-way-this-machinepolicy-id-exists-i-hope"
 	expected := client.ErrItemNotFound

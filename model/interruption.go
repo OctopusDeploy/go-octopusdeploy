@@ -16,6 +16,7 @@ type Interruption struct {
 	SpaceID                     string    `json:"SpaceId,omitempty"`
 	TaskID                      string    `json:"TaskId,omitempty"`
 	Title                       string    `json:"Title,omitempty"`
+
 	Resource
 }
 

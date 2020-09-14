@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestProjectAddAndDelete(t *testing.T) {
 	projectName := getRandomName()
 	expected := getTestProject(projectName)
@@ -59,7 +53,7 @@ func TestProjectGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
 
-	numberOfProjects := len(*allProjects)
+	numberOfProjects := len(allProjects)
 
 	// check there are greater than or equal to the amount of projects requested to be created, otherwise pagination isn't working
 	if numberOfProjects < projectsToCreate {
@@ -75,7 +69,7 @@ func TestProjectGetAll(t *testing.T) {
 	}
 
 	assert.Nil(t, err, "error when looking for project when not expected")
-	assert.Equal(t, len(*allProjectsAfterCreatingAdditional), numberOfProjects+1, "created an additional project and expected number of projects to increase by 1")
+	assert.Equal(t, len(allProjectsAfterCreatingAdditional), numberOfProjects+1, "created an additional project and expected number of projects to increase by 1")
 }
 
 func TestProjectUpdate(t *testing.T) {

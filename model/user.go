@@ -19,6 +19,7 @@ type User struct {
 	IsRequestor         bool       `json:"IsRequestor,omitempty"`
 	Password            string     `json:"Password,omitempty"`
 	Identities          []Identity `json:"Identities,omitempty"`
+
 	Resource
 }
 

@@ -27,11 +27,12 @@ func NewUserService(sling *sling.Sling) *UserService {
 
 func (s *UserService) Get(id string) (*model.User, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("UserService: invalid parameter, id")
 	}
 
@@ -47,6 +48,7 @@ func (s *UserService) Get(id string) (*model.User, error) {
 
 func (s *UserService) GetMe() (*model.User, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +62,10 @@ func (s *UserService) GetMe() (*model.User, error) {
 	return resp.(*model.User), nil
 }
 
+// GetAll returns all instances of a User.
 func (s *UserService) GetAll() (*[]model.User, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +81,7 @@ func (s *UserService) GetAll() (*[]model.User, error) {
 
 func (s *UserService) GetAuthentication() (*model.UserAuthentication, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -92,6 +97,7 @@ func (s *UserService) GetAuthentication() (*model.UserAuthentication, error) {
 
 func (s *UserService) GetAuthenticationForUser(user *model.User) (*model.UserAuthentication, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +118,7 @@ func (s *UserService) GetAuthenticationForUser(user *model.User) (*model.UserAut
 
 func (s *UserService) GetSpaces(user *model.User) (*[]model.Spaces, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -130,13 +137,15 @@ func (s *UserService) GetSpaces(user *model.User) (*[]model.Spaces, error) {
 	return resp.(*[]model.Spaces), nil
 }
 
+// GetByName performs a lookup and returns the User with a matching name.
 func (s *UserService) GetByName(name string) (*model.User, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(name, " ")) == 0 {
+	if isEmpty(name) {
 		return nil, errors.New("UserService: invalid parameter, name")
 	}
 
@@ -155,14 +164,22 @@ func (s *UserService) GetByName(name string) (*model.User, error) {
 	return nil, errors.New("client: item not found")
 }
 
+// Add creates a new User.
 func (s *UserService) Add(user *model.User) (*model.User, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	if user == nil {
 		return nil, errors.New("UserService: invalid parameter, user")
+	}
+
+	err = user.Validate()
+
+	if err != nil {
+		return nil, err
 	}
 
 	resp, err := apiAdd(s.sling, user, new(model.User), s.path)
@@ -180,7 +197,7 @@ func (s *UserService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("UserService: invalid parameter, id")
 	}
 
@@ -189,6 +206,7 @@ func (s *UserService) Delete(id string) error {
 
 func (s *UserService) Update(user *model.User) (*model.User, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}

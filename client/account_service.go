@@ -3,7 +3,6 @@ package client
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -31,13 +30,14 @@ func NewAccountService(sling *sling.Sling) *AccountService {
 
 // Get returns an Account that matches the input ID.
 func (s *AccountService) Get(id string) (*model.Account, error) {
-	err := s.validateInternalState()
-	if err != nil {
-		return nil, err
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("AccountService", "id")
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
-		return nil, errors.New("AccountService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -50,31 +50,34 @@ func (s *AccountService) Get(id string) (*model.Account, error) {
 	return resp.(*model.Account), nil
 }
 
-// GetAll returns all of the Accounts for a Space.
-func (s *AccountService) GetAll() (*[]model.Account, error) {
+// GetAll returns all instances of an Account.
+func (s *AccountService) GetAll() ([]model.Account, error) {
 	err := s.validateInternalState()
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.Account), s.path+"/all")
 
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*[]model.Account), nil
+	accounts := new([]model.Account)
+	_, err = apiGet(s.sling, accounts, s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return *accounts, nil
 }
 
-// GetByName returns an Account that matches the input name.
+// GetByName performs a lookup and returns the Account with a matching name.
 func (s *AccountService) GetByName(name string) (*model.Account, error) {
-	err := s.validateInternalState()
-	if err != nil {
-		return nil, err
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("AccountService", "accountName")
 	}
 
-	if len(strings.Trim(name, " ")) == 0 {
-		return nil, errors.New("AccountService: invalid parameter, name")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
 	}
 
 	collection, err := s.GetAll()
@@ -83,7 +86,7 @@ func (s *AccountService) GetByName(name string) (*model.Account, error) {
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}
@@ -92,16 +95,40 @@ func (s *AccountService) GetByName(name string) (*model.Account, error) {
 	return nil, errors.New("AccountService: item not found")
 }
 
+// GetUsage returns all projects and deployments which are using an Account.
+func (s *AccountService) GetUsage(account model.Account) (*model.AccountUsage, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	path := account.Links["Usages"]
+	resp, err := apiGet(s.sling, new(model.AccountUsage), path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.AccountUsage), nil
+}
+
 // Add creates a new Account.
 func (s *AccountService) Add(account *model.Account) (*model.Account, error) {
+	if account == nil {
+		return nil, createInvalidParameterError("Add", "account")
+	}
+
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = account.Validate()
+
 	if err != nil {
-		return nil, err
+		return nil, createValidationFailureError("Add", err)
 	}
 
 	resp, err := apiAdd(s.sling, account, new(model.Account), s.path)
@@ -114,29 +141,32 @@ func (s *AccountService) Add(account *model.Account) (*model.Account, error) {
 }
 
 // Delete removes the Account that matches the input ID.
-func (s *AccountService) Delete(id string) error {
+func (s *AccountService) Delete(accountID string) error {
+	if isEmpty(accountID) {
+		return createInvalidParameterError("Delete", "accountID")
+	}
+
 	err := s.validateInternalState()
+
 	if err != nil {
-		return nil
+		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
-		return errors.New("AccountService: invalid parameter, ID")
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", accountID))
 }
 
 // Update modifies an Account based on the one provided as input.
 func (s *AccountService) Update(account model.Account) (*model.Account, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = account.Validate()
+
 	if err != nil {
-		return nil, err
+		return nil, createValidationFailureError("AccountService", err)
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", account.ID)

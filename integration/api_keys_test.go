@@ -7,12 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestGetAPIKeys(t *testing.T) {
 
 	user := model.NewUser(getRandomName(), getRandomName())
@@ -26,6 +20,10 @@ func TestGetAPIKeys(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, apiKeys)
+
+	if err != nil {
+		return
+	}
 
 	for _, apiKey := range *apiKeys {
 		assert.NotNil(t, apiKey)
@@ -51,6 +49,10 @@ func TestGetAPIKeyByID(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, apiKeys)
 
+	if err != nil {
+		return
+	}
+
 	for _, apiKey := range *apiKeys {
 		key, _ := octopusClient.APIKeys.GetByID(user.ID, apiKey.ID)
 		assert.NotNil(t, key)
@@ -74,6 +76,10 @@ func TestCreateAPIKey(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.NotNil(t, user)
+
+	if err != nil {
+		return
+	}
 
 	apiKey.UserID = &user.ID
 	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)

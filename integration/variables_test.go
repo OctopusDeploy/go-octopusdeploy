@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestVarAddAndDelete(t *testing.T) {
 	varProj := createVarTestProject(t, getRandomName())
 	defer cleanProject(t, varProj.ID)

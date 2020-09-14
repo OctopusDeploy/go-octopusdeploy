@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -13,6 +12,7 @@ type MachineConnectionStatus struct {
 	Logs                   []*ActivityLogElement `json:"Logs"`
 	MachineID              string                `json:"MachineId,omitempty"`
 	Status                 string                `json:"Status,omitempty"`
+
 	Resource
 }
 
@@ -28,12 +28,7 @@ func (m *MachineConnectionStatus) Validate() error {
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
 			return nil
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Println(err)
 		}
 
 		return err

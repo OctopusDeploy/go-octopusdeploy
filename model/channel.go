@@ -17,7 +17,20 @@ type Channel struct {
 	ProjectID   string        `json:"ProjectId"`
 	Rules       []ChannelRule `json:"Rules,omitempty"`
 	TenantTags  []string      `json:"TenantedDeploymentMode,omitempty"`
+
 	Resource
+}
+
+func NewChannel(name, description, projectID string) (*Channel, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("NewChannel", "name")
+	}
+
+	return &Channel{
+		Name:        name,
+		ProjectID:   projectID,
+		Description: description,
+	}, nil
 }
 
 func (c *Channel) GetID() string {
@@ -36,14 +49,6 @@ func (c *Channel) Validate() error {
 		ValidateRequiredPropertyValue("Name", c.Name),
 		ValidateRequiredPropertyValue("ProjectID", c.ProjectID),
 	})
-}
-
-func NewChannel(name, description, projectID string) *Channel {
-	return &Channel{
-		Name:        name,
-		ProjectID:   projectID,
-		Description: description,
-	}
 }
 
 var _ ResourceInterface = &Channel{}

@@ -6,14 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestGetConfiguration(t *testing.T) {
-	configurationSection, err := octopusClient.Configuration.Get("authentication")
+		configurationSection, err := octopusClient.Configuration.Get("authentication")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, configurationSection)
@@ -28,7 +22,7 @@ func TestGetConfiguration(t *testing.T) {
 }
 
 func TestGetAllConfiguration(t *testing.T) {
-	configurationSections, err := octopusClient.Configuration.GetAll()
+		configurationSections, err := octopusClient.Configuration.GetAll()
 
 	assert.NoError(t, err)
 	assert.NotNil(t, configurationSections)

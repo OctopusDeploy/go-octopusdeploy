@@ -28,11 +28,12 @@ func NewMachinePolicyService(sling *sling.Sling) *MachinePolicyService {
 // Get returns a single machine with a given MachineID
 func (s *MachinePolicyService) Get(id string) (*model.MachinePolicy, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("LifecycleService: invalid parameter, id")
 	}
 
@@ -46,9 +47,10 @@ func (s *MachinePolicyService) Get(id string) (*model.MachinePolicy, error) {
 	return resp.(*model.MachinePolicy), nil
 }
 
-// GetAll returns all registered machines
+// GetAll returns all instances of a MachinePolicy.
 func (s *MachinePolicyService) GetAll() (*[]model.MachinePolicy, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}

@@ -1,14 +1,13 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/go-playground/validator/v10"
 )
 
 type LibraryVariableSetUsageEntry struct {
 	LibraryVariableSetID   string `json:"LibraryVariableSetId,omitempty"`
 	LibraryVariableSetName string `json:"LibraryVariableSetName,omitempty"`
+
 	Resource
 }
 
@@ -24,12 +23,7 @@ func (l *LibraryVariableSetUsageEntry) Validate() error {
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
 			return nil
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Println(err)
 		}
 
 		return err

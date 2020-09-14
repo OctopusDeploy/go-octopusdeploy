@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -27,11 +28,12 @@ func NewChannelService(sling *sling.Sling) *ChannelService {
 
 func (s *ChannelService) Get(id string) (*model.Channel, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("ChannelService: invalid parameter, id")
 	}
 
@@ -45,39 +47,93 @@ func (s *ChannelService) Get(id string) (*model.Channel, error) {
 	return resp.(*model.Channel), nil
 }
 
-// GetAll returns all Channels.
-func (s *ChannelService) GetAll() (*[]model.Channel, error) {
+// GetAll returns all instances of a Channel.
+func (s *ChannelService) GetAll() ([]model.Channel, error) {
 	err := s.validateInternalState()
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.Channel), s.path+"/all")
 
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*[]model.Channel), nil
+	channels := new([]model.Channel)
+	_, err = apiGet(s.sling, channels, s.path+"/all")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return *channels, nil
+}
+
+func (s *ChannelService) GetProject(channel model.Channel) (*model.Project, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	path := channel.Links["Project"]
+	resp, err := apiGet(s.sling, new(model.Project), path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.Project), nil
+}
+
+func (s *ChannelService) GetReleases(channel model.Channel) ([]model.Release, error) {
+	releases := []model.Release{}
+
+	err := s.validateInternalState()
+
+	if err != nil {
+		return releases, err
+	}
+
+	url, err := url.Parse(channel.Links["Releases"])
+
+	if err != nil {
+		return releases, err
+	}
+
+	path := strings.Split(url.Path, "{")[0]
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.sling, new(model.Releases), path)
+
+		if err != nil {
+			return releases, err
+		}
+
+		r := resp.(*model.Releases)
+		releases = append(releases, r.Items...)
+		path, loadNextPage = LoadNextPage(r.PagedResults)
+	}
+
+	return releases, nil
 }
 
 // Add creates a new Channel.
-func (s *ChannelService) Add(resource *model.Channel) (*model.Channel, error) {
+func (s *ChannelService) Add(channel *model.Channel) (*model.Channel, error) {
+	if channel == nil {
+		return nil, createInvalidParameterError("Add", "channel")
+	}
+
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("ChannelService: invalid parameter, resource")
-	}
+	err = channel.Validate()
 
-	err = resource.Validate()
 	if err != nil {
-		return nil, err
+		return nil, createValidationFailureError("Add", err)
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.Channel), s.path)
+	resp, err := apiAdd(s.sling, channel, new(model.Channel), s.path)
 
 	if err != nil {
 		return nil, err
@@ -93,7 +149,7 @@ func (s *ChannelService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("ChannelService: invalid parameter, id")
 	}
 
@@ -103,11 +159,13 @@ func (s *ChannelService) Delete(id string) error {
 // Update modifies an Channel based on the one provided as input.
 func (s *ChannelService) Update(channel *model.Channel) (*model.Channel, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = channel.Validate()
+
 	if err != nil {
 		return nil, err
 	}

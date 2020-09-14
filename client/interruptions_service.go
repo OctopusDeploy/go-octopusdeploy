@@ -28,11 +28,12 @@ func NewInterruptionsService(sling *sling.Sling) *InterruptionsService {
 // Get returns the interruption matching the id
 func (s *InterruptionsService) Get(id string) (*model.Interruption, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("InterruptionsService: invalid parameter, id")
 	}
 
@@ -46,8 +47,14 @@ func (s *InterruptionsService) Get(id string) (*model.Interruption, error) {
 	return resp.(*model.Interruption), nil
 }
 
-// GetAll returns all interruptions in Octopus Deploy
+// GetAll returns all instances of an Interruption.
 func (s *InterruptionsService) GetAll() (*[]model.Interruption, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var p []model.Interruption
 	path := s.path
 	loadNextPage := true

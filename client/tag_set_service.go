@@ -27,11 +27,12 @@ func NewTagSetService(sling *sling.Sling) *TagSetService {
 
 func (s *TagSetService) Get(id string) (*model.TagSet, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("TagSetService: invalid parameter, id")
 	}
 
@@ -45,8 +46,10 @@ func (s *TagSetService) Get(id string) (*model.TagSet, error) {
 	return resp.(*model.TagSet), nil
 }
 
+// GetAll returns all instances of a TagSet.
 func (s *TagSetService) GetAll() (*[]model.TagSet, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +63,18 @@ func (s *TagSetService) GetAll() (*[]model.TagSet, error) {
 	return resp.(*[]model.TagSet), nil
 }
 
+// GetByName performs a lookup and returns the TagSet with a matching name.
 func (s *TagSetService) GetByName(name string) (*model.TagSet, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if isEmpty(name) {
+		return nil, errors.New("TagSetService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -76,8 +90,25 @@ func (s *TagSetService) GetByName(name string) (*model.TagSet, error) {
 	return nil, errors.New("client: item not found")
 }
 
-func (s *TagSetService) Add(resource *model.TagSet) (*model.TagSet, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.TagSet), s.path)
+// Add creates a new TagSet.
+func (s *TagSetService) Add(tagSet *model.TagSet) (*model.TagSet, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if tagSet == nil {
+		return nil, errors.New("TagSetService: invalid parameter, tagSet")
+	}
+
+	err = tagSet.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, tagSet, new(model.TagSet), s.path)
 
 	if err != nil {
 		return nil, err
@@ -92,7 +123,7 @@ func (s *TagSetService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("TagSetService: invalid parameter, id")
 	}
 

@@ -12,6 +12,7 @@ type RootResource struct {
 	InstallationID       *uuid.UUID `json:"InstallationId" validate:"required"`
 	IsEarlyAccessProgram bool       `json:"IsEarlyAccessProgram"`
 	HasLongTermSupport   bool       `json:"HasLongTermSupport"`
+
 	Resource
 }
 

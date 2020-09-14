@@ -14,6 +14,7 @@ type DeploymentProcess struct {
 	ProjectID      string           `json:"ProjectId,omitempty"`
 	Steps          []DeploymentStep `json:"Steps,omitempty"`
 	Version        int32            `json:"Version"`
+
 	Resource
 }
 

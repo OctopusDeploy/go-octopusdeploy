@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/go-playground/validator/v10"
 )
 
@@ -34,6 +32,7 @@ type Machine struct {
 	OperatingSystem   string           `json:"OperatingSystem,omitempty"`
 	ShellName         string           `json:"ShellName,omitempty"`
 	ShellVersion      string           `json:"ShellVersion,omitempty"`
+
 	Resource
 }
 
@@ -62,12 +61,7 @@ func (m *Machine) Validate() error {
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
 			return nil
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Println(err)
 		}
 
 		return err

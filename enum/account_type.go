@@ -1,6 +1,6 @@
 package enum
 
-// AccountType indicates what type of account and Account object represents.
+// AccountType indicates what type of account the Account object represents.
 /*
 ENUM(
 	None

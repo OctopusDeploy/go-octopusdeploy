@@ -4,44 +4,47 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	uuid "github.com/google/uuid"
 )
 
 var (
-	octopusURL    string
-	octopusAPIKey string
+	octopusURL    string = os.Getenv("OCTOPUS_URL")
+	octopusAPIKey string = os.Getenv("OCTOPUS_APIKEY")
 	octopusClient *client.Client
 )
 
 func initTest() *client.Client {
-	octopusURL = os.Getenv("OCTOPUS_URL")
-	octopusAPIKey = os.Getenv("OCTOPUS_APIKEY")
 
-	if octopusURL == "" || octopusAPIKey == "" {
+	if isEmpty(octopusURL) || isEmpty(octopusAPIKey) {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
 	}
+
+	octopusClient, err := client.NewClient(&http.Client{}, octopusURL, octopusAPIKey, nil)
 
 	// NOTE: You can direct traffic through a proxy trace like Fiddler
 	// Everywhere by preconfiguring the client to route traffic through a
 	// proxy.
 
-	// proxyStr := "http://127.0.0.1:5555"
-	// proxyURL, err := url.Parse(proxyStr)
-	// if err != nil {
-	// 	log.Println(err)
-	// }
+	proxyStr := "http://127.0.0.1:5555"
+	proxyURL, err := url.Parse(proxyStr)
+	if err != nil {
+		log.Println(err)
+	}
 
-	// tr := &http.Transport{
-	// 	Proxy: http.ProxyURL(proxyURL),
-	// }
-	// httpClient := http.Client{Transport: tr}
+	tr := &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+	}
+	httpClient := http.Client{Transport: tr}
 
-	httpClient := http.Client{}
-	octopusClient, err := client.NewClient(&httpClient, octopusURL, octopusAPIKey)
+	// httpClient := http.Client{}
+	octopusClient, err = client.NewClient(&httpClient, octopusURL, octopusAPIKey, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,4 +60,14 @@ func getRandomName() string {
 
 func getRandomVarName() string {
 	return fmt.Sprintf("go-octo-%v", time.Now().Unix())
+}
+
+func generateSensitiveValue() model.SensitiveValue {
+	sensitiveValue, err := model.NewSensitiveValue(getRandomName())
+
+	if err != nil {
+		return model.SensitiveValue{}
+	}
+
+	return *sensitiveValue
 }

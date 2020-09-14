@@ -28,11 +28,12 @@ func NewMachineService(sling *sling.Sling) *MachineService {
 // Get returns a single machine with a given ID.
 func (s *MachineService) Get(id string) (*model.Machine, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("MachineService: invalid parameter, id")
 	}
 
@@ -46,8 +47,14 @@ func (s *MachineService) Get(id string) (*model.Machine, error) {
 	return resp.(*model.Machine), nil
 }
 
-// GetAll returns all registered machines
+// GetAll returns all instances of a Machine.
 func (s *MachineService) GetAll() (*[]model.Machine, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var p []model.Machine
 	path := s.path
 	loadNextPage := true
@@ -66,8 +73,18 @@ func (s *MachineService) GetAll() (*[]model.Machine, error) {
 	return &p, nil
 }
 
-// GetByName gets an existing machine by its name in Octopus Deploy
+// GetByName performs a lookup and returns the Machine with a matching name.
 func (s *MachineService) GetByName(name string) (*model.Machine, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if isEmpty(name) {
+		return nil, errors.New("MachineService: invalid parameter, name")
+	}
+
 	collection, err := s.GetAll()
 
 	if err != nil {
@@ -83,14 +100,26 @@ func (s *MachineService) GetByName(name string) (*model.Machine, error) {
 	return nil, errors.New("client: item not found")
 }
 
-// Add creates a new machine in Octopus Deploy
-func (s *MachineService) Add(resource *model.Machine) (*model.Machine, error) {
-	err := resource.Validate()
+// Add creates a new Machine.
+func (s *MachineService) Add(machine *model.Machine) (*model.Machine, error) {
+	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.Machine), s.path)
+	if machine == nil {
+		return nil, errors.New("MachineService: invalid parameter, machine")
+	}
+
+	err = machine.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, machine, new(model.Machine), s.path)
+
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +134,7 @@ func (s *MachineService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("MachineService: invalid parameter, id")
 	}
 
@@ -115,11 +144,13 @@ func (s *MachineService) Delete(id string) error {
 // Update updates an existing machine in Octopus Deploy
 func (s *MachineService) Update(machine *model.Machine) (*model.Machine, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = machine.Validate()
+
 	if err != nil {
 		return nil, err
 	}

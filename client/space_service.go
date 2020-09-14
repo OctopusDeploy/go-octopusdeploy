@@ -27,11 +27,12 @@ func NewSpaceService(sling *sling.Sling) *SpaceService {
 
 func (s *SpaceService) Get(id string) (*model.Space, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("SpaceService: invalid parameter, id")
 	}
 
@@ -45,8 +46,10 @@ func (s *SpaceService) Get(id string) (*model.Space, error) {
 	return resp.(*model.Space), nil
 }
 
+// GetAll returns all instances of a Space.
 func (s *SpaceService) GetAll() (*[]model.Space, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -60,13 +63,15 @@ func (s *SpaceService) GetAll() (*[]model.Space, error) {
 	return resp.(*[]model.Space), nil
 }
 
+// GetByName performs a lookup and returns the Space with a matching name.
 func (s *SpaceService) GetByName(name string) (*model.Space, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(name, " ")) == 0 {
+	if isEmpty(name) {
 		return nil, errors.New("SpaceService: invalid parameter, name")
 	}
 
@@ -85,14 +90,22 @@ func (s *SpaceService) GetByName(name string) (*model.Space, error) {
 	return nil, errors.New("client: item not found")
 }
 
+// Add creates a new Space.
 func (s *SpaceService) Add(space *model.Space) (*model.Space, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	if space == nil {
 		return nil, errors.New("SpaceService: invalid parameter, space")
+	}
+
+	err = space.Validate()
+
+	if err != nil {
+		return nil, err
 	}
 
 	resp, err := apiAdd(s.sling, space, new(model.Space), s.path)
@@ -110,7 +123,7 @@ func (s *SpaceService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("SpaceService: invalid parameter, id")
 	}
 
@@ -119,6 +132,7 @@ func (s *SpaceService) Delete(id string) error {
 
 func (s *SpaceService) Update(space *model.Space) (*model.Space, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}

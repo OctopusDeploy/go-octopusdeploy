@@ -36,6 +36,7 @@ func NewVariableService(sling *sling.Sling) *VariableService {
 // GetAll fetches an entire VariableSet from Octopus Deploy for a given Project ID.
 func (s *VariableService) GetAll(projectID string) (*model.Variables, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +58,7 @@ func (s *VariableService) GetAll(projectID string) (*model.Variables, error) {
 // GetByID fetches a single variable, located by its ID, from Octopus Deploy for a given Project ID.
 func (s *VariableService) GetByID(projectID string, variableID string) (*model.Variable, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +90,7 @@ func (s *VariableService) GetByID(projectID string, variableID string) (*model.V
 // be used to locate the appropriate variables.
 func (s *VariableService) GetByName(projectID string, name string, scope *model.VariableScope) ([]model.Variable, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +99,7 @@ func (s *VariableService) GetByName(projectID string, name string, scope *model.
 		return nil, errInvalidVariableServiceParameter{parameterName: "projectID"}
 	}
 
-	if len(strings.Trim(name, " ")) == 0 {
+	if isEmpty(name) {
 		return nil, errInvalidVariableServiceParameter{parameterName: "name"}
 	}
 
@@ -130,6 +133,7 @@ func (s *VariableService) GetByName(projectID string, name string, scope *model.
 // the variable set, adding a new item to it, and posting back to Octopus
 func (s *VariableService) AddSingle(projectID string, variable *model.Variable) (*model.Variables, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -156,6 +160,7 @@ func (s *VariableService) AddSingle(projectID string, variable *model.Variable) 
 // the variable set, updating the existing item, and posting back to Octopus
 func (s *VariableService) UpdateSingle(projectID string, variable *model.Variable) (*model.Variables, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -193,6 +198,7 @@ func (s *VariableService) UpdateSingle(projectID string, variable *model.Variabl
 // the variable set, removing the existing item, and posting back to Octopus
 func (s *VariableService) DeleteSingle(projectID string, variableID string) (*model.Variables, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -229,6 +235,7 @@ func (s *VariableService) DeleteSingle(projectID string, variableID string) (*mo
 // functions like AddSingle and UpdateSingle that can make this process more of a "typical" CRUD Octopus command.
 func (s *VariableService) Update(projectID string, variableSet *model.Variables) (*model.Variables, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}

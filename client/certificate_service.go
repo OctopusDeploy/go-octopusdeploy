@@ -31,11 +31,12 @@ func NewCertificateService(sling *sling.Sling) *CertificateService {
 
 func (s *CertificateService) Get(id string) (*model.Certificate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("CertificateService: invalid parameter, id")
 	}
 
@@ -49,8 +50,10 @@ func (s *CertificateService) Get(id string) (*model.Certificate, error) {
 	return resp.(*model.Certificate), nil
 }
 
+// GetAll returns all instances of a Certificate.
 func (s *CertificateService) GetAll() (*[]model.Certificate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -64,13 +67,15 @@ func (s *CertificateService) GetAll() (*[]model.Certificate, error) {
 	return resp.(*[]model.Certificate), nil
 }
 
+// GetByName performs a lookup and returns the Certificate with a matching name.
 func (s *CertificateService) GetByName(name string) (*model.Certificate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(name, " ")) == 0 {
+	if isEmpty(name) {
 		return nil, errors.New("CertificateService: invalid parameter, name")
 	}
 
@@ -89,13 +94,20 @@ func (s *CertificateService) GetByName(name string) (*model.Certificate, error) 
 	return nil, errors.New("client: item not found")
 }
 
+// Add creates a new Certificate.
 func (s *CertificateService) Add(certificate *model.Certificate) (*model.Certificate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
+	if certificate == nil {
+		return nil, errors.New("CertificateService: invalid parameter, certificate")
+	}
+
 	err = certificate.Validate()
+
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +128,7 @@ func (s *CertificateService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("CertificateService: invalid parameter, id")
 	}
 
@@ -125,11 +137,13 @@ func (s *CertificateService) Delete(id string) error {
 
 func (s *CertificateService) Update(certificate model.Certificate) (*model.Certificate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = certificate.Validate()
+
 	if err != nil {
 		return nil, err
 	}
@@ -146,6 +160,7 @@ func (s *CertificateService) Update(certificate model.Certificate) (*model.Certi
 
 func (s *CertificateService) Replace(certificateID string, certificate *model.CertificateReplace) (*model.Certificate, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}

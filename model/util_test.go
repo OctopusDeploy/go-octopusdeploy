@@ -79,3 +79,17 @@ func TestValidateSemanticVersion(t *testing.T) {
 	err = ValidateSemanticVersion(propertyName, semanticVersion)
 	assert.NoError(t, err)
 }
+
+func TestValidateRequiredSensitiveValue(t *testing.T) {
+	sensitiveValue, err := NewSensitiveValue("test-value")
+	assert.NoError(t, err)
+
+	err = ValidateRequiredSensitiveValue("", *sensitiveValue)
+	assert.Error(t, err)
+
+	err = ValidateRequiredSensitiveValue(" ", *sensitiveValue)
+	assert.Error(t, err)
+
+	err = ValidateRequiredSensitiveValue(propertyName, *sensitiveValue)
+	assert.NoError(t, err)
+}

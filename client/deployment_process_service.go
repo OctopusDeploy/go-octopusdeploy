@@ -27,11 +27,12 @@ func NewDeploymentProcessService(sling *sling.Sling) *DeploymentProcessService {
 
 func (s *DeploymentProcessService) Get(id string) (*model.DeploymentProcess, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("DeploymentProcessService: invalid parameter, id")
 	}
 
@@ -45,7 +46,14 @@ func (s *DeploymentProcessService) Get(id string) (*model.DeploymentProcess, err
 	return resp.(*model.DeploymentProcess), nil
 }
 
+// GetAll returns all instances of a DeploymentProcess.
 func (s *DeploymentProcessService) GetAll() (*[]model.DeploymentProcess, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var p []model.DeploymentProcess
 	path := s.path
 	loadNextPage := true
@@ -67,11 +75,13 @@ func (s *DeploymentProcessService) GetAll() (*[]model.DeploymentProcess, error) 
 
 func (s *DeploymentProcessService) Update(deploymentProcess *model.DeploymentProcess) (*model.DeploymentProcess, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
 	err = deploymentProcess.Validate()
+
 	if err != nil {
 		return nil, err
 	}

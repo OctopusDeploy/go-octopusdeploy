@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -39,6 +37,7 @@ type Project struct {
 	VariableSetID                   string                       `json:"VariableSetId,omitempty"`
 	VersionControlSettings          *VersionControlSettings      `json:"VersionControlSettings,omitempty"`
 	VersioningStrategy              VersioningStrategy           `json:"VersioningStrategy"`
+
 	Resource
 }
 
@@ -70,12 +69,7 @@ func (p *Project) Validate() error {
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
-			fmt.Println(err)
 			return nil
-		}
-
-		for _, err := range err.(validator.ValidationErrors) {
-			fmt.Println(err)
 		}
 
 		return err

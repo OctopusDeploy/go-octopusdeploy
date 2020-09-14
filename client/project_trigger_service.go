@@ -27,11 +27,12 @@ func NewProjectTriggerService(sling *sling.Sling) *ProjectTriggerService {
 
 func (s *ProjectTriggerService) Get(id string) (*model.ProjectTrigger, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("ProjectTriggerService: invalid parameter, id")
 	}
 
@@ -59,7 +60,14 @@ func (s *ProjectTriggerService) GetByProjectID(id string) (*[]model.ProjectTrigg
 	return &triggersByProject, nil
 }
 
+// GetAll returns all instances of a ProjectTrigger.
 func (s *ProjectTriggerService) GetAll() (*[]model.ProjectTrigger, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	var p []model.ProjectTrigger
 	path := s.path
 	loadNextPage := true
@@ -79,8 +87,25 @@ func (s *ProjectTriggerService) GetAll() (*[]model.ProjectTrigger, error) {
 	return &p, nil
 }
 
-func (s *ProjectTriggerService) Add(resource *model.ProjectTrigger) (*model.ProjectTrigger, error) {
-	resp, err := apiAdd(s.sling, resource, new(model.ProjectTrigger), s.path)
+// Add creates a new ProjectTrigger.
+func (s *ProjectTriggerService) Add(projectTrigger *model.ProjectTrigger) (*model.ProjectTrigger, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if projectTrigger == nil {
+		return nil, errors.New("ProjectTriggerService: invalid parameter, projectTrigger")
+	}
+
+	err = projectTrigger.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, projectTrigger, new(model.ProjectTrigger), s.path)
 
 	if err != nil {
 		return nil, err
@@ -95,7 +120,7 @@ func (s *ProjectTriggerService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("ProjectTriggerService: invalid parameter, id")
 	}
 
@@ -104,6 +129,7 @@ func (s *ProjectTriggerService) Delete(id string) error {
 
 func (s *ProjectTriggerService) Update(resource *model.ProjectTrigger) (*model.ProjectTrigger, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -113,6 +139,7 @@ func (s *ProjectTriggerService) Update(resource *model.ProjectTrigger) (*model.P
 	}
 
 	err = resource.Validate()
+
 	if err != nil {
 		return nil, err
 	}

@@ -46,6 +46,7 @@ type Certificate struct {
 	SerialNumber                    string                      `json:"SerialNumber,omitempty"`
 	SignatureAlgorithmName          string                      `json:"SignatureAlgorithmName,omitempty"`
 	SubjectAlternativeNames         []string                    `json:"SubjectAlternativeNames,omitempty"`
+
 	Resource
 }
 
@@ -65,7 +66,7 @@ func (c *Certificate) Validate() error {
 }
 
 func NewCertificate(name string, certificateData SensitiveValue, password SensitiveValue) (*Certificate, error) {
-	if len(strings.Trim(name, " ")) == 0 {
+	if isEmpty(name) {
 		return nil, errors.New("NewCertificate: invalid name")
 	}
 

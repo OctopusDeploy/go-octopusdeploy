@@ -16,6 +16,7 @@ type Space struct {
 	SpaceManagersTeamMembers []string `json:"SpaceManagersTeamMembers"`
 	SpaceManagersTeams       []string `json:"SpaceManagersTeams"`
 	TaskQueueStopped         bool     `json:"TaskQueueStopped,omitempty"`
+
 	Resource
 }
 

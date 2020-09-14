@@ -27,11 +27,12 @@ func NewProjectGroupService(sling *sling.Sling) *ProjectGroupService {
 
 func (s *ProjectGroupService) Get(id string) (*model.ProjectGroup, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("ProjectGroupService: invalid parameter, id")
 	}
 
@@ -45,8 +46,10 @@ func (s *ProjectGroupService) Get(id string) (*model.ProjectGroup, error) {
 	return resp.(*model.ProjectGroup), nil
 }
 
+// GetAll returns all instances of a ProjectGroup.
 func (s *ProjectGroupService) GetAll() (*[]model.ProjectGroup, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +63,10 @@ func (s *ProjectGroupService) GetAll() (*[]model.ProjectGroup, error) {
 	return resp.(*[]model.ProjectGroup), nil
 }
 
+// Add creates a new ProjectGroup.
 func (s *ProjectGroupService) Add(projectGroup *model.ProjectGroup) (*model.ProjectGroup, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +76,7 @@ func (s *ProjectGroupService) Add(projectGroup *model.ProjectGroup) (*model.Proj
 	}
 
 	err = projectGroup.Validate()
+
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +96,7 @@ func (s *ProjectGroupService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("ProjectGroupService: invalid parameter, id")
 	}
 
@@ -99,6 +105,7 @@ func (s *ProjectGroupService) Delete(id string) error {
 
 func (s *ProjectGroupService) Update(projectGroup *model.ProjectGroup) (*model.ProjectGroup, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +115,7 @@ func (s *ProjectGroupService) Update(projectGroup *model.ProjectGroup) (*model.P
 	}
 
 	err = projectGroup.Validate()
+
 	if err != nil {
 		return nil, err
 	}

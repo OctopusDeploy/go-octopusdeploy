@@ -20,6 +20,7 @@ type Artifact struct {
 	ServerTaskID     string    `json:"ServerTaskId,omitempty"`
 	Source           string    `json:"Source,omitempty"`
 	SpaceID          string    `json:"SpaceId,omitempty"`
+
 	Resource
 }
 

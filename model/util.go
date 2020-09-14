@@ -3,7 +3,6 @@ package model
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -41,8 +40,8 @@ func ValidateStringInSlice(str string, list []string) bool {
 
 // ValidatePropertyValues returns an error if the given string is not in a slice of strings
 func ValidatePropertyValues(propertyName string, propertyValue string, validValues []string) error {
-	if len(strings.Trim(propertyName, " ")) == 0 {
-		return errors.New("ValidateRequiredPropertyValue: invalid parameter, propertyName")
+	if isEmpty(propertyName) {
+		return createInvalidParameterError("ValidatePropertyValues", "propertyName")
 	}
 
 	if ValidateStringInSlice(propertyValue, validValues) {
@@ -54,8 +53,8 @@ func ValidatePropertyValues(propertyName string, propertyValue string, validValu
 
 // ValidateRequiredPropertyValue returns an error if the property value is empty
 func ValidateRequiredPropertyValue(propertyName string, propertyValue string) error {
-	if len(strings.Trim(propertyName, " ")) == 0 {
-		return errors.New("ValidateRequiredPropertyValue: invalid parameter, propertyName")
+	if isEmpty(propertyName) {
+		return createInvalidParameterError("ValidateRequiredPropertyValue", "propertyName")
 	}
 
 	if len(propertyValue) > 0 {
@@ -66,16 +65,36 @@ func ValidateRequiredPropertyValue(propertyName string, propertyValue string) er
 }
 
 func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
-	if len(strings.Trim(propertyName, " ")) == 0 {
-		return errors.New("ValidateRequiredUUID: invalid parameter, propertyName")
+	if isEmpty(propertyName) {
+		return createInvalidParameterError("ValidateRequiredUUID", "propertyName")
 	}
 
 	if id == nil {
-		return errors.New("ValidateRequiredUUID: invalid parameter, id")
+		return createInvalidParameterError("ValidateRequiredUUID", "id")
 	}
 
 	if *id == uuid.Nil {
 		return fmt.Errorf("%s is a required property; its value is an empty UUID", propertyName)
+	}
+
+	return nil
+}
+
+func ValidateRequiredSensitiveValue(propertyName string, sensitiveValue SensitiveValue) error {
+	if isEmpty(propertyName) {
+		return createInvalidParameterError("ValidateRequiredSensitiveValue", "propertyName")
+	}
+
+	if !sensitiveValue.HasValue {
+		return fmt.Errorf("%s is a required property; its underlying value is not set", propertyName)
+	}
+
+	if sensitiveValue.NewValue == nil {
+		return fmt.Errorf("%s is a required property; its underlying value is not set", propertyName)
+	}
+
+	if len(*sensitiveValue.NewValue) == 0 {
+		return fmt.Errorf("%s is a required property; its underlying value is not set", propertyName)
 	}
 
 	return nil
@@ -102,8 +121,8 @@ func ValidatePropertiesMatch(firstProperty, firstPropertyName, secondProperty, s
 }
 
 func ValidateSemanticVersion(propertyName string, version string) error {
-	if len(strings.Trim(propertyName, " ")) == 0 {
-		return errors.New("ValidateRequiredPropertyValue: invalid parameter, propertyName")
+	if isEmpty(propertyName) {
+		return createInvalidParameterError("ValidateSemanticVersion", "propertyName")
 	}
 
 	re := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)

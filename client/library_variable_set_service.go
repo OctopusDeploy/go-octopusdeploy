@@ -29,11 +29,12 @@ func NewLibraryVariableSetService(sling *sling.Sling) *LibraryVariableSetService
 // Get returns a single LibraryVariableSet by its Id in Octopus Deploy
 func (s *LibraryVariableSetService) Get(id string) (*model.LibraryVariableSet, error) {
 	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return nil, errors.New("LibraryVariableSetService: invalid parameter, id")
 	}
 
@@ -47,8 +48,14 @@ func (s *LibraryVariableSetService) Get(id string) (*model.LibraryVariableSet, e
 	return resp.(*model.LibraryVariableSet), nil
 }
 
-// GetAll returns all libraryVariableSets in Octopus Deploy
+// GetAll returns all instances of a LibraryVariableSet.
 func (s *LibraryVariableSetService) GetAll() (*[]model.LibraryVariableSet, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
 	return s.get("")
 }
 
@@ -79,8 +86,18 @@ func (s *LibraryVariableSetService) get(query string) (*[]model.LibraryVariableS
 	return &p, nil
 }
 
-// GetByName gets an existing Library Variable Set by its name in Octopus Deploy
+// GetByName performs a lookup and returns the LibraryVariableSet with a matching name.
 func (s *LibraryVariableSetService) GetByName(name string) (*model.LibraryVariableSet, error) {
+	err := s.validateInternalState()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if isEmpty(name) {
+		return nil, errors.New("LibraryVariableSetService: invalid parameter, name")
+	}
+
 	collection, err := s.get(fmt.Sprintf("partialName=%s", url.PathEscape(name)))
 
 	if err != nil {
@@ -96,14 +113,24 @@ func (s *LibraryVariableSetService) GetByName(name string) (*model.LibraryVariab
 	return nil, errors.New("client: item not found")
 }
 
-// Add adds an new libraryVariableSet in Octopus Deploy
-func (s *LibraryVariableSetService) Add(resource *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
-	err := model.ValidateLibraryVariableSetValues(resource)
+// Add creates a new LibraryVariableSet.
+func (s *LibraryVariableSetService) Add(libraryVariableSet *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
+	err := s.validateInternalState()
+
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, resource, new(model.LibraryVariableSet), "libraryVariableSets")
+	if libraryVariableSet == nil {
+		return nil, errors.New("LibraryVariableSetService: invalid parameter, libraryVariableSet")
+	}
+
+	err = model.ValidateLibraryVariableSetValues(libraryVariableSet)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.sling, libraryVariableSet, new(model.LibraryVariableSet), "libraryVariableSets")
 
 	if err != nil {
 		return nil, err
@@ -119,7 +146,7 @@ func (s *LibraryVariableSetService) Delete(id string) error {
 		return err
 	}
 
-	if len(strings.Trim(id, " ")) == 0 {
+	if isEmpty(id) {
 		return errors.New("LibraryVariableSetService: invalid parameter, id")
 	}
 

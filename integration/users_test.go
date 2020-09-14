@@ -7,12 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestGetAllUsers(t *testing.T) {
 	users, err := octopusClient.Users.GetAll()
 
