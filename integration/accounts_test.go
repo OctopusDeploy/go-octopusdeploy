@@ -45,6 +45,6 @@ func TestGetUsage(t *testing.T) {
 		accountUsages, err := octopusClient.Accounts.GetUsage(account)
 
 		assert.NoError(t, err)
-		assert.NotEmpty(t, accountUsages)
+		assert.NotNil(t, accountUsages)
 	}
 }
