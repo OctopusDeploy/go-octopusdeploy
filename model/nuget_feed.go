@@ -8,10 +8,12 @@ func NewNuGetFeed(name string) (*Feed, error) {
 	}
 
 	feed := &Feed{
-		Name:     name,
-		FeedType: enum.NuGetFeed,
+		DownloadAttempts:            5,
+		DownloadRetryBackoffSeconds: 10,
+		EnhancedMode:                false,
+		FeedType:                    enum.NuGet,
+		Name:                        name,
 	}
 
 	return feed, nil
-
 }

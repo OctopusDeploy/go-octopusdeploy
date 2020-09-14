@@ -11,14 +11,21 @@ type Feeds struct {
 }
 
 type Feed struct {
-	Name                        string         `json:"Name"`
-	FeedType                    enum.FeedType  `json:"FeedType"`
-	DownloadAttempts            int            `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds int            `json:"DownloadRetryBackoffSeconds"`
-	FeedURI                     string         `json:"FeedUri"`
-	EnhancedMode                bool           `json:"EnhancedMode"`
-	Username                    string         `json:"Username"`
-	Password                    SensitiveValue `json:"Password"`
+	AccessKey                         string         `json:"AccessKey,omitempty"`
+	APIVersion                        string         `json:"ApiVersion,omitempty"`
+	DeleteUnreleasedPackagesAfterDays int            `json:"DeleteUnreleasedPackagesAfterDays,omitempty"`
+	DownloadAttempts                  int            `json:"DownloadAttempts,omitempty"`
+	DownloadRetryBackoffSeconds       int            `json:"DownloadRetryBackoffSeconds,omitempty"`
+	EnhancedMode                      bool           `json:"EnhancedMode,omitempty"`
+	FeedType                          enum.FeedType  `json:"FeedType,omitempty"`
+	FeedURI                           string         `json:"FeedUri,omitempty"`
+	IsBuiltInRepoSyncEnabled          bool           `json:"IsBuiltInRepoSyncEnabled,omitempty"`
+	Name                              string         `json:"Name,omitempty"`
+	Password                          SensitiveValue `json:"Password,omitempty"`
+	Region                            string         `json:"Region,omitempty"`
+	RegistryPath                      string         `json:"RegistryPath,omitempty"`
+	SecretKey                         SensitiveValue `json:"SecretKey,omitempty"`
+	Username                          string         `json:"Username,omitempty"`
 
 	Resource
 }
@@ -38,7 +45,7 @@ func (f *Feed) Validate() error {
 	return nil
 }
 
-func NewFeed(name, feedType string, feedURI string) *Feed {
+func NewFeed(name string, feedType enum.FeedType, feedURI string) *Feed {
 	return &Feed{
 		Name:     name,
 		FeedType: feedType,
