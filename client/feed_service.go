@@ -47,20 +47,18 @@ func (s *FeedService) Get(id string) (*model.Feed, error) {
 }
 
 // GetAll returns all instances of a Feed.
-func (s *FeedService) GetAll() (*[]model.Feed, error) {
+func (s *FeedService) GetAll() ([]model.Feed, error) {
+
+	feeds := new([]model.Feed)
 	err := s.validateInternalState()
 
 	if err != nil {
-		return nil, err
+		return *feeds, err
 	}
 
-	resp, err := apiGet(s.sling, new([]model.Feed), s.path+"/all")
+	_, err = apiGet(s.sling, feeds, s.path+"/all")
 
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*[]model.Feed), nil
+	return *feeds, err
 }
 
 // GetByName performs a lookup and returns the Feed with a matching name.
@@ -81,7 +79,7 @@ func (s *FeedService) GetByName(name string) (*model.Feed, error) {
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}

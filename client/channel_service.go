@@ -51,18 +51,15 @@ func (s *ChannelService) Get(id string) (*model.Channel, error) {
 func (s *ChannelService) GetAll() ([]model.Channel, error) {
 	err := s.validateInternalState()
 
+	channels := new([]model.Channel)
+
 	if err != nil {
-		return nil, err
+		return *channels, err
 	}
 
-	channels := new([]model.Channel)
 	_, err = apiGet(s.sling, channels, s.path+"/all")
 
-	if err != nil {
-		return nil, err
-	}
-
-	return *channels, nil
+	return *channels, err
 }
 
 func (s *ChannelService) GetProject(channel model.Channel) (*model.Project, error) {

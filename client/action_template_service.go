@@ -55,18 +55,15 @@ func (s *ActionTemplateService) Get(id string) (*model.ActionTemplate, error) {
 func (s *ActionTemplateService) GetAll() ([]model.ActionTemplate, error) {
 	err := s.validateInternalState()
 
+	actionTemplates := new([]model.ActionTemplate)
+
 	if err != nil {
-		return nil, err
+		return *actionTemplates, err
 	}
 
-	actionTemplates := new([]model.ActionTemplate)
 	_, err = apiGet(s.sling, actionTemplates, s.path+"/all")
 
-	if err != nil {
-		return nil, err
-	}
-
-	return *actionTemplates, nil
+	return *actionTemplates, err
 }
 
 // GetByName performs a lookup and returns the ActionTemplate with a matching name.

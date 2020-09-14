@@ -52,18 +52,15 @@ func (s *ProjectService) Get(id string) (*model.Project, error) {
 func (s *ProjectService) GetAll() ([]model.Project, error) {
 	err := s.validateInternalState()
 
+	projects := new([]model.Project)
+
 	if err != nil {
-		return nil, err
+		return *projects, err
 	}
 
-	projects := new([]model.Project)
 	_, err = apiGet(s.sling, projects, s.path+"/all")
 
-	if err != nil {
-		return nil, err
-	}
-
-	return *projects, nil
+	return *projects, err
 }
 
 // GetByName performs a lookup and returns the Project with a matching name.

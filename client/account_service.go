@@ -54,18 +54,15 @@ func (s *AccountService) Get(id string) (*model.Account, error) {
 func (s *AccountService) GetAll() ([]model.Account, error) {
 	err := s.validateInternalState()
 
+	accounts := new([]model.Account)
+
 	if err != nil {
-		return nil, err
+		return *accounts, err
 	}
 
-	accounts := new([]model.Account)
 	_, err = apiGet(s.sling, accounts, s.path+"/all")
 
-	if err != nil {
-		return nil, err
-	}
-
-	return *accounts, nil
+	return *accounts, err
 }
 
 // GetByName performs a lookup and returns the Account with a matching name.
