@@ -158,7 +158,7 @@ func (s *CertificateService) Update(certificate model.Certificate) (*model.Certi
 	return resp.(*model.Certificate), nil
 }
 
-func (s *CertificateService) Replace(certificateID string, certificate *model.CertificateReplace) (*model.Certificate, error) {
+func (s *CertificateService) Replace(certificateID string, replacementCertificate *model.ReplacementCertificate) (*model.Certificate, error) {
 	err := s.validateInternalState()
 
 	if err != nil {
@@ -169,12 +169,12 @@ func (s *CertificateService) Replace(certificateID string, certificate *model.Ce
 		return nil, errors.New("CertificateService: invalid parameter, certificateID")
 	}
 
-	if certificate == nil {
-		return nil, errors.New("CertificateService: invalid parameter, certificate")
+	if replacementCertificate == nil {
+		return nil, errors.New("CertificateService: invalid parameter, replacementCertificate")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s/replace", certificateID)
-	_, err = apiPost(s.sling, certificate, new(model.Certificate), path)
+	_, err = apiPost(s.sling, replacementCertificate, new(model.ReplacementCertificate), path)
 
 	if err != nil {
 		return nil, err

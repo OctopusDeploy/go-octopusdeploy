@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
@@ -11,11 +10,6 @@ import (
 type Certificates struct {
 	Items []Certificate `json:"Items"`
 	PagedResults
-}
-
-type CertificateReplace struct {
-	CertificateData string `json:"CertificateData,omitempty"`
-	Password        string `json:"Password,omitempty"`
 }
 
 type Certificate struct {
@@ -74,21 +68,6 @@ func NewCertificate(name string, certificateData SensitiveValue, password Sensit
 		Name:            name,
 		CertificateData: &certificateData,
 		Password:        &password,
-	}, nil
-}
-
-func NewCertificateReplace(certificateData string, password string) (*CertificateReplace, error) {
-	if len(strings.Trim(certificateData, " ")) == 0 {
-		return nil, errors.New("NewCertificateReplace: invalid certificateData")
-	}
-
-	if len(strings.Trim(password, " ")) == 0 {
-		return nil, errors.New("NewCertificateReplace: invalid password")
-	}
-
-	return &CertificateReplace{
-		CertificateData: certificateData,
-		Password:        password,
 	}, nil
 }
 
