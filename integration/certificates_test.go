@@ -105,8 +105,8 @@ func getTestCert1(t *testing.T, certName string) (*model.Certificate, error) {
 	return certificate, nil
 }
 
-func getTestCertReplace(t *testing.T) (*model.CertificateReplace, error) {
-	certificateReplace, err := model.NewCertificateReplace(testCert2Data, testCert2Password)
+func getTestCertReplace(t *testing.T) (*model.ReplacementCertificate, error) {
+	certificateReplace, err := model.NewReplacementCertificate(testCert2Data, testCert2Password)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, certificateReplace)

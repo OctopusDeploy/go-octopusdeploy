@@ -85,7 +85,7 @@ func TestCertificateServiceReplaceWithInvalidArguments(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, certificate)
 
-	replacementCertificate, err := model.NewCertificateReplace("fake-name-string", "fake-password-string")
+	replacementCertificate, err := model.NewReplacementCertificate("fake-name-string", "fake-password-string")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, replacementCertificate)
