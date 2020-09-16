@@ -28,5 +28,5 @@ func GetFakeOctopusClient(t *testing.T, apiPath string, statusCode int, response
 			Body:       ioutil.NopCloser(strings.NewReader(responseBody)),
 		}, nil
 	})
-	return NewClient(&httpClient, "http://octopusserver", "FakeAPIKey", nil)
+	return NewClient(&httpClient, "http://octopusserver", "FakeAPIKey", "")
 }
