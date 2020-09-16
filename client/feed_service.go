@@ -89,15 +89,11 @@ func (s *FeedService) GetByName(name string) (*model.Feed, error) {
 }
 
 // Add creates a new Feed.
-func (s *FeedService) Add(feed *model.Feed) (*model.Feed, error) {
+func (s *FeedService) Add(feed model.Feed) (*model.Feed, error) {
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if feed == nil {
-		return nil, errors.New("FeedService: invalid parameter, feed")
 	}
 
 	err = feed.Validate()
@@ -106,7 +102,7 @@ func (s *FeedService) Add(feed *model.Feed) (*model.Feed, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, feed, new(model.Feed), "feeds")
+	resp, err := apiAdd(s.sling, &feed, new(model.Feed), "feeds")
 
 	if err != nil {
 		return nil, err
