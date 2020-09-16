@@ -9,3 +9,14 @@ type DeploymentStep struct {
 	StartTrigger       DeploymentStepStartTrigger       `json:"StartTrigger,omitempty" validate:"oneof=StartAfterPrevious StartWithPrevious"`
 	Actions            []DeploymentAction               `json:"Actions,omitempty"`
 }
+
+// NewDeploymentStep initializes a DeploymentStep with a name.
+func NewDeploymentStep(name string) (*DeploymentStep, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("NewDeploymentStep", "name")
+	}
+
+	return &DeploymentStep{
+		Name: name,
+	}, nil
+}
