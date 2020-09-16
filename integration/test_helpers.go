@@ -62,11 +62,6 @@ func getRandomVarName() string {
 }
 
 func generateSensitiveValue() model.SensitiveValue {
-	sensitiveValue, err := model.NewSensitiveValue(getRandomName())
-
-	if err != nil {
-		return model.SensitiveValue{}
-	}
-
-	return *sensitiveValue
+	sensitiveValue := model.NewSensitiveValue(getRandomName())
+	return sensitiveValue
 }
