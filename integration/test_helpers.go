@@ -25,7 +25,7 @@ func initTest() *client.Client {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
 	}
 
-	octopusClient, err := client.NewClient(&http.Client{}, octopusURL, octopusAPIKey, nil)
+	// octopusClient, err := client.NewClient(&http.Client{}, octopusURL, octopusAPIKey, "")
 
 	// NOTE: You can direct traffic through a proxy trace like Fiddler
 	// Everywhere by preconfiguring the client to route traffic through a
@@ -43,7 +43,7 @@ func initTest() *client.Client {
 	// httpClient := http.Client{Transport: tr}
 
 	httpClient := http.Client{}
-	octopusClient, err = client.NewClient(&httpClient, octopusURL, octopusAPIKey, nil)
+	octopusClient, err := client.NewClient(&httpClient, octopusURL, octopusAPIKey, "")
 	if err != nil {
 		log.Fatal(err)
 	}
