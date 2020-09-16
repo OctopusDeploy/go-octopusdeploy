@@ -22,9 +22,11 @@ type Feed struct {
 	IsBuiltInRepoSyncEnabled          bool           `json:"IsBuiltInRepoSyncEnabled,omitempty"`
 	Name                              string         `json:"Name,omitempty"`
 	Password                          SensitiveValue `json:"Password,omitempty"`
+	PackageAcquisitionLocationOptions []string       `json:"PackageAcquisitionLocationOptions,omitempty"`
 	Region                            string         `json:"Region,omitempty"`
 	RegistryPath                      string         `json:"RegistryPath,omitempty"`
 	SecretKey                         SensitiveValue `json:"SecretKey,omitempty"`
+	SpaceID                           string         `json:"SpaceId,omitempty"`
 	Username                          string         `json:"Username,omitempty"`
 
 	Resource
