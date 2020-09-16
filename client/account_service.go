@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -17,14 +18,16 @@ type AccountService struct {
 }
 
 // NewAccountService returns an AccountService with a preconfigured client.
-func NewAccountService(sling *sling.Sling) *AccountService {
+func NewAccountService(sling *sling.Sling, uriTemplate string) *AccountService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &AccountService{
 		sling: sling,
-		path:  "accounts",
+		path:  path,
 	}
 }
 

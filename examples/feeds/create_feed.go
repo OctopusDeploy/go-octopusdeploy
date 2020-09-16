@@ -1,27 +1,27 @@
-package main
+package examples
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
 
-var (
-	// Declare working variables
-	octopusURL    string = "https://youroctourl"
-	octopusAPIKey string = "API-YOURAPIKEY"
+func CreateFeedExample() {
+	var (
+		// Declare working variables
+		octopusURL    string = "https://youroctourl"
+		octopusAPIKey string = "API-YOURAPIKEY"
 
-	spaceName                   string = "Default"
-	feedName                    string = "nuget.org 3"
-	feedURI                     string = "https://api.nuget.org/v3/index.json"
-	downloadAttempts            int    = 5
-	downloadRetryBackoffSeconds int    = 10
-	useExtendedAPI              bool   = false
-	// optional
-	feedUsername string = ""
-	feedPassword string = ""
-)
+		spaceName                   string = "Default"
+		feedName                    string = "nuget.org 3"
+		feedURI                     string = "https://api.nuget.org/v3/index.json"
+		downloadAttempts            int    = 5
+		downloadRetryBackoffSeconds int    = 10
+		useExtendedAPI              bool   = false
+		// optional
+		feedUsername string = ""
+		feedPassword string = ""
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
@@ -54,7 +54,7 @@ func main() {
 		feedResource.Password = model.NewSensitiveValue(feedPassword)
 	}
 
-	feed, err := client.Feeds.Add(*feedResource)
+	_, err = client.Feeds.Add(*feedResource)
 
 	if err != nil {
 		// TODO: handle error

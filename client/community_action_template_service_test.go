@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewCommunityActionTemplateServiceWithNil(t *testing.T) {
-	service := NewCommunityActionTemplateService(nil)
+	service := NewCommunityActionTemplateService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestCommunityActionTemplateServiceWithEmptyClient(t *testing.T) {
-	service := NewCommunityActionTemplateService(&sling.Sling{})
+	service := NewCommunityActionTemplateService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestCommunityActionTemplateServiceGetWithEmptyID(t *testing.T) {
-	service := NewCommunityActionTemplateService(&sling.Sling{})
+	service := NewCommunityActionTemplateService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

@@ -9,13 +9,13 @@ import (
 )
 
 func TestNewAccountServiceWithNil(t *testing.T) {
-	service := NewAccountService(nil)
+	service := NewAccountService(nil, "")
 
 	assert.Nil(t, service)
 }
 
 func TestNewAccountServiceWithEmptyClient(t *testing.T) {
-	service := NewAccountService(&sling.Sling{})
+	service := NewAccountService(&sling.Sling{}, "accounts")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "accounts")
@@ -23,7 +23,7 @@ func TestNewAccountServiceWithEmptyClient(t *testing.T) {
 }
 
 func TestAccountServiceGetWithEmptyID(t *testing.T) {
-	service := NewAccountService(&sling.Sling{})
+	service := NewAccountService(&sling.Sling{}, "accounts")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "accounts")
@@ -40,7 +40,7 @@ func TestAccountServiceGetWithEmptyID(t *testing.T) {
 }
 
 func TestAccountServiceGetWithEmptyName(t *testing.T) {
-	service := NewAccountService(&sling.Sling{})
+	service := NewAccountService(&sling.Sling{}, "accounts")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "accounts")
@@ -57,7 +57,7 @@ func TestAccountServiceGetWithEmptyName(t *testing.T) {
 }
 
 func TestAccountServiceAddWithNilAccount(t *testing.T) {
-	service := NewAccountService(&sling.Sling{})
+	service := NewAccountService(&sling.Sling{}, "accounts")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "accounts")
@@ -69,7 +69,7 @@ func TestAccountServiceAddWithNilAccount(t *testing.T) {
 }
 
 func TestAccountServiceAddWithInvalidAccount(t *testing.T) {
-	service := NewAccountService(&sling.Sling{})
+	service := NewAccountService(&sling.Sling{}, "accounts")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "accounts")
@@ -81,7 +81,7 @@ func TestAccountServiceAddWithInvalidAccount(t *testing.T) {
 }
 
 func TestAccountServiceDeleteWithEmptyID(t *testing.T) {
-	service := NewAccountService(&sling.Sling{})
+	service := NewAccountService(&sling.Sling{}, "accounts")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "accounts")

@@ -9,13 +9,13 @@ import (
 )
 
 func TestNewActionTemplateServiceWithNil(t *testing.T) {
-	service := NewActionTemplateService(nil)
+	service := NewActionTemplateService(nil, "")
 
 	assert.Nil(t, service)
 }
 
 func TestNewActionTemplateServiceWithEmptyClient(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{})
+	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "actiontemplates")
@@ -23,7 +23,7 @@ func TestNewActionTemplateServiceWithEmptyClient(t *testing.T) {
 }
 
 func TestActionTemplateServiceGetWithEmptyID(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{})
+	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "actiontemplates")
@@ -40,7 +40,7 @@ func TestActionTemplateServiceGetWithEmptyID(t *testing.T) {
 }
 
 func TestActionTemplateGetWithEmptyName(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{})
+	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "actiontemplates")
@@ -57,7 +57,7 @@ func TestActionTemplateGetWithEmptyName(t *testing.T) {
 }
 
 func TestActionTemplateServiceAddWithNilActionTemplate(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{})
+	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "actiontemplates")
@@ -69,7 +69,7 @@ func TestActionTemplateServiceAddWithNilActionTemplate(t *testing.T) {
 }
 
 func TestActionTemplateServiceAddWithInvalidActionTemplate(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{})
+	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "actiontemplates")
@@ -81,7 +81,7 @@ func TestActionTemplateServiceAddWithInvalidActionTemplate(t *testing.T) {
 }
 
 func TestActionTemplateServiceDeleteWithEmptyID(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{})
+	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
 
 	assert.NotNil(t, service)
 	assert.Equal(t, service.path, "actiontemplates")

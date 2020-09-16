@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -6,15 +6,15 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 )
 
-var (
-	// Declare working variables
-	octopusURL    string = "https://youroctourl"
-	octopusAPIKey string = "API-YOURAPIKEY"
+func GetAllFeedsExample() {
+	var (
+		// Declare working variables
+		octopusURL    string = "https://youroctourl"
+		octopusAPIKey string = "API-YOURAPIKEY"
 
-	spaceName string = "Default"
-)
+		spaceName string = "Default"
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
@@ -29,9 +29,9 @@ func main() {
 	}
 
 	for _, feed := range feeds {
-		fmt.Sprintln("Feed ID: %s", feed.ID)
-		fmt.Sprintln("Feed Name: %s", feed.Name)
-		fmt.Sprintln("Feed Type: %s", feed.FeedType)
+		fmt.Printf("Feed ID: %s\n", feed.ID)
+		fmt.Printf("Feed Name: %s\n", feed.Name)
+		fmt.Printf("Feed Type: %s\n", feed.FeedType)
 		fmt.Println()
 	}
 }

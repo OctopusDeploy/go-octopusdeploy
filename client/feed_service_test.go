@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewFeedServiceWithNil(t *testing.T) {
-	service := NewFeedService(nil)
+	service := NewFeedService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestFeedServiceWithEmptyClient(t *testing.T) {
-	service := NewFeedService(&sling.Sling{})
+	service := NewFeedService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestFeedServiceGetWithEmptyID(t *testing.T) {
-	service := NewFeedService(&sling.Sling{})
+	service := NewFeedService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

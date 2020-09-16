@@ -14,14 +14,16 @@ type InterruptionsService struct {
 	path  string       `validate:"required"`
 }
 
-func NewInterruptionsService(sling *sling.Sling) *InterruptionsService {
+func NewInterruptionsService(sling *sling.Sling, uriTemplate string) *InterruptionsService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &InterruptionsService{
 		sling: sling,
-		path:  "interruptions",
+		path:  path,
 	}
 }
 

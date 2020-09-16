@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,83 +15,38 @@ var (
 )
 
 func TestNewClientWithEmptyProperties(t *testing.T) {
-	client, err := NewClient(nil, "", "", nil)
+	client, err := NewClient(nil, "", "", "")
 
 	assert.Error(t, err)
 	assert.Nil(t, client)
 }
 
 func TestNewClientWithEmptyClient(t *testing.T) {
-	client, err := NewClient(nil, octopusURL, apiKey, &spaceName)
+	client, err := NewClient(nil, octopusURL, apiKey, spaceName)
 
-	assert.NoError(t, err)
-	assert.NotNil(t, client)
+	assert.Error(t, err)
+	assert.Nil(t, client)
 }
 
 func TestNewClientWithEmptyOctopusURL(t *testing.T) {
-	client, err := NewClient(&http.Client{}, "", apiKey, &spaceName)
+	client, err := NewClient(&http.Client{}, "", apiKey, spaceName)
 
 	assert.Error(t, err)
 	assert.Nil(t, client)
 
-	client, err = NewClient(&http.Client{}, " ", apiKey, &spaceName)
+	client, err = NewClient(&http.Client{}, " ", apiKey, spaceName)
 
 	assert.Error(t, err)
 	assert.Nil(t, client)
 }
 
 func TestNewClientWithEmptyAPIKey(t *testing.T) {
-	client, err := NewClient(&http.Client{}, octopusURL, "", &spaceName)
+	client, err := NewClient(&http.Client{}, octopusURL, "", spaceName)
 
 	assert.Error(t, err)
 	assert.Nil(t, client)
 
-	client, err = NewClient(&http.Client{}, octopusURL, " ", &spaceName)
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
-
-func TestForSpaceWithEmptyProperties(t *testing.T) {
-	client, err := ForSpace(nil, "", "", nil)
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
-
-func TestForSpaceWithEmptyClient(t *testing.T) {
-	client, err := ForSpace(nil, octopusURL, apiKey, &model.Space{})
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
-
-func TestForSpaceWithEmptyOctopusURL(t *testing.T) {
-	client, err := ForSpace(&http.Client{}, "", apiKey, &model.Space{})
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-
-	client, err = ForSpace(&http.Client{}, " ", apiKey, &model.Space{})
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
-
-func TestForSpaceWithEmptyAPIKey(t *testing.T) {
-	client, err := ForSpace(&http.Client{}, octopusURL, "", &model.Space{})
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-
-	client, err = ForSpace(&http.Client{}, octopusURL, " ", &model.Space{})
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
-
-func TestForSpaceWithEmptySpace(t *testing.T) {
-	client, err := ForSpace(&http.Client{}, octopusURL, apiKey, nil)
+	client, err = NewClient(&http.Client{}, octopusURL, " ", spaceName)
 
 	assert.Error(t, err)
 	assert.Nil(t, client)

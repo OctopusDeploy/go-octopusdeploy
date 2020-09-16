@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewMachinePolicyServiceWithNil(t *testing.T) {
-	service := NewMachinePolicyService(nil)
+	service := NewMachinePolicyService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestMachinePolicyServiceWithEmptyClient(t *testing.T) {
-	service := NewMachinePolicyService(&sling.Sling{})
+	service := NewMachinePolicyService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestMachinePolicyServiceGetWithEmptyID(t *testing.T) {
-	service := NewMachinePolicyService(&sling.Sling{})
+	service := NewMachinePolicyService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

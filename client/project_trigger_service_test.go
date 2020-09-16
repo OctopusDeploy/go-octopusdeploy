@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewProjectTriggerServiceWithNil(t *testing.T) {
-	service := NewProjectTriggerService(nil)
+	service := NewProjectTriggerService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestProjectTriggerServiceWithEmptyClient(t *testing.T) {
-	service := NewProjectTriggerService(&sling.Sling{})
+	service := NewProjectTriggerService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestProjectTriggerServiceGetWithEmptyID(t *testing.T) {
-	service := NewProjectTriggerService(&sling.Sling{})
+	service := NewProjectTriggerService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

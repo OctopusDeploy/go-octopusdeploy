@@ -14,14 +14,16 @@ type TenantService struct {
 	path  string       `validate:"required"`
 }
 
-func NewTenantService(sling *sling.Sling) *TenantService {
+func NewTenantService(sling *sling.Sling, uriTemplate string) *TenantService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &TenantService{
 		sling: sling,
-		path:  "tenants",
+		path:  path,
 	}
 }
 

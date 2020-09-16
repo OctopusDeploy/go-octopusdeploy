@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -7,15 +7,15 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 )
 
-var (
-	// Declare working variables
-	octopusURL    string = "https://youroctourl"
-	octopusAPIKey string = "API-YOURAPIKEY"
-	spaceName     string = "default"
-	roleName      string = "My role"
-)
+func GetStepsUsingRoleExample() {
+	var (
+		// Declare working variables
+		octopusURL    string = "https://youroctourl"
+		octopusAPIKey string = "API-YOURAPIKEY"
+		spaceName     string = "default"
+		roleName      string = "My role"
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
@@ -42,7 +42,7 @@ func main() {
 			if len(propertyValue) > 0 {
 				for _, role := range strings.Split(propertyValue, ",") {
 					if strings.ToLower(role) == strings.ToLower(roleName) {
-						fmt.Println("Step [%s] from project [%s] is using the role [%s]", step.Name, project.Name, roleName)
+						fmt.Printf("Step [%s] from project [%s] is using the role [%s]\n", step.Name, project.Name, roleName)
 					}
 				}
 			}

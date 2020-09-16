@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewArtifactServiceWithNil(t *testing.T) {
-	service := NewArtifactService(nil)
+	service := NewArtifactService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestArtifactServiceWithEmptyClient(t *testing.T) {
-	service := NewArtifactService(&sling.Sling{})
+	service := NewArtifactService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestArtifactServiceGetWithEmptyID(t *testing.T) {
-	service := NewArtifactService(&sling.Sling{})
+	service := NewArtifactService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

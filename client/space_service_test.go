@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewSpaceServiceWithNil(t *testing.T) {
-	service := NewSpaceService(nil)
+	service := NewSpaceService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestSpaceServiceWithEmptyClient(t *testing.T) {
-	service := NewSpaceService(&sling.Sling{})
+	service := NewSpaceService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestSpaceServiceGetWithEmptyID(t *testing.T) {
-	service := NewSpaceService(&sling.Sling{})
+	service := NewSpaceService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

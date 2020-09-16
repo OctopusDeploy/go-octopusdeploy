@@ -14,14 +14,16 @@ type TagSetService struct {
 	path  string       `validate:"required"`
 }
 
-func NewTagSetService(sling *sling.Sling) *TagSetService {
+func NewTagSetService(sling *sling.Sling, uriTemplate string) *TagSetService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &TagSetService{
 		sling: sling,
-		path:  "tagsets",
+		path:  path,
 	}
 }
 

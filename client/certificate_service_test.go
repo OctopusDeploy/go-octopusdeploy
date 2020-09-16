@@ -9,18 +9,18 @@ import (
 )
 
 func TestNewCertificateServiceWithNil(t *testing.T) {
-	service := NewCertificateService(nil)
+	service := NewCertificateService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestCertificateServiceWithEmptyClient(t *testing.T) {
-	service := NewCertificateService(&sling.Sling{})
+	service := NewCertificateService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestCertificateServiceGetWithEmptyID(t *testing.T) {
-	service := NewCertificateService(&sling.Sling{})
+	service := NewCertificateService(&sling.Sling{}, "")
 
 	certificate, err := service.Get("")
 
@@ -34,7 +34,7 @@ func TestCertificateServiceGetWithEmptyID(t *testing.T) {
 }
 
 func TestCertificateServiceGetWithEmptyName(t *testing.T) {
-	service := NewCertificateService(&sling.Sling{})
+	service := NewCertificateService(&sling.Sling{}, "")
 
 	certificate, err := service.GetByName("")
 
@@ -48,7 +48,7 @@ func TestCertificateServiceGetWithEmptyName(t *testing.T) {
 }
 
 func TestCertificateServiceAddWithEmptyCertificate(t *testing.T) {
-	service := NewCertificateService(&sling.Sling{})
+	service := NewCertificateService(&sling.Sling{}, "")
 
 	certificate, err := service.Add(nil)
 
@@ -57,7 +57,7 @@ func TestCertificateServiceAddWithEmptyCertificate(t *testing.T) {
 }
 
 func TestCertificateServiceDeleteWithEmptyID(t *testing.T) {
-	service := NewCertificateService(&sling.Sling{})
+	service := NewCertificateService(&sling.Sling{}, "")
 
 	err := service.Delete("")
 
@@ -69,7 +69,7 @@ func TestCertificateServiceDeleteWithEmptyID(t *testing.T) {
 }
 
 func TestCertificateServiceUpdateWithEmptyCertificate(t *testing.T) {
-	service := NewCertificateService(&sling.Sling{})
+	service := NewCertificateService(&sling.Sling{}, "")
 
 	certificate, err := service.Update(model.Certificate{})
 
@@ -78,16 +78,15 @@ func TestCertificateServiceUpdateWithEmptyCertificate(t *testing.T) {
 }
 
 func TestCertificateServiceReplaceWithInvalidArguments(t *testing.T) {
-	service := NewCertificateService(&sling.Sling{})
+	service := NewCertificateService(&sling.Sling{}, "")
 
 	certificate, err := service.Replace("fake-id-string", nil)
 
 	assert.Error(t, err)
 	assert.Nil(t, certificate)
 
-	replacementCertificate, err := model.NewReplacementCertificate("fake-name-string", "fake-password-string")
+	replacementCertificate := model.NewReplacementCertificate("fake-name-string", "fake-password-string")
 
-	assert.NoError(t, err)
 	assert.NotNil(t, replacementCertificate)
 
 	certificate, err = service.Replace(" ", replacementCertificate)

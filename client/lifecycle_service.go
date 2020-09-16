@@ -15,14 +15,16 @@ type LifecycleService struct {
 	path  string       `validate:"required"`
 }
 
-func NewLifecycleService(sling *sling.Sling) *LifecycleService {
+func NewLifecycleService(sling *sling.Sling, uriTemplate string) *LifecycleService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &LifecycleService{
 		sling: sling,
-		path:  "lifecycles",
+		path:  path,
 	}
 }
 

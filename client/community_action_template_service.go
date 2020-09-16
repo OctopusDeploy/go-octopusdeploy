@@ -17,14 +17,16 @@ type CommunityActionTemplateService struct {
 }
 
 // NewCommunityActionTemplateService returns an CommunityActionTemplateService with a preconfigured client.
-func NewCommunityActionTemplateService(sling *sling.Sling) *CommunityActionTemplateService {
+func NewCommunityActionTemplateService(sling *sling.Sling, uriTemplate string) *CommunityActionTemplateService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &CommunityActionTemplateService{
 		sling: sling,
-		path:  "communityactiontemplates",
+		path:  path,
 	}
 }
 

@@ -15,14 +15,16 @@ type ProjectService struct {
 	path  string       `validate:"required"`
 }
 
-func NewProjectService(sling *sling.Sling) *ProjectService {
+func NewProjectService(sling *sling.Sling, uriTemplate string) *ProjectService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &ProjectService{
 		sling: sling,
-		path:  "projects",
+		path:  path,
 	}
 }
 

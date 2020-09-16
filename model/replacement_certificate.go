@@ -1,18 +1,10 @@
 package model
 
-func NewReplacementCertificate(certificateData string, password string) (*ReplacementCertificate, error) {
-	if isEmpty(certificateData) {
-		return nil, createInvalidParameterError("NewReplacementCertificate", "certificateData")
-	}
-
-	if isEmpty(password) {
-		return nil, createInvalidParameterError("NewReplacementCertificate", "password")
-	}
-
+func NewReplacementCertificate(certificateData string, password string) *ReplacementCertificate {
 	return &ReplacementCertificate{
 		CertificateData: certificateData,
 		Password:        password,
-	}, nil
+	}
 }
 
 type ReplacementCertificate struct {

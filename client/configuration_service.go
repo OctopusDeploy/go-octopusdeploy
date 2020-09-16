@@ -14,14 +14,16 @@ type ConfigurationService struct {
 	path  string       `validate:"required"`
 }
 
-func NewConfigurationService(sling *sling.Sling) *ConfigurationService {
+func NewConfigurationService(sling *sling.Sling, uriTemplate string) *ConfigurationService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &ConfigurationService{
 		sling: sling,
-		path:  "configuration",
+		path:  path,
 	}
 }
 

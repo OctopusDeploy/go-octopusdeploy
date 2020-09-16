@@ -14,14 +14,16 @@ type DeploymentProcessService struct {
 	path  string       `validate:"required"`
 }
 
-func NewDeploymentProcessService(sling *sling.Sling) *DeploymentProcessService {
+func NewDeploymentProcessService(sling *sling.Sling, uriTemplate string) *DeploymentProcessService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &DeploymentProcessService{
 		sling: sling,
-		path:  "deploymentprocesses",
+		path:  path,
 	}
 }
 

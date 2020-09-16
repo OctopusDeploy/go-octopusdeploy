@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewConfigurationServiceWithNil(t *testing.T) {
-	service := NewConfigurationService(nil)
+	service := NewConfigurationService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestConfigurationServiceWithEmptyClient(t *testing.T) {
-	service := NewConfigurationService(&sling.Sling{})
+	service := NewConfigurationService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestConfigurationServiceGetWithEmptyID(t *testing.T) {
-	service := NewConfigurationService(&sling.Sling{})
+	service := NewConfigurationService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

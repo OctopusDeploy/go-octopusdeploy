@@ -8,12 +8,12 @@ import (
 )
 
 func TestNewBuildInformationServiceWithNil(t *testing.T) {
-	service := NewBuildInformationService(nil)
+	service := NewBuildInformationService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestBuildInformationServiceWithEmptyClient(t *testing.T) {
-	service := NewBuildInformationService(&sling.Sling{})
+	service := NewBuildInformationService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }

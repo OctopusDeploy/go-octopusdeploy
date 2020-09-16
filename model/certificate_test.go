@@ -24,12 +24,11 @@ func TestCertificateWithOnlyName(t *testing.T) {
 }
 
 func TestCertificateWithNameAndCertificateData(t *testing.T) {
-	sensitiveValue, err := NewSensitiveValue(sensitiveValueTestValue)
+	sensitiveValue := NewSensitiveValue(sensitiveValueTestValue)
 
-	assert.NoError(t, err)
 	assert.NotNil(t, sensitiveValue)
 
-	certificate := Certificate{Name: certificateName, CertificateData: sensitiveValue}
+	certificate := Certificate{Name: certificateName, CertificateData: &sensitiveValue}
 
 	assert.NotNil(t, certificate)
 	assert.NoError(t, certificate.Validate())

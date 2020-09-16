@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"encoding/base64"
@@ -9,17 +9,17 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
 
-var (
-	// Declare working variables
-	octopusURL      string = "https://youroctourl"
-	octopusAPIKey   string = "API-YOURAPIKEY"
-	pfxFilePath     string = "path\\to\\pfxfile.pfx"
-	pfxFilePassword string = "PFX-file-password"
-	certificateName string = "MyCertificate"
-	spaceName       string = "default"
-)
+func CreateCertificateExample() {
+	var (
+		// Declare working variables
+		octopusURL      string = "https://youroctourl"
+		octopusAPIKey   string = "API-YOURAPIKEY"
+		pfxFilePath     string = "path\\to\\pfxfile.pfx"
+		pfxFilePassword string = "PFX-file-password"
+		certificateName string = "MyCertificate"
+		spaceName       string = "default"
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
@@ -44,7 +44,15 @@ func main() {
 	// Create certificate object
 	certificateData := model.NewSensitiveValue(base64Certificate)
 	password := model.NewSensitiveValue(pfxFilePassword)
-	octopusCertificate := model.NewCertificate(certificateName, certificateData, password)
+	octopusCertificate, err := model.NewCertificate(certificateName, certificateData, password)
 
-	client.Certificates.Create(octopusCertificate)
+	if err != nil {
+		// TODO: handle error
+	}
+
+	_, err = client.Certificates.Add(octopusCertificate)
+
+	if err != nil {
+		// TODO: handle error
+	}
 }

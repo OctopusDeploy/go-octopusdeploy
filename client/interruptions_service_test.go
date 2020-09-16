@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewInterruptionsServiceWithNil(t *testing.T) {
-	service := NewInterruptionsService(nil)
+	service := NewInterruptionsService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestInterruptionsServiceWithEmptyClient(t *testing.T) {
-	service := NewInterruptionsService(&sling.Sling{})
+	service := NewInterruptionsService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestInterruptionsServiceGetWithEmptyID(t *testing.T) {
-	service := NewInterruptionsService(&sling.Sling{})
+	service := NewInterruptionsService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

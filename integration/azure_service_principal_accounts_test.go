@@ -47,12 +47,11 @@ func TestCreateInvalidAzureServicePrincipalAccount(t *testing.T) {
 }
 
 func TestCreateAndDeleteAndGetAzureServicePrincipalAccount(t *testing.T) {
-	sensitiveValue, err := model.NewSensitiveValue(getRandomName())
+	sensitiveValue := model.NewSensitiveValue(getRandomName())
 
-	assert.NoError(t, err)
 	assert.NotNil(t, sensitiveValue)
 
-	account, err := model.NewAzureServicePrincipalAccount(getRandomName(), uuid.New(), uuid.New(), uuid.New(), *sensitiveValue)
+	account, err := model.NewAzureServicePrincipalAccount(getRandomName(), uuid.New(), uuid.New(), uuid.New(), sensitiveValue)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)

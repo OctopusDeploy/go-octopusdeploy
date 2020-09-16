@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewDeploymentProcessServiceWithNil(t *testing.T) {
-	service := NewDeploymentProcessService(nil)
+	service := NewDeploymentProcessService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestDeploymentProcessServiceWithEmptyClient(t *testing.T) {
-	service := NewDeploymentProcessService(&sling.Sling{})
+	service := NewDeploymentProcessService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestDeploymentProcessServiceGetWithEmptyID(t *testing.T) {
-	service := NewDeploymentProcessService(&sling.Sling{})
+	service := NewDeploymentProcessService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

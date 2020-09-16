@@ -54,92 +54,170 @@ func NewClient(httpClient *http.Client, octopusURL string, apiKey string, spaceN
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
+	baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
 
-	if isEmpty(spaceName) {
-		baseURLWithAPI = fmt.Sprintf("%s/api/", baseURLWithAPI)
-	} else {
-		baseURLWithAPI = fmt.Sprintf("%s/api/%s/", baseURLWithAPI, spaceName)
+	// fetch root resource and process paths
+	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
+	rootService := NewRootService(base.New(), baseURLWithAPI)
+	root, err := rootService.Get()
+
+	if err != nil {
+		return nil, err
 	}
 
-	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
+	accountsPath := root.Links["Accounts"]
+	actionTemplatesPath := root.Links["ActionTemplates"]
+	apiKeysPath := "/api/users"
+	authenticationPath := root.Links["Authentication"]
+	certificatesPath := root.Links["Certificates"]
+	channelsPath := root.Links["Channels"]
+	configurationPath := root.Links["Configuration"]
+	deploymentProcessesPath := root.Links["DeploymentProcesses"]
+	environmentsPath := root.Links["Environments"]
+	feedsPath := root.Links["Feeds"]
+	interruptionsPath := root.Links["Interruptions"]
+	machinesPath := root.Links["Machines"]
+	machinePoliciesPath := root.Links["MachinePolicies"]
+	libraryVariableSetsPath := root.Links["LibraryVariableSets"]
+	lifecyclesPath := root.Links["Lifecycles"]
+	projectsPath := root.Links["Projects"]
+	projectGroupsPath := root.Links["ProjectGroups"]
+	projectTriggersPath := root.Links["ProjectTriggers"]
+	spacesPath := root.Links["Spaces"]
+	tagSetsPath := root.Links["TagSets"]
+	tenantsPath := root.Links["Tenants"]
+	usersPath := root.Links["Users"]
+	variablesPath := root.Links["Variables"]
+
+	if !isEmpty(spaceName) {
+		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceName)
+		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
+		rootService = NewRootService(base.New(), baseURLWithAPI)
+		root, err = rootService.Get()
+
+		if err != nil {
+			return nil, err
+		}
+
+		if !isEmpty(root.Links["Accounts"]) {
+			accountsPath = root.Links["Accounts"]
+		}
+
+		if !isEmpty(root.Links["ActionTemplates"]) {
+			actionTemplatesPath = root.Links["ActionTemplates"]
+		}
+
+		if !isEmpty(root.Links["Authentication"]) {
+			authenticationPath = root.Links["Authentication"]
+		}
+
+		if !isEmpty(root.Links["Authentication"]) {
+			authenticationPath = root.Links["Authentication"]
+		}
+
+		if !isEmpty(root.Links["Certificates"]) {
+			certificatesPath = root.Links["Certificates"]
+		}
+
+		if !isEmpty(root.Links["Channels"]) {
+			channelsPath = root.Links["Channels"]
+		}
+
+		if !isEmpty(root.Links["Configuration"]) {
+			configurationPath = root.Links["Configuration"]
+		}
+
+		if !isEmpty(root.Links["DeploymentProcesses"]) {
+			deploymentProcessesPath = root.Links["DeploymentProcesses"]
+		}
+
+		if !isEmpty(root.Links["Environments"]) {
+			environmentsPath = root.Links["Environments"]
+		}
+
+		if !isEmpty(root.Links["Feeds"]) {
+			feedsPath = root.Links["Feeds"]
+		}
+
+		if !isEmpty(root.Links["Interruptions"]) {
+			interruptionsPath = root.Links["Interruptions"]
+		}
+
+		if !isEmpty(root.Links["Machines"]) {
+			machinesPath = root.Links["Machines"]
+		}
+
+		if !isEmpty(root.Links["MachinePolicies"]) {
+			machinePoliciesPath = root.Links["MachinePolicies"]
+		}
+
+		if !isEmpty(root.Links["LibraryVariableSets"]) {
+			libraryVariableSetsPath = root.Links["LibraryVariableSets"]
+		}
+
+		if !isEmpty(root.Links["Lifecycles"]) {
+			lifecyclesPath = root.Links["Lifecycles"]
+		}
+
+		if !isEmpty(root.Links["Projects"]) {
+			projectsPath = root.Links["Projects"]
+		}
+
+		if !isEmpty(root.Links["ProjectGroups"]) {
+			projectGroupsPath = root.Links["ProjectGroups"]
+		}
+
+		if !isEmpty(root.Links["ProjectTriggers"]) {
+			projectTriggersPath = root.Links["ProjectTriggers"]
+		}
+
+		if !isEmpty(root.Links["Spaces"]) {
+			spacesPath = root.Links["Spaces"]
+		}
+
+		if !isEmpty(root.Links["TagSets"]) {
+			tagSetsPath = root.Links["TagSets"]
+		}
+
+		if !isEmpty(root.Links["Tenants"]) {
+			tenantsPath = root.Links["Tenants"]
+		}
+
+		if !isEmpty(root.Links["Users"]) {
+			usersPath = root.Links["Users"]
+		}
+
+		if !isEmpty(root.Links["Variables"]) {
+			variablesPath = root.Links["Variables"]
+		}
+	}
 
 	return &Client{
 		sling:               base,
-		Accounts:            NewAccountService(base.New()),
-		ActionTemplates:     NewActionTemplateService(base.New()),
-		APIKeys:             NewAPIKeyService(base.New()),
-		Authentication:      NewAuthenticationService(base.New()),
-		Certificates:        NewCertificateService(base.New()),
-		Channels:            NewChannelService(base.New()),
-		Configuration:       NewConfigurationService(base.New()),
-		DeploymentProcesses: NewDeploymentProcessService(base.New()),
-		Environments:        NewEnvironmentService(base.New()),
-		Feeds:               NewFeedService(base.New()),
-		Interruptions:       NewInterruptionsService(base.New()),
-		Machines:            NewMachineService(base.New()),
-		MachinePolicies:     NewMachinePolicyService(base.New()),
-		LibraryVariableSets: NewLibraryVariableSetService(base.New()),
-		Lifecycles:          NewLifecycleService(base.New()),
-		Projects:            NewProjectService(base.New()),
-		ProjectGroups:       NewProjectGroupService(base.New()),
-		ProjectTriggers:     NewProjectTriggerService(base.New()),
-		Root:                NewRootService(base.New()),
-		Spaces:              NewSpaceService(base.New()),
-		TagSets:             NewTagSetService(base.New()),
-		Tenants:             NewTenantService(base.New()),
-		Users:               NewUserService(base.New()),
-		Variables:           NewVariableService(base.New()),
-	}, nil
-}
-
-func ForSpace(httpClient *http.Client, octopusURL string, apiKey string, space *model.Space) (*Client, error) {
-	if httpClient == nil {
-		return nil, createInvalidParameterError("ForSpace", "httpClient")
-	}
-
-	if isEmpty(octopusURL) {
-		return nil, createInvalidParameterError("ForSpace", "octopusURL")
-	}
-
-	if isEmpty(apiKey) {
-		return nil, createInvalidParameterError("ForSpace", "apiKey")
-	}
-
-	if space == nil {
-		return nil, createInvalidParameterError("ForSpace", "space")
-	}
-
-	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
-
-	const apiPath = "%s/api/%s/"
-	baseURLWithAPI = fmt.Sprintf(apiPath, baseURLWithAPI, space.ID)
-
-	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
-
-	return &Client{
-		sling:               base,
-		Accounts:            NewAccountService(base.New()),
-		ActionTemplates:     NewActionTemplateService(base.New()),
-		APIKeys:             NewAPIKeyService(base.New()),
-		Authentication:      NewAuthenticationService(base.New()),
-		Certificates:        NewCertificateService(base.New()),
-		Channels:            NewChannelService(base.New()),
-		Configuration:       NewConfigurationService(base.New()),
-		DeploymentProcesses: NewDeploymentProcessService(base.New()),
-		Environments:        NewEnvironmentService(base.New()),
-		Feeds:               NewFeedService(base.New()),
-		LibraryVariableSets: NewLibraryVariableSetService(base.New()),
-		Lifecycles:          NewLifecycleService(base.New()),
-		Machines:            NewMachineService(base.New()),
-		MachinePolicies:     NewMachinePolicyService(base.New()),
-		Projects:            NewProjectService(base.New()),
-		ProjectGroups:       NewProjectGroupService(base.New()),
-		ProjectTriggers:     NewProjectTriggerService(base.New()),
-		Root:                NewRootService(base.New()),
-		TagSets:             NewTagSetService(base.New()),
-		Tenants:             NewTenantService(base.New()),
-		Users:               NewUserService(base.New()),
-		Variables:           NewVariableService(base.New()),
+		Accounts:            NewAccountService(base.New(), accountsPath),
+		ActionTemplates:     NewActionTemplateService(base.New(), actionTemplatesPath),
+		APIKeys:             NewAPIKeyService(base.New(), apiKeysPath),
+		Authentication:      NewAuthenticationService(base.New(), authenticationPath),
+		Certificates:        NewCertificateService(base.New(), certificatesPath),
+		Channels:            NewChannelService(base.New(), channelsPath),
+		Configuration:       NewConfigurationService(base.New(), configurationPath),
+		DeploymentProcesses: NewDeploymentProcessService(base.New(), deploymentProcessesPath),
+		Environments:        NewEnvironmentService(base.New(), environmentsPath),
+		Feeds:               NewFeedService(base.New(), feedsPath),
+		Interruptions:       NewInterruptionsService(base.New(), interruptionsPath),
+		Machines:            NewMachineService(base.New(), machinesPath),
+		MachinePolicies:     NewMachinePolicyService(base.New(), machinePoliciesPath),
+		LibraryVariableSets: NewLibraryVariableSetService(base.New(), libraryVariableSetsPath),
+		Lifecycles:          NewLifecycleService(base.New(), lifecyclesPath),
+		Projects:            NewProjectService(base.New(), projectsPath),
+		ProjectGroups:       NewProjectGroupService(base.New(), projectGroupsPath),
+		ProjectTriggers:     NewProjectTriggerService(base.New(), projectTriggersPath),
+		Root:                rootService,
+		Spaces:              NewSpaceService(base.New(), spacesPath),
+		TagSets:             NewTagSetService(base.New(), tagSetsPath),
+		Tenants:             NewTenantService(base.New(), tenantsPath),
+		Users:               NewUserService(base.New(), usersPath),
+		Variables:           NewVariableService(base.New(), variablesPath),
 	}, nil
 }
 

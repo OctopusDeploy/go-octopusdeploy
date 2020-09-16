@@ -14,14 +14,16 @@ type FeedService struct {
 	path  string       `validate:"required"`
 }
 
-func NewFeedService(sling *sling.Sling) *FeedService {
+func NewFeedService(sling *sling.Sling, uriTemplate string) *FeedService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &FeedService{
 		sling: sling,
-		path:  "feeds",
+		path:  path,
 	}
 }
 

@@ -18,14 +18,16 @@ type AuthenticationService struct {
 
 // NewAuthenticationService returns an AuthenticationService with a
 // preconfigured client.
-func NewAuthenticationService(sling *sling.Sling) *AuthenticationService {
+func NewAuthenticationService(sling *sling.Sling, uriTemplate string) *AuthenticationService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &AuthenticationService{
 		sling: sling,
-		path:  "authentication",
+		path:  path,
 	}
 }
 

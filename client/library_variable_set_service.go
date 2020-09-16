@@ -15,14 +15,16 @@ type LibraryVariableSetService struct {
 	path  string       `validate:"required"`
 }
 
-func NewLibraryVariableSetService(sling *sling.Sling) *LibraryVariableSetService {
+func NewLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *LibraryVariableSetService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &LibraryVariableSetService{
 		sling: sling,
-		path:  "libraryvariablesets",
+		path:  path,
 	}
 }
 

@@ -28,14 +28,14 @@ func TestUserServiceWithValidProperties(t *testing.T) {
 }
 
 func TestNewUserServiceWithNil(t *testing.T) {
-	userService := NewUserService(nil)
+	userService := NewUserService(nil, "")
 	if !assert.Nil(t, userService) {
 		assert.Error(t, userService.validateInternalState())
 	}
 }
 
 func TestUserServiceWithEmptyClient(t *testing.T) {
-	userService := NewUserService(&sling.Sling{})
+	userService := NewUserService(&sling.Sling{}, "")
 
 	if !assert.NotNil(t, userService) {
 		assert.NotNil(t, userService.sling)

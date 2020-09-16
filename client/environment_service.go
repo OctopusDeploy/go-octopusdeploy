@@ -14,14 +14,16 @@ type EnvironmentService struct {
 	path  string       `validate:"required"`
 }
 
-func NewEnvironmentService(sling *sling.Sling) *EnvironmentService {
+func NewEnvironmentService(sling *sling.Sling, uriTemplate string) *EnvironmentService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &EnvironmentService{
 		sling: sling,
-		path:  "environments",
+		path:  path,
 	}
 }
 

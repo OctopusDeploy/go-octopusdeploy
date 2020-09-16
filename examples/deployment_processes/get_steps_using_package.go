@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -6,15 +6,15 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 )
 
-var (
-	// Declare working variables
-	octopusURL    string = "https://youroctourl"
-	octopusAPIKey string = "API-YOURAPIKEY"
-	spaceName     string = "default"
-	packageID     string = "PackageId"
-)
+func GetStepsUsingPackageExample() {
+	var (
+		// Declare working variables
+		octopusURL    string = "https://youroctourl"
+		octopusAPIKey string = "API-YOURAPIKEY"
+		spaceName     string = "default"
+		packageID     string = "PackageId"
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
@@ -40,7 +40,7 @@ func main() {
 			for _, action := range step.Actions {
 				for _, pkg := range action.Packages {
 					if pkg.ID == packageID {
-						fmt.Println("Step [%s] from project [%s] is using the package [%s]", step.Name, project.Name, packageID)
+						fmt.Printf("Step [%s] from project [%s] is using the package [%s]\n", step.Name, project.Name, packageID)
 					}
 				}
 			}

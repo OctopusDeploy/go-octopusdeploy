@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"encoding/base64"
@@ -6,19 +6,20 @@ import (
 	"os"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
 
-var (
-	// Declare working variables
-	octopusURL      string = "https://youroctourl"
-	octopusAPIKey   string = "API-YOURAPIKEY"
-	pfxFilePath     string = "path\\to\\pfxfile.pfx"
-	pfxFilePassword string = "PFX-file-password"
-	certificateName string = "MyCertificate"
-	spaceName       string = "default"
-)
+func ReplaceCertificateExample() {
+	var (
+		// Declare working variables
+		octopusURL      string = "https://youroctourl"
+		octopusAPIKey   string = "API-YOURAPIKEY"
+		pfxFilePath     string = "path\\to\\pfxfile.pfx"
+		pfxFilePassword string = "PFX-file-password"
+		certificateName string = "MyCertificate"
+		spaceName       string = "default"
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
@@ -48,6 +49,10 @@ func main() {
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
 
 	// Replace certificate
-	replacementCertificate := NewReplacementCertificate(base64Certificate, pfxFilePassword)
-	octopusCertificate := client.Certificates.Replace(octopusCertificate.ID, replacementCertificate)
+	replacementCertificate := model.NewReplacementCertificate(base64Certificate, pfxFilePassword)
+	octopusCertificate, err = client.Certificates.Replace(octopusCertificate.ID, replacementCertificate)
+
+	if err != nil {
+		// TODO: handle error
+	}
 }

@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -13,16 +14,20 @@ import (
 // Octopus API.
 type APIKeyService struct {
 	sling *sling.Sling `validate:"required"`
+	path  string       `validate:"required"`
 }
 
 // NewAPIKeyService returns an APIKeyService with a preconfigured client.
-func NewAPIKeyService(sling *sling.Sling) *APIKeyService {
+func NewAPIKeyService(sling *sling.Sling, uriTemplate string) *APIKeyService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &APIKeyService{
 		sling: sling,
+		path:  path,
 	}
 }
 
@@ -39,7 +44,7 @@ func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
 	}
 
 	var p []model.APIKey
-	path := fmt.Sprintf("users/%s/apikeys", userID)
+	path := fmt.Sprintf("/%s/apikeys", userID)
 	loadNextPage := true
 
 	for loadNextPage {

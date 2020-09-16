@@ -14,14 +14,16 @@ type UserService struct {
 	path  string       `validate:"required"`
 }
 
-func NewUserService(sling *sling.Sling) *UserService {
+func NewUserService(sling *sling.Sling, uriTemplate string) *UserService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &UserService{
 		sling: sling,
-		path:  "users",
+		path:  path,
 	}
 }
 

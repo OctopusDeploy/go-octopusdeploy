@@ -13,14 +13,16 @@ type BuildInformationService struct {
 	path  string       `validate:"required"`
 }
 
-func NewBuildInformationService(sling *sling.Sling) *BuildInformationService {
+func NewBuildInformationService(sling *sling.Sling, uriTemplate string) *BuildInformationService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &BuildInformationService{
 		sling: sling,
-		path:  "build-information",
+		path:  path,
 	}
 }
 

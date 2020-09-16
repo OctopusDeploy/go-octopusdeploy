@@ -136,7 +136,7 @@ func main() {
 
 	Initialize()
 
-	client, err := client.NewClient(&httpClient, serviceURL, apiKey, nil)
+	client, err := client.NewClient(&httpClient, serviceURL, apiKey, "")
 	if err != nil {
 		fmt.Println(err.Error())
 	}

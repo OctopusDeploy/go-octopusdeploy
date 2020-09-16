@@ -14,14 +14,16 @@ type MachineService struct {
 	path  string       `validate:"required"`
 }
 
-func NewMachineService(sling *sling.Sling) *MachineService {
+func NewMachineService(sling *sling.Sling, uriTemplate string) *MachineService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &MachineService{
 		sling: sling,
-		path:  "machines",
+		path:  path,
 	}
 }
 

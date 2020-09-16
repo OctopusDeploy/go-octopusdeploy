@@ -8,12 +8,12 @@ import (
 )
 
 func TestNewAuthenticationServiceWithNil(t *testing.T) {
-	service := NewAuthenticationService(nil)
+	service := NewAuthenticationService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestAuthenticationServiceWithEmptyClient(t *testing.T) {
-	service := NewAuthenticationService(&sling.Sling{})
+	service := NewAuthenticationService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }

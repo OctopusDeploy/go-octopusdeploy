@@ -18,14 +18,16 @@ type CertificateService struct {
 
 // NewCertificateService returns an CertificateService with a preconfigured
 // client.
-func NewCertificateService(sling *sling.Sling) *CertificateService {
+func NewCertificateService(sling *sling.Sling, uriTemplate string) *CertificateService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &CertificateService{
 		sling: sling,
-		path:  "certificates",
+		path:  path,
 	}
 }
 

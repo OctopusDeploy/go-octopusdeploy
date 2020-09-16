@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -17,14 +18,16 @@ type ArtifactService struct {
 }
 
 // NewArtifactService returns an ArtifactService with a preconfigured client.
-func NewArtifactService(sling *sling.Sling) *ArtifactService {
+func NewArtifactService(sling *sling.Sling, uriTemplate string) *ArtifactService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &ArtifactService{
 		sling: sling,
-		path:  "artifacts",
+		path:  path,
 	}
 }
 

@@ -3,6 +3,7 @@ package client
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -18,14 +19,16 @@ type ActionTemplateService struct {
 
 // NewActionTemplateService returns an ActionTemplateService with a
 // preconfigured client.
-func NewActionTemplateService(sling *sling.Sling) *ActionTemplateService {
+func NewActionTemplateService(sling *sling.Sling, uriTemplate string) *ActionTemplateService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &ActionTemplateService{
 		sling: sling,
-		path:  "actiontemplates",
+		path:  path,
 	}
 }
 

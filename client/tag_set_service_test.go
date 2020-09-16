@@ -9,18 +9,18 @@ import (
 )
 
 func TestNewTagSetServiceWithNil(t *testing.T) {
-	service := NewTagSetService(nil)
+	service := NewTagSetService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestTagSetServiceWithEmptyClient(t *testing.T) {
-	service := NewTagSetService(&sling.Sling{})
+	service := NewTagSetService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestTagSetServiceGetWithEmptyID(t *testing.T) {
-	service := NewTagSetService(&sling.Sling{})
+	service := NewTagSetService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

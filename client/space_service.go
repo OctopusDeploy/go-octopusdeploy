@@ -14,14 +14,16 @@ type SpaceService struct {
 	path  string       `validate:"required"`
 }
 
-func NewSpaceService(sling *sling.Sling) *SpaceService {
+func NewSpaceService(sling *sling.Sling, uriTemplate string) *SpaceService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &SpaceService{
 		sling: sling,
-		path:  "spaces",
+		path:  path,
 	}
 }
 

@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewAPIKeyServiceWithNil(t *testing.T) {
-	service := NewAPIKeyService(nil)
+	service := NewAPIKeyService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestNewAPIKeyServiceWithEmptyClient(t *testing.T) {
-	service := NewAPIKeyService(&sling.Sling{})
+	service := NewAPIKeyService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
-	service := NewAPIKeyService(&sling.Sling{})
+	service := NewAPIKeyService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

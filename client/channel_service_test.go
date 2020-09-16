@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewChannelServiceWithNil(t *testing.T) {
-	service := NewChannelService(nil)
+	service := NewChannelService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestChannelServiceWithEmptyClient(t *testing.T) {
-	service := NewChannelService(&sling.Sling{})
+	service := NewChannelService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestChannelServiceGetWithEmptyID(t *testing.T) {
-	service := NewChannelService(&sling.Sling{})
+	service := NewChannelService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

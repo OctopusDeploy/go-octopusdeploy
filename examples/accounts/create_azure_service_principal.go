@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
@@ -7,28 +7,28 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-var (
-	octopusURL    string = "https://youroctourl"
-	octopusAPIKey string = "API-YOURAPIKEY"
+func CreateAzureServicePrincipalExample() {
+	var (
+		octopusURL    string = "https://youroctourl"
+		octopusAPIKey string = "API-YOURAPIKEY"
 
-	// Azure specific details
-	azureSubscriptionID uuid.UUID            = uuid.MustParse("Subscription UUID")
-	azureApplicationID  uuid.UUID            = uuid.MustParse("Client UUID")
-	azureTenantID       uuid.UUID            = uuid.MustParse("Tenant UUID")
-	azureSecret         model.SensitiveValue = model.NewSensitiveValue("Secret")
+		// Azure specific details
+		azureSubscriptionID uuid.UUID            = uuid.MustParse("Subscription UUID")
+		azureApplicationID  uuid.UUID            = uuid.MustParse("Client UUID")
+		azureTenantID       uuid.UUID            = uuid.MustParse("Tenant UUID")
+		azureSecret         model.SensitiveValue = model.NewSensitiveValue("Secret")
 
-	// Octopus Account details
-	spaceName           string                      = "default"
-	accountName         string                      = "Azure Account"
-	accountDescription  string                      = "My Azure Account"
-	tenantParticipation enum.TenantedDeploymentMode = enum.Untenanted
-	tenantTags          []string                    = nil
-	tenantIDs           []string                    = nil
-	environmentIDs      []string                    = nil
-)
+		// Octopus Account details
+		spaceName           string                      = "default"
+		accountName         string                      = "Azure Account"
+		accountDescription  string                      = "My Azure Account"
+		tenantParticipation enum.TenantedDeploymentMode = enum.Untenanted
+		tenantTags          []string                    = nil
+		tenantIDs           []string                    = nil
+		environmentIDs      []string                    = nil
+	)
 
-func main() {
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, &spaceName)
+	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
 		// TODO: handle error
@@ -48,7 +48,7 @@ func main() {
 	azureAccount.EnvironmentIDs = environmentIDs
 
 	// Create account
-	createdAccount, err := client.Accounts.Add(azureAccount)
+	_, err = client.Accounts.Add(azureAccount)
 
 	if err != nil {
 		// TODO: handle error

@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewEnvironmentServiceWithNil(t *testing.T) {
-	service := NewEnvironmentService(nil)
+	service := NewEnvironmentService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestEnvironmentServiceWithEmptyClient(t *testing.T) {
-	service := NewEnvironmentService(&sling.Sling{})
+	service := NewEnvironmentService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestEnvironmentServiceGetWithEmptyID(t *testing.T) {
-	service := NewEnvironmentService(&sling.Sling{})
+	service := NewEnvironmentService(&sling.Sling{}, "")
 
 	resource, err := service.Get("")
 

@@ -22,14 +22,16 @@ type VariableService struct {
 	path  string       `validate:"required"`
 }
 
-func NewVariableService(sling *sling.Sling) *VariableService {
+func NewVariableService(sling *sling.Sling, uriTemplate string) *VariableService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &VariableService{
 		sling: sling,
-		path:  "variables",
+		path:  path,
 	}
 }
 

@@ -1,17 +1,17 @@
-package main
+package examples
 
 import "github.com/OctopusDeploy/go-octopusdeploy/client"
 
-var (
-	// Declare working variables
-	octopusURL    string = "https://youroctourl"
-	octopusAPIKey string = "API-YOURAPIKEY"
+func DeleteFeedExample() {
+	var (
+		// Declare working variables
+		octopusURL    string = "https://youroctourl"
+		octopusAPIKey string = "API-YOURAPIKEY"
 
-	spaceName string = "Default"
-	feedName  string = "nuget to delete"
-)
+		spaceName string = "Default"
+		feedName  string = "nuget to delete"
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {

@@ -36,12 +36,11 @@ func TestCreateInvalidSSHKeyAccount(t *testing.T) {
 }
 
 func TestCreateAndDeleteAndGetSSHKeyAccount(t *testing.T) {
-	sensitiveValue, err := model.NewSensitiveValue(getRandomName())
+	sensitiveValue := model.NewSensitiveValue(getRandomName())
 
-	assert.NoError(t, err)
 	assert.NotNil(t, sensitiveValue)
 
-	account, err := model.NewSSHKeyAccount(getRandomName(), getRandomName(), *sensitiveValue)
+	account, err := model.NewSSHKeyAccount(getRandomName(), getRandomName(), sensitiveValue)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)

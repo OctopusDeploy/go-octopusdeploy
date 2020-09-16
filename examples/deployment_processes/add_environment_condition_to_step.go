@@ -1,18 +1,18 @@
-package main
+package examples
 
 import "github.com/OctopusDeploy/go-octopusdeploy/client"
 
-var (
-	// Declare working variables
-	octopusURL       string   = "https://youroctourl"
-	octopusAPIKey    string   = "API-YOURAPIKEY"
-	spaceName        string   = "default"
-	projectName      string   = "MyProject"
-	environmentNames []string = []string{"Development", "Test"}
-	stepName         string   = "Run a script"
-)
+func AddEnvironmentConditionToStepExample() {
+	var (
+		// Declare working variables
+		octopusURL       string   = "https://youroctourl"
+		octopusAPIKey    string   = "API-YOURAPIKEY"
+		spaceName        string   = "default"
+		projectName      string   = "MyProject"
+		environmentNames []string = []string{"Development", "Test"}
+		stepName         string   = "Run a script"
+	)
 
-func main() {
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
 
 	if err != nil {
@@ -53,7 +53,7 @@ func main() {
 		}
 	}
 
-	updatedDeploymentProcess, err := client.DeploymentProcesses.Update(deploymentProcess)
+	_, err = client.DeploymentProcesses.Update(deploymentProcess)
 
 	if err != nil {
 		// TODO: handle error

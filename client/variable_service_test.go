@@ -8,18 +8,18 @@ import (
 )
 
 func TestNewVariableServiceWithNil(t *testing.T) {
-	service := NewVariableService(nil)
+	service := NewVariableService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestVariableServiceWithEmptyClient(t *testing.T) {
-	service := NewVariableService(&sling.Sling{})
+	service := NewVariableService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }
 
 func TestVariableServiceGetAllWithEmptyID(t *testing.T) {
-	service := NewVariableService(&sling.Sling{})
+	service := NewVariableService(&sling.Sling{}, "")
 
 	resource, err := service.GetAll("")
 

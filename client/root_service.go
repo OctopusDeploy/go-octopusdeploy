@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
@@ -12,14 +13,16 @@ type RootService struct {
 	path  string       `validate:"required"`
 }
 
-func NewRootService(sling *sling.Sling) *RootService {
+func NewRootService(sling *sling.Sling, uriTemplate string) *RootService {
 	if sling == nil {
 		return nil
 	}
 
+	path := strings.Split(uriTemplate, "{")[0]
+
 	return &RootService{
 		sling: sling,
-		path:  "",
+		path:  path,
 	}
 }
 

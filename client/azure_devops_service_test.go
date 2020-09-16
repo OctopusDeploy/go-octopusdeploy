@@ -8,12 +8,12 @@ import (
 )
 
 func TestNewAzureDevOpsServiceWithNil(t *testing.T) {
-	service := NewAzureDevOpsService(nil)
+	service := NewAzureDevOpsService(nil, "")
 	assert.Nil(t, service)
 }
 
 func TestAzureDevOpsServiceWithEmptyClient(t *testing.T) {
-	service := NewAzureDevOpsService(&sling.Sling{})
+	service := NewAzureDevOpsService(&sling.Sling{}, "")
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
 }

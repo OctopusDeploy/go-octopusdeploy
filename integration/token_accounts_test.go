@@ -32,12 +32,11 @@ func TestCreateInvalidTokenAccount(t *testing.T) {
 }
 
 func TestCreateAndDeleteAndGetTokenAccount(t *testing.T) {
-	sensitiveValue, err := model.NewSensitiveValue(getRandomName())
+	sensitiveValue := model.NewSensitiveValue(getRandomName())
 
-	assert.NoError(t, err)
 	assert.NotNil(t, sensitiveValue)
 
-	account, err := model.NewTokenAccount(getRandomName(), *sensitiveValue)
+	account, err := model.NewTokenAccount(getRandomName(), sensitiveValue)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, account)

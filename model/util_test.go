@@ -81,15 +81,14 @@ func TestValidateSemanticVersion(t *testing.T) {
 }
 
 func TestValidateRequiredSensitiveValue(t *testing.T) {
-	sensitiveValue, err := NewSensitiveValue("test-value")
-	assert.NoError(t, err)
+	sensitiveValue := NewSensitiveValue("test-value")
 
-	err = ValidateRequiredSensitiveValue("", *sensitiveValue)
+	err := ValidateRequiredSensitiveValue("", sensitiveValue)
 	assert.Error(t, err)
 
-	err = ValidateRequiredSensitiveValue(" ", *sensitiveValue)
+	err = ValidateRequiredSensitiveValue(" ", sensitiveValue)
 	assert.Error(t, err)
 
-	err = ValidateRequiredSensitiveValue(propertyName, *sensitiveValue)
+	err = ValidateRequiredSensitiveValue(propertyName, sensitiveValue)
 	assert.NoError(t, err)
 }
