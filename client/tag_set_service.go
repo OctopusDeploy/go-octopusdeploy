@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type TagSetService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewTagSetService(sling *sling.Sling, uriTemplate string) *TagSetService {
@@ -22,20 +22,21 @@ func NewTagSetService(sling *sling.Sling, uriTemplate string) *TagSetService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &TagSetService{
-		sling: sling,
+		name:  "TagSetService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *TagSetService) Get(id string) (*model.TagSet, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("TagSetService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -49,32 +50,30 @@ func (s *TagSetService) Get(id string) (*model.TagSet, error) {
 }
 
 // GetAll returns all instances of a TagSet.
-func (s *TagSetService) GetAll() (*[]model.TagSet, error) {
+func (s *TagSetService) GetAll() ([]model.TagSet, error) {
 	err := s.validateInternalState()
 
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.TagSet), s.path+"/all")
+	items := new([]model.TagSet)
 
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return resp.(*[]model.TagSet), nil
+	_, err = apiGet(s.sling, items, s.path+"/all")
+
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the TagSet with a matching name.
 func (s *TagSetService) GetByName(name string) (*model.TagSet, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("TagSetService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -83,28 +82,28 @@ func (s *TagSetService) GetByName(name string) (*model.TagSet, error) {
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new TagSet.
 func (s *TagSetService) Add(tagSet *model.TagSet) (*model.TagSet, error) {
-	err := s.validateInternalState()
+	if tagSet == nil {
+		return nil, createInvalidParameterError("Add", "tagSet")
+	}
+
+	err := tagSet.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if tagSet == nil {
-		return nil, errors.New("TagSetService: invalid parameter, tagSet")
-	}
-
-	err = tagSet.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -120,13 +119,14 @@ func (s *TagSetService) Add(tagSet *model.TagSet) (*model.TagSet, error) {
 }
 
 func (s *TagSetService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("TagSetService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -145,11 +145,11 @@ func (s *TagSetService) Update(resource *model.TagSet) (*model.TagSet, error) {
 
 func (s *TagSetService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("TagSetService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("TagSetService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

@@ -54,7 +54,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
 
-	numberOfProjectGroups := len(*allProjectGroups)
+	numberOfProjectGroups := len(allProjectGroups)
 
 	// check there are greater than or equal to the amount of projects requested to be created, otherwise pagination isn't working
 	if numberOfProjectGroups < projectsGroupsToCreate {
@@ -70,7 +70,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 	}
 
 	assert.Nil(t, err, "error when looking for project when not expected")
-	assert.Equal(t, len(*allProjectGroupsAfterCreatingAdditional), numberOfProjectGroups+1, "created an additional projectgroup and expected number of projectgroups to increase by 1")
+	assert.Equal(t, len(allProjectGroupsAfterCreatingAdditional), numberOfProjectGroups+1, "created an additional projectgroup and expected number of projectgroups to increase by 1")
 }
 
 func TestProjectGroupUpdate(t *testing.T) {

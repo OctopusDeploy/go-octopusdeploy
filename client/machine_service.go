@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type MachineService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewMachineService(sling *sling.Sling, uriTemplate string) *MachineService {
@@ -22,21 +22,22 @@ func NewMachineService(sling *sling.Sling, uriTemplate string) *MachineService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &MachineService{
-		sling: sling,
+		name:  "MachineService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns a single machine with a given ID.
 func (s *MachineService) Get(id string) (*model.Machine, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("MachineService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -77,14 +78,14 @@ func (s *MachineService) GetAll() (*[]model.Machine, error) {
 
 // GetByName performs a lookup and returns the Machine with a matching name.
 func (s *MachineService) GetByName(name string) (*model.Machine, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("MachineService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -99,22 +100,22 @@ func (s *MachineService) GetByName(name string) (*model.Machine, error) {
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new Machine.
 func (s *MachineService) Add(machine *model.Machine) (*model.Machine, error) {
-	err := s.validateInternalState()
+	if machine == nil {
+		return nil, createInvalidParameterError("Add", "machine")
+	}
+
+	err := machine.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if machine == nil {
-		return nil, errors.New("MachineService: invalid parameter, machine")
-	}
-
-	err = machine.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -131,13 +132,14 @@ func (s *MachineService) Add(machine *model.Machine) (*model.Machine, error) {
 
 // Delete deletes an existing machine in Octopus Deploy
 func (s *MachineService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("MachineService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -169,11 +171,11 @@ func (s *MachineService) Update(machine *model.Machine) (*model.Machine, error) 
 
 func (s *MachineService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("MachineService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("MachineService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

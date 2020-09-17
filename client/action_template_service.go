@@ -1,20 +1,19 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
-	"github.com/go-playground/validator"
 )
 
 // ActionTemplateService handles communication with ActionTemplate-related
 // methods of the Octopus API.
 type ActionTemplateService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewActionTemplateService returns an ActionTemplateService with a
@@ -27,15 +26,16 @@ func NewActionTemplateService(sling *sling.Sling, uriTemplate string) *ActionTem
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &ActionTemplateService{
-		sling: sling,
+		name:  "ActionTemplateService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns an ActionTemplate that matches the input ID.
 func (s *ActionTemplateService) Get(id string) (*model.ActionTemplate, error) {
 	if isEmpty(id) {
-		return nil, createInvalidParameterError("ActionTemplateService", "id")
+		return nil, createInvalidParameterError("Get", "id")
 	}
 
 	err := s.validateInternalState()
@@ -58,21 +58,21 @@ func (s *ActionTemplateService) Get(id string) (*model.ActionTemplate, error) {
 func (s *ActionTemplateService) GetAll() ([]model.ActionTemplate, error) {
 	err := s.validateInternalState()
 
-	actionTemplates := new([]model.ActionTemplate)
+	items := new([]model.ActionTemplate)
 
 	if err != nil {
-		return *actionTemplates, err
+		return *items, err
 	}
 
-	_, err = apiGet(s.sling, actionTemplates, s.path+"/all")
+	_, err = apiGet(s.sling, items, s.path+"/all")
 
-	return *actionTemplates, err
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the ActionTemplate with a matching name.
 func (s *ActionTemplateService) GetByName(name string) (*model.ActionTemplate, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("ActionTemplateService", "name")
+		return nil, createInvalidParameterError("GetByName", "name")
 	}
 
 	err := s.validateInternalState()
@@ -93,7 +93,7 @@ func (s *ActionTemplateService) GetByName(name string) (*model.ActionTemplate, e
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new ActionTemplate.
@@ -124,9 +124,9 @@ func (s *ActionTemplateService) Add(actionTemplate *model.ActionTemplate) (*mode
 }
 
 // Delete removes the ActionTemplate that matches the input ID.
-func (s *ActionTemplateService) Delete(actionTemplateID string) error {
-	if isEmpty(actionTemplateID) {
-		return createInvalidParameterError("ActionTemplateService", "actionTemplateID")
+func (s *ActionTemplateService) Delete(id string) error {
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
 	err := s.validateInternalState()
@@ -135,7 +135,7 @@ func (s *ActionTemplateService) Delete(actionTemplateID string) error {
 		return err
 	}
 
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", actionTemplateID))
+	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 func (s *ActionTemplateService) Update(actionTemplate model.ActionTemplate) (*model.ActionTemplate, error) {
@@ -162,14 +162,12 @@ func (s *ActionTemplateService) Update(actionTemplate model.ActionTemplate) (*mo
 }
 
 func (s *ActionTemplateService) validateInternalState() error {
-	validate := validator.New()
-	err := validate.Struct(s)
+	if s.sling == nil {
+		return createInvalidClientStateError(s.name)
+	}
 
-	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
-		return err
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

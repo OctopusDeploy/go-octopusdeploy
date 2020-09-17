@@ -7,13 +7,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewAzureDevOpsServiceWithNil(t *testing.T) {
+const (
+	TestAzureDevOpsServiceURITemplate = "azure-devops-service"
+)
+
+func TestNewAzureDevOpsService(t *testing.T) {
 	service := NewAzureDevOpsService(nil, "")
 	assert.Nil(t, service)
+	createAzureDevOpsService(t)
 }
 
-func TestAzureDevOpsServiceWithEmptyClient(t *testing.T) {
-	service := NewAzureDevOpsService(&sling.Sling{}, "")
+func createAzureDevOpsService(t *testing.T) *AzureDevOpsService {
+	service := NewAzureDevOpsService(&sling.Sling{}, TestAzureDevOpsServiceURITemplate)
+
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
+	assert.Equal(t, service.path, TestAzureDevOpsServiceURITemplate)
+	assert.Equal(t, service.name, "AzureDevOpsService")
+
+	return service
 }

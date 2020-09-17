@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type ProjectGroupService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewProjectGroupService(sling *sling.Sling, uriTemplate string) *ProjectGroupService {
@@ -22,20 +22,21 @@ func NewProjectGroupService(sling *sling.Sling, uriTemplate string) *ProjectGrou
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &ProjectGroupService{
-		sling: sling,
+		name:  "ProjectGroupService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *ProjectGroupService) Get(id string) (*model.ProjectGroup, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("ProjectGroupService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -49,32 +50,30 @@ func (s *ProjectGroupService) Get(id string) (*model.ProjectGroup, error) {
 }
 
 // GetAll returns all instances of a ProjectGroup.
-func (s *ProjectGroupService) GetAll() (*[]model.ProjectGroup, error) {
+func (s *ProjectGroupService) GetAll() ([]model.ProjectGroup, error) {
 	err := s.validateInternalState()
 
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.ProjectGroup), s.path+"/all")
+	items := new([]model.ProjectGroup)
 
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return resp.(*[]model.ProjectGroup), nil
+	_, err = apiGet(s.sling, items, s.path+"/all")
+
+	return *items, err
 }
 
 // Add creates a new ProjectGroup.
 func (s *ProjectGroupService) Add(projectGroup *model.ProjectGroup) (*model.ProjectGroup, error) {
+	if projectGroup == nil {
+		return nil, createInvalidParameterError("Add", "projectGroup")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if projectGroup == nil {
-		return nil, errors.New("ProjectGroupService: invalid parameter, projectGroup")
 	}
 
 	err = projectGroup.Validate()
@@ -93,30 +92,31 @@ func (s *ProjectGroupService) Add(projectGroup *model.ProjectGroup) (*model.Proj
 }
 
 func (s *ProjectGroupService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("ProjectGroupService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 func (s *ProjectGroupService) Update(projectGroup *model.ProjectGroup) (*model.ProjectGroup, error) {
-	err := s.validateInternalState()
+	if projectGroup == nil {
+		return nil, createInvalidParameterError("Update", "projectGroup")
+	}
+
+	err := projectGroup.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if projectGroup == nil {
-		return nil, errors.New("ProjectGroupService: invalid parameter, projectGroup")
-	}
-
-	err = projectGroup.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -134,11 +134,11 @@ func (s *ProjectGroupService) Update(projectGroup *model.ProjectGroup) (*model.P
 
 func (s *ProjectGroupService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("ProjectGroupService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("ProjectGroupService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

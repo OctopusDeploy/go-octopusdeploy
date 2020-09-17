@@ -1,16 +1,15 @@
 package client
 
 import (
-	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/dghubble/sling"
 )
 
 type AzureDevOpsService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewAzureDevOpsService(sling *sling.Sling, uriTemplate string) *AzureDevOpsService {
@@ -21,18 +20,19 @@ func NewAzureDevOpsService(sling *sling.Sling, uriTemplate string) *AzureDevOpsS
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &AzureDevOpsService{
-		sling: sling,
+		name:  "AzureDevOpsService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *AzureDevOpsService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("AzureDevOpsService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("AzureDevOpsService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

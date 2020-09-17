@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type ConfigurationService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewConfigurationService(sling *sling.Sling, uriTemplate string) *ConfigurationService {
@@ -22,8 +22,9 @@ func NewConfigurationService(sling *sling.Sling, uriTemplate string) *Configurat
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &ConfigurationService{
-		sling: sling,
+		name:  "ConfigurationService",
 		path:  path,
+		sling: sling,
 	}
 }
 
@@ -46,14 +47,14 @@ func (s *ConfigurationService) GetAll() (*model.ConfigurationSections, error) {
 
 // Get returns a ConfigurationSection that matches the input ID.
 func (s *ConfigurationService) Get(id string) (*model.ConfigurationSection, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("ConfigurationService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -68,11 +69,11 @@ func (s *ConfigurationService) Get(id string) (*model.ConfigurationSection, erro
 
 func (s *ConfigurationService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("ConfigurationService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("ConfigurationService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

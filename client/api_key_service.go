@@ -1,20 +1,19 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
-	"github.com/go-playground/validator"
 )
 
 // APIKeyService handles communication with API key-related methods of the
 // Octopus API.
 type APIKeyService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewAPIKeyService returns an APIKeyService with a preconfigured client.
@@ -26,25 +25,26 @@ func NewAPIKeyService(sling *sling.Sling, uriTemplate string) *APIKeyService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &APIKeyService{
-		sling: sling,
+		name:  "APIKeyService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get lists all API keys for a user, returning the most recent results first.
 func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
+	if isEmpty(userID) {
+		return nil, createInvalidParameterError("Get", "userID")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if isEmpty(userID) {
-		return nil, errors.New("APIKeyService: invalid parameter, userID")
-	}
-
 	var p []model.APIKey
-	path := fmt.Sprintf("/%s/apikeys", userID)
+	path := fmt.Sprintf(s.path+"/%s/apikeys", userID)
 	loadNextPage := true
 
 	for loadNextPage {
@@ -64,21 +64,21 @@ func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
 
 // GetByID the API key that belongs to the user by its ID.
 func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, error) {
+	if isEmpty(userID) {
+		return nil, createInvalidParameterError("GetByID", "userID")
+	}
+
+	if isEmpty(apiKeyID) {
+		return nil, createInvalidParameterError("GetByID", "apiKeyID")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if isEmpty(userID) {
-		return nil, errors.New("APIKeyService: invalid parameter, userID")
-	}
-
-	if isEmpty(apiKeyID) {
-		return nil, errors.New("APIKeyService: invalid parameter, apiKeyID")
-	}
-
-	path := fmt.Sprintf("users/%s/apikeys/%s", userID, apiKeyID)
+	path := fmt.Sprintf(s.path+"/%s/apikeys/%s", userID, apiKeyID)
 	resp, err := apiGet(s.sling, new(model.APIKey), path)
 
 	if err != nil {
@@ -104,7 +104,7 @@ func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("users/%s/apikeys", *apiKey.UserID)
+	path := fmt.Sprintf(s.path+"/%s/apikeys", *apiKey.UserID)
 	resp, err := apiPost(s.sling, apiKey, new(model.APIKey), path)
 
 	if err != nil {
@@ -115,14 +115,12 @@ func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 }
 
 func (s *APIKeyService) validateInternalState() error {
-	validate := validator.New()
-	err := validate.Struct(s)
+	if s.sling == nil {
+		return createInvalidClientStateError(s.name)
+	}
 
-	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
-		return err
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

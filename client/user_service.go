@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type UserService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewUserService(sling *sling.Sling, uriTemplate string) *UserService {
@@ -22,20 +22,21 @@ func NewUserService(sling *sling.Sling, uriTemplate string) *UserService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &UserService{
-		sling: sling,
+		name:  "UserService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *UserService) Get(id string) (*model.User, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("UserService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -65,20 +66,18 @@ func (s *UserService) GetMe() (*model.User, error) {
 }
 
 // GetAll returns all instances of a User.
-func (s *UserService) GetAll() (*[]model.User, error) {
+func (s *UserService) GetAll() ([]model.User, error) {
 	err := s.validateInternalState()
 
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.User), s.path+"/all")
+	items := new([]model.User)
 
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return resp.(*[]model.User), nil
+	_, err = apiGet(s.sling, items, s.path+"/all")
+
+	return *items, err
 }
 
 func (s *UserService) GetAuthentication() (*model.UserAuthentication, error) {
@@ -98,14 +97,14 @@ func (s *UserService) GetAuthentication() (*model.UserAuthentication, error) {
 }
 
 func (s *UserService) GetAuthenticationForUser(user *model.User) (*model.UserAuthentication, error) {
+	if user == nil {
+		return nil, createInvalidParameterError("GetAuthenticationForUser", "user")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if user == nil {
-		return nil, errors.New("UserService: invalid parameter, user")
 	}
 
 	path := fmt.Sprintf(s.path+"/authentication/%s", user.ID)
@@ -119,14 +118,14 @@ func (s *UserService) GetAuthenticationForUser(user *model.User) (*model.UserAut
 }
 
 func (s *UserService) GetSpaces(user *model.User) (*[]model.Spaces, error) {
+	if user == nil {
+		return nil, createInvalidParameterError("GetSpaces", "user")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if user == nil {
-		return nil, errors.New("UserService: invalid parameter, user")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s/spaces", user.ID)
@@ -141,14 +140,14 @@ func (s *UserService) GetSpaces(user *model.User) (*[]model.Spaces, error) {
 
 // GetByName performs a lookup and returns the User with a matching name.
 func (s *UserService) GetByName(name string) (*model.User, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("UserService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -157,28 +156,28 @@ func (s *UserService) GetByName(name string) (*model.User, error) {
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Username == name {
 			return &item, nil
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new User.
 func (s *UserService) Add(user *model.User) (*model.User, error) {
-	err := s.validateInternalState()
+	if user == nil {
+		return nil, createInvalidParameterError("Add", "user")
+	}
+
+	err := user.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if user == nil {
-		return nil, errors.New("UserService: invalid parameter, user")
-	}
-
-	err = user.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -194,27 +193,28 @@ func (s *UserService) Add(user *model.User) (*model.User, error) {
 }
 
 func (s *UserService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("UserService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 func (s *UserService) Update(user *model.User) (*model.User, error) {
+	if user == nil {
+		return nil, createInvalidParameterError("Update", "user")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if user == nil {
-		return nil, errors.New("UserService: invalid parameter, user")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", user.ID)
@@ -229,11 +229,11 @@ func (s *UserService) Update(user *model.User) (*model.User, error) {
 
 func (s *UserService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("UserService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("UserService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

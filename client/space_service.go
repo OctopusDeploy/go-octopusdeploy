@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type SpaceService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewSpaceService(sling *sling.Sling, uriTemplate string) *SpaceService {
@@ -22,20 +22,21 @@ func NewSpaceService(sling *sling.Sling, uriTemplate string) *SpaceService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &SpaceService{
-		sling: sling,
+		name:  "SpaceService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *SpaceService) Get(id string) (*model.Space, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("SpaceService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -49,32 +50,30 @@ func (s *SpaceService) Get(id string) (*model.Space, error) {
 }
 
 // GetAll returns all instances of a Space.
-func (s *SpaceService) GetAll() (*[]model.Space, error) {
+func (s *SpaceService) GetAll() ([]model.Space, error) {
 	err := s.validateInternalState()
 
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.Space), s.path+"/all")
+	items := new([]model.Space)
 
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return resp.(*[]model.Space), nil
+	_, err = apiGet(s.sling, items, s.path+"/all")
+
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the Space with a matching name.
 func (s *SpaceService) GetByName(name string) (*model.Space, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("SpaceService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -83,28 +82,28 @@ func (s *SpaceService) GetByName(name string) (*model.Space, error) {
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new Space.
 func (s *SpaceService) Add(space *model.Space) (*model.Space, error) {
-	err := s.validateInternalState()
+	if space == nil {
+		return nil, createInvalidParameterError("Add", "space")
+	}
+
+	err := space.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if space == nil {
-		return nil, errors.New("SpaceService: invalid parameter, space")
-	}
-
-	err = space.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -120,27 +119,28 @@ func (s *SpaceService) Add(space *model.Space) (*model.Space, error) {
 }
 
 func (s *SpaceService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("SpaceService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 func (s *SpaceService) Update(space *model.Space) (*model.Space, error) {
+	if space == nil {
+		return nil, createInvalidParameterError("Update", "space")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if space == nil {
-		return nil, errors.New("SpaceService: invalid parameter, space")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", space.ID)
@@ -155,11 +155,11 @@ func (s *SpaceService) Update(space *model.Space) (*model.Space, error) {
 
 func (s *SpaceService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("SpaceService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("SpaceService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

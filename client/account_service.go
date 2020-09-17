@@ -1,20 +1,19 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
-	"github.com/go-playground/validator"
 )
 
 // AccountService handles communication with Account-related methods of the
 // Octopus API.
 type AccountService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewAccountService returns an AccountService with a preconfigured client.
@@ -26,15 +25,16 @@ func NewAccountService(sling *sling.Sling, uriTemplate string) *AccountService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &AccountService{
-		sling: sling,
+		name:  "AccountService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns an Account that matches the input ID.
 func (s *AccountService) Get(id string) (*model.Account, error) {
 	if isEmpty(id) {
-		return nil, createInvalidParameterError("AccountService", "id")
+		return nil, createInvalidParameterError("Get", "id")
 	}
 
 	err := s.validateInternalState()
@@ -57,21 +57,21 @@ func (s *AccountService) Get(id string) (*model.Account, error) {
 func (s *AccountService) GetAll() ([]model.Account, error) {
 	err := s.validateInternalState()
 
-	accounts := new([]model.Account)
+	items := new([]model.Account)
 
 	if err != nil {
-		return *accounts, err
+		return *items, err
 	}
 
-	_, err = apiGet(s.sling, accounts, s.path+"/all")
+	_, err = apiGet(s.sling, items, s.path+"/all")
 
-	return *accounts, err
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the Account with a matching name.
 func (s *AccountService) GetByName(name string) (*model.Account, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("AccountService", "accountName")
+		return nil, createInvalidParameterError("GetByName", "name")
 	}
 
 	err := s.validateInternalState()
@@ -92,7 +92,7 @@ func (s *AccountService) GetByName(name string) (*model.Account, error) {
 		}
 	}
 
-	return nil, errors.New("AccountService: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // GetUsage returns all projects and deployments which are using an Account.
@@ -119,16 +119,16 @@ func (s *AccountService) Add(account *model.Account) (*model.Account, error) {
 		return nil, createInvalidParameterError("Add", "account")
 	}
 
-	err := s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = account.Validate()
+	err := account.Validate()
 
 	if err != nil {
 		return nil, createValidationFailureError("Add", err)
+	}
+
+	err = s.validateInternalState()
+
+	if err != nil {
+		return nil, err
 	}
 
 	resp, err := apiAdd(s.sling, account, new(model.Account), s.path)
@@ -141,9 +141,9 @@ func (s *AccountService) Add(account *model.Account) (*model.Account, error) {
 }
 
 // Delete removes the Account that matches the input ID.
-func (s *AccountService) Delete(accountID string) error {
-	if isEmpty(accountID) {
-		return createInvalidParameterError("Delete", "accountID")
+func (s *AccountService) Delete(id string) error {
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
 	err := s.validateInternalState()
@@ -152,7 +152,7 @@ func (s *AccountService) Delete(accountID string) error {
 		return err
 	}
 
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", accountID))
+	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 // Update modifies an Account based on the one provided as input.
@@ -166,7 +166,7 @@ func (s *AccountService) Update(account model.Account) (*model.Account, error) {
 	err = account.Validate()
 
 	if err != nil {
-		return nil, createValidationFailureError("AccountService", err)
+		return nil, createValidationFailureError("Update", err)
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", account.ID)
@@ -180,14 +180,12 @@ func (s *AccountService) Update(account model.Account) (*model.Account, error) {
 }
 
 func (s *AccountService) validateInternalState() error {
-	validate := validator.New()
-	err := validate.Struct(s)
+	if s.sling == nil {
+		return createInvalidClientStateError(s.name)
+	}
 
-	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
-		return err
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

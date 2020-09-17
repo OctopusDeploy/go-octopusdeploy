@@ -21,7 +21,7 @@ func TestMachinePolicyGetAll(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Retrieving all machinepolicies failed when it shouldn't: %s", err)
 	}
-	numberOfMachinePolicies := len(*allMachinePolicies)
+	numberOfMachinePolicies := len(allMachinePolicies)
 
 	assert.Nil(t, err, "error when looking for machine policies when not expected")
 	assert.NotNil(t, allMachinePolicies, "machine policy object returned as nil")

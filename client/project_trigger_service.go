@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type ProjectTriggerService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewProjectTriggerService(sling *sling.Sling, uriTemplate string) *ProjectTriggerService {
@@ -22,20 +22,21 @@ func NewProjectTriggerService(sling *sling.Sling, uriTemplate string) *ProjectTr
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &ProjectTriggerService{
-		sling: sling,
+		name:  "ProjectTriggerService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *ProjectTriggerService) Get(id string) (*model.ProjectTrigger, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("ProjectTriggerService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -57,17 +58,19 @@ func (s *ProjectTriggerService) GetByProjectID(id string) (*[]model.ProjectTrigg
 		return nil, err
 	}
 
-	triggersByProject = append(triggersByProject, *triggers...)
+	triggersByProject = append(triggersByProject, triggers...)
 
 	return &triggersByProject, nil
 }
 
 // GetAll returns all instances of a ProjectTrigger.
-func (s *ProjectTriggerService) GetAll() (*[]model.ProjectTrigger, error) {
+func (s *ProjectTriggerService) GetAll() ([]model.ProjectTrigger, error) {
 	err := s.validateInternalState()
 
+	items := new([]model.ProjectTrigger)
+
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
 	var p []model.ProjectTrigger
@@ -78,7 +81,7 @@ func (s *ProjectTriggerService) GetAll() (*[]model.ProjectTrigger, error) {
 		resp, err := apiGet(s.sling, new(model.ProjectTriggers), path)
 
 		if err != nil {
-			return nil, err
+			return *items, err
 		}
 
 		r := resp.(*model.ProjectTriggers)
@@ -86,22 +89,22 @@ func (s *ProjectTriggerService) GetAll() (*[]model.ProjectTrigger, error) {
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
 
-	return &p, nil
+	return p, nil
 }
 
 // Add creates a new ProjectTrigger.
 func (s *ProjectTriggerService) Add(projectTrigger *model.ProjectTrigger) (*model.ProjectTrigger, error) {
-	err := s.validateInternalState()
+	if projectTrigger == nil {
+		return nil, createInvalidParameterError("Add", "projectTrigger")
+	}
+
+	err := projectTrigger.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if projectTrigger == nil {
-		return nil, errors.New("ProjectTriggerService: invalid parameter, projectTrigger")
-	}
-
-	err = projectTrigger.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -117,30 +120,31 @@ func (s *ProjectTriggerService) Add(projectTrigger *model.ProjectTrigger) (*mode
 }
 
 func (s *ProjectTriggerService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("ProjectTriggerService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 func (s *ProjectTriggerService) Update(resource *model.ProjectTrigger) (*model.ProjectTrigger, error) {
-	err := s.validateInternalState()
+	if resource == nil {
+		return nil, createInvalidParameterError("Update", "resource")
+	}
+
+	err := resource.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("ProjectTriggerService: invalid parameter, resource")
-	}
-
-	err = resource.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -158,11 +162,11 @@ func (s *ProjectTriggerService) Update(resource *model.ProjectTrigger) (*model.P
 
 func (s *ProjectTriggerService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("ProjectTriggerService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("ProjectTriggerService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

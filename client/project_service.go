@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -11,8 +10,9 @@ import (
 )
 
 type ProjectService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewProjectService(sling *sling.Sling, uriTemplate string) *ProjectService {
@@ -23,21 +23,22 @@ func NewProjectService(sling *sling.Sling, uriTemplate string) *ProjectService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &ProjectService{
-		sling: sling,
+		name:  "ProjectService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns a single project by its ID in Octopus Deploy
 func (s *ProjectService) Get(id string) (*model.Project, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("ProjectService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -54,15 +55,15 @@ func (s *ProjectService) Get(id string) (*model.Project, error) {
 func (s *ProjectService) GetAll() ([]model.Project, error) {
 	err := s.validateInternalState()
 
-	projects := new([]model.Project)
+	items := new([]model.Project)
 
 	if err != nil {
-		return *projects, err
+		return *items, err
 	}
 
-	_, err = apiGet(s.sling, projects, s.path+"/all")
+	_, err = apiGet(s.sling, items, s.path+"/all")
 
-	return *projects, err
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the Project with a matching name.
@@ -89,7 +90,7 @@ func (s *ProjectService) GetByName(name string) (*model.Project, error) {
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 func (s *ProjectService) GetChannels(project model.Project) ([]model.Channel, error) {
@@ -177,17 +178,17 @@ func (s *ProjectService) GetReleases(project model.Project) ([]model.Release, er
 
 // Add creates a new Project.
 func (s *ProjectService) Add(project *model.Project) (*model.Project, error) {
-	err := s.validateInternalState()
+	if project == nil {
+		return nil, createInvalidParameterError("Add", "project")
+	}
+
+	err := project.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if project == nil {
-		return nil, errors.New("ProjectService: invalid parameter, project")
-	}
-
-	err = project.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -204,13 +205,14 @@ func (s *ProjectService) Add(project *model.Project) (*model.Project, error) {
 
 // Delete deletes an existing project in Octopus Deploy
 func (s *ProjectService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("ProjectService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -218,17 +220,17 @@ func (s *ProjectService) Delete(id string) error {
 
 // Update updates an existing project in Octopus Deploy
 func (s *ProjectService) Update(resource *model.Project) (*model.Project, error) {
-	err := s.validateInternalState()
+	if resource == nil {
+		return nil, createInvalidParameterError("Update", "resource")
+	}
+
+	err := resource.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if resource == nil {
-		return nil, errors.New("ProjectService: invalid parameter, resource")
-	}
-
-	err = resource.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -246,11 +248,11 @@ func (s *ProjectService) Update(resource *model.Project) (*model.Project, error)
 
 func (s *ProjectService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("ProjectService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("ProjectService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

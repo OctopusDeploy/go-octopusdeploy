@@ -53,7 +53,7 @@ func TestTenantGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all tenants failed when it shouldn't: %s", err)
 	}
 
-	numberOfTenants := len(*allTenants)
+	numberOfTenants := len(allTenants)
 
 	// check there are greater than or equal to the amount of tenants requested to be created, otherwise pagination isn't working
 	if numberOfTenants < tenantsToCreate {
@@ -69,7 +69,7 @@ func TestTenantGetAll(t *testing.T) {
 	}
 
 	assert.Nil(t, err, "error when looking for tenant when not expected")
-	assert.Equal(t, len(*allTenantsAfterCreatingAdditional), numberOfTenants+1, "created an additional tenant and expected number of tenants to increase by 1")
+	assert.Equal(t, len(allTenantsAfterCreatingAdditional), numberOfTenants+1, "created an additional tenant and expected number of tenants to increase by 1")
 }
 
 func TestTenantUpdate(t *testing.T) {

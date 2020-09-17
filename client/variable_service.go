@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -18,8 +17,9 @@ func (e errInvalidVariableServiceParameter) Error() string {
 }
 
 type VariableService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewVariableService(sling *sling.Sling, uriTemplate string) *VariableService {
@@ -30,8 +30,9 @@ func NewVariableService(sling *sling.Sling, uriTemplate string) *VariableService
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &VariableService{
-		sling: sling,
+		name:  "VariableService",
 		path:  path,
+		sling: sling,
 	}
 }
 
@@ -363,11 +364,11 @@ func (s *VariableService) MatchesScope(variableScope *model.VariableScope, defin
 
 func (s *VariableService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("VariableService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("VariableService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

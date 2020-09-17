@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -11,8 +10,9 @@ import (
 )
 
 type LibraryVariableSetService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *LibraryVariableSetService {
@@ -23,21 +23,22 @@ func NewLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *Libra
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &LibraryVariableSetService{
-		sling: sling,
+		name:  "LibraryVariableSetService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns a single LibraryVariableSet by its Id in Octopus Deploy
 func (s *LibraryVariableSetService) Get(id string) (*model.LibraryVariableSet, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("LibraryVariableSetService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -90,14 +91,14 @@ func (s *LibraryVariableSetService) get(query string) (*[]model.LibraryVariableS
 
 // GetByName performs a lookup and returns the LibraryVariableSet with a matching name.
 func (s *LibraryVariableSetService) GetByName(name string) (*model.LibraryVariableSet, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("LibraryVariableSetService: invalid parameter, name")
 	}
 
 	collection, err := s.get(fmt.Sprintf("partialName=%s", url.PathEscape(name)))
@@ -112,19 +113,19 @@ func (s *LibraryVariableSetService) GetByName(name string) (*model.LibraryVariab
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new LibraryVariableSet.
 func (s *LibraryVariableSetService) Add(libraryVariableSet *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
+	if libraryVariableSet == nil {
+		return nil, createInvalidParameterError("Get", "libraryVariableSet")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if libraryVariableSet == nil {
-		return nil, errors.New("LibraryVariableSetService: invalid parameter, libraryVariableSet")
 	}
 
 	err = model.ValidateLibraryVariableSetValues(libraryVariableSet)
@@ -143,13 +144,14 @@ func (s *LibraryVariableSetService) Add(libraryVariableSet *model.LibraryVariabl
 
 // Delete deletes an existing libraryVariableSet in Octopus Deploy
 func (s *LibraryVariableSetService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("LibraryVariableSetService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -174,11 +176,11 @@ func (s *LibraryVariableSetService) Update(resource *model.LibraryVariableSet) (
 
 func (s *LibraryVariableSetService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("LibraryVariableSetService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("LibraryVariableSetService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

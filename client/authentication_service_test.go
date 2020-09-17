@@ -7,13 +7,23 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewAuthenticationServiceWithNil(t *testing.T) {
+const (
+	TestAuthenticationServiceURITemplate = "authentication-service"
+)
+
+func TestNewAuthenticationService(t *testing.T) {
 	service := NewAuthenticationService(nil, "")
 	assert.Nil(t, service)
+	createAuthenticationService(t)
 }
 
-func TestAuthenticationServiceWithEmptyClient(t *testing.T) {
-	service := NewAuthenticationService(&sling.Sling{}, "")
+func createAuthenticationService(t *testing.T) *AuthenticationService {
+	service := NewAuthenticationService(&sling.Sling{}, TestAuthenticationServiceURITemplate)
+
 	assert.NotNil(t, service)
 	assert.NotNil(t, service.sling)
+	assert.Equal(t, service.path, TestAuthenticationServiceURITemplate)
+	assert.Equal(t, service.name, "AuthenticationService")
+
+	return service
 }

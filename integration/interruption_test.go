@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
 )

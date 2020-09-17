@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -11,8 +10,9 @@ import (
 )
 
 type LifecycleService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewLifecycleService(sling *sling.Sling, uriTemplate string) *LifecycleService {
@@ -23,21 +23,22 @@ func NewLifecycleService(sling *sling.Sling, uriTemplate string) *LifecycleServi
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &LifecycleService{
-		sling: sling,
+		name:  "LifecycleService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns a single lifecycle by its lifecycleid in Octopus Deploy
 func (s *LifecycleService) Get(id string) (*model.Lifecycle, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("LifecycleService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -90,14 +91,14 @@ func (s *LifecycleService) get(query string) (*[]model.Lifecycle, error) {
 
 // GetByName performs a lookup and returns the Lifecycle with a matching name.
 func (s *LifecycleService) GetByName(name string) (*model.Lifecycle, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("LifecycleService: invalid parameter, name")
 	}
 
 	collection, err := s.get(fmt.Sprintf("partialName=%s", url.PathEscape(name)))
@@ -112,19 +113,19 @@ func (s *LifecycleService) GetByName(name string) (*model.Lifecycle, error) {
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new Lifecycle.
 func (s *LifecycleService) Add(lifecycle *model.Lifecycle) (*model.Lifecycle, error) {
+	if lifecycle == nil {
+		return nil, createInvalidParameterError("Add", "lifecycle")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if lifecycle == nil {
-		return nil, errors.New("LifecycleService: invalid parameter, lifecycle")
 	}
 
 	err = model.ValidateLifecycleValues(lifecycle)
@@ -143,13 +144,14 @@ func (s *LifecycleService) Add(lifecycle *model.Lifecycle) (*model.Lifecycle, er
 
 // Delete deletes an existing lifecycle in Octopus Deploy
 func (s *LifecycleService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("LifecycleService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -174,11 +176,11 @@ func (s *LifecycleService) Update(resource *model.Lifecycle) (*model.Lifecycle, 
 
 func (s *LifecycleService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("LifecycleService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("LifecycleService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

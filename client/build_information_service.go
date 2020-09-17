@@ -1,16 +1,15 @@
 package client
 
 import (
-	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/dghubble/sling"
 )
 
 type BuildInformationService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewBuildInformationService(sling *sling.Sling, uriTemplate string) *BuildInformationService {
@@ -21,18 +20,19 @@ func NewBuildInformationService(sling *sling.Sling, uriTemplate string) *BuildIn
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &BuildInformationService{
-		sling: sling,
+		name:  "BuildInformationService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *BuildInformationService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("BuildInformationService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("BuildInformationService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

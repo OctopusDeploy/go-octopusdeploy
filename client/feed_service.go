@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type FeedService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewFeedService(sling *sling.Sling, uriTemplate string) *FeedService {
@@ -22,20 +22,21 @@ func NewFeedService(sling *sling.Sling, uriTemplate string) *FeedService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &FeedService{
-		sling: sling,
+		name:  "FeedService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *FeedService) Get(id string) (*model.Feed, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("FeedService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -65,14 +66,14 @@ func (s *FeedService) GetAll() ([]model.Feed, error) {
 
 // GetByName performs a lookup and returns the Feed with a matching name.
 func (s *FeedService) GetByName(name string) (*model.Feed, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("FeedService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -87,7 +88,7 @@ func (s *FeedService) GetByName(name string) (*model.Feed, error) {
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new Feed.
@@ -114,13 +115,14 @@ func (s *FeedService) Add(feed model.Feed) (*model.Feed, error) {
 }
 
 func (s *FeedService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("FeedService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -151,11 +153,11 @@ func (s *FeedService) Update(feed model.Feed) (*model.Feed, error) {
 
 func (s *FeedService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("FeedService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("FeedService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

@@ -13,8 +13,16 @@ func createInvalidParameterError(methodName string, parameterName string) error 
 	return fmt.Errorf("%s: invalid input parameter, %s", methodName, parameterName)
 }
 
-func createInvalidClientStateError(methodName string) error {
-	return fmt.Errorf("%s: the state of the internal client is invalid", methodName)
+func createInvalidClientStateError(serviceName string) error {
+	return fmt.Errorf("%s: the state of the internal client is invalid", serviceName)
+}
+
+func createInvalidPathError(serviceName string) error {
+	return fmt.Errorf("%s: the internal path is not set", serviceName)
+}
+
+func createItemNotFoundError(serviceName string, methodName string, name string) error {
+	return fmt.Errorf("%s: the item (%s) via %s was not found", serviceName, name, methodName)
 }
 
 func createClientInitializationError(methodName string) error {

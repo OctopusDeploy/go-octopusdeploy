@@ -1,8 +1,6 @@
 package model
 
 import (
-	"errors"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -61,7 +59,7 @@ func (c *Certificate) Validate() error {
 
 func NewCertificate(name string, certificateData SensitiveValue, password SensitiveValue) (*Certificate, error) {
 	if isEmpty(name) {
-		return nil, errors.New("NewCertificate: invalid name")
+		return nil, createInvalidParameterError("NewCertificate", "name")
 	}
 
 	return &Certificate{

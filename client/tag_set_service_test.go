@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -25,7 +24,7 @@ func TestTagSetServiceGetWithEmptyID(t *testing.T) {
 	resource, err := service.Get("")
 
 	if err != nil {
-		fmt.Println(err)
+		return
 	}
 
 	assert.Error(t, err)

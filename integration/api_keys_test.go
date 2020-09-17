@@ -30,6 +30,25 @@ func TestGetAPIKeys(t *testing.T) {
 		return
 	}
 
+	apiKey, err := model.NewAPIKey(getRandomName())
+	apiKey.UserID = &user.ID
+
+	assert.NoError(t, err)
+	assert.NotNil(t, apiKey)
+
+	if err != nil {
+		return
+	}
+
+	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, createdAPIKey)
+
+	if err != nil {
+		return
+	}
+
 	apiKeys, err := octopusClient.APIKeys.Get(user.ID)
 
 	assert.NoError(t, err)

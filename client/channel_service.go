@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -11,8 +10,9 @@ import (
 )
 
 type ChannelService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewChannelService(sling *sling.Sling, uriTemplate string) *ChannelService {
@@ -23,20 +23,21 @@ func NewChannelService(sling *sling.Sling, uriTemplate string) *ChannelService {
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &ChannelService{
-		sling: sling,
+		name:  "ChannelService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *ChannelService) Get(id string) (*model.Channel, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("ChannelService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -53,15 +54,15 @@ func (s *ChannelService) Get(id string) (*model.Channel, error) {
 func (s *ChannelService) GetAll() ([]model.Channel, error) {
 	err := s.validateInternalState()
 
-	channels := new([]model.Channel)
+	items := new([]model.Channel)
 
 	if err != nil {
-		return *channels, err
+		return *items, err
 	}
 
-	_, err = apiGet(s.sling, channels, s.path+"/all")
+	_, err = apiGet(s.sling, items, s.path+"/all")
 
-	return *channels, err
+	return *items, err
 }
 
 func (s *ChannelService) GetProject(channel model.Channel) (*model.Project, error) {
@@ -120,16 +121,16 @@ func (s *ChannelService) Add(channel *model.Channel) (*model.Channel, error) {
 		return nil, createInvalidParameterError("Add", "channel")
 	}
 
-	err := s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = channel.Validate()
+	err := channel.Validate()
 
 	if err != nil {
 		return nil, createValidationFailureError("Add", err)
+	}
+
+	err = s.validateInternalState()
+
+	if err != nil {
+		return nil, err
 	}
 
 	resp, err := apiAdd(s.sling, channel, new(model.Channel), s.path)
@@ -143,20 +144,21 @@ func (s *ChannelService) Add(channel *model.Channel) (*model.Channel, error) {
 
 // Delete removes the Channel that matches the input ID.
 func (s *ChannelService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("ChannelService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 // Update modifies an Channel based on the one provided as input.
-func (s *ChannelService) Update(channel *model.Channel) (*model.Channel, error) {
+func (s *ChannelService) Update(channel model.Channel) (*model.Channel, error) {
 	err := s.validateInternalState()
 
 	if err != nil {
@@ -166,7 +168,7 @@ func (s *ChannelService) Update(channel *model.Channel) (*model.Channel, error) 
 	err = channel.Validate()
 
 	if err != nil {
-		return nil, err
+		return nil, createValidationFailureError("Update", err)
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", channel.ID)
@@ -181,11 +183,11 @@ func (s *ChannelService) Update(channel *model.Channel) (*model.Channel, error) 
 
 func (s *ChannelService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("ChannelService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("ChannelService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

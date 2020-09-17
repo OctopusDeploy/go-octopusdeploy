@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type EnvironmentService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewEnvironmentService(sling *sling.Sling, uriTemplate string) *EnvironmentService {
@@ -22,20 +22,21 @@ func NewEnvironmentService(sling *sling.Sling, uriTemplate string) *EnvironmentS
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &EnvironmentService{
-		sling: sling,
+		name:  "EnvironmentService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("EnvironmentService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -49,32 +50,30 @@ func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
 }
 
 // GetAll returns all instances of an Environment.
-func (s *EnvironmentService) GetAll() (*[]model.Environment, error) {
+func (s *EnvironmentService) GetAll() ([]model.Environment, error) {
 	err := s.validateInternalState()
 
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.Environment), s.path+"/all")
+	items := new([]model.Environment)
 
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return resp.(*[]model.Environment), nil
+	_, err = apiGet(s.sling, items, s.path+"/all")
+
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the Environment with a matching name.
 func (s *EnvironmentService) GetByName(name string) (*model.Environment, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("EnvironmentService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -83,28 +82,28 @@ func (s *EnvironmentService) GetByName(name string) (*model.Environment, error) 
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new Environment.
 func (s *EnvironmentService) Add(environment *model.Environment) (*model.Environment, error) {
-	err := s.validateInternalState()
+	if environment == nil {
+		return nil, createInvalidParameterError("Add", "environment")
+	}
+
+	err := environment.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if environment == nil {
-		return nil, errors.New("EnvironmentService: invalid parameter, environment")
-	}
-
-	err = environment.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -120,13 +119,14 @@ func (s *EnvironmentService) Add(environment *model.Environment) (*model.Environ
 }
 
 func (s *EnvironmentService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("EnvironmentService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -157,11 +157,11 @@ func (s *EnvironmentService) Update(environment *model.Environment) (*model.Envi
 
 func (s *EnvironmentService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("EnvironmentService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("EnvironmentService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

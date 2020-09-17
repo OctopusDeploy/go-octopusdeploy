@@ -1,20 +1,19 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
-	"github.com/go-playground/validator"
 )
 
 // ArtifactService handles communication with Account-related methods of the
 // Octopus API.
 type ArtifactService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewArtifactService returns an ArtifactService with a preconfigured client.
@@ -26,21 +25,22 @@ func NewArtifactService(sling *sling.Sling, uriTemplate string) *ArtifactService
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &ArtifactService{
-		sling: sling,
+		name:  "ArtifactService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns an Artifact that matches the input ID.
 func (s *ArtifactService) Get(id string) (*model.Artifact, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("ArtifactService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -82,14 +82,14 @@ func (s *ArtifactService) GetAll() (*[]model.Artifact, error) {
 
 // Add creates a new Artifact.
 func (s *ArtifactService) Add(artifact *model.Artifact) (*model.Artifact, error) {
+	if artifact == nil {
+		return nil, createInvalidParameterError("Add", "artifact")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if artifact == nil {
-		return nil, errors.New("ArtifactService: invalid parameter, artifact")
 	}
 
 	err = artifact.Validate()
@@ -109,13 +109,13 @@ func (s *ArtifactService) Add(artifact *model.Artifact) (*model.Artifact, error)
 
 // Delete removes the Artifact that matches the input ID.
 func (s *ArtifactService) Delete(id string) error {
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
+	}
+
 	err := s.validateInternalState()
 	if err != nil {
 		return err
-	}
-
-	if isEmpty(id) {
-		return errors.New("ArtifactService: invalid parameter, id")
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -146,14 +146,12 @@ func (s *ArtifactService) Update(artifact model.Artifact) (*model.Artifact, erro
 }
 
 func (s *ArtifactService) validateInternalState() error {
-	validate := validator.New()
-	err := validate.Struct(s)
+	if s.sling == nil {
+		return createInvalidClientStateError(s.name)
+	}
 
-	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
-		return err
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

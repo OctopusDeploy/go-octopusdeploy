@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type MachinePolicyService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewMachinePolicyService(sling *sling.Sling, uriTemplate string) *MachinePolicyService {
@@ -22,21 +22,22 @@ func NewMachinePolicyService(sling *sling.Sling, uriTemplate string) *MachinePol
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &MachinePolicyService{
-		sling: sling,
+		name:  "MachinePolicyService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns a single machine with a given MachineID
 func (s *MachinePolicyService) Get(id string) (*model.MachinePolicy, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("LifecycleService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -50,29 +51,27 @@ func (s *MachinePolicyService) Get(id string) (*model.MachinePolicy, error) {
 }
 
 // GetAll returns all instances of a MachinePolicy.
-func (s *MachinePolicyService) GetAll() (*[]model.MachinePolicy, error) {
+func (s *MachinePolicyService) GetAll() ([]model.MachinePolicy, error) {
 	err := s.validateInternalState()
 
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.MachinePolicy), s.path+"/all")
+	items := new([]model.MachinePolicy)
 
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return resp.(*[]model.MachinePolicy), nil
+	_, err = apiGet(s.sling, items, s.path+"/all")
+
+	return *items, err
 }
 
 func (s *MachinePolicyService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("MachinePolicyService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("MachinePolicyService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

@@ -1,8 +1,6 @@
 package client
 
 import (
-	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -12,8 +10,9 @@ import (
 // AuthenticationService handles communication with Authentication-related
 // methods of the Octopus API.
 type AuthenticationService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewAuthenticationService returns an AuthenticationService with a
@@ -26,8 +25,9 @@ func NewAuthenticationService(sling *sling.Sling, uriTemplate string) *Authentic
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &AuthenticationService{
-		sling: sling,
+		name:  "AuthenticationService",
 		path:  path,
+		sling: sling,
 	}
 }
 
@@ -43,11 +43,11 @@ func (s *AuthenticationService) Get() (*model.Authentication, error) {
 
 func (s *AuthenticationService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("AuthenticationService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("AuthenticationService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

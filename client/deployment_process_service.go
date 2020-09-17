@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type DeploymentProcessService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewDeploymentProcessService(sling *sling.Sling, uriTemplate string) *DeploymentProcessService {
@@ -22,20 +22,21 @@ func NewDeploymentProcessService(sling *sling.Sling, uriTemplate string) *Deploy
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &DeploymentProcessService{
-		sling: sling,
+		name:  "DeploymentProcessService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *DeploymentProcessService) Get(id string) (*model.DeploymentProcess, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("DeploymentProcessService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -100,11 +101,11 @@ func (s *DeploymentProcessService) Update(deploymentProcess *model.DeploymentPro
 
 func (s *DeploymentProcessService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("DeploymentProcessService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("DeploymentProcessService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

@@ -8,25 +8,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewActionTemplateServiceWithNil(t *testing.T) {
+const (
+	TestActionTemplateServiceURITemplate = "action-templates-service"
+)
+
+func TestNewActionTemplateService(t *testing.T) {
 	service := NewActionTemplateService(nil, "")
-
 	assert.Nil(t, service)
-}
-
-func TestNewActionTemplateServiceWithEmptyClient(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
-
-	assert.NotNil(t, service)
-	assert.Equal(t, service.path, "actiontemplates")
-	assert.NotNil(t, service.sling)
+	createActionTemplateService(t)
 }
 
 func TestActionTemplateServiceGetWithEmptyID(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
-
-	assert.NotNil(t, service)
-	assert.Equal(t, service.path, "actiontemplates")
+	service := createActionTemplateService(t)
 
 	resource, err := service.Get("")
 
@@ -40,10 +33,7 @@ func TestActionTemplateServiceGetWithEmptyID(t *testing.T) {
 }
 
 func TestActionTemplateGetWithEmptyName(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
-
-	assert.NotNil(t, service)
-	assert.Equal(t, service.path, "actiontemplates")
+	service := createActionTemplateService(t)
 
 	resource, err := service.GetByName("")
 
@@ -57,10 +47,7 @@ func TestActionTemplateGetWithEmptyName(t *testing.T) {
 }
 
 func TestActionTemplateServiceAddWithNilActionTemplate(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
-
-	assert.NotNil(t, service)
-	assert.Equal(t, service.path, "actiontemplates")
+	service := createActionTemplateService(t)
 
 	account, err := service.Add(nil)
 
@@ -69,10 +56,7 @@ func TestActionTemplateServiceAddWithNilActionTemplate(t *testing.T) {
 }
 
 func TestActionTemplateServiceAddWithInvalidActionTemplate(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
-
-	assert.NotNil(t, service)
-	assert.Equal(t, service.path, "actiontemplates")
+	service := createActionTemplateService(t)
 
 	account, err := service.Add(&model.ActionTemplate{})
 
@@ -81,16 +65,42 @@ func TestActionTemplateServiceAddWithInvalidActionTemplate(t *testing.T) {
 }
 
 func TestActionTemplateServiceDeleteWithEmptyID(t *testing.T) {
-	service := NewActionTemplateService(&sling.Sling{}, "actiontemplates")
-
-	assert.NotNil(t, service)
-	assert.Equal(t, service.path, "actiontemplates")
+	service := createActionTemplateService(t)
 
 	err := service.Delete("")
 
 	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError("Delete", "id"))
 
 	err = service.Delete(" ")
 
 	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError("Delete", "id"))
+}
+
+func TestActionTemplateServiceGetWithInvalidID(t *testing.T) {
+	service := createActionTemplateService(t)
+
+	item, err := service.Get("")
+
+	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError("Get", "id"))
+	assert.Nil(t, item)
+
+	item, err = service.Get(" ")
+
+	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError("Get", "id"))
+	assert.Nil(t, item)
+}
+
+func createActionTemplateService(t *testing.T) *ActionTemplateService {
+	service := NewActionTemplateService(&sling.Sling{}, TestActionTemplateServiceURITemplate)
+
+	assert.NotNil(t, service)
+	assert.NotNil(t, service.sling)
+	assert.Equal(t, service.path, TestActionTemplateServiceURITemplate)
+	assert.Equal(t, service.name, "ActionTemplateService")
+
+	return service
 }

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -12,8 +11,9 @@ import (
 // CommunityActionTemplateService handles communication with Account-related methods of the
 // Octopus API.
 type CommunityActionTemplateService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewCommunityActionTemplateService returns an CommunityActionTemplateService with a preconfigured client.
@@ -25,21 +25,22 @@ func NewCommunityActionTemplateService(sling *sling.Sling, uriTemplate string) *
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &CommunityActionTemplateService{
-		sling: sling,
+		name:  "CommunityActionTemplateService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns an Account that matches the input ID.
 func (s *CommunityActionTemplateService) Get(id string) (*model.CommunityActionTemplate, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("CommunityActionTemplateService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -81,14 +82,14 @@ func (s *CommunityActionTemplateService) GetAll() (*[]model.CommunityActionTempl
 
 // GetByName performs a lookup and returns the CommunityActionTemplate with a matching name.
 func (s *CommunityActionTemplateService) GetByName(name string) (*model.CommunityActionTemplate, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("CommunityActionTemplateService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -103,22 +104,22 @@ func (s *CommunityActionTemplateService) GetByName(name string) (*model.Communit
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new CommunityActionTemplate.
 func (s *CommunityActionTemplateService) Add(communityActionTemplate *model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
-	err := s.validateInternalState()
+	if communityActionTemplate == nil {
+		return nil, createInvalidParameterError("Add", "communityActionTemplate")
+	}
+
+	err := communityActionTemplate.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	if communityActionTemplate == nil {
-		return nil, errors.New("CommunityActionTemplateService: invalid parameter, communityActionTemplate")
-	}
-
-	err = communityActionTemplate.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -135,13 +136,14 @@ func (s *CommunityActionTemplateService) Add(communityActionTemplate *model.Comm
 
 // Delete removes the CommunityActionTemplate that matches the input ID.
 func (s *CommunityActionTemplateService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("CommunityActionTemplateService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
@@ -149,13 +151,13 @@ func (s *CommunityActionTemplateService) Delete(id string) error {
 
 // Update modifies an CommunityActionTemplate based on the one provided as input.
 func (s *CommunityActionTemplateService) Update(communityActionTemplate model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
-	err := s.validateInternalState()
+	err := communityActionTemplate.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = communityActionTemplate.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -173,11 +175,11 @@ func (s *CommunityActionTemplateService) Update(communityActionTemplate model.Co
 
 func (s *CommunityActionTemplateService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("CommunityActionTemplateService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("CommunityActionTemplateService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

@@ -53,7 +53,7 @@ func TestProjectTriggerGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all projectstriggers failed when it shouldn't: %s", err)
 	}
 
-	numberOfProjectTriggers := len(*allProjectsTriggers)
+	numberOfProjectTriggers := len(allProjectsTriggers)
 
 	additionalTrigger := getTestProjectTrigger(project.ID)
 	additionalTrigger.Name = getRandomName()
@@ -66,7 +66,7 @@ func TestProjectTriggerGetAll(t *testing.T) {
 	}
 
 	assert.Nil(t, err, "error when looking for project when not expected")
-	assert.Equal(t, len(*allProjectTriggersAfterCreatingAdditional), numberOfProjectTriggers+1, "created an additional projecttrigger and expected number of projects to increase by 1")
+	assert.Equal(t, len(allProjectTriggersAfterCreatingAdditional), numberOfProjectTriggers+1, "created an additional projecttrigger and expected number of projects to increase by 1")
 }
 
 func TestProjectTriggerUpdate(t *testing.T) {

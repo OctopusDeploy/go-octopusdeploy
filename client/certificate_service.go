@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -12,8 +11,9 @@ import (
 // CertificateService handles communication with Certificate-related methods of
 // the Octopus API.
 type CertificateService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 // NewCertificateService returns an CertificateService with a preconfigured
@@ -26,20 +26,21 @@ func NewCertificateService(sling *sling.Sling, uriTemplate string) *CertificateS
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &CertificateService{
-		sling: sling,
+		name:  "CertificateService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 func (s *CertificateService) Get(id string) (*model.Certificate, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("CertificateService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -53,32 +54,30 @@ func (s *CertificateService) Get(id string) (*model.Certificate, error) {
 }
 
 // GetAll returns all instances of a Certificate.
-func (s *CertificateService) GetAll() (*[]model.Certificate, error) {
+func (s *CertificateService) GetAll() ([]model.Certificate, error) {
 	err := s.validateInternalState()
 
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new([]model.Certificate), s.path+"/all")
+	items := new([]model.Certificate)
 
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return resp.(*[]model.Certificate), nil
+	_, err = apiGet(s.sling, items, s.path+"/all")
+
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the Certificate with a matching name.
 func (s *CertificateService) GetByName(name string) (*model.Certificate, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("GetByName", "name")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(name) {
-		return nil, errors.New("CertificateService: invalid parameter, name")
 	}
 
 	collection, err := s.GetAll()
@@ -87,25 +86,25 @@ func (s *CertificateService) GetByName(name string) (*model.Certificate, error) 
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}
 	}
 
-	return nil, errors.New("client: item not found")
+	return nil, createItemNotFoundError(s.name, "GetByName", name)
 }
 
 // Add creates a new Certificate.
 func (s *CertificateService) Add(certificate *model.Certificate) (*model.Certificate, error) {
+	if certificate == nil {
+		return nil, createInvalidParameterError("Add", "certificate")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if certificate == nil {
-		return nil, errors.New("CertificateService: invalid parameter, certificate")
 	}
 
 	err = certificate.Validate()
@@ -125,26 +124,27 @@ func (s *CertificateService) Add(certificate *model.Certificate) (*model.Certifi
 
 // Delete removes the Certificate that matches the input ID.
 func (s *CertificateService) Delete(id string) error {
-	err := s.validateInternalState()
-	if err != nil {
-		return err
+	if isEmpty(id) {
+		return createInvalidParameterError("Delete", "id")
 	}
 
-	if isEmpty(id) {
-		return errors.New("CertificateService: invalid parameter, id")
+	err := s.validateInternalState()
+
+	if err != nil {
+		return err
 	}
 
 	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
 }
 
 func (s *CertificateService) Update(certificate model.Certificate) (*model.Certificate, error) {
-	err := s.validateInternalState()
+	err := certificate.Validate()
 
 	if err != nil {
 		return nil, err
 	}
 
-	err = certificate.Validate()
+	err = s.validateInternalState()
 
 	if err != nil {
 		return nil, err
@@ -161,18 +161,18 @@ func (s *CertificateService) Update(certificate model.Certificate) (*model.Certi
 }
 
 func (s *CertificateService) Replace(certificateID string, replacementCertificate *model.ReplacementCertificate) (*model.Certificate, error) {
+	if isEmpty(certificateID) {
+		return nil, createInvalidParameterError("Replace", "certificateID")
+	}
+
+	if replacementCertificate == nil {
+		return nil, createInvalidParameterError("Replace", "replacementCertificate")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if len(strings.Trim(certificateID, " ")) == 0 {
-		return nil, errors.New("CertificateService: invalid parameter, certificateID")
-	}
-
-	if replacementCertificate == nil {
-		return nil, errors.New("CertificateService: invalid parameter, replacementCertificate")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s/replace", certificateID)
@@ -188,11 +188,11 @@ func (s *CertificateService) Replace(certificateID string, replacementCertificat
 
 func (s *CertificateService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("CertificateService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("CertificateService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

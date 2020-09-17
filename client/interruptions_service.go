@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 
@@ -10,8 +9,9 @@ import (
 )
 
 type InterruptionsService struct {
-	sling *sling.Sling `validate:"required"`
+	name  string       `validate:"required"`
 	path  string       `validate:"required"`
+	sling *sling.Sling `validate:"required"`
 }
 
 func NewInterruptionsService(sling *sling.Sling, uriTemplate string) *InterruptionsService {
@@ -22,21 +22,22 @@ func NewInterruptionsService(sling *sling.Sling, uriTemplate string) *Interrupti
 	path := strings.Split(uriTemplate, "{")[0]
 
 	return &InterruptionsService{
-		sling: sling,
+		name:  "InterruptionsService",
 		path:  path,
+		sling: sling,
 	}
 }
 
 // Get returns the interruption matching the id
 func (s *InterruptionsService) Get(id string) (*model.Interruption, error) {
+	if isEmpty(id) {
+		return nil, createInvalidParameterError("Get", "id")
+	}
+
 	err := s.validateInternalState()
 
 	if err != nil {
 		return nil, err
-	}
-
-	if isEmpty(id) {
-		return nil, errors.New("InterruptionsService: invalid parameter, id")
 	}
 
 	path := fmt.Sprintf(s.path+"/%s", id)
@@ -113,11 +114,11 @@ func (s *InterruptionsService) TakeResponsability(i *model.Interruption) (*model
 
 func (s *InterruptionsService) validateInternalState() error {
 	if s.sling == nil {
-		return fmt.Errorf("InterruptionsService: the internal client is nil")
+		return createInvalidClientStateError(s.name)
 	}
 
-	if len(strings.Trim(s.path, " ")) == 0 {
-		return errors.New("InterruptionsService: the internal path is not set")
+	if isEmpty(s.path) {
+		return createInvalidPathError(s.name)
 	}
 
 	return nil

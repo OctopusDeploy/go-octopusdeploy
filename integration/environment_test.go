@@ -53,7 +53,7 @@ func TestEnvironmentGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all environments failed when it shouldn't: %s", err)
 	}
 
-	numberOfEnvironments := len(*allEnvironments)
+	numberOfEnvironments := len(allEnvironments)
 
 	// check there are greater than or equal to the amount of environments requested to be created, otherwise pagination isn't working
 	if numberOfEnvironments < environmentsToCreate {
@@ -69,7 +69,7 @@ func TestEnvironmentGetAll(t *testing.T) {
 	}
 
 	assert.Nil(t, err, "error when looking for environment when not expected")
-	assert.Equal(t, len(*allEnvironmentsAfterCreatingAdditional), numberOfEnvironments+1, "created an additional environment and expected number of environments to increase by 1")
+	assert.Equal(t, len(allEnvironmentsAfterCreatingAdditional), numberOfEnvironments+1, "created an additional environment and expected number of environments to increase by 1")
 }
 
 func TestEnvironmentUpdate(t *testing.T) {
