@@ -72,9 +72,9 @@ func (s feedService) GetAll() ([]model.Feed, error) {
 	return *items, err
 }
 
-// GetByName performs a lookup and returns the Feed with a matching name.
-func (s feedService) GetByName(name string) ([]model.Feed, error) {
-	path, err := getByNamePath(s, name)
+// GetByPartialName performs a lookup and returns the Feed with a matching name.
+func (s feedService) GetByPartialName(name string) ([]model.Feed, error) {
+	path, err := getByPartialNamePath(s, name)
 	if err != nil {
 		return []model.Feed{}, err
 	}
