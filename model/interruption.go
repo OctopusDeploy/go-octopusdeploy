@@ -1,6 +1,15 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-playground/validator/v10"
+)
+
+type Interruptions struct {
+	Items []Interruption `json:"Items"`
+	PagedResults
+}
 
 type Interruption struct {
 	CanTakeResponsibility       bool      `json:"CanTakeResponsibility,omitempty"`
@@ -20,9 +29,36 @@ type Interruption struct {
 	Resource
 }
 
-type Interruptions struct {
-	Items []Interruption `json:"Items"`
-	PagedResults
+// GetID returns the ID value of the Interruption.
+func (resource Interruption) GetID() string {
+	return resource.ID
+}
+
+// GetLastModifiedBy returns the name of the account that modified the value of this Interruption.
+func (resource Interruption) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this Interruption was changed.
+func (resource Interruption) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this Interruption.
+func (resource Interruption) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the Interruption and returns an error if invalid.
+func (resource Interruption) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(resource)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type InterruptionSubmitRequest struct {
@@ -33,3 +69,5 @@ type InterruptionSubmitRequest struct {
 
 const ManualInterverventionApprove = "Proceed"
 const ManualInterventionDecline = "Abort"
+
+var _ ResourceInterface = &Interruption{}

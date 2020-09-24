@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -13,211 +14,244 @@ import (
 // Client is an OctopusDeploy for making OctpusDeploy API requests.
 type Client struct {
 	sling               *sling.Sling
-	Accounts            *AccountService
-	ActionTemplates     *ActionTemplateService
-	APIKeys             *APIKeyService
-	Authentication      *AuthenticationService
-	Certificates        *CertificateService
-	Channels            *ChannelService
-	Configuration       *ConfigurationService
-	DeploymentProcesses *DeploymentProcessService
-	Environments        *EnvironmentService
-	Feeds               *FeedService
-	Interruptions       *InterruptionsService
-	LibraryVariableSets *LibraryVariableSetService
-	Lifecycles          *LifecycleService
-	Machines            *MachineService
-	MachinePolicies     *MachinePolicyService
-	Projects            *ProjectService
-	ProjectGroups       *ProjectGroupService
-	ProjectTriggers     *ProjectTriggerService
-	Root                *RootService
-	Spaces              *SpaceService
-	TagSets             *TagSetService
-	Tenants             *TenantService
-	Users               *UserService
-	Variables           *VariableService
+	Accounts            *accountService
+	ActionTemplates     *actionTemplateService
+	APIKeys             *apiKeyService
+	Authentication      *authenticationService
+	Certificates        *certificateService
+	Channels            *channelService
+	Configuration       *configurationService
+	DeploymentProcesses *deploymentProcessService
+	Deployments         *deploymentService
+	Environments        *environmentService
+	Feeds               *feedService
+	Interruptions       *interruptionsService
+	LibraryVariableSets *libraryVariableSetService
+	Lifecycles          *lifecycleService
+	Machines            *machineService
+	MachinePolicies     *machinePolicyService
+	Projects            *projectService
+	ProjectGroups       *projectGroupService
+	ProjectTriggers     *projectTriggerService
+	Root                *rootService
+	Spaces              *spaceService
+	TagSets             *tagSetService
+	Tenants             *tenantService
+	Users               *userService
+	Variables           *variableService
 }
 
-// NewClient returns a new
+// NewClient returns a new Octopus API client. If a nil httpClient is
+// provided, a new http.Client will be used.
 func NewClient(httpClient *http.Client, octopusURL string, apiKey string, spaceID string) (*Client, error) {
-	if httpClient == nil {
-		httpClient = &http.Client{}
-	}
-
 	if isEmpty(octopusURL) {
-		return nil, createInvalidParameterError("NewClient", "octopusURL")
+		return nil, createInvalidParameterError(clientNewClient, parameterOctopusURL)
 	}
 
 	if isEmpty(apiKey) {
-		return nil, createInvalidParameterError("NewClient", "apiKey")
+		return nil, createInvalidParameterError(clientNewClient, parameterAPIKey)
+	}
+
+	if !isAPIKey(apiKey) {
+		return nil, createInvalidParameterError(clientNewClient, parameterAPIKey)
+	}
+
+	_, err := url.Parse(octopusURL)
+	if err != nil {
+		return nil, createInvalidParameterError(clientNewClient, parameterOctopusURL)
 	}
 
 	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
 	baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
 
-	// fetch root resource and process paths
-	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
-	rootService := NewRootService(base.New(), baseURLWithAPI)
-	root, err := rootService.Get()
+	if httpClient == nil {
+		httpClient = &http.Client{}
+	}
 
+	// fetch root resource and process paths
+	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set(clientAPIKeyHTTPHeader, apiKey)
+	rootService := newRootService(base, baseURLWithAPI)
+
+	root, err := rootService.Get()
 	if err != nil {
 		return nil, err
 	}
 
-	accountsPath := root.Links["Accounts"]
-	actionTemplatesPath := root.Links["ActionTemplates"]
+	accountsPath := root.Links[linkAccounts]
+	actionTemplatesPath := root.Links[linkActionTemplates]
+	actionTemplatesCategoriesURL, _ := url.Parse(root.Links[linkActionTemplatesCategories])
+	actionTemplatesSearchURL, _ := url.Parse(root.Links[linkActionTemplatesSearch])
+	actionTemplateVersionedLogoURL, _ := url.Parse(root.Links[linkActionTemplateVersionedLogo])
 	apiKeysPath := "/api/users"
-	authenticationPath := root.Links["Authentication"]
-	certificatesPath := root.Links["Certificates"]
-	channelsPath := root.Links["Channels"]
-	configurationPath := root.Links["Configuration"]
-	deploymentProcessesPath := root.Links["DeploymentProcesses"]
-	environmentsPath := root.Links["Environments"]
-	feedsPath := root.Links["Feeds"]
-	interruptionsPath := root.Links["Interruptions"]
-	machinesPath := root.Links["Machines"]
-	machinePoliciesPath := root.Links["MachinePolicies"]
-	libraryVariableSetsPath := root.Links["LibraryVariableSets"]
-	lifecyclesPath := root.Links["Lifecycles"]
-	projectsPath := root.Links["Projects"]
-	projectGroupsPath := root.Links["ProjectGroups"]
-	projectTriggersPath := root.Links["ProjectTriggers"]
-	spacesPath := root.Links["Spaces"]
-	tagSetsPath := root.Links["TagSets"]
-	tenantsPath := root.Links["Tenants"]
-	usersPath := root.Links["Users"]
-	variablesPath := root.Links["Variables"]
+	authenticationPath := root.Links[linkAuthentication]
+	certificatesPath := root.Links[linkCertificates]
+	channelsPath := root.Links[linkChannels]
+	configurationPath := root.Links[linkConfiguration]
+	deploymentProcessesPath := root.Links[linkDeploymentProcesses]
+	deploymentsPath := root.Links[linkDeployments]
+	environmentsPath := root.Links[linkEnvironments]
+	feedsPath := root.Links[linkFeeds]
+	interruptionsPath := root.Links[linkInterruptions]
+	machinesPath := root.Links[linkMachines]
+	machinePoliciesPath := root.Links[linkMachinePolicies]
+	libraryVariableSetsPath := root.Links[linkLibraryVariableSets]
+	lifecyclesPath := root.Links[linkLifecycles]
+	projectsPath := root.Links[linkProjects]
+	projectGroupsPath := root.Links[linkProjectGroups]
+	projectTriggersPath := root.Links[linkProjectTriggers]
+	rootPath := root.Links[linkSelf]
+	spacesPath := root.Links[linkSpaces]
+	tagSetsPath := root.Links[linkTagSets]
+	tenantsPath := root.Links[linkTenants]
+	usersPath := root.Links[linkUsers]
+	variablesPath := root.Links[linkVariables]
 
 	if !isEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
-		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set("X-Octopus-ApiKey", apiKey)
-		rootService = NewRootService(base.New(), baseURLWithAPI)
+		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set(clientAPIKeyHTTPHeader, apiKey)
+		rootService = newRootService(base, baseURLWithAPI)
 		root, err = rootService.Get()
 
 		if err != nil {
 			return nil, err
 		}
 
-		if !isEmpty(root.Links["Accounts"]) {
-			accountsPath = root.Links["Accounts"]
+		if !isEmpty(root.Links[linkAccounts]) {
+			accountsPath = root.Links[linkAccounts]
 		}
 
-		if !isEmpty(root.Links["ActionTemplates"]) {
-			actionTemplatesPath = root.Links["ActionTemplates"]
+		if !isEmpty(root.Links[linkActionTemplates]) {
+			actionTemplatesPath = root.Links[linkActionTemplates]
 		}
 
-		if !isEmpty(root.Links["Authentication"]) {
-			authenticationPath = root.Links["Authentication"]
+		if !isEmpty(root.Links[linkActionTemplatesCategories]) {
+			actionTemplatesCategoriesURL, _ = url.Parse(root.Links[linkActionTemplatesCategories])
 		}
 
-		if !isEmpty(root.Links["Authentication"]) {
-			authenticationPath = root.Links["Authentication"]
+		if !isEmpty(root.Links[linkActionTemplatesSearch]) {
+			actionTemplatesSearchURL, _ = url.Parse(root.Links[linkActionTemplatesSearch])
 		}
 
-		if !isEmpty(root.Links["Certificates"]) {
-			certificatesPath = root.Links["Certificates"]
+		if !isEmpty(root.Links[linkActionTemplateVersionedLogo]) {
+			actionTemplateVersionedLogoURL, _ = url.Parse(root.Links[linkActionTemplateVersionedLogo])
 		}
 
-		if !isEmpty(root.Links["Channels"]) {
-			channelsPath = root.Links["Channels"]
+		if !isEmpty(root.Links[linkAuthentication]) {
+			authenticationPath = root.Links[linkAuthentication]
 		}
 
-		if !isEmpty(root.Links["Configuration"]) {
-			configurationPath = root.Links["Configuration"]
+		if !isEmpty(root.Links[linkCertificates]) {
+			certificatesPath = root.Links[linkCertificates]
 		}
 
-		if !isEmpty(root.Links["DeploymentProcesses"]) {
-			deploymentProcessesPath = root.Links["DeploymentProcesses"]
+		if !isEmpty(root.Links[linkChannels]) {
+			channelsPath = root.Links[linkChannels]
 		}
 
-		if !isEmpty(root.Links["Environments"]) {
-			environmentsPath = root.Links["Environments"]
+		if !isEmpty(root.Links[linkConfiguration]) {
+			configurationPath = root.Links[linkConfiguration]
 		}
 
-		if !isEmpty(root.Links["Feeds"]) {
-			feedsPath = root.Links["Feeds"]
+		if !isEmpty(root.Links[linkDeploymentProcesses]) {
+			deploymentProcessesPath = root.Links[linkDeploymentProcesses]
 		}
 
-		if !isEmpty(root.Links["Interruptions"]) {
-			interruptionsPath = root.Links["Interruptions"]
+		if !isEmpty(root.Links[linkDeployments]) {
+			deploymentsPath = root.Links[linkDeployments]
 		}
 
-		if !isEmpty(root.Links["Machines"]) {
-			machinesPath = root.Links["Machines"]
+		if !isEmpty(root.Links[linkEnvironments]) {
+			environmentsPath = root.Links[linkEnvironments]
 		}
 
-		if !isEmpty(root.Links["MachinePolicies"]) {
-			machinePoliciesPath = root.Links["MachinePolicies"]
+		if !isEmpty(root.Links[linkFeeds]) {
+			feedsPath = root.Links[linkFeeds]
 		}
 
-		if !isEmpty(root.Links["LibraryVariableSets"]) {
-			libraryVariableSetsPath = root.Links["LibraryVariableSets"]
+		if !isEmpty(root.Links[linkInterruptions]) {
+			interruptionsPath = root.Links[linkInterruptions]
 		}
 
-		if !isEmpty(root.Links["Lifecycles"]) {
-			lifecyclesPath = root.Links["Lifecycles"]
+		if !isEmpty(root.Links[linkMachines]) {
+			machinesPath = root.Links[linkMachines]
 		}
 
-		if !isEmpty(root.Links["Projects"]) {
-			projectsPath = root.Links["Projects"]
+		if !isEmpty(root.Links[linkMachinePolicies]) {
+			machinePoliciesPath = root.Links[linkMachinePolicies]
 		}
 
-		if !isEmpty(root.Links["ProjectGroups"]) {
-			projectGroupsPath = root.Links["ProjectGroups"]
+		if !isEmpty(root.Links[linkLibraryVariableSets]) {
+			libraryVariableSetsPath = root.Links[linkLibraryVariableSets]
 		}
 
-		if !isEmpty(root.Links["ProjectTriggers"]) {
-			projectTriggersPath = root.Links["ProjectTriggers"]
+		if !isEmpty(root.Links[linkLifecycles]) {
+			lifecyclesPath = root.Links[linkLifecycles]
 		}
 
-		if !isEmpty(root.Links["Spaces"]) {
-			spacesPath = root.Links["Spaces"]
+		if !isEmpty(root.Links[linkProjects]) {
+			projectsPath = root.Links[linkProjects]
 		}
 
-		if !isEmpty(root.Links["TagSets"]) {
-			tagSetsPath = root.Links["TagSets"]
+		if !isEmpty(root.Links[linkProjectGroups]) {
+			projectGroupsPath = root.Links[linkProjectGroups]
 		}
 
-		if !isEmpty(root.Links["Tenants"]) {
-			tenantsPath = root.Links["Tenants"]
+		if !isEmpty(root.Links[linkProjectTriggers]) {
+			projectTriggersPath = root.Links[linkProjectTriggers]
 		}
 
-		if !isEmpty(root.Links["Users"]) {
-			usersPath = root.Links["Users"]
+		if !isEmpty(root.Links[linkSelf]) {
+			rootPath = root.Links[linkSelf]
 		}
 
-		if !isEmpty(root.Links["Variables"]) {
-			variablesPath = root.Links["Variables"]
+		if !isEmpty(root.Links[linkSpaces]) {
+			spacesPath = root.Links[linkSpaces]
+		}
+
+		if !isEmpty(root.Links[linkTagSets]) {
+			tagSetsPath = root.Links[linkTagSets]
+		}
+
+		if !isEmpty(root.Links[linkTenants]) {
+			tenantsPath = root.Links[linkTenants]
+		}
+
+		if !isEmpty(root.Links[linkUsers]) {
+			usersPath = root.Links[linkUsers]
+		}
+
+		if !isEmpty(root.Links[linkVariables]) {
+			variablesPath = root.Links[linkVariables]
 		}
 	}
 
 	return &Client{
 		sling:               base,
-		Accounts:            NewAccountService(base.New(), accountsPath),
-		ActionTemplates:     NewActionTemplateService(base.New(), actionTemplatesPath),
-		APIKeys:             NewAPIKeyService(base.New(), apiKeysPath),
-		Authentication:      NewAuthenticationService(base.New(), authenticationPath),
-		Certificates:        NewCertificateService(base.New(), certificatesPath),
-		Channels:            NewChannelService(base.New(), channelsPath),
-		Configuration:       NewConfigurationService(base.New(), configurationPath),
-		DeploymentProcesses: NewDeploymentProcessService(base.New(), deploymentProcessesPath),
-		Environments:        NewEnvironmentService(base.New(), environmentsPath),
-		Feeds:               NewFeedService(base.New(), feedsPath),
-		Interruptions:       NewInterruptionsService(base.New(), interruptionsPath),
-		Machines:            NewMachineService(base.New(), machinesPath),
-		MachinePolicies:     NewMachinePolicyService(base.New(), machinePoliciesPath),
-		LibraryVariableSets: NewLibraryVariableSetService(base.New(), libraryVariableSetsPath),
-		Lifecycles:          NewLifecycleService(base.New(), lifecyclesPath),
-		Projects:            NewProjectService(base.New(), projectsPath),
-		ProjectGroups:       NewProjectGroupService(base.New(), projectGroupsPath),
-		ProjectTriggers:     NewProjectTriggerService(base.New(), projectTriggersPath),
-		Root:                rootService,
-		Spaces:              NewSpaceService(base.New(), spacesPath),
-		TagSets:             NewTagSetService(base.New(), tagSetsPath),
-		Tenants:             NewTenantService(base.New(), tenantsPath),
-		Users:               NewUserService(base.New(), usersPath),
-		Variables:           NewVariableService(base.New(), variablesPath),
+		Accounts:            newAccountService(base, accountsPath),
+		ActionTemplates:     newActionTemplateService(base, actionTemplatesPath, *actionTemplatesCategoriesURL, *actionTemplatesSearchURL, *actionTemplateVersionedLogoURL),
+		APIKeys:             newAPIKeyService(base, apiKeysPath),
+		Authentication:      newAuthenticationService(base, authenticationPath),
+		Certificates:        newCertificateService(base, certificatesPath),
+		Channels:            newChannelService(base, channelsPath),
+		Configuration:       newConfigurationService(base, configurationPath),
+		Deployments:         newDeploymentService(base, deploymentsPath),
+		DeploymentProcesses: newDeploymentProcessService(base, deploymentProcessesPath),
+		Environments:        newEnvironmentService(base, environmentsPath),
+		Feeds:               newFeedService(base, feedsPath),
+		Interruptions:       newInterruptionsService(base, interruptionsPath),
+		Machines:            newMachineService(base, machinesPath),
+		MachinePolicies:     newMachinePolicyService(base, machinePoliciesPath),
+		LibraryVariableSets: newLibraryVariableSetService(base, libraryVariableSetsPath),
+		Lifecycles:          newLifecycleService(base, lifecyclesPath),
+		Projects:            newProjectService(base, projectsPath),
+		ProjectGroups:       newProjectGroupService(base, projectGroupsPath),
+		ProjectTriggers:     newProjectTriggerService(base, projectTriggersPath),
+		Root:                newRootService(base, rootPath),
+		Spaces:              newSpaceService(base, spacesPath),
+		TagSets:             newTagSetService(base, tagSetsPath),
+		Tenants:             newTenantService(base, tenantsPath),
+		Users:               newUserService(base, usersPath),
+		Variables:           newVariableService(base, variablesPath),
 	}, nil
 }
 
@@ -270,30 +304,26 @@ func LoadNextPage(pagedResults model.PagedResults) (string, bool) {
 // Generic OctopusDeploy API Get Function.
 func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError("apiGet", "sling")
+		return nil, createInvalidParameterError(operationAPIGet, parameterSling)
 	}
 
 	getClient := sling.New()
-
 	if getClient == nil {
-		return nil, createClientInitializationError("apiGet")
+		return nil, createClientInitializationError(operationAPIGet)
 	}
 
 	getClient = getClient.Get(path)
-
 	if getClient == nil {
-		return nil, createClientInitializationError("apiGet")
+		return nil, createClientInitializationError(operationAPIGet)
 	}
 
 	octopusDeployError := new(APIError)
 	resp, err := getClient.Receive(inputStruct, &octopusDeployError)
-
 	if err != nil {
 		return nil, err
 	}
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
 	if apiErrorCheck != nil {
 		return nil, apiErrorCheck
 	}
@@ -302,38 +332,34 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 }
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
-func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, path string) (interface{}, error) {
+func apiAdd(sling *sling.Sling, inputStruct, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError("apiAdd", "sling")
+		return nil, createInvalidParameterError(operationAPIAdd, parameterSling)
 	}
 
 	if isEmpty(path) {
-		return nil, createInvalidParameterError("apiAdd", "path")
+		return nil, createInvalidParameterError(operationAPIAdd, parameterPath)
 	}
 
 	postClient := sling.New()
-
 	if postClient == nil {
-		return nil, createClientInitializationError("apiAdd")
+		return nil, createClientInitializationError(operationAPIAdd)
 	}
 
 	postClient = postClient.Post(path)
-
 	if postClient == nil {
-		return nil, createClientInitializationError("apiAdd")
+		return nil, createClientInitializationError(operationAPIAdd)
 	}
 
 	request := postClient.BodyJSON(inputStruct)
-
 	if request == nil {
-		return nil, createClientInitializationError("apiAdd")
+		return nil, createClientInitializationError(operationAPIAdd)
 	}
 
 	octopusDeployError := new(APIError)
 	resp, err := request.Receive(resource, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
-
 	if apiErrorCheck != nil {
 		return nil, apiErrorCheck
 	}
@@ -344,36 +370,32 @@ func apiAdd(sling *sling.Sling, inputStruct, resource model.ResourceInterface, p
 // apiPost post to octopus and expect a 200 response code.
 func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError("apiPost", "sling")
+		return nil, createInvalidParameterError(operationAPIPost, parameterSling)
 	}
 
 	if isEmpty(path) {
-		return nil, createInvalidParameterError("apiPost", "path")
+		return nil, createInvalidParameterError(operationAPIPost, parameterPath)
 	}
 
 	postClient := sling.New()
-
 	if postClient == nil {
-		return nil, createClientInitializationError("apiPost")
+		return nil, createClientInitializationError(operationAPIPost)
 	}
 
 	postClient = postClient.Post(path)
-
 	if postClient == nil {
-		return nil, createClientInitializationError("apiPost")
+		return nil, createClientInitializationError(operationAPIPost)
 	}
 
 	request := postClient.BodyJSON(inputStruct)
-
 	if request == nil {
-		return nil, createClientInitializationError("apiPost")
+		return nil, createClientInitializationError(operationAPIPost)
 	}
 
 	octopusDeployError := new(APIError)
 	resp, err := request.Receive(returnStruct, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
 	if apiErrorCheck != nil {
 		return nil, apiErrorCheck
 	}
@@ -384,36 +406,32 @@ func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path str
 // Generic OctopusDeploy API Update Function.
 func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError("apiUpdate", "sling")
+		return nil, createInvalidParameterError(operationAPIUpdate, parameterSling)
 	}
 
 	if isEmpty(path) {
-		return nil, createInvalidParameterError("apiUpdate", "path")
+		return nil, createInvalidParameterError(operationAPIUpdate, parameterPath)
 	}
 
 	putClient := sling.New()
-
 	if putClient == nil {
-		return nil, createClientInitializationError("apiUpdate")
+		return nil, createClientInitializationError(operationAPIUpdate)
 	}
 
 	putClient = putClient.Put(path)
-
 	if putClient == nil {
-		return nil, createClientInitializationError("apiUpdate")
+		return nil, createClientInitializationError(operationAPIUpdate)
 	}
 
 	request := putClient.BodyJSON(inputStruct)
-
 	if request == nil {
-		return nil, createClientInitializationError("apiUpdate")
+		return nil, createClientInitializationError(operationAPIUpdate)
 	}
 
 	octopusDeployError := new(APIError)
 	resp, err := request.Receive(returnStruct, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
 	if apiErrorCheck != nil {
 		return nil, apiErrorCheck
 	}
@@ -424,30 +442,27 @@ func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path s
 // Generic OctopusDeploy API Delete Function.
 func apiDelete(sling *sling.Sling, path string) error {
 	if sling == nil {
-		return createInvalidParameterError("apiDelete", "sling")
+		return createInvalidParameterError(operationAPIDelete, parameterSling)
 	}
 
 	if isEmpty(path) {
-		return createInvalidParameterError("apiDelete", "path")
+		return createInvalidParameterError(operationAPIDelete, parameterPath)
 	}
 
 	deleteClient := sling.New()
-
 	if deleteClient == nil {
-		return createClientInitializationError("apiDelete")
+		return createClientInitializationError(operationAPIDelete)
 	}
 
 	deleteClient = deleteClient.Delete(path)
-
 	if deleteClient == nil {
-		return createClientInitializationError("apiDelete")
+		return createClientInitializationError(operationAPIDelete)
 	}
 
 	octopusDeployError := new(APIError)
 	resp, err := deleteClient.Receive(nil, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-
 	if apiErrorCheck != nil {
 		return apiErrorCheck
 	}

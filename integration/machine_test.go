@@ -17,7 +17,7 @@ func TestMachineAddAndDelete(t *testing.T) {
 	testEnvironment := createTestEnvironment(t, testName)
 	defer cleanEnvironment(t, testEnvironment.ID)
 
-	machineName := strings.Split(getRandomName(), " ")[1]
+	machineName := strings.Split(getRandomName(), whitespaceString)[1]
 	expected := getTestMachine(t, testEnvironment.ID, machineName)
 	actual := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, actual.ID)
@@ -27,25 +27,35 @@ func TestMachineAddAndDelete(t *testing.T) {
 }
 
 func TestMachineAddGetAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	testName := "TestMachineAddGetAndDelete"
 	testEnvironment := createTestEnvironment(t, testName)
 	defer cleanEnvironment(t, testEnvironment.ID)
 
-	machineName := strings.Split(getRandomName(), " ")[1]
+	machineName := strings.Split(getRandomName(), whitespaceString)[1]
 	machine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, machine.ID)
 
-	getMachine, err := octopusClient.Machines.Get(machine.ID)
-	assert.Nil(t, err, "there was an error raised getting machine when there should not be")
+	getMachine, err := octopusClient.Machines.GetByID(machine.ID)
+
+	assert.NoError(t, err, "there was an error raised getting machine when there should not be")
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, machine.Name, getMachine.Name)
 	assert.Equal(t, machine.Thumbprint, getMachine.Thumbprint)
 	assert.Equal(t, machine.URI, getMachine.Endpoint.URI)
 }
 
 func TestMachineGetThatDoesNotExist(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	machineID := "there-is-no-way-this-machine-id-exists-i-hope"
 	expected := client.ErrItemNotFound
-	machine, err := octopusClient.Machines.Get(machineID)
+	machine, err := octopusClient.Machines.GetByID(machineID)
 
 	assert.Error(t, err, "there should have been an error raised as this machine should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -53,6 +63,8 @@ func TestMachineGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestMachineGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	testName := "TestMachineGetAll"
 	testEnvironment := createTestEnvironment(t, testName)
 	defer cleanEnvironment(t, testEnvironment.ID)
@@ -61,7 +73,7 @@ func TestMachineGetAll(t *testing.T) {
 	machinesToCreate := 32
 	sum := 0
 	for i := 0; i < machinesToCreate; i++ {
-		machineName := strings.Split(getRandomName(), " ")[1]
+		machineName := strings.Split(getRandomName(), whitespaceString)[1]
 		machine := createTestMachine(t, testEnvironment.ID, machineName)
 		defer cleanMachine(t, machine.ID)
 		sum += i
@@ -72,14 +84,14 @@ func TestMachineGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all machines failed when it shouldn't: %s", err)
 	}
 
-	numberOfMachines := len(*allMachines)
+	numberOfMachines := len(allMachines)
 
 	// check there are greater than or equal to the amount of machines requested to be created, otherwise pagination isn't working
 	if numberOfMachines < machinesToCreate {
 		t.Fatalf("There should be at least %d machines created but there was only %d. Pagination is likely not working.", machinesToCreate, numberOfMachines)
 	}
 
-	machineName := strings.Split(getRandomName(), " ")[1]
+	machineName := strings.Split(getRandomName(), whitespaceString)[1]
 	additionalMachine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, additionalMachine.ID)
 
@@ -88,29 +100,37 @@ func TestMachineGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all machines failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for machine when not expected")
-	assert.Equal(t, len(*allMachinesAfterCreatingAdditional), numberOfMachines+1, "created an additional machine and expected number of machines to increase by 1")
+	assert.NoError(t, err, "error when looking for machine when not expected")
+	assert.Equal(t, len(allMachinesAfterCreatingAdditional), numberOfMachines+1, "created an additional machine and expected number of machines to increase by 1")
 }
 
 func TestMachineUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	testName := "TestMachineUpdate"
 	testEnvironment := createTestEnvironment(t, testName)
 	defer cleanEnvironment(t, testEnvironment.ID)
 
-	machineName := strings.Split(getRandomName(), " ")[1]
+	machineName := strings.Split(getRandomName(), whitespaceString)[1]
 	machine := createTestMachine(t, testEnvironment.ID, machineName)
 	defer cleanMachine(t, machine.ID)
 
 	newApplicationsDirectory := "C:\\New-Applications-Directory"
 	newWorkingDirectory := "C:\\New-WorkingDirectory"
 
-	newMachineName := strings.Split(getRandomName(), " ")[1]
+	newMachineName := strings.Split(getRandomName(), whitespaceString)[1]
 	machine.Name = newMachineName
 	machine.Endpoint.ApplicationsDirectory = newApplicationsDirectory
 	machine.Endpoint.WorkingDirectory = newWorkingDirectory
 
 	updatedMachine, err := octopusClient.Machines.Update(&machine)
-	assert.Nil(t, err, "error when updating machine")
+
+	assert.NoError(t, err, "error when updating machine")
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, newMachineName, updatedMachine.Name, "machine name was not updated")
 	assert.Equal(t, newApplicationsDirectory, updatedMachine.Endpoint.ApplicationsDirectory, "machine endpoint's applications Directory was not updated")
 	assert.Equal(t, newWorkingDirectory, updatedMachine.Endpoint.WorkingDirectory, "machine endpoint's working Directory was not updated")
@@ -162,6 +182,8 @@ func getTestMachine(t *testing.T, environmentID string, machineName string) mode
 }
 
 func createTestMachine(t *testing.T, environmentID string, machineName string) model.Machine {
+	octopusClient := getOctopusClient()
+
 	e := getTestMachine(t, environmentID, machineName)
 	createdMachine, err := octopusClient.Machines.Add(&e)
 
@@ -173,7 +195,10 @@ func createTestMachine(t *testing.T, environmentID string, machineName string) m
 }
 
 func cleanMachine(t *testing.T, machineID string) {
-	err := octopusClient.Machines.Delete(machineID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.Machines.DeleteByID(machineID)
+
 	if err == nil {
 		return
 	}

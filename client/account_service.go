@@ -1,51 +1,77 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-// AccountService handles communication with Account-related methods of the
-// Octopus API.
-type AccountService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+// accountService handles communication with Account-related methods of the Octopus API.
+type accountService struct {
+	name        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-// NewAccountService returns an AccountService with a preconfigured client.
-func NewAccountService(sling *sling.Sling, uriTemplate string) *AccountService {
+// newAccountService returns an accountService with a preconfigured client.
+func newAccountService(sling *sling.Sling, uriTemplate string) *accountService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &AccountService{
-		name:  "AccountService",
-		path:  path,
-		sling: sling,
+	return &accountService{
+		name:        serviceAccountService,
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get returns an Account that matches the input ID.
-func (s *AccountService) Get(id string) (*model.Account, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
+func (s accountService) getClient() *sling.Sling {
+	return s.sling
+}
+
+func (s accountService) getName() string {
+	return s.name
+}
+
+func (s accountService) getPagedResponse(path string) ([]model.Account, error) {
+	var resources []model.Account
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Accounts), path)
+		if err != nil {
+			return nil, err
+		}
+
+		responseList := resp.(*model.Accounts)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	err := s.validateInternalState()
+	return resources, nil
+}
 
+func (s accountService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// Add creates a new account.
+func (s accountService) Add(resource *model.Account) (*model.Account, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Account), path)
-
+	resp, err := apiAdd(s.getClient(), resource, new(model.Account), path)
 	if err != nil {
 		return nil, err
 	}
@@ -53,59 +79,78 @@ func (s *AccountService) Get(id string) (*model.Account, error) {
 	return resp.(*model.Account), nil
 }
 
-// GetAll returns all instances of an Account.
-func (s *AccountService) GetAll() ([]model.Account, error) {
-	err := s.validateInternalState()
+// DeleteByID deletes the Account that matches the input ID.
+func (s accountService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
 
+// GetAll returns all of the accounts. The results will be sorted alphabetically by name.
+func (s accountService) GetAll() ([]model.Account, error) {
 	items := new([]model.Account)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
-// GetByName performs a lookup and returns the Account with a matching name.
-func (s *AccountService) GetByName(name string) (*model.Account, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
-	}
-
-	err := s.validateInternalState()
-
+// GetByID returns a single Account by its ID. If one is not found, it returns nil.
+func (s accountService) GetByID(id string) (*model.Account, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	collection, err := s.GetAll()
-
+	resp, err := apiGet(s.getClient(), new(model.Account), path)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, item := range collection {
-		if item.Name == name {
-			return &item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return resp.(*model.Account), nil
 }
 
-// GetUsage returns all projects and deployments which are using an Account.
-func (s *AccountService) GetUsage(account model.Account) (*model.AccountUsage, error) {
-	err := s.validateInternalState()
+// GetByIDs gets a list of accounts that match the input IDs.
+func (s accountService) GetByIDs(ids []string) ([]model.Account, error) {
+	path, err := getByIDsPath(s, ids)
+	if err != nil {
+		return []model.Account{}, err
+	}
 
+	return s.getPagedResponse(path)
+}
+
+// GetByAccountType performs a lookup and returns the Accounts with a matching AccountType.
+func (s accountService) GetByAccountType(accountType enum.AccountType) ([]model.Account, error) {
+	path, err := getByAccountTypePath(s, accountType)
+	if err != nil {
+		return []model.Account{}, err
+	}
+
+	return s.getPagedResponse(path)
+}
+
+// GetByPartialName performs a lookup and returns instances of an Account with a matching partial name.
+func (s accountService) GetByPartialName(name string) ([]model.Account, error) {
+	path, err := getByPartialNamePath(s, name)
+	if err != nil {
+		return []model.Account{}, err
+	}
+
+	return s.getPagedResponse(path)
+}
+
+// GetUsages lists the projects and deployments which are using an account.
+func (s accountService) GetUsages(account model.Account) (*model.AccountUsage, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
-	path := account.Links["Usages"]
-	resp, err := apiGet(s.sling, new(model.AccountUsage), path)
+	path := account.Links[linkUsages]
 
+	resp, err := apiGet(s.getClient(), new(model.AccountUsage), path)
 	if err != nil {
 		return nil, err
 	}
@@ -113,65 +158,14 @@ func (s *AccountService) GetUsage(account model.Account) (*model.AccountUsage, e
 	return resp.(*model.AccountUsage), nil
 }
 
-// Add creates a new Account.
-func (s *AccountService) Add(account *model.Account) (*model.Account, error) {
-	if account == nil {
-		return nil, createInvalidParameterError("Add", "account")
-	}
-
-	err := account.Validate()
-
-	if err != nil {
-		return nil, createValidationFailureError("Add", err)
-	}
-
-	err = s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.sling, account, new(model.Account), s.path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Account), nil
-}
-
-// Delete removes the Account that matches the input ID.
-func (s *AccountService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
-}
-
 // Update modifies an Account based on the one provided as input.
-func (s *AccountService) Update(account model.Account) (*model.Account, error) {
-	err := s.validateInternalState()
-
+func (s accountService) Update(resource model.Account) (*model.Account, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	err = account.Validate()
-
-	if err != nil {
-		return nil, createValidationFailureError("Update", err)
-	}
-
-	path := fmt.Sprintf(s.path+"/%s", account.ID)
-	resp, err := apiUpdate(s.sling, account, new(model.Account), path)
-
+	resp, err := apiUpdate(s.getClient(), resource, new(model.Account), path)
 	if err != nil {
 		return nil, err
 	}
@@ -179,16 +173,4 @@ func (s *AccountService) Update(account model.Account) (*model.Account, error) {
 	return resp.(*model.Account), nil
 }
 
-func (s *AccountService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &AccountService{}
+var _ ServiceInterface = &accountService{}

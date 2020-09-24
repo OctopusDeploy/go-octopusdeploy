@@ -13,3 +13,8 @@ type VariableScope struct {
 	TenantTag   []string `json:"TenantTag,omitempty"`
 	Tenant      []string `json:"Tenant,omitempty"`
 }
+
+// NewVariableScope initializes a variable scope.
+func NewVariableScope() *VariableScope {
+	return &VariableScope{}
+}

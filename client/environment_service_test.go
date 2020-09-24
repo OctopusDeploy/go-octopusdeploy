@@ -7,27 +7,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewEnvironmentServiceWithNil(t *testing.T) {
-	service := NewEnvironmentService(nil, "")
-	assert.Nil(t, service)
-}
+func TestNewEnvironmentService(t *testing.T) {
+	serviceFunction := newEnvironmentService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceEnvironmentService
 
-func TestEnvironmentServiceWithEmptyClient(t *testing.T) {
-	service := NewEnvironmentService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *environmentService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestEnvironmentServiceGetWithEmptyID(t *testing.T) {
-	service := NewEnvironmentService(&sling.Sling{}, "")
+	service := newEnvironmentService(&sling.Sling{}, emptyString)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 }

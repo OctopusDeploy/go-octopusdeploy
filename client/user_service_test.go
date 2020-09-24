@@ -7,45 +7,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserServiceWithEmptyProperties(t *testing.T) {
-	userService := &UserService{}
-	assert.Error(t, userService.validateInternalState())
-}
+func TestUserService(t *testing.T) {
+	serviceFunction := newUserService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceUserService
 
-func TestUserServiceWithEmptyPathProperty(t *testing.T) {
-	userService := &UserService{sling: &sling.Sling{}}
-	assert.Error(t, userService.validateInternalState())
-}
-
-func TestUserServiceWithEmptySlingProperty(t *testing.T) {
-	userService := &UserService{path: "fake-path"}
-	assert.Error(t, userService.validateInternalState())
-}
-
-func TestUserServiceWithValidProperties(t *testing.T) {
-	userService := createTestUserService()
-	assert.NoError(t, userService.validateInternalState())
-}
-
-func TestNewUserServiceWithNil(t *testing.T) {
-	userService := NewUserService(nil, "")
-	if !assert.Nil(t, userService) {
-		assert.Error(t, userService.validateInternalState())
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *userService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
 	}
-}
-
-func TestUserServiceWithEmptyClient(t *testing.T) {
-	userService := NewUserService(&sling.Sling{}, "")
-
-	if !assert.NotNil(t, userService) {
-		assert.NotNil(t, userService.sling)
-		assert.Error(t, userService.validateInternalState())
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
 	}
 }
 
 func TestUserServiceGetWithEmptyID(t *testing.T) {
 	userService := createTestUserService()
-	user, err := userService.Get("")
+	user, err := userService.GetByID(emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, user)
@@ -53,12 +41,12 @@ func TestUserServiceGetWithEmptyID(t *testing.T) {
 
 func TestUserServiceGetWithBlankID(t *testing.T) {
 	userService := createTestUserService()
-	user, err := userService.Get(" ")
+	user, err := userService.GetByID(whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, user)
 }
 
-func createTestUserService() *UserService {
-	return &UserService{sling: &sling.Sling{}, path: "fake-path"}
+func createTestUserService() *userService {
+	return &userService{sling: &sling.Sling{}, path: "fake-path"}
 }

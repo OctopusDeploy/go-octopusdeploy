@@ -11,16 +11,17 @@ func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID) (*Accoun
 		return nil, createInvalidParameterError("NewAzureSubscriptionAccount", "name")
 	}
 
-	account := &Account{
-		Name:        name,
-		AccountType: enum.AzureSubscription,
+	account, err := NewAccount(name, enum.AzureSubscription)
+	if err != nil {
+		return nil, err
 	}
+
 	account.SubscriptionID = &subscriptionID
 
 	return account, nil
 }
 
-func validateAzureSubscriptionAccount(account *Account) error {
+func validateAzureSubscriptionAccount(account Account) error {
 	validate := validator.New()
 	err := validate.Struct(account)
 

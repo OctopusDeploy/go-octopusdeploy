@@ -7,39 +7,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	TestAPIKeyServiceURITemplate = "api-key-service"
-)
-
 func TestNewAPIKeyService(t *testing.T) {
-	service := NewAPIKeyService(nil, "")
-	assert.Nil(t, service)
-	createAPIKeyService(t)
+	serviceFunction := newAPIKeyService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceAPIKeyService
+
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *apiKeyService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 	service := createAPIKeyService(t)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByUserID(emptyString)
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Get", "userID"))
+	assert.Equal(t, err, createInvalidParameterError(operationGetByUserID, parameterUserID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByUserID(whitespaceString)
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Get", "userID"))
+	assert.Equal(t, err, createInvalidParameterError(operationGetByUserID, parameterUserID))
 	assert.Nil(t, resource)
 }
 
-func createAPIKeyService(t *testing.T) *APIKeyService {
-	service := NewAPIKeyService(&sling.Sling{}, TestAPIKeyServiceURITemplate)
-
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
-	assert.Equal(t, service.path, TestAPIKeyServiceURITemplate)
-	assert.Equal(t, service.name, "APIKeyService")
-
+func createAPIKeyService(t *testing.T) *apiKeyService {
+	service := newAPIKeyService(&sling.Sling{}, TestURIAPIKeys)
+	testNewService(t, service, TestURIAPIKeys, serviceAPIKeyService)
 	return service
 }

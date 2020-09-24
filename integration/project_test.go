@@ -13,13 +13,9 @@ var (
 	projectDescription = getRandomName()
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestAddNilProject(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project, err := octopusClient.Projects.Add(nil)
 
 	assert.Error(t, err)
@@ -27,6 +23,8 @@ func TestAddNilProject(t *testing.T) {
 }
 
 func TestGetSummary(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	projects, err := octopusClient.Projects.GetAll()
 
 	assert.NoError(t, err)
@@ -44,6 +42,8 @@ func TestGetSummary(t *testing.T) {
 	}
 }
 func TestGetReleasesForProject(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	projects, err := octopusClient.Projects.GetAll()
 
 	assert.NoError(t, err)
@@ -62,6 +62,8 @@ func TestGetReleasesForProject(t *testing.T) {
 }
 
 func TestGetChannelsForProject(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	projects, err := octopusClient.Projects.GetAll()
 
 	assert.NoError(t, err)
@@ -85,9 +87,14 @@ func TestProjectGet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, client)
 
-	project, err := client.Projects.Get("Projects-663")
+	project, err := client.Projects.GetByID("Projects-663")
 
 	assert.NoError(t, err)
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, "Canary .NET Core 2.0", project.Name)
 }
 
@@ -111,7 +118,7 @@ const getProjectResponseJSON = `
     "Template": "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}"
   },
   "ReleaseCreationStrategy": {
-    "ReleaseCreationPackageStepId": "",
+    "ReleaseCreationPackageStepId": emptyString,
     "ChannelId": null
   },
   "Templates": [],

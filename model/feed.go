@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -32,13 +34,30 @@ type Feed struct {
 	Resource
 }
 
-func (f *Feed) GetID() string {
-	return f.ID
+// GetID returns the ID value of the Feed.
+func (resource Feed) GetID() string {
+	return resource.ID
 }
 
-func (f *Feed) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this Feed.
+func (resource Feed) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this Feed was changed.
+func (resource Feed) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this Feed.
+func (resource Feed) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the Feed and returns an error if invalid.
+func (resource Feed) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(f)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		return err

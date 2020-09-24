@@ -5,43 +5,54 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type TagSetService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type tagSetService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewTagSetService(sling *sling.Sling, uriTemplate string) *TagSetService {
+func newTagSetService(sling *sling.Sling, uriTemplate string) *tagSetService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &TagSetService{
-		name:  "TagSetService",
-		path:  path,
-		sling: sling,
+	return &tagSetService{
+		name:        serviceTagSetService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *TagSetService) Get(id string) (*model.TagSet, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s tagSetService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s tagSetService) getName() string {
+	return s.name
+}
 
+func (s tagSetService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+func (s tagSetService) GetByID(id string) (*model.TagSet, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.TagSet), path)
-
+	resp, err := apiGet(s.getClient(), new(model.TagSet), path)
 	if err != nil {
 		return nil, err
 	}
@@ -49,29 +60,25 @@ func (s *TagSetService) Get(id string) (*model.TagSet, error) {
 	return resp.(*model.TagSet), nil
 }
 
-// GetAll returns all instances of a TagSet.
-func (s *TagSetService) GetAll() ([]model.TagSet, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a TagSet. If none can be found or an error occurs, it returns an empty collection.
+func (s tagSetService) GetAll() ([]model.TagSet, error) {
 	items := new([]model.TagSet)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
 // GetByName performs a lookup and returns the TagSet with a matching name.
-func (s *TagSetService) GetByName(name string) (*model.TagSet, error) {
+func (s tagSetService) GetByName(name string) (*model.TagSet, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
+		return nil, createInvalidParameterError(operationGetByName, parameterName)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -88,13 +95,13 @@ func (s *TagSetService) GetByName(name string) (*model.TagSet, error) {
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
 // Add creates a new TagSet.
-func (s *TagSetService) Add(tagSet *model.TagSet) (*model.TagSet, error) {
+func (s tagSetService) Add(tagSet *model.TagSet) (*model.TagSet, error) {
 	if tagSet == nil {
-		return nil, createInvalidParameterError("Add", "tagSet")
+		return nil, createInvalidParameterError(operationAdd, "tagSet")
 	}
 
 	err := tagSet.Validate()
@@ -103,39 +110,15 @@ func (s *TagSetService) Add(tagSet *model.TagSet) (*model.TagSet, error) {
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, tagSet, new(model.TagSet), s.path)
+	path := trimTemplate(s.path)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.TagSet), nil
-}
-
-func (s *TagSetService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
-}
-
-func (s *TagSetService) Update(resource *model.TagSet) (*model.TagSet, error) {
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.TagSet), path)
-
+	resp, err := apiAdd(s.getClient(), tagSet, new(model.TagSet), path)
 	if err != nil {
 		return nil, err
 	}
@@ -143,16 +126,20 @@ func (s *TagSetService) Update(resource *model.TagSet) (*model.TagSet, error) {
 	return resp.(*model.TagSet), nil
 }
 
-func (s *TagSetService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
+func (s tagSetService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
-var _ ServiceInterface = &TagSetService{}
+func (s tagSetService) Update(resource *model.TagSet) (*model.TagSet, error) {
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s", resource.ID)
+
+	resp, err := apiUpdate(s.getClient(), resource, new(model.TagSet), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.TagSet), nil
+}
+
+var _ ServiceInterface = &tagSetService{}

@@ -10,18 +10,17 @@ func NewTokenAccount(name string, token SensitiveValue) (*Account, error) {
 		return nil, createInvalidParameterError("NewTokenAccount", "name")
 	}
 
-	return &Account{
-		Name:        name,
-		Token:       &token,
-		AccountType: enum.Token,
-	}, nil
-}
-
-func validateTokenAccount(account *Account) error {
-	if account == nil {
-		return createInvalidParameterError("validateTokenAccount", "account")
+	account, err := NewAccount(name, enum.Token)
+	if err != nil {
+		return nil, err
 	}
 
+	account.Token = &token
+
+	return account, nil
+}
+
+func validateTokenAccount(account Account) error {
 	validate := validator.New()
 	err := validate.Struct(account)
 

@@ -9,6 +9,8 @@ import (
 )
 
 func TestProjectTriggerAddGetAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	// need a project to add a trigger to
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
@@ -21,9 +23,9 @@ func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 	projectTrigger := createTestProjectTrigger(t, toCreateTrigger)
 	defer cleanProjectTrigger(t, projectTrigger.ID)
 
-	getProjectTrigger, err := octopusClient.ProjectTriggers.Get(projectTrigger.ID)
+	getProjectTrigger, err := octopusClient.ProjectTriggers.GetByID(projectTrigger.ID)
 
-	assert.Nil(t, err, "there was an error raised getting projecttrigger when there should not be")
+	assert.NoError(t, err, "there was an error raised getting projecttrigger when there should not be")
 	assert.Equal(t, getProjectTrigger.Name, getProjectTrigger.Name)
 	assert.ElementsMatch(t, getProjectTrigger.Filter.Roles, toCreateTrigger.Filter.Roles)
 	assert.ElementsMatch(t, getProjectTrigger.Filter.EventGroups, toCreateTrigger.Filter.EventGroups)
@@ -31,9 +33,11 @@ func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 }
 
 func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	projectTriggerID := "there-is-no-way-this-projecttrigger-id-exists-i-hope"
 	expected := client.ErrItemNotFound
-	project, err := octopusClient.ProjectTriggers.Get(projectTriggerID)
+	project, err := octopusClient.ProjectTriggers.GetByID(projectTriggerID)
 
 	assert.Error(t, err, "there should have been an error raised as this project should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -41,6 +45,8 @@ func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestProjectTriggerGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
@@ -65,11 +71,13 @@ func TestProjectTriggerGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all projectstriggers failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for project when not expected")
+	assert.NoError(t, err, "error when looking for project when not expected")
 	assert.Equal(t, len(allProjectTriggersAfterCreatingAdditional), numberOfProjectTriggers+1, "created an additional projecttrigger and expected number of projects to increase by 1")
 }
 
 func TestProjectTriggerUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
@@ -85,13 +93,15 @@ func TestProjectTriggerUpdate(t *testing.T) {
 	createdTrigger.IsDisabled = newIsDisabled
 
 	updatedProjectTrigger, err := octopusClient.ProjectTriggers.Update(createdTrigger)
-	assert.Nil(t, err, "error when updating projecttrigger")
+	assert.NoError(t, err, "error when updating projecttrigger")
 	assert.Equal(t, newProjectTriggerName, updatedProjectTrigger.Name, "projecttrigger name was not updated")
 	assert.Equal(t, newProjectTriggerRole, updatedProjectTrigger.Filter.Roles, "projecttrigger roles was not updated")
 	assert.Equal(t, newIsDisabled, updatedProjectTrigger.IsDisabled, "projecttrigger isdisabled setting not updated")
 }
 
 func createTestProjectTrigger(t *testing.T, trigger *model.ProjectTrigger) *model.ProjectTrigger {
+	octopusClient := getOctopusClient()
+
 	createdProjectTrigger, err := octopusClient.ProjectTriggers.Add(trigger)
 
 	if err != nil {
@@ -106,7 +116,9 @@ func getTestProjectTrigger(projectID string) *model.ProjectTrigger {
 }
 
 func cleanProjectTrigger(t *testing.T, projectTriggerID string) {
-	err := octopusClient.ProjectTriggers.Delete(projectTriggerID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.ProjectTriggers.DeleteByID(projectTriggerID)
 
 	if err == nil {
 		return

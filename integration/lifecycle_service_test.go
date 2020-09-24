@@ -8,15 +8,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestLifecycleAddAndDelete(t *testing.T) {
 	lifecycleName := getRandomName()
-	expected := getTestLifecycle(lifecycleName)
+
+	expected, err := getTestLifecycle(lifecycleName)
+	assert.NoError(t, err)
+
 	actual := createTestLifecycle(t, lifecycleName)
 
 	defer cleanLifecycle(t, actual.ID)
@@ -26,18 +23,22 @@ func TestLifecycleAddAndDelete(t *testing.T) {
 }
 
 func TestLifecycleAddGetAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	lifecycle := createTestLifecycle(t, getRandomName())
 	defer cleanLifecycle(t, lifecycle.ID)
 
-	getLifecycle, err := octopusClient.Lifecycles.Get(lifecycle.ID)
-	assert.Nil(t, err, "there was an error raised getting lifecycle when there should not be")
+	getLifecycle, err := octopusClient.Lifecycles.GetByID(lifecycle.ID)
+	assert.NoError(t, err, "there was an error raised getting lifecycle when there should not be")
 	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
 }
 
 func TestLifecycleGetThatDoesNotExist(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	lifecycleID := "there-is-no-way-this-lifecycle-id-exists-i-hope"
 	expected := client.ErrItemNotFound
-	lifecycle, err := octopusClient.Lifecycles.Get(lifecycleID)
+	lifecycle, err := octopusClient.Lifecycles.GetByID(lifecycleID)
 
 	assert.Error(t, err, "there should have been an error raised as this lifecycle should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -45,6 +46,8 @@ func TestLifecycleGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestLifecycleGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	// create many lifecycles to test pagination
 	lifecyclesToCreate := 32
 	sum := 0
@@ -59,7 +62,7 @@ func TestLifecycleGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all lifecycles failed when it shouldn't: %s", err)
 	}
 
-	numberOfLifecycles := len(*allLifecycles)
+	numberOfLifecycles := len(allLifecycles)
 
 	// check there are greater than or equal to the amount of lifecycles requested to be created, otherwise pagination isn't working
 	if numberOfLifecycles < lifecyclesToCreate {
@@ -74,11 +77,13 @@ func TestLifecycleGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all lifecycles failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for lifecycle when not expected")
-	assert.Equal(t, len(*allLifecyclesAfterCreatingAdditional), numberOfLifecycles+1, "created an additional lifecycle and expected number of lifecycles to increase by 1")
+	assert.NoError(t, err, "error when looking for lifecycle when not expected")
+	assert.Equal(t, len(allLifecyclesAfterCreatingAdditional), numberOfLifecycles+1, "created an additional lifecycle and expected number of lifecycles to increase by 1")
 }
 
 func TestLifecycleUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	lifecycle := createTestLifecycle(t, getRandomName())
 	defer cleanLifecycle(t, lifecycle.ID)
 
@@ -89,24 +94,46 @@ func TestLifecycleUpdate(t *testing.T) {
 	lifecycle.Name = newLifecycleName
 	lifecycle.Description = newDescription
 
-	updatedLifecycle, err := octopusClient.Lifecycles.Update(&lifecycle)
-	assert.Nil(t, err, "error when updating lifecycle")
+	updatedLifecycle, err := octopusClient.Lifecycles.Update(lifecycle)
+	assert.NoError(t, err, "error when updating lifecycle")
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, newLifecycleName, updatedLifecycle.Name, "lifecycle name was not updated")
 	assert.Equal(t, newDescription, updatedLifecycle.Description, "lifecycle description was not updated")
 }
 
-func TestLifecycleGetByName(t *testing.T) {
-	lifecycle := createTestLifecycle(t, getRandomName())
-	defer cleanLifecycle(t, lifecycle.ID)
+func TestLifecycleGetByPartialName(t *testing.T) {
+	octopusClient := getOctopusClient()
 
-	foundLifecycle, err := octopusClient.Lifecycles.GetByName(lifecycle.Name)
-	assert.Nil(t, err, "error when looking for lifecycle when not expected")
-	assert.Equal(t, lifecycle.Name, foundLifecycle.Name, "lifecycle not found when searching by its name")
+	createdLifecycle := createTestLifecycle(t, getRandomName())
+	defer cleanLifecycle(t, createdLifecycle.ID)
+
+	lifecycleList, err := octopusClient.Lifecycles.GetByPartialName(createdLifecycle.Name)
+	assert.NoError(t, err, "error when looking for lifecycle when not expected")
+
+	if err != nil {
+		return
+	}
+
+	for _, lifecycle := range lifecycleList {
+		if lifecycle.Name == createdLifecycle.Name {
+			return
+		}
+	}
+
+	t.Errorf("lifecycle not found when searching by its name (%s)", createdLifecycle.Name)
 }
 
 func createTestLifecycle(t *testing.T, lifecycleName string) model.Lifecycle {
-	p := getTestLifecycle(lifecycleName)
-	createdLifecycle, err := octopusClient.Lifecycles.Add(&p)
+	octopusClient := getOctopusClient()
+
+	p, err := getTestLifecycle(lifecycleName)
+	assert.NoError(t, err)
+
+	createdLifecycle, err := octopusClient.Lifecycles.Add(p)
 
 	if err != nil {
 		t.Fatalf("creating lifecycle %s failed when it shouldn't: %s", lifecycleName, err)
@@ -115,13 +142,14 @@ func createTestLifecycle(t *testing.T, lifecycleName string) model.Lifecycle {
 	return *createdLifecycle
 }
 
-func getTestLifecycle(lifecycleName string) model.Lifecycle {
-	p := model.NewLifecycle(lifecycleName)
-	return *p
+func getTestLifecycle(name string) (*model.Lifecycle, error) {
+	return model.NewLifecycle(name)
 }
 
 func cleanLifecycle(t *testing.T, lifecycleID string) {
-	err := octopusClient.Lifecycles.Delete(lifecycleID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.Lifecycles.DeleteByID(lifecycleID)
 
 	if err == nil {
 		return

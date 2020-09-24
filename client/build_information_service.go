@@ -3,39 +3,43 @@ package client
 import (
 	"strings"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type BuildInformationService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type buildInformationService struct {
+	name        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewBuildInformationService(sling *sling.Sling, uriTemplate string) *BuildInformationService {
+func newBuildInformationService(sling *sling.Sling, uriTemplate string) *buildInformationService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &BuildInformationService{
-		name:  "BuildInformationService",
-		path:  path,
-		sling: sling,
+	return &buildInformationService{
+		name:        serviceBuildInformationService,
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *BuildInformationService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
+func (s buildInformationService) getClient() *sling.Sling {
+	return s.sling
 }
 
-var _ ServiceInterface = &BuildInformationService{}
+func (s buildInformationService) getName() string {
+	return s.name
+}
+
+func (s buildInformationService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+var _ ServiceInterface = &buildInformationService{}

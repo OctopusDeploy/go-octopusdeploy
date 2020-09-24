@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -16,13 +18,30 @@ type ConfigurationSection struct {
 	Resource
 }
 
-func (c *ConfigurationSection) GetID() string {
-	return c.ID
+// GetID returns the ID value of the ConfigurationSection.
+func (resource ConfigurationSection) GetID() string {
+	return resource.ID
 }
 
-func (c *ConfigurationSection) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this ConfigurationSection.
+func (resource ConfigurationSection) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this ConfigurationSection was changed.
+func (resource ConfigurationSection) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this ConfigurationSection.
+func (resource ConfigurationSection) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the ConfigurationSection and returns an error if invalid.
+func (resource ConfigurationSection) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(c)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

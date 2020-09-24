@@ -5,51 +5,69 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-// APIKeyService handles communication with API key-related methods of the
-// Octopus API.
-type APIKeyService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+// apiKeyService handles communication with API key-related methods of the Octopus API.
+type apiKeyService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-// NewAPIKeyService returns an APIKeyService with a preconfigured client.
-func NewAPIKeyService(sling *sling.Sling, uriTemplate string) *APIKeyService {
+// newAPIKeyService returns an apiKeyService with a preconfigured client.
+func newAPIKeyService(sling *sling.Sling, uriTemplate string) *apiKeyService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &APIKeyService{
-		name:  "APIKeyService",
-		path:  path,
-		sling: sling,
+	return &apiKeyService{
+		name:        serviceAPIKeyService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get lists all API keys for a user, returning the most recent results first.
-func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
+func (s apiKeyService) getClient() *sling.Sling {
+	return s.sling
+}
+
+func (s apiKeyService) getName() string {
+	return s.name
+}
+
+func (s apiKeyService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByUserID lists all API keys for a user, returning the most recent results first.
+func (s apiKeyService) GetByUserID(userID string) (*[]model.APIKey, error) {
 	if isEmpty(userID) {
-		return nil, createInvalidParameterError("Get", "userID")
+		return nil, createInvalidParameterError(operationGetByUserID, parameterUserID)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
 	var p []model.APIKey
-	path := fmt.Sprintf(s.path+"/%s/apikeys", userID)
+
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s/apikeys", userID)
+
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.APIKeys), path)
-
+		resp, err := apiGet(s.getClient(), new(model.APIKeys), path)
 		if err != nil {
 			return nil, err
 		}
@@ -63,24 +81,24 @@ func (s *APIKeyService) Get(userID string) (*[]model.APIKey, error) {
 }
 
 // GetByID the API key that belongs to the user by its ID.
-func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, error) {
+func (s apiKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, error) {
 	if isEmpty(userID) {
-		return nil, createInvalidParameterError("GetByID", "userID")
+		return nil, createInvalidParameterError(operationGetByID, parameterUserID)
 	}
 
 	if isEmpty(apiKeyID) {
-		return nil, createInvalidParameterError("GetByID", "apiKeyID")
+		return nil, createInvalidParameterError(operationGetByID, parameterAPIKeyID)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s/apikeys/%s", userID, apiKeyID)
-	resp, err := apiGet(s.sling, new(model.APIKey), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s/apikeys/%s", userID, apiKeyID)
 
+	resp, err := apiGet(s.getClient(), new(model.APIKey), path)
 	if err != nil {
 		return nil, err
 	}
@@ -91,9 +109,8 @@ func (s *APIKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, 
 // Create generates a new API key for the specified user ID. The API key
 // returned in the result must be saved by the caller, as it cannot be
 // retrieved subsequently from the Octopus server.
-func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
-	err := s.validateInternalState()
-
+func (s apiKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -104,9 +121,10 @@ func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s/apikeys", *apiKey.UserID)
-	resp, err := apiPost(s.sling, apiKey, new(model.APIKey), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s/apikeys", *apiKey.UserID)
 
+	resp, err := apiPost(s.getClient(), apiKey, new(model.APIKey), path)
 	if err != nil {
 		return nil, err
 	}
@@ -114,16 +132,4 @@ func (s *APIKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 	return resp.(*model.APIKey), nil
 }
 
-func (s *APIKeyService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &APIKeyService{}
+var _ ServiceInterface = &apiKeyService{}

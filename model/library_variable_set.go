@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -36,15 +38,30 @@ func ValidateLibraryVariableSetValues(LibraryVariableSet *LibraryVariableSet) er
 	return err
 }
 
-func (l *LibraryVariableSet) GetID() string {
-	return l.ID
+// GetID returns the ID value of the LibraryVariableSet.
+func (resource LibraryVariableSet) GetID() string {
+	return resource.ID
 }
 
-// Validate returns a collection of validation errors against the library
-// variable set's internal values.
-func (l *LibraryVariableSet) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this LibraryVariableSet.
+func (resource LibraryVariableSet) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this LibraryVariableSet was changed.
+func (resource LibraryVariableSet) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this LibraryVariableSet.
+func (resource LibraryVariableSet) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the LibraryVariableSet and returns an error if invalid.
+func (resource LibraryVariableSet) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(l)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type Release struct {
 	Assembled                          time.Time                                `json:"Assembled,omitempty"`
@@ -19,10 +23,42 @@ type Release struct {
 	Resource
 }
 
-// Releases defines a collection of Release instance with built-in support for
-// paged results from the API.
+// Releases defines a collection of Release instance with built-in support for paged results from the API.
 type Releases struct {
 	Items []Release `json:"Items"`
-
 	PagedResults
 }
+
+// GetID returns the ID value of the Release.
+func (resource Release) GetID() string {
+	return resource.ID
+}
+
+// GetLastModifiedBy returns the name of the account that modified the value of this Release.
+func (resource Release) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this Release was changed.
+func (resource Release) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this Release.
+func (resource Release) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the Release and returns an error if invalid.
+func (resource Release) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(resource)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var _ ResourceInterface = &Release{}

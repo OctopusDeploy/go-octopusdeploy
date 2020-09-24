@@ -5,43 +5,54 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type SpaceService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type spaceService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewSpaceService(sling *sling.Sling, uriTemplate string) *SpaceService {
+func newSpaceService(sling *sling.Sling, uriTemplate string) *spaceService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &SpaceService{
-		name:  "SpaceService",
-		path:  path,
-		sling: sling,
+	return &spaceService{
+		name:        serviceSpaceService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *SpaceService) Get(id string) (*model.Space, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s spaceService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s spaceService) getName() string {
+	return s.name
+}
 
+func (s spaceService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+func (s spaceService) GetByID(id string) (*model.Space, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Space), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Space), path)
 	if err != nil {
 		return nil, err
 	}
@@ -49,29 +60,25 @@ func (s *SpaceService) Get(id string) (*model.Space, error) {
 	return resp.(*model.Space), nil
 }
 
-// GetAll returns all instances of a Space.
-func (s *SpaceService) GetAll() ([]model.Space, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a Space. If none can be found or an error occurs, it returns an empty collection.
+func (s spaceService) GetAll() ([]model.Space, error) {
 	items := new([]model.Space)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
 // GetByName performs a lookup and returns the Space with a matching name.
-func (s *SpaceService) GetByName(name string) (*model.Space, error) {
+func (s spaceService) GetByName(name string) (*model.Space, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
+		return nil, createInvalidParameterError(operationGetByName, parameterName)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -88,13 +95,13 @@ func (s *SpaceService) GetByName(name string) (*model.Space, error) {
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
 // Add creates a new Space.
-func (s *SpaceService) Add(space *model.Space) (*model.Space, error) {
+func (s spaceService) Add(space *model.Space) (*model.Space, error) {
 	if space == nil {
-		return nil, createInvalidParameterError("Add", "space")
+		return nil, createInvalidParameterError(operationAdd, "space")
 	}
 
 	err := space.Validate()
@@ -103,14 +110,15 @@ func (s *SpaceService) Add(space *model.Space) (*model.Space, error) {
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, space, new(model.Space), s.path)
+	path := trimTemplate(s.path)
 
+	resp, err := apiAdd(s.getClient(), space, new(model.Space), path)
 	if err != nil {
 		return nil, err
 	}
@@ -118,34 +126,24 @@ func (s *SpaceService) Add(space *model.Space) (*model.Space, error) {
 	return resp.(*model.Space), nil
 }
 
-func (s *SpaceService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+func (s spaceService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
-func (s *SpaceService) Update(space *model.Space) (*model.Space, error) {
+func (s spaceService) Update(space *model.Space) (*model.Space, error) {
 	if space == nil {
-		return nil, createInvalidParameterError("Update", "space")
+		return nil, createInvalidParameterError(operationUpdate, "space")
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", space.ID)
-	resp, err := apiUpdate(s.sling, space, new(model.Space), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s", space.ID)
 
+	resp, err := apiUpdate(s.getClient(), space, new(model.Space), path)
 	if err != nil {
 		return nil, err
 	}
@@ -153,16 +151,4 @@ func (s *SpaceService) Update(space *model.Space) (*model.Space, error) {
 	return resp.(*model.Space), nil
 }
 
-func (s *SpaceService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &SpaceService{}
+var _ ServiceInterface = &spaceService{}

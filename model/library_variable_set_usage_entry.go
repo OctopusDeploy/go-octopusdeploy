@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -11,15 +13,30 @@ type LibraryVariableSetUsageEntry struct {
 	Resource
 }
 
-func (l *LibraryVariableSetUsageEntry) GetID() string {
-	return l.ID
+// GetID returns the ID value of the LibraryVariableSetUsageEntry.
+func (resource LibraryVariableSetUsageEntry) GetID() string {
+	return resource.ID
 }
 
-// Validate returns a collection of validation errors against the library
-// variable set usage entry's internal values.
-func (l *LibraryVariableSetUsageEntry) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this LibraryVariableSetUsageEntry.
+func (resource LibraryVariableSetUsageEntry) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this LibraryVariableSetUsageEntry was changed.
+func (resource LibraryVariableSetUsageEntry) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this LibraryVariableSetUsageEntry.
+func (resource LibraryVariableSetUsageEntry) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the LibraryVariableSetUsageEntry and returns an error if invalid.
+func (resource LibraryVariableSetUsageEntry) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(l)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

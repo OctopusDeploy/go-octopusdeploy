@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -21,13 +23,30 @@ type AccountUsage struct {
 	Resource
 }
 
-func (a *AccountUsage) GetID() string {
-	return a.ID
+// GetID returns the ID value of the AccountUsage struct instance.
+func (resource AccountUsage) GetID() string {
+	return resource.ID
 }
 
-func (a *AccountUsage) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this AccountUsage.
+func (resource AccountUsage) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this AccountUsage was changed.
+func (resource AccountUsage) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this AccountUsage.
+func (resource AccountUsage) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the AccountUsage and returns an error if invalid.
+func (resource AccountUsage) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(a)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

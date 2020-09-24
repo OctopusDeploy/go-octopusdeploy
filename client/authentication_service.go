@@ -4,36 +4,54 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-// AuthenticationService handles communication with Authentication-related
-// methods of the Octopus API.
-type AuthenticationService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+// authenticationService handles communication with Authentication-related methods of the Octopus API.
+type authenticationService struct {
+	name        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-// NewAuthenticationService returns an AuthenticationService with a
-// preconfigured client.
-func NewAuthenticationService(sling *sling.Sling, uriTemplate string) *AuthenticationService {
+// newAuthenticationService returns an authenticationService with a preconfigured client.
+func newAuthenticationService(sling *sling.Sling, uriTemplate string) *authenticationService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &AuthenticationService{
-		name:  "AuthenticationService",
-		path:  path,
-		sling: sling,
+	return &authenticationService{
+		name:        serviceAuthenticationService,
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *AuthenticationService) Get() (*model.Authentication, error) {
-	resp, err := apiGet(s.sling, new(model.Authentication), s.path)
+func (s authenticationService) getClient() *sling.Sling {
+	return s.sling
+}
 
+func (s authenticationService) getName() string {
+	return s.name
+}
+
+func (s authenticationService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+func (s authenticationService) Get() (*model.Authentication, error) {
+	path, err := getPath(s)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.getClient(), new(model.Authentication), path)
 	if err != nil {
 		return nil, err
 	}
@@ -41,16 +59,4 @@ func (s *AuthenticationService) Get() (*model.Authentication, error) {
 	return resp.(*model.Authentication), nil
 }
 
-func (s *AuthenticationService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &AuthenticationService{}
+var _ ServiceInterface = &authenticationService{}

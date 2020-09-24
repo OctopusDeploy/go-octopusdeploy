@@ -5,43 +5,54 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type EnvironmentService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type environmentService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewEnvironmentService(sling *sling.Sling, uriTemplate string) *EnvironmentService {
+func newEnvironmentService(sling *sling.Sling, uriTemplate string) *environmentService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &EnvironmentService{
-		name:  "EnvironmentService",
-		path:  path,
-		sling: sling,
+	return &environmentService{
+		name:        serviceEnvironmentService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s environmentService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s environmentService) getName() string {
+	return s.name
+}
 
+func (s environmentService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+func (s environmentService) GetByID(id string) (*model.Environment, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Environment), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Environment), path)
 	if err != nil {
 		return nil, err
 	}
@@ -49,29 +60,25 @@ func (s *EnvironmentService) Get(id string) (*model.Environment, error) {
 	return resp.(*model.Environment), nil
 }
 
-// GetAll returns all instances of an Environment.
-func (s *EnvironmentService) GetAll() ([]model.Environment, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of an Environment. If none can be found or an error occurs, it returns an empty collection.
+func (s environmentService) GetAll() ([]model.Environment, error) {
 	items := new([]model.Environment)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
 // GetByName performs a lookup and returns the Environment with a matching name.
-func (s *EnvironmentService) GetByName(name string) (*model.Environment, error) {
+func (s environmentService) GetByName(name string) (*model.Environment, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
+		return nil, createInvalidParameterError(operationGetByName, parameterName)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -88,13 +95,13 @@ func (s *EnvironmentService) GetByName(name string) (*model.Environment, error) 
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
 // Add creates a new Environment.
-func (s *EnvironmentService) Add(environment *model.Environment) (*model.Environment, error) {
+func (s environmentService) Add(environment *model.Environment) (*model.Environment, error) {
 	if environment == nil {
-		return nil, createInvalidParameterError("Add", "environment")
+		return nil, createInvalidParameterError(operationAdd, parameterEnvironment)
 	}
 
 	err := environment.Validate()
@@ -103,14 +110,15 @@ func (s *EnvironmentService) Add(environment *model.Environment) (*model.Environ
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, environment, new(model.Environment), s.path)
+	path := trimTemplate(s.path)
 
+	resp, err := apiAdd(s.getClient(), environment, new(model.Environment), path)
 	if err != nil {
 		return nil, err
 	}
@@ -118,23 +126,12 @@ func (s *EnvironmentService) Add(environment *model.Environment) (*model.Environ
 	return resp.(*model.Environment), nil
 }
 
-func (s *EnvironmentService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+func (s environmentService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
-func (s *EnvironmentService) Update(environment *model.Environment) (*model.Environment, error) {
-	err := s.validateInternalState()
-
+func (s environmentService) Update(environment *model.Environment) (*model.Environment, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -145,9 +142,10 @@ func (s *EnvironmentService) Update(environment *model.Environment) (*model.Envi
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", environment.ID)
-	resp, err := apiUpdate(s.sling, environment, new(model.Environment), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s", environment.ID)
 
+	resp, err := apiUpdate(s.getClient(), environment, new(model.Environment), path)
 	if err != nil {
 		return nil, err
 	}
@@ -155,16 +153,4 @@ func (s *EnvironmentService) Update(environment *model.Environment) (*model.Envi
 	return resp.(*model.Environment), nil
 }
 
-func (s *EnvironmentService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &EnvironmentService{}
+var _ ServiceInterface = &environmentService{}

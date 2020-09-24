@@ -10,19 +10,15 @@ func NewUsernamePasswordAccount(name string) (*Account, error) {
 		return nil, createInvalidParameterError("NewUsernamePasswordAccount", "name")
 	}
 
-	account := &Account{
-		Name:        name,
-		AccountType: enum.UsernamePassword,
+	account, err := NewAccount(name, enum.UsernamePassword)
+	if err != nil {
+		return nil, err
 	}
 
 	return account, nil
 }
 
-func validateUsernamePasswordAccount(account *Account) error {
-	if account == nil {
-		return createInvalidParameterError("validateUsernamePasswordAccount", "account")
-	}
-
+func validateUsernamePasswordAccount(account Account) error {
 	validate := validator.New()
 	err := validate.Struct(account)
 

@@ -7,21 +7,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewTagSetServiceWithNil(t *testing.T) {
-	service := NewTagSetService(nil, "")
-	assert.Nil(t, service)
-}
+func TestNewTagSetService(t *testing.T) {
+	serviceFunction := newTagSetService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceTagSetService
 
-func TestTagSetServiceWithEmptyClient(t *testing.T) {
-	service := NewTagSetService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *tagSetService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestTagSetServiceGetWithEmptyID(t *testing.T) {
-	service := NewTagSetService(&sling.Sling{}, "")
+	service := newTagSetService(&sling.Sling{}, emptyString)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
 	if err != nil {
 		return
@@ -30,7 +43,7 @@ func TestTagSetServiceGetWithEmptyID(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)

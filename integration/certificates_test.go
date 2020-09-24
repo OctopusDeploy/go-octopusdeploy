@@ -64,6 +64,8 @@ func TestCertAddAndReplace(t *testing.T) {
 }
 
 func createTestCert(t *testing.T, certName string) model.Certificate {
+	octopusClient := getOctopusClient()
+
 	c, err := getTestCert1(t, certName)
 	if err != nil {
 		t.Fatalf("getting certificate %s failed when it shouldn't: %s", certName, err)
@@ -78,6 +80,8 @@ func createTestCert(t *testing.T, certName string) model.Certificate {
 }
 
 func replaceCert(t *testing.T, originalCert *model.Certificate) model.Certificate {
+	octopusClient := getOctopusClient()
+
 	certificateReplace, err := getTestCertReplace(t)
 
 	assert.NoError(t, err)
@@ -114,13 +118,18 @@ func getTestCertReplace(t *testing.T) (*model.ReplacementCertificate, error) {
 }
 
 func cleanCert(t *testing.T, certID string) {
-	err := octopusClient.Certificates.Delete(certID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.Certificates.DeleteByID(certID)
+
 	if err == nil {
 		return
 	}
+
 	if err == client.ErrItemNotFound {
 		return
 	}
+
 	if err != nil {
 		t.Fatalf("deleting certificate failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
 	}

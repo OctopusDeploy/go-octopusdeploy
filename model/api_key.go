@@ -29,13 +29,30 @@ type APIKey struct {
 	Resource
 }
 
-func (a *APIKey) GetID() string {
-	return a.ID
+// GetID returns the ID value of the APIKey.
+func (resource APIKey) GetID() string {
+	return resource.ID
 }
 
-func (a *APIKey) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this APIKey.
+func (resource APIKey) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this APIKey was changed.
+func (resource APIKey) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this APIKey.
+func (resource APIKey) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the APIKey and returns an error if invalid.
+func (resource APIKey) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(a)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

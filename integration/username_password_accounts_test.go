@@ -8,6 +8,8 @@ import (
 )
 
 func TestCreateAndDeleteAndGetUsernamePasswordAccount(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	name := getRandomName()
 	description := getRandomName()
 	username := getRandomName()
@@ -54,11 +56,11 @@ func TestCreateAndDeleteAndGetUsernamePasswordAccount(t *testing.T) {
 	assert.Nil(t, createdAccount.Password.NewValue)
 	assert.NotEmpty(t, createdAccount.Links)
 
-	err = octopusClient.Accounts.Delete(createdAccount.ID)
+	err = octopusClient.Accounts.DeleteByID(createdAccount.ID)
 
 	assert.NoError(t, err)
 
-	deletedAccount, err := octopusClient.Accounts.Get(createdAccount.ID)
+	deletedAccount, err := octopusClient.Accounts.GetByID(createdAccount.ID)
 
 	assert.Error(t, err)
 	assert.Nil(t, deletedAccount)

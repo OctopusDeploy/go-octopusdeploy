@@ -8,13 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestCreateInvalidAzureServicePrincipalAccount(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	account, err := model.NewAzureServicePrincipalAccount(getRandomName(), uuid.Nil, uuid.Nil, uuid.Nil, model.SensitiveValue{})
 
 	assert.NoError(t, err)
@@ -47,6 +43,8 @@ func TestCreateInvalidAzureServicePrincipalAccount(t *testing.T) {
 }
 
 func TestCreateAndDeleteAndGetAzureServicePrincipalAccount(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	sensitiveValue := model.NewSensitiveValue(getRandomName())
 
 	assert.NotNil(t, sensitiveValue)
@@ -80,11 +78,11 @@ func TestCreateAndDeleteAndGetAzureServicePrincipalAccount(t *testing.T) {
 	assert.Equal(t, account.SubscriptionID, createdAccount.SubscriptionID)
 	assert.Equal(t, account.TenantedDeploymentParticipation, createdAccount.TenantedDeploymentParticipation)
 
-	err = octopusClient.Accounts.Delete(createdAccount.ID)
+	err = octopusClient.Accounts.DeleteByID(createdAccount.ID)
 
 	assert.NoError(t, err)
 
-	deletedAccount, err := octopusClient.Accounts.Get(createdAccount.ID)
+	deletedAccount, err := octopusClient.Accounts.GetByID(createdAccount.ID)
 
 	assert.Error(t, err)
 	assert.Nil(t, deletedAccount)

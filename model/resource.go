@@ -4,6 +4,9 @@ import "time"
 
 type ResourceInterface interface {
 	GetID() string
+	GetLastModifiedBy() string
+	GetLastModifiedOn() *time.Time
+	GetLinks() map[string]string
 	Validate() error
 }
 

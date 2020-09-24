@@ -15,10 +15,19 @@ func TestLifecycleGet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, client)
 
-	lifecycle, err := client.Lifecycles.Get("Lifecycles-41")
+	if err != nil {
+		return
+	}
+
+	lifecycle, err := client.Lifecycles.GetByID("Lifecycles-41")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, lifecycle)
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, "Test", lifecycle.Name)
 	assert.Equal(t, 2, len(lifecycle.Phases))
 
@@ -96,7 +105,7 @@ const getLifecycleResponseJSON = `
     "QuantityToKeep": 2,
     "ShouldKeepForever": false
   },
-  "Description": "",
+  "Description": emptyString,
   "Links": {
     "Self": "/api/lifecycles/Lifecycles-41",
     "Preview": "/api/lifecycles/Lifecycles-41/preview",
@@ -105,16 +114,14 @@ const getLifecycleResponseJSON = `
 }`
 
 func TestValidateLifecycleValuesJustANamePasses(t *testing.T) {
-
 	lifecycle := &model.Lifecycle{
 		Name: "My Lifecycle",
 	}
 
-	assert.Nil(t, model.ValidateLifecycleValues(lifecycle))
+	assert.NoError(t, lifecycle.Validate())
 }
 
 func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
-
 	lifecycle := &model.Lifecycle{
 		Name: "My Lifecycle",
 		Phases: []model.Phase{
@@ -124,14 +131,12 @@ func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
 		},
 	}
 
-	assert.Nil(t, model.ValidateLifecycleValues(lifecycle))
+	assert.NoError(t, lifecycle.Validate())
 }
 
 func TestValidateLifecycleValuesMissingNameFails(t *testing.T) {
-
 	lifecycle := &model.Lifecycle{}
-
-	assert.Error(t, model.ValidateLifecycleValues(lifecycle))
+	assert.Error(t, lifecycle.Validate())
 }
 
 func TestValidateLifecycleValuesPhaseWithMissingNameFails(t *testing.T) {
@@ -143,5 +148,5 @@ func TestValidateLifecycleValuesPhaseWithMissingNameFails(t *testing.T) {
 		},
 	}
 
-	assert.Error(t, model.ValidateLifecycleValues(lifecycle))
+	assert.Error(t, lifecycle.Validate())
 }

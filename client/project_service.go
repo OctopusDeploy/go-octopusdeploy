@@ -6,44 +6,55 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type ProjectService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type projectService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewProjectService(sling *sling.Sling, uriTemplate string) *ProjectService {
+func newProjectService(sling *sling.Sling, uriTemplate string) *projectService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &ProjectService{
-		name:  "ProjectService",
-		path:  path,
-		sling: sling,
+	return &projectService{
+		name:        serviceProjectService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get returns a single project by its ID in Octopus Deploy
-func (s *ProjectService) Get(id string) (*model.Project, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s projectService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s projectService) getName() string {
+	return s.name
+}
 
+func (s projectService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByID returns a single project by its ID in Octopus Deploy
+func (s projectService) GetByID(id string) (*model.Project, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Project), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Project), path)
 	if err != nil {
 		return nil, err
 	}
@@ -51,29 +62,25 @@ func (s *ProjectService) Get(id string) (*model.Project, error) {
 	return resp.(*model.Project), nil
 }
 
-// GetAll returns all instances of a Project.
-func (s *ProjectService) GetAll() ([]model.Project, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a Project. If none can be found or an error occurs, it returns an empty collection.
+func (s projectService) GetAll() ([]model.Project, error) {
 	items := new([]model.Project)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
 // GetByName performs a lookup and returns the Project with a matching name.
-func (s *ProjectService) GetByName(name string) (*model.Project, error) {
+func (s projectService) GetByName(name string) (*model.Project, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
+		return nil, createInvalidParameterError(operationGetByName, parameterName)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -90,13 +97,13 @@ func (s *ProjectService) GetByName(name string) (*model.Project, error) {
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
-func (s *ProjectService) GetChannels(project model.Project) ([]model.Channel, error) {
+func (s projectService) GetChannels(project model.Project) ([]model.Channel, error) {
 	channels := []model.Channel{}
 
-	err := s.validateInternalState()
+	err := validateInternalState(s)
 
 	if err != nil {
 		return channels, err
@@ -112,7 +119,7 @@ func (s *ProjectService) GetChannels(project model.Project) ([]model.Channel, er
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Channels), path)
+		resp, err := apiGet(s.getClient(), new(model.Channels), path)
 
 		if err != nil {
 			return channels, err
@@ -126,16 +133,14 @@ func (s *ProjectService) GetChannels(project model.Project) ([]model.Channel, er
 	return channels, nil
 }
 
-func (s *ProjectService) GetSummary(project model.Project) (*model.ProjectSummary, error) {
-	err := s.validateInternalState()
-
+func (s projectService) GetSummary(project model.Project) (*model.ProjectSummary, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
 	path := project.Links["Summary"]
-	resp, err := apiGet(s.sling, new(model.ProjectSummary), path)
-
+	resp, err := apiGet(s.getClient(), new(model.ProjectSummary), path)
 	if err != nil {
 		return nil, err
 	}
@@ -143,9 +148,8 @@ func (s *ProjectService) GetSummary(project model.Project) (*model.ProjectSummar
 	return resp.(*model.ProjectSummary), nil
 }
 
-func (s *ProjectService) GetReleases(project model.Project) ([]model.Release, error) {
-	err := s.validateInternalState()
-
+func (s projectService) GetReleases(project model.Project) ([]model.Release, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -162,8 +166,7 @@ func (s *ProjectService) GetReleases(project model.Project) ([]model.Release, er
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Releases), path)
-
+		resp, err := apiGet(s.getClient(), new(model.Releases), path)
 		if err != nil {
 			return nil, err
 		}
@@ -177,9 +180,9 @@ func (s *ProjectService) GetReleases(project model.Project) ([]model.Release, er
 }
 
 // Add creates a new Project.
-func (s *ProjectService) Add(project *model.Project) (*model.Project, error) {
+func (s projectService) Add(project *model.Project) (*model.Project, error) {
 	if project == nil {
-		return nil, createInvalidParameterError("Add", "project")
+		return nil, createInvalidParameterError(operationAdd, "project")
 	}
 
 	err := project.Validate()
@@ -188,14 +191,15 @@ func (s *ProjectService) Add(project *model.Project) (*model.Project, error) {
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, project, new(model.Project), s.path)
+	path := trimTemplate(s.path)
 
+	resp, err := apiAdd(s.getClient(), project, new(model.Project), path)
 	if err != nil {
 		return nil, err
 	}
@@ -204,24 +208,14 @@ func (s *ProjectService) Add(project *model.Project) (*model.Project, error) {
 }
 
 // Delete deletes an existing project in Octopus Deploy
-func (s *ProjectService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+func (s projectService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
 // Update updates an existing project in Octopus Deploy
-func (s *ProjectService) Update(resource *model.Project) (*model.Project, error) {
+func (s projectService) Update(resource *model.Project) (*model.Project, error) {
 	if resource == nil {
-		return nil, createInvalidParameterError("Update", "resource")
+		return nil, createInvalidParameterError(operationUpdate, "resource")
 	}
 
 	err := resource.Validate()
@@ -230,15 +224,16 @@ func (s *ProjectService) Update(resource *model.Project) (*model.Project, error)
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Project), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s", resource.ID)
 
+	resp, err := apiUpdate(s.getClient(), resource, new(model.Project), path)
 	if err != nil {
 		return nil, err
 	}
@@ -246,16 +241,4 @@ func (s *ProjectService) Update(resource *model.Project) (*model.Project, error)
 	return resp.(*model.Project), nil
 }
 
-func (s *ProjectService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &ProjectService{}
+var _ ServiceInterface = &projectService{}

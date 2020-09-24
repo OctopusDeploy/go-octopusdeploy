@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 	uuid "github.com/google/uuid"
 )
@@ -16,22 +18,39 @@ type RootResource struct {
 	Resource
 }
 
-func (r *RootResource) GetID() string {
-	return r.ID
+// GetID returns the ID value of the RootResource.
+func (resource RootResource) GetID() string {
+	return resource.ID
 }
 
-func (r *RootResource) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this RootResource.
+func (resource RootResource) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this RootResource was changed.
+func (resource RootResource) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this RootResource.
+func (resource RootResource) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the RootResource and returns an error if invalid.
+func (resource RootResource) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(r)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		return err
 	}
 
 	validations := []error{
-		ValidateSemanticVersion("Version", r.Version),
-		ValidateSemanticVersion("APIVersion", r.APIVersion),
-		ValidateRequiredUUID("InstallationID", r.InstallationID),
+		ValidateSemanticVersion("Version", resource.Version),
+		ValidateSemanticVersion("APIVersion", resource.APIVersion),
+		ValidateRequiredUUID("InstallationID", resource.InstallationID),
 	}
 
 	return ValidateMultipleProperties(validations)

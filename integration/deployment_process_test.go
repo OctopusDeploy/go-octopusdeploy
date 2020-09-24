@@ -8,16 +8,20 @@ import (
 )
 
 func TestDeploymentProcessGet(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
-	deploymentProcess, err := octopusClient.DeploymentProcesses.Get(project.DeploymentProcessID)
+	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
 	assert.Equal(t, project.DeploymentProcessID, deploymentProcess.ID)
 	assert.NoError(t, err, "there should be error raised getting a projects deployment process")
 }
 
 func TestDeploymentProcessGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
@@ -26,7 +30,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all deployment processes failed when it shouldn't: %s", err)
 	}
 
-	numberOfDeploymentProcesses := len(*allDeploymentProcess)
+	numberOfDeploymentProcesses := len(allDeploymentProcess)
 
 	additionalProject := createTestProject(t, getRandomName())
 	defer cleanProject(t, additionalProject.ID)
@@ -36,15 +40,17 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all deployment processes failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for deployment processes when not expected")
-	assert.Equal(t, len(*allDeploymentProcessAfterCreatingAdditional), numberOfDeploymentProcesses+1, "created an additional project and expected number of deployment processes to increase by 1")
+	assert.NoError(t, err, "error when looking for deployment processes when not expected")
+	assert.Equal(t, len(allDeploymentProcessAfterCreatingAdditional), numberOfDeploymentProcesses+1, "created an additional project and expected number of deployment processes to increase by 1")
 }
 
 func TestDeploymentProcessUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
-	deploymentProcess, err := octopusClient.DeploymentProcesses.Get(project.DeploymentProcessID)
+	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
 	if err != nil {
 		t.Fatalf("Retrieving deployment processes failed when it shouldn't: %s", err)
@@ -83,9 +89,9 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 
 	deploymentProcess.Steps = append(deploymentProcess.Steps, *step1)
 
-	updated, err := octopusClient.DeploymentProcesses.Update(deploymentProcess)
+	updated, err := octopusClient.DeploymentProcesses.Update(*deploymentProcess)
 
-	assert.Nil(t, err, "error when updating deployment process")
+	assert.NoError(t, err, "error when updating deployment process")
 	assert.Equal(t, updated.Steps[0].Properties, deploymentProcess.Steps[0].Properties)
 	assert.Equal(t, updated.Steps[0].Actions[0].ActionType, deploymentProcess.Steps[0].Actions[0].ActionType)
 }

@@ -7,14 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Setup() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestGetAPIKeys(t *testing.T) {
-	Setup()
+	octopusClient := getOctopusClient()
 
 	user := model.NewUser(getRandomName(), getRandomName())
 	user.IsService = true
@@ -49,7 +43,7 @@ func TestGetAPIKeys(t *testing.T) {
 		return
 	}
 
-	apiKeys, err := octopusClient.APIKeys.Get(user.ID)
+	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.ID)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, apiKeys)
@@ -63,13 +57,13 @@ func TestGetAPIKeys(t *testing.T) {
 		assert.NotNil(t, apiKey.ID)
 	}
 
-	err = octopusClient.Users.Delete(user.ID)
+	err = octopusClient.Users.DeleteByID(user.ID)
 
 	assert.NoError(t, err)
 }
 
 func TestGetAPIKeyByID(t *testing.T) {
-	Setup()
+	octopusClient := getOctopusClient()
 
 	user := model.NewUser(getRandomName(), getRandomName())
 	user.IsService = true
@@ -82,7 +76,7 @@ func TestGetAPIKeyByID(t *testing.T) {
 		return
 	}
 
-	apiKeys, err := octopusClient.APIKeys.Get(user.ID)
+	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.ID)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, apiKeys)
@@ -96,13 +90,13 @@ func TestGetAPIKeyByID(t *testing.T) {
 		assert.NotNil(t, key)
 	}
 
-	err = octopusClient.Users.Delete(user.ID)
+	err = octopusClient.Users.DeleteByID(user.ID)
 
 	assert.NoError(t, err)
 }
 
 func TestCreateAPIKey(t *testing.T) {
-	Setup()
+	octopusClient := getOctopusClient()
 
 	apiKey, err := model.NewAPIKey(getRandomName())
 
@@ -126,7 +120,7 @@ func TestCreateAPIKey(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, createdAPIKey)
 
-	err = octopusClient.Users.Delete(user.ID)
+	err = octopusClient.Users.DeleteByID(user.ID)
 
 	assert.NoError(t, err)
 }

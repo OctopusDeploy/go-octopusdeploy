@@ -7,27 +7,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewCommunityActionTemplateServiceWithNil(t *testing.T) {
-	service := NewCommunityActionTemplateService(nil, "")
-	assert.Nil(t, service)
-}
+func TestNewCommunityActionTemplateService(t *testing.T) {
+	serviceFunction := newCommunityActionTemplateService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceCommunityActionTemplateService
 
-func TestCommunityActionTemplateServiceWithEmptyClient(t *testing.T) {
-	service := NewCommunityActionTemplateService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *communityActionTemplateService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestCommunityActionTemplateServiceGetWithEmptyID(t *testing.T) {
-	service := NewCommunityActionTemplateService(&sling.Sling{}, "")
+	service := createCommunityActionTemplateService(t)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
+}
+
+func createCommunityActionTemplateService(t *testing.T) *communityActionTemplateService {
+	service := newCommunityActionTemplateService(&sling.Sling{}, TestURICommunityActionTemplates)
+	testNewService(t, service, TestURICommunityActionTemplates, serviceCommunityActionTemplateService)
+	return service
 }

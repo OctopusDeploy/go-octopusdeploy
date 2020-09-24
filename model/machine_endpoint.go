@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -22,21 +24,39 @@ type MachineEndpoint struct {
 	PollingTentacleMachineEndpoint
 	ServiceFabricMachineEndpoint
 	SshMachineEndpoint
+
 	Resource
 }
 
+// NewMachineEndpoint initializes a MachineEndpoint.
 func NewMachineEndpoint() (*MachineEndpoint, error) {
 	return &MachineEndpoint{}, nil
 }
 
-func (m *MachineEndpoint) GetID() string {
-	return m.ID
+// GetID returns the ID value of the MachineEndpoint.
+func (resource MachineEndpoint) GetID() string {
+	return resource.ID
 }
 
-func (m *MachineEndpoint) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this MachineEndpoint.
+func (resource MachineEndpoint) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
 
+// GetLastModifiedOn returns the time when the value of this MachineEndpoint was changed.
+func (resource MachineEndpoint) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this MachineEndpoint.
+func (resource MachineEndpoint) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the MachineEndpoint and returns an error if invalid.
+func (resource MachineEndpoint) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(m)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

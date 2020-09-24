@@ -1,49 +1,58 @@
 package client
 
 import (
-	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type LibraryVariableSetService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type libraryVariableSetService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *LibraryVariableSetService {
+func newLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *libraryVariableSetService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &LibraryVariableSetService{
-		name:  "LibraryVariableSetService",
-		path:  path,
-		sling: sling,
+	return &libraryVariableSetService{
+		name:        serviceLibraryVariableSetService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get returns a single LibraryVariableSet by its Id in Octopus Deploy
-func (s *LibraryVariableSetService) Get(id string) (*model.LibraryVariableSet, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s libraryVariableSetService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s libraryVariableSetService) getName() string {
+	return s.name
+}
 
+func (s libraryVariableSetService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByID returns a single LibraryVariableSet by its Id in Octopus Deploy
+func (s libraryVariableSetService) GetByID(id string) (*model.LibraryVariableSet, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.LibraryVariableSet), path)
-
+	resp, err := apiGet(s.getClient(), new(model.LibraryVariableSet), path)
 	if err != nil {
 		return nil, err
 	}
@@ -51,90 +60,36 @@ func (s *LibraryVariableSetService) Get(id string) (*model.LibraryVariableSet, e
 	return resp.(*model.LibraryVariableSet), nil
 }
 
-// GetAll returns all instances of a LibraryVariableSet.
-func (s *LibraryVariableSetService) GetAll() (*[]model.LibraryVariableSet, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a LibraryVariableSet. If none can be found or an error occurs, it returns an empty collection.
+func (s libraryVariableSetService) GetAll() ([]model.LibraryVariableSet, error) {
+	items := new([]model.LibraryVariableSet)
+	path, err := getAllPath(s)
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	return s.get("")
-}
-
-func (s *LibraryVariableSetService) get(query string) (*[]model.LibraryVariableSet, error) {
-	var p []model.LibraryVariableSet
-
-	path := s.path + "?take=2147483647"
-	loadNextPage := true
-
-	if query != "" {
-		path = fmt.Sprintf("%s&%s", path, query)
-	}
-
-	for loadNextPage { // Older Octopus Servers do not accept the take parameter, so the only choice is to page through them
-		resp, err := apiGet(s.sling, new(model.LibraryVariableSets), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.LibraryVariableSets)
-
-		p = append(p, r.Items...)
-
-		path, loadNextPage = LoadNextPage(r.PagedResults)
-	}
-
-	return &p, nil
+	_, err = apiGet(s.getClient(), items, path)
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the LibraryVariableSet with a matching name.
-func (s *LibraryVariableSetService) GetByName(name string) (*model.LibraryVariableSet, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
-	}
-
-	err := s.validateInternalState()
-
+func (s libraryVariableSetService) GetByName(name string) ([]model.LibraryVariableSet, error) {
+	path, err := getByNamePath(s, name)
 	if err != nil {
-		return nil, err
+		return []model.LibraryVariableSet{}, err
 	}
 
-	collection, err := s.get(fmt.Sprintf("partialName=%s", url.PathEscape(name)))
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range *collection {
-		if item.Name == name {
-			return &item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return s.getPagedResponse(path)
 }
 
 // Add creates a new LibraryVariableSet.
-func (s *LibraryVariableSetService) Add(libraryVariableSet *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
-	if libraryVariableSet == nil {
-		return nil, createInvalidParameterError("Get", "libraryVariableSet")
-	}
-
-	err := s.validateInternalState()
-
+func (s libraryVariableSetService) Add(libraryVariableSet *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
+	path, err := getAddPath(s, libraryVariableSet)
 	if err != nil {
 		return nil, err
 	}
 
-	err = model.ValidateLibraryVariableSetValues(libraryVariableSet)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.sling, libraryVariableSet, new(model.LibraryVariableSet), "libraryVariableSets")
-
+	resp, err := apiAdd(s.getClient(), libraryVariableSet, new(model.LibraryVariableSet), path)
 	if err != nil {
 		return nil, err
 	}
@@ -142,31 +97,19 @@ func (s *LibraryVariableSetService) Add(libraryVariableSet *model.LibraryVariabl
 	return resp.(*model.LibraryVariableSet), nil
 }
 
-// Delete deletes an existing libraryVariableSet in Octopus Deploy
-func (s *LibraryVariableSetService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+// DeleteByID deletes the LibraryVariableSet that matches the input ID.
+func (s libraryVariableSetService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
-// Update updates an existing libraryVariableSet in Octopus Deploy
-func (s *LibraryVariableSetService) Update(resource *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
-	err := model.ValidateLibraryVariableSetValues(resource)
+// Update modifies a LibraryVariableSet based on the one provided as input.
+func (s libraryVariableSetService) Update(resource *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.LibraryVariableSet), path)
-
+	resp, err := apiUpdate(s.getClient(), resource, new(model.LibraryVariableSet), path)
 	if err != nil {
 		return nil, err
 	}
@@ -174,16 +117,22 @@ func (s *LibraryVariableSetService) Update(resource *model.LibraryVariableSet) (
 	return resp.(*model.LibraryVariableSet), nil
 }
 
-func (s *LibraryVariableSetService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
+func (s libraryVariableSetService) getPagedResponse(path string) ([]model.LibraryVariableSet, error) {
+	items := []model.LibraryVariableSet{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.LibraryVariableSets), path)
+		if err != nil {
+			return items, err
+		}
+
+		responseList := resp.(*model.LibraryVariableSets)
+		items = append(items, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
+	return items, nil
 }
 
-var _ ServiceInterface = &LibraryVariableSetService{}
+var _ ServiceInterface = &libraryVariableSetService{}

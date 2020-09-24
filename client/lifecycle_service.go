@@ -1,49 +1,58 @@
 package client
 
 import (
-	"fmt"
-	"net/url"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type LifecycleService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type lifecycleService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewLifecycleService(sling *sling.Sling, uriTemplate string) *LifecycleService {
+func newLifecycleService(sling *sling.Sling, uriTemplate string) *lifecycleService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &LifecycleService{
-		name:  "LifecycleService",
-		path:  path,
-		sling: sling,
+	return &lifecycleService{
+		name:        serviceLifecycleService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get returns a single lifecycle by its lifecycleid in Octopus Deploy
-func (s *LifecycleService) Get(id string) (*model.Lifecycle, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s lifecycleService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s lifecycleService) getName() string {
+	return s.name
+}
 
+func (s lifecycleService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByID returns a Lifecycle that matches the input ID. If one cannot be found, it returns nil and an error.
+func (s lifecycleService) GetByID(id string) (*model.Lifecycle, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Lifecycle), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Lifecycle), path)
 	if err != nil {
 		return nil, err
 	}
@@ -51,139 +60,79 @@ func (s *LifecycleService) Get(id string) (*model.Lifecycle, error) {
 	return resp.(*model.Lifecycle), nil
 }
 
-// GetAll returns all instances of a Lifecycle.
-func (s *LifecycleService) GetAll() (*[]model.Lifecycle, error) {
-	err := s.validateInternalState()
+// GetAll returns all instances of a Lifecycle. If none can be found or an error occurs, it returns an empty collection.
+func (s lifecycleService) GetAll() ([]model.Lifecycle, error) {
+	items := new([]model.Lifecycle)
+	path, err := getAllPath(s)
+	if err != nil {
+		return *items, err
+	}
 
+	_, err = apiGet(s.getClient(), items, path)
+	return *items, err
+}
+
+// GetByPartialName performs a lookup and returns instances of a Lifecycle with a matching partial name.
+func (s lifecycleService) GetByPartialName(name string) ([]model.Lifecycle, error) {
+	path, err := getByPartialNamePath(s, name)
+	if err != nil {
+		return []model.Lifecycle{}, err
+	}
+
+	return s.getPagedResponse(path)
+}
+
+// Add creates a new Lifecycle.
+func (s lifecycleService) Add(lifecycle *model.Lifecycle) (*model.Lifecycle, error) {
+	path, err := getAddPath(s, lifecycle)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.get("")
-}
-
-func (s *LifecycleService) get(query string) (*[]model.Lifecycle, error) {
-	var p []model.Lifecycle
-
-	path := s.path + "?take=2147483647"
-	loadNextPage := true
-
-	if query != "" {
-		path = fmt.Sprintf("%s&%s", path, query)
+	resp, err := apiAdd(s.getClient(), lifecycle, new(model.Lifecycle), path)
+	if err != nil {
+		return nil, err
 	}
 
-	for loadNextPage { // Older Octopus Servers do not accept the take parameter, so the only choice is to page through them
-		resp, err := apiGet(s.sling, new(model.Lifecycles), path)
+	return resp.(*model.Lifecycle), nil
+}
 
+// DeleteByID deletes the Lifecycle that matches the input ID.
+func (s lifecycleService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
+
+// Update modifies a Lifecycle based on the one provided as input.
+func (s lifecycleService) Update(resource model.Lifecycle) (*model.Lifecycle, error) {
+	path, err := getUpdatePath(s, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiUpdate(s.getClient(), resource, new(model.Lifecycle), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.Lifecycle), nil
+}
+
+func (s lifecycleService) getPagedResponse(path string) ([]model.Lifecycle, error) {
+	var resources []model.Lifecycle
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Lifecycles), path)
 		if err != nil {
 			return nil, err
 		}
 
-		r := resp.(*model.Lifecycles)
-
-		p = append(p, r.Items...)
-
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+		responseList := resp.(*model.Lifecycles)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return &p, nil
+	return resources, nil
 }
 
-// GetByName performs a lookup and returns the Lifecycle with a matching name.
-func (s *LifecycleService) GetByName(name string) (*model.Lifecycle, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	collection, err := s.get(fmt.Sprintf("partialName=%s", url.PathEscape(name)))
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range *collection {
-		if item.Name == name {
-			return &item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
-}
-
-// Add creates a new Lifecycle.
-func (s *LifecycleService) Add(lifecycle *model.Lifecycle) (*model.Lifecycle, error) {
-	if lifecycle == nil {
-		return nil, createInvalidParameterError("Add", "lifecycle")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = model.ValidateLifecycleValues(lifecycle)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.sling, lifecycle, new(model.Lifecycle), s.path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Lifecycle), nil
-}
-
-// Delete deletes an existing lifecycle in Octopus Deploy
-func (s *LifecycleService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
-}
-
-// Update updates an existing lifecycle in Octopus Deploy
-func (s *LifecycleService) Update(resource *model.Lifecycle) (*model.Lifecycle, error) {
-	err := model.ValidateLifecycleValues(resource)
-	if err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Lifecycle), path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Lifecycle), nil
-}
-
-func (s *LifecycleService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &LifecycleService{}
+var _ ServiceInterface = &lifecycleService{}

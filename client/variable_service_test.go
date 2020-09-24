@@ -7,26 +7,39 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewVariableServiceWithNil(t *testing.T) {
-	service := NewVariableService(nil, "")
-	assert.Nil(t, service)
-}
+func TestNewVariableService(t *testing.T) {
+	serviceFunction := newVariableService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceVariableService
 
-func TestVariableServiceWithEmptyClient(t *testing.T) {
-	service := NewVariableService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *variableService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestVariableServiceGetAllWithEmptyID(t *testing.T) {
-	service := NewVariableService(&sling.Sling{}, "")
+	service := newVariableService(&sling.Sling{}, emptyString)
 
-	resource, err := service.GetAll("")
+	resource, err := service.GetAll(emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = service.GetAll(" ")
+	resource, err = service.GetAll(whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)

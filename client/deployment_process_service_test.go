@@ -7,27 +7,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewDeploymentProcessServiceWithNil(t *testing.T) {
-	service := NewDeploymentProcessService(nil, "")
-	assert.Nil(t, service)
-}
+func TestNewDeploymentProcessService(t *testing.T) {
+	serviceFunction := newDeploymentProcessService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceDeploymentProcessService
 
-func TestDeploymentProcessServiceWithEmptyClient(t *testing.T) {
-	service := NewDeploymentProcessService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *deploymentProcessService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestDeploymentProcessServiceGetWithEmptyID(t *testing.T) {
-	service := NewDeploymentProcessService(&sling.Sling{}, "")
+	service := newDeploymentProcessService(&sling.Sling{}, emptyString)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 }

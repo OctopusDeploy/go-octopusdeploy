@@ -7,27 +7,46 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewLibraryVariableSetServiceWithNil(t *testing.T) {
-	service := NewLibraryVariableSetService(nil, "")
-	assert.Nil(t, service)
-}
+func TestNewLibraryVariableSetService(t *testing.T) {
+	serviceFunction := newLibraryVariableSetService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceLibraryVariableSetService
 
-func TestLibraryVariableSetServiceWithEmptyClient(t *testing.T) {
-	service := NewLibraryVariableSetService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *libraryVariableSetService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestLibraryVariableSetServiceGetWithEmptyID(t *testing.T) {
-	service := NewLibraryVariableSetService(&sling.Sling{}, "")
+	service := createLibraryVariableSetService(t)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
+}
+
+func createLibraryVariableSetService(t *testing.T) *libraryVariableSetService {
+	service := newLibraryVariableSetService(nil, TestURILibraryVariables)
+	testNewService(t, service, TestURILibraryVariables, serviceLibraryVariableSetService)
+	return service
 }

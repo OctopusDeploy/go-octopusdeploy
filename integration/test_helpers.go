@@ -3,29 +3,21 @@ package integration
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	uuid "github.com/google/uuid"
 )
 
-var (
-	octopusURL    string = os.Getenv("OCTOPUS_URL")
-	octopusAPIKey string = os.Getenv("OCTOPUS_APIKEY")
-	octopusClient *client.Client
-)
-
-func initTest() *client.Client {
+func getOctopusClient() *client.Client {
+	octopusURL := os.Getenv("OCTOPUS_URL")
+	octopusAPIKey := os.Getenv("OCTOPUS_APIKEY")
 
 	if isEmpty(octopusURL) || isEmpty(octopusAPIKey) {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
 	}
-
-	// octopusClient, err := client.NewClient(&http.Client{}, octopusURL, octopusAPIKey, "")
 
 	// NOTE: You can direct traffic through a proxy trace like Fiddler
 	// Everywhere by preconfiguring the client to route traffic through a
@@ -42,8 +34,7 @@ func initTest() *client.Client {
 	// }
 	// httpClient := http.Client{Transport: tr}
 
-	httpClient := http.Client{}
-	octopusClient, err := client.NewClient(&httpClient, octopusURL, octopusAPIKey, "")
+	octopusClient, err := client.NewClient(nil, octopusURL, octopusAPIKey, emptyString)
 	if err != nil {
 		log.Fatal(err)
 	}

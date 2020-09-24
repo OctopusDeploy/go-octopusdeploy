@@ -7,7 +7,7 @@ import (
 
 const (
 	plainJSONValue       = `"blah"`
-	emptyJSONValue       = `""`
+	emptyJSONValue       = `emptyString`
 	secretJSONValue      = `{"HasValue":true,"NewValue":null}`
 	secretFalseJSONValue = `{"HasValue":false,"NewValue":null}`
 	secretJSONNewValue   = `{"HasValue":true,"NewValue":"blah"}`

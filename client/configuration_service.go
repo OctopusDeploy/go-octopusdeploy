@@ -1,65 +1,58 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type ConfigurationService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type configurationService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewConfigurationService(sling *sling.Sling, uriTemplate string) *ConfigurationService {
+func newConfigurationService(sling *sling.Sling, uriTemplate string) *configurationService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &ConfigurationService{
-		name:  "ConfigurationService",
-		path:  path,
-		sling: sling,
+	return &configurationService{
+		name:        serviceConfigurationService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// GetAll returns all instances of a ConfigurationSections.
-func (s *ConfigurationService) GetAll() (*model.ConfigurationSections, error) {
-	err := s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.sling, new(model.ConfigurationSections), s.path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.ConfigurationSections), nil
+func (s configurationService) getClient() *sling.Sling {
+	return s.sling
 }
 
-// Get returns a ConfigurationSection that matches the input ID.
-func (s *ConfigurationService) Get(id string) (*model.ConfigurationSection, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s configurationService) getName() string {
+	return s.name
+}
 
-	err := s.validateInternalState()
+func (s configurationService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
 
+// GetByID returns a ConfigurationSection that matches the input ID. If one cannot be found, it returns nil and an error.
+func (s configurationService) GetByID(id string) (*model.ConfigurationSection, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.ConfigurationSection), path)
-
+	resp, err := apiGet(s.getClient(), new(model.ConfigurationSection), path)
 	if err != nil {
 		return nil, err
 	}
@@ -67,16 +60,22 @@ func (s *ConfigurationService) Get(id string) (*model.ConfigurationSection, erro
 	return resp.(*model.ConfigurationSection), nil
 }
 
-func (s *ConfigurationService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
+func (s configurationService) getPagedResponse(path string) ([]model.ConfigurationSection, error) {
+	items := []model.ConfigurationSection{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.ConfigurationSections), path)
+		if err != nil {
+			return nil, err
+		}
+
+		responseList := resp.(*model.ConfigurationSections)
+		items = append(items, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
+	return items, nil
 }
 
-var _ ServiceInterface = &ConfigurationService{}
+var _ ServiceInterface = &configurationService{}

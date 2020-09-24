@@ -20,18 +20,22 @@ func TestProjectAddAndDelete(t *testing.T) {
 }
 
 func TestProjectAddGetAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
-	getProject, err := octopusClient.Projects.Get(project.ID)
-	assert.Nil(t, err, "there was an error raised getting project when there should not be")
+	getProject, err := octopusClient.Projects.GetByID(project.ID)
+	assert.NoError(t, err, "there was an error raised getting project when there should not be")
 	assert.Equal(t, project.Name, getProject.Name)
 }
 
 func TestProjectGetThatDoesNotExist(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	projectID := "there-is-no-way-this-project-id-exists-i-hope"
 	expected := client.ErrItemNotFound
-	project, err := octopusClient.Projects.Get(projectID)
+	project, err := octopusClient.Projects.GetByID(projectID)
 
 	assert.Error(t, err, "there should have been an error raised as this project should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -39,6 +43,8 @@ func TestProjectGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestProjectGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	// create many projects to test pagination
 	projectsToCreate := 32
 	sum := 0
@@ -68,11 +74,13 @@ func TestProjectGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for project when not expected")
+	assert.NoError(t, err, "error when looking for project when not expected")
 	assert.Equal(t, len(allProjectsAfterCreatingAdditional), numberOfProjects+1, "created an additional project and expected number of projects to increase by 1")
 }
 
 func TestProjectUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
@@ -85,22 +93,32 @@ func TestProjectUpdate(t *testing.T) {
 	project.ProjectConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 
 	updatedProject, err := octopusClient.Projects.Update(&project)
-	assert.Nil(t, err, "error when updating project")
+
+	assert.NoError(t, err, "error when updating project")
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
 	assert.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
 	assert.Equal(t, newSkipMachineBehavior, project.ProjectConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name was not updated")
 }
 
 func TestProjectGetByName(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	foundProject, err := octopusClient.Projects.GetByName(project.Name)
-	assert.Nil(t, err, "error when looking for project when not expected")
+	assert.NoError(t, err, "error when looking for project when not expected")
 	assert.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
 }
 
 func createTestProject(t *testing.T, projectName string) model.Project {
+	octopusClient := getOctopusClient()
+
 	p := getTestProject(projectName)
 	createdProject, err := octopusClient.Projects.Add(&p)
 
@@ -118,7 +136,9 @@ func getTestProject(projectName string) model.Project {
 }
 
 func cleanProject(t *testing.T, projectID string) {
-	err := octopusClient.Projects.Delete(projectID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.Projects.DeleteByID(projectID)
 
 	if err == nil {
 		return

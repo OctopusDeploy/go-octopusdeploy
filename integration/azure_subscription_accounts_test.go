@@ -11,6 +11,8 @@ import (
 var azureSubscriptionName string = getRandomName()
 
 func TestCreateInvalidAzureSubscriptionAccount(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	account, err := model.NewAzureSubscriptionAccount(azureSubscriptionName, uuid.Nil)
 
 	assert.NoError(t, err)
@@ -24,6 +26,8 @@ func TestCreateInvalidAzureSubscriptionAccount(t *testing.T) {
 }
 
 func TestCreateAndDeleteAndGetMinimalAzureSubscriptionAccount(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	account, err := model.NewAzureSubscriptionAccount(azureSubscriptionName, uuid.New())
 
 	assert.NoError(t, err)
@@ -62,11 +66,11 @@ func TestCreateAndDeleteAndGetMinimalAzureSubscriptionAccount(t *testing.T) {
 	assert.Equal(t, account.SubscriptionID, createdAccount.SubscriptionID)
 	assert.Equal(t, account.TenantedDeploymentParticipation, createdAccount.TenantedDeploymentParticipation)
 
-	err = octopusClient.Accounts.Delete(createdAccount.ID)
+	err = octopusClient.Accounts.DeleteByID(createdAccount.ID)
 
 	assert.NoError(t, err)
 
-	deletedAccount, err := octopusClient.Accounts.Get(createdAccount.ID)
+	deletedAccount, err := octopusClient.Accounts.GetByID(createdAccount.ID)
 
 	assert.Error(t, err)
 	assert.Nil(t, deletedAccount)

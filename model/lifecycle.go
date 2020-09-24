@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -10,12 +12,13 @@ type Lifecycles struct {
 }
 
 type Lifecycle struct {
-	ID                      string          `json:"Id,omitempty"`
 	Name                    string          `json:"Name" validate:"required"`
 	Description             string          `json:"Description,omitempty"`
 	ReleaseRetentionPolicy  RetentionPeriod `json:"ReleaseRetentionPolicy,omitempty"`
 	TentacleRetentionPolicy RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
 	Phases                  []Phase         `json:"Phases"`
+
+	Resource
 }
 
 const (
@@ -23,7 +26,11 @@ const (
 	RetentionUnitItems = RetentionUnit("Items")
 )
 
-func NewLifecycle(name string) *Lifecycle {
+func NewLifecycle(name string) (*Lifecycle, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("NewLifecycle", "name")
+	}
+
 	return &Lifecycle{
 		Name:   name,
 		Phases: []Phase{},
@@ -35,50 +42,40 @@ func NewLifecycle(name string) *Lifecycle {
 			Unit:           RetentionUnitDays,
 			QuantityToKeep: 30,
 		},
-	}
+	}, nil
 }
 
-// ValidateLifecycleValues checks the values of a Lifecycle object to see if they are suitable for
-// sending to Octopus Deploy. Used when adding or updating lifecycles.
-func ValidateLifecycleValues(Lifecycle *Lifecycle) error {
-	validate := validator.New()
+// GetID returns the ID value of the Lifecycle.
+func (resource Lifecycle) GetID() string {
+	return resource.ID
+}
 
-	err := validate.Struct(Lifecycle)
+// GetLastModifiedBy returns the name of the account that modified the value of this Lifecycle.
+func (resource Lifecycle) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this Lifecycle was changed.
+func (resource Lifecycle) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this Lifecycle.
+func (resource Lifecycle) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the Lifecycle and returns an error if invalid.
+func (resource Lifecycle) Validate() error {
+	validate := validator.New()
+	err := validate.Struct(resource)
 
 	if err != nil {
 		return err
 	}
 
-	if Lifecycle.Phases != nil {
-		for _, phase := range Lifecycle.Phases {
-			phaseErr := validate.Struct(phase)
-
-			if phaseErr != nil {
-				return phaseErr
-			}
-		}
-	}
-
-	return nil
-}
-
-func (l *Lifecycle) GetID() string {
-	return l.ID
-}
-
-// ValidateLifecycleValues checks the values of a Lifecycle object to see
-// if they are suitable for sending to Octopus Deploy. Used when adding or
-// updating lifecycles.
-func (l *Lifecycle) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(l)
-
-	if err != nil {
-		return err
-	}
-
-	if l.Phases != nil {
-		for _, phase := range l.Phases {
+	if resource.Phases != nil {
+		for _, phase := range resource.Phases {
 			phaseErr := validate.Struct(phase)
 
 			if phaseErr != nil {

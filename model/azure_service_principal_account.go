@@ -11,10 +11,11 @@ func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tena
 		return nil, createInvalidParameterError("NewAzureServicePrincipalAccount", "name")
 	}
 
-	account := &Account{
-		Name:        name,
-		AccountType: enum.AzureServicePrincipal,
+	account, err := NewAccount(name, enum.AzureServicePrincipal)
+	if err != nil {
+		return nil, err
 	}
+
 	account.SubscriptionID = &subscriptionID
 	account.TenantID = &tenantID
 	account.ApplicationID = &applicationID
@@ -23,7 +24,7 @@ func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tena
 	return account, nil
 }
 
-func validateAzureServicePrincipalAccount(account *Account) error {
+func validateAzureServicePrincipalAccount(account Account) error {
 	validate := validator.New()
 	err := validate.Struct(account)
 

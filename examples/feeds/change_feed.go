@@ -14,24 +14,24 @@ func ChangeFeedExample() {
 	)
 
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
-
 	if err != nil {
 		// TODO: handle error
 	}
 
-	// Get Feed
-	feed, err := client.Feeds.GetByName(feedName)
-
+	// Get Feed instances that match the name provided
+	feeds, err := client.Feeds.GetByName(feedName)
 	if err != nil {
 		// TODO: handle error
 	}
+
+	// select a specific Feed instance
+	feed := feeds[0]
 
 	// Change feed name
 	feed.Name = newFeedName
 
 	// Update feed
-	_, err = client.Feeds.Update(*feed)
-
+	_, err = client.Feeds.Update(feed)
 	if err != nil {
 		// TODO: handle error
 	}

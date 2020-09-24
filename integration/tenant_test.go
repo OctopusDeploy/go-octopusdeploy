@@ -20,18 +20,22 @@ func TestTenantAddAndDelete(t *testing.T) {
 }
 
 func TestTenantAddGetAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	tenant := createTestTenant(t, getRandomName())
 	defer cleanTenant(t, tenant.ID)
 
-	getTenant, err := octopusClient.Tenants.Get(tenant.ID)
-	assert.Nil(t, err, "there was an error raised getting tenant when there should not be")
+	getTenant, err := octopusClient.Tenants.GetByID(tenant.ID)
+	assert.NoError(t, err, "there was an error raised getting tenant when there should not be")
 	assert.Equal(t, tenant.Name, getTenant.Name)
 }
 
 func TestTenantGetThatDoesNotExist(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	tenantID := "there-is-no-way-this-tenant-id-exists-i-hope"
 	expected := client.ErrItemNotFound
-	tenant, err := octopusClient.Tenants.Get(tenantID)
+	tenant, err := octopusClient.Tenants.GetByID(tenantID)
 
 	assert.Error(t, err, "there should have been an error raised as this tenant should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -39,6 +43,8 @@ func TestTenantGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestTenantGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	// create many tenant to test pagination
 	tenantsToCreate := 32
 	sum := 0
@@ -68,11 +74,13 @@ func TestTenantGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all tenants failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for tenant when not expected")
+	assert.NoError(t, err, "error when looking for tenant when not expected")
 	assert.Equal(t, len(allTenantsAfterCreatingAdditional), numberOfTenants+1, "created an additional tenant and expected number of tenants to increase by 1")
 }
 
 func TestTenantUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	tenant := createTestTenant(t, getRandomName())
 	defer cleanTenant(t, tenant.ID)
 
@@ -84,21 +92,25 @@ func TestTenantUpdate(t *testing.T) {
 	tenant.Description = newDescription
 
 	updatedTenant, err := octopusClient.Tenants.Update(&tenant)
-	assert.Nil(t, err, "error when updating tenant")
+	assert.NoError(t, err, "error when updating tenant")
 	assert.Equal(t, newTenantName, updatedTenant.Name, "tenant name was not updated")
 	assert.Equal(t, newDescription, updatedTenant.Description, "tenant description was not updated")
 }
 
 func TestTenantGetByName(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	tenant := createTestTenant(t, getRandomName())
 	defer cleanTenant(t, tenant.ID)
 
 	foundTenant, err := octopusClient.Tenants.GetByName(tenant.Name)
-	assert.Nil(t, err, "error when looking for tenant when not expected")
+	assert.NoError(t, err, "error when looking for tenant when not expected")
 	assert.Equal(t, tenant.Name, foundTenant.Name, "tenant not found when searching by its name")
 }
 
 func createTestTenant(t *testing.T, tenantName string) model.Tenant {
+	octopusClient := getOctopusClient()
+
 	p := getTestTenant(tenantName)
 	createdTenant, err := octopusClient.Tenants.Add(&p)
 
@@ -116,7 +128,9 @@ func getTestTenant(tenantName string) model.Tenant {
 }
 
 func cleanTenant(t *testing.T, tenantID string) {
-	err := octopusClient.Tenants.Delete(tenantID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.Tenants.DeleteByID(tenantID)
 
 	if err == nil {
 		return

@@ -5,43 +5,54 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type FeedService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type feedService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewFeedService(sling *sling.Sling, uriTemplate string) *FeedService {
+func newFeedService(sling *sling.Sling, uriTemplate string) *feedService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &FeedService{
-		name:  "FeedService",
-		path:  path,
-		sling: sling,
+	return &feedService{
+		name:        serviceFeedService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *FeedService) Get(id string) (*model.Feed, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s feedService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s feedService) getName() string {
+	return s.name
+}
 
+func (s feedService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+func (s feedService) GetByID(id string) (*model.Feed, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Feed), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Feed), path)
 	if err != nil {
 		return nil, err
 	}
@@ -49,52 +60,31 @@ func (s *FeedService) Get(id string) (*model.Feed, error) {
 	return resp.(*model.Feed), nil
 }
 
-// GetAll returns all instances of a Feed.
-func (s *FeedService) GetAll() ([]model.Feed, error) {
-
-	feeds := new([]model.Feed)
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a Feed. If none can be found or an error occurs, it returns an empty collection.
+func (s feedService) GetAll() ([]model.Feed, error) {
+	items := new([]model.Feed)
+	path, err := getAllPath(s)
 	if err != nil {
-		return *feeds, err
+		return *items, err
 	}
 
-	_, err = apiGet(s.sling, feeds, s.path+"/all")
-
-	return *feeds, err
+	_, err = apiGet(s.getClient(), items, path)
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the Feed with a matching name.
-func (s *FeedService) GetByName(name string) (*model.Feed, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
-	}
-
-	err := s.validateInternalState()
-
+func (s feedService) GetByName(name string) ([]model.Feed, error) {
+	path, err := getByNamePath(s, name)
 	if err != nil {
-		return nil, err
+		return []model.Feed{}, err
 	}
 
-	collection, err := s.GetAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range collection {
-		if item.Name == name {
-			return &item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return s.getPagedResponse(path)
 }
 
 // Add creates a new Feed.
-func (s *FeedService) Add(feed model.Feed) (*model.Feed, error) {
-	err := s.validateInternalState()
-
+func (s feedService) Add(feed model.Feed) (*model.Feed, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +95,9 @@ func (s *FeedService) Add(feed model.Feed) (*model.Feed, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, &feed, new(model.Feed), "feeds")
+	path := trimTemplate(s.path)
 
+	resp, err := apiAdd(s.getClient(), &feed, new(model.Feed), path)
 	if err != nil {
 		return nil, err
 	}
@@ -114,23 +105,12 @@ func (s *FeedService) Add(feed model.Feed) (*model.Feed, error) {
 	return resp.(*model.Feed), nil
 }
 
-func (s *FeedService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+func (s feedService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
-func (s *FeedService) Update(feed model.Feed) (*model.Feed, error) {
-	err := s.validateInternalState()
-
+func (s feedService) Update(feed model.Feed) (*model.Feed, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -141,9 +121,10 @@ func (s *FeedService) Update(feed model.Feed) (*model.Feed, error) {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", feed.ID)
-	resp, err := apiUpdate(s.sling, feed, new(model.Feed), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s", feed.ID)
 
+	resp, err := apiUpdate(s.getClient(), feed, new(model.Feed), path)
 	if err != nil {
 		return nil, err
 	}
@@ -151,16 +132,22 @@ func (s *FeedService) Update(feed model.Feed) (*model.Feed, error) {
 	return resp.(*model.Feed), nil
 }
 
-func (s *FeedService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
+func (s feedService) getPagedResponse(path string) ([]model.Feed, error) {
+	items := []model.Feed{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Feeds), path)
+		if err != nil {
+			return nil, err
+		}
+
+		responseList := resp.(*model.Feeds)
+		items = append(items, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
+	return items, nil
 }
 
-var _ ServiceInterface = &FeedService{}
+var _ ServiceInterface = &feedService{}

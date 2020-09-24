@@ -12,13 +12,9 @@ var (
 	channelDescription = getRandomName()
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestAddNilChannel(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	channel, err := octopusClient.Channels.Add(nil)
 
 	assert.Error(t, err)
@@ -26,6 +22,8 @@ func TestAddNilChannel(t *testing.T) {
 }
 
 func TestAddAndDeleteAndGetValidChannel(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	projects, err := octopusClient.Projects.GetAll()
 
 	assert.NoError(t, err)
@@ -50,12 +48,12 @@ func TestAddAndDeleteAndGetValidChannel(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, createdChannel)
 
-		err = octopusClient.Channels.Delete(createdChannel.ID)
+		err = octopusClient.Channels.DeleteByID(createdChannel.ID)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, createdChannel)
 
-		deletedChannel, err := octopusClient.Channels.Get(createdChannel.ID)
+		deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.ID)
 
 		assert.Error(t, err)
 		assert.Nil(t, deletedChannel)
@@ -63,6 +61,8 @@ func TestAddAndDeleteAndGetValidChannel(t *testing.T) {
 }
 
 func TestAddAndDeleteValidChannel(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	projects, err := octopusClient.Projects.GetAll()
 
 	assert.NoError(t, err)
@@ -89,12 +89,12 @@ func TestAddAndDeleteValidChannel(t *testing.T) {
 		assert.NotNil(t, createdChannel)
 
 		if !channel.IsDefault {
-			err = octopusClient.Channels.Delete(createdChannel.ID)
+			err = octopusClient.Channels.DeleteByID(createdChannel.ID)
 
 			assert.NoError(t, err)
 			assert.NotNil(t, createdChannel)
 
-			deletedChannel, err := octopusClient.Channels.Get(createdChannel.ID)
+			deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.ID)
 
 			assert.Error(t, err)
 			assert.Nil(t, deletedChannel)
@@ -103,6 +103,8 @@ func TestAddAndDeleteValidChannel(t *testing.T) {
 }
 
 func TestGetReleasesForChannel(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	channels, err := octopusClient.Channels.GetAll()
 
 	assert.NoError(t, err)
@@ -121,6 +123,8 @@ func TestGetReleasesForChannel(t *testing.T) {
 }
 
 func TestGetProject(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	channels, err := octopusClient.Channels.GetAll()
 
 	assert.NoError(t, err)
@@ -133,12 +137,17 @@ func TestGetProject(t *testing.T) {
 	for _, channel := range channels {
 		project, err := octopusClient.Channels.GetProject(channel)
 
-		assert.NoError(t, err)
-		assert.NotNil(t, project)
+		if err != nil {
+			assert.Nil(t, project)
+		} else {
+			assert.NotNil(t, project)
+		}
 	}
 }
 
 func TestGetAllChannels(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	channels, err := octopusClient.Channels.GetAll()
 
 	assert.NoError(t, err)

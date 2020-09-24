@@ -14,15 +14,15 @@ type Variables struct {
 }
 
 type Variable struct {
-	ID          string                 `json:"Id"`
-	Name        string                 `json:"Name"`
-	Value       string                 `json:"Value"`
 	Description string                 `json:"Description"`
-	Scope       *VariableScope         `json:"Scope,omitempty"`
+	ID          string                 `json:"Id"`
 	IsEditable  bool                   `json:"IsEditable"`
-	Prompt      *VariablePromptOptions `json:"Prompt"`
-	Type        string                 `json:"Type"`
 	IsSensitive bool                   `json:"IsSensitive"`
+	Name        string                 `json:"Name"`
+	Prompt      *VariablePromptOptions `json:"Prompt"`
+	Scope       *VariableScope         `json:"Scope,omitempty"`
+	Type        string                 `json:"Type"`
+	Value       string                 `json:"Value"`
 }
 
 func (t *Variable) Validate() error {

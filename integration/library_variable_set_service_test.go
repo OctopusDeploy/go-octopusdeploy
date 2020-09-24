@@ -20,18 +20,22 @@ func TestLibraryVariableSetAddAndDelete(t *testing.T) {
 }
 
 func TestLibraryVariableSetAddGetAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	libraryVariableSet := createTestLibraryVariableSet(t, getRandomName())
 	defer cleanLibraryVariableSet(t, libraryVariableSet.ID)
 
-	getLibraryVariableSet, err := octopusClient.LibraryVariableSets.Get(libraryVariableSet.ID)
-	assert.Nil(t, err, "there was an error raised getting libraryVariableSet when there should not be")
+	getLibraryVariableSet, err := octopusClient.LibraryVariableSets.GetByID(libraryVariableSet.ID)
+	assert.NoError(t, err, "there was an error raised getting libraryVariableSet when there should not be")
 	assert.Equal(t, libraryVariableSet.Name, getLibraryVariableSet.Name)
 }
 
 func TestLibraryVariableSetGetThatDoesNotExist(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	libraryVariableSetID := "there-is-no-way-this-libraryVariableSet-id-exists-i-hope"
 	expected := client.ErrItemNotFound
-	libraryVariableSet, err := octopusClient.LibraryVariableSets.Get(libraryVariableSetID)
+	libraryVariableSet, err := octopusClient.LibraryVariableSets.GetByID(libraryVariableSetID)
 
 	assert.Error(t, err, "there should have been an error raised as this libraryVariableSet should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -39,6 +43,8 @@ func TestLibraryVariableSetGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestLibraryVariableSetGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	// create many libraryVariableSets to test pagination
 	libraryVariableSetsToCreate := 32
 	sum := 0
@@ -53,7 +59,7 @@ func TestLibraryVariableSetGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all libraryVariableSets failed when it shouldn't: %s", err)
 	}
 
-	numberOfLibraryVariableSets := len(*allLibraryVariableSets)
+	numberOfLibraryVariableSets := len(allLibraryVariableSets)
 
 	// check there are greater than or equal to the amount of libraryVariableSets requested to be created, otherwise pagination isn't working
 	if numberOfLibraryVariableSets < libraryVariableSetsToCreate {
@@ -68,11 +74,13 @@ func TestLibraryVariableSetGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all libraryVariableSets failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for libraryVariableSet when not expected")
-	assert.Equal(t, len(*allLibraryVariableSetsAfterCreatingAdditional), numberOfLibraryVariableSets+1, "created an additional libraryVariableSet and expected number of libraryVariableSets to increase by 1")
+	assert.NoError(t, err, "error when looking for libraryVariableSet when not expected")
+	assert.Equal(t, len(allLibraryVariableSetsAfterCreatingAdditional), numberOfLibraryVariableSets+1, "created an additional libraryVariableSet and expected number of libraryVariableSets to increase by 1")
 }
 
 func TestLibraryVariableSetUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	libraryVariableSet := createTestLibraryVariableSet(t, getRandomName())
 	defer cleanLibraryVariableSet(t, libraryVariableSet.ID)
 
@@ -83,21 +91,25 @@ func TestLibraryVariableSetUpdate(t *testing.T) {
 	libraryVariableSet.Description = newDescription
 
 	updatedLibraryVariableSet, err := octopusClient.LibraryVariableSets.Update(&libraryVariableSet)
-	assert.Nil(t, err, "error when updating libraryVariableSet")
+	assert.NoError(t, err, "error when updating libraryVariableSet")
 	assert.Equal(t, newLibraryVariableSetName, updatedLibraryVariableSet.Name, "libraryVariableSet name was not updated")
 	assert.Equal(t, newDescription, updatedLibraryVariableSet.Description, "libraryVariableSet description was not updated")
 }
 
 func TestLibraryVariableSetGetByName(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	libraryVariableSet := createTestLibraryVariableSet(t, getRandomName())
 	defer cleanLibraryVariableSet(t, libraryVariableSet.ID)
 
 	foundLibraryVariableSet, err := octopusClient.LibraryVariableSets.GetByName(libraryVariableSet.Name)
-	assert.Nil(t, err, "error when looking for libraryVariableSet when not expected")
-	assert.Equal(t, libraryVariableSet.Name, foundLibraryVariableSet.Name, "libraryVariableSet not found when searching by its name")
+	assert.NoError(t, err, "error when looking for libraryVariableSet when not expected")
+	assert.Equal(t, libraryVariableSet.Name, foundLibraryVariableSet[0].Name, "libraryVariableSet not found when searching by its name")
 }
 
 func createTestLibraryVariableSet(t *testing.T, libraryVariableSetName string) model.LibraryVariableSet {
+	octopusClient := getOctopusClient()
+
 	p := getTestLibraryVariableSet(libraryVariableSetName)
 	createdLibraryVariableSet, err := octopusClient.LibraryVariableSets.Add(&p)
 
@@ -115,7 +127,9 @@ func getTestLibraryVariableSet(libraryVariableSetName string) model.LibraryVaria
 }
 
 func cleanLibraryVariableSet(t *testing.T, libraryVariableSetID string) {
-	err := octopusClient.LibraryVariableSets.Delete(libraryVariableSetID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.LibraryVariableSets.DeleteByID(libraryVariableSetID)
 
 	if err == nil {
 		return

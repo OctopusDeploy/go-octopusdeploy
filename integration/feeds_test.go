@@ -6,13 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestGetAllFeeds(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	feeds, err := octopusClient.Feeds.GetAll()
 
 	assert.NoError(t, err)

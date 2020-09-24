@@ -7,7 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGet(t *testing.T) {
+func TestGetRoot(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	root, err := octopusClient.Root.Get()
 
 	assert.NoError(t, err)

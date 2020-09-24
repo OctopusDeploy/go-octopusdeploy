@@ -5,47 +5,57 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-// CertificateService handles communication with Certificate-related methods of
-// the Octopus API.
-type CertificateService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+// certificateService handles communication with Certificate-related methods of the Octopus API.
+type certificateService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-// NewCertificateService returns an CertificateService with a preconfigured
-// client.
-func NewCertificateService(sling *sling.Sling, uriTemplate string) *CertificateService {
+// newCertificateService returns an certificateService with a preconfigured client.
+func newCertificateService(sling *sling.Sling, uriTemplate string) *certificateService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &CertificateService{
-		name:  "CertificateService",
-		path:  path,
-		sling: sling,
+	return &certificateService{
+		name:        serviceCertificateService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *CertificateService) Get(id string) (*model.Certificate, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s certificateService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s certificateService) getName() string {
+	return s.name
+}
 
+func (s certificateService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByID returns a Certificate that matches the input ID. If one cannot be found, it returns nil and an error.
+func (s certificateService) GetByID(id string) (*model.Certificate, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Certificate), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Certificate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -53,68 +63,36 @@ func (s *CertificateService) Get(id string) (*model.Certificate, error) {
 	return resp.(*model.Certificate), nil
 }
 
-// GetAll returns all instances of a Certificate.
-func (s *CertificateService) GetAll() ([]model.Certificate, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a Certificate. If none can be found or an error occurs, it returns an empty collection.
+func (s certificateService) GetAll() ([]model.Certificate, error) {
 	items := new([]model.Certificate)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
-// GetByName performs a lookup and returns the Certificate with a matching name.
-func (s *CertificateService) GetByName(name string) (*model.Certificate, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
-	}
-
-	err := s.validateInternalState()
-
+// GetByPartialName performs a lookup and returns instances of a Certificate with a matching partial name.
+func (s certificateService) GetByPartialName(name string) ([]model.Certificate, error) {
+	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return nil, err
+		return []model.Certificate{}, err
 	}
 
-	collection, err := s.GetAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range collection {
-		if item.Name == name {
-			return &item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return s.getPagedResponse(path)
 }
 
 // Add creates a new Certificate.
-func (s *CertificateService) Add(certificate *model.Certificate) (*model.Certificate, error) {
-	if certificate == nil {
-		return nil, createInvalidParameterError("Add", "certificate")
-	}
-
-	err := s.validateInternalState()
-
+func (s certificateService) Add(resource *model.Certificate) (*model.Certificate, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	err = certificate.Validate()
-
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.sling, certificate, new(model.Certificate), s.path)
-
+	resp, err := apiAdd(s.getClient(), resource, new(model.Certificate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -122,37 +100,19 @@ func (s *CertificateService) Add(certificate *model.Certificate) (*model.Certifi
 	return resp.(*model.Certificate), nil
 }
 
-// Delete removes the Certificate that matches the input ID.
-func (s *CertificateService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+// DeleteByID deletes the Certificate that matches the input ID.
+func (s certificateService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
-func (s *CertificateService) Update(certificate model.Certificate) (*model.Certificate, error) {
-	err := certificate.Validate()
-
+// Update modifies a Certificate based on the one provided as input.
+func (s certificateService) Update(resource model.Certificate) (*model.Certificate, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(s.path+"/%s", certificate.ID)
-	resp, err := apiUpdate(s.sling, certificate, new(model.Certificate), path)
-
+	resp, err := apiUpdate(s.getClient(), resource, new(model.Certificate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -160,42 +120,48 @@ func (s *CertificateService) Update(certificate model.Certificate) (*model.Certi
 	return resp.(*model.Certificate), nil
 }
 
-func (s *CertificateService) Replace(certificateID string, replacementCertificate *model.ReplacementCertificate) (*model.Certificate, error) {
+func (s certificateService) Replace(certificateID string, replacementCertificate *model.ReplacementCertificate) (*model.Certificate, error) {
 	if isEmpty(certificateID) {
-		return nil, createInvalidParameterError("Replace", "certificateID")
+		return nil, createInvalidParameterError(operationReplace, parameterCertificateID)
 	}
 
 	if replacementCertificate == nil {
-		return nil, createInvalidParameterError("Replace", "replacementCertificate")
+		return nil, createInvalidParameterError(operationReplace, parameterReplacementCertificate)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s/replace", certificateID)
-	_, err = apiPost(s.sling, replacementCertificate, new(model.ReplacementCertificate), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s/replace", certificateID)
 
+	_, err = apiPost(s.getClient(), replacementCertificate, new(model.ReplacementCertificate), path)
 	if err != nil {
 		return nil, err
 	}
 
 	//The API endpoint /certificates/id/replace returns the old cert, we need to re-query to get the updated one.
-	return s.Get(certificateID)
+	return s.GetByID(certificateID)
 }
 
-func (s *CertificateService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
+func (s certificateService) getPagedResponse(path string) ([]model.Certificate, error) {
+	var resources []model.Certificate
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Certificates), path)
+		if err != nil {
+			return nil, err
+		}
+
+		responseList := resp.(*model.Certificates)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
+	return resources, nil
 }
 
-var _ ServiceInterface = &CertificateService{}
+var _ ServiceInterface = &certificateService{}

@@ -2,58 +2,59 @@ package client
 
 import (
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	octopusURL = "fake-url"
-	apiKey     = "fake-api-key"
-	spaceName  = "fake-space-name"
-)
+func TestNewClient(t *testing.T) {
+	client := &http.Client{}
+	url := os.Getenv("OCTOPUS_URL")
+	apiKey := os.Getenv("OCTOPUS_APIKEY")
+	spaceID := os.Getenv("OCTOPUS_SPACE_ID")
 
-func TestNewClientWithEmptyProperties(t *testing.T) {
-	client, err := NewClient(nil, "", "", "")
+	testCases := []struct {
+		name    string
+		isValid bool
+		client  *http.Client
+		url     string
+		apiKey  string
+		spaceID string
+	}{
+		{"EmptyURL", false, client, emptyString, apiKey, spaceID},
+		{"EmptyURLWithSpace", false, client, whitespaceString, apiKey, spaceID},
+		{"EmptyAPIKey", false, client, url, emptyString, emptyString},
+		{"EmptyAPIKeyWithSpace", false, client, url, whitespaceString, spaceID},
+		{"InvalidAPIKey", false, client, url, "API-***************************", spaceID},
+		{"ValidAPIKey", true, client, url, apiKey, spaceID},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Logf("[INFO] URL: %s", tc.url)
+			t.Logf("[INFO] API Key: %s", tc.apiKey)
+			t.Logf("[INFO] Space ID: %s", tc.spaceID)
 
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
+			client, err := NewClient(tc.client, tc.url, tc.apiKey, tc.spaceID)
 
-func TestNewClientWithEmptyClient(t *testing.T) {
-	client, err := NewClient(nil, octopusURL, apiKey, spaceName)
+			if !tc.isValid {
+				t.Logf("[INFO] Error: %s", err)
 
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
+				assert.Error(t, err)
+				assert.Nil(t, client)
 
-func TestNewClientWithEmptyOctopusURL(t *testing.T) {
-	client, err := NewClient(&http.Client{}, "", apiKey, spaceName)
+				return
+			}
 
-	assert.Error(t, err)
-	assert.Nil(t, client)
-
-	client, err = NewClient(&http.Client{}, " ", apiKey, spaceName)
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-}
-
-func TestNewClientWithEmptyAPIKey(t *testing.T) {
-	client, err := NewClient(&http.Client{}, octopusURL, "", spaceName)
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
-
-	client, err = NewClient(&http.Client{}, octopusURL, " ", spaceName)
-
-	assert.Error(t, err)
-	assert.Nil(t, client)
+			assert.NoError(t, err)
+			assert.NotNil(t, client)
+		})
+	}
 }
 
 func TestGetWithEmptyParameters(t *testing.T) {
-	resource, err := apiGet(nil, nil, "")
+	resource, err := apiGet(nil, nil, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -69,12 +70,12 @@ func TestGetWithEmptySling(t *testing.T) {
 
 func TestGetWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
-	resource, err := apiGet(sling.New(), input, "")
+	resource, err := apiGet(sling.New(), input, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiGet(sling.New(), input, " ")
+	resource, err = apiGet(sling.New(), input, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -84,7 +85,7 @@ func TestAddWithEmptyParameters(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiAdd(nil, input, response, "")
+	resource, err := apiAdd(nil, input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -104,12 +105,12 @@ func TestAddWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiAdd(sling.New(), input, response, "")
+	resource, err := apiAdd(sling.New(), input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiAdd(sling.New(), input, response, " ")
+	resource, err = apiAdd(sling.New(), input, response, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -119,7 +120,7 @@ func TestPostWithEmptyParameters(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiPost(nil, input, response, "")
+	resource, err := apiPost(nil, input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -139,12 +140,12 @@ func TestPostWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiPost(sling.New(), input, response, "")
+	resource, err := apiPost(sling.New(), input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiPost(sling.New(), input, response, " ")
+	resource, err = apiPost(sling.New(), input, response, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -154,7 +155,7 @@ func TestUpdateWithEmptyParameters(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiUpdate(nil, input, response, "")
+	resource, err := apiUpdate(nil, input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -174,19 +175,19 @@ func TestUpdateWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiUpdate(sling.New(), input, response, "")
+	resource, err := apiUpdate(sling.New(), input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiUpdate(sling.New(), input, response, " ")
+	resource, err = apiUpdate(sling.New(), input, response, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 }
 
 func TestDeleteWithEmptyParameters(t *testing.T) {
-	err := apiDelete(nil, "")
+	err := apiDelete(nil, emptyString)
 	assert.Error(t, err)
 }
 
@@ -196,10 +197,10 @@ func TestDeleteWithEmptySling(t *testing.T) {
 }
 
 func TestDeleteWithEmptyPath(t *testing.T) {
-	err := apiDelete(nil, "")
+	err := apiDelete(nil, emptyString)
 	assert.Error(t, err)
 
-	err = apiDelete(nil, " ")
+	err = apiDelete(nil, whitespaceString)
 	assert.Error(t, err)
 }
 

@@ -7,53 +7,58 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	TestChannelServiceURITemplate = "channel-service"
-)
-
 func TestNewChannelService(t *testing.T) {
-	service := NewChannelService(nil, "")
-	assert.Nil(t, service)
-	createChannelService(t)
+	serviceFunction := newChannelService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceChannelService
+
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *channelService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestChannelServiceGetWithEmptyID(t *testing.T) {
 	service := createChannelService(t)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Get", "id"))
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Get", "id"))
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 }
 
 func TestChannelServiceDeleteWithEmptyID(t *testing.T) {
 	service := createChannelService(t)
 
-	err := service.Delete("")
+	err := service.DeleteByID(emptyString)
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Delete", "id"))
+	assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
 
-	err = service.Delete(" ")
+	err = service.DeleteByID(whitespaceString)
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Delete", "id"))
+	assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
 }
 
-func createChannelService(t *testing.T) *ChannelService {
-	service := NewChannelService(&sling.Sling{}, TestChannelServiceURITemplate)
-
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
-	assert.Equal(t, service.path, TestChannelServiceURITemplate)
-	assert.Equal(t, service.name, "ChannelService")
-
+func createChannelService(t *testing.T) *channelService {
+	service := newChannelService(&sling.Sling{}, TestURIChannels)
+	testNewService(t, service, TestURIChannels, serviceChannelService)
 	return service
 }

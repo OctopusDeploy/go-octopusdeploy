@@ -22,11 +22,7 @@ func NewSSHKeyAccount(name string, username string, privateKey SensitiveValue) (
 	}, nil
 }
 
-func validateSSHKeyAccount(account *Account) error {
-	if account == nil {
-		return createInvalidParameterError("validateSSHKeyAccount", "account")
-	}
-
+func validateSSHKeyAccount(account Account) error {
 	validate := validator.New()
 	err := validate.Struct(account)
 

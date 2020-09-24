@@ -16,9 +16,18 @@ func TestLibraryVariableSetGet(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, client)
 
-	libraryVariableSet, err := client.LibraryVariableSets.Get("LibraryVariableSets-41")
+	if err != nil {
+		return
+	}
 
-	assert.Nil(t, err)
+	libraryVariableSet, err := client.LibraryVariableSets.GetByID("LibraryVariableSets-41")
+
+	assert.NoError(t, err)
+
+	if err != nil {
+		return
+	}
+
 	assert.Equal(t, "MySet", libraryVariableSet.Name)
 	assert.Equal(t, "The Description", libraryVariableSet.Description)
 	assert.Equal(t, "variableset-LibraryVariableSets-41", libraryVariableSet.VariableSetID)

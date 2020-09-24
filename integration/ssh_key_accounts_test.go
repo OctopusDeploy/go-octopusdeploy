@@ -7,19 +7,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestCreateInvalidSSHKeyAccount(t *testing.T) {
-	account, err := model.NewSSHKeyAccount("", "", model.SensitiveValue{})
+	octopusClient := getOctopusClient()
+
+	account, err := model.NewSSHKeyAccount(emptyString, emptyString, model.SensitiveValue{})
 
 	assert.Error(t, err)
 	assert.Nil(t, account)
 
-	account, err = model.NewSSHKeyAccount(getRandomName(), "", model.SensitiveValue{})
+	account, err = model.NewSSHKeyAccount(getRandomName(), emptyString, model.SensitiveValue{})
 
 	assert.Error(t, err)
 	assert.Nil(t, account)
@@ -36,6 +32,8 @@ func TestCreateInvalidSSHKeyAccount(t *testing.T) {
 }
 
 func TestCreateAndDeleteAndGetSSHKeyAccount(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	sensitiveValue := model.NewSensitiveValue(getRandomName())
 
 	assert.NotNil(t, sensitiveValue)
@@ -69,11 +67,11 @@ func TestCreateAndDeleteAndGetSSHKeyAccount(t *testing.T) {
 	assert.Equal(t, account.SubscriptionID, createdAccount.SubscriptionID)
 	assert.Equal(t, account.TenantedDeploymentParticipation, createdAccount.TenantedDeploymentParticipation)
 
-	err = octopusClient.Accounts.Delete(createdAccount.ID)
+	err = octopusClient.Accounts.DeleteByID(createdAccount.ID)
 
 	assert.NoError(t, err)
 
-	deletedAccount, err := octopusClient.Accounts.Get(createdAccount.ID)
+	deletedAccount, err := octopusClient.Accounts.GetByID(createdAccount.ID)
 
 	assert.Error(t, err)
 	assert.Nil(t, deletedAccount)

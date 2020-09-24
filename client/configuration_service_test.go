@@ -7,27 +7,69 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewConfigurationServiceWithNil(t *testing.T) {
-	service := NewConfigurationService(nil, "")
-	assert.Nil(t, service)
+func TestNewConfigurationService(t *testing.T) {
+	serviceFunction := newConfigurationService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceConfigurationService
+
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *configurationService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
-func TestConfigurationServiceWithEmptyClient(t *testing.T) {
-	service := NewConfigurationService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+func TestConfigurationServiceGetOperations(t *testing.T) {
+	testCases := []struct {
+		name      string
+		parameter string
+	}{
+		{"All Operations", "go-"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Logf("[INFO] Parameter: %q", tc.parameter)
+
+			service := createConfigurationService(t)
+
+			assert.NotNil(t, service)
+			if service == nil {
+				return
+			}
+
+			// TODO: put GetBy operation here
+		})
+	}
 }
 
 func TestConfigurationServiceGetWithEmptyID(t *testing.T) {
-	service := NewConfigurationService(&sling.Sling{}, "")
+	service := createConfigurationService(t)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
+}
+
+func createConfigurationService(t *testing.T) *configurationService {
+	service := newConfigurationService(nil, TestURIConfiguration)
+	testNewService(t, service, TestURIConfiguration, serviceConfigurationService)
+	return service
 }

@@ -12,10 +12,10 @@ var propertyName = "fake-property-name"
 func TestValidateRequiredUUID(t *testing.T) {
 	uuidToTest := uuid.Nil
 
-	err := ValidateRequiredUUID("", &uuidToTest)
+	err := ValidateRequiredUUID(emptyString, &uuidToTest)
 	assert.Error(t, err)
 
-	err = ValidateRequiredUUID(" ", &uuidToTest)
+	err = ValidateRequiredUUID(whitespaceString, &uuidToTest)
 	assert.Error(t, err)
 
 	err = ValidateRequiredUUID(propertyName, &uuidToTest)
@@ -28,12 +28,12 @@ func TestValidateRequiredUUID(t *testing.T) {
 }
 
 func TestValidateSemanticVersion(t *testing.T) {
-	semanticVersion := ""
+	semanticVersion := emptyString
 
-	err := ValidateSemanticVersion("", semanticVersion)
+	err := ValidateSemanticVersion(emptyString, semanticVersion)
 	assert.Error(t, err)
 
-	err = ValidateSemanticVersion(" ", semanticVersion)
+	err = ValidateSemanticVersion(whitespaceString, semanticVersion)
 	assert.Error(t, err)
 
 	err = ValidateSemanticVersion(propertyName, semanticVersion)
@@ -83,10 +83,10 @@ func TestValidateSemanticVersion(t *testing.T) {
 func TestValidateRequiredSensitiveValue(t *testing.T) {
 	sensitiveValue := NewSensitiveValue("test-value")
 
-	err := ValidateRequiredSensitiveValue("", sensitiveValue)
+	err := ValidateRequiredSensitiveValue(emptyString, sensitiveValue)
 	assert.Error(t, err)
 
-	err = ValidateRequiredSensitiveValue(" ", sensitiveValue)
+	err = ValidateRequiredSensitiveValue(whitespaceString, sensitiveValue)
 	assert.Error(t, err)
 
 	err = ValidateRequiredSensitiveValue(propertyName, sensitiveValue)

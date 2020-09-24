@@ -4,26 +4,34 @@ import (
 	"testing"
 
 	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/assert"
-)
-
-const (
-	TestAuthenticationServiceURITemplate = "authentication-service"
 )
 
 func TestNewAuthenticationService(t *testing.T) {
-	service := NewAuthenticationService(nil, "")
-	assert.Nil(t, service)
-	createAuthenticationService(t)
+	serviceFunction := newAuthenticationService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceAuthenticationService
+
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *authenticationService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
-func createAuthenticationService(t *testing.T) *AuthenticationService {
-	service := NewAuthenticationService(&sling.Sling{}, TestAuthenticationServiceURITemplate)
-
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
-	assert.Equal(t, service.path, TestAuthenticationServiceURITemplate)
-	assert.Equal(t, service.name, "AuthenticationService")
-
+func createAuthenticationService(t *testing.T) *authenticationService {
+	service := newAuthenticationService(&sling.Sling{}, TestURIAuthentication)
+	testNewService(t, service, TestURIAuthentication, serviceAuthenticationService)
 	return service
 }

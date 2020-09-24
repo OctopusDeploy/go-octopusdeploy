@@ -5,44 +5,55 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type TenantService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type tenantService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewTenantService(sling *sling.Sling, uriTemplate string) *TenantService {
+func newTenantService(sling *sling.Sling, uriTemplate string) *tenantService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &TenantService{
-		name:  "TenantService",
-		path:  path,
-		sling: sling,
+	return &tenantService{
+		name:        serviceTenantService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get returns a single tenant by its tenantid in Octopus Deploy
-func (s *TenantService) Get(id string) (*model.Tenant, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s tenantService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s tenantService) getName() string {
+	return s.name
+}
 
+func (s tenantService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByID returns a single tenant by its tenantid in Octopus Deploy
+func (s tenantService) GetByID(id string) (*model.Tenant, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Tenant), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Tenant), path)
 	if err != nil {
 		return nil, err
 	}
@@ -50,29 +61,25 @@ func (s *TenantService) Get(id string) (*model.Tenant, error) {
 	return resp.(*model.Tenant), nil
 }
 
-// GetAll returns all instances of a Tenant.
-func (s *TenantService) GetAll() ([]model.Tenant, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a Tenant. If none can be found or an error occurs, it returns an empty collection.
+func (s tenantService) GetAll() ([]model.Tenant, error) {
 	items := new([]model.Tenant)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
 // GetByName performs a lookup and returns the Tenant with a matching name.
-func (s *TenantService) GetByName(name string) (*model.Tenant, error) {
+func (s tenantService) GetByName(name string) (*model.Tenant, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
+		return nil, createInvalidParameterError(operationGetByName, parameterName)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -89,13 +96,13 @@ func (s *TenantService) GetByName(name string) (*model.Tenant, error) {
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
 // Add creates a new Tenant.
-func (s *TenantService) Add(tenant *model.Tenant) (*model.Tenant, error) {
+func (s tenantService) Add(tenant *model.Tenant) (*model.Tenant, error) {
 	if tenant == nil {
-		return nil, createInvalidParameterError("Add", "tenant")
+		return nil, createInvalidParameterError(operationAdd, "tenant")
 	}
 
 	err := tenant.Validate()
@@ -104,14 +111,15 @@ func (s *TenantService) Add(tenant *model.Tenant) (*model.Tenant, error) {
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, tenant, new(model.Tenant), s.path)
+	path := trimTemplate(s.path)
 
+	resp, err := apiAdd(s.getClient(), tenant, new(model.Tenant), path)
 	if err != nil {
 		return nil, err
 	}
@@ -120,24 +128,14 @@ func (s *TenantService) Add(tenant *model.Tenant) (*model.Tenant, error) {
 }
 
 // Delete deletes an existing tenant in Octopus Deploy
-func (s *TenantService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+func (s tenantService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
 // Update updates an existing tenant in Octopus Deploy
-func (s *TenantService) Update(resource *model.Tenant) (*model.Tenant, error) {
+func (s tenantService) Update(resource *model.Tenant) (*model.Tenant, error) {
 	if resource == nil {
-		return nil, createInvalidParameterError("Update", "resource")
+		return nil, createInvalidParameterError(operationUpdate, "resource")
 	}
 
 	err := resource.Validate()
@@ -146,15 +144,16 @@ func (s *TenantService) Update(resource *model.Tenant) (*model.Tenant, error) {
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", resource.ID)
-	resp, err := apiUpdate(s.sling, resource, new(model.Tenant), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s", resource.ID)
 
+	resp, err := apiUpdate(s.getClient(), resource, new(model.Tenant), path)
 	if err != nil {
 		return nil, err
 	}
@@ -162,16 +161,4 @@ func (s *TenantService) Update(resource *model.Tenant) (*model.Tenant, error) {
 	return resp.(*model.Tenant), nil
 }
 
-func (s *TenantService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &TenantService{}
+var _ ServiceInterface = &tenantService{}

@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
-	"net/url"
 	"os"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
@@ -74,7 +72,7 @@ func CreateSpace(client *client.Client) (*model.Space, error) {
 	return space, err
 }
 
-func CreateProject(client *client.Client) *model.Project {
+func createProject(client *client.Client) *model.Project {
 	fmt.Println("Creating a new project...")
 
 	if client.Projects == nil {
@@ -100,7 +98,7 @@ func CreateProject(client *client.Client) *model.Project {
 	return project
 }
 
-func UpdateProject(client *client.Client, project *model.Project) *model.Project {
+func updateProject(client *client.Client, project *model.Project) *model.Project {
 	fmt.Println("Updating a project...")
 
 	if client == nil {
@@ -121,10 +119,10 @@ func UpdateProject(client *client.Client, project *model.Project) *model.Project
 	return project
 }
 
-func DeleteProject(client *client.Client, project *model.Project) {
+func deleteProject(client *client.Client, project *model.Project) {
 	fmt.Println("Deleting a project...")
 
-	err := client.Projects.Delete(project.ID)
+	err := client.Projects.DeleteByID(project.ID)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -134,9 +132,7 @@ func DeleteProject(client *client.Client, project *model.Project) {
 
 func main() {
 
-	Initialize()
-
-	client, err := client.NewClient(&httpClient, serviceURL, apiKey, "")
+	client, err := client.NewClient(nil, serviceURL, apiKey, "")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -160,9 +156,9 @@ func main() {
 	jsonData, _ = model.PrettyJSON(authentication)
 	fmt.Println(jsonData)
 
-	project := CreateProject(client)
-	project = UpdateProject(client, project)
-	DeleteProject(client, project)
+	project := createProject(client)
+	project = updateProject(client, project)
+	deleteProject(client, project)
 
 	OutputAsJSON(client.Accounts.GetAll())
 	OutputAsJSON(client.ActionTemplates.GetAll())
@@ -204,7 +200,7 @@ func main() {
 		fmt.Println("done.")
 	}
 
-	err = client.Spaces.Delete(updatedSpace.ID)
+	err = client.Spaces.DeleteByID(updatedSpace.ID)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -226,7 +222,7 @@ func main() {
 	} else { //This isn't idomatic go, but it allows the demo to continue if the create fails
 		fmt.Printf("Created Project ID %s", project.ID)
 
-		project, err := client.Projects.Get(project.ID)
+		project, err := client.Projects.GetByID(project.ID)
 
 		if err != nil {
 			fmt.Println(err.Error())
@@ -248,7 +244,7 @@ func main() {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Printf("Created Project ID %s", createdEnvironment.ID)
-		environment, err := client.Environments.Get(createdEnvironment.ID)
+		environment, err := client.Environments.GetByID(createdEnvironment.ID)
 
 		if err != nil {
 			fmt.Println(err.Error())
@@ -256,17 +252,4 @@ func main() {
 
 		fmt.Println(environment.Name)
 	}
-}
-
-func Initialize() {
-	proxy := "http://127.0.0.1:5555"
-	proxyURL, err := url.Parse(proxy)
-	if err != nil {
-		log.Println(err)
-	}
-
-	tr := &http.Transport{
-		Proxy: http.ProxyURL(proxyURL),
-	}
-	httpClient = http.Client{Transport: tr}
 }

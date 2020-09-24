@@ -16,15 +16,30 @@ type MachineConnectionStatus struct {
 	Resource
 }
 
-func (m *MachineConnectionStatus) GetID() string {
-	return m.ID
+// GetID returns the ID value of the MachineConnectionStatus.
+func (resource MachineConnectionStatus) GetID() string {
+	return resource.ID
 }
 
-// Validate returns a collection of validation errors against the machine
-// connection status' internal values.
-func (m *MachineConnectionStatus) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this MachineConnectionStatus.
+func (resource MachineConnectionStatus) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this MachineConnectionStatus was changed.
+func (resource MachineConnectionStatus) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this MachineConnectionStatus.
+func (resource MachineConnectionStatus) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the MachineConnectionStatus and returns an error if invalid.
+func (resource MachineConnectionStatus) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(m)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

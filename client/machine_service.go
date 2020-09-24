@@ -5,44 +5,55 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type MachineService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type machineService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewMachineService(sling *sling.Sling, uriTemplate string) *MachineService {
+func newMachineService(sling *sling.Sling, uriTemplate string) *machineService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &MachineService{
-		name:  "MachineService",
-		path:  path,
-		sling: sling,
+	return &machineService{
+		name:        serviceMachineService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get returns a single machine with a given ID.
-func (s *MachineService) Get(id string) (*model.Machine, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s machineService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s machineService) getName() string {
+	return s.name
+}
 
+func (s machineService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByID returns a single machine with a given ID.
+func (s machineService) GetByID(id string) (*model.Machine, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Machine), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Machine), path)
 	if err != nil {
 		return nil, err
 	}
@@ -50,40 +61,25 @@ func (s *MachineService) Get(id string) (*model.Machine, error) {
 	return resp.(*model.Machine), nil
 }
 
-// GetAll returns all instances of a Machine.
-func (s *MachineService) GetAll() (*[]model.Machine, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a Machine. If none can be found or an error occurs, it returns an empty collection.
+func (s machineService) GetAll() ([]model.Machine, error) {
+	items := new([]model.Machine)
+	path, err := getAllPath(s)
 	if err != nil {
-		return nil, err
+		return *items, err
 	}
 
-	var p []model.Machine
-	path := s.path
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.Machines), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*model.Machines)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
-	}
-	return &p, nil
+	_, err = apiGet(s.getClient(), items, path)
+	return *items, err
 }
 
 // GetByName performs a lookup and returns the Machine with a matching name.
-func (s *MachineService) GetByName(name string) (*model.Machine, error) {
+func (s machineService) GetByName(name string) (*model.Machine, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError("GetByName", "name")
+		return nil, createInvalidParameterError(operationGetByName, parameterName)
 	}
 
-	err := s.validateInternalState()
-
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -94,19 +90,19 @@ func (s *MachineService) GetByName(name string) (*model.Machine, error) {
 		return nil, err
 	}
 
-	for _, item := range *collection {
+	for _, item := range collection {
 		if item.Name == name {
 			return &item, nil
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, "GetByName", name)
+	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
 // Add creates a new Machine.
-func (s *MachineService) Add(machine *model.Machine) (*model.Machine, error) {
+func (s machineService) Add(machine *model.Machine) (*model.Machine, error) {
 	if machine == nil {
-		return nil, createInvalidParameterError("Add", "machine")
+		return nil, createInvalidParameterError(operationAdd, "machine")
 	}
 
 	err := machine.Validate()
@@ -115,14 +111,15 @@ func (s *MachineService) Add(machine *model.Machine) (*model.Machine, error) {
 		return nil, err
 	}
 
-	err = s.validateInternalState()
+	err = validateInternalState(s)
 
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.sling, machine, new(model.Machine), s.path)
+	path := trimTemplate(s.path)
 
+	resp, err := apiAdd(s.getClient(), machine, new(model.Machine), path)
 	if err != nil {
 		return nil, err
 	}
@@ -131,24 +128,13 @@ func (s *MachineService) Add(machine *model.Machine) (*model.Machine, error) {
 }
 
 // Delete deletes an existing machine in Octopus Deploy
-func (s *MachineService) Delete(id string) error {
-	if isEmpty(id) {
-		return createInvalidParameterError("Delete", "id")
-	}
-
-	err := s.validateInternalState()
-
-	if err != nil {
-		return err
-	}
-
-	return apiDelete(s.sling, fmt.Sprintf(s.path+"/%s", id))
+func (s machineService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
 // Update updates an existing machine in Octopus Deploy
-func (s *MachineService) Update(machine *model.Machine) (*model.Machine, error) {
-	err := s.validateInternalState()
-
+func (s machineService) Update(machine *model.Machine) (*model.Machine, error) {
+	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
@@ -159,9 +145,10 @@ func (s *MachineService) Update(machine *model.Machine) (*model.Machine, error) 
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", machine.ID)
-	resp, err := apiUpdate(s.sling, machine, new(model.Machine), path)
+	path := trimTemplate(s.path)
+	path = fmt.Sprintf(path+"/%s", machine.ID)
 
+	resp, err := apiUpdate(s.getClient(), machine, new(model.Machine), path)
 	if err != nil {
 		return nil, err
 	}
@@ -169,16 +156,4 @@ func (s *MachineService) Update(machine *model.Machine) (*model.Machine, error) 
 	return resp.(*model.Machine), nil
 }
 
-func (s *MachineService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &MachineService{}
+var _ ServiceInterface = &machineService{}

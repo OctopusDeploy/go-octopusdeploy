@@ -1,11 +1,12 @@
 package model
 
 import (
+	"time"
+
 	"github.com/go-playground/validator/v10"
 )
 
-// ActionTemplates defines a collection of action templates with built-in
-// support for paged results.
+// ActionTemplates defines a collection of ActionTemplate items with built-in support for paged results.
 type ActionTemplates struct {
 	Items []ActionTemplate `json:"Items"`
 	PagedResults
@@ -37,13 +38,30 @@ func NewActionTemplate(name string, actionType string) (*ActionTemplate, error) 
 	}, nil
 }
 
-func (a *ActionTemplate) GetID() string {
-	return a.ID
+// GetID returns the ID value of the ActionTemplate.
+func (resource ActionTemplate) GetID() string {
+	return resource.ID
 }
 
-func (a *ActionTemplate) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this ActionTemplate.
+func (resource ActionTemplate) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this ActionTemplate was changed.
+func (resource ActionTemplate) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this ActionTemplate.
+func (resource ActionTemplate) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the ActionTemplate and returns an error if invalid.
+func (resource ActionTemplate) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(a)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {

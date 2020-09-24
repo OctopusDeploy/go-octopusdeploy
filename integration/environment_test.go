@@ -20,18 +20,22 @@ func TestEnvironmentAddAndDelete(t *testing.T) {
 }
 
 func TestEnvironmentAddGetAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	environment := createTestEnvironment(t, getRandomName())
 	defer cleanEnvironment(t, environment.ID)
 
-	getEnvironment, err := octopusClient.Environments.Get(environment.ID)
-	assert.Nil(t, err, "there was an error raised getting environment when there should not be")
+	getEnvironment, err := octopusClient.Environments.GetByID(environment.ID)
+	assert.NoError(t, err, "there was an error raised getting environment when there should not be")
 	assert.Equal(t, environment.Name, getEnvironment.Name)
 }
 
 func TestEnvironmentGetThatDoesNotExist(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	environmentID := "there-is-no-way-this-environment-id-exists-i-hope"
 	expected := client.ErrItemNotFound
-	environment, err := octopusClient.Environments.Get(environmentID)
+	environment, err := octopusClient.Environments.GetByID(environmentID)
 
 	assert.Error(t, err, "there should have been an error raised as this environment should not be found")
 	assert.Equal(t, expected, err, "a item not found error should have been raised")
@@ -39,6 +43,8 @@ func TestEnvironmentGetThatDoesNotExist(t *testing.T) {
 }
 
 func TestEnvironmentGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	// create many environments to test pagination
 	environmentsToCreate := 32
 	sum := 0
@@ -68,11 +74,13 @@ func TestEnvironmentGetAll(t *testing.T) {
 		t.Fatalf("Retrieving all environments failed when it shouldn't: %s", err)
 	}
 
-	assert.Nil(t, err, "error when looking for environment when not expected")
+	assert.NoError(t, err, "error when looking for environment when not expected")
 	assert.Equal(t, len(allEnvironmentsAfterCreatingAdditional), numberOfEnvironments+1, "created an additional environment and expected number of environments to increase by 1")
 }
 
 func TestEnvironmentUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	environment := createTestEnvironment(t, getRandomName())
 	defer cleanEnvironment(t, environment.ID)
 
@@ -85,18 +93,20 @@ func TestEnvironmentUpdate(t *testing.T) {
 	environment.UseGuidedFailure = newUseGuidedFailure
 
 	updatedEnvironment, err := octopusClient.Environments.Update(&environment)
-	assert.Nil(t, err, "error when updating environment")
+	assert.NoError(t, err, "error when updating environment")
 	assert.Equal(t, newEnvironmentName, updatedEnvironment.Name, "environment name was not updated")
 	assert.Equal(t, newDescription, updatedEnvironment.Description, "environment description was not updated")
 	assert.Equal(t, newUseGuidedFailure, environment.UseGuidedFailure, "environment UseGuidedFailure was not updated")
 }
 
 func TestEnvironmentGetByName(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	environment := createTestEnvironment(t, getRandomName())
 	defer cleanEnvironment(t, environment.ID)
 
 	foundEnvironment, err := octopusClient.Environments.GetByName(environment.Name)
-	assert.Nil(t, err, "error when looking for environment when not expected")
+	assert.NoError(t, err, "error when looking for environment when not expected")
 	assert.Equal(t, environment.Name, foundEnvironment.Name, "environment not found when searching by its name")
 }
 
@@ -115,6 +125,8 @@ func TestEnvironmentCleanup(t *testing.T) {
 */
 
 func createTestEnvironment(t *testing.T, environmentName string) model.Environment {
+	octopusClient := getOctopusClient()
+
 	e := getTestEnvironment(environmentName)
 	createdEnvironment, err := octopusClient.Environments.Add(&e)
 
@@ -131,7 +143,9 @@ func getTestEnvironment(environmentName string) model.Environment {
 }
 
 func cleanEnvironment(t *testing.T, environmentID string) {
-	err := octopusClient.Environments.Delete(environmentID)
+	octopusClient := getOctopusClient()
+
+	err := octopusClient.Environments.DeleteByID(environmentID)
 
 	if err == nil {
 		return

@@ -27,12 +27,12 @@ func TestChannelWithName(t *testing.T) {
 }
 
 func TestNewChannelWithEmptyName(t *testing.T) {
-	channel, err := NewChannel("", channelDescription, channelProjectID)
+	channel, err := NewChannel(emptyString, channelDescription, channelProjectID)
 
 	assert.Error(t, err)
 	assert.Nil(t, channel)
 
-	channel, err = NewChannel(" ", channelDescription, channelProjectID)
+	channel, err = NewChannel(whitespaceString, channelDescription, channelProjectID)
 
 	assert.Error(t, err)
 	assert.Nil(t, channel)

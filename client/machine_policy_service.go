@@ -1,48 +1,58 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type MachinePolicyService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type machinePolicyService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewMachinePolicyService(sling *sling.Sling, uriTemplate string) *MachinePolicyService {
+func newMachinePolicyService(sling *sling.Sling, uriTemplate string) *machinePolicyService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &MachinePolicyService{
-		name:  "MachinePolicyService",
-		path:  path,
-		sling: sling,
+	return &machinePolicyService{
+		name:        serviceMachinePolicyService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-// Get returns a single machine with a given MachineID
-func (s *MachinePolicyService) Get(id string) (*model.MachinePolicy, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s machinePolicyService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s machinePolicyService) getName() string {
+	return s.name
+}
 
+func (s machinePolicyService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// GetByID returns a single machine with a given MachineID
+func (s machinePolicyService) GetByID(id string) (*model.MachinePolicy, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.Machine), path)
-
+	resp, err := apiGet(s.getClient(), new(model.Machine), path)
 	if err != nil {
 		return nil, err
 	}
@@ -50,31 +60,16 @@ func (s *MachinePolicyService) Get(id string) (*model.MachinePolicy, error) {
 	return resp.(*model.MachinePolicy), nil
 }
 
-// GetAll returns all instances of a MachinePolicy.
-func (s *MachinePolicyService) GetAll() ([]model.MachinePolicy, error) {
-	err := s.validateInternalState()
-
+// GetAll returns all instances of a MachinePolicy. If none can be found or an error occurs, it returns an empty collection.
+func (s machinePolicyService) GetAll() ([]model.MachinePolicy, error) {
 	items := new([]model.MachinePolicy)
-
+	path, err := getAllPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.sling, items, s.path+"/all")
-
+	_, err = apiGet(s.getClient(), items, path)
 	return *items, err
 }
 
-func (s *MachinePolicyService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &MachinePolicyService{}
+var _ ServiceInterface = &machinePolicyService{}

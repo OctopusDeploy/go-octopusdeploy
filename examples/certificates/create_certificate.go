@@ -9,6 +9,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
 
+// CreateCertificateExample shows how to create a certificate using go-octopusdeploy.
 func CreateCertificateExample() {
 	var (
 		// Declare working variables

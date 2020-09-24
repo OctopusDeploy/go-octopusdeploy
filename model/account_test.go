@@ -96,14 +96,7 @@ func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidProperties(t *tes
 }
 
 func TestNewAccountWithEmptyName(t *testing.T) {
-	account, err := NewAccount(" ", enum.UsernamePassword)
-
-	assert.Error(t, err)
-	assert.Nil(t, account)
-}
-
-func TestNewAccountWithLongEmptyName(t *testing.T) {
-	account, err := NewAccount("       ", enum.UsernamePassword)
+	account, err := NewAccount(whitespaceString, enum.UsernamePassword)
 
 	assert.Error(t, err)
 	assert.Nil(t, account)

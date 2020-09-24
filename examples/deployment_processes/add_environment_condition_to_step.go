@@ -37,7 +37,7 @@ func AddEnvironmentConditionToStepExample() {
 		// TODO: handle error
 	}
 
-	deploymentProcess, err := client.DeploymentProcesses.Get(project.DeploymentProcessID)
+	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
 	if err != nil {
 		// TODO: handle error
@@ -53,7 +53,7 @@ func AddEnvironmentConditionToStepExample() {
 		}
 	}
 
-	_, err = client.DeploymentProcesses.Update(deploymentProcess)
+	_, err = client.DeploymentProcesses.Update(*deploymentProcess)
 
 	if err != nil {
 		// TODO: handle error

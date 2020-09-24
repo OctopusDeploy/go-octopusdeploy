@@ -1,47 +1,57 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
-type DeploymentProcessService struct {
-	name  string       `validate:"required"`
-	path  string       `validate:"required"`
-	sling *sling.Sling `validate:"required"`
+type deploymentProcessService struct {
+	name        string                    `validate:"required"`
+	path        string                    `validate:"required"`
+	sling       *sling.Sling              `validate:"required"`
+	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
 
-func NewDeploymentProcessService(sling *sling.Sling, uriTemplate string) *DeploymentProcessService {
+func newDeploymentProcessService(sling *sling.Sling, uriTemplate string) *deploymentProcessService {
 	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	if err != nil {
 		return nil
 	}
 
-	path := strings.Split(uriTemplate, "{")[0]
-
-	return &DeploymentProcessService{
-		name:  "DeploymentProcessService",
-		path:  path,
-		sling: sling,
+	return &deploymentProcessService{
+		name:        serviceDeploymentProcessService,
+		path:        strings.TrimSpace(uriTemplate),
+		sling:       sling,
+		uriTemplate: template,
 	}
 }
 
-func (s *DeploymentProcessService) Get(id string) (*model.DeploymentProcess, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError("Get", "id")
-	}
+func (s deploymentProcessService) getClient() *sling.Sling {
+	return s.sling
+}
 
-	err := s.validateInternalState()
+func (s deploymentProcessService) getName() string {
+	return s.name
+}
 
+func (s deploymentProcessService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+func (s deploymentProcessService) GetByID(id string) (*model.DeploymentProcess, error) {
+	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(s.path+"/%s", id)
-	resp, err := apiGet(s.sling, new(model.DeploymentProcess), path)
-
+	resp, err := apiGet(s.getClient(), new(model.DeploymentProcess), path)
 	if err != nil {
 		return nil, err
 	}
@@ -49,66 +59,48 @@ func (s *DeploymentProcessService) Get(id string) (*model.DeploymentProcess, err
 	return resp.(*model.DeploymentProcess), nil
 }
 
-// GetAll returns all instances of a DeploymentProcess.
-func (s *DeploymentProcessService) GetAll() (*[]model.DeploymentProcess, error) {
-	err := s.validateInternalState()
+// GetAll returns all instances of a DeploymentProcess. If none can be found or an error occurs, it returns an empty collection.
+func (s deploymentProcessService) GetAll() ([]model.DeploymentProcess, error) {
+	items := new([]model.DeploymentProcess)
+	path, err := getAllPath(s)
+	if err != nil {
+		return *items, err
+	}
 
+	_, err = apiGet(s.getClient(), items, path)
+	return *items, err
+}
+
+func (s deploymentProcessService) Update(resource model.DeploymentProcess) (*model.DeploymentProcess, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	var p []model.DeploymentProcess
-	path := s.path
+	resp, err := apiUpdate(s.getClient(), resource, new(model.DeploymentProcess), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.DeploymentProcess), nil
+}
+
+func (s deploymentProcessService) getPagedResponse(path string) ([]model.DeploymentProcess, error) {
+	items := []model.DeploymentProcess{}
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := apiGet(s.sling, new(model.DeploymentProcesses), path)
-
+		resp, err := apiGet(s.getClient(), new(model.DeploymentProcesses), path)
 		if err != nil {
 			return nil, err
 		}
 
-		r := resp.(*model.DeploymentProcesses)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
+		responseList := resp.(*model.DeploymentProcesses)
+		items = append(items, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return &p, nil
+	return items, nil
 }
 
-func (s *DeploymentProcessService) Update(deploymentProcess *model.DeploymentProcess) (*model.DeploymentProcess, error) {
-	err := s.validateInternalState()
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = deploymentProcess.Validate()
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(s.path+"/%s", deploymentProcess.ID)
-	resp, err := apiUpdate(s.sling, deploymentProcess, new(model.DeploymentProcess), path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.DeploymentProcess), nil
-}
-
-func (s *DeploymentProcessService) validateInternalState() error {
-	if s.sling == nil {
-		return createInvalidClientStateError(s.name)
-	}
-
-	if isEmpty(s.path) {
-		return createInvalidPathError(s.name)
-	}
-
-	return nil
-}
-
-var _ ServiceInterface = &DeploymentProcessService{}
+var _ ServiceInterface = &deploymentProcessService{}

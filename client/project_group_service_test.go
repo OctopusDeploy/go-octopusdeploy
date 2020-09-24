@@ -7,27 +7,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewProjectGroupServiceWithNil(t *testing.T) {
-	service := NewProjectGroupService(nil, "")
-	assert.Nil(t, service)
-}
+func TestNewProjectGroupService(t *testing.T) {
+	serviceFunction := newProjectGroupService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceProjectGroupService
 
-func TestProjectGroupServiceWithEmptyClient(t *testing.T) {
-	service := NewProjectGroupService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *projectGroupService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestProjectGroupServiceGetWithEmptyID(t *testing.T) {
-	service := NewProjectGroupService(&sling.Sling{}, "")
+	service := newProjectGroupService(&sling.Sling{}, emptyString)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 	assert.Nil(t, resource)
 }

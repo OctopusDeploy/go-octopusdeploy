@@ -21,6 +21,8 @@ func TestVarAddAndDelete(t *testing.T) {
 }
 
 func createTestVariable(t *testing.T, projectID, variableName string) model.Variable {
+	octopusClient := getOctopusClient()
+
 	v := getTestVariable(variableName)
 	variableSet, err := octopusClient.Variables.AddSingle(projectID, &v)
 	if err != nil {
@@ -44,6 +46,8 @@ func getTestVariable(variableName string) model.Variable {
 }
 
 func createVarTestProject(t *testing.T, projectName string) model.Project {
+	octopusClient := getOctopusClient()
+
 	p := model.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
 	createdProject, err := octopusClient.Projects.Add(p)
 
@@ -55,7 +59,10 @@ func createVarTestProject(t *testing.T, projectName string) model.Project {
 }
 
 func cleanVar(t *testing.T, varID string, projID string) {
+	octopusClient := getOctopusClient()
+
 	_, err := octopusClient.Variables.DeleteSingle(projID, varID)
+
 	if err == nil {
 		return
 	}

@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
@@ -57,15 +59,30 @@ func NewProject(name, lifeCycleID, projectGroupID string) *Project {
 	}
 }
 
-func (p *Project) GetID() string {
-	return p.ID
+// GetID returns the ID value of the Project.
+func (resource Project) GetID() string {
+	return resource.ID
 }
 
-// Validate returns a collection of validation errors against the project's
-// internal values.
-func (p *Project) Validate() error {
+// GetLastModifiedBy returns the name of the account that modified the value of this Project.
+func (resource Project) GetLastModifiedBy() string {
+	return resource.LastModifiedBy
+}
+
+// GetLastModifiedOn returns the time when the value of this Project was changed.
+func (resource Project) GetLastModifiedOn() *time.Time {
+	return resource.LastModifiedOn
+}
+
+// GetLinks returns the associated links with the value of this Project.
+func (resource Project) GetLinks() map[string]string {
+	return resource.Links
+}
+
+// Validate checks the state of the Project and returns an error if invalid.
+func (resource Project) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(p)
+	err := validate.Struct(resource)
 
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
@@ -76,11 +93,11 @@ func (p *Project) Validate() error {
 	}
 
 	return ValidateMultipleProperties([]error{
-		ValidatePropertyValues("SkipMachineBehavior", p.ProjectConnectivityPolicy.SkipMachineBehavior, ValidProjectConnectivityPolicySkipMachineBehaviors),
-		ValidatePropertyValues("DefaultGuidedFailureMode", p.DefaultGuidedFailureMode, ValidProjectDefaultGuidedFailureModes),
-		ValidateRequiredPropertyValue("LifecycleID", p.LifecycleID),
-		ValidateRequiredPropertyValue("Name", p.Name),
-		ValidateRequiredPropertyValue("ProjectGroupID", p.ProjectGroupID),
+		ValidatePropertyValues("SkipMachineBehavior", resource.ProjectConnectivityPolicy.SkipMachineBehavior, ValidProjectConnectivityPolicySkipMachineBehaviors),
+		ValidatePropertyValues("DefaultGuidedFailureMode", resource.DefaultGuidedFailureMode, ValidProjectDefaultGuidedFailureModes),
+		ValidateRequiredPropertyValue("LifecycleID", resource.LifecycleID),
+		ValidateRequiredPropertyValue("Name", resource.Name),
+		ValidateRequiredPropertyValue("ProjectGroupID", resource.ProjectGroupID),
 	})
 
 }

@@ -3,102 +3,225 @@ package client
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	TestAccountServiceURITemplate = "accounts-service"
-)
+func TestAccountService(t *testing.T) {
+	t.Run("New", TestNewAccountService)
+	t.Run("Parameters", TestAccountServiceParameters)
+	t.Run("GetAll", TestAccountServiceGetAll)
+	t.Run("GetByID", TestAccountServiceGetByID)
+	t.Run("GetByAccountType", TestAccountServiceGetByAccountType)
+	t.Run("Add", TestAccountServiceAdd)
+	t.Run("Update", TestAccountServiceUpdateWithEmptyAccount)
+	t.Run("Usage", TestAccountServiceGetUsages)
+}
 
 func TestNewAccountService(t *testing.T) {
-	service := NewAccountService(nil, "")
-	assert.Nil(t, service)
-	createAccountService(t)
+	serviceFunction := newAccountService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceAccountService
+
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *accountService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
-func TestAccountServiceGetWithEmptyID(t *testing.T) {
+func TestAccountServiceGetByAccountType(t *testing.T) {
 	service := createAccountService(t)
+	assert := assert.New(t)
 
-	resource, err := service.Get("")
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Get", "id"))
-	assert.Nil(t, resource)
+	for _, typeName := range enum.AccountTypeNames() {
+		accountType, err := enum.ParseAccountType(typeName)
 
-	resource, err = service.Get(" ")
+		assert.NoError(err)
+		if err != nil {
+			return
+		}
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Get", "id"))
-	assert.Nil(t, resource)
+		resourceList, err := service.GetByAccountType(accountType)
+
+		assert.NoError(err)
+
+		if len(resourceList) > 0 {
+			resourceToCompare, err := service.GetByID(resourceList[0].ID)
+
+			assert.NoError(err)
+			assert.EqualValues(resourceList[0], *resourceToCompare)
+		}
+	}
 }
 
-func TestAccountServiceGetWithEmptyName(t *testing.T) {
+func TestAccountServiceGetByID(t *testing.T) {
 	service := createAccountService(t)
+	assert := assert.New(t)
 
-	resource, err := service.GetByName("")
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("GetByName", "name"))
-	assert.Nil(t, resource)
+	resourceList, err := service.GetAll()
 
-	resource, err = service.GetByName(" ")
+	assert.NoError(err)
+	assert.NotEmpty(resourceList)
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("GetByName", "name"))
-	assert.Nil(t, resource)
+	if len(resourceList) > 0 {
+		resourceToCompare, err := service.GetByID(resourceList[0].ID)
+
+		assert.NoError(err)
+		assert.EqualValues(resourceList[0], *resourceToCompare)
+	}
 }
 
-func TestAccountServiceAddWithNilAccount(t *testing.T) {
+func TestAccountServiceGetAll(t *testing.T) {
 	service := createAccountService(t)
+	assert := assert.New(t)
 
-	account, err := service.Add(nil)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Add", "account"))
-	assert.Nil(t, account)
+	resourceList, err := service.GetAll()
+
+	assert.NoError(err)
+	assert.NotEmpty(resourceList)
 }
 
-func TestAccountServiceAddWithInvalidAccount(t *testing.T) {
-	service := createAccountService(t)
+func TestAccountServiceParameters(t *testing.T) {
+	testCases := []struct {
+		name      string
+		parameter string
+	}{
+		{"Empty", emptyString},
+		{"Whitespace", whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-	account, err := service.Add(&model.Account{})
+			service := createAccountService(t)
+			assert := assert.New(t)
 
-	assert.Error(t, err)
-	assert.Nil(t, account)
+			assert.NotNil(service)
+			if service == nil {
+				return
+			}
+
+			resource, err := service.GetByID(tc.parameter)
+
+			assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
+			assert.Nil(resource)
+
+			resourceList, err := service.GetByPartialName(tc.parameter)
+
+			assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
+			assert.NotNil(resourceList)
+
+			err = service.DeleteByID(tc.parameter)
+
+			assert.Error(err)
+			assert.Equal(err, createInvalidParameterError(operationDeleteByID, parameterID))
+		})
+	}
 }
 
-func TestAccountServiceDeleteWithEmptyID(t *testing.T) {
+func TestAccountServiceGetUsages(t *testing.T) {
 	service := createAccountService(t)
+	assert := assert.New(t)
 
-	err := service.Delete("")
+	accounts, err := service.GetAll()
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Delete", "id"))
+	assert.NoError(err)
 
-	err = service.Delete(" ")
+	if len(accounts) > 0 {
+		accountUsages, err := service.GetUsages(accounts[0])
 
-	assert.Error(t, err)
-	assert.Equal(t, err, createInvalidParameterError("Delete", "id"))
+		assert.NoError(err)
+		assert.NotNil(accountUsages)
+	}
+}
+
+func TestAccountServiceGetByIDs(t *testing.T) {
+	service := createAccountService(t)
+	assert := assert.New(t)
+
+	ids := []string{"Accounts-285", "Accounts-286", "Accounts-450"}
+
+	resourceList, err := service.GetByIDs(ids)
+
+	assert.NoError(err)
+	assert.Len(resourceList, len(ids))
+}
+
+func TestAccountServiceAdd(t *testing.T) {
+	service := createAccountService(t)
+	assert := assert.New(t)
+
+	resource, err := service.Add(nil)
+
+	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
+	assert.Nil(resource)
+
+	resource, err = service.Add(&model.Account{})
+
+	assert.Error(err)
+	assert.Nil(resource)
+
+	resource, err = model.NewUsernamePasswordAccount(getRandomName())
+
+	assert.NoError(err)
+	assert.NotNil(resource)
+
+	if err != nil {
+		return
+	}
+
+	resource, err = service.Add(resource)
+
+	assert.NoError(err)
+	assert.NotNil(resource)
+
+	err = service.DeleteByID(resource.ID)
+
+	assert.NoError(err)
 }
 
 func TestAccountServiceUpdateWithEmptyAccount(t *testing.T) {
 	service := createAccountService(t)
+	assert := assert.New(t)
 
 	account, err := service.Update(model.Account{})
 
-	assert.Error(t, err)
-	assert.Nil(t, account)
+	assert.Error(err)
+	assert.Nil(account)
 }
 
-func createAccountService(t *testing.T) *AccountService {
-	service := NewAccountService(&sling.Sling{}, TestAccountServiceURITemplate)
-
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
-	assert.Equal(t, service.path, TestAccountServiceURITemplate)
-	assert.Equal(t, service.name, "AccountService")
-
+func createAccountService(t *testing.T) *accountService {
+	service := newAccountService(nil, TestURIAccounts)
+	testNewService(t, service, TestURIAccounts, serviceAccountService)
 	return service
 }

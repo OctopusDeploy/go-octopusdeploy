@@ -8,6 +8,8 @@ import (
 )
 
 func TestGetAllUsers(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	users, err := octopusClient.Users.GetAll()
 
 	assert.NoError(t, err)
@@ -19,6 +21,8 @@ func TestGetAllUsers(t *testing.T) {
 }
 
 func TestGetMe(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	user, err := octopusClient.Users.GetMe()
 
 	assert.NoError(t, err)
@@ -32,6 +36,8 @@ func TestGetMe(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	user, err := octopusClient.Users.GetMe()
 
 	assert.NoError(t, err)
@@ -41,7 +47,7 @@ func TestGetUserByID(t *testing.T) {
 		return
 	}
 
-	userToVerify, err := octopusClient.Users.Get(user.ID)
+	userToVerify, err := octopusClient.Users.GetByID(user.ID)
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, userToVerify)
@@ -54,6 +60,8 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestGetSpaces(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	user, err := octopusClient.Users.GetMe()
 
 	assert.NoError(t, err)
@@ -76,6 +84,8 @@ func TestGetSpaces(t *testing.T) {
 }
 
 func TestGetAuthenticationForUser(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	user, err := octopusClient.Users.GetMe()
 
 	assert.NoError(t, err)
@@ -98,6 +108,8 @@ func TestGetAuthenticationForUser(t *testing.T) {
 }
 
 func TestGetAuthentication(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	authentication, err := octopusClient.Users.GetAuthentication()
 
 	assert.NoError(t, err)
@@ -111,6 +123,8 @@ func TestGetAuthentication(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	user := model.NewUser(getRandomName(), getRandomName())
 	user.Password = getRandomName()
 	user, err := octopusClient.Users.Add(user)
@@ -128,6 +142,8 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestCreateServiceUser(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	user := model.NewUser(getRandomName(), getRandomName())
 	user.IsService = true
 	user, err := octopusClient.Users.Add(user)

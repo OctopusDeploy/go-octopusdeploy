@@ -7,7 +7,9 @@ import (
 )
 
 func TestGetConfiguration(t *testing.T) {
-		configurationSection, err := octopusClient.Configuration.Get("authentication")
+	octopusClient := getOctopusClient()
+
+	configurationSection, err := octopusClient.Configuration.GetByID("authentication")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, configurationSection)
@@ -19,22 +21,4 @@ func TestGetConfiguration(t *testing.T) {
 	assert.NotEmpty(t, configurationSection.Links)
 	assert.NotEmpty(t, configurationSection.Links["Values"])
 	assert.NotEmpty(t, configurationSection.Links["Metadata"])
-}
-
-func TestGetAllConfiguration(t *testing.T) {
-		configurationSections, err := octopusClient.Configuration.GetAll()
-
-	assert.NoError(t, err)
-	assert.NotNil(t, configurationSections)
-
-	if err != nil || configurationSections == nil {
-		return
-	}
-
-	assert.NotEmpty(t, configurationSections.Items)
-
-	for _, configurationSection := range configurationSections.Items {
-		assert.NotEmpty(t, configurationSection.Links["Metadata"])
-		assert.NotEmpty(t, configurationSection.Links["Values"])
-	}
 }

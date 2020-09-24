@@ -7,27 +7,45 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewMachineServiceWithNil(t *testing.T) {
-	service := NewMachineService(nil, "")
-	assert.Nil(t, service)
+func TestMachineService(t *testing.T) {
+	t.Run("New", TestNewMachineService)
 }
 
-func TestMachineServiceWithEmptyClient(t *testing.T) {
-	service := NewMachineService(&sling.Sling{}, "")
-	assert.NotNil(t, service)
-	assert.NotNil(t, service.sling)
+func TestNewMachineService(t *testing.T) {
+	serviceFunction := newMachineService
+	client := &sling.Sling{}
+	uriTemplate := emptyString
+	serviceName := serviceMachineService
+
+	testCases := []struct {
+		name        string
+		f           func(*sling.Sling, string) *machineService
+		client      *sling.Sling
+		uriTemplate string
+	}{
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := tc.f(tc.client, tc.uriTemplate)
+			testNewService(t, service, uriTemplate, serviceName)
+		})
+	}
 }
 
 func TestMachineServiceGetWithEmptyID(t *testing.T) {
-	service := NewMachineService(&sling.Sling{}, "")
+	service := newMachineService(&sling.Sling{}, emptyString)
+	assert := assert.New(t)
 
-	resource, err := service.Get("")
+	resource, err := service.GetByID(emptyString)
 
-	assert.Error(t, err)
-	assert.Nil(t, resource)
+	assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Nil(resource)
 
-	resource, err = service.Get(" ")
+	resource, err = service.GetByID(whitespaceString)
 
-	assert.Error(t, err)
-	assert.Nil(t, resource)
+	assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Nil(resource)
 }

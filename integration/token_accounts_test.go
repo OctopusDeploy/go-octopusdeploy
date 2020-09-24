@@ -7,14 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
-
 func TestCreateInvalidTokenAccount(t *testing.T) {
-	account, err := model.NewTokenAccount("", model.SensitiveValue{})
+	octopusClient := getOctopusClient()
+
+	account, err := model.NewTokenAccount(emptyString, model.SensitiveValue{})
 
 	assert.Error(t, err)
 	assert.Nil(t, account)
@@ -32,6 +28,8 @@ func TestCreateInvalidTokenAccount(t *testing.T) {
 }
 
 func TestCreateAndDeleteAndGetTokenAccount(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	sensitiveValue := model.NewSensitiveValue(getRandomName())
 
 	assert.NotNil(t, sensitiveValue)
@@ -65,11 +63,11 @@ func TestCreateAndDeleteAndGetTokenAccount(t *testing.T) {
 	assert.Equal(t, account.SubscriptionID, createdAccount.SubscriptionID)
 	assert.Equal(t, account.TenantedDeploymentParticipation, createdAccount.TenantedDeploymentParticipation)
 
-	err = octopusClient.Accounts.Delete(createdAccount.ID)
+	err = octopusClient.Accounts.DeleteByID(createdAccount.ID)
 
 	assert.NoError(t, err)
 
-	deletedAccount, err := octopusClient.Accounts.Get(createdAccount.ID)
+	deletedAccount, err := octopusClient.Accounts.GetByID(createdAccount.ID)
 
 	assert.Error(t, err)
 	assert.Nil(t, deletedAccount)

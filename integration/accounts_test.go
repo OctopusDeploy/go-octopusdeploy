@@ -3,23 +3,23 @@ package integration
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	if octopusClient == nil {
-		octopusClient = initTest()
-	}
-}
+func TestAccountServiceAdd(t *testing.T) {
+	octopusClient := getOctopusClient()
 
-func TestAddAccount(t *testing.T) {
 	account, err := octopusClient.Accounts.Add(nil)
 
 	assert.Error(t, err)
 	assert.Nil(t, account)
 }
 
-func TestGetAllAccounts(t *testing.T) {
+func TestAccountServiceGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+
 	accounts, err := octopusClient.Accounts.GetAll()
 
 	assert.NoError(t, err)
@@ -35,15 +35,38 @@ func TestGetAllAccounts(t *testing.T) {
 	}
 }
 
-func TestGetUsage(t *testing.T) {
-	accounts, err := octopusClient.Accounts.GetAll()
+func TestAccountServiceGetByName(t *testing.T) {
+	octopusClient := getOctopusClient()
+
+	accounts, err := octopusClient.Accounts.GetByPartialName("go")
 
 	assert.NoError(t, err)
+	assert.NotNil(t, accounts)
+
+	if len(accounts) == 0 {
+		return
+	}
 
 	for _, account := range accounts {
-		accountUsages, err := octopusClient.Accounts.GetUsage(account)
-
 		assert.NoError(t, err)
-		assert.NotNil(t, accountUsages)
+		assert.NotEmpty(t, account)
+	}
+}
+
+func TestAccountServiceGetByType(t *testing.T) {
+	octopusClient := getOctopusClient()
+
+	accounts, err := octopusClient.Accounts.GetByAccountType(enum.UsernamePassword)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, accounts)
+
+	if len(accounts) == 0 {
+		return
+	}
+
+	for _, account := range accounts {
+		assert.NoError(t, err)
+		assert.NotEmpty(t, account)
 	}
 }
