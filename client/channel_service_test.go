@@ -57,8 +57,23 @@ func TestChannelServiceDeleteWithEmptyID(t *testing.T) {
 	assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
 }
 
+func TestChannelServiceGetAll(t *testing.T) {
+	service := createChannelService(t)
+	assert := assert.New(t)
+
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+}
+
 func createChannelService(t *testing.T) *channelService {
-	service := newChannelService(&sling.Sling{}, TestURIChannels)
+	service := newChannelService(nil, TestURIChannels)
 	testNewService(t, service, TestURIChannels, serviceChannelService)
 	return service
 }
