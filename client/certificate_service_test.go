@@ -59,6 +59,28 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	}
 }
 
+func TestCertificateServiceGetByName(t *testing.T) {
+	service := createCertificateService(t)
+	assert := assert.New(t)
+
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+
+	if len(resourceList) > 0 {
+		resourceToCompare, err := service.GetByName(resourceList[0].Name)
+
+		assert.NoError(err)
+		assert.EqualValues(*resourceToCompare, resourceList[0])
+	}
+}
+
 func TestCertificateServiceGetWithEmptyID(t *testing.T) {
 	service := createCertificateService(t)
 	assert := assert.New(t)

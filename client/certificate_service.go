@@ -75,6 +75,22 @@ func (s certificateService) GetAll() ([]model.Certificate, error) {
 	return *items, err
 }
 
+// GetByName performs a lookup and returns a single instance of a certificate with a matching name.
+func (s certificateService) GetByName(name string) (*model.Certificate, error) {
+	resourceList, err := s.GetByPartialName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, resource := range resourceList {
+		if resource.Name == name {
+			return &resource, nil
+		}
+	}
+
+	return nil, nil
+}
+
 // GetByPartialName performs a lookup and returns instances of a Certificate with a matching partial name.
 func (s certificateService) GetByPartialName(name string) ([]model.Certificate, error) {
 	path, err := getByPartialNamePath(s, name)
