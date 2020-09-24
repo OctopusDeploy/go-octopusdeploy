@@ -74,13 +74,12 @@ func (s channelService) GetByPartialName(name string) ([]model.Channel, error) {
 // GetAll returns all instances of a Channel. If none can be found or an error occurs, it returns an empty collection.
 func (s channelService) GetAll() ([]model.Channel, error) {
 	items := new([]model.Channel)
-	path, err := getAllPath(s)
+	path, err := getPath(s)
 	if err != nil {
 		return *items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	return s.getPagedResponse(path)
 }
 
 func (s channelService) GetProject(channel model.Channel) (*model.Project, error) {
@@ -166,7 +165,7 @@ func (s channelService) Update(resource model.Channel) (*model.Channel, error) {
 }
 
 func (s channelService) getPagedResponse(path string) ([]model.Channel, error) {
-	items := []model.Channel{}
+	var resources []model.Channel
 	loadNextPage := true
 
 	for loadNextPage {
@@ -176,11 +175,11 @@ func (s channelService) getPagedResponse(path string) ([]model.Channel, error) {
 		}
 
 		responseList := resp.(*model.Channels)
-		items = append(items, responseList.Items...)
+		resources = append(resources, responseList.Items...)
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return items, nil
+	return resources, nil
 }
 
 var _ ServiceInterface = &channelService{}
