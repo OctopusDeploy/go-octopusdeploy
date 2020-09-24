@@ -131,6 +131,22 @@ func (s accountService) GetByAccountType(accountType enum.AccountType) ([]model.
 	return s.getPagedResponse(path)
 }
 
+// GetByName performs a lookup and returns a single instance of an account with a matching name.
+func (s accountService) GetByName(name string) (*model.Account, error) {
+	resourceList, err := s.GetByPartialName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, resource := range resourceList {
+		if resource.Name == name {
+			return &resource, nil
+		}
+	}
+
+	return nil, nil
+}
+
 // GetByPartialName performs a lookup and returns instances of an Account with a matching partial name.
 func (s accountService) GetByPartialName(name string) ([]model.Account, error) {
 	path, err := getByPartialNamePath(s, name)

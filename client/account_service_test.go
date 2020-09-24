@@ -14,6 +14,7 @@ func TestAccountService(t *testing.T) {
 	t.Run("Parameters", TestAccountServiceParameters)
 	t.Run("GetAll", TestAccountServiceGetAll)
 	t.Run("GetByID", TestAccountServiceGetByID)
+	t.Run("GetByName", TestAccountServiceGetByName)
 	t.Run("GetByAccountType", TestAccountServiceGetByAccountType)
 	t.Run("Add", TestAccountServiceAdd)
 	t.Run("Update", TestAccountServiceUpdateWithEmptyAccount)
@@ -93,6 +94,28 @@ func TestAccountServiceGetByID(t *testing.T) {
 
 		assert.NoError(err)
 		assert.EqualValues(resourceList[0], *resourceToCompare)
+	}
+}
+
+func TestAccountServiceGetByName(t *testing.T) {
+	service := createAccountService(t)
+	assert := assert.New(t)
+
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+
+	if len(resourceList) > 0 {
+		resourceToCompare, err := service.GetByName(resourceList[0].Name)
+
+		assert.NoError(err)
+		assert.EqualValues(*resourceToCompare, resourceList[0])
 	}
 }
 
