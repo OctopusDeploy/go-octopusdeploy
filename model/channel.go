@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// Channels defines a collection of channels with built-in support for paged results.
 type Channels struct {
 	Items []Channel `json:"Items"`
 	PagedResults
