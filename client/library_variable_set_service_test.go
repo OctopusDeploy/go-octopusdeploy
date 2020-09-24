@@ -45,6 +45,28 @@ func TestLibraryVariableSetServiceGetWithEmptyID(t *testing.T) {
 	assert.Nil(t, resource)
 }
 
+func TestLibraryVariableSetGetByPartialName(t *testing.T) {
+	service := createLibraryVariableSetService(t)
+	assert := assert.New(t)
+
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+
+	if len(resourceList) > 0 {
+		resourcesToCompare, err := service.GetByPartialName(resourceList[0].Name)
+
+		assert.NoError(err)
+		assert.EqualValues(resourcesToCompare[0], resourceList[0])
+	}
+}
+
 func createLibraryVariableSetService(t *testing.T) *libraryVariableSetService {
 	service := newLibraryVariableSetService(nil, TestURILibraryVariables)
 	testNewService(t, service, TestURILibraryVariables, serviceLibraryVariableSetService)

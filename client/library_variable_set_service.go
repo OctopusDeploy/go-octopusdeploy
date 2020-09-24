@@ -72,9 +72,9 @@ func (s libraryVariableSetService) GetAll() ([]model.LibraryVariableSet, error) 
 	return *items, err
 }
 
-// GetByName performs a lookup and returns the LibraryVariableSet with a matching name.
-func (s libraryVariableSetService) GetByName(name string) ([]model.LibraryVariableSet, error) {
-	path, err := getByNamePath(s, name)
+// GetByPartialName performs a lookup and returns a list of library variable sets with a matching partial name.
+func (s libraryVariableSetService) GetByPartialName(name string) ([]model.LibraryVariableSet, error) {
+	path, err := getByPartialNamePath(s, name)
 	if err != nil {
 		return []model.LibraryVariableSet{}, err
 	}
