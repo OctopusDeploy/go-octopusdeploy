@@ -59,7 +59,7 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	}
 }
 
-func TestCertificateServiceGetByName(t *testing.T) {
+func TestCertificateServiceGetByPartialName(t *testing.T) {
 	service := createCertificateService(t)
 	assert := assert.New(t)
 
@@ -74,10 +74,10 @@ func TestCertificateServiceGetByName(t *testing.T) {
 	assert.NotNil(resourceList)
 
 	if len(resourceList) > 0 {
-		resourceToCompare, err := service.GetByName(resourceList[0].Name)
+		resourcesToCompare, err := service.GetByPartialName(resourceList[0].Name)
 
 		assert.NoError(err)
-		assert.EqualValues(*resourceToCompare, resourceList[0])
+		assert.EqualValues(resourcesToCompare[0], resourceList[0])
 	}
 }
 
