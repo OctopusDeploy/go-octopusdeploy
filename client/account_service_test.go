@@ -86,7 +86,7 @@ func TestAccountServiceGetByID(t *testing.T) {
 	resourceList, err := service.GetAll()
 
 	assert.NoError(err)
-	assert.NotEmpty(resourceList)
+	assert.NotNil(resourceList)
 
 	if len(resourceList) > 0 {
 		resourceToCompare, err := service.GetByID(resourceList[0].ID)
@@ -108,7 +108,7 @@ func TestAccountServiceGetAll(t *testing.T) {
 	resourceList, err := service.GetAll()
 
 	assert.NoError(err)
-	assert.NotEmpty(resourceList)
+	assert.NotNil(resourceList)
 }
 
 func TestAccountServiceParameters(t *testing.T) {
