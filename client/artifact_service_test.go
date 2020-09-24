@@ -69,7 +69,7 @@ func TestArtifactServiceOperationsWithStringParameter(t *testing.T) {
 }
 
 func createArtifactService(t *testing.T) *artifactService {
-	service := newArtifactService(&sling.Sling{}, TestURIArtifacts)
+	service := newArtifactService(nil, TestURIArtifacts)
 	testNewService(t, service, TestURIArtifacts, serviceArtifactService)
 	return service
 }

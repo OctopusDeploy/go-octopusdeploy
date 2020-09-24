@@ -46,7 +46,7 @@ func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 }
 
 func createAPIKeyService(t *testing.T) *apiKeyService {
-	service := newAPIKeyService(&sling.Sling{}, TestURIAPIKeys)
+	service := newAPIKeyService(nil, TestURIAPIKeys)
 	testNewService(t, service, TestURIAPIKeys, serviceAPIKeyService)
 	return service
 }

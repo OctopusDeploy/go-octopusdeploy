@@ -31,7 +31,7 @@ func TestNewBuildInformationService(t *testing.T) {
 }
 
 func createBuildInformationService(t *testing.T) *buildInformationService {
-	service := newBuildInformationService(&sling.Sling{}, TestURIBuildInformation)
+	service := newBuildInformationService(nil, TestURIBuildInformation)
 	testNewService(t, service, TestURIBuildInformation, serviceBuildInformationService)
 	return service
 }

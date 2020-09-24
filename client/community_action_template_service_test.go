@@ -46,7 +46,7 @@ func TestCommunityActionTemplateServiceGetWithEmptyID(t *testing.T) {
 }
 
 func createCommunityActionTemplateService(t *testing.T) *communityActionTemplateService {
-	service := newCommunityActionTemplateService(&sling.Sling{}, TestURICommunityActionTemplates)
+	service := newCommunityActionTemplateService(nil, TestURICommunityActionTemplates)
 	testNewService(t, service, TestURICommunityActionTemplates, serviceCommunityActionTemplateService)
 	return service
 }

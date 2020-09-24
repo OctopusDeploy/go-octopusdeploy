@@ -31,7 +31,7 @@ func TestNewAuthenticationService(t *testing.T) {
 }
 
 func createAuthenticationService(t *testing.T) *authenticationService {
-	service := newAuthenticationService(&sling.Sling{}, TestURIAuthentication)
+	service := newAuthenticationService(nil, TestURIAuthentication)
 	testNewService(t, service, TestURIAuthentication, serviceAuthenticationService)
 	return service
 }
