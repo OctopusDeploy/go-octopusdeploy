@@ -61,6 +61,16 @@ func (s channelService) GetByID(id string) (*model.Channel, error) {
 	return resp.(*model.Channel), nil
 }
 
+// GetByPartialName performs a lookup and returns instances of a channel with a matching partial name.
+func (s channelService) GetByPartialName(name string) ([]model.Channel, error) {
+	path, err := getByPartialNamePath(s, name)
+	if err != nil {
+		return []model.Channel{}, err
+	}
+
+	return s.getPagedResponse(path)
+}
+
 // GetAll returns all instances of a Channel. If none can be found or an error occurs, it returns an empty collection.
 func (s channelService) GetAll() ([]model.Channel, error) {
 	items := new([]model.Channel)
