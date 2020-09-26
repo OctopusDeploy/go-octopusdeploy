@@ -243,6 +243,32 @@ func TestAccountServiceUpdateWithEmptyAccount(t *testing.T) {
 	assert.Nil(account)
 }
 
+func TestAccountServiceUpdate(t *testing.T) {
+	service := createAccountService(t)
+	assert := assert.New(t)
+
+	resource, err := model.NewUsernamePasswordAccount(getRandomName())
+
+	assert.NoError(err)
+	assert.NotNil(resource)
+
+	if err != nil {
+		return
+	}
+
+	resourceToCompare, err := service.Add(resource)
+
+	assert.NoError(err)
+	assert.NotNil(resourceToCompare)
+
+	resourceToCompare.Name = getRandomName()
+
+	updatedResource, err := service.Update(*resourceToCompare)
+
+	assert.NoError(err)
+	assert.Equal(resourceToCompare.Name, updatedResource.Name)
+}
+
 func createAccountService(t *testing.T) *accountService {
 	service := newAccountService(nil, TestURIAccounts)
 	testNewService(t, service, TestURIAccounts, serviceAccountService)
