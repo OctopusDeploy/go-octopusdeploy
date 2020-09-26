@@ -80,7 +80,7 @@ func getByIDPath(s ServiceInterface, id string) (string, error) {
 
 func getByIDsPath(s ServiceInterface, ids []string) (string, error) {
 	if len(ids) == 0 {
-		return emptyString, createInvalidParameterError(operationGetByIDs, parameterIDs)
+		return s.getURITemplate().Expand(make(map[string]interface{}))
 	}
 
 	err := validateInternalState(s)
