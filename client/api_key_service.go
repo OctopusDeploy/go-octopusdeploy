@@ -62,7 +62,7 @@ func (s apiKeyService) GetByUserID(userID string) (*[]model.APIKey, error) {
 	var p []model.APIKey
 
 	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s/apikeys", userID)
+	path = fmt.Sprintf(path+"%s/apikeys", userID)
 
 	loadNextPage := true
 
@@ -96,7 +96,7 @@ func (s apiKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, e
 	}
 
 	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s/apikeys/%s", userID, apiKeyID)
+	path = fmt.Sprintf(path+"%s/apikeys/%s", userID, apiKeyID)
 
 	resp, err := apiGet(s.getClient(), new(model.APIKey), path)
 	if err != nil {
@@ -122,7 +122,7 @@ func (s apiKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 	}
 
 	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s/apikeys", *apiKey.UserID)
+	path = fmt.Sprintf(path+"%s/apikeys", apiKey.UserID)
 
 	resp, err := apiPost(s.getClient(), apiKey, new(model.APIKey), path)
 	if err != nil {
