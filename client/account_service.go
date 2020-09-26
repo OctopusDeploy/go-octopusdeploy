@@ -174,7 +174,7 @@ func (s accountService) GetUsages(account model.Account) (*model.AccountUsage, e
 	return resp.(*model.AccountUsage), nil
 }
 
-// Update modifies an Account based on the one provided as input.
+// Update modifies an account based on the one provided as input.
 func (s accountService) Update(resource model.Account) (*model.Account, error) {
 	path, err := getUpdatePath(s, resource)
 	if err != nil {
