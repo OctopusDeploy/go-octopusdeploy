@@ -164,7 +164,7 @@ func (s channelService) Update(resource model.Channel) (*model.Channel, error) {
 }
 
 func (s channelService) getPagedResponse(path string) ([]model.Channel, error) {
-	var resources []model.Channel
+	resources := []model.Channel{}
 	loadNextPage := true
 
 	for loadNextPage {
