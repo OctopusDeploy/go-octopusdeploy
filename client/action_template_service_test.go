@@ -54,8 +54,6 @@ func TestActionTemplateServiceOperationsWithStringParameter(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Logf("[INFO] Parameter: %q", tc.parameter)
-
 			service := createActionTemplateService(t)
 
 			assert.NotNil(t, service)
@@ -66,7 +64,7 @@ func TestActionTemplateServiceOperationsWithStringParameter(t *testing.T) {
 			resourceList, err := service.GetAll()
 
 			assert.NoError(t, err)
-			assert.NotEmpty(t, resourceList)
+			assert.NotNil(t, resourceList)
 
 			for _, actionTemplate := range resourceList {
 				fmt.Println(actionTemplate.GetID())

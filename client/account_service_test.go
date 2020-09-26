@@ -192,12 +192,20 @@ func TestAccountServiceGetByIDs(t *testing.T) {
 	service := createAccountService(t)
 	assert := assert.New(t)
 
-	ids := []string{"Accounts-285", "Accounts-286", "Accounts-450"}
-
-	resourceList, err := service.GetByIDs(ids)
+	resourceList, err := service.GetAll()
 
 	assert.NoError(err)
-	assert.Len(resourceList, len(ids))
+	assert.NotNil(resourceList)
+
+	idList := []string{}
+	for _, resource := range resourceList {
+		idList = append(idList, resource.ID)
+	}
+
+	resourceListToCompare, err := service.GetByIDs(idList)
+
+	assert.NoError(err)
+	assert.Equal(len(resourceList), len(resourceListToCompare))
 }
 
 func TestAccountServiceAdd(t *testing.T) {
