@@ -49,7 +49,7 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	resourceList, err := service.GetAll()
 
 	assert.NoError(err)
-	assert.NotEmpty(resourceList)
+	assert.NotNil(resourceList)
 
 	for _, resource := range resourceList {
 		resourceToCompare, err := service.GetByID(resource.ID)
