@@ -19,7 +19,7 @@ func ChangeFeedExample() {
 	}
 
 	// Get Feed instances that match the name provided
-	feeds, err := client.Feeds.GetByName(feedName)
+	feeds, err := client.Feeds.GetByPartialName(feedName)
 	if err != nil {
 		// TODO: handle error
 	}
