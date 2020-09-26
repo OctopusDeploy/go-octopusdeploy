@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
@@ -154,13 +156,16 @@ func getTestMachine(t *testing.T, environmentID string, machineName string) mode
 
 	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
 
-	endpoint, err := model.NewMachineEndpoint()
+	endpoint := &model.MachineEndpoint{}
 
 	assert.NoError(t, err)
 	assert.NotNil(t, endpoint)
 
 	endpoint.ApplicationsDirectory = "C:\\Applications"
-	endpoint.CommunicationStyle = "OfflineDrop"
+
+	communicationStyle, _ := enum.ParseCommunicationStyle("OfflineDrop")
+	endpoint.CommunicationStyle = communicationStyle
+
 	endpoint.WorkingDirectory = "C:\\Octopus"
 
 	e := model.Machine{

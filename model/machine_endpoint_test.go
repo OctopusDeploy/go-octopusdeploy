@@ -3,6 +3,8 @@ package model
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,9 +14,10 @@ func TestEmptyMachineEndpoint(t *testing.T) {
 }
 
 func TestInvalidEndpointURI(t *testing.T) {
+	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	endpointURI := "x"
 	endpoint := &MachineEndpoint{
-		CommunicationStyle: "None",
+		CommunicationStyle: communicationStyle,
 		URI:                endpointURI,
 	}
 
@@ -23,10 +26,12 @@ func TestInvalidEndpointURI(t *testing.T) {
 }
 
 func TestValidSshEndpointPort(t *testing.T) {
-	var port uint16 = 22
+	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	endpoint := &MachineEndpoint{
-		CommunicationStyle: "None",
+		CommunicationStyle: communicationStyle,
 	}
+
+	var port uint16 = 22
 	endpoint.Port = &port
 
 	assert.NotNil(t, endpoint)

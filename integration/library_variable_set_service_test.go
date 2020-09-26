@@ -90,7 +90,7 @@ func TestLibraryVariableSetUpdate(t *testing.T) {
 	libraryVariableSet.Name = newLibraryVariableSetName
 	libraryVariableSet.Description = newDescription
 
-	updatedLibraryVariableSet, err := octopusClient.LibraryVariableSets.Update(&libraryVariableSet)
+	updatedLibraryVariableSet, err := octopusClient.LibraryVariableSets.Update(libraryVariableSet)
 	assert.NoError(t, err, "error when updating libraryVariableSet")
 	assert.Equal(t, newLibraryVariableSetName, updatedLibraryVariableSet.Name, "libraryVariableSet name was not updated")
 	assert.Equal(t, newDescription, updatedLibraryVariableSet.Description, "libraryVariableSet description was not updated")
@@ -102,9 +102,9 @@ func TestLibraryVariableSetGetByName(t *testing.T) {
 	libraryVariableSet := createTestLibraryVariableSet(t, getRandomName())
 	defer cleanLibraryVariableSet(t, libraryVariableSet.ID)
 
-	foundLibraryVariableSet, err := octopusClient.LibraryVariableSets.GetByName(libraryVariableSet.Name)
+	foundLibraryVariableSets, err := octopusClient.LibraryVariableSets.GetByPartialName(libraryVariableSet.Name)
 	assert.NoError(t, err, "error when looking for libraryVariableSet when not expected")
-	assert.Equal(t, libraryVariableSet.Name, foundLibraryVariableSet[0].Name, "libraryVariableSet not found when searching by its name")
+	assert.Equal(t, libraryVariableSet.Name, foundLibraryVariableSets[0].Name, "libraryVariableSet not found when searching by its name")
 }
 
 func createTestLibraryVariableSet(t *testing.T, libraryVariableSetName string) model.LibraryVariableSet {

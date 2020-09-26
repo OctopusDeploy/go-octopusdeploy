@@ -3,6 +3,7 @@ package model
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,10 +34,11 @@ func TestEmptyEndpoint(t *testing.T) {
 }
 
 func TestValidEndpointAndInvalidDeploymentMode(t *testing.T) {
+	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machine := &Machine{
 		DeploymentMode: "invalid",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: "None",
+			CommunicationStyle: communicationStyle,
 		},
 	}
 
@@ -45,10 +47,11 @@ func TestValidEndpointAndInvalidDeploymentMode(t *testing.T) {
 }
 
 func TestValidDeploymentModeAndEndpoint(t *testing.T) {
+	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: "None",
+			CommunicationStyle: communicationStyle,
 		},
 	}
 
@@ -57,11 +60,12 @@ func TestValidDeploymentModeAndEndpoint(t *testing.T) {
 }
 
 func TestInvalidMachineURI(t *testing.T) {
+	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machineURI := "x"
 	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: "None",
+			CommunicationStyle: communicationStyle,
 		},
 		URI: machineURI,
 	}
@@ -71,11 +75,12 @@ func TestInvalidMachineURI(t *testing.T) {
 }
 
 func TestValidMachineURI(t *testing.T) {
+	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machineURI := "http://localhost"
 	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: "None",
+			CommunicationStyle: communicationStyle,
 		},
 		URI: machineURI,
 	}
