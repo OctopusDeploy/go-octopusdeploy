@@ -14,17 +14,18 @@ type APIKeys struct {
 }
 
 // NewAPIKey initializes an API key with a purpose.
-func NewAPIKey(purpose string) (*APIKey, error) {
+func NewAPIKey(purpose string, userID string) (*APIKey, error) {
 	return &APIKey{
-		Purpose: &purpose,
+		Purpose: purpose,
+		UserID:  userID,
 	}, nil
 }
 
 type APIKey struct {
-	APIKey  *string    `json:"ApiKey,omitempty"`
+	APIKey  string     `json:"ApiKey,omitempty"`
 	Created *time.Time `json:"Created,omitempty"`
-	Purpose *string    `json:"Purpose,omitempty"`
-	UserID  *string    `json:"UserId,omitempty"`
+	Purpose string     `json:"Purpose,omitempty"`
+	UserID  string     `json:"UserId,omitempty"`
 
 	Resource
 }
