@@ -73,10 +73,9 @@ func (s channelService) GetByPartialName(name string) ([]model.Channel, error) {
 
 // GetAll returns all instances of a Channel. If none can be found or an error occurs, it returns an empty collection.
 func (s channelService) GetAll() ([]model.Channel, error) {
-	items := new([]model.Channel)
 	path, err := getPath(s)
 	if err != nil {
-		return *items, err
+		return []model.Channel{}, err
 	}
 
 	return s.getPagedResponse(path)
