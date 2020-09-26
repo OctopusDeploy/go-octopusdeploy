@@ -3,12 +3,13 @@ package model
 import (
 	"time"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
 )
 
 type MachineEndpoint struct {
 	AccountID                     string                        `json:"AccountId,omitempty"`
-	CommunicationStyle            string                        `json:"CommunicationStyle" validate:"required,oneof=None TentaclePassive TentacleActive Ssh OfflineDrop AzureWebApp Ftp AzureCloudService AzureServiceFabricCluster Kubernetes"`
+	CommunicationStyle            enum.CommunicationStyle       `json:"CommunicationStyle" validate:"required,oneof=None TentaclePassive TentacleActive Ssh OfflineDrop AzureWebApp Ftp AzureCloudService AzureServiceFabricCluster Kubernetes"`
 	DefaultWorkerPoolID           string                        `json:"DefaultWorkerPoolId,omitempty"`
 	ProxyID                       *string                       `json:"ProxyId"`
 	Thumbprint                    string                        `json:"Thumbprint,omitempty"`
@@ -29,8 +30,14 @@ type MachineEndpoint struct {
 }
 
 // NewMachineEndpoint initializes a MachineEndpoint.
-func NewMachineEndpoint() (*MachineEndpoint, error) {
-	return &MachineEndpoint{}, nil
+func NewMachineEndpoint(uri string, thumbprint string, communicationStyle enum.CommunicationStyle, proxyID string, defaultWorkerPoolID string) (*MachineEndpoint, error) {
+	return &MachineEndpoint{
+		URI:                 uri,
+		Thumbprint:          thumbprint,
+		CommunicationStyle:  communicationStyle,
+		ProxyID:             &proxyID,
+		DefaultWorkerPoolID: defaultWorkerPoolID,
+	}, nil
 }
 
 // GetID returns the ID value of the MachineEndpoint.
