@@ -102,8 +102,8 @@ func (s libraryVariableSetService) DeleteByID(id string) error {
 	return deleteByID(s, id)
 }
 
-// Update modifies a LibraryVariableSet based on the one provided as input.
-func (s libraryVariableSetService) Update(resource *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
+// Update modifies a library variable set based on the one provided as input.
+func (s libraryVariableSetService) Update(resource model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
 	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
