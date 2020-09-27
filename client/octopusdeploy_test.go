@@ -32,18 +32,11 @@ func TestNewClient(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Logf("[INFO] URL: %s", tc.url)
-			t.Logf("[INFO] API Key: %s", tc.apiKey)
-			t.Logf("[INFO] Space ID: %s", tc.spaceID)
-
 			client, err := NewClient(tc.client, tc.url, tc.apiKey, tc.spaceID)
 
 			if !tc.isValid {
-				t.Logf("[INFO] Error: %s", err)
-
 				assert.Error(t, err)
 				assert.Nil(t, client)
-
 				return
 			}
 
