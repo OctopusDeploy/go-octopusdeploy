@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
-
 	"github.com/stretchr/testify/assert"
 )
 
