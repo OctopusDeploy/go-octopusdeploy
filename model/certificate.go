@@ -36,7 +36,7 @@ type Certificate struct {
 	SubjectOrganization             string                      `json:"SubjectOrganization,omitempty"`
 	SelfSigned                      bool                        `json:"SelfSigned,omitempty"`
 	TenantedDeploymentParticipation enum.TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
-	TenantIds                       []string                    `json:"TenantIds,omitempty"`
+	TenantIDs                       []string                    `json:"TenantIds,omitempty"`
 	TenantTags                      []string                    `json:"TenantTags,omitempty"`
 	Thumbprint                      string                      `json:"Thumbprint,omitempty"`
 	Version                         int                         `json:"Version,omitempty"`

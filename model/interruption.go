@@ -19,8 +19,8 @@ type Interruption struct {
 	HasResponsibility           bool      `json:"HasResponsibility"`
 	IsLinkedToOtherInterruption bool      `json:"IsLinkedToOtherInterruption"`
 	IsPending                   bool      `json:"IsPending"`
-	RelatedDocumentIds          []string  `json:"RelatedDocumentIds"`
-	ResponsibleTeamIds          []string  `json:"ResponsibleTeamIds"`
+	RelatedDocumentIDs          []string  `json:"RelatedDocumentIds"`
+	ResponsibleTeamIDs          []string  `json:"ResponsibleTeamIds"`
 	ResponsibleUserID           string    `json:"ResponsibleUserId,omitempty"`
 	SpaceID                     string    `json:"SpaceId,omitempty"`
 	TaskID                      string    `json:"TaskId,omitempty"`

@@ -11,7 +11,7 @@ type Release struct {
 	BuildInformation                   []*ReleasePackageVersionBuildInformation `json:"BuildInformation"`
 	ChannelID                          string                                   `json:"ChannelId,omitempty"`
 	IgnoreChannelRules                 bool                                     `json:"IgnoreChannelRules,omitempty"`
-	LibraryVariableSetSnapshotIds      []string                                 `json:"LibraryVariableSetSnapshotIds"`
+	LibraryVariableSetSnapshotIDs      []string                                 `json:"LibraryVariableSetSnapshotIds"`
 	ProjectDeploymentProcessSnapshotID string                                   `json:"ProjectDeploymentProcessSnapshotId,omitempty"`
 	ProjectID                          string                                   `json:"ProjectId,omitempty"`
 	ProjectVariableSetSnapshotID       string                                   `json:"ProjectVariableSetSnapshotId,omitempty"`

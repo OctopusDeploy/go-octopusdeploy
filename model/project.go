@@ -23,7 +23,7 @@ type Project struct {
 	Description                     string                       `json:"Description,omitempty"`
 	DiscreteChannelRelease          bool                         `json:"DiscreteChannelRelease"`
 	ExtensionSettings               []*ExtensionSettingsValues   `json:"ExtensionSettings,omitempty"`
-	IncludedLibraryVariableSetIds   []string                     `json:"IncludedLibraryVariableSetIds,omitempty"`
+	IncludedLibraryVariableSetIDs   []string                     `json:"IncludedLibraryVariableSetIds,omitempty"`
 	IsDisabled                      bool                         `json:"IsDisabled"`
 	IsVersionControlled             bool                         `json:"IsVersionControlled"`
 	LifecycleID                     string                       `json:"LifecycleId"`

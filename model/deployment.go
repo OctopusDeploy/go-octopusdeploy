@@ -14,10 +14,10 @@ type Deployment struct {
 	Created                  *time.Time        `json:"Created,omitempty"`
 	DeployedBy               string            `json:"DeployedBy,omitempty"`
 	DeployedByID             string            `json:"DeployedById,omitempty"`
-	DeployedToMachineIds     []string          `json:"DeployedToMachineIds"`
+	DeployedToMachineIDs     []string          `json:"DeployedToMachineIds"`
 	DeploymentProcessID      string            `json:"DeploymentProcessId,omitempty"`
 	EnvironmentID            *string           `json:"EnvironmentId" validate:"required"`
-	ExcludedMachineIds       []string          `json:"ExcludedMachineIds"`
+	ExcludedMachineIDs       []string          `json:"ExcludedMachineIds"`
 	FailureEncountered       bool              `json:"FailureEncountered,omitempty"`
 	ForcePackageDownload     bool              `json:"ForcePackageDownload,omitempty"`
 	ForcePackageRedeployment bool              `json:"ForcePackageRedeployment,omitempty"`
@@ -30,7 +30,7 @@ type Deployment struct {
 	ReleaseID                *string           `json:"ReleaseId" validate:"required"`
 	SkipActions              []string          `json:"SkipActions"`
 	SpaceID                  string            `json:"SpaceId,omitempty"`
-	SpecificMachineIds       []string          `json:"SpecificMachineIds"`
+	SpecificMachineIDs       []string          `json:"SpecificMachineIds"`
 	TaskID                   string            `json:"TaskId,omitempty"`
 	TenantID                 string            `json:"TenantId,omitempty"`
 	TentacleRetentionPeriod  *RetentionPeriod  `json:"TentacleRetentionPeriod,omitempty"`

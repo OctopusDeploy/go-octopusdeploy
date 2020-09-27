@@ -4,7 +4,7 @@ type ProjectTriggerFilter struct {
 	DateOfMonth         string   `json:"DateOfMonth"`
 	DayNumberOfMonth    string   `json:"DayNumberOfMonth"`
 	DayOfWeek           string   `json:"DayOfWeek"`
-	EnvironmentIds      []string `json:"EnvironmentIds,omitempty"`
+	EnvironmentIDs      []string `json:"EnvironmentIds,omitempty"`
 	EventCategories     []string `json:"EventCategories,omitempty"`
 	EventGroups         []string `json:"EventGroups,omitempty"`
 	FilterType          string   `json:"FilterType"`
