@@ -9,7 +9,7 @@ import (
 
 type MachineEndpoint struct {
 	AccountID                     string                        `json:"AccountId,omitempty"`
-	CommunicationStyle            enum.CommunicationStyle       `json:"CommunicationStyle" validate:"required,oneof=None TentaclePassive TentacleActive Ssh OfflineDrop AzureWebApp Ftp AzureCloudService AzureServiceFabricCluster Kubernetes"`
+	CommunicationStyle            enum.CommunicationStyle       `json:"CommunicationStyle"`
 	DefaultWorkerPoolID           string                        `json:"DefaultWorkerPoolId,omitempty"`
 	ProxyID                       *string                       `json:"ProxyId"`
 	Thumbprint                    string                        `json:"Thumbprint,omitempty"`

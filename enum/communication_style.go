@@ -3,7 +3,7 @@ package enum
 // CommunicationStyle indicates the communication style used by a machine.
 /*
 ENUM(
-	None
+	NoCommunicationStyle
 	TentaclePassive
 	TentacleActive
 	Ssh

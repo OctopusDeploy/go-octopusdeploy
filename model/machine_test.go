@@ -34,11 +34,10 @@ func TestEmptyEndpoint(t *testing.T) {
 }
 
 func TestValidEndpointAndInvalidDeploymentMode(t *testing.T) {
-	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machine := &Machine{
 		DeploymentMode: "invalid",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: communicationStyle,
+			CommunicationStyle: enum.NoCommunicationStyle,
 		},
 	}
 
@@ -47,11 +46,10 @@ func TestValidEndpointAndInvalidDeploymentMode(t *testing.T) {
 }
 
 func TestValidDeploymentModeAndEndpoint(t *testing.T) {
-	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: communicationStyle,
+			CommunicationStyle: enum.NoCommunicationStyle,
 		},
 	}
 
@@ -60,12 +58,11 @@ func TestValidDeploymentModeAndEndpoint(t *testing.T) {
 }
 
 func TestInvalidMachineURI(t *testing.T) {
-	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machineURI := "x"
 	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: communicationStyle,
+			CommunicationStyle: enum.NoCommunicationStyle,
 		},
 		URI: machineURI,
 	}
@@ -75,12 +72,11 @@ func TestInvalidMachineURI(t *testing.T) {
 }
 
 func TestValidMachineURI(t *testing.T) {
-	communicationStyle, _ := enum.ParseCommunicationStyle("None")
 	machineURI := "http://localhost"
 	machine := &Machine{
 		DeploymentMode: "Untenanted",
 		Endpoint: &MachineEndpoint{
-			CommunicationStyle: communicationStyle,
+			CommunicationStyle: enum.NoCommunicationStyle,
 		},
 		URI: machineURI,
 	}

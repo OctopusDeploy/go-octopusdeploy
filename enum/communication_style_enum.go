@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	// None is a CommunicationStyle of type None
-	None CommunicationStyle = iota
+	// NoCommunicationStyle is a CommunicationStyle of type NoCommunicationStyle
+	NoCommunicationStyle CommunicationStyle = iota
 	// TentaclePassive is a CommunicationStyle of type TentaclePassive
 	TentaclePassive
 	// TentacleActive is a CommunicationStyle of type TentacleActive
@@ -31,19 +31,19 @@ const (
 	Kubernetes
 )
 
-const _CommunicationStyleName = "NoneTentaclePassiveTentacleActiveSshOfflineDropAzureWebAppFtpAzureCloudServiceAzureServiceFabricClusterKubernetes"
+const _CommunicationStyleName = "NoCommunicationStyleTentaclePassiveTentacleActiveSshOfflineDropAzureWebAppFtpAzureCloudServiceAzureServiceFabricClusterKubernetes"
 
 var _CommunicationStyleNames = []string{
-	_CommunicationStyleName[0:4],
-	_CommunicationStyleName[4:19],
-	_CommunicationStyleName[19:33],
-	_CommunicationStyleName[33:36],
-	_CommunicationStyleName[36:47],
-	_CommunicationStyleName[47:58],
-	_CommunicationStyleName[58:61],
-	_CommunicationStyleName[61:78],
-	_CommunicationStyleName[78:103],
-	_CommunicationStyleName[103:113],
+	_CommunicationStyleName[0:20],
+	_CommunicationStyleName[20:35],
+	_CommunicationStyleName[35:49],
+	_CommunicationStyleName[49:52],
+	_CommunicationStyleName[52:63],
+	_CommunicationStyleName[63:74],
+	_CommunicationStyleName[74:77],
+	_CommunicationStyleName[77:94],
+	_CommunicationStyleName[94:119],
+	_CommunicationStyleName[119:129],
 }
 
 // CommunicationStyleNames returns a list of possible string values of CommunicationStyle.
@@ -54,16 +54,16 @@ func CommunicationStyleNames() []string {
 }
 
 var _CommunicationStyleMap = map[CommunicationStyle]string{
-	0: _CommunicationStyleName[0:4],
-	1: _CommunicationStyleName[4:19],
-	2: _CommunicationStyleName[19:33],
-	3: _CommunicationStyleName[33:36],
-	4: _CommunicationStyleName[36:47],
-	5: _CommunicationStyleName[47:58],
-	6: _CommunicationStyleName[58:61],
-	7: _CommunicationStyleName[61:78],
-	8: _CommunicationStyleName[78:103],
-	9: _CommunicationStyleName[103:113],
+	0: _CommunicationStyleName[0:20],
+	1: _CommunicationStyleName[20:35],
+	2: _CommunicationStyleName[35:49],
+	3: _CommunicationStyleName[49:52],
+	4: _CommunicationStyleName[52:63],
+	5: _CommunicationStyleName[63:74],
+	6: _CommunicationStyleName[74:77],
+	7: _CommunicationStyleName[77:94],
+	8: _CommunicationStyleName[94:119],
+	9: _CommunicationStyleName[119:129],
 }
 
 // String implements the Stringer interface.
@@ -75,26 +75,26 @@ func (x CommunicationStyle) String() string {
 }
 
 var _CommunicationStyleValue = map[string]CommunicationStyle{
-	_CommunicationStyleName[0:4]:                      0,
-	strings.ToLower(_CommunicationStyleName[0:4]):     0,
-	_CommunicationStyleName[4:19]:                     1,
-	strings.ToLower(_CommunicationStyleName[4:19]):    1,
-	_CommunicationStyleName[19:33]:                    2,
-	strings.ToLower(_CommunicationStyleName[19:33]):   2,
-	_CommunicationStyleName[33:36]:                    3,
-	strings.ToLower(_CommunicationStyleName[33:36]):   3,
-	_CommunicationStyleName[36:47]:                    4,
-	strings.ToLower(_CommunicationStyleName[36:47]):   4,
-	_CommunicationStyleName[47:58]:                    5,
-	strings.ToLower(_CommunicationStyleName[47:58]):   5,
-	_CommunicationStyleName[58:61]:                    6,
-	strings.ToLower(_CommunicationStyleName[58:61]):   6,
-	_CommunicationStyleName[61:78]:                    7,
-	strings.ToLower(_CommunicationStyleName[61:78]):   7,
-	_CommunicationStyleName[78:103]:                   8,
-	strings.ToLower(_CommunicationStyleName[78:103]):  8,
-	_CommunicationStyleName[103:113]:                  9,
-	strings.ToLower(_CommunicationStyleName[103:113]): 9,
+	_CommunicationStyleName[0:20]:                     0,
+	strings.ToLower(_CommunicationStyleName[0:20]):    0,
+	_CommunicationStyleName[20:35]:                    1,
+	strings.ToLower(_CommunicationStyleName[20:35]):   1,
+	_CommunicationStyleName[35:49]:                    2,
+	strings.ToLower(_CommunicationStyleName[35:49]):   2,
+	_CommunicationStyleName[49:52]:                    3,
+	strings.ToLower(_CommunicationStyleName[49:52]):   3,
+	_CommunicationStyleName[52:63]:                    4,
+	strings.ToLower(_CommunicationStyleName[52:63]):   4,
+	_CommunicationStyleName[63:74]:                    5,
+	strings.ToLower(_CommunicationStyleName[63:74]):   5,
+	_CommunicationStyleName[74:77]:                    6,
+	strings.ToLower(_CommunicationStyleName[74:77]):   6,
+	_CommunicationStyleName[77:94]:                    7,
+	strings.ToLower(_CommunicationStyleName[77:94]):   7,
+	_CommunicationStyleName[94:119]:                   8,
+	strings.ToLower(_CommunicationStyleName[94:119]):  8,
+	_CommunicationStyleName[119:129]:                  9,
+	strings.ToLower(_CommunicationStyleName[119:129]): 9,
 }
 
 // ParseCommunicationStyle attempts to convert a string to a CommunicationStyle
