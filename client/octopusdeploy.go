@@ -113,6 +113,9 @@ func NewClient(httpClient *http.Client, octopusURL string, apiKey string, spaceI
 		root, err = rootService.Get()
 
 		if err != nil {
+			if err == ErrItemNotFound {
+				return nil, fmt.Errorf("the space ID (%s) cannot be found", spaceID)
+			}
 			return nil, err
 		}
 
@@ -294,11 +297,11 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 
 // LoadNextPage checks if the next page should be loaded from the API. Returns the new path and a bool if the next page should be checked.
 func LoadNextPage(pagedResults model.PagedResults) (string, bool) {
-	if pagedResults.Links.PageNext != "" {
+	if pagedResults.Links.PageNext != emptyString {
 		return pagedResults.Links.PageNext, true
 	}
 
-	return "", false
+	return emptyString, false
 }
 
 // Generic OctopusDeploy API Get Function.
