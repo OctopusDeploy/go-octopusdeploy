@@ -22,8 +22,8 @@ type Lifecycle struct {
 }
 
 const (
-	RetentionUnitDays  = RetentionUnit("Days")
-	RetentionUnitItems = RetentionUnit("Items")
+	RetentionUnitDays  string = "Days"
+	RetentionUnitItems string = "Items"
 )
 
 func NewLifecycle(name string) (*Lifecycle, error) {
