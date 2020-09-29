@@ -46,6 +46,28 @@ func (s userService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
+// Add creates a new user.
+func (s userService) Add(resource *model.User) (*model.User, error) {
+	path, err := getAddPath(s, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), resource, new(model.User), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.User), nil
+}
+
+// DeleteByID deletes the user that matches the input ID.
+func (s userService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
+
+// GetByID returns the user that matches the input ID. If one cannot be found,
+// it returns nil and an error.
 func (s userService) GetByID(id string) (*model.User, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -54,7 +76,7 @@ func (s userService) GetByID(id string) (*model.User, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.User), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("user", "ID", id)
 	}
 
 	return resp.(*model.User), nil
@@ -77,16 +99,17 @@ func (s userService) GetMe() (*model.User, error) {
 	return resp.(*model.User), nil
 }
 
-// GetAll returns all instances of a User. If none can be found or an error occurs, it returns an empty collection.
+// GetAll returns all tenants. If none can be found or an error occurs, it
+// returns an empty collection.
 func (s userService) GetAll() ([]model.User, error) {
-	items := new([]model.User)
+	items := []model.User{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return *items, err
+		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 func (s userService) GetAuthentication() (*model.UserAuthentication, error) {
@@ -148,28 +171,8 @@ func (s userService) GetSpaces(user *model.User) (*[]model.Spaces, error) {
 	return resp.(*[]model.Spaces), nil
 }
 
-// Add creates a new user.
-func (s userService) Add(resource *model.User) (*model.User, error) {
-	path, err := getAddPath(s, resource)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.getClient(), resource, new(model.User), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.User), nil
-}
-
-// DeleteByID deletes the User that matches the input ID.
-func (s userService) DeleteByID(id string) error {
-	return deleteByID(s, id)
-}
-
-// Update modifies a User based on the one provided as input.
-func (s userService) Update(resource *model.User) (*model.User, error) {
+// Update modifies a user based on the one provided as input.
+func (s userService) Update(resource model.User) (*model.User, error) {
 	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err

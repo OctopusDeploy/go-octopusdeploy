@@ -25,6 +25,18 @@ type CommunityActionTemplate struct {
 	Resource
 }
 
+// NewCommunityActionTemplate initializes a community action template. If any
+// input parameters are invalid, it will return nil and an error.
+func NewCommunityActionTemplate(name string) (*CommunityActionTemplate, error) {
+	if isEmpty(name) {
+		return nil, createInvalidParameterError("CommunityActionTemplate", "name")
+	}
+
+	return &CommunityActionTemplate{
+		Name: name,
+	}, nil
+}
+
 // GetID returns the ID value of the CommunityActionTemplate.
 func (resource CommunityActionTemplate) GetID() string {
 	return resource.ID

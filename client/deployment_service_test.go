@@ -7,16 +7,19 @@ import (
 )
 
 func TestDeploymentServiceGetByIDs(t *testing.T) {
-	service := createDeploymentService(t)
 	assert := assert.New(t)
 
-	ids := []string{"Accounts-285", "Accounts-286"}
+	service := createDeploymentService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
 
+	ids := []string{"Accounts-285", "Accounts-286"}
 	resources, err := service.GetByIDs(ids)
 
 	assert.NoError(err)
-
-	t.Log(resources)
+	assert.NotNil(resources)
 }
 
 func createDeploymentService(t *testing.T) *deploymentService {

@@ -10,7 +10,6 @@ import (
 
 type lifecycleService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -27,7 +26,6 @@ func newLifecycleService(sling *sling.Sling, uriTemplate string) *lifecycleServi
 
 	return &lifecycleService{
 		name:        serviceLifecycleService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -41,11 +39,30 @@ func (s lifecycleService) getName() string {
 	return s.name
 }
 
+func (s lifecycleService) getPagedResponse(path string) ([]model.Lifecycle, error) {
+	resources := []model.Lifecycle{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Lifecycles), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Lifecycles)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s lifecycleService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns a Lifecycle that matches the input ID. If one cannot be found, it returns nil and an error.
+// GetByID returns the lifecycle that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s lifecycleService) GetByID(id string) (*model.Lifecycle, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -54,22 +71,23 @@ func (s lifecycleService) GetByID(id string) (*model.Lifecycle, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Lifecycle), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("lifecycle", "ID", id)
 	}
 
 	return resp.(*model.Lifecycle), nil
 }
 
-// GetAll returns all instances of a Lifecycle. If none can be found or an error occurs, it returns an empty collection.
+// GetAll returns all lifecycles. If none can be found or an error occurs, it
+// returns an empty collection.
 func (s lifecycleService) GetAll() ([]model.Lifecycle, error) {
-	items := new([]model.Lifecycle)
+	items := []model.Lifecycle{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return *items, err
+		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByPartialName performs a lookup and returns instances of a Lifecycle with a matching partial name.
@@ -82,14 +100,14 @@ func (s lifecycleService) GetByPartialName(name string) ([]model.Lifecycle, erro
 	return s.getPagedResponse(path)
 }
 
-// Add creates a new Lifecycle.
-func (s lifecycleService) Add(lifecycle *model.Lifecycle) (*model.Lifecycle, error) {
-	path, err := getAddPath(s, lifecycle)
+// Add creates a new lifecycle.
+func (s lifecycleService) Add(resource *model.Lifecycle) (*model.Lifecycle, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), lifecycle, new(model.Lifecycle), path)
+	resp, err := apiAdd(s.getClient(), resource, new(model.Lifecycle), path)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +115,7 @@ func (s lifecycleService) Add(lifecycle *model.Lifecycle) (*model.Lifecycle, err
 	return resp.(*model.Lifecycle), nil
 }
 
-// DeleteByID deletes the Lifecycle that matches the input ID.
+// DeleteByID deletes the lifecycle that matches the input ID.
 func (s lifecycleService) DeleteByID(id string) error {
 	return deleteByID(s, id)
 }
@@ -115,24 +133,6 @@ func (s lifecycleService) Update(resource model.Lifecycle) (*model.Lifecycle, er
 	}
 
 	return resp.(*model.Lifecycle), nil
-}
-
-func (s lifecycleService) getPagedResponse(path string) ([]model.Lifecycle, error) {
-	var resources []model.Lifecycle
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.Lifecycles), path)
-		if err != nil {
-			return nil, err
-		}
-
-		responseList := resp.(*model.Lifecycles)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 var _ ServiceInterface = &lifecycleService{}

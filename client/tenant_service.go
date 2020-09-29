@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -11,7 +10,6 @@ import (
 
 type tenantService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -28,10 +26,25 @@ func newTenantService(sling *sling.Sling, uriTemplate string) *tenantService {
 
 	return &tenantService{
 		name:        serviceTenantService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
+}
+
+func (s tenantService) getByProjectIDPath(id string) (string, error) {
+	if isEmpty(id) {
+		return emptyString, createInvalidParameterError(operationGetByProjectID, parameterID)
+	}
+
+	err := validateInternalState(s)
+	if err != nil {
+		return emptyString, err
+	}
+
+	values := make(map[string]interface{})
+	values[parameterProjectID] = id
+
+	return s.getURITemplate().Expand(values)
 }
 
 func (s tenantService) getClient() *sling.Sling {
@@ -42,11 +55,63 @@ func (s tenantService) getName() string {
 	return s.name
 }
 
+func (s tenantService) getPagedResponse(path string) ([]model.Tenant, error) {
+	resources := []model.Tenant{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Tenants), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Tenants)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s tenantService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns a single tenant by its tenantid in Octopus Deploy
+// Add creates a new Tenant.
+func (s tenantService) Add(resource *model.Tenant) (*model.Tenant, error) {
+	path, err := getAddPath(s, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), resource, new(model.Tenant), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.Tenant), nil
+}
+
+// DeleteByID deletes the tenant that matches the input ID.
+func (s tenantService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
+
+// GetAll returns all tenants. If none can be found or an error occurs, it
+// returns an empty collection.
+func (s tenantService) GetAll() ([]model.Tenant, error) {
+	items := []model.Tenant{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
+}
+
+// GetByID returns the tenant that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s tenantService) GetByID(id string) (*model.Tenant, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -55,103 +120,50 @@ func (s tenantService) GetByID(id string) (*model.Tenant, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Tenant), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("tenant", "ID", id)
 	}
 
 	return resp.(*model.Tenant), nil
 }
 
-// GetAll returns all instances of a Tenant. If none can be found or an error occurs, it returns an empty collection.
-func (s tenantService) GetAll() ([]model.Tenant, error) {
-	items := new([]model.Tenant)
-	path, err := getAllPath(s)
+// GetByIDs returns the accounts that match the input IDs.
+func (s tenantService) GetByIDs(ids []string) ([]model.Tenant, error) {
+	path, err := getByIDsPath(s, ids)
 	if err != nil {
-		return *items, err
+		return []model.Tenant{}, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	return s.getPagedResponse(path)
 }
 
-// GetByName performs a lookup and returns the Tenant with a matching name.
-func (s tenantService) GetByName(name string) (*model.Tenant, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError(operationGetByName, parameterName)
-	}
-
-	err := validateInternalState(s)
+// GetByProjectID performs a lookup and returns all tenants with a matching
+// project ID.
+func (s tenantService) GetByProjectID(id string) ([]model.Tenant, error) {
+	path, err := s.getByProjectIDPath(id)
 	if err != nil {
-		return nil, err
+		return []model.Tenant{}, nil
 	}
 
-	collection, err := s.GetAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range collection {
-		if item.Name == name {
-			return &item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.name, operationGetByName, name)
+	return s.getPagedResponse(path)
 }
 
-// Add creates a new Tenant.
-func (s tenantService) Add(tenant *model.Tenant) (*model.Tenant, error) {
-	if tenant == nil {
-		return nil, createInvalidParameterError(operationAdd, "tenant")
-	}
-
-	err := tenant.Validate()
-
+// GetByPartialName performs a lookup and returns all tenants with a matching
+// partial name.
+func (s tenantService) GetByPartialName(name string) ([]model.Tenant, error) {
+	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return nil, err
+		return []model.Tenant{}, nil
 	}
 
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-
-	resp, err := apiAdd(s.getClient(), tenant, new(model.Tenant), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Tenant), nil
+	return s.getPagedResponse(path)
 }
 
-// Delete deletes an existing tenant in Octopus Deploy
-func (s tenantService) DeleteByID(id string) error {
-	return deleteByID(s, id)
-}
-
-// Update updates an existing tenant in Octopus Deploy
-func (s tenantService) Update(resource *model.Tenant) (*model.Tenant, error) {
-	if resource == nil {
-		return nil, createInvalidParameterError(operationUpdate, "resource")
-	}
-
-	err := resource.Validate()
-
+// Update modifies a tenant based on the one provided as input.
+func (s tenantService) Update(resource model.Tenant) (*model.Tenant, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
-
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s", resource.ID)
 
 	resp, err := apiUpdate(s.getClient(), resource, new(model.Tenant), path)
 	if err != nil {

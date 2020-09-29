@@ -10,7 +10,6 @@ import (
 
 type configurationService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -27,7 +26,6 @@ func newConfigurationService(sling *sling.Sling, uriTemplate string) *configurat
 
 	return &configurationService{
 		name:        serviceConfigurationService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -54,28 +52,28 @@ func (s configurationService) GetByID(id string) (*model.ConfigurationSection, e
 
 	resp, err := apiGet(s.getClient(), new(model.ConfigurationSection), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("configuration", "ID", id)
 	}
 
 	return resp.(*model.ConfigurationSection), nil
 }
 
 func (s configurationService) getPagedResponse(path string) ([]model.ConfigurationSection, error) {
-	items := []model.ConfigurationSection{}
+	resources := []model.ConfigurationSection{}
 	loadNextPage := true
 
 	for loadNextPage {
 		resp, err := apiGet(s.getClient(), new(model.ConfigurationSections), path)
 		if err != nil {
-			return nil, err
+			return resources, err
 		}
 
 		responseList := resp.(*model.ConfigurationSections)
-		items = append(items, responseList.Items...)
+		resources = append(resources, responseList.Items...)
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return items, nil
+	return resources, nil
 }
 
 var _ ServiceInterface = &configurationService{}

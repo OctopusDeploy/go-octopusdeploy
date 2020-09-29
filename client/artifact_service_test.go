@@ -31,6 +31,34 @@ func TestNewArtifactService(t *testing.T) {
 	}
 }
 
+func TestArtifactServiceGetByID(t *testing.T) {
+	service := createArtifactService(t)
+	assert := assert.New(t)
+
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+
+	if len(resourceList) > 0 {
+		resourceToCompare, err := service.GetByID(resourceList[0].ID)
+
+		assert.NoError(err)
+		assert.EqualValues(resourceList[0], *resourceToCompare)
+	}
+
+	value := getRandomName()
+	resource, err := service.GetByID(value)
+
+	assert.Equal(err, createResourceNotFoundError("artifact", "ID", value))
+	assert.Nil(resource)
+}
+
 func TestArtifactServiceOperationsWithStringParameter(t *testing.T) {
 	testCases := []struct {
 		name      string
@@ -41,8 +69,6 @@ func TestArtifactServiceOperationsWithStringParameter(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Logf("[INFO] Parameter: %q", tc.parameter)
-
 			service := createArtifactService(t)
 
 			assert.NotNil(t, service)

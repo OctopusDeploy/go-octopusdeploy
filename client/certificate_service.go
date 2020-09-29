@@ -44,48 +44,29 @@ func (s certificateService) getName() string {
 	return s.name
 }
 
+func (s certificateService) getPagedResponse(path string) ([]model.Certificate, error) {
+	resources := []model.Certificate{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Certificates), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Certificates)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s certificateService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns a Certificate that matches the input ID. If one cannot be found, it returns nil and an error.
-func (s certificateService) GetByID(id string) (*model.Certificate, error) {
-	path, err := getByIDPath(s, id)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.getClient(), new(model.Certificate), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Certificate), nil
-}
-
-// GetAll returns all instances of a Certificate. If none can be found or an error occurs, it returns an empty collection.
-func (s certificateService) GetAll() ([]model.Certificate, error) {
-	items := new([]model.Certificate)
-	path, err := getAllPath(s)
-	if err != nil {
-		return *items, err
-	}
-
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
-}
-
-// GetByPartialName performs a lookup and returns instances of a Certificate with a matching partial name.
-func (s certificateService) GetByPartialName(name string) ([]model.Certificate, error) {
-	path, err := getByPartialNamePath(s, name)
-	if err != nil {
-		return []model.Certificate{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
-// Add creates a new Certificate.
+// Add creates a new certificate.
 func (s certificateService) Add(resource *model.Certificate) (*model.Certificate, error) {
 	path, err := getAddPath(s, resource)
 	if err != nil {
@@ -100,9 +81,48 @@ func (s certificateService) Add(resource *model.Certificate) (*model.Certificate
 	return resp.(*model.Certificate), nil
 }
 
-// DeleteByID deletes the Certificate that matches the input ID.
+// DeleteByID deletes the certificate that matches the input ID.
 func (s certificateService) DeleteByID(id string) error {
 	return deleteByID(s, id)
+}
+
+// GetAll returns all certificates. If none can be found or an error occurs, it
+// returns an empty collection.
+func (s certificateService) GetAll() ([]model.Certificate, error) {
+	items := []model.Certificate{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
+}
+
+// GetByID returns the certificate that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func (s certificateService) GetByID(id string) (*model.Certificate, error) {
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.getClient(), new(model.Certificate), path)
+	if err != nil {
+		return nil, createResourceNotFoundError("certificate", "ID", id)
+	}
+
+	return resp.(*model.Certificate), nil
+}
+
+// GetByPartialName performs a lookup and returns instances of a Certificate with a matching partial name.
+func (s certificateService) GetByPartialName(name string) ([]model.Certificate, error) {
+	path, err := getByPartialNamePath(s, name)
+	if err != nil {
+		return []model.Certificate{}, err
+	}
+
+	return s.getPagedResponse(path)
 }
 
 // Update modifies a Certificate based on the one provided as input.
@@ -144,24 +164,6 @@ func (s certificateService) Replace(certificateID string, replacementCertificate
 
 	//The API endpoint /certificates/id/replace returns the old cert, we need to re-query to get the updated one.
 	return s.GetByID(certificateID)
-}
-
-func (s certificateService) getPagedResponse(path string) ([]model.Certificate, error) {
-	var resources []model.Certificate
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.Certificates), path)
-		if err != nil {
-			return nil, err
-		}
-
-		responseList := resp.(*model.Certificates)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 var _ ServiceInterface = &certificateService{}

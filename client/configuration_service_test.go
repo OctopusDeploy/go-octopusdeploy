@@ -40,8 +40,6 @@ func TestConfigurationServiceGetOperations(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Logf("[INFO] Parameter: %q", tc.parameter)
-
 			service := createConfigurationService(t)
 
 			assert.NotNil(t, service)

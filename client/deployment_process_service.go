@@ -10,7 +10,6 @@ import (
 
 type deploymentProcessService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -27,7 +26,6 @@ func newDeploymentProcessService(sling *sling.Sling, uriTemplate string) *deploy
 
 	return &deploymentProcessService{
 		name:        serviceDeploymentProcessService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -45,6 +43,21 @@ func (s deploymentProcessService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
+// GetAll returns all deployment processes. If none can be found or an error
+// occurs, it returns an empty collection.
+func (s deploymentProcessService) GetAll() ([]model.DeploymentProcess, error) {
+	items := []model.DeploymentProcess{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
+}
+
+// GetByID returns the deployment process that matches the input ID. If one
+// cannot be found, it returns nil and an error.
 func (s deploymentProcessService) GetByID(id string) (*model.DeploymentProcess, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -53,22 +66,10 @@ func (s deploymentProcessService) GetByID(id string) (*model.DeploymentProcess, 
 
 	resp, err := apiGet(s.getClient(), new(model.DeploymentProcess), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("deployment process", "ID", id)
 	}
 
 	return resp.(*model.DeploymentProcess), nil
-}
-
-// GetAll returns all instances of a DeploymentProcess. If none can be found or an error occurs, it returns an empty collection.
-func (s deploymentProcessService) GetAll() ([]model.DeploymentProcess, error) {
-	items := new([]model.DeploymentProcess)
-	path, err := getAllPath(s)
-	if err != nil {
-		return *items, err
-	}
-
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
 }
 
 func (s deploymentProcessService) Update(resource model.DeploymentProcess) (*model.DeploymentProcess, error) {
@@ -86,21 +87,21 @@ func (s deploymentProcessService) Update(resource model.DeploymentProcess) (*mod
 }
 
 func (s deploymentProcessService) getPagedResponse(path string) ([]model.DeploymentProcess, error) {
-	items := []model.DeploymentProcess{}
+	resources := []model.DeploymentProcess{}
 	loadNextPage := true
 
 	for loadNextPage {
 		resp, err := apiGet(s.getClient(), new(model.DeploymentProcesses), path)
 		if err != nil {
-			return nil, err
+			return resources, err
 		}
 
 		responseList := resp.(*model.DeploymentProcesses)
-		items = append(items, responseList.Items...)
+		resources = append(resources, responseList.Items...)
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return items, nil
+	return resources, nil
 }
 
 var _ ServiceInterface = &deploymentProcessService{}

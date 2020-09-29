@@ -9,7 +9,8 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// actionTemplateService handles communication with ActionTemplate-related methods of the Octopus API.
+// actionTemplateService handles communication for any operations in the
+// Octopus API that pertain to action templates.
 type actionTemplateService struct {
 	categoriesURL    url.URL                   `validate:"required"`
 	name             string                    `validate:"required"`
@@ -19,19 +20,8 @@ type actionTemplateService struct {
 	versionedLogoURL url.URL                   `validate:"required"`
 }
 
-func (s actionTemplateService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s actionTemplateService) getName() string {
-	return s.name
-}
-
-func (s actionTemplateService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
-// newActionTemplateService returns an actionTemplateService with a preconfigured client.
+// newActionTemplateService returns an actionTemplateService with a
+// preconfigured client.
 func newActionTemplateService(sling *sling.Sling, uriTemplate string, categoriesURL url.URL, searchURL url.URL, versionedLogoURL url.URL) *actionTemplateService {
 	if sling == nil {
 		sling = getDefaultClient()
@@ -52,14 +42,44 @@ func newActionTemplateService(sling *sling.Sling, uriTemplate string, categories
 	}
 }
 
-// GetByID returns an ActionTemplate that matches the input ID. If one cannot be found, it returns nil and an error.
-func (s actionTemplateService) GetByID(id string) (*model.ActionTemplate, error) {
-	path, err := getByIDPath(s, id)
+func (s actionTemplateService) getClient() *sling.Sling {
+	return s.sling
+}
+
+func (s actionTemplateService) getName() string {
+	return s.name
+}
+
+func (s actionTemplateService) getPagedResponse(path string) ([]model.ActionTemplate, error) {
+	resources := []model.ActionTemplate{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.ActionTemplates), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.ActionTemplates)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
+func (s actionTemplateService) getURITemplate() *uritemplates.UriTemplate {
+	return s.uriTemplate
+}
+
+// Add creates a new action template.
+func (s actionTemplateService) Add(resource *model.ActionTemplate) (*model.ActionTemplate, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(model.ActionTemplate), path)
+	resp, err := apiAdd(s.getClient(), resource, new(model.ActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -67,19 +87,25 @@ func (s actionTemplateService) GetByID(id string) (*model.ActionTemplate, error)
 	return resp.(*model.ActionTemplate), nil
 }
 
-// GetAll returns all instances of an ActionTemplate. If none can be found or an error occurs, it returns an empty collection.
-func (s actionTemplateService) GetAll() ([]model.ActionTemplate, error) {
-	items := new([]model.ActionTemplate)
-	path, err := getAllPath(s)
-	if err != nil {
-		return *items, err
-	}
-
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+// DeleteByID deletes the action template that matches the input ID.
+func (s actionTemplateService) DeleteByID(id string) error {
+	return deleteByID(s, id)
 }
 
-// GetCategories returns all instances of an ActionTemplateCategory.
+// GetAll returns all action templates. If none can be found or an error
+// occurs, it returns an empty collection.
+func (s actionTemplateService) GetAll() ([]model.ActionTemplate, error) {
+	items := []model.ActionTemplate{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
+}
+
+// GetCategories returns all action template categories.
 func (s actionTemplateService) GetCategories() ([]model.ActionTemplateCategory, error) {
 	err := validateInternalState(s)
 
@@ -93,6 +119,22 @@ func (s actionTemplateService) GetCategories() ([]model.ActionTemplateCategory, 
 	_, err = apiGet(s.getClient(), items, path)
 
 	return *items, err
+}
+
+// GetByID returns the action template that matches the input ID. If one cannot
+// be found, it returns nil and an error.
+func (s actionTemplateService) GetByID(id string) (*model.ActionTemplate, error) {
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.getClient(), new(model.ActionTemplate), path)
+	if err != nil {
+		return nil, createResourceNotFoundError("action template", "ID", id)
+	}
+
+	return resp.(*model.ActionTemplate), nil
 }
 
 // Search lists all available action templates including built-in, custom, and community-contributed step templates.
@@ -111,7 +153,7 @@ func (s actionTemplateService) Search() ([]model.ActionTemplateSearch, error) {
 	return *items, err
 }
 
-// GetByName performs a lookup and returns instances of an ActionTemplate with a matching partial name.
+// GetByName returns the action templates with a matching partial name.
 func (s actionTemplateService) GetByName(name string) ([]model.ActionTemplate, error) {
 	path, err := getByNamePath(s, name)
 	if err != nil {
@@ -119,26 +161,6 @@ func (s actionTemplateService) GetByName(name string) ([]model.ActionTemplate, e
 	}
 
 	return s.getPagedResponse(path)
-}
-
-// Add creates a new ActionTemplate.
-func (s actionTemplateService) Add(actionTemplate *model.ActionTemplate) (*model.ActionTemplate, error) {
-	path, err := getAddPath(s, actionTemplate)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.getClient(), actionTemplate, new(model.ActionTemplate), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.ActionTemplate), nil
-}
-
-// DeleteByID deletes the ActionTemplate that matches the input ID.
-func (s actionTemplateService) DeleteByID(id string) error {
-	return deleteByID(s, id)
 }
 
 // Update modifies an ActionTemplate based on the one provided as input.
@@ -154,24 +176,6 @@ func (s actionTemplateService) Update(resource model.ActionTemplate) (*model.Act
 	}
 
 	return resp.(*model.ActionTemplate), nil
-}
-
-func (s actionTemplateService) getPagedResponse(path string) ([]model.ActionTemplate, error) {
-	var resources []model.ActionTemplate
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.ActionTemplates), path)
-		if err != nil {
-			return nil, err
-		}
-
-		responseList := resp.(*model.ActionTemplates)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 var _ ServiceInterface = &actionTemplateService{}

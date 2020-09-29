@@ -10,7 +10,6 @@ import (
 
 type machinePolicyService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -27,7 +26,6 @@ func newMachinePolicyService(sling *sling.Sling, uriTemplate string) *machinePol
 
 	return &machinePolicyService{
 		name:        serviceMachinePolicyService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -45,7 +43,8 @@ func (s machinePolicyService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns a single machine with a given MachineID
+// GetByID returns the machine policy that matches the input ID. If one cannot
+// be found, it returns nil and an error.
 func (s machinePolicyService) GetByID(id string) (*model.MachinePolicy, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -54,22 +53,23 @@ func (s machinePolicyService) GetByID(id string) (*model.MachinePolicy, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Machine), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("machine policy", "ID", id)
 	}
 
 	return resp.(*model.MachinePolicy), nil
 }
 
-// GetAll returns all instances of a MachinePolicy. If none can be found or an error occurs, it returns an empty collection.
+// GetAll returns all machine policies. If none can be found or an error
+// occurs, it returns an empty collection.
 func (s machinePolicyService) GetAll() ([]model.MachinePolicy, error) {
-	items := new([]model.MachinePolicy)
+	items := []model.MachinePolicy{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return *items, err
+		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 var _ ServiceInterface = &machinePolicyService{}

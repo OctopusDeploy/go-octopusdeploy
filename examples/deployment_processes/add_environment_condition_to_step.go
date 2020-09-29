@@ -22,13 +22,13 @@ func AddEnvironmentConditionToStepExample() {
 	environmentIDs := []string{}
 
 	for _, environmentName := range environmentNames {
-		environment, err := client.Environments.GetByName(environmentName)
+		environments, err := client.Environments.GetByName(environmentName)
 
 		if err != nil {
 			// TODO: handle error
 		}
 
-		environmentIDs = append(environmentIDs, environment.ID)
+		environmentIDs = append(environmentIDs, environments[0].ID)
 	}
 
 	project, err := client.Projects.GetByName(projectName)

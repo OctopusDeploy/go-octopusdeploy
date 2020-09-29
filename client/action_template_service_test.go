@@ -120,6 +120,34 @@ func TestActionTemplateServiceGetCategories(t *testing.T) {
 	assert.NotEmpty(t, resource)
 }
 
+func TestActionTemplateServiceGetByID(t *testing.T) {
+	service := createActionTemplateService(t)
+	assert := assert.New(t)
+
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+
+	if len(resourceList) > 0 {
+		resourceToCompare, err := service.GetByID(resourceList[0].ID)
+
+		assert.NoError(err)
+		assert.EqualValues(resourceList[0], *resourceToCompare)
+	}
+
+	value := getRandomName()
+	resource, err := service.GetByID(value)
+
+	assert.Equal(err, createResourceNotFoundError("action template", "ID", value))
+	assert.Nil(resource)
+}
+
 func TestActionTemplateServiceSearch(t *testing.T) {
 	service := createActionTemplateService(t)
 

@@ -107,7 +107,7 @@ func updateProject(client *client.Client, project *model.Project) *model.Project
 	}
 
 	project.Description = "This is the new description..."
-	project, err := client.Projects.Update(project)
+	project, err := client.Projects.Update(*project)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -192,7 +192,7 @@ func main() {
 	// stop the task queue before deleting the space
 	fmt.Print("Stopping task queue... ")
 	space.TaskQueueStopped = true
-	updatedSpace, err := client.Spaces.Update(space)
+	updatedSpace, err := client.Spaces.Update(*space)
 
 	if err != nil {
 		fmt.Println(err.Error())

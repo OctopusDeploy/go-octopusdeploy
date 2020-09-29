@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"net/url"
 	"strings"
 
@@ -12,7 +11,6 @@ import (
 
 type projectService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -29,7 +27,6 @@ func newProjectService(sling *sling.Sling, uriTemplate string) *projectService {
 
 	return &projectService{
 		name:        serviceProjectService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -47,7 +44,8 @@ func (s projectService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns a single project by its ID in Octopus Deploy
+// GetByID returns the project that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s projectService) GetByID(id string) (*model.Project, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -56,22 +54,23 @@ func (s projectService) GetByID(id string) (*model.Project, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Project), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("project", "ID", id)
 	}
 
 	return resp.(*model.Project), nil
 }
 
-// GetAll returns all instances of a Project. If none can be found or an error occurs, it returns an empty collection.
+// GetAll returns all projects. If none can be found or an error occurs, it
+// returns an empty collection.
 func (s projectService) GetAll() ([]model.Project, error) {
-	items := new([]model.Project)
+	items := []model.Project{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return *items, err
+		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByName performs a lookup and returns the Project with a matching name.
@@ -179,27 +178,14 @@ func (s projectService) GetReleases(project model.Project) ([]model.Release, err
 	return p, nil
 }
 
-// Add creates a new Project.
-func (s projectService) Add(project *model.Project) (*model.Project, error) {
-	if project == nil {
-		return nil, createInvalidParameterError(operationAdd, "project")
-	}
-
-	err := project.Validate()
-
+// Add creates a new project.
+func (s projectService) Add(resource *model.Project) (*model.Project, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-
-	resp, err := apiAdd(s.getClient(), project, new(model.Project), path)
+	resp, err := apiAdd(s.getClient(), resource, new(model.Project), path)
 	if err != nil {
 		return nil, err
 	}
@@ -207,31 +193,17 @@ func (s projectService) Add(project *model.Project) (*model.Project, error) {
 	return resp.(*model.Project), nil
 }
 
-// Delete deletes an existing project in Octopus Deploy
+// DeleteByID deletes the project that matches the input ID.
 func (s projectService) DeleteByID(id string) error {
 	return deleteByID(s, id)
 }
 
-// Update updates an existing project in Octopus Deploy
-func (s projectService) Update(resource *model.Project) (*model.Project, error) {
-	if resource == nil {
-		return nil, createInvalidParameterError(operationUpdate, "resource")
-	}
-
-	err := resource.Validate()
-
+// Update modifies a project based on the one provided as input.
+func (s projectService) Update(resource model.Project) (*model.Project, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
-
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s", resource.ID)
 
 	resp, err := apiUpdate(s.getClient(), resource, new(model.Project), path)
 	if err != nil {

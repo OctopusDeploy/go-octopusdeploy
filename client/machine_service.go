@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -11,7 +10,6 @@ import (
 
 type machineService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -28,7 +26,6 @@ func newMachineService(sling *sling.Sling, uriTemplate string) *machineService {
 
 	return &machineService{
 		name:        serviceMachineService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -42,11 +39,50 @@ func (s machineService) getName() string {
 	return s.name
 }
 
+func (s machineService) getPagedResponse(path string) ([]model.Machine, error) {
+	resources := []model.Machine{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Machines), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Machines)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s machineService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns a single machine with a given ID.
+// Add creates a new machine.
+func (s machineService) Add(resource *model.Machine) (*model.Machine, error) {
+	path, err := getAddPath(s, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), resource, new(model.Machine), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.Machine), nil
+}
+
+// DeleteByID deletes the machine that matches the input ID.
+func (s machineService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
+
+// GetByID returns the machine that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s machineService) GetByID(id string) (*model.Machine, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -55,100 +91,54 @@ func (s machineService) GetByID(id string) (*model.Machine, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Machine), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("machine", "ID", id)
 	}
 
 	return resp.(*model.Machine), nil
 }
 
-// GetAll returns all instances of a Machine. If none can be found or an error occurs, it returns an empty collection.
+// GetAll returns all machines. If none can be found or an error occurs, it
+// returns an empty collection.
 func (s machineService) GetAll() ([]model.Machine, error) {
-	items := new([]model.Machine)
+	items := []model.Machine{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return *items, err
+		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByName performs a lookup and returns the Machine with a matching name.
-func (s machineService) GetByName(name string) (*model.Machine, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError(operationGetByName, parameterName)
-	}
-
-	err := validateInternalState(s)
+func (s machineService) GetByName(name string) ([]model.Machine, error) {
+	path, err := getByNamePath(s, name)
 	if err != nil {
-		return nil, err
+		return []model.Machine{}, err
 	}
 
-	collection, err := s.GetAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range collection {
-		if item.Name == name {
-			return &item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.name, operationGetByName, name)
+	return s.getPagedResponse(path)
 }
 
-// Add creates a new Machine.
-func (s machineService) Add(machine *model.Machine) (*model.Machine, error) {
-	if machine == nil {
-		return nil, createInvalidParameterError(operationAdd, "machine")
-	}
-
-	err := machine.Validate()
-
+// GetByPartialName performs a lookup and returns the machine with a matching
+// partial name.
+func (s machineService) GetByPartialName(name string) ([]model.Machine, error) {
+	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return nil, err
+		return []model.Machine{}, err
 	}
 
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-
-	resp, err := apiAdd(s.getClient(), machine, new(model.Machine), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Machine), nil
-}
-
-// Delete deletes an existing machine in Octopus Deploy
-func (s machineService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	return s.getPagedResponse(path)
 }
 
 // Update updates an existing machine in Octopus Deploy
-func (s machineService) Update(machine *model.Machine) (*model.Machine, error) {
-	err := validateInternalState(s)
+func (s machineService) Update(resource model.Machine) (*model.Machine, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	err = machine.Validate()
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s", machine.ID)
-
-	resp, err := apiUpdate(s.getClient(), machine, new(model.Machine), path)
+	resp, err := apiUpdate(s.getClient(), resource, new(model.Machine), path)
 	if err != nil {
 		return nil, err
 	}

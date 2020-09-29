@@ -46,9 +46,9 @@ func TestNewAccountService(t *testing.T) {
 }
 
 func TestAccountServiceGetByAccountType(t *testing.T) {
-	service := createAccountService(t)
 	assert := assert.New(t)
 
+	service := createAccountService(t)
 	assert.NotNil(service)
 	if service == nil {
 		return
@@ -95,6 +95,12 @@ func TestAccountServiceGetByID(t *testing.T) {
 		assert.NoError(err)
 		assert.EqualValues(resourceList[0], *resourceToCompare)
 	}
+
+	value := getRandomName()
+	resource, err := service.GetByID(value)
+
+	assert.Equal(err, createResourceNotFoundError("account", "ID", value))
+	assert.Nil(resource)
 }
 
 func TestAccountServiceGetByName(t *testing.T) {
@@ -161,7 +167,7 @@ func TestAccountServiceParameters(t *testing.T) {
 
 			resourceList, err := service.GetByPartialName(tc.parameter)
 
-			assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
+			assert.Equal(createInvalidParameterError(operationGetByPartialName, parameterName), err)
 			assert.NotNil(resourceList)
 
 			err = service.DeleteByID(tc.parameter)

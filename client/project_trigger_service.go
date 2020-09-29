@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -11,7 +10,6 @@ import (
 
 type projectTriggerService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -28,7 +26,6 @@ func newProjectTriggerService(sling *sling.Sling, uriTemplate string) *projectTr
 
 	return &projectTriggerService{
 		name:        serviceProjectTriggerService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -42,10 +39,30 @@ func (s projectTriggerService) getName() string {
 	return s.name
 }
 
+func (s projectTriggerService) getPagedResponse(path string) ([]model.ProjectTrigger, error) {
+	resources := []model.ProjectTrigger{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.ProjectTriggers), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.ProjectTriggers)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s projectTriggerService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
+// GetByID returns the project trigger that matches the input ID. If one cannot
+// be found, it returns nil and an error.
 func (s projectTriggerService) GetByID(id string) (*model.ProjectTrigger, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -54,7 +71,7 @@ func (s projectTriggerService) GetByID(id string) (*model.ProjectTrigger, error)
 
 	resp, err := apiGet(s.getClient(), new(model.ProjectTrigger), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("project trigger", "ID", id)
 	}
 
 	return resp.(*model.ProjectTrigger), nil
@@ -74,55 +91,25 @@ func (s projectTriggerService) GetByProjectID(id string) (*[]model.ProjectTrigge
 	return &triggersByProject, nil
 }
 
-// GetAll returns all instances of a ProjectTrigger. If none can be found or an error occurs, it returns an empty collection.
+// GetAll returns all project triggers. If none can be found or an error
+// occurs, it returns an empty collection.
 func (s projectTriggerService) GetAll() ([]model.ProjectTrigger, error) {
-	err := validateInternalState(s)
-
-	items := new([]model.ProjectTrigger)
+	path, err := getPath(s)
 	if err != nil {
-		return *items, err
+		return []model.ProjectTrigger{}, err
 	}
 
-	var p []model.ProjectTrigger
-	path := trimTemplate(s.path)
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.ProjectTriggers), path)
-
-		if err != nil {
-			return *items, err
-		}
-
-		r := resp.(*model.ProjectTriggers)
-		p = append(p, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
-	}
-
-	return p, nil
+	return s.getPagedResponse(path)
 }
 
-// Add creates a new ProjectTrigger.
-func (s projectTriggerService) Add(projectTrigger *model.ProjectTrigger) (*model.ProjectTrigger, error) {
-	if projectTrigger == nil {
-		return nil, createInvalidParameterError(operationAdd, "projectTrigger")
-	}
-
-	err := projectTrigger.Validate()
-
+// Add creates a new project trigger.
+func (s projectTriggerService) Add(resource *model.ProjectTrigger) (*model.ProjectTrigger, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-
-	resp, err := apiAdd(s.getClient(), projectTrigger, new(model.ProjectTrigger), path)
+	resp, err := apiAdd(s.getClient(), resource, new(model.ProjectTrigger), path)
 	if err != nil {
 		return nil, err
 	}
@@ -130,29 +117,17 @@ func (s projectTriggerService) Add(projectTrigger *model.ProjectTrigger) (*model
 	return resp.(*model.ProjectTrigger), nil
 }
 
+// DeleteByID deletes the project trigger that matches the input ID.
 func (s projectTriggerService) DeleteByID(id string) error {
 	return deleteByID(s, id)
 }
 
-func (s projectTriggerService) Update(resource *model.ProjectTrigger) (*model.ProjectTrigger, error) {
-	if resource == nil {
-		return nil, createInvalidParameterError(operationUpdate, "resource")
-	}
-
-	err := resource.Validate()
-
+// Update modifies a project trigger based on the one provided as input.
+func (s projectTriggerService) Update(resource model.ProjectTrigger) (*model.ProjectTrigger, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
-
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s", resource.ID)
 
 	resp, err := apiUpdate(s.getClient(), resource, new(model.ProjectTrigger), path)
 	if err != nil {

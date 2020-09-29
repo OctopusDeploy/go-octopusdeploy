@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -11,7 +10,6 @@ import (
 
 type tagSetService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -28,7 +26,6 @@ func newTagSetService(sling *sling.Sling, uriTemplate string) *tagSetService {
 
 	return &tagSetService{
 		name:        serviceTagSetService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -46,6 +43,28 @@ func (s tagSetService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
+// Add creates a new tag set.
+func (s tagSetService) Add(resource *model.TagSet) (*model.TagSet, error) {
+	path, err := getAddPath(s, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), resource, new(model.TagSet), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.TagSet), nil
+}
+
+// DeleteByID deletes the tag set that matches the input ID.
+func (s tagSetService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
+
+// GetByID returns the tag set that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s tagSetService) GetByID(id string) (*model.TagSet, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -54,22 +73,23 @@ func (s tagSetService) GetByID(id string) (*model.TagSet, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.TagSet), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("tag set", "ID", id)
 	}
 
 	return resp.(*model.TagSet), nil
 }
 
-// GetAll returns all instances of a TagSet. If none can be found or an error occurs, it returns an empty collection.
+// GetAll returns all tag sets. If none can be found or an error occurs, it
+// returns an empty collection.
 func (s tagSetService) GetAll() ([]model.TagSet, error) {
-	items := new([]model.TagSet)
+	items := []model.TagSet{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return *items, err
+		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByName performs a lookup and returns the TagSet with a matching name.
@@ -98,41 +118,12 @@ func (s tagSetService) GetByName(name string) (*model.TagSet, error) {
 	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
-// Add creates a new TagSet.
-func (s tagSetService) Add(tagSet *model.TagSet) (*model.TagSet, error) {
-	if tagSet == nil {
-		return nil, createInvalidParameterError(operationAdd, "tagSet")
-	}
-
-	err := tagSet.Validate()
-
+// Update modifies a tag set based on the one provided as input.
+func (s tagSetService) Update(resource model.TagSet) (*model.TagSet, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
-
-	err = validateInternalState(s)
-
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.path)
-
-	resp, err := apiAdd(s.getClient(), tagSet, new(model.TagSet), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.TagSet), nil
-}
-
-func (s tagSetService) DeleteByID(id string) error {
-	return deleteByID(s, id)
-}
-
-func (s tagSetService) Update(resource *model.TagSet) (*model.TagSet, error) {
-	path := trimTemplate(s.path)
-	path = fmt.Sprintf(path+"/%s", resource.ID)
 
 	resp, err := apiUpdate(s.getClient(), resource, new(model.TagSet), path)
 	if err != nil {

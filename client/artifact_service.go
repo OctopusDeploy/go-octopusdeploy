@@ -8,7 +8,8 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// artifactService handles communication with Account-related methods of the Octopus API.
+// actionTemplateService handles communication for any operations in the
+// Octopus API that pertain to artifacts.
 type artifactService struct {
 	name        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
@@ -41,11 +42,61 @@ func (s artifactService) getName() string {
 	return s.name
 }
 
+func (s artifactService) getPagedResponse(path string) ([]model.Artifact, error) {
+	resources := []model.Artifact{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Artifacts), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Artifacts)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s artifactService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns an Artifact that matches the input ID. If one cannot be found, it returns nil and an error.
+// Add creates a new artifact.
+func (s artifactService) Add(resource *model.Artifact) (*model.Artifact, error) {
+	path, err := getAddPath(s, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), resource, new(model.Artifact), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.Artifact), nil
+}
+
+// DeleteByID deletes the artifact that matches the input ID.
+func (s artifactService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
+
+// GetAll returns all artifacts. If none can be found or an error occurs, it
+// returns an empty collection.
+func (s artifactService) GetAll() ([]model.Artifact, error) {
+	path, err := getPath(s)
+	if err != nil {
+		return []model.Artifact{}, err
+	}
+
+	return s.getPagedResponse(path)
+}
+
+// GetByID returns the artifact that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s artifactService) GetByID(id string) (*model.Artifact, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -54,7 +105,7 @@ func (s artifactService) GetByID(id string) (*model.Artifact, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Artifact), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("artifact", "ID", id)
 	}
 
 	return resp.(*model.Artifact), nil
@@ -64,30 +115,10 @@ func (s artifactService) GetByID(id string) (*model.Artifact, error) {
 func (s artifactService) GetByPartialName(name string) ([]model.Artifact, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return nil, err
+		return []model.Artifact{}, err
 	}
 
 	return s.getPagedResponse(path)
-}
-
-// Add creates a new Artifact.
-func (s artifactService) Add(artifact *model.Artifact) (*model.Artifact, error) {
-	path, err := getAddPath(s, artifact)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.getClient(), artifact, new(model.Artifact), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Artifact), nil
-}
-
-// DeleteByID deletes the Artifact that matches the input ID.
-func (s artifactService) DeleteByID(id string) error {
-	return deleteByID(s, id)
 }
 
 // Update modifies an Artifact based on the one provided as input.
@@ -103,24 +134,6 @@ func (s artifactService) Update(resource model.Artifact) (*model.Artifact, error
 	}
 
 	return resp.(*model.Artifact), nil
-}
-
-func (s artifactService) getPagedResponse(path string) ([]model.Artifact, error) {
-	var resources []model.Artifact
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.Artifacts), path)
-		if err != nil {
-			return nil, err
-		}
-
-		responseList := resp.(*model.Artifacts)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 var _ ServiceInterface = &artifactService{}

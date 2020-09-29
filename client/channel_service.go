@@ -11,7 +11,6 @@ import (
 
 type channelService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -28,7 +27,6 @@ func newChannelService(sling *sling.Sling, uriTemplate string) *channelService {
 
 	return &channelService{
 		name:        serviceChannelService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -42,11 +40,61 @@ func (s channelService) getName() string {
 	return s.name
 }
 
+func (s channelService) getPagedResponse(path string) ([]model.Channel, error) {
+	resources := []model.Channel{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Channels), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Channels)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s channelService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns a Channel that matches the input ID. If one cannot be found, it returns nil and an error.
+// Add creates a new channel.
+func (s channelService) Add(resource *model.Channel) (*model.Channel, error) {
+	path, err := getAddPath(s, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), resource, new(model.Channel), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.Channel), nil
+}
+
+// DeleteByID deletes the Channel that matches the input ID.
+func (s channelService) DeleteByID(id string) error {
+	return deleteByID(s, id)
+}
+
+// GetAll returns all channels. If none can be found or an error occurs, it
+// returns an empty collection.
+func (s channelService) GetAll() ([]model.Channel, error) {
+	path, err := getPath(s)
+	if err != nil {
+		return []model.Channel{}, err
+	}
+
+	return s.getPagedResponse(path)
+}
+
+// GetByID returns the channel that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s channelService) GetByID(id string) (*model.Channel, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -55,7 +103,7 @@ func (s channelService) GetByID(id string) (*model.Channel, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Channel), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("channel", "ID", id)
 	}
 
 	return resp.(*model.Channel), nil
@@ -64,16 +112,6 @@ func (s channelService) GetByID(id string) (*model.Channel, error) {
 // GetByPartialName performs a lookup and returns instances of a channel with a matching partial name.
 func (s channelService) GetByPartialName(name string) ([]model.Channel, error) {
 	path, err := getByPartialNamePath(s, name)
-	if err != nil {
-		return []model.Channel{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
-// GetAll returns all instances of a Channel. If none can be found or an error occurs, it returns an empty collection.
-func (s channelService) GetAll() ([]model.Channel, error) {
-	path, err := getPath(s)
 	if err != nil {
 		return []model.Channel{}, err
 	}
@@ -128,26 +166,6 @@ func (s channelService) GetReleases(channel model.Channel) ([]model.Release, err
 	return releases, nil
 }
 
-// Add creates a new Channel.
-func (s channelService) Add(channel *model.Channel) (*model.Channel, error) {
-	path, err := getAddPath(s, channel)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.getClient(), channel, new(model.Channel), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.Channel), nil
-}
-
-// DeleteByID deletes the Channel that matches the input ID.
-func (s channelService) DeleteByID(id string) error {
-	return deleteByID(s, id)
-}
-
 // Update modifies an Channel based on the one provided as input.
 func (s channelService) Update(resource model.Channel) (*model.Channel, error) {
 	path, err := getUpdatePath(s, resource)
@@ -161,24 +179,6 @@ func (s channelService) Update(resource model.Channel) (*model.Channel, error) {
 	}
 
 	return resp.(*model.Channel), nil
-}
-
-func (s channelService) getPagedResponse(path string) ([]model.Channel, error) {
-	resources := []model.Channel{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.Channels), path)
-		if err != nil {
-			return nil, err
-		}
-
-		responseList := resp.(*model.Channels)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 var _ ServiceInterface = &channelService{}

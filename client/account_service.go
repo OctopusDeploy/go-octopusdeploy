@@ -43,13 +43,13 @@ func (s accountService) getName() string {
 }
 
 func (s accountService) getPagedResponse(path string) ([]model.Account, error) {
-	var resources []model.Account
+	resources := []model.Account{}
 	loadNextPage := true
 
 	for loadNextPage {
 		resp, err := apiGet(s.getClient(), new(model.Accounts), path)
 		if err != nil {
-			return nil, err
+			return resources, err
 		}
 
 		responseList := resp.(*model.Accounts)
@@ -79,24 +79,26 @@ func (s accountService) Add(resource *model.Account) (*model.Account, error) {
 	return resp.(*model.Account), nil
 }
 
-// DeleteByID deletes the Account that matches the input ID.
+// DeleteByID deletes the account that matches the input ID.
 func (s accountService) DeleteByID(id string) error {
 	return deleteByID(s, id)
 }
 
-// GetAll returns all of the accounts. The results will be sorted alphabetically by name.
+// GetAll returns all accounts. If none can be found or an error occurs, it
+// returns an empty collection.
 func (s accountService) GetAll() ([]model.Account, error) {
-	items := new([]model.Account)
+	items := []model.Account{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return *items, err
+		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), items, path)
-	return *items, err
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
-// GetByID returns a single Account by its ID. If one is not found, it returns nil.
+// GetByID returns the account that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s accountService) GetByID(id string) (*model.Account, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -105,13 +107,13 @@ func (s accountService) GetByID(id string) (*model.Account, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Account), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("account", "ID", id)
 	}
 
 	return resp.(*model.Account), nil
 }
 
-// GetByIDs gets a list of accounts that match the input IDs.
+// GetByIDs returns the accounts that match the input IDs.
 func (s accountService) GetByIDs(ids []string) ([]model.Account, error) {
 	path, err := getByIDsPath(s, ids)
 	if err != nil {

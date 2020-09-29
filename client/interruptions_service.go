@@ -10,7 +10,6 @@ import (
 
 type interruptionsService struct {
 	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
 	sling       *sling.Sling              `validate:"required"`
 	uriTemplate *uritemplates.UriTemplate `validate:"required"`
 }
@@ -27,7 +26,6 @@ func newInterruptionsService(sling *sling.Sling, uriTemplate string) *interrupti
 
 	return &interruptionsService{
 		name:        serviceInterruptionsService,
-		path:        strings.TrimSpace(uriTemplate),
 		sling:       sling,
 		uriTemplate: template,
 	}
@@ -41,11 +39,30 @@ func (s interruptionsService) getName() string {
 	return s.name
 }
 
+func (s interruptionsService) getPagedResponse(path string) ([]model.Interruption, error) {
+	resources := []model.Interruption{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Interruptions), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Interruptions)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 func (s interruptionsService) getURITemplate() *uritemplates.UriTemplate {
 	return s.uriTemplate
 }
 
-// GetByID returns the interruption that matches the input ID. If one cannot be found, it returns nil and an error.
+// GetByID returns the interruption that matches the input ID. If one cannot be
+// found, it returns nil and an error.
 func (s interruptionsService) GetByID(id string) (*model.Interruption, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -54,7 +71,7 @@ func (s interruptionsService) GetByID(id string) (*model.Interruption, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Interruption), path)
 	if err != nil {
-		return nil, err
+		return nil, createResourceNotFoundError("interruption", "ID", id)
 	}
 
 	return resp.(*model.Interruption), nil
@@ -70,7 +87,8 @@ func (s interruptionsService) GetByIDs(ids []string) ([]model.Interruption, erro
 	return s.getPagedResponse(path)
 }
 
-// GetAll returns interruptions for user attention. The results will be sorted by date from most recently to least recently created.
+// GetAll returns all interruptions. If none can be found or an error occurs,
+// it returns an empty collection.
 func (s interruptionsService) GetAll() ([]model.Interruption, error) {
 	path, err := getPath(s)
 	if err != nil {
@@ -112,24 +130,6 @@ func (s interruptionsService) TakeResponsibility(resource *model.Interruption) (
 		return nil, err
 	}
 	return resp.(*model.User), nil
-}
-
-func (s interruptionsService) getPagedResponse(path string) ([]model.Interruption, error) {
-	var resources []model.Interruption
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.Interruptions), path)
-		if err != nil {
-			return nil, err
-		}
-
-		responseList := resp.(*model.Interruptions)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 var _ ServiceInterface = &interruptionsService{}

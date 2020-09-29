@@ -42,38 +42,35 @@ func TestNewLifecycleService(t *testing.T) {
 }
 
 func TestLifecycleServiceGetByID(t *testing.T) {
-	service := createLifecycleService(t)
 	assert := assert.New(t)
 
+	service := createLifecycleService(t)
 	assert.NotNil(service)
 	if service == nil {
 		return
 	}
 
 	resourceList, err := service.GetAll()
-
 	assert.NoError(err)
 	assert.NotEmpty(resourceList)
 
 	for _, resource := range resourceList {
 		resourceToCompare, err := service.GetByID(resource.ID)
-
 		assert.NoError(err)
 		assert.EqualValues(resource, *resourceToCompare)
 	}
 }
 
 func TestLifecycleServiceGetAll(t *testing.T) {
-	service := createLifecycleService(t)
 	assert := assert.New(t)
 
+	service := createLifecycleService(t)
 	assert.NotNil(service)
 	if service == nil {
 		return
 	}
 
 	resourceList, err := service.GetAll()
-
 	assert.NoError(err)
 	assert.NotEmpty(resourceList)
 }
