@@ -34,12 +34,7 @@ func TestIsAPIKey(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Logf("[INFO] API Key: %q", tc.test)
-
 			testResult := isAPIKey(tc.test)
-
-			t.Logf("[INFO] Result is %t, expected is %t", testResult, tc.isValid)
-
 			assert.Equal(t, testResult, tc.isValid)
 		})
 	}
