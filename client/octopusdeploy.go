@@ -11,7 +11,7 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// Client is an OctopusDeploy for making OctpusDeploy API requests.
+// Client is an OctopusDeploy for making Octopus API requests.
 type Client struct {
 	sling               *sling.Sling
 	Accounts            *accountService
@@ -41,8 +41,8 @@ type Client struct {
 	Variables           *variableService
 }
 
-// NewClient returns a new Octopus API client. If a nil httpClient is
-// provided, a new http.Client will be used.
+// NewClient returns a new Octopus API client. If a nil client is provided, a
+// new http.Client will be used.
 func NewClient(httpClient *http.Client, octopusURL string, apiKey string, spaceID string) (*Client, error) {
 	if isEmpty(octopusURL) {
 		return nil, createInvalidParameterError(clientNewClient, parameterOctopusURL)
@@ -258,12 +258,14 @@ func NewClient(httpClient *http.Client, octopusURL string, apiKey string, spaceI
 	}, nil
 }
 
+// APIError is a generic structure for containing errors for API operations.
 type APIError struct {
 	ErrorMessage  string   `json:"ErrorMessage"`
 	Errors        []string `json:"Errors"`
 	FullException string   `json:"FullException"`
 }
 
+// Error creates a predefined error for Octopus API responses.
 func (e APIError) Error() string {
 	return fmt.Sprintf("Octopus Deploy Error Response: %v %+v %v", e.ErrorMessage, e.Errors, e.FullException)
 }
