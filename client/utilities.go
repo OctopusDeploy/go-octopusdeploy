@@ -171,6 +171,10 @@ func createClientInitializationError(methodName string) error {
 	return fmt.Errorf("%s: unable to initialize internal client", methodName)
 }
 
+func createResourceNotFoundError(name string, identifier string, value string) error {
+	return fmt.Errorf("%s %s (%s) could not be found", name, identifier, value)
+}
+
 func createValidationFailureError(methodName string, err error) error {
 	return fmt.Errorf("%s: validation failure: %v", methodName, err)
 }
