@@ -13,6 +13,7 @@ const (
 	operationGetByIDs         = "GetByIDs"
 	operationGetByName        = "GetByName"
 	operationGetByPartialName = "GetByPartialName"
+	operationGetByProjectID   = "GetByProjectID"
 	operationGetByUserID      = "GetByUserID"
 	operationReplace          = "Replace"
 	operationUpdate           = "Update"
