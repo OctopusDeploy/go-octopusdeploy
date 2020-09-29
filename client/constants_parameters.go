@@ -13,6 +13,7 @@ const (
 	parameterID                     string = "id"
 	parameterIDs                    string = "ids"
 	parameterPartialName            string = "partialName"
+	parameterProjectID              string = "projectID"
 	parameterName                   string = "name"
 	parameterOctopusURL             string = "octopusURL"
 	parameterPath                   string = "path"
