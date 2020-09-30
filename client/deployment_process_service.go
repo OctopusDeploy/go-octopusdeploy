@@ -46,14 +46,12 @@ func (s deploymentProcessService) getURITemplate() *uritemplates.UriTemplate {
 // GetAll returns all deployment processes. If none can be found or an error
 // occurs, it returns an empty collection.
 func (s deploymentProcessService) GetAll() ([]model.DeploymentProcess, error) {
-	items := []model.DeploymentProcess{}
-	path, err := getAllPath(s)
+	path, err := getPath(s)
 	if err != nil {
-		return items, err
+		return []model.DeploymentProcess{}, err
 	}
 
-	_, err = apiGet(s.getClient(), &items, path)
-	return items, err
+	return s.getPagedResponse(path)
 }
 
 // GetByID returns the deployment process that matches the input ID. If one
