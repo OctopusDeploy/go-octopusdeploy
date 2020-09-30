@@ -3,15 +3,96 @@ package client
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMachineService(t *testing.T) {
-	t.Run("New", TestNewMachineService)
+func createMachineService(t *testing.T) *machineService {
+	service := newMachineService(nil, TestURIMachines)
+	testNewService(t, service, TestURIMachines, serviceMachineService)
+	return service
 }
 
-func TestNewMachineService(t *testing.T) {
+func TestMachineService(t *testing.T) {
+	t.Run("Delete", TestMachineServiceDelete)
+	t.Run("GetByID", TestMachineServiceGetByID)
+	t.Run("New", TestMachineServiceNew)
+}
+
+func TestMachineServiceAdd(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createMachineService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resource, err := service.Add(nil)
+	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
+	assert.Nil(resource)
+
+	invalidResource := &model.Machine{}
+	resource, err = service.Add(invalidResource)
+	assert.Equal(createValidationFailureError("Add", invalidResource.Validate()), err)
+	assert.Nil(resource)
+}
+
+func TestMachineServiceDelete(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createMachineService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	err := service.DeleteByID(emptyString)
+	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+
+	err = service.DeleteByID(whitespaceString)
+	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+
+	id := getRandomName()
+	err = service.DeleteByID(id)
+	assert.Equal(createResourceNotFoundError("machine", "ID", id), err)
+}
+
+func TestMachineServiceGetByID(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createMachineService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resource, err := service.GetByID(emptyString)
+	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
+	assert.Nil(resource)
+
+	resource, err = service.GetByID(whitespaceString)
+	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
+	assert.Nil(resource)
+
+	id := getRandomName()
+	resource, err = service.GetByID(id)
+	assert.Equal(createResourceNotFoundError("machine", "ID", id), err)
+	assert.Nil(resource)
+
+	resources, err := service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resources)
+
+	if len(resources) > 0 {
+		resourceToCompare, err := service.GetByID(resources[0].ID)
+		assert.NoError(err)
+		assert.EqualValues(resources[0], *resourceToCompare)
+	}
+}
+
+func TestMachineServiceNew(t *testing.T) {
 	serviceFunction := newMachineService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
@@ -33,19 +114,4 @@ func TestNewMachineService(t *testing.T) {
 			testNewService(t, service, uriTemplate, serviceName)
 		})
 	}
-}
-
-func TestMachineServiceGetWithEmptyID(t *testing.T) {
-	service := newMachineService(&sling.Sling{}, emptyString)
-	assert := assert.New(t)
-
-	resource, err := service.GetByID(emptyString)
-
-	assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
-	assert.Nil(resource)
-
-	resource, err = service.GetByID(whitespaceString)
-
-	assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
-	assert.Nil(resource)
 }

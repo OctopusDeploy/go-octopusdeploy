@@ -5,10 +5,18 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestDeploymentProcesses(t *testing.T) {
+	t.Run("Get", TestDeploymentProcessGet)
+	t.Run("GetAll", TestDeploymentProcessGetAll)
+	t.Run("Update", TestDeploymentProcessUpdate)
+}
 
 func TestDeploymentProcessGet(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
@@ -21,14 +29,13 @@ func TestDeploymentProcessGet(t *testing.T) {
 
 func TestDeploymentProcessGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
 
 	allDeploymentProcess, err := octopusClient.DeploymentProcesses.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all deployment processes failed when it shouldn't: %s", err)
-	}
+	require.NoError(t, err)
 
 	numberOfDeploymentProcesses := len(allDeploymentProcess)
 
@@ -36,11 +43,8 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	defer cleanProject(t, additionalProject.ID)
 
 	allDeploymentProcessAfterCreatingAdditional, err := octopusClient.DeploymentProcesses.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all deployment processes failed when it shouldn't: %s", err)
-	}
+	require.NoError(t, err)
 
-	assert.NoError(t, err, "error when looking for deployment processes when not expected")
 	assert.Equal(t, len(allDeploymentProcessAfterCreatingAdditional), numberOfDeploymentProcesses+1, "created an additional project and expected number of deployment processes to increase by 1")
 }
 

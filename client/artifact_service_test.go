@@ -7,7 +7,104 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewArtifactService(t *testing.T) {
+func createArtifactService(t *testing.T) *artifactService {
+	service := newArtifactService(nil, TestURIArtifacts)
+	testNewService(t, service, TestURIArtifacts, serviceArtifactService)
+	return service
+}
+
+func TestArtifactService(t *testing.T) {
+	t.Run("Delete", TestArtifactServiceDelete)
+	t.Run("GetByID", TestArtifactServiceGetByID)
+	t.Run("New", TestArtifactServiceNew)
+}
+
+func TestArtifactServiceDelete(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createArtifactService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	err := service.DeleteByID(emptyString)
+	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+
+	err = service.DeleteByID(whitespaceString)
+	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+
+	id := getRandomName()
+	err = service.DeleteByID(id)
+	assert.Equal(createResourceNotFoundError("artifact", "ID", id), err)
+}
+
+func TestArtifactServiceGetByID(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createArtifactService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resource, err := service.GetByID(emptyString)
+	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
+	assert.Nil(resource)
+
+	resource, err = service.GetByID(whitespaceString)
+	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
+	assert.Nil(resource)
+
+	id := getRandomName()
+	resource, err = service.GetByID(id)
+	assert.Equal(createResourceNotFoundError("artifact", "ID", id), err)
+	assert.Nil(resource)
+
+	resources, err := service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resources)
+
+	if len(resources) > 0 {
+		resourceToCompare, err := service.GetByID(resources[0].ID)
+		assert.NoError(err)
+		assert.EqualValues(resources[0], *resourceToCompare)
+	}
+}
+
+func TestArtifactServiceGetByPartialName(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createArtifactService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resources, err := service.GetByPartialName(emptyString)
+	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.NotNil(resources)
+	assert.Len(resources, 0)
+
+	resources, err = service.GetByPartialName(whitespaceString)
+	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.NotNil(resources)
+	assert.Len(resources, 0)
+
+	resources, err = service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resources)
+
+	// TODO
+
+	// if len(resources) > 0 {
+	// 	resourcesToCompare, err := service.GetByPartialName(resources[0].Name)
+	// 	assert.NoError(err)
+	// 	assert.EqualValues(resourcesToCompare[0], resources[0])
+	// }
+}
+
+func TestArtifactServiceNew(t *testing.T) {
 	serviceFunction := newArtifactService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
@@ -29,73 +126,4 @@ func TestNewArtifactService(t *testing.T) {
 			testNewService(t, service, uriTemplate, serviceName)
 		})
 	}
-}
-
-func TestArtifactServiceGetByID(t *testing.T) {
-	service := createArtifactService(t)
-	assert := assert.New(t)
-
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
-
-	resourceList, err := service.GetAll()
-
-	assert.NoError(err)
-	assert.NotNil(resourceList)
-
-	if len(resourceList) > 0 {
-		resourceToCompare, err := service.GetByID(resourceList[0].ID)
-
-		assert.NoError(err)
-		assert.EqualValues(resourceList[0], *resourceToCompare)
-	}
-
-	value := getRandomName()
-	resource, err := service.GetByID(value)
-
-	assert.Equal(err, createResourceNotFoundError("artifact", "ID", value))
-	assert.Nil(resource)
-}
-
-func TestArtifactServiceOperationsWithStringParameter(t *testing.T) {
-	testCases := []struct {
-		name      string
-		parameter string
-	}{
-		{"EmptyParameter", emptyString},
-		{"WhitespaceParameter", whitespaceString},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			service := createArtifactService(t)
-
-			assert.NotNil(t, service)
-			if service == nil {
-				return
-			}
-
-			resource, err := service.GetByID(tc.parameter)
-
-			assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
-			assert.Nil(t, resource)
-
-			resourceList, err := service.GetByPartialName(tc.parameter)
-
-			assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
-			assert.Nil(t, resourceList)
-
-			err = service.DeleteByID(tc.parameter)
-
-			assert.Error(t, err)
-			assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
-		})
-	}
-}
-
-func createArtifactService(t *testing.T) *artifactService {
-	service := newArtifactService(nil, TestURIArtifacts)
-	testNewService(t, service, TestURIArtifacts, serviceArtifactService)
-	return service
 }

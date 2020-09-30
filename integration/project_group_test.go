@@ -91,7 +91,7 @@ func TestProjectGroupUpdate(t *testing.T) {
 	projectGroup.Name = newProjectGroupName
 	projectGroup.Description = newDescription
 
-	updatedProjectGroup, err := octopusClient.ProjectGroups.Update(projectGroup)
+	updatedProjectGroup, err := octopusClient.ProjectGroups.Update(*projectGroup)
 
 	assert.NoError(t, err, "error when updating projectgroup")
 

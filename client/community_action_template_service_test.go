@@ -6,18 +6,79 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCommunityActionTemplateService(t *testing.T) {
-	t.Run("Add", TestCommunityActionTemplateServiceAdd)
 	t.Run("GetAll", TestCommunityActionTemplateServiceGetAll)
 	t.Run("GetByID", TestCommunityActionTemplateServiceGetByID)
 	t.Run("GetByName", TestCommunityActionTemplateServiceGetByName)
-	t.Run("New", TestNewCommunityActionTemplateService)
+	t.Run("Install", TestCommunityActionTemplateServiceInstall)
+	t.Run("New", TestCommunityActionTemplateServiceNew)
 	t.Run("Parameters", TestCommunityActionTemplateServiceParameters)
 }
 
-func TestNewCommunityActionTemplateService(t *testing.T) {
+func TestCommunityActionTemplateServiceGetByID(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createCommunityActionTemplateService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+
+	if len(resourceList) > 0 {
+		resourceToCompare, err := service.GetByID(resourceList[0].ID)
+		assert.NoError(err)
+		assert.EqualValues(resourceList[0], *resourceToCompare)
+	}
+
+	value := getRandomName()
+	resource, err := service.GetByID(value)
+
+	assert.Equal(err, createResourceNotFoundError("community action template", "ID", value))
+	assert.Nil(resource)
+}
+
+func TestCommunityActionTemplateServiceGetByName(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createCommunityActionTemplateService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+
+	if len(resourceList) > 0 {
+		resourceToCompare, err := service.GetByName(resourceList[0].Name)
+		assert.NoError(err)
+		assert.EqualValues(*resourceToCompare, resourceList[0])
+	}
+}
+
+func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createCommunityActionTemplateService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resourceList, err := service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resourceList)
+}
+
+func TestCommunityActionTemplateServiceNew(t *testing.T) {
 	serviceFunction := newCommunityActionTemplateService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
@@ -39,71 +100,6 @@ func TestNewCommunityActionTemplateService(t *testing.T) {
 			testNewService(t, service, uriTemplate, serviceName)
 		})
 	}
-}
-
-func TestCommunityActionTemplateServiceGetByID(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	assert := assert.New(t)
-
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
-
-	resourceList, err := service.GetAll()
-
-	assert.NoError(err)
-	assert.NotNil(resourceList)
-
-	if len(resourceList) > 0 {
-		resourceToCompare, err := service.GetByID(resourceList[0].ID)
-
-		assert.NoError(err)
-		assert.EqualValues(resourceList[0], *resourceToCompare)
-	}
-
-	value := getRandomName()
-	resource, err := service.GetByID(value)
-
-	assert.Equal(err, createResourceNotFoundError("account", "ID", value))
-	assert.Nil(resource)
-}
-
-func TestCommunityActionTemplateServiceGetByName(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	assert := assert.New(t)
-
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
-
-	resourceList, err := service.GetAll()
-
-	assert.NoError(err)
-	assert.NotNil(resourceList)
-
-	if len(resourceList) > 0 {
-		resourceToCompare, err := service.GetByName(resourceList[0].Name)
-
-		assert.NoError(err)
-		assert.EqualValues(*resourceToCompare, resourceList[0])
-	}
-}
-
-func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	assert := assert.New(t)
-
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
-
-	resourceList, err := service.GetAll()
-
-	assert.NoError(err)
-	assert.NotNil(resourceList)
 }
 
 func TestCommunityActionTemplateServiceParameters(t *testing.T) {
@@ -144,7 +140,6 @@ func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
 	assert := assert.New(t)
 
 	resourceList, err := service.GetAll()
-
 	assert.NoError(err)
 	assert.NotNil(resourceList)
 
@@ -159,33 +154,16 @@ func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
 	assert.NotNil(resourceListToCompare)
 }
 
-func TestCommunityActionTemplateServiceAdd(t *testing.T) {
+func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	service := createCommunityActionTemplateService(t)
-	assert := assert.New(t)
 
 	resource, err := service.Install(model.CommunityActionTemplate{})
-
-	assert.Error(err)
-	assert.Nil(resource)
+	assert.Error(t, err)
+	assert.Nil(t, resource)
 
 	resource, err = model.NewCommunityActionTemplate(getRandomName())
-	resource.ID = "CommunityActionTemplates-126"
-
-	assert.NoError(err)
-	assert.NotNil(resource)
-
-	if err != nil {
-		return
-	}
-
-	resource, err = service.Install(*resource)
-
-	assert.NoError(err)
-	assert.NotNil(resource)
-
-	err = service.DeleteByID(resource.ID)
-
-	assert.NoError(err)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
 }
 
 func TestCommunityActionTemplateServiceUpdate(t *testing.T) {
@@ -193,13 +171,8 @@ func TestCommunityActionTemplateServiceUpdate(t *testing.T) {
 	assert := assert.New(t)
 
 	resource, err := model.NewCommunityActionTemplate(getRandomName())
-
-	assert.NoError(err)
 	assert.NotNil(resource)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
 
 	resourceToCompare, err := service.Install(*resource)
 

@@ -92,7 +92,7 @@ func TestProjectTriggerUpdate(t *testing.T) {
 	createdTrigger.Filter.Roles = newProjectTriggerRole
 	createdTrigger.IsDisabled = newIsDisabled
 
-	updatedProjectTrigger, err := octopusClient.ProjectTriggers.Update(createdTrigger)
+	updatedProjectTrigger, err := octopusClient.ProjectTriggers.Update(*createdTrigger)
 	assert.NoError(t, err, "error when updating projecttrigger")
 	assert.Equal(t, newProjectTriggerName, updatedProjectTrigger.Name, "projecttrigger name was not updated")
 	assert.Equal(t, newProjectTriggerRole, updatedProjectTrigger.Filter.Roles, "projecttrigger roles was not updated")

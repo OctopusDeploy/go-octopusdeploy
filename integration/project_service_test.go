@@ -92,7 +92,7 @@ func TestProjectUpdate(t *testing.T) {
 	project.Description = newDescription
 	project.ProjectConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 
-	updatedProject, err := octopusClient.Projects.Update(&project)
+	updatedProject, err := octopusClient.Projects.Update(project)
 
 	assert.NoError(t, err, "error when updating project")
 

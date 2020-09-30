@@ -92,7 +92,7 @@ func TestEnvironmentUpdate(t *testing.T) {
 	environment.Description = newDescription
 	environment.UseGuidedFailure = newUseGuidedFailure
 
-	updatedEnvironment, err := octopusClient.Environments.Update(&environment)
+	updatedEnvironment, err := octopusClient.Environments.Update(environment)
 	assert.NoError(t, err, "error when updating environment")
 	assert.Equal(t, newEnvironmentName, updatedEnvironment.Name, "environment name was not updated")
 	assert.Equal(t, newDescription, updatedEnvironment.Description, "environment description was not updated")
@@ -100,14 +100,38 @@ func TestEnvironmentUpdate(t *testing.T) {
 }
 
 func TestEnvironmentGetByName(t *testing.T) {
+	assert := assert.New(t)
+
 	octopusClient := getOctopusClient()
+	assert.NotNil(octopusClient)
+	if octopusClient == nil {
+		t.Fatal("client could not be created")
+	}
 
-	environment := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, environment.ID)
+	expected := createTestEnvironment(t, getRandomName())
+	defer cleanEnvironment(t, expected.ID)
 
-	foundEnvironment, err := octopusClient.Environments.GetByName(environment.Name)
-	assert.NoError(t, err, "error when looking for environment when not expected")
-	assert.Equal(t, environment.Name, foundEnvironment.Name, "environment not found when searching by its name")
+	resources, err := octopusClient.Environments.GetByName(expected.Name)
+	assert.NoError(err)
+	assert.NotNil(resources)
+
+	// equality cannot be determined through a direct comparison (below)
+	// because GetByPartialName does not include the fields, LastModifiedBy and
+	// LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
+
+	for _, actual := range resources {
+		assert.Equal(expected.AllowDynamicInfrastructure, actual.AllowDynamicInfrastructure)
+		assert.Equal(expected.Description, actual.Description)
+		assert.Equal(expected.ID, actual.ID)
+		assert.Equal(expected.Name, actual.Name)
+		assert.Equal(expected.SortOrder, actual.SortOrder)
+		assert.Equal(expected.UseGuidedFailure, actual.UseGuidedFailure)
+	}
 }
 
 /*

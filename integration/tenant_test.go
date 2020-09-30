@@ -6,14 +6,73 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func cleanTenant(t *testing.T, octopusClient *client.Client, tenantID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
+
+	err := octopusClient.Tenants.DeleteByID(tenantID)
+	assert.NoError(t, err)
+}
+
+func createTestTenant(t *testing.T, octopusClient *client.Client, name string) model.Tenant {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
+
+	p := createTenant(name)
+	resource, err := octopusClient.Tenants.Add(&p)
+	require.NoError(t, err)
+
+	return *resource
+}
+
+func createTenant(tenantName string) model.Tenant {
+	p := model.NewTenant(tenantName, "Lifecycles-1")
+	return *p
+}
+
+func isEqualTenants(t *testing.T, expected model.Tenant, actual model.Tenant) {
+	assert := assert.New(t)
+
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
+
+	assert.Equal(expected.ClonedFromTenantID, actual.ClonedFromTenantID)
+	assert.Equal(expected.Description, actual.Description)
+	assert.Equal(expected.ID, actual.ID)
+	assert.Equal(expected.Links, actual.Links)
+	assert.Equal(expected.Name, actual.Name)
+	assert.Equal(expected.ProjectEnvironments, actual.ProjectEnvironments)
+	assert.Equal(expected.SpaceID, actual.SpaceID)
+	assert.Equal(expected.TenantTags, actual.TenantTags)
+}
+
+func TestTenants(t *testing.T) {
+	t.Run("AddAndDelete", TestTenantAddAndDelete)
+	t.Run("AddGetAndDelete", TestTenantAddGetAndDelete)
+	t.Run("GetAll", TestTenantGetAll)
+	t.Run("GetByPartialName", TestTenantGetByPartialName)
+	t.Run("Update", TestTenantUpdate)
+}
 
 func TestTenantAddAndDelete(t *testing.T) {
 	tenantName := getRandomName()
-	expected := getTestTenant(tenantName)
-	actual := createTestTenant(t, tenantName)
+	expected := createTenant(tenantName)
+	actual := createTestTenant(t, nil, tenantName)
 
-	defer cleanTenant(t, actual.ID)
+	defer cleanTenant(t, nil, actual.ID)
 
 	assert.Equal(t, expected.Name, actual.Name, "tenant name doesn't match expected")
 	assert.NotEmpty(t, actual.ID, "tenant doesn't contain an ID from the octopus server")
@@ -21,126 +80,70 @@ func TestTenantAddAndDelete(t *testing.T) {
 
 func TestTenantAddGetAndDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	tenant := createTestTenant(t, getRandomName())
-	defer cleanTenant(t, tenant.ID)
+	expected := createTestTenant(t, octopusClient, getRandomName())
+	defer cleanTenant(t, octopusClient, expected.ID)
 
-	getTenant, err := octopusClient.Tenants.GetByID(tenant.ID)
-	assert.NoError(t, err, "there was an error raised getting tenant when there should not be")
-	assert.Equal(t, tenant.Name, getTenant.Name)
-}
-
-func TestTenantGetThatDoesNotExist(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	tenantID := "there-is-no-way-this-tenant-id-exists-i-hope"
-	expected := client.ErrItemNotFound
-	tenant, err := octopusClient.Tenants.GetByID(tenantID)
-
-	assert.Error(t, err, "there should have been an error raised as this tenant should not be found")
-	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, tenant, "no tenant should have been returned")
+	actual, err := octopusClient.Tenants.GetByID(expected.ID)
+	assert.NoError(t, err)
+	isEqualTenants(t, expected, *actual)
 }
 
 func TestTenantGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	// create many tenant to test pagination
-	tenantsToCreate := 32
-	sum := 0
-	for i := 0; i < tenantsToCreate; i++ {
-		tenant := createTestTenant(t, getRandomName())
-		defer cleanTenant(t, tenant.ID)
-		sum += i
+	const count int = 32
+	expected := map[string]model.Tenant{}
+	for i := 0; i < count; i++ {
+		resource := createTestTenant(t, octopusClient, getRandomName())
+		defer cleanTenant(t, octopusClient, resource.ID)
+		expected[resource.ID] = resource
 	}
 
-	allTenants, err := octopusClient.Tenants.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all tenants failed when it shouldn't: %s", err)
+	resources, err := octopusClient.Tenants.GetAll()
+	assert.NoError(t, err)
+	assert.NotNil(t, resources)
+	assert.GreaterOrEqual(t, len(resources), count)
+
+	for _, actual := range resources {
+		_, ok := expected[actual.ID]
+		if ok {
+			isEqualTenants(t, expected[actual.ID], actual)
+		}
 	}
+}
 
-	numberOfTenants := len(allTenants)
+func TestTenantGetByPartialName(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	// check there are greater than or equal to the amount of tenants requested to be created, otherwise pagination isn't working
-	if numberOfTenants < tenantsToCreate {
-		t.Fatalf("There should be at least %d tenants created but there was only %d. Pagination is likely not working.", tenantsToCreate, numberOfTenants)
+	expected := createTestTenant(t, octopusClient, getRandomName())
+	defer cleanTenant(t, octopusClient, expected.ID)
+
+	resources, err := octopusClient.Tenants.GetByPartialName(expected.Name)
+	assert.NoError(t, err)
+	assert.NotNil(t, resources)
+
+	for _, actual := range resources {
+		isEqualTenants(t, expected, actual)
 	}
-
-	additionalTenant := createTestTenant(t, getRandomName())
-	defer cleanTenant(t, additionalTenant.ID)
-
-	allTenantsAfterCreatingAdditional, err := octopusClient.Tenants.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all tenants failed when it shouldn't: %s", err)
-	}
-
-	assert.NoError(t, err, "error when looking for tenant when not expected")
-	assert.Equal(t, len(allTenantsAfterCreatingAdditional), numberOfTenants+1, "created an additional tenant and expected number of tenants to increase by 1")
 }
 
 func TestTenantUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	tenant := createTestTenant(t, getRandomName())
-	defer cleanTenant(t, tenant.ID)
+	expected := createTestTenant(t, octopusClient, getRandomName())
+	defer cleanTenant(t, octopusClient, expected.ID)
 
-	newTenantName := getRandomName()
-	const newDescription = "this should be updated"
-	// const newSkipMachineBehavior = "SkipUnavailableMachines"
+	expected.Name = getRandomName()
+	expected.Description = getRandomName()
 
-	tenant.Name = newTenantName
-	tenant.Description = newDescription
+	actual, err := octopusClient.Tenants.Update(expected)
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
 
-	updatedTenant, err := octopusClient.Tenants.Update(&tenant)
-	assert.NoError(t, err, "error when updating tenant")
-	assert.Equal(t, newTenantName, updatedTenant.Name, "tenant name was not updated")
-	assert.Equal(t, newDescription, updatedTenant.Description, "tenant description was not updated")
-}
-
-func TestTenantGetByName(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	tenant := createTestTenant(t, getRandomName())
-	defer cleanTenant(t, tenant.ID)
-
-	foundTenant, err := octopusClient.Tenants.GetByName(tenant.Name)
-	assert.NoError(t, err, "error when looking for tenant when not expected")
-	assert.Equal(t, tenant.Name, foundTenant.Name, "tenant not found when searching by its name")
-}
-
-func createTestTenant(t *testing.T, tenantName string) model.Tenant {
-	octopusClient := getOctopusClient()
-
-	p := getTestTenant(tenantName)
-	createdTenant, err := octopusClient.Tenants.Add(&p)
-
-	if err != nil {
-		t.Fatalf("creating tenant %s failed when it shouldn't: %s", tenantName, err)
-	}
-
-	return *createdTenant
-}
-
-func getTestTenant(tenantName string) model.Tenant {
-	p := model.NewTenant(tenantName, "Lifecycles-1")
-
-	return *p
-}
-
-func cleanTenant(t *testing.T, tenantID string) {
-	octopusClient := getOctopusClient()
-
-	err := octopusClient.Tenants.DeleteByID(tenantID)
-
-	if err == nil {
-		return
-	}
-
-	if err == client.ErrItemNotFound {
-		return
-	}
-
-	if err != nil {
-		t.Fatalf("deleting tenant failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	isEqualTenants(t, expected, *actual)
 }

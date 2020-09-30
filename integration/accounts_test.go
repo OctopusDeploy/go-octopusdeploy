@@ -4,12 +4,20 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/enum"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestAccounts(t *testing.T) {
+	t.Run("Add", TestAccountServiceAdd)
+	t.Run("GetAll", TestAccountServiceGetAll)
+	t.Run("GetByName", TestAccountServiceGetByName)
+	t.Run("GetByType", TestAccountServiceGetByType)
+}
 
 func TestAccountServiceAdd(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	account, err := octopusClient.Accounts.Add(nil)
 
@@ -19,6 +27,7 @@ func TestAccountServiceAdd(t *testing.T) {
 
 func TestAccountServiceGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	accounts, err := octopusClient.Accounts.GetAll()
 
@@ -37,6 +46,7 @@ func TestAccountServiceGetAll(t *testing.T) {
 
 func TestAccountServiceGetByName(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	accounts, err := octopusClient.Accounts.GetByPartialName("go")
 
@@ -55,6 +65,7 @@ func TestAccountServiceGetByName(t *testing.T) {
 
 func TestAccountServiceGetByType(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	accounts, err := octopusClient.Accounts.GetByAccountType(enum.UsernamePassword)
 

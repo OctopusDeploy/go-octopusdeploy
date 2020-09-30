@@ -3,11 +3,154 @@ package client
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewChannelService(t *testing.T) {
+func createChannelService(t *testing.T) *channelService {
+	service := newChannelService(nil, TestURIChannels)
+	testNewService(t, service, TestURIChannels, serviceChannelService)
+	return service
+}
+
+func TestChannelService(t *testing.T) {
+	t.Run("Add", TestChannelServiceAdd)
+	t.Run("Delete", TestChannelServiceDelete)
+	t.Run("GetAll", TestChannelServiceGetAll)
+	t.Run("GetByID", TestChannelServiceGetByID)
+	t.Run("GetByPartialName", TestChannelServiceGetByPartialName)
+	t.Run("New", TestChannelServiceNew)
+}
+
+func TestChannelServiceAdd(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createChannelService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resource, err := service.Add(nil)
+	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
+	assert.Nil(resource)
+
+	invalidResource := &model.Channel{}
+	resource, err = service.Add(invalidResource)
+	assert.Equal(createValidationFailureError("Add", invalidResource.Validate()), err)
+	assert.Nil(resource)
+}
+
+func TestChannelServiceDelete(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createChannelService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	err := service.DeleteByID(emptyString)
+	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+
+	err = service.DeleteByID(whitespaceString)
+	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+
+	id := getRandomName()
+	err = service.DeleteByID(id)
+	assert.Equal(createResourceNotFoundError("channel", "ID", id), err)
+}
+
+func TestChannelServiceGetAll(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createChannelService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resources, err := service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resources)
+
+	for _, resource := range resources {
+		assert.NotNil(resource)
+		assert.NotEmpty(resource.ID)
+	}
+}
+
+func TestChannelServiceGetByID(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createChannelService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resource, err := service.GetByID(emptyString)
+	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
+	assert.Nil(resource)
+
+	resource, err = service.GetByID(whitespaceString)
+	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
+	assert.Nil(resource)
+
+	id := getRandomName()
+	resource, err = service.GetByID(id)
+	assert.Equal(createResourceNotFoundError("channel", "ID", id), err)
+	assert.Nil(resource)
+
+	resources, err := service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resources)
+
+	if len(resources) > 0 {
+		resourceToCompare, err := service.GetByID(resources[0].ID)
+		assert.NoError(err)
+		assert.EqualValues(resources[0], *resourceToCompare)
+	}
+}
+
+func TestChannelServiceGetByPartialName(t *testing.T) {
+	assert := assert.New(t)
+
+	service := createChannelService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
+
+	resources, err := service.GetByPartialName(emptyString)
+	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.NotNil(resources)
+	assert.Len(resources, 0)
+
+	resources, err = service.GetByPartialName(whitespaceString)
+	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.NotNil(resources)
+	assert.Len(resources, 0)
+
+	name := getRandomName()
+	resources, err = service.GetByPartialName(name)
+	assert.NoError(err)
+	assert.NotNil(resources)
+	assert.Len(resources, 0)
+
+	resources, err = service.GetAll()
+	assert.NoError(err)
+	assert.NotNil(resources)
+
+	if len(resources) > 0 {
+		resourcesToCompare, err := service.GetByPartialName(resources[0].Name)
+		assert.NoError(err)
+		assert.EqualValues(resourcesToCompare[0], resources[0])
+	}
+}
+
+func TestChannelServiceNew(t *testing.T) {
 	serviceFunction := newChannelService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
@@ -29,51 +172,4 @@ func TestNewChannelService(t *testing.T) {
 			testNewService(t, service, uriTemplate, serviceName)
 		})
 	}
-}
-
-func TestChannelServiceGetWithEmptyID(t *testing.T) {
-	service := createChannelService(t)
-
-	resource, err := service.GetByID(emptyString)
-
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
-	assert.Nil(t, resource)
-
-	resource, err = service.GetByID(whitespaceString)
-
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
-	assert.Nil(t, resource)
-}
-
-func TestChannelServiceDeleteWithEmptyID(t *testing.T) {
-	service := createChannelService(t)
-
-	err := service.DeleteByID(emptyString)
-
-	assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
-
-	err = service.DeleteByID(whitespaceString)
-
-	assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
-}
-
-func TestChannelServiceGetAll(t *testing.T) {
-	service := createChannelService(t)
-	assert := assert.New(t)
-
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
-
-	resourceList, err := service.GetAll()
-
-	assert.NoError(err)
-	assert.NotNil(resourceList)
-}
-
-func createChannelService(t *testing.T) *channelService {
-	service := newChannelService(nil, TestURIChannels)
-	testNewService(t, service, TestURIChannels, serviceChannelService)
-	return service
 }
