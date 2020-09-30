@@ -7,138 +7,37 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestMachineAddAndDelete(t *testing.T) {
-	testName := "TestMachineAddAndDelete"
-	testEnvironment := createTestEnvironment(t, testName)
-	defer cleanEnvironment(t, testEnvironment.ID)
+func cleanMachine(t *testing.T, octopusClient *client.Client, machineID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
-	machineName := strings.Split(getRandomName(), whitespaceString)[1]
-	expected := getTestMachine(t, testEnvironment.ID, machineName)
-	actual := createTestMachine(t, testEnvironment.ID, machineName)
-	defer cleanMachine(t, actual.ID)
-
-	assert.Equal(t, expected.Name, actual.Name, "machine name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "machine doesn't contain an ID from the octopus server")
+	err := octopusClient.Machines.DeleteByID(machineID)
+	assert.NoError(t, err)
 }
 
-func TestMachineAddGetAndDelete(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	testName := "TestMachineAddGetAndDelete"
-	testEnvironment := createTestEnvironment(t, testName)
-	defer cleanEnvironment(t, testEnvironment.ID)
-
-	machineName := strings.Split(getRandomName(), whitespaceString)[1]
-	machine := createTestMachine(t, testEnvironment.ID, machineName)
-	defer cleanMachine(t, machine.ID)
-
-	getMachine, err := octopusClient.Machines.GetByID(machine.ID)
-
-	assert.NoError(t, err, "there was an error raised getting machine when there should not be")
-
-	if err != nil {
-		return
+func createTestMachine(t *testing.T, octopusClient *client.Client, environmentID string, name string) model.Machine {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
 	}
+	require.NotNil(t, octopusClient)
 
-	assert.Equal(t, machine.Name, getMachine.Name)
-	assert.Equal(t, machine.Thumbprint, getMachine.Thumbprint)
-	assert.Equal(t, machine.URI, getMachine.Endpoint.URI)
+	e := createMachine(t, environmentID, name)
+	resource, err := octopusClient.Machines.Add(&e)
+	require.NoError(t, err)
+
+	return *resource
 }
 
-func TestMachineGetThatDoesNotExist(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	machineID := "there-is-no-way-this-machine-id-exists-i-hope"
-	expected := client.ErrItemNotFound
-	machine, err := octopusClient.Machines.GetByID(machineID)
-
-	assert.Error(t, err, "there should have been an error raised as this machine should not be found")
-	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, machine, "no machine should have been returned")
-}
-
-func TestMachineGetAll(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	testName := "TestMachineGetAll"
-	testEnvironment := createTestEnvironment(t, testName)
-	defer cleanEnvironment(t, testEnvironment.ID)
-
-	// create many machines to test pagination
-	machinesToCreate := 32
-	sum := 0
-	for i := 0; i < machinesToCreate; i++ {
-		machineName := strings.Split(getRandomName(), whitespaceString)[1]
-		machine := createTestMachine(t, testEnvironment.ID, machineName)
-		defer cleanMachine(t, machine.ID)
-		sum += i
-	}
-
-	allMachines, err := octopusClient.Machines.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all machines failed when it shouldn't: %s", err)
-	}
-
-	numberOfMachines := len(allMachines)
-
-	// check there are greater than or equal to the amount of machines requested to be created, otherwise pagination isn't working
-	if numberOfMachines < machinesToCreate {
-		t.Fatalf("There should be at least %d machines created but there was only %d. Pagination is likely not working.", machinesToCreate, numberOfMachines)
-	}
-
-	machineName := strings.Split(getRandomName(), whitespaceString)[1]
-	additionalMachine := createTestMachine(t, testEnvironment.ID, machineName)
-	defer cleanMachine(t, additionalMachine.ID)
-
-	allMachinesAfterCreatingAdditional, err := octopusClient.Machines.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all machines failed when it shouldn't: %s", err)
-	}
-
-	assert.NoError(t, err, "error when looking for machine when not expected")
-	assert.Equal(t, len(allMachinesAfterCreatingAdditional), numberOfMachines+1, "created an additional machine and expected number of machines to increase by 1")
-}
-
-func TestMachineUpdate(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	testName := "TestMachineUpdate"
-	testEnvironment := createTestEnvironment(t, testName)
-	defer cleanEnvironment(t, testEnvironment.ID)
-
-	machineName := strings.Split(getRandomName(), whitespaceString)[1]
-	machine := createTestMachine(t, testEnvironment.ID, machineName)
-	defer cleanMachine(t, machine.ID)
-
-	newApplicationsDirectory := "C:\\New-Applications-Directory"
-	newWorkingDirectory := "C:\\New-WorkingDirectory"
-
-	newMachineName := strings.Split(getRandomName(), whitespaceString)[1]
-	machine.Name = newMachineName
-	machine.Endpoint.ApplicationsDirectory = newApplicationsDirectory
-	machine.Endpoint.WorkingDirectory = newWorkingDirectory
-
-	updatedMachine, err := octopusClient.Machines.Update(&machine)
-
-	assert.NoError(t, err, "error when updating machine")
-
-	if err != nil {
-		return
-	}
-
-	assert.Equal(t, newMachineName, updatedMachine.Name, "machine name was not updated")
-	assert.Equal(t, newApplicationsDirectory, updatedMachine.Endpoint.ApplicationsDirectory, "machine endpoint's applications Directory was not updated")
-	assert.Equal(t, newWorkingDirectory, updatedMachine.Endpoint.WorkingDirectory, "machine endpoint's working Directory was not updated")
-}
-
-func getTestMachine(t *testing.T, environmentID string, machineName string) model.Machine {
+func createMachine(t *testing.T, environmentID string, machineName string) model.Machine {
 	// Thumbprints have to be unique, so accept a testName string so we can pass through a fixed ID
 	// with the name machine that will be consistent through the same test, but different for different
 	// tests
@@ -186,33 +85,107 @@ func getTestMachine(t *testing.T, environmentID string, machineName string) mode
 	return e
 }
 
-func createTestMachine(t *testing.T, environmentID string, machineName string) model.Machine {
-	octopusClient := getOctopusClient()
+func isEqualMachines(t *testing.T, expected model.Machine, actual model.Machine) {
+	assert := assert.New(t)
 
-	e := getTestMachine(t, environmentID, machineName)
-	createdMachine, err := octopusClient.Machines.Add(&e)
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
 
-	if err != nil {
-		t.Fatalf("creating machine %s failed when it shouldn't: %s", machineName, err)
-	}
-
-	return *createdMachine
+	assert.Equal(expected.DeploymentMode, actual.DeploymentMode)
+	assert.Equal(expected.Endpoint, actual.Endpoint)
+	assert.Equal(expected.EnvironmentIDs, actual.EnvironmentIDs)
+	assert.Equal(expected.HasLatestCalamari, actual.HasLatestCalamari)
+	assert.Equal(expected.HealthStatus, actual.HealthStatus)
+	assert.Equal(expected.ID, actual.ID)
+	assert.Equal(expected.IsDisabled, actual.IsDisabled)
+	assert.Equal(expected.IsInProcess, actual.IsInProcess)
+	assert.Equal(expected.Links, actual.Links)
+	assert.Equal(expected.MachinePolicyID, actual.MachinePolicyID)
+	assert.Equal(expected.Name, actual.Name)
+	assert.Equal(expected.OperatingSystem, actual.OperatingSystem)
+	assert.Equal(expected.Roles, actual.Roles)
+	assert.Equal(expected.ShellName, actual.ShellName)
+	assert.Equal(expected.ShellVersion, actual.ShellVersion)
+	assert.Equal(expected.Status, actual.Status)
+	assert.Equal(expected.StatusSummary, actual.StatusSummary)
+	assert.Equal(expected.TenantIDs, actual.TenantIDs)
+	assert.Equal(expected.TenantTags, actual.TenantTags)
+	assert.Equal(expected.Thumbprint, actual.Thumbprint)
+	assert.Equal(expected.TenantTags, actual.TenantTags)
 }
 
-func cleanMachine(t *testing.T, machineID string) {
+func TestMachines(t *testing.T) {
+	t.Run("AddGetDelete", TestMachineAddGetDelete)
+	t.Run("GetAll", TestMachineGetAll)
+	t.Run("Update", TestMachineUpdate)
+}
+
+func TestMachineAddGetDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	err := octopusClient.Machines.DeleteByID(machineID)
+	testEnvironment := createTestEnvironment(t, getRandomName())
+	defer cleanEnvironment(t, testEnvironment.ID)
 
-	if err == nil {
-		return
+	expected := createTestMachine(t, octopusClient, testEnvironment.ID, getRandomName())
+	defer cleanMachine(t, octopusClient, expected.ID)
+
+	actual, err := octopusClient.Machines.GetByID(expected.ID)
+	require.NoError(t, err)
+	isEqualMachines(t, expected, *actual)
+}
+
+func TestMachineGetAll(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	testEnvironment := createTestEnvironment(t, getRandomName())
+	defer cleanEnvironment(t, testEnvironment.ID)
+
+	const count int = 32
+	expected := map[string]model.Machine{}
+	for i := 0; i < count; i++ {
+		resource := createTestMachine(t, octopusClient, testEnvironment.ID, getRandomName())
+		defer cleanMachine(t, octopusClient, resource.ID)
+		expected[resource.ID] = resource
 	}
 
-	if err == client.ErrItemNotFound {
-		return
-	}
+	resources, err := octopusClient.Machines.GetAll()
+	assert.NoError(t, err)
+	assert.NotNil(t, resources)
+	assert.GreaterOrEqual(t, len(resources), count)
 
-	if err != nil {
-		t.Fatalf("deleting machine failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
+	for _, actual := range resources {
+		_, ok := expected[actual.ID]
+		if ok {
+			isEqualMachines(t, expected[actual.ID], actual)
+		}
 	}
+}
+
+func TestMachineUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	testEnvironment := createTestEnvironment(t, getRandomName())
+	defer cleanEnvironment(t, testEnvironment.ID)
+
+	expected := createTestMachine(t, octopusClient, testEnvironment.ID, getRandomName())
+	defer cleanMachine(t, octopusClient, expected.ID)
+
+	expected.Name = getRandomName()
+	expected.Endpoint.ApplicationsDirectory = getRandomName()
+	expected.Endpoint.WorkingDirectory = getRandomName()
+
+	actual, err := octopusClient.Machines.Update(expected)
+	assert.NoError(t, err)
+	assert.NotNil(t, actual)
+
+	isEqualMachines(t, expected, *actual)
 }
