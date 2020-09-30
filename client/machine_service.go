@@ -78,7 +78,12 @@ func (s machineService) Add(resource *model.Machine) (*model.Machine, error) {
 
 // DeleteByID deletes the machine that matches the input ID.
 func (s machineService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("machine", "ID", id)
+	}
+
+	return err
 }
 
 // GetByID returns the machine that matches the input ID. If one cannot be

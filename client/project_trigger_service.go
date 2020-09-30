@@ -119,7 +119,12 @@ func (s projectTriggerService) Add(resource *model.ProjectTrigger) (*model.Proje
 
 // DeleteByID deletes the project trigger that matches the input ID.
 func (s projectTriggerService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("project trigger", "ID", id)
+	}
+
+	return err
 }
 
 // Update modifies a project trigger based on the one provided as input.

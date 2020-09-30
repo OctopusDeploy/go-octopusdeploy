@@ -63,7 +63,12 @@ func (s userService) Add(resource *model.User) (*model.User, error) {
 
 // DeleteByID deletes the user that matches the input ID.
 func (s userService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("user", "ID", id)
+	}
+
+	return err
 }
 
 // GetByID returns the user that matches the input ID. If one cannot be found,

@@ -78,7 +78,12 @@ func (s environmentService) Add(resource *model.Environment) (*model.Environment
 
 // DeleteByID deletes the environment that matches the input ID.
 func (s environmentService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("environment", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all environments. If none can be found or an error occurs, it

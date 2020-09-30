@@ -80,7 +80,12 @@ func (s communityActionTemplateService) getURITemplate() *uritemplates.UriTempla
 
 // DeleteByID deletes the community action template that matches the input ID.
 func (s communityActionTemplateService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("community action template", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all community action templates. If none can be found or an

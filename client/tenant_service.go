@@ -94,7 +94,12 @@ func (s tenantService) Add(resource *model.Tenant) (*model.Tenant, error) {
 
 // DeleteByID deletes the tenant that matches the input ID.
 func (s tenantService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("tenant", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all tenants. If none can be found or an error occurs, it

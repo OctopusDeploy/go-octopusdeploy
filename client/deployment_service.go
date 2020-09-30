@@ -82,7 +82,12 @@ func (s deploymentService) Add(resource *model.Deployment) (*model.Deployment, e
 
 // DeleteByID deletes the deployment that matches the input ID.
 func (s deploymentService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("deployment", "ID", id)
+	}
+
+	return err
 }
 
 // GetByID gets a deployment that matches the input ID. If one cannot be found,

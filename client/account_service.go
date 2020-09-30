@@ -81,7 +81,12 @@ func (s accountService) Add(resource *model.Account) (*model.Account, error) {
 
 // DeleteByID deletes the account that matches the input ID.
 func (s accountService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("account", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all accounts. If none can be found or an error occurs, it

@@ -81,7 +81,12 @@ func (s artifactService) Add(resource *model.Artifact) (*model.Artifact, error) 
 
 // DeleteByID deletes the artifact that matches the input ID.
 func (s artifactService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("artifact", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all artifacts. If none can be found or an error occurs, it

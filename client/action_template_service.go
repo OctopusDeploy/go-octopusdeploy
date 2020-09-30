@@ -89,7 +89,12 @@ func (s actionTemplateService) Add(resource *model.ActionTemplate) (*model.Actio
 
 // DeleteByID deletes the action template that matches the input ID.
 func (s actionTemplateService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("action template", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all action templates. If none can be found or an error

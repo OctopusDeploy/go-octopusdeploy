@@ -60,7 +60,12 @@ func (s spaceService) Add(resource *model.Space) (*model.Space, error) {
 
 // DeleteByID deletes the space that matches the input ID.
 func (s spaceService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("space", "ID", id)
+	}
+
+	return err
 }
 
 // GetByID returns the space that matches the input ID. If one cannot be found,

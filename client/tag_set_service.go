@@ -60,7 +60,12 @@ func (s tagSetService) Add(resource *model.TagSet) (*model.TagSet, error) {
 
 // DeleteByID deletes the tag set that matches the input ID.
 func (s tagSetService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("tag set", "ID", id)
+	}
+
+	return err
 }
 
 // GetByID returns the tag set that matches the input ID. If one cannot be

@@ -78,7 +78,12 @@ func (s feedService) Add(resource model.Feed) (*model.Feed, error) {
 
 // DeleteByID deletes the feed that matches the input ID.
 func (s feedService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("feed", "ID", id)
+	}
+
+	return err
 }
 
 // GetByID returns the feed that matches the input ID. If one cannot be found,

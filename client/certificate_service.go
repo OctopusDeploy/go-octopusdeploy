@@ -81,9 +81,15 @@ func (s certificateService) Add(resource *model.Certificate) (*model.Certificate
 	return resp.(*model.Certificate), nil
 }
 
-// DeleteByID deletes the certificate that matches the input ID.
+// DeleteByID deletes the certificate that matches the input ID. If the ID
+// cannot be found, it returns nil and an error.
 func (s certificateService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("certificate", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all certificates. If none can be found or an error occurs, it

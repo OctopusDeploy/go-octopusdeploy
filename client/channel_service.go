@@ -79,7 +79,12 @@ func (s channelService) Add(resource *model.Channel) (*model.Channel, error) {
 
 // DeleteByID deletes the Channel that matches the input ID.
 func (s channelService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("channel", "ID", id)
+	}
+
+	return err
 }
 
 // GetAll returns all channels. If none can be found or an error occurs, it

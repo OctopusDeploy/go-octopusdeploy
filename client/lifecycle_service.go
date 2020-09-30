@@ -117,7 +117,12 @@ func (s lifecycleService) Add(resource *model.Lifecycle) (*model.Lifecycle, erro
 
 // DeleteByID deletes the lifecycle that matches the input ID.
 func (s lifecycleService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("lifecycle", "ID", id)
+	}
+
+	return err
 }
 
 // Update modifies a Lifecycle based on the one provided as input.

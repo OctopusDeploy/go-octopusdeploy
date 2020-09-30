@@ -62,7 +62,12 @@ func (s projectGroupService) Add(resource *model.ProjectGroup) (*model.ProjectGr
 
 // DeleteByID deletes the project group that matches the input ID.
 func (s projectGroupService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("project group", "ID", id)
+	}
+
+	return err
 }
 
 // GetByID returns the project group that matches the input ID. If one cannot

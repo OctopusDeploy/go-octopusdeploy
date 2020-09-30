@@ -195,7 +195,12 @@ func (s projectService) Add(resource *model.Project) (*model.Project, error) {
 
 // DeleteByID deletes the project that matches the input ID.
 func (s projectService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("project", "ID", id)
+	}
+
+	return err
 }
 
 // Update modifies a project based on the one provided as input.

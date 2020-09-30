@@ -117,7 +117,12 @@ func (s libraryVariableSetService) Add(resource *model.LibraryVariableSet) (*mod
 
 // DeleteByID deletes the library variable set that matches the input ID.
 func (s libraryVariableSetService) DeleteByID(id string) error {
-	return deleteByID(s, id)
+	err := deleteByID(s, id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError("library variable set", "ID", id)
+	}
+
+	return err
 }
 
 // Update modifies a library variable set based on the one provided as input.
