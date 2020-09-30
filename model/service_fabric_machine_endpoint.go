@@ -1,14 +1,13 @@
 package model
 
-type ServiceFabricMachineEndpoint struct {
-	ConnectionEndpoint        string         `json:"ConnectionEndpoint,omitempty"`
-	SecurityMode              string         `json:"SecurityMode,omitempty" validate:"omitempty,oneof=Unsecure SecureClientCertificate SecureAzureAD"`
-	ServerCertThumbprint      string         `json:"ServerCertThumbprint,omitempty"`
-	ClientCertVariable        string         `json:"ClientCertVariable,omitempty"`
-	CertificateStoreLocation  string         `json:"CertificateStoreLocation,omitempty"`
-	CertificateStoreName      string         `json:"CertificateStoreName,omitempty"`
-	AadCredentialType         string         `json:"AadCredentialType,omitempty" validate:"omitempty,oneof=ClientCredential UserCredential"`
-	AadClientCredentialSecret string         `json:"AadClientCredentialSecret,omitempty"`
-	AadUserCredentialUsername string         `json:"AadUserCredentialUsername,omitempty"`
-	AadUserCredentialPassword SensitiveValue `json:"AadUserCredentialPassword,omitempty"`
+import "github.com/OctopusDeploy/go-octopusdeploy/enum"
+
+func NewServiceFabricMachineEndpoint(uri string, thumbprint string, communicationStyle enum.CommunicationStyle, proxyID string, defaultWorkerPoolID string) (*MachineEndpoint, error) {
+	return &MachineEndpoint{
+		CommunicationStyle:  communicationStyle,
+		DefaultWorkerPoolID: defaultWorkerPoolID,
+		ProxyID:             &proxyID,
+		Thumbprint:          thumbprint,
+		URI:                 uri,
+	}, nil
 }

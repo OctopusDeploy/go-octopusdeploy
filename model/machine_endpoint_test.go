@@ -7,32 +7,47 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEmptyMachineEndpoint(t *testing.T) {
-	machineEndpoint := &MachineEndpoint{}
-	assert.Error(t, machineEndpoint.Validate())
-}
+func TestMachineEndpointNew(t *testing.T) {
+	defaultWorkerPoolID := "worker-id"
+	proxyID := "proxy-id"
+	thumbprint := "thumbprint"
+	uri := "https://example.com"
 
-func TestInvalidEndpointURI(t *testing.T) {
-	communicationStyle, _ := enum.ParseCommunicationStyle("None")
-	endpointURI := "x"
-	endpoint := &MachineEndpoint{
-		CommunicationStyle: communicationStyle,
-		URI:                endpointURI,
+	testCases := []struct {
+		name                string
+		communicationStyle  enum.CommunicationStyle
+		defaultWorkerPoolID string
+		proxyID             string
+		thumbprint          string
+		uri                 string
+	}{
+		{"Invalid", enum.TentaclePassive, emptyString, emptyString, emptyString, emptyString},
+		{"Invalid Communication Style", enum.NoCommunicationStyle, defaultWorkerPoolID, proxyID, thumbprint, uri},
+		{"Invalid Worker Pool ID", enum.TentaclePassive, emptyString, emptyString, emptyString, uri},
+		{"Invalid Proxy ID", enum.TentaclePassive, defaultWorkerPoolID, emptyString, emptyString, uri},
+		{"Invalid Thumbprint", enum.TentaclePassive, defaultWorkerPoolID, proxyID, emptyString, uri},
+		{"Invalid URI", enum.TentaclePassive, defaultWorkerPoolID, proxyID, thumbprint, "123"},
 	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			endpoint := &MachineEndpoint{
+				CommunicationStyle:  tc.communicationStyle,
+				DefaultWorkerPoolID: tc.defaultWorkerPoolID,
+				ProxyID:             &tc.proxyID,
+				Thumbprint:          tc.thumbprint,
+				URI:                 tc.uri,
+			}
+			assert.Error(t, endpoint.Validate())
 
-	assert.NotNil(t, endpoint)
-	assert.Error(t, endpoint.Validate())
-}
-
-func TestValidSshEndpointPort(t *testing.T) {
-	communicationStyle, _ := enum.ParseCommunicationStyle("None")
-	endpoint := &MachineEndpoint{
-		CommunicationStyle: communicationStyle,
+			endpoint, err := NewMachineEndpoint(
+				tc.uri,
+				tc.thumbprint,
+				tc.communicationStyle,
+				tc.proxyID,
+				tc.defaultWorkerPoolID,
+			)
+			assert.NoError(t, err)
+			assert.Error(t, endpoint.Validate())
+		})
 	}
-
-	var port uint16 = 22
-	endpoint.Port = &port
-
-	assert.NotNil(t, endpoint)
-	assert.NoError(t, endpoint.Validate())
 }

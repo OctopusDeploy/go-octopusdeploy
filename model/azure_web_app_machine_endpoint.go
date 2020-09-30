@@ -1,7 +1,13 @@
 package model
 
-type AzureWebAppMachineEndpoint struct {
-	ResourceGroupName string `json:"ResourceGroupName,omitempty"`
-	WebAppName        string `json:"WebAppName,omitempty"`
-	WebAppSlotName    int    `json:"WebAppSlotName"`
+import "github.com/OctopusDeploy/go-octopusdeploy/enum"
+
+func NewAzureWebAppMachineEndpoint(uri string, thumbprint string, communicationStyle enum.CommunicationStyle, proxyID string, defaultWorkerPoolID string) (*MachineEndpoint, error) {
+	return &MachineEndpoint{
+		CommunicationStyle:  communicationStyle,
+		DefaultWorkerPoolID: defaultWorkerPoolID,
+		ProxyID:             &proxyID,
+		Thumbprint:          thumbprint,
+		URI:                 uri,
+	}, nil
 }

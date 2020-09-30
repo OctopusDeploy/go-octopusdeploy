@@ -1,4 +1,13 @@
 package model
 
-type PollingTentacleMachineEndpoint struct {
+import "github.com/OctopusDeploy/go-octopusdeploy/enum"
+
+func NewPollingTentacleMachineEndpoint(uri string, thumbprint string, communicationStyle enum.CommunicationStyle, proxyID string, defaultWorkerPoolID string) (*MachineEndpoint, error) {
+	return &MachineEndpoint{
+		CommunicationStyle:  communicationStyle,
+		DefaultWorkerPoolID: defaultWorkerPoolID,
+		ProxyID:             &proxyID,
+		Thumbprint:          thumbprint,
+		URI:                 uri,
+	}, nil
 }

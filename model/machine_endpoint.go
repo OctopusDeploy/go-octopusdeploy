@@ -8,23 +8,47 @@ import (
 )
 
 type MachineEndpoint struct {
-	AccountID                     string                        `json:"AccountId,omitempty"`
-	CommunicationStyle            enum.CommunicationStyle       `json:"CommunicationStyle"`
-	DefaultWorkerPoolID           string                        `json:"DefaultWorkerPoolId,omitempty"`
-	ProxyID                       *string                       `json:"ProxyId"`
-	Thumbprint                    string                        `json:"Thumbprint,omitempty"`
-	TentacleVersionDetails        MachineTentacleVersionDetails `json:"TentacleVersionDetails"`
-	CertificateSignatureAlgorithm string                        `json:"CertificateSignatureAlgorithm,omitempty"`
-	URI                           string                        `json:"Uri,omitempty" validate:"omitempty,uri"` // This is not in the spec doc, but it shows up and needs to be kept in sync
-	AzureWebAppMachineEndpoint
-	CloudRegionMachineEndpoint
-	CloudServiceMachineEndpoint
-	KubernetesMachineEndpoint
-	ListeningTentacleMachineEndpoint
-	OfflineDropMachineEndpoint
-	PollingTentacleMachineEndpoint
-	ServiceFabricMachineEndpoint
-	SshMachineEndpoint
+	AadCredentialType                    string                         `json:"AadCredentialType,omitempty" validate:"omitempty,oneof=ClientCredential UserCredential"`
+	AadClientCredentialSecret            string                         `json:"AadClientCredentialSecret,omitempty"`
+	AadUserCredentialUsername            string                         `json:"AadUserCredentialUsername,omitempty"`
+	AadUserCredentialPassword            SensitiveValue                 `json:"AadUserCredentialPassword,omitempty"`
+	AccountID                            string                         `json:"AccountId,omitempty"`
+	ApplicationsDirectory                string                         `json:"ApplicationsDirectory,omitempty"`
+	Authentication                       *MachineEndpointAuthentication `json:"Authentication,omitempty"`
+	CertificateSignatureAlgorithm        string                         `json:"CertificateSignatureAlgorithm,omitempty"`
+	CertificateStoreLocation             string                         `json:"CertificateStoreLocation,omitempty"`
+	CertificateStoreName                 string                         `json:"CertificateStoreName,omitempty"`
+	ClientCertVariable                   string                         `json:"ClientCertVariable,omitempty"`
+	CloudServiceName                     string                         `json:"CloudServiceName,omitempty"`
+	ClusterCertificate                   string                         `json:"ClusterCertificate,omitempty"`
+	ClusterURL                           string                         `json:"ClusterUrl,omitempty" validate:"omitempty,url"`
+	CommunicationStyle                   enum.CommunicationStyle        `json:"CommunicationStyle" validate:"required"`
+	ConnectionEndpoint                   string                         `json:"ConnectionEndpoint,omitempty"`
+	Container                            DeploymentActionContainer      `json:"Container"`
+	DefaultWorkerPoolID                  string                         `json:"DefaultWorkerPoolId" validate:"required"`
+	Destination                          OfflineDropDestination         `json:"Destination"`
+	DotNetCorePlatform                   string                         `json:"DotNetCorePlatform,omitempty"`
+	Fingerprint                          string                         `json:"Fingerprint,omitempty"`
+	Host                                 string                         `json:"Host,omitempty"`
+	Namespace                            string                         `json:"Namespace,omitempty"`
+	Port                                 *uint16                        `json:"Port,omitempty"`
+	ProxyID                              *string                        `json:"ProxyId" validate:"required"`
+	ResourceGroupName                    string                         `json:"ResourceGroupName,omitempty"`
+	RunningInContainer                   bool                           `json:"RunningInContainer"`
+	SecurityMode                         string                         `json:"SecurityMode,omitempty" validate:"omitempty,oneof=Unsecure SecureClientCertificate SecureAzureAD"`
+	SensitiveVariablesEncryptionPassword SensitiveValue                 `json:"SensitiveVariablesEncryptionPassword"`
+	ServerCertThumbprint                 string                         `json:"ServerCertThumbprint,omitempty"`
+	SkipTLSVerification                  string                         `json:"SkipTlsVerification,omitempty"`
+	Slot                                 string                         `json:"Slot,omitempty"`
+	StorageAccountName                   string                         `json:"StorageAccountName,omitempty"`
+	SwapIfPossible                       bool                           `json:"SwapIfPossible"`
+	TentacleVersionDetails               MachineTentacleVersionDetails  `json:"TentacleVersionDetails"`
+	Thumbprint                           string                         `json:"Thumbprint" validate:"required"`
+	URI                                  string                         `json:"Uri,omitempty" validate:"required,uri"` // This is not in the spec doc, but it shows up and needs to be kept in sync
+	UseCurrentInstanceCount              bool                           `json:"UseCurrentInstanceCount"`
+	WebAppName                           string                         `json:"WebAppName,omitempty"`
+	WebAppSlotName                       int                            `json:"WebAppSlotName"`
+	WorkingDirectory                     string                         `json:"OctopusWorkingDirectory,omitempty"`
 
 	Resource
 }
@@ -32,11 +56,11 @@ type MachineEndpoint struct {
 // NewMachineEndpoint initializes a MachineEndpoint.
 func NewMachineEndpoint(uri string, thumbprint string, communicationStyle enum.CommunicationStyle, proxyID string, defaultWorkerPoolID string) (*MachineEndpoint, error) {
 	return &MachineEndpoint{
-		URI:                 uri,
-		Thumbprint:          thumbprint,
 		CommunicationStyle:  communicationStyle,
-		ProxyID:             &proxyID,
 		DefaultWorkerPoolID: defaultWorkerPoolID,
+		ProxyID:             &proxyID,
+		Thumbprint:          thumbprint,
+		URI:                 uri,
 	}, nil
 }
 

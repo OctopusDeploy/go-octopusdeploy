@@ -1,8 +1,13 @@
 package model
 
-type SshMachineEndpoint struct {
-	Fingerprint        string  `json:"Fingerprint,omitempty"`
-	Host               string  `json:"Host,omitempty"`
-	Port               *uint16 `json:"Port,omitempty"`
-	DotNetCorePlatform string  `json:"DotNetCorePlatform,omitempty"`
+import "github.com/OctopusDeploy/go-octopusdeploy/enum"
+
+func NewSshMachineEndpoint(uri string, thumbprint string, communicationStyle enum.CommunicationStyle, proxyID string, defaultWorkerPoolID string) (*MachineEndpoint, error) {
+	return &MachineEndpoint{
+		CommunicationStyle:  communicationStyle,
+		DefaultWorkerPoolID: defaultWorkerPoolID,
+		ProxyID:             &proxyID,
+		Thumbprint:          thumbprint,
+		URI:                 uri,
+	}, nil
 }
