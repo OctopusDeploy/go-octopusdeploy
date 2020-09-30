@@ -312,12 +312,7 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 		return nil, createInvalidParameterError(operationAPIGet, parameterSling)
 	}
 
-	getClient := sling.New()
-	if getClient == nil {
-		return nil, createClientInitializationError(operationAPIGet)
-	}
-
-	getClient = getClient.Get(path)
+	getClient := sling.Get(path)
 	if getClient == nil {
 		return nil, createClientInitializationError(operationAPIGet)
 	}
@@ -346,12 +341,7 @@ func apiAdd(sling *sling.Sling, inputStruct, resource interface{}, path string) 
 		return nil, createInvalidParameterError(operationAPIAdd, parameterPath)
 	}
 
-	postClient := sling.New()
-	if postClient == nil {
-		return nil, createClientInitializationError(operationAPIAdd)
-	}
-
-	postClient = postClient.Post(path)
+	postClient := sling.Post(path)
 	if postClient == nil {
 		return nil, createClientInitializationError(operationAPIAdd)
 	}
@@ -382,12 +372,7 @@ func apiPost(sling *sling.Sling, inputStruct, returnStruct interface{}, path str
 		return nil, createInvalidParameterError(operationAPIPost, parameterPath)
 	}
 
-	postClient := sling.New()
-	if postClient == nil {
-		return nil, createClientInitializationError(operationAPIPost)
-	}
-
-	postClient = postClient.Post(path)
+	postClient := sling.Post(path)
 	if postClient == nil {
 		return nil, createClientInitializationError(operationAPIPost)
 	}
@@ -418,12 +403,7 @@ func apiUpdate(sling *sling.Sling, inputStruct, returnStruct interface{}, path s
 		return nil, createInvalidParameterError(operationAPIUpdate, parameterPath)
 	}
 
-	putClient := sling.New()
-	if putClient == nil {
-		return nil, createClientInitializationError(operationAPIUpdate)
-	}
-
-	putClient = putClient.Put(path)
+	putClient := sling.Put(path)
 	if putClient == nil {
 		return nil, createClientInitializationError(operationAPIUpdate)
 	}
@@ -454,12 +434,7 @@ func apiDelete(sling *sling.Sling, path string) error {
 		return createInvalidParameterError(operationAPIDelete, parameterPath)
 	}
 
-	deleteClient := sling.New()
-	if deleteClient == nil {
-		return createClientInitializationError(operationAPIDelete)
-	}
-
-	deleteClient = deleteClient.Delete(path)
+	deleteClient := sling.Delete(path)
 	if deleteClient == nil {
 		return createClientInitializationError(operationAPIDelete)
 	}
