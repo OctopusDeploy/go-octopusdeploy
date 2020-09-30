@@ -176,5 +176,5 @@ func createResourceNotFoundError(name string, identifier string, value string) e
 }
 
 func createValidationFailureError(methodName string, err error) error {
-	return fmt.Errorf("%s: validation failure: %v", methodName, err)
+	return fmt.Errorf("validation failure in %s; %v", methodName, err)
 }
