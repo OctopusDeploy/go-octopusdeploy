@@ -7,26 +7,21 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestLifecycles(t *testing.T) {
+	t.Run("Get", TestLifecycleGet)
+}
 
 func TestLifecycleGet(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
-
-	assert.NoError(t, err)
 	assert.NotNil(t, client)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
 
 	lifecycle, err := client.Lifecycles.GetByID("Lifecycles-41")
-
-	assert.NoError(t, err)
 	assert.NotNil(t, lifecycle)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
 
 	assert.Equal(t, "Test", lifecycle.Name)
 	assert.Equal(t, 2, len(lifecycle.Phases))
