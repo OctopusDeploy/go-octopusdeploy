@@ -5,161 +5,110 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUsers(t *testing.T) {
+	t.Run("Add", TestUsersAdd)
 	t.Run("GetAll", TestUsersGetAll)
+	t.Run("GetAuthentication", TestUsersGetAuthentication)
+	t.Run("GetAuthenticationForUser", TestUsersGetAuthenticationForUser)
+	t.Run("GetByID", TestUsersGetByID)
 	t.Run("GetMe", TestUsersGetMe)
+	t.Run("GetSpaces", TestUsersGetSpaces)
+}
+
+func TestUsersAdd(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	user := model.NewUser(getRandomName(), getRandomName())
+	user.Password = getRandomName()
+
+	user, err := octopusClient.Users.Add(user)
+	assert.NoError(t, err)
+	require.NotNil(t, user)
+
+	assert.True(t, user.IsActive)
+	assert.False(t, user.IsService)
+	assert.Empty(t, user.EmailAddress)
 }
 
 func TestUsersGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	users, err := octopusClient.Users.GetAll()
+	assert.NoError(t, err)
+	require.NotEmpty(t, users)
+}
+
+func TestUsersGetAuthentication(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	authentication, err := octopusClient.Users.GetAuthentication()
+	assert.NoError(t, err)
+	require.NotEmpty(t, authentication)
+
+	// TODO: add more asserts here
+}
+
+func TestUsersGetAuthenticationForUser(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	user, err := octopusClient.Users.GetMe()
+	assert.NoError(t, err)
+	require.NotEmpty(t, user)
+
+	authentication, err := octopusClient.Users.GetAuthenticationForUser(user)
+	assert.NoError(t, err)
+	require.NotEmpty(t, authentication)
+
+	// TODO: add more asserts here
+}
+
+func TestUsersGetByID(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	user, err := octopusClient.Users.GetMe()
+	assert.NoError(t, err)
+	require.NotEmpty(t, user)
+
+	userToVerify, err := octopusClient.Users.GetByID(user.ID)
 
 	assert.NoError(t, err)
-	assert.NotEmpty(t, users)
+	require.NotEmpty(t, userToVerify)
 
-	if users == nil {
-		return
-	}
+	// TODO: add more asserts here
 }
 
 func TestUsersGetMe(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	user, err := octopusClient.Users.GetMe()
-
 	assert.NoError(t, err)
-	if !assert.NotEmpty(t, user) {
-		return
-	}
+	require.NotNil(t, user)
 
 	assert.True(t, user.IsActive)
 	assert.False(t, user.IsService)
 	assert.NotEmpty(t, user.EmailAddress)
 }
 
-func TestGetUserByID(t *testing.T) {
+func TestUsersGetSpaces(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	user, err := octopusClient.Users.GetMe()
-
 	assert.NoError(t, err)
-	assert.NotEmpty(t, user)
-
-	if user == nil {
-		return
-	}
-
-	userToVerify, err := octopusClient.Users.GetByID(user.ID)
-
-	assert.NoError(t, err)
-	assert.NotEmpty(t, userToVerify)
-
-	if userToVerify == nil {
-		return
-	}
-
-	// TODO: add more asserts here
-}
-
-func TestGetSpaces(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	user, err := octopusClient.Users.GetMe()
-
-	assert.NoError(t, err)
-	assert.NotEmpty(t, user)
-
-	if user == nil {
-		return
-	}
+	require.NotEmpty(t, user)
 
 	spaces, err := octopusClient.Users.GetSpaces(user)
-
 	assert.NoError(t, err)
-	assert.NotEmpty(t, user)
-
-	if spaces == nil {
-		return
-	}
+	require.NotNil(t, spaces)
 
 	// TODO: add more asserts here
-}
-
-func TestGetAuthenticationForUser(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	user, err := octopusClient.Users.GetMe()
-
-	assert.NoError(t, err)
-	assert.NotEmpty(t, user)
-
-	if user == nil {
-		return
-	}
-
-	authentication, err := octopusClient.Users.GetAuthenticationForUser(user)
-
-	assert.NoError(t, err)
-	assert.NotEmpty(t, authentication)
-
-	if authentication == nil {
-		return
-	}
-
-	// TODO: add more asserts here
-}
-
-func TestGetAuthentication(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	authentication, err := octopusClient.Users.GetAuthentication()
-
-	assert.NoError(t, err)
-	assert.NotEmpty(t, authentication)
-
-	if authentication == nil {
-		return
-	}
-
-	// TODO: add more asserts here
-}
-
-func TestCreateUser(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	user := model.NewUser(getRandomName(), getRandomName())
-	user.Password = getRandomName()
-	user, err := octopusClient.Users.Add(user)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, user)
-
-	if user == nil {
-		return
-	}
-
-	assert.True(t, user.IsActive)
-	assert.False(t, user.IsService)
-	assert.Empty(t, user.EmailAddress)
-}
-
-func TestCreateServiceUser(t *testing.T) {
-	octopusClient := getOctopusClient()
-
-	user := model.NewUser(getRandomName(), getRandomName())
-	user.IsService = true
-	user, err := octopusClient.Users.Add(user)
-
-	if user == nil {
-		return
-	}
-
-	assert.NoError(t, err)
-	assert.NotNil(t, user)
-	assert.True(t, user.IsActive)
-	assert.True(t, user.IsService)
-	assert.Empty(t, user.EmailAddress)
 }
