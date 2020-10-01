@@ -38,7 +38,12 @@ func (s communityActionTemplateService) getClient() *sling.Sling {
 }
 
 func (s communityActionTemplateService) getInstallationPath(resource model.CommunityActionTemplate) (string, error) {
-	err := validateInternalState(s)
+	err := resource.Validate()
+	if err != nil {
+		return emptyString, createValidationFailureError(operationInstall, err)
+	}
+
+	err = validateInternalState(s)
 	if err != nil {
 		return emptyString, err
 	}
@@ -150,7 +155,7 @@ func (s communityActionTemplateService) GetByName(name string) (*model.Community
 	return nil, createItemNotFoundError(s.name, operationGetByName, name)
 }
 
-// Install creates a new community action template.
+// Install installs a community step template.
 func (s communityActionTemplateService) Install(resource model.CommunityActionTemplate) (*model.CommunityActionTemplate, error) {
 	path, err := s.getInstallationPath(resource)
 	if err != nil {
