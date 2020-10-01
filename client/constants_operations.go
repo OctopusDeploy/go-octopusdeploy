@@ -15,6 +15,7 @@ const (
 	operationGetByPartialName = "GetByPartialName"
 	operationGetByProjectID   = "GetByProjectID"
 	operationGetByUserID      = "GetByUserID"
+	operationInstall          = "Install"
 	operationReplace          = "Replace"
 	operationUpdate           = "Update"
 )
