@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createMachineService(t *testing.T) *machineService {
@@ -15,6 +16,7 @@ func createMachineService(t *testing.T) *machineService {
 }
 
 func TestMachineService(t *testing.T) {
+	t.Run("Add", TestMachineServiceAdd)
 	t.Run("Delete", TestMachineServiceDelete)
 	t.Run("GetByID", TestMachineServiceGetByID)
 	t.Run("New", TestMachineServiceNew)
@@ -82,8 +84,8 @@ func TestMachineServiceGetByID(t *testing.T) {
 	assert.Nil(resource)
 
 	resources, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resources)
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
 	if len(resources) > 0 {
 		resourceToCompare, err := service.GetByID(resources[0].ID)
