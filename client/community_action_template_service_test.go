@@ -9,6 +9,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func createCommunityActionTemplateService(t *testing.T) *communityActionTemplateService {
+	service := newCommunityActionTemplateService(nil, TestURICommunityActionTemplates)
+	testNewService(t, service, TestURICommunityActionTemplates, serviceCommunityActionTemplateService)
+	return service
+}
+
 func TestCommunityActionTemplateService(t *testing.T) {
 	t.Run("GetAll", TestCommunityActionTemplateServiceGetAll)
 	t.Run("GetByID", TestCommunityActionTemplateServiceGetByID)
@@ -136,8 +142,13 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 }
 
 func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
 	assert := assert.New(t)
+
+	service := createCommunityActionTemplateService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
 
 	resourceList, err := service.GetAll()
 	assert.NoError(err)
@@ -155,40 +166,19 @@ func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
 }
 
 func TestCommunityActionTemplateServiceInstall(t *testing.T) {
+	assert := assert.New(t)
+
 	service := createCommunityActionTemplateService(t)
+	assert.NotNil(service)
+	if service == nil {
+		return
+	}
 
 	resource, err := service.Install(model.CommunityActionTemplate{})
-	assert.Error(t, err)
-	assert.Nil(t, resource)
+	assert.Error(err)
+	assert.Nil(resource)
 
 	resource, err = model.NewCommunityActionTemplate(getRandomName())
 	require.NoError(t, err)
 	require.NotNil(t, resource)
-}
-
-func TestCommunityActionTemplateServiceUpdate(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	assert := assert.New(t)
-
-	resource, err := model.NewCommunityActionTemplate(getRandomName())
-	assert.NotNil(resource)
-	require.NoError(t, err)
-
-	resourceToCompare, err := service.Install(*resource)
-
-	assert.NoError(err)
-	assert.NotNil(resourceToCompare)
-
-	resourceToCompare.Name = getRandomName()
-
-	updatedResource, err := service.Update(*resourceToCompare)
-
-	assert.NoError(err)
-	assert.Equal(resourceToCompare.Name, updatedResource.Name)
-}
-
-func createCommunityActionTemplateService(t *testing.T) *communityActionTemplateService {
-	service := newCommunityActionTemplateService(nil, TestURICommunityActionTemplates)
-	testNewService(t, service, TestURICommunityActionTemplates, serviceCommunityActionTemplateService)
-	return service
 }
