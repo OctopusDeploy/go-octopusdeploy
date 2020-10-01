@@ -12,6 +12,7 @@ type ActionTemplates struct {
 	PagedResults
 }
 
+// ActionTemplate represents an action template in Octopus.
 type ActionTemplate struct {
 	ActionType                string                     `json:"ActionType" validate:"required"`
 	CommunityActionTemplateID string                     `json:"CommunityActionTemplateId,omitempty"`
@@ -26,7 +27,7 @@ type ActionTemplate struct {
 	Resource
 }
 
-// NewActionTemplate initializes an account with a name and action type.
+// NewActionTemplate creates and initializes an action template.
 func NewActionTemplate(name string, actionType string) (*ActionTemplate, error) {
 	if isEmpty(name) {
 		return nil, createInvalidParameterError("NewActionTemplate", "name")
