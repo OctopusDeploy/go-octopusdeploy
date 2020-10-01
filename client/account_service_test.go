@@ -54,12 +54,8 @@ func TestAccountServiceAdd(t *testing.T) {
 	assert.Nil(resource)
 
 	resource, err = createAccount(t)
-	assert.NoError(err)
-	assert.NotNil(resource)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, resource)
 
 	resource, err = service.Add(resource)
 	assert.NoError(err)
@@ -164,19 +160,13 @@ func TestAccountServiceGetByAccountType(t *testing.T) {
 
 	for _, typeName := range enum.AccountTypeNames() {
 		accountType, err := enum.ParseAccountType(typeName)
-
-		assert.NoError(err)
-		if err != nil {
-			return
-		}
+		require.NoError(t, err)
 
 		resourceList, err := service.GetByAccountType(accountType)
-
 		assert.NoError(err)
 
 		if len(resourceList) > 0 {
 			resourceToCompare, err := service.GetByID(resourceList[0].ID)
-
 			assert.NoError(err)
 			assert.EqualValues(resourceList[0], *resourceToCompare)
 		}
