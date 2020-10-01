@@ -40,7 +40,8 @@ func (resource User) GetID() string {
 	return resource.ID
 }
 
-// GetLastModifiedBy returns the name of the account that modified the value of this user.
+// GetLastModifiedBy returns the name of the account that modified the value of
+// this user.
 func (resource User) GetLastModifiedBy() string {
 	return resource.LastModifiedBy
 }
