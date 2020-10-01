@@ -5,6 +5,7 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewLibraryVariableSetService(t *testing.T) {
