@@ -104,9 +104,6 @@ func isNil(i model.ResourceInterface) bool {
 	case *model.Tenant:
 		v := i.(*model.Tenant)
 		ret = v == nil
-	case *model.UserAuthentication:
-		v := i.(*model.UserAuthentication)
-		ret = v == nil
 	case *model.User:
 		v := i.(*model.User)
 		ret = v == nil
