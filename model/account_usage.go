@@ -11,6 +11,8 @@ func NewAccountUsage() (*AccountUsage, error) {
 	return &AccountUsage{}, nil
 }
 
+// AccountUsage contains the projects and deployments which are using an
+// account.
 type AccountUsage struct {
 	DeploymentProcesses []*StepUsage                    `json:"DeploymentProcesses,omitempty"`
 	LibraryVariableSets []*LibraryVariableSetUsageEntry `json:"LibraryVariableSets,omitempty"`
