@@ -8,8 +8,8 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-// Account represents account details used for deployments, including username/password,
-// tokens, Azure and AWS credentials, and SSH key pairs.
+// Account represents account details used for deployments, including
+// username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type Account struct {
 	AccessKey                        string                      `json:"AccessKey,omitempty"`
 	AccountType                      enum.AccountType            `json:"AccountType" validate:"required"`
@@ -40,7 +40,8 @@ type Account struct {
 	Resource
 }
 
-// Accounts defines a collection of accounts with built-in support for paged results.
+// Accounts defines a collection of accounts with built-in support for paged
+// results.
 type Accounts struct {
 	Items []Account `json:"Items"`
 	PagedResults
