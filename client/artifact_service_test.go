@@ -5,6 +5,7 @@ import (
 
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createArtifactService(t *testing.T) *artifactService {
@@ -23,10 +24,7 @@ func TestArtifactServiceDelete(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createArtifactService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	err := service.DeleteByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
@@ -43,10 +41,7 @@ func TestArtifactServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createArtifactService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
@@ -76,10 +71,7 @@ func TestArtifactServiceGetByPartialName(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createArtifactService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName(emptyString)
 	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))

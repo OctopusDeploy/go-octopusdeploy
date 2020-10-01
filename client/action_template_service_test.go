@@ -43,10 +43,7 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
 	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
@@ -77,10 +74,7 @@ func TestActionTemplateServiceDelete(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	err := service.DeleteByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
@@ -97,10 +91,7 @@ func TestActionTemplateServiceGetCategories(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.GetCategories()
 	assert.NoError(err)
@@ -111,10 +102,7 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
@@ -174,10 +162,7 @@ func TestActionTemplateServiceSearch(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.Search()
 	assert.NoError(err)

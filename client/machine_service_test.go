@@ -26,10 +26,7 @@ func TestMachineServiceAdd(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createMachineService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
 	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
@@ -45,10 +42,7 @@ func TestMachineServiceDelete(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createMachineService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	err := service.DeleteByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
@@ -65,10 +59,7 @@ func TestMachineServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createMachineService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)

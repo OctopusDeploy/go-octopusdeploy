@@ -27,10 +27,7 @@ func TestChannelServiceAdd(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createChannelService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
 	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
@@ -46,10 +43,7 @@ func TestChannelServiceDelete(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createChannelService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	err := service.DeleteByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
@@ -66,10 +60,7 @@ func TestChannelServiceGetAll(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createChannelService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resources, err := service.GetAll()
 	assert.NoError(err)
@@ -85,10 +76,7 @@ func TestChannelServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createChannelService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
@@ -118,10 +106,7 @@ func TestChannelServiceGetByPartialName(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createChannelService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName(emptyString)
 	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))

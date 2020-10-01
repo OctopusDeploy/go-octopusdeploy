@@ -41,10 +41,7 @@ func TestAccountServiceAdd(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createAccountService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
 	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
@@ -75,10 +72,7 @@ func TestAccountServiceDelete(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createAccountService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	err := service.DeleteByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
@@ -95,10 +89,7 @@ func TestAccountServiceGetAll(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createAccountService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resources, err := service.GetAll()
 	assert.NoError(err)
@@ -114,10 +105,7 @@ func TestAccountServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createAccountService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
@@ -171,10 +159,7 @@ func TestAccountServiceGetByAccountType(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createAccountService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	for _, typeName := range enum.AccountTypeNames() {
 		accountType, err := enum.ParseAccountType(typeName)
@@ -201,10 +186,7 @@ func TestAccountServiceGetByName(t *testing.T) {
 	service := createAccountService(t)
 	assert := assert.New(t)
 
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 

@@ -49,10 +49,7 @@ func TestLibraryVariableSetGetByPartialName(t *testing.T) {
 	service := createLibraryVariableSetService(t)
 	assert := assert.New(t)
 
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 

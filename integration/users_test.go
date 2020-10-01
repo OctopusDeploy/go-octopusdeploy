@@ -7,7 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetAllUsers(t *testing.T) {
+func TestUsers(t *testing.T) {
+	t.Run("GetAll", TestUsersGetAll)
+	t.Run("GetMe", TestUsersGetMe)
+}
+
+func TestUsersGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
 
 	users, err := octopusClient.Users.GetAll()
@@ -20,7 +25,7 @@ func TestGetAllUsers(t *testing.T) {
 	}
 }
 
-func TestGetMe(t *testing.T) {
+func TestUsersGetMe(t *testing.T) {
 	octopusClient := getOctopusClient()
 
 	user, err := octopusClient.Users.GetMe()

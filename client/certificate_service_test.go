@@ -48,10 +48,7 @@ func TestCertificateServiceAdd(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCertificateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
 	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
@@ -82,10 +79,7 @@ func TestCertificateServiceDelete(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCertificateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	err := service.DeleteByID(emptyString)
 	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
@@ -102,10 +96,7 @@ func TestCertificateServiceGetAll(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCertificateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resources, err := service.GetAll()
 	assert.NoError(err)
@@ -121,10 +112,7 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCertificateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
 	assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
@@ -154,10 +142,7 @@ func TestCertificateServiceGetByPartialName(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCertificateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName(emptyString)
 	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
@@ -214,10 +199,7 @@ func TestCertificateServiceReplace(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCertificateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	certificate, err := service.Replace(emptyString, nil)
 
@@ -248,10 +230,7 @@ func TestCertificateServiceUpdate(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCertificateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	certificate, err := service.Update(model.Certificate{})
 

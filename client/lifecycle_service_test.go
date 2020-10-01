@@ -45,10 +45,7 @@ func TestLifecycleServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createLifecycleService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 	assert.NoError(err)
@@ -65,10 +62,7 @@ func TestLifecycleServiceGetAll(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createLifecycleService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 	assert.NoError(err)

@@ -28,10 +28,7 @@ func TestCommunityActionTemplateServiceGetByID(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCommunityActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 	assert.NoError(err)
@@ -54,10 +51,7 @@ func TestCommunityActionTemplateServiceGetByName(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCommunityActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 	assert.NoError(err)
@@ -74,10 +68,7 @@ func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCommunityActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 	assert.NoError(err)
@@ -145,10 +136,7 @@ func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCommunityActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
 	assert.NoError(err)
@@ -169,10 +157,7 @@ func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createCommunityActionTemplateService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	resource, err := service.Install(model.CommunityActionTemplate{})
 	assert.Error(err)

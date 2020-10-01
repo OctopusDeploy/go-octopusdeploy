@@ -10,10 +10,7 @@ func TestDeploymentServiceGetByIDs(t *testing.T) {
 	assert := assert.New(t)
 
 	service := createDeploymentService(t)
-	assert.NotNil(service)
-	if service == nil {
-		return
-	}
+	require.NotNil(t, service)
 
 	ids := []string{"Accounts-285", "Accounts-286"}
 	resources, err := service.GetByIDs(ids)
