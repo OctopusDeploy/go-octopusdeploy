@@ -6,10 +6,19 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestProjectTriggers(t *testing.T) {
+	t.Run("AddGetAndDelete", TestProjectTriggerAddGetAndDelete)
+	t.Run("GetThatDoesNotExist", TestProjectTriggerGetThatDoesNotExist)
+	t.Run("GetAll", TestProjectTriggerGetAll)
+	t.Run("Update", TestProjectTriggerUpdate)
+}
 
 func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	// need a project to add a trigger to
 	project := createTestProject(t, getRandomName())
@@ -34,18 +43,17 @@ func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 
 func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	projectTriggerID := "there-is-no-way-this-projecttrigger-id-exists-i-hope"
-	expected := client.ErrItemNotFound
-	project, err := octopusClient.ProjectTriggers.GetByID(projectTriggerID)
-
-	assert.Error(t, err, "there should have been an error raised as this project should not be found")
-	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, project, "no project should have been returned")
+	id := "there-is-no-way-this-projecttrigger-id-exists-i-hope"
+	resource, err := octopusClient.ProjectTriggers.GetByID(id)
+	assert.Equal(t, createResourceNotFoundError("project trigger", "ID", id), err)
+	assert.Nil(t, resource)
 }
 
 func TestProjectTriggerGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
@@ -77,6 +85,7 @@ func TestProjectTriggerGetAll(t *testing.T) {
 
 func TestProjectTriggerUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, getRandomName())
 	defer cleanProject(t, project.ID)
@@ -101,6 +110,7 @@ func TestProjectTriggerUpdate(t *testing.T) {
 
 func createTestProjectTrigger(t *testing.T, trigger *model.ProjectTrigger) *model.ProjectTrigger {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	createdProjectTrigger, err := octopusClient.ProjectTriggers.Add(trigger)
 
@@ -117,6 +127,7 @@ func getTestProjectTrigger(projectID string) *model.ProjectTrigger {
 
 func cleanProjectTrigger(t *testing.T, projectTriggerID string) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	err := octopusClient.ProjectTriggers.DeleteByID(projectTriggerID)
 
