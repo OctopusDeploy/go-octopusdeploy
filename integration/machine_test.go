@@ -130,8 +130,8 @@ func TestMachineAddGetDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	testEnvironment := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, testEnvironment.ID)
+	testEnvironment := createTestEnvironment(t, octopusClient, getRandomName())
+	defer cleanEnvironment(t, octopusClient, testEnvironment.ID)
 
 	expected := createTestMachine(t, octopusClient, testEnvironment.ID, getRandomName())
 	defer cleanMachine(t, octopusClient, expected.ID)
@@ -145,8 +145,8 @@ func TestMachineGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	testEnvironment := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, testEnvironment.ID)
+	testEnvironment := createTestEnvironment(t, octopusClient, getRandomName())
+	defer cleanEnvironment(t, octopusClient, testEnvironment.ID)
 
 	const count int = 32
 	expected := map[string]model.Machine{}
@@ -173,8 +173,8 @@ func TestMachineUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	testEnvironment := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, testEnvironment.ID)
+	testEnvironment := createTestEnvironment(t, octopusClient, getRandomName())
+	defer cleanEnvironment(t, octopusClient, testEnvironment.ID)
 
 	expected := createTestMachine(t, octopusClient, testEnvironment.ID, getRandomName())
 	defer cleanMachine(t, octopusClient, expected.ID)
