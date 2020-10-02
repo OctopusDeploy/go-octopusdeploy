@@ -25,14 +25,14 @@ type MachineEndpoint struct {
 	CommunicationStyle                   enum.CommunicationStyle        `json:"CommunicationStyle" validate:"required"`
 	ConnectionEndpoint                   string                         `json:"ConnectionEndpoint,omitempty"`
 	Container                            DeploymentActionContainer      `json:"Container"`
-	DefaultWorkerPoolID                  string                         `json:"DefaultWorkerPoolId" validate:"required"`
+	DefaultWorkerPoolID                  string                         `json:"DefaultWorkerPoolId"`
 	Destination                          OfflineDropDestination         `json:"Destination"`
 	DotNetCorePlatform                   string                         `json:"DotNetCorePlatform,omitempty"`
 	Fingerprint                          string                         `json:"Fingerprint,omitempty"`
 	Host                                 string                         `json:"Host,omitempty"`
 	Namespace                            string                         `json:"Namespace,omitempty"`
 	Port                                 *uint16                        `json:"Port,omitempty"`
-	ProxyID                              *string                        `json:"ProxyId" validate:"required"`
+	ProxyID                              *string                        `json:"ProxyId"`
 	ResourceGroupName                    string                         `json:"ResourceGroupName,omitempty"`
 	RunningInContainer                   bool                           `json:"RunningInContainer"`
 	SecurityMode                         string                         `json:"SecurityMode,omitempty" validate:"omitempty,oneof=Unsecure SecureClientCertificate SecureAzureAD"`
@@ -43,8 +43,8 @@ type MachineEndpoint struct {
 	StorageAccountName                   string                         `json:"StorageAccountName,omitempty"`
 	SwapIfPossible                       bool                           `json:"SwapIfPossible"`
 	TentacleVersionDetails               MachineTentacleVersionDetails  `json:"TentacleVersionDetails"`
-	Thumbprint                           string                         `json:"Thumbprint" validate:"required"`
-	URI                                  string                         `json:"Uri,omitempty" validate:"required,uri"` // This is not in the spec doc, but it shows up and needs to be kept in sync
+	Thumbprint                           string                         `json:"Thumbprint"`
+	URI                                  string                         `json:"Uri,omitempty" validate:"omitempty,uri"` // This is not in the spec doc, but it shows up and needs to be kept in sync
 	UseCurrentInstanceCount              bool                           `json:"UseCurrentInstanceCount"`
 	WebAppName                           string                         `json:"WebAppName,omitempty"`
 	WebAppSlotName                       int                            `json:"WebAppSlotName"`
