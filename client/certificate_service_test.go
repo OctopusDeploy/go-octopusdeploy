@@ -203,26 +203,21 @@ func TestCertificateServiceReplace(t *testing.T) {
 	require.NotNil(t, service)
 
 	certificate, err := service.Replace(emptyString, nil)
-
 	assert.Equal(err, createInvalidParameterError(operationReplace, parameterCertificateID))
 	assert.Nil(certificate)
 
 	certificate, err = service.Replace(whitespaceString, nil)
-
 	assert.Equal(err, createInvalidParameterError(operationReplace, parameterCertificateID))
 	assert.Nil(certificate)
 
 	certificate, err = service.Replace("fake-id-string", nil)
-
 	assert.Equal(err, createInvalidParameterError(operationReplace, parameterReplacementCertificate))
 	assert.Nil(certificate)
 
 	replacementCertificate := model.NewReplacementCertificate("fake-name-string", "fake-password-string")
-
 	assert.NotNil(replacementCertificate)
 
 	certificate, err = service.Replace(whitespaceString, replacementCertificate)
-
 	assert.Error(err)
 	assert.Nil(certificate)
 }
