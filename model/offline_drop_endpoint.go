@@ -2,6 +2,7 @@ package model
 
 type OfflineDropEndpoint struct {
 	ApplicationsDirectory                string                  `json:"ApplicationsDirectory,omitempty"`
+	CommunicationStyle                   string                  `validate:"required,eq=OfflineDrop"`
 	Destination                          *OfflineDropDestination `json:"Destination"`
 	SensitiveVariablesEncryptionPassword SensitiveValue          `json:"SensitiveVariablesEncryptionPassword"`
 	OctopusWorkingDirectory              string                  `json:"OctopusWorkingDirectory,omitempty"`
@@ -10,8 +11,10 @@ type OfflineDropEndpoint struct {
 }
 
 func NewOfflineDropEndpoint() *OfflineDropEndpoint {
-	resource := &OfflineDropEndpoint{}
-	resource.CommunicationStyle = "OfflineDrop"
+	offlineDropEndpoint := &OfflineDropEndpoint{
+		CommunicationStyle: "OfflineDrop",
+	}
+	offlineDropEndpoint.endpoint.CommunicationStyle = offlineDropEndpoint.CommunicationStyle
 
-	return resource
+	return offlineDropEndpoint
 }
