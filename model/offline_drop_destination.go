@@ -1,5 +1,6 @@
 package model
 
 type OfflineDropDestination struct {
-	DropFolderPath string `json:"DropFolderPath,omitempty"`
+	DestinationType string `json:"DestinationType validate="oneof=Artifact FileSystem"`
+	DropFolderPath  string `json:"DropFolderPath,omitempty"`
 }
