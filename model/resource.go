@@ -7,6 +7,9 @@ type ResourceInterface interface {
 	GetLastModifiedBy() string
 	GetLastModifiedOn() *time.Time
 	GetLinks() map[string]string
+	SetID(id string)
+	SetLastModifiedBy(name string)
+	SetLastModifiedOn(*time.Time)
 	Validate() error
 }
 
