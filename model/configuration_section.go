@@ -38,6 +38,21 @@ func (resource ConfigurationSection) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource ConfigurationSection) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource ConfigurationSection) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource ConfigurationSection) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the ConfigurationSection and returns an error if invalid.
 func (resource ConfigurationSection) Validate() error {
 	validate := validator.New()

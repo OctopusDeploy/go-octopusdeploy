@@ -49,6 +49,18 @@ func (resource Space) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource Space) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource Space) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource Space) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Space and returns an error if invalid.
 func (resource Space) Validate() error {
 	validate := validator.New()

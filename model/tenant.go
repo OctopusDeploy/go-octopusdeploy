@@ -50,6 +50,18 @@ func (resource Tenant) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource Tenant) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource Tenant) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource Tenant) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Tenant and returns an error if invalid.
 func (resource Tenant) Validate() error {
 	validate := validator.New()

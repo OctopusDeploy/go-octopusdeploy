@@ -58,6 +58,18 @@ func (resource LibraryVariableSet) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource LibraryVariableSet) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource LibraryVariableSet) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource LibraryVariableSet) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the LibraryVariableSet and returns an error if invalid.
 func (resource LibraryVariableSet) Validate() error {
 	validate := validator.New()

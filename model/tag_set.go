@@ -45,6 +45,18 @@ func (resource TagSet) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource TagSet) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource TagSet) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource TagSet) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the TagSet and returns an error if invalid.
 func (resource TagSet) Validate() error {
 	validate := validator.New()

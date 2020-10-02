@@ -40,6 +40,18 @@ func (resource ProjectGroup) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource ProjectGroup) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource ProjectGroup) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource ProjectGroup) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the ProjectGroup and returns an error if invalid.
 func (resource ProjectGroup) Validate() error {
 	validate := validator.New()

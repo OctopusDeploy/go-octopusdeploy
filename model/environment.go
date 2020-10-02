@@ -41,6 +41,18 @@ func (resource Environment) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource Environment) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource Environment) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource Environment) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Environment and returns an error if invalid.
 func (resource Environment) Validate() error {
 	validate := validator.New()

@@ -50,6 +50,21 @@ func (resource APIKey) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource APIKey) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource APIKey) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource APIKey) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the APIKey and returns an error if invalid.
 func (resource APIKey) Validate() error {
 	validate := validator.New()

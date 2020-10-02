@@ -77,6 +77,21 @@ func (resource Certificate) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource Certificate) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource Certificate) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource Certificate) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Certificate and returns an error if invalid.
 func (resource Certificate) Validate() error {
 	validate := validator.New()

@@ -56,6 +56,18 @@ func (resource User) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource User) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource User) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource User) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the user and returns an error if invalid.
 func (resource User) Validate() error {
 	validate := validator.New()

@@ -56,6 +56,21 @@ func (resource Channel) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource Channel) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource Channel) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource Channel) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Channel and returns an error if invalid.
 func (resource Channel) Validate() error {
 	validate := validator.New()

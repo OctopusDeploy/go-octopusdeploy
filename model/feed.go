@@ -54,6 +54,18 @@ func (resource Feed) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource Feed) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource Feed) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource Feed) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Feed and returns an error if invalid.
 func (resource Feed) Validate() error {
 	validate := validator.New()

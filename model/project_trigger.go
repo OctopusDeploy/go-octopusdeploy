@@ -66,6 +66,18 @@ func (resource ProjectTrigger) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource ProjectTrigger) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource ProjectTrigger) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource ProjectTrigger) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the ProjectTrigger and returns an error if invalid.
 func (resource ProjectTrigger) Validate() error {
 	validate := validator.New()

@@ -35,6 +35,21 @@ func (resource Authentication) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource Authentication) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource Authentication) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource Authentication) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Authentication and returns an error if invalid.
 func (resource Authentication) Validate() error {
 	validate := validator.New()

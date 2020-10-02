@@ -57,6 +57,21 @@ func (resource CommunityActionTemplate) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource CommunityActionTemplate) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource CommunityActionTemplate) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource CommunityActionTemplate) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the CommunityActionTemplate and returns an error if invalid.
 func (resource CommunityActionTemplate) Validate() error {
 	validate := validator.New()

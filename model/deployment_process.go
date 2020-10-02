@@ -52,6 +52,18 @@ func (resource DeploymentProcess) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource DeploymentProcess) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource DeploymentProcess) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource DeploymentProcess) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the DeploymentProcess and returns an error if invalid.
 func (resource DeploymentProcess) Validate() error {
 	validate := validator.New()

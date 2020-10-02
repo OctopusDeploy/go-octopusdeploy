@@ -49,6 +49,18 @@ func (resource Release) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource Release) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource Release) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource Release) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Release and returns an error if invalid.
 func (resource Release) Validate() error {
 	validate := validator.New()

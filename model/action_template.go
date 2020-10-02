@@ -59,6 +59,21 @@ func (resource ActionTemplate) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource ActionTemplate) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource ActionTemplate) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource ActionTemplate) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the ActionTemplate and returns an error if invalid.
 func (resource ActionTemplate) Validate() error {
 	validate := validator.New()

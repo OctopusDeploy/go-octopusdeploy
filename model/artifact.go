@@ -44,6 +44,21 @@ func (resource Artifact) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource Artifact) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource Artifact) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource Artifact) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Artifact and returns an error if invalid.
 func (resource Artifact) Validate() error {
 	validate := validator.New()

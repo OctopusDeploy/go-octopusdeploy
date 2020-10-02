@@ -65,6 +65,18 @@ func (resource Lifecycle) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource Lifecycle) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource Lifecycle) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource Lifecycle) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Lifecycle and returns an error if invalid.
 func (resource Lifecycle) Validate() error {
 	validate := validator.New()

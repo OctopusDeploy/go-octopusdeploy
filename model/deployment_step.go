@@ -48,6 +48,21 @@ func (resource DeploymentStep) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource DeploymentStep) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource DeploymentStep) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource DeploymentStep) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the DeploymentStep and returns an error if invalid.
 func (resource DeploymentStep) Validate() error {
 	validate := validator.New()

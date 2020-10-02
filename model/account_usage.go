@@ -45,6 +45,21 @@ func (resource AccountUsage) GetLinks() map[string]string {
 	return resource.Links
 }
 
+// SetID
+func (resource AccountUsage) SetID(id string) {
+	resource.ID = id
+}
+
+// SetLastModifiedBy
+func (resource AccountUsage) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+// SetLastModifiedOn
+func (resource AccountUsage) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the AccountUsage and returns an error if invalid.
 func (resource AccountUsage) Validate() error {
 	validate := validator.New()

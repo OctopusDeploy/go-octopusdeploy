@@ -49,6 +49,18 @@ func (resource Interruption) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource Interruption) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource Interruption) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource Interruption) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the Interruption and returns an error if invalid.
 func (resource Interruption) Validate() error {
 	validate := validator.New()
