@@ -21,16 +21,16 @@ func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	// need a project to add a trigger to
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	toCreateTrigger := getTestProjectTrigger(project.ID)
 	toCreateTrigger.Filter.Roles = []string{"MyRole1", "MyRole2"}
 	toCreateTrigger.Filter.EventGroups = []string{"Machine"}
 	toCreateTrigger.Action.ShouldRedeployWhenMachineHasBeenDeployedTo = true
 
-	projectTrigger := createTestProjectTrigger(t, toCreateTrigger)
-	defer cleanProjectTrigger(t, projectTrigger.ID)
+	projectTrigger := createTestProjectTrigger(t, octopusClient, toCreateTrigger)
+	defer cleanProjectTrigger(t, octopusClient, projectTrigger.ID)
 
 	getProjectTrigger, err := octopusClient.ProjectTriggers.GetByID(projectTrigger.ID)
 
@@ -45,22 +45,22 @@ func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	id := "there-is-no-way-this-projecttrigger-id-exists-i-hope"
+	id := getRandomName()
 	resource, err := octopusClient.ProjectTriggers.GetByID(id)
-	assert.Equal(t, createResourceNotFoundError("project trigger", "ID", id), err)
-	assert.Nil(t, resource)
+	require.Equal(t, createResourceNotFoundError("project trigger", "ID", id), err)
+	require.Nil(t, resource)
 }
 
 func TestProjectTriggerGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	trigger := getTestProjectTrigger(project.ID)
-	createdTrigger := createTestProjectTrigger(t, trigger)
-	defer cleanProjectTrigger(t, createdTrigger.ID)
+	createdTrigger := createTestProjectTrigger(t, octopusClient, trigger)
+	defer cleanProjectTrigger(t, octopusClient, createdTrigger.ID)
 
 	allProjectsTriggers, err := octopusClient.ProjectTriggers.GetAll()
 	if err != nil {
@@ -71,8 +71,8 @@ func TestProjectTriggerGetAll(t *testing.T) {
 
 	additionalTrigger := getTestProjectTrigger(project.ID)
 	additionalTrigger.Name = getRandomName()
-	createdAdditionalTrigger := createTestProjectTrigger(t, additionalTrigger)
-	defer cleanProjectTrigger(t, createdAdditionalTrigger.ID)
+	createdAdditionalTrigger := createTestProjectTrigger(t, octopusClient, additionalTrigger)
+	defer cleanProjectTrigger(t, octopusClient, createdAdditionalTrigger.ID)
 
 	allProjectTriggersAfterCreatingAdditional, err := octopusClient.ProjectTriggers.GetAll()
 	if err != nil {
@@ -87,11 +87,11 @@ func TestProjectTriggerUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	trigger := getTestProjectTrigger(project.ID)
-	createdTrigger := createTestProjectTrigger(t, trigger)
+	createdTrigger := createTestProjectTrigger(t, octopusClient, trigger)
 
 	newProjectTriggerName := getRandomName()
 	newProjectTriggerRole := []string{"Roley", "Roley 2"}
@@ -108,8 +108,10 @@ func TestProjectTriggerUpdate(t *testing.T) {
 	assert.Equal(t, newIsDisabled, updatedProjectTrigger.IsDisabled, "projecttrigger isdisabled setting not updated")
 }
 
-func createTestProjectTrigger(t *testing.T, trigger *model.ProjectTrigger) *model.ProjectTrigger {
-	octopusClient := getOctopusClient()
+func createTestProjectTrigger(t *testing.T, octopusClient *client.Client, trigger *model.ProjectTrigger) *model.ProjectTrigger {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
 	require.NotNil(t, octopusClient)
 
 	createdProjectTrigger, err := octopusClient.ProjectTriggers.Add(trigger)
@@ -125,21 +127,12 @@ func getTestProjectTrigger(projectID string) *model.ProjectTrigger {
 	return model.NewProjectDeploymentTargetTrigger(getRandomName(), projectID, false, []string{"Role1", "Role2"}, []string{"Machine"}, []string{"MachineCleanupFailed"})
 }
 
-func cleanProjectTrigger(t *testing.T, projectTriggerID string) {
-	octopusClient := getOctopusClient()
+func cleanProjectTrigger(t *testing.T, octopusClient *client.Client, projectTriggerID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
 	require.NotNil(t, octopusClient)
 
 	err := octopusClient.ProjectTriggers.DeleteByID(projectTriggerID)
-
-	if err == nil {
-		return
-	}
-
-	if err == client.ErrItemNotFound {
-		return
-	}
-
-	if err != nil {
-		t.Fatalf("deleting projecttrigger failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	assert.NoError(t, err)
 }

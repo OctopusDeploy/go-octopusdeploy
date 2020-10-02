@@ -6,14 +6,27 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
+func TestEnvironments(t *testing.T) {
+	t.Run("AddAndDelete", TestEnvironmentAddAndDelete)
+	t.Run("AddGetAndDelete", TestEnvironmentAddGetAndDelete)
+	t.Run("GetThatDoesNotExist", TestEnvironmentGetThatDoesNotExist)
+	t.Run("GetAll", TestEnvironmentGetAll)
+	t.Run("Update", TestEnvironmentUpdate)
+	t.Run("GetByName", TestEnvironmentGetByName)
+}
+
 func TestEnvironmentAddAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
 	environmentName := getRandomName()
 	expected := getTestEnvironment(environmentName)
-	actual := createTestEnvironment(t, environmentName)
+	actual := createTestEnvironment(t, octopusClient, environmentName)
 
-	defer cleanEnvironment(t, actual.ID)
+	defer cleanEnvironment(t, octopusClient, actual.ID)
 
 	assert.Equal(t, expected.Name, actual.Name, "environment name doesn't match expected")
 	assert.NotEmpty(t, actual.ID, "environment doesn't contain an ID from the octopus server")
@@ -21,36 +34,36 @@ func TestEnvironmentAddAndDelete(t *testing.T) {
 
 func TestEnvironmentAddGetAndDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	environment := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, environment.ID)
+	environment := createTestEnvironment(t, octopusClient, getRandomName())
+	defer cleanEnvironment(t, octopusClient, environment.ID)
 
 	getEnvironment, err := octopusClient.Environments.GetByID(environment.ID)
-	assert.NoError(t, err, "there was an error raised getting environment when there should not be")
-	assert.Equal(t, environment.Name, getEnvironment.Name)
+	require.NoError(t, err)
+	require.Equal(t, environment.Name, getEnvironment.Name)
 }
 
 func TestEnvironmentGetThatDoesNotExist(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	environmentID := "there-is-no-way-this-environment-id-exists-i-hope"
-	expected := client.ErrItemNotFound
-	environment, err := octopusClient.Environments.GetByID(environmentID)
-
-	assert.Error(t, err, "there should have been an error raised as this environment should not be found")
-	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, environment, "no environment should have been returned")
+	id := getRandomName()
+	environment, err := octopusClient.Environments.GetByID(id)
+	require.Equal(t, createResourceNotFoundError("environment", "ID", id), err)
+	require.Nil(t, environment)
 }
 
 func TestEnvironmentGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	// create many environments to test pagination
 	environmentsToCreate := 32
 	sum := 0
 	for i := 0; i < environmentsToCreate; i++ {
-		environment := createTestEnvironment(t, getRandomName())
-		defer cleanEnvironment(t, environment.ID)
+		environment := createTestEnvironment(t, octopusClient, getRandomName())
+		defer cleanEnvironment(t, octopusClient, environment.ID)
 		sum += i
 	}
 
@@ -66,8 +79,8 @@ func TestEnvironmentGetAll(t *testing.T) {
 		t.Fatalf("There should be at least %d environments created but there was only %d. Pagination is likely not working.", environmentsToCreate, numberOfEnvironments)
 	}
 
-	additionalEnvironment := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, additionalEnvironment.ID)
+	additionalEnvironment := createTestEnvironment(t, octopusClient, getRandomName())
+	defer cleanEnvironment(t, octopusClient, additionalEnvironment.ID)
 
 	allEnvironmentsAfterCreatingAdditional, err := octopusClient.Environments.GetAll()
 	if err != nil {
@@ -80,9 +93,10 @@ func TestEnvironmentGetAll(t *testing.T) {
 
 func TestEnvironmentUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	environment := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, environment.ID)
+	environment := createTestEnvironment(t, octopusClient, getRandomName())
+	defer cleanEnvironment(t, octopusClient, environment.ID)
 
 	newEnvironmentName := getRandomName()
 	const newDescription = "this should be updated"
@@ -100,18 +114,16 @@ func TestEnvironmentUpdate(t *testing.T) {
 }
 
 func TestEnvironmentGetByName(t *testing.T) {
-	assert := assert.New(t)
-
 	octopusClient := getOctopusClient()
-	assert.NotNil(octopusClient)
-	if octopusClient == nil {
-		t.Fatal("client could not be created")
-	}
+	require.NotNil(t, octopusClient)
 
-	expected := createTestEnvironment(t, getRandomName())
-	defer cleanEnvironment(t, expected.ID)
+	expected := createTestEnvironment(t, octopusClient, getRandomName())
+	defer cleanEnvironment(t, octopusClient, expected.ID)
 
 	resources, err := octopusClient.Environments.GetByName(expected.Name)
+
+	assert := assert.New(t)
+
 	assert.NoError(err)
 	assert.NotNil(resources)
 
@@ -148,8 +160,11 @@ func TestEnvironmentCleanup(t *testing.T) {
 }
 */
 
-func createTestEnvironment(t *testing.T, environmentName string) model.Environment {
-	octopusClient := getOctopusClient()
+func createTestEnvironment(t *testing.T, octopusClient *client.Client, environmentName string) model.Environment {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	e := getTestEnvironment(environmentName)
 	createdEnvironment, err := octopusClient.Environments.Add(&e)
@@ -166,20 +181,12 @@ func getTestEnvironment(environmentName string) model.Environment {
 	return *e
 }
 
-func cleanEnvironment(t *testing.T, environmentID string) {
-	octopusClient := getOctopusClient()
+func cleanEnvironment(t *testing.T, octopusClient *client.Client, environmentID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	err := octopusClient.Environments.DeleteByID(environmentID)
-
-	if err == nil {
-		return
-	}
-
-	if err == client.ErrItemNotFound {
-		return
-	}
-
-	if err != nil {
-		t.Fatalf("deleting environment failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	assert.NoError(t, err)
 }

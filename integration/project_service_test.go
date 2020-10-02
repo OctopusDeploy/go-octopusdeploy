@@ -6,14 +6,18 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestProjectAddAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
 	projectName := getRandomName()
 	expected := getTestProject(projectName)
-	actual := createTestProject(t, projectName)
+	actual := createTestProject(t, octopusClient, projectName)
 
-	defer cleanProject(t, actual.ID)
+	defer cleanProject(t, octopusClient, actual.ID)
 
 	assert.Equal(t, expected.Name, actual.Name, "project name doesn't match expected")
 	assert.NotEmpty(t, actual.ID, "project doesn't contain an ID from the octopus server")
@@ -21,9 +25,10 @@ func TestProjectAddAndDelete(t *testing.T) {
 
 func TestProjectAddGetAndDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	getProject, err := octopusClient.Projects.GetByID(project.ID)
 	assert.NoError(t, err, "there was an error raised getting project when there should not be")
@@ -32,25 +37,24 @@ func TestProjectAddGetAndDelete(t *testing.T) {
 
 func TestProjectGetThatDoesNotExist(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	projectID := "there-is-no-way-this-project-id-exists-i-hope"
-	expected := client.ErrItemNotFound
-	project, err := octopusClient.Projects.GetByID(projectID)
-
-	assert.Error(t, err, "there should have been an error raised as this project should not be found")
-	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, project, "no project should have been returned")
+	id := getRandomName()
+	resource, err := octopusClient.Projects.GetByID(id)
+	require.Equal(t, createResourceNotFoundError("project", "ID", id), err)
+	require.Nil(t, resource)
 }
 
 func TestProjectGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	// create many projects to test pagination
 	projectsToCreate := 32
 	sum := 0
 	for i := 0; i < projectsToCreate; i++ {
-		project := createTestProject(t, getRandomName())
-		defer cleanProject(t, project.ID)
+		project := createTestProject(t, octopusClient, getRandomName())
+		defer cleanProject(t, octopusClient, project.ID)
 		sum += i
 	}
 
@@ -66,8 +70,8 @@ func TestProjectGetAll(t *testing.T) {
 		t.Fatalf("There should be at least %d projects created but there was only %d. Pagination is likely not working.", projectsToCreate, numberOfProjects)
 	}
 
-	additionalProject := createTestProject(t, getRandomName())
-	defer cleanProject(t, additionalProject.ID)
+	additionalProject := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, additionalProject.ID)
 
 	allProjectsAfterCreatingAdditional, err := octopusClient.Projects.GetAll()
 	if err != nil {
@@ -80,9 +84,10 @@ func TestProjectGetAll(t *testing.T) {
 
 func TestProjectUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	newProjectName := getRandomName()
 	const newDescription = "this should be updated"
@@ -107,17 +112,21 @@ func TestProjectUpdate(t *testing.T) {
 
 func TestProjectGetByName(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	foundProject, err := octopusClient.Projects.GetByName(project.Name)
 	assert.NoError(t, err, "error when looking for project when not expected")
 	assert.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
 }
 
-func createTestProject(t *testing.T, projectName string) model.Project {
-	octopusClient := getOctopusClient()
+func createTestProject(t *testing.T, octopusClient *client.Client, projectName string) model.Project {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	p := getTestProject(projectName)
 	createdProject, err := octopusClient.Projects.Add(&p)
@@ -135,20 +144,12 @@ func getTestProject(projectName string) model.Project {
 	return *p
 }
 
-func cleanProject(t *testing.T, projectID string) {
-	octopusClient := getOctopusClient()
+func cleanProject(t *testing.T, octopusClient *client.Client, projectID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	err := octopusClient.Projects.DeleteByID(projectID)
-
-	if err == nil {
-		return
-	}
-
-	if err == client.ErrItemNotFound {
-		return
-	}
-
-	if err != nil {
-		t.Fatalf("deleting project failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	assert.NoError(t, err)
 }

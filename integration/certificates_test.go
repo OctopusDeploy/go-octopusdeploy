@@ -20,6 +20,9 @@ var testCert1 = model.SensitiveValue{NewValue: &testCert1Data}
 // var testCert2 = model.SensitiveValue{NewValue: &testCert2Data}
 
 func TestCertAddAndDelete(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
 	certName := getRandomName()
 
 	expected, err := getTestCert1(t, certName)
@@ -32,14 +35,17 @@ func TestCertAddAndDelete(t *testing.T) {
 		return
 	}
 
-	actual := createTestCert(t, certName)
-	defer cleanCert(t, actual.ID)
+	actual := createTestCert(t, octopusClient, certName)
+	defer cleanCert(t, octopusClient, actual.ID)
 
 	assert.Equal(t, expected.Name, actual.Name, "certificate name doesn't match expected")
 	assert.NotEmpty(t, actual.ID, "certificate doesn't contain an ID from the octopus server")
 }
 
 func TestCertAddAndReplace(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
 	certName := getRandomName()
 
 	expectedCert1, err := getTestCert1(t, certName)
@@ -47,19 +53,22 @@ func TestCertAddAndReplace(t *testing.T) {
 	require.NotNil(t, expectedCert1)
 	require.NoError(t, expectedCert1.Validate())
 
-	actualCert1 := createTestCert(t, certName)
+	actualCert1 := createTestCert(t, octopusClient, certName)
 	assert.Equal(t, expectedCert1.Name, actualCert1.Name, "certificate name doesn't match expected")
 	assert.NotEmpty(t, actualCert1.ID, "certificate doesn't contain an ID from the octopus server")
 
-	actualCert2 := replaceCert(t, &actualCert1)
-	defer cleanCert(t, actualCert2.ID)
+	actualCert2 := replaceCert(t, octopusClient, &actualCert1)
+	defer cleanCert(t, octopusClient, actualCert2.ID)
 
 	assert.Equal(t, testCert2Thumbprint, actualCert2.Thumbprint, "certificate name doesn't match expected")
 	assert.NotEmpty(t, actualCert2.ID, "certificate doesn't contain an ID from the octopus server")
 }
 
-func createTestCert(t *testing.T, certName string) model.Certificate {
-	octopusClient := getOctopusClient()
+func createTestCert(t *testing.T, octopusClient *client.Client, certName string) model.Certificate {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	c, err := getTestCert1(t, certName)
 	if err != nil {
@@ -74,8 +83,10 @@ func createTestCert(t *testing.T, certName string) model.Certificate {
 	return *cert
 }
 
-func replaceCert(t *testing.T, originalCert *model.Certificate) model.Certificate {
-	octopusClient := getOctopusClient()
+func replaceCert(t *testing.T, octopusClient *client.Client, originalCert *model.Certificate) model.Certificate {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
 	require.NotNil(t, octopusClient)
 
 	certificateReplace, err := getTestCertReplace(t)
@@ -111,20 +122,12 @@ func getTestCertReplace(t *testing.T) (*model.ReplacementCertificate, error) {
 	return certificateReplace, nil
 }
 
-func cleanCert(t *testing.T, certID string) {
-	octopusClient := getOctopusClient()
+func cleanCert(t *testing.T, octopusClient *client.Client, certID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	err := octopusClient.Certificates.DeleteByID(certID)
-
-	if err == nil {
-		return
-	}
-
-	if err == client.ErrItemNotFound {
-		return
-	}
-
-	if err != nil {
-		t.Fatalf("deleting certificate failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	assert.NoError(t, err)
 }

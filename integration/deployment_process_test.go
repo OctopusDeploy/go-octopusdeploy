@@ -18,8 +18,8 @@ func TestDeploymentProcessGet(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
@@ -31,16 +31,16 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	allDeploymentProcess, err := octopusClient.DeploymentProcesses.GetAll()
 	require.NoError(t, err)
 
 	numberOfDeploymentProcesses := len(allDeploymentProcess)
 
-	additionalProject := createTestProject(t, getRandomName())
-	defer cleanProject(t, additionalProject.ID)
+	additionalProject := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, additionalProject.ID)
 
 	allDeploymentProcessAfterCreatingAdditional, err := octopusClient.DeploymentProcesses.GetAll()
 	require.NoError(t, err)
@@ -51,8 +51,8 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 func TestDeploymentProcessUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
 
-	project := createTestProject(t, getRandomName())
-	defer cleanProject(t, project.ID)
+	project := createTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, project.ID)
 
 	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 

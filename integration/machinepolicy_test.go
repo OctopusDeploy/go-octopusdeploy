@@ -3,23 +3,23 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMachinePolicyGetThatDoesNotExist(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
-	machinePolicyID := "there-is-no-way-this-machinepolicy-id-exists-i-hope"
-	expected := client.ErrItemNotFound
-	machinePolicy, err := octopusClient.MachinePolicies.GetByID(machinePolicyID)
-	assert.Error(t, err, "there should have been an error raised as this machinepolicy should not be found")
-	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, machinePolicy, "no machinepolicy should have been returned")
+	id := getRandomName()
+	resource, err := octopusClient.MachinePolicies.GetByID(id)
+	require.Equal(t, createResourceNotFoundError("machine policy", "ID", id), err)
+	require.Nil(t, resource)
 }
 
 func TestMachinePolicyGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	allMachinePolicies, err := octopusClient.MachinePolicies.GetAll()
 	if err != nil {

@@ -6,15 +6,19 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestVarAddAndDelete(t *testing.T) {
-	varProj := createVarTestProject(t, getRandomName())
-	defer cleanProject(t, varProj.ID)
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	varProj := createVarTestProject(t, octopusClient, getRandomName())
+	defer cleanProject(t, octopusClient, varProj.ID)
 	varName := getRandomVarName()
 	expected := getTestVariable(varName)
 	actual := createTestVariable(t, varProj.ID, varName)
-	defer cleanVar(t, actual.ID, varProj.ID)
+	defer cleanVar(t, octopusClient, actual.ID, varProj.ID)
 
 	assert.Equal(t, expected.Name, actual.Name, "variable name doesn't match expected")
 	assert.NotEmpty(t, actual.ID, "variable doesn't contain an ID from the octopus server")
@@ -22,6 +26,7 @@ func TestVarAddAndDelete(t *testing.T) {
 
 func createTestVariable(t *testing.T, projectID, variableName string) model.Variable {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	v := getTestVariable(variableName)
 	variableSet, err := octopusClient.Variables.AddSingle(projectID, &v)
@@ -45,8 +50,11 @@ func getTestVariable(variableName string) model.Variable {
 	return *v
 }
 
-func createVarTestProject(t *testing.T, projectName string) model.Project {
-	octopusClient := getOctopusClient()
+func createVarTestProject(t *testing.T, octopusClient *client.Client, projectName string) model.Project {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	p := model.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
 	createdProject, err := octopusClient.Projects.Add(p)
@@ -58,18 +66,12 @@ func createVarTestProject(t *testing.T, projectName string) model.Project {
 	return *createdProject
 }
 
-func cleanVar(t *testing.T, varID string, projID string) {
-	octopusClient := getOctopusClient()
+func cleanVar(t *testing.T, octopusClient *client.Client, varID string, projID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
 	_, err := octopusClient.Variables.DeleteSingle(projID, varID)
-
-	if err == nil {
-		return
-	}
-	if err == client.ErrItemNotFound {
-		return
-	}
-	if err != nil {
-		t.Fatalf("deleting variable failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	assert.NoError(t, err)
 }
