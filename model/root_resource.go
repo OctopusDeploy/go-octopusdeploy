@@ -38,6 +38,18 @@ func (resource RootResource) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource RootResource) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource RootResource) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource RootResource) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the RootResource and returns an error if invalid.
 func (resource RootResource) Validate() error {
 	validate := validator.New()
