@@ -138,19 +138,24 @@ func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
 
-	resourceList, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resourceList)
+	resources, err := service.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
-	idList := []string{}
-	for i := 0; i < 3; i++ {
-		idList = append(idList, resourceList[i].ID)
+	ids := []string{}
+	for _, resource := range resources {
+		ids = append(ids, resource.ID)
 	}
 
-	resourceListToCompare, err := service.GetByIDs(idList)
+	// no need to test if ID collection size is less than 2
+	if len(ids) < 2 {
+		return
+	}
 
+	resourceListToCompare, err := service.GetByIDs(ids[0:2])
 	assert.NoError(err)
 	assert.NotNil(resourceListToCompare)
+	assert.Equal(2, len(resourceListToCompare))
 }
 
 func TestCommunityActionTemplateServiceInstall(t *testing.T) {
