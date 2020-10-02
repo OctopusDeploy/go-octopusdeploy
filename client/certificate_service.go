@@ -163,7 +163,7 @@ func (s certificateService) Replace(certificateID string, replacementCertificate
 	path := trimTemplate(s.path)
 	path = fmt.Sprintf(path+"/%s/replace", certificateID)
 
-	_, err = apiPost(s.getClient(), replacementCertificate, new(model.ReplacementCertificate), path)
+	_, err = apiPost(s.getClient(), replacementCertificate, new(model.Certificate), path)
 	if err != nil {
 		return nil, err
 	}
