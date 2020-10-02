@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var testCert1Data = `MIIDiDCCAnACCQDXHofnqz05ITANBgkqhkiG9w0BAQsFADCBhTELMAkGA1UEBhMCVVMxETAPBgNVBAgMCE9rbGFob21hMQ8wDQYDVQQHDAZOb3JtYW4xEzARBgNVBAoMCk1vb25zd2l0Y2gxGTAXBgNVBAMMEGRlbW8ub2N0b3B1cy5jb20xIjAgBgkqhkiG9w0BCQEWE2plZmZAbW9vbnN3aXRjaC5jb20wHhcNMTkwNjE0MjExMzI1WhcNMjAwNjEzMjExMzI1WjCBhTELMAkGA1UEBhMCVVMxETAPBgNVBAgMCE9rbGFob21hMQ8wDQYDVQQHDAZOb3JtYW4xEzARBgNVBAoMCk1vb25zd2l0Y2gxGTAXBgNVBAMMEGRlbW8ub2N0b3B1cy5jb20xIjAgBgkqhkiG9w0BCQEWE2plZmZAbW9vbnN3aXRjaC5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDSTiD0OHyFDMH9O+d/h3AiqcuvpvUgRkKjf+whZ6mVlQnGkvPddRTUY48xCEaQ4QD1MAVJcGaJ2PU4NxwhrQgHqWW8TQkAZESL4wfzSwIKO2NX/I2tWqyv7a0uA/WdtlWQye+2oPV5rCnS0kM75X+gjEwOTpFh/ryS6KhMPFDb0zeNGREdg6564FdxWSvN4ppUZMqhvMpfzM7rsDWqEzYsMaQ4CNJDFdWkG89D4j5qk4b4Qb4m+l7QINdmYIXf4qO/0LE1WcfIkCpAS65tjc/hefIHmYtj/E/ijoNJbWKZDK3WLZg3zq99Ipqv/9DFvSiMQFBhZT0jO2B5d5zBUuIHAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAKsa4gaW7GhByu8aq56h99DaIl1LauI5WMVH8Q9Qpapho2VLRIpfwGeI5eENFoXwuKrnJp1ncsCqGnMQnugQHS+SrruS3Yyl0Uog4Zak9GbbK6qn+olx7GNJbsckmD371lqQOaKITLqYzK6kTc7/v8Cv0BwHFCBda1OCrmeVBSaarucPxZhGxzLAielzHHdlkZFQT/oO2VR3thhURIqtni7jVQ2MoeZF1ccvmAfVbzr/QnlNe/jrcmyPYymuF2JyrezzIjlKuiDhalKqwqkCHpOOgzV4y6BFuS+0w3DS8pa07nUudZ6E0kZzvhjjiyAx/sBdX6ZDdUjP9TDJMM4f5YA=`
@@ -42,17 +43,11 @@ func TestCertAddAndReplace(t *testing.T) {
 	certName := getRandomName()
 
 	expectedCert1, err := getTestCert1(t, certName)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, expectedCert1)
-	assert.NoError(t, expectedCert1.Validate())
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, expectedCert1)
+	require.NoError(t, expectedCert1.Validate())
 
 	actualCert1 := createTestCert(t, certName)
-
 	assert.Equal(t, expectedCert1.Name, actualCert1.Name, "certificate name doesn't match expected")
 	assert.NotEmpty(t, actualCert1.ID, "certificate doesn't contain an ID from the octopus server")
 
@@ -81,16 +76,15 @@ func createTestCert(t *testing.T, certName string) model.Certificate {
 
 func replaceCert(t *testing.T, originalCert *model.Certificate) model.Certificate {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	certificateReplace, err := getTestCertReplace(t)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, certificateReplace)
+	require.NoError(t, err)
+	require.NotNil(t, certificateReplace)
 
 	cert, err := octopusClient.Certificates.Replace(originalCert.ID, certificateReplace)
-	if err != nil {
-		t.Fatalf("replacing a certificate %s failed when it shouldn't: %s", originalCert.ID, err)
-	}
+	require.NoError(t, err)
+	require.NotNil(t, cert)
 
 	return *cert
 }
