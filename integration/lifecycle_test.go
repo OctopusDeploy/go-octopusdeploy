@@ -100,7 +100,7 @@ const getLifecycleResponseJSON = `
     "QuantityToKeep": 2,
     "ShouldKeepForever": false
   },
-  "Description": emptyString,
+  "Description": "",
   "Links": {
     "Self": "/api/lifecycles/Lifecycles-41",
     "Preview": "/api/lifecycles/Lifecycles-41/preview",
