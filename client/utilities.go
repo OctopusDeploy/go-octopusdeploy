@@ -59,6 +59,9 @@ func isNil(i model.ResourceInterface) bool {
 	case *model.Interruption:
 		v := i.(*model.Interruption)
 		ret = v == nil
+	case *model.KubernetesEndpoint:
+		v := i.(*model.KubernetesEndpoint)
+		ret = v == nil
 	case *model.LibraryVariableSetUsageEntry:
 		v := i.(*model.LibraryVariableSetUsageEntry)
 		ret = v == nil
