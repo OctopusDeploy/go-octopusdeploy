@@ -6,6 +6,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -15,6 +16,7 @@ var (
 
 func TestAddNilProject(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	project, err := octopusClient.Projects.Add(nil)
 
@@ -24,9 +26,9 @@ func TestAddNilProject(t *testing.T) {
 
 func TestGetSummary(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	projects, err := octopusClient.Projects.GetAll()
-
 	assert.NoError(t, err)
 	assert.NotNil(t, projects)
 
@@ -43,6 +45,7 @@ func TestGetSummary(t *testing.T) {
 }
 func TestGetReleasesForProject(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	projects, err := octopusClient.Projects.GetAll()
 
@@ -63,9 +66,9 @@ func TestGetReleasesForProject(t *testing.T) {
 
 func TestGetChannelsForProject(t *testing.T) {
 	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
 
 	projects, err := octopusClient.Projects.GetAll()
-
 	assert.NoError(t, err)
 	assert.NotNil(t, projects)
 
@@ -75,7 +78,6 @@ func TestGetChannelsForProject(t *testing.T) {
 
 	for _, project := range projects {
 		channels, err := octopusClient.Projects.GetChannels(project)
-
 		assert.NoError(t, err)
 		assert.NotNil(t, channels)
 	}
@@ -83,17 +85,11 @@ func TestGetChannelsForProject(t *testing.T) {
 
 func TestProjectGet(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	project, err := client.Projects.GetByID("Projects-663")
-
-	assert.NoError(t, err)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
 
 	assert.Equal(t, "Canary .NET Core 2.0", project.Name)
 }
@@ -118,7 +114,7 @@ const getProjectResponseJSON = `
     "Template": "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}"
   },
   "ReleaseCreationStrategy": {
-    "ReleaseCreationPackageStepId": emptyString,
+    "ReleaseCreationPackageStepId": "",
     "ChannelId": null
   },
   "Templates": [],
