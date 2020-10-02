@@ -50,6 +50,18 @@ func (resource MachinePolicy) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource MachinePolicy) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource MachinePolicy) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource MachinePolicy) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the MachinePolicy and returns an error if invalid.
 func (resource MachinePolicy) Validate() error {
 	validate := validator.New()

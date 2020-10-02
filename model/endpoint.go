@@ -16,12 +16,11 @@ type EndpointInterface interface {
 // endpoint is the base definition of an endpoint and describes its
 // communication style (SSH, Kubernetes, etc.)
 type endpoint struct {
-	CommunicationStyle string `json:"CommunicationStyle" validate:"omitempty,oneof=None TentaclePassive TentacleActive Ssh OfflineDrop AzureWebApp Ftp AzureCloudService AzureServiceFabricCluster Kubernetes"`
+	CommunicationStyle string
 
 	Resource
 }
 
-// GetCommunicationStyle returns the communication style of the endpoint.
 func (resource endpoint) GetCommunicationStyle() string {
 	return resource.CommunicationStyle
 }
@@ -46,6 +45,18 @@ func (resource endpoint) GetLastModifiedOn() *time.Time {
 // GetLinks returns the associated links with the value of this endpoint.
 func (resource endpoint) GetLinks() map[string]string {
 	return resource.Links
+}
+
+func (resource endpoint) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource endpoint) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource endpoint) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
 }
 
 // Validate checks the state of the endpoint and returns an error if invalid.

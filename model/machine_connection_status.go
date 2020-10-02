@@ -36,6 +36,18 @@ func (resource MachineConnectionStatus) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource MachineConnectionStatus) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource MachineConnectionStatus) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource MachineConnectionStatus) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the MachineConnectionStatus and returns an error if invalid.
 func (resource MachineConnectionStatus) Validate() error {
 	validate := validator.New()

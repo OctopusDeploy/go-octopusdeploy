@@ -84,6 +84,18 @@ func (resource MachineEndpoint) GetLinks() map[string]string {
 	return resource.Links
 }
 
+func (resource MachineEndpoint) SetID(id string) {
+	resource.ID = id
+}
+
+func (resource MachineEndpoint) SetLastModifiedBy(name string) {
+	resource.LastModifiedBy = name
+}
+
+func (resource MachineEndpoint) SetLastModifiedOn(time *time.Time) {
+	resource.LastModifiedOn = time
+}
+
 // Validate checks the state of the MachineEndpoint and returns an error if invalid.
 func (resource MachineEndpoint) Validate() error {
 	validate := validator.New()
