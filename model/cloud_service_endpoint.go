@@ -11,6 +11,6 @@ type CloudServiceEndpoint struct {
 }
 
 func NewCloudServiceEndpoint() *CloudServiceEndpoint {
-	resource := &CloudServiceEndpoint{}
-	return resource
+	cloudServiceEndpoint := &CloudServiceEndpoint{}
+	return cloudServiceEndpoint
 }
