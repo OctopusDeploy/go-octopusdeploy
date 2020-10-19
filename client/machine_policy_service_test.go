@@ -53,7 +53,7 @@ func CreateTestMachinePolicy(t *testing.T, service *machinePolicyService) *model
 	return createdMachinePolicy
 }
 
-func DeleteTestMachinePolicy(t *testing.T, service *machinePolicyService, machinePolicy model.MachinePolicy) error {
+func DeleteTestMachinePolicy(t *testing.T, service *machinePolicyService, machinePolicy *model.MachinePolicy) error {
 	require.NotNil(t, machinePolicy)
 
 	if service == nil {
@@ -125,7 +125,7 @@ func TestMachinePolicySetAddGetDelete(t *testing.T) {
 
 	resource = CreateTestMachinePolicy(t, service)
 	require.NotNil(t, resource)
-	defer DeleteTestMachinePolicy(t, service, *resource)
+	defer DeleteTestMachinePolicy(t, service, resource)
 
 	resourceToCompare, err := service.GetByID(resource.GetID())
 	require.NoError(t, err)
@@ -146,7 +146,7 @@ func TestMachinePolicyServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	resource = CreateTestMachinePolicy(t, service)
-	err = DeleteTestMachinePolicy(t, service, *resource)
+	err = DeleteTestMachinePolicy(t, service, resource)
 	require.NoError(t, err)
 }
 
@@ -159,8 +159,8 @@ func TestMachinePolicyServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		err = DeleteTestMachinePolicy(t, service, *resource)
-		require.NoError(t, err)
+		err = DeleteTestMachinePolicy(t, service, resource)
+		assert.NoError(t, err)
 	}
 }
 
@@ -168,20 +168,28 @@ func TestMachinePolicyServiceGetAll(t *testing.T) {
 	service := createMachinePolicyService(t)
 	require.NotNil(t, service)
 
-	// create 30 test library variable sets (to be deleted)
+	machinePolicies := []*model.MachinePolicy{}
+
+	// create 30 test machine policies (to be deleted)
 	for i := 0; i < 30; i++ {
-		resource := CreateTestMachinePolicy(t, service)
-		require.NotNil(t, resource)
-		defer DeleteTestMachinePolicy(t, service, *resource)
+		machinePolicy := CreateTestMachinePolicy(t, service)
+		require.NotNil(t, machinePolicy)
+		machinePolicies = append(machinePolicies, machinePolicy)
+		require.Equal(t, machinePolicies[i].GetID(), machinePolicy.GetID())
 	}
 
-	resources, err := service.GetAll()
+	allMachinePolicies, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, resources)
+	require.NotNil(t, allMachinePolicies)
 
-	for _, resource := range resources {
-		require.NotNil(t, resource)
-		assert.NotEmpty(t, resource.GetID())
+	// TODO: get individual pointer values here
+
+	for _, machinePolicy := range machinePolicies {
+		require.NotNil(t, machinePolicy)
+		require.NotEmpty(t, machinePolicy.GetID())
+
+		err := DeleteTestMachinePolicy(t, service, machinePolicy)
+		assert.NoError(t, err)
 	}
 }
 
@@ -318,5 +326,5 @@ func TestMachinePolicyServiceUpdate(t *testing.T) {
 	expected := CreateTestMachinePolicy(t, service)
 	actual := UpdateMachinePolicy(t, service, expected)
 	IsEqualMachinePolicies(t, expected, actual)
-	defer DeleteTestMachinePolicy(t, service, *expected)
+	defer DeleteTestMachinePolicy(t, service, expected)
 }
