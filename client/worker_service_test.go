@@ -214,6 +214,16 @@ func TestWorkerServiceGetByID(t *testing.T) {
 	}
 }
 
+func TestWorkerServiceGetByIDs(t *testing.T) {
+	service := createWorkerService(t)
+	require.NotNil(t, service)
+
+	ids := []string{}
+	resource, err := service.GetByIDs(ids)
+	assert.NoError(t, err)
+	assert.Equal(t, []*model.Worker{}, resource)
+}
+
 func TestWorkerServiceGetByName(t *testing.T) {
 	service := createWorkerService(t)
 	require.NotNil(t, service)
