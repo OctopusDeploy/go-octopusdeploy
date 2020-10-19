@@ -6,18 +6,14 @@ A Go client for the [Octopus Deploy](https://octopus.com/) API.
 
 This client is used by the [Octopus Deploy Terraform Provider](https://github.com/OctopusDeploy/terraform-provider-octopusdeploy).
 
-## Go Dependencies
+## Supported Octopus Types and API Operations
 
-* Dependencies are managed using [Go Modules](https://github.com/golang/go/wiki/Modules#daily-workflow)
-
-## Using the main.go Example
-
-```bash
-export OCTOPUS_URL=http://localhost:8081/
-export OCTOPUS_APIKEY=API-FAKEAPIKEYFAKEAPIKEY
-
-go run main.go # creates a project
-```
+| Service       | Operations     |
+| :- | :- |
+| Accounts | `Add`, `DeleteByID` `GetAll`, `GetByID`, `GetByIDs`, `GetByAccountType`, `GetByName`, `GetByPartialName`, `GetUsages`, `Update` |
+| Action Templates | `Add`, `DeleteByID`, `GetAll`, `GetCategories`, `GetByID`, `GetByName`, `Search`, `Update` |
+| Channels | `Add`, `DeleteByID`, `GetAll`, `GetByID`, `GetByPartialName`, `GetProject`, `GetReleases`, `Update` |
+| Feeds | `Add`, `DeleteByID`, `GetAll`, `GetByID`, `GetByPartialName`, `Update` |
 
 ## Contributing
 
