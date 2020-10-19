@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
 
-var serviceURL = os.Getenv("OCTOPUS_URL")
+var octopusURL = os.Getenv("OCTOPUS_URL")
 var apiKey = os.Getenv("OCTOPUS_APIKEY")
 var testSpaceName = "Test Space"
 var projectName = "Test Project"
@@ -132,9 +133,16 @@ func deleteProject(client *client.Client, project *model.Project) {
 
 func main() {
 
-	client, err := client.NewClient(nil, serviceURL, apiKey, "")
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		fmt.Println(err.Error())
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, "")
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	user := model.NewUser("askdhj", "aklsjd")
