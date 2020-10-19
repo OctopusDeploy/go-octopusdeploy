@@ -127,14 +127,17 @@ func TestMachineServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, environmentService)
 
 	environment := CreateTestEnvironment(t, nil)
-	defer DeleteTestEnvironment(t, environmentService, environment)
-
 	expected := CreateTestDeploymentTarget(t, service, getRandomName(), environment)
-	defer DeleteTestDeploymentTarget(t, service, expected)
 
 	actual, err := service.GetByID(expected.ID)
 	require.NoError(t, err)
 	IsEqualDeploymentTargets(t, expected, actual)
+
+	err = DeleteTestDeploymentTarget(t, service, expected)
+	require.NoError(t, err)
+
+	err = DeleteTestEnvironment(t, environmentService, environment)
+	require.NoError(t, err)
 }
 
 func TestMachineServiceDelete(t *testing.T) {
