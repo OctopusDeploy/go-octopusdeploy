@@ -20,9 +20,6 @@ jobs:
       
       - name: Build client module
         run: go build -v ./client
-    
-      - name: Build enum module
-        run: go build -v ./enum
 
       - name: Build model module
         run: go build -v ./model
