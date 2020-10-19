@@ -26,6 +26,7 @@ const (
 	parameterResource               string = "resource"
 	parameterRunbook                string = "runbook"
 	parameterSling                  string = "sling"
+	parameterUser                   string = "user"
 	parameterUserID                 string = "userID"
 	parameterWorker                 string = "worker"
 	parameterWorkerPool             string = "workerPool"
