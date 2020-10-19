@@ -104,6 +104,10 @@ func (s tenantService) GetByID(id string) (*model.Tenant, error) {
 
 // GetByIDs returns the accounts that match the input IDs.
 func (s tenantService) GetByIDs(ids []string) ([]*model.Tenant, error) {
+	if len(ids) == 0 {
+		return []*model.Tenant{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []*model.Tenant{}, err
