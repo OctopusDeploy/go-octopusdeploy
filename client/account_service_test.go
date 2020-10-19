@@ -268,27 +268,33 @@ func TestAccountServiceAdd(t *testing.T) {
 
 	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, service)
 	ValidateAccount(t, amazonWebServicesAccount)
-	defer DeleteTestAccount(t, service, amazonWebServicesAccount)
+	err = DeleteTestAccount(t, service, amazonWebServicesAccount)
+	require.NoError(t, err)
 
 	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, service)
 	ValidateAccount(t, azureServicePrincipalAccount)
-	defer DeleteTestAccount(t, service, azureServicePrincipalAccount)
+	err = DeleteTestAccount(t, service, azureServicePrincipalAccount)
+	require.NoError(t, err)
 
 	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, service)
 	ValidateAccount(t, azureSubscriptionAccount)
-	defer DeleteTestAccount(t, service, azureSubscriptionAccount)
+	err = DeleteTestAccount(t, service, azureSubscriptionAccount)
+	require.NoError(t, err)
 
 	sshKeyAccount := CreateTestSSHKeyAccount(t, service)
 	ValidateAccount(t, sshKeyAccount)
-	defer DeleteTestAccount(t, service, sshKeyAccount)
+	err = DeleteTestAccount(t, service, sshKeyAccount)
+	require.NoError(t, err)
 
 	tokenAccount := CreateTestTokenAccount(t, service)
 	ValidateAccount(t, tokenAccount)
-	defer DeleteTestAccount(t, service, tokenAccount)
+	err = DeleteTestAccount(t, service, tokenAccount)
+	require.NoError(t, err)
 
 	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, service)
 	ValidateAccount(t, usernamePasswordAccount)
-	defer DeleteTestAccount(t, service, usernamePasswordAccount)
+	err = DeleteTestAccount(t, service, usernamePasswordAccount)
+	require.NoError(t, err)
 }
 
 func TestAccountServiceDeleteAll(t *testing.T) {
@@ -300,7 +306,8 @@ func TestAccountServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, accounts)
 
 	for _, account := range accounts {
-		defer DeleteTestAccount(t, service, account)
+		err = DeleteTestAccount(t, service, account)
+		require.NoError(t, err)
 	}
 }
 
@@ -395,27 +402,33 @@ func TestAccountServiceGetByName(t *testing.T) {
 
 	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, service)
 	ValidateAccount(t, amazonWebServicesAccount)
-	defer DeleteTestAccount(t, service, amazonWebServicesAccount)
+	err := DeleteTestAccount(t, service, amazonWebServicesAccount)
+	require.NoError(t, err)
 
 	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, service)
 	ValidateAccount(t, azureServicePrincipalAccount)
-	defer DeleteTestAccount(t, service, azureServicePrincipalAccount)
+	err = DeleteTestAccount(t, service, azureServicePrincipalAccount)
+	require.NoError(t, err)
 
 	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, service)
 	ValidateAccount(t, azureSubscriptionAccount)
-	defer DeleteTestAccount(t, service, azureSubscriptionAccount)
+	err = DeleteTestAccount(t, service, azureSubscriptionAccount)
+	require.NoError(t, err)
 
 	sshKeyAccount := CreateTestSSHKeyAccount(t, service)
 	ValidateAccount(t, sshKeyAccount)
-	defer DeleteTestAccount(t, service, sshKeyAccount)
+	err = DeleteTestAccount(t, service, sshKeyAccount)
+	require.NoError(t, err)
 
 	tokenAccount := CreateTestTokenAccount(t, service)
 	ValidateAccount(t, tokenAccount)
-	defer DeleteTestAccount(t, service, tokenAccount)
+	err = DeleteTestAccount(t, service, tokenAccount)
+	require.NoError(t, err)
 
 	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, service)
 	ValidateAccount(t, usernamePasswordAccount)
-	defer DeleteTestAccount(t, service, usernamePasswordAccount)
+	err = DeleteTestAccount(t, service, usernamePasswordAccount)
+	require.NoError(t, err)
 
 	accounts, err := service.GetAll()
 	require.NoError(t, err)
@@ -554,33 +567,38 @@ func TestAccountServiceUpdate(t *testing.T) {
 	actual := UpdateAccount(t, service, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	defer DeleteTestAccount(t, service, expected)
+	err := DeleteTestAccount(t, service, expected)
+	require.NoError(t, err)
 
 	expected = CreateTestAzureSubscriptionAccount(t, service)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, service, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	defer DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, service, expected)
+	require.NoError(t, err)
 
 	expected = CreateTestSSHKeyAccount(t, service)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, service, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	defer DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, service, expected)
+	require.NoError(t, err)
 
 	expected = CreateTestTokenAccount(t, service)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, service, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	defer DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, service, expected)
+	require.NoError(t, err)
 
 	expected = CreateTestUsernamePasswordAccount(t, service)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, service, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	defer DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, service, expected)
+	require.NoError(t, err)
 }
