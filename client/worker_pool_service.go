@@ -102,6 +102,10 @@ func (s workerPoolService) GetByID(id string) (*model.WorkerPool, error) {
 
 // GetByIDs returns the worker pools that match the input IDs.
 func (s workerPoolService) GetByIDs(ids []string) ([]*model.WorkerPool, error) {
+	if len(ids) == 0 {
+		return []*model.WorkerPool{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []*model.WorkerPool{}, err
