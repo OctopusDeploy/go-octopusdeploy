@@ -142,19 +142,23 @@ func TestFeedServiceAdd(t *testing.T) {
 
 	feed = CreateTestGitHubRepositoryFeed(t, service)
 	require.NotNil(t, feed)
-	defer DeleteTestFeed(t, service, feed)
+	err = DeleteTestFeed(t, service, feed)
+	require.NoError(t, err)
 
 	feed = CreateTestHelmFeed(t, service)
 	require.NotNil(t, feed)
-	defer DeleteTestFeed(t, service, feed)
+	err = DeleteTestFeed(t, service, feed)
+	require.NoError(t, err)
 
 	feed = CreateTestMavenFeed(t, service)
 	require.NotNil(t, feed)
-	defer DeleteTestFeed(t, service, feed)
+	err = DeleteTestFeed(t, service, feed)
+	require.NoError(t, err)
 
 	feed = CreateTestNuGetFeed(t, service)
 	require.NotNil(t, feed)
-	defer DeleteTestFeed(t, service, feed)
+	err = DeleteTestFeed(t, service, feed)
+	require.NoError(t, err)
 }
 
 func TestFeedServiceAddGetDelete(t *testing.T) {
