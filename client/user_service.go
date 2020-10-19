@@ -52,47 +52,18 @@ func newUserService(
 	return userService
 }
 
-// GetByID returns the user that matches the input ID. If one cannot be found,
-// it returns nil and an error.
-func (s userService) GetByID(id string) (*model.User, error) {
-	path, err := getByIDPath(s, id)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.getClient(), new(model.User), path)
-	if err != nil {
-		return nil, createResourceNotFoundError("user", "ID", id)
-	}
-
-	return resp.(*model.User), nil
-}
-
-func (s userService) GetMe() (*model.User, error) {
-	err := validateInternalState(s)
-	if err != nil {
-		return nil, err
-	}
-
-	path := trimTemplate(s.getPath())
-	path = path + "/me"
-
-	resp, err := apiGet(s.getClient(), s.itemType, path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*model.User), nil
-}
-
 // Add creates a new user.
-func (s userService) Add(resource *model.User) (*model.User, error) {
-	path, err := getAddPath(s, resource)
+func (s userService) Add(user *model.User) (*model.User, error) {
+	if user == nil {
+		return nil, createInvalidParameterError(operationAdd, parameterUser)
+	}
+
+	path, err := getAddPath(s, user)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), user, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +71,7 @@ func (s userService) Add(resource *model.User) (*model.User, error) {
 	return resp.(*model.User), nil
 }
 
-// GetAll returns all tenants. If none can be found or an error occurs, it
+// GetAll returns all users. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s userService) GetAll() ([]*model.User, error) {
 	items := []*model.User{}
@@ -132,7 +103,7 @@ func (s userService) GetAuthentication() (*model.UserAuthentication, error) {
 
 func (s userService) GetAuthenticationForUser(user *model.User) (*model.UserAuthentication, error) {
 	if user == nil {
-		return nil, createInvalidParameterError("GetAuthenticationForUser", "user")
+		return nil, createInvalidParameterError(operationGetAuthenticationForUser, parameterUser)
 	}
 
 	err := validateInternalState(s)
@@ -149,6 +120,39 @@ func (s userService) GetAuthenticationForUser(user *model.User) (*model.UserAuth
 	}
 
 	return resp.(*model.UserAuthentication), nil
+}
+
+// GetByID returns the user that matches the input ID. If one cannot be found,
+// it returns nil and an error.
+func (s userService) GetByID(id string) (*model.User, error) {
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.getClient(), new(model.User), path)
+	if err != nil {
+		return nil, createResourceNotFoundError("user", "ID", id)
+	}
+
+	return resp.(*model.User), nil
+}
+
+func (s userService) GetMe() (*model.User, error) {
+	err := validateInternalState(s)
+	if err != nil {
+		return nil, err
+	}
+
+	path := trimTemplate(s.getPath())
+	path = path + "/me"
+
+	resp, err := apiGet(s.getClient(), s.itemType, path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.User), nil
 }
 
 func (s userService) GetSpaces(user *model.User) ([]*model.Spaces, error) {
