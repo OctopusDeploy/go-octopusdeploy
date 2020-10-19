@@ -1,7 +1,9 @@
 package client
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"testing"
 
@@ -11,9 +13,15 @@ import (
 
 func TestNewClient(t *testing.T) {
 	client := &http.Client{}
-	url := os.Getenv("OCTOPUS_URL")
+	octopusURL := os.Getenv("OCTOPUS_URL")
 	apiKey := os.Getenv("OCTOPUS_APIKEY")
 	spaceID := os.Getenv("OCTOPUS_SPACE_ID")
+
+	apiURL, err := url.Parse(octopusURL)
+	if err != nil {
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
 
 	testCases := []struct {
 		name    string
@@ -23,12 +31,11 @@ func TestNewClient(t *testing.T) {
 		apiKey  string
 		spaceID string
 	}{
-		{"EmptyURL", false, client, emptyString, apiKey, spaceID},
-		{"EmptyURLWithSpace", false, client, whitespaceString, apiKey, spaceID},
-		{"EmptyAPIKey", false, client, url, emptyString, emptyString},
-		{"EmptyAPIKeyWithSpace", false, client, url, whitespaceString, spaceID},
-		{"InvalidAPIKey", false, client, url, "API-***************************", spaceID},
-		{"ValidAPIKey", true, client, url, apiKey, spaceID},
+		{"NilURL", false, client, nil, apiKey, spaceID},
+		{"EmptyAPIKey", false, client, apiURL, emptyString, emptyString},
+		{"EmptyAPIKeyWithSpace", false, client, apiURL, whitespaceString, spaceID},
+		{"InvalidAPIKey", false, client, apiURL, "API-***************************", spaceID},
+		{"ValidAPIKey", true, client, apiURL, apiKey, spaceID},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
