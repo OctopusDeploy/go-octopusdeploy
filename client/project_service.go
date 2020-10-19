@@ -89,7 +89,7 @@ func (s projectService) GetChannels(project model.Project) ([]*model.Channel, er
 		return channels, err
 	}
 
-	url, err := url.Parse(project.Links["Channels"])
+	url, err := url.Parse(project.Links[linkChannels])
 
 	if err != nil {
 		return channels, err
@@ -113,13 +113,17 @@ func (s projectService) GetChannels(project model.Project) ([]*model.Channel, er
 	return channels, nil
 }
 
-func (s projectService) GetSummary(project model.Project) (*model.ProjectSummary, error) {
+func (s projectService) GetSummary(project *model.Project) (*model.ProjectSummary, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(operationGetSummary, parameterProject)
+	}
+
 	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
-	path := project.Links["Summary"]
+	path := project.Links[linkSummary]
 	resp, err := apiGet(s.getClient(), new(model.ProjectSummary), path)
 	if err != nil {
 		return nil, err
@@ -134,7 +138,7 @@ func (s projectService) GetReleases(project model.Project) ([]*model.Release, er
 		return nil, err
 	}
 
-	url, err := url.Parse(project.Links["Releases"])
+	url, err := url.Parse(project.Links[linkReleases])
 
 	if err != nil {
 		return nil, err
