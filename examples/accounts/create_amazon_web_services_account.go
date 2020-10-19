@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -9,22 +10,29 @@ import (
 
 func CreateAmazonWebServicesAccountExample() {
 	var (
-		octopusURL    string = "https://your_octopus_url"
-		octopusAPIKey string = "API-YOUR_API_KEY"
+		apiKey     string = "API-YOUR_API_KEY"
+		octopusURL string = "https://your_octopus_url"
+		spaceID    string = "space-id"
 
 		// AWS-specific values
 		accessKey string               = "access-key"
 		secretKey model.SensitiveValue = model.NewSensitiveValue("secret-key")
 
-		// Octopus Account values
-		spaceName          string = "default"
+		// account values
 		accountName        string = "AWS Account"
 		accountDescription string = "My AWS Account"
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
+	apiURL, err := url.Parse(octopusURL)
+	if err != nil {
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	awsAccount := model.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)

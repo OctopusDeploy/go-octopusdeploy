@@ -1,6 +1,9 @@
 package examples
 
 import (
+	"fmt"
+	"net/url"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	uuid "github.com/google/uuid"
@@ -8,48 +11,53 @@ import (
 
 func CreateAzureServicePrincipalExample() {
 	var (
-		octopusURL    string = "https://youroctourl"
-		octopusAPIKey string = "API-YOURAPIKEY"
+		apiKey     string = "API-YOUR_API_KEY"
+		octopusURL string = "https://your_octopus_url"
+		spaceID    string = "space-id"
 
-		// Azure specific details
-		azureApplicationID  uuid.UUID            = uuid.MustParse("Client UUID")
-		azureSecret         model.SensitiveValue = model.NewSensitiveValue("Secret")
-		azureSubscriptionID uuid.UUID            = uuid.MustParse("Subscription UUID")
-		azureTenantID       uuid.UUID            = uuid.MustParse("Tenant UUID")
+		// Azure-specific values
+		azureApplicationID  uuid.UUID            = uuid.MustParse("client-UUID")
+		azureSecret         model.SensitiveValue = model.NewSensitiveValue("azure-secret")
+		azureSubscriptionID uuid.UUID            = uuid.MustParse("subscription-UUID")
+		azureTenantID       uuid.UUID            = uuid.MustParse("tenant-UUID")
 
-		// Octopus Account details
-		spaceName           string   = "default"
-		accountName         string   = "Azure Account"
-		accountDescription  string   = "My Azure Account"
-		tenantParticipation string   = "Untenanted"
-		tenantTags          []string = nil
-		tenantIDs           []string = nil
-		environmentIDs      []string = nil
+		// account values
+		accountName        string   = "Azure Account"
+		accountDescription string   = "My Azure Account"
+		tenantTags         []string = nil
+		tenantIDs          []string = nil
+		environmentIDs     []string = nil
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
-
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	azureAccount := model.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
 
-	if err != nil {
-		// TODO: handle error
-	}
-
-	// Fill in account details
+	// fill in account details
 	azureAccount.Description = accountDescription
-	azureAccount.TenantedDeploymentMode = tenantParticipation
 	azureAccount.TenantTags = tenantTags
 	azureAccount.TenantIDs = tenantIDs
 	azureAccount.EnvironmentIDs = environmentIDs
 
-	// Create account
-	_, err = client.Accounts.Add(azureAccount)
-
+	// create account
+	createdAccount, err := client.Accounts.Add(azureAccount)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error adding account: %v", err)
 	}
+
+	// type conversion required to access Username/Password-specific fields
+	azureAccount = createdAccount.(*model.AzureServicePrincipalAccount)
+
+	// work with created account
+	fmt.Printf("account created: (%s)\n", azureAccount.ID)
 }

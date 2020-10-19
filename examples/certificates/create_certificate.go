@@ -2,7 +2,9 @@ package examples
 
 import (
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
@@ -12,19 +14,24 @@ import (
 // CreateCertificateExample shows how to create a certificate using go-octopusdeploy.
 func CreateCertificateExample() {
 	var (
-		// Declare working variables
-		octopusURL      string = "https://youroctourl"
-		octopusAPIKey   string = "API-YOURAPIKEY"
+		apiKey          string = "API-YOUR_API_KEY"
+		certificateName string = "MyCertificate"
+		octopusURL      string = "https://your_octopus_url"
 		pfxFilePath     string = "path\\to\\pfxfile.pfx"
 		pfxFilePassword string = "PFX-file-password"
-		certificateName string = "MyCertificate"
-		spaceName       string = "default"
+		spaceID         string = "space-id"
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
-
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	file, err := os.Open(pfxFilePath)

@@ -1,6 +1,9 @@
 package examples
 
 import (
+	"fmt"
+	"net/url"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
@@ -8,19 +11,25 @@ import (
 func CreateScriptStepExample() {
 	var (
 		// Declare working variables
-		octopusURL    string = "https://youroctourl"
-		octopusAPIKey string = "API-YOURAPIKEY"
-		spaceName     string = "default"
-		projectName   string = "MyProject"
-		roleName      string = "My role"
-		scriptBody    string = "Write-Host \"Hello world\""
-		stepName      string = "Run a script"
+		octopusURL  string = "https://your_octopus_url"
+		apiKey      string = "API-YOUR_API_KEY"
+		projectName string = "project-name"
+		roleName    string = "role-name"
+		scriptBody  string = "Write-Host \"Hello world\""
+		spaceID     string = "space-id"
+		stepName    string = "Run a script"
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
-
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	// Get project

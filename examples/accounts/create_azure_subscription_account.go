@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -10,27 +11,32 @@ import (
 
 func CreateAzureSubscriptionAccountExample() {
 	var (
-		octopusURL    string = "https://your_octopus_url"
-		octopusAPIKey string = "API-YOUR_API_KEY"
+		apiKey     string = "API-YOUR_API_KEY"
+		octopusURL string = "https://your_octopus_url"
+		spaceID    string = "space-id"
 
 		// Azure-specific values
-		subscriptionID             uuid.UUID = uuid.MustParse("subscription UUID")
+		accountDescription         string    = "My Azure Account"
 		azureEnvironmentName       string    = "AzureCloud"
 		azureManagementEndpoint    string    = "https://management.core.windows.net/"
 		azureStorageEndpointSuffix string    = "core.windows.net"
-
-		// Octopus Account values
-		spaceName          string = "default"
-		accountName        string = "Azure Account"
-		accountDescription string = "My Azure Account"
+		name                       string    = "Azure Account"
+		subscriptionID             uuid.UUID = uuid.MustParse("subscription-UUID")
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		_ = fmt.Errorf("error creating API client: %v", err)
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
 	}
 
-	azureAccount := model.NewAzureSubscriptionAccount(accountName, subscriptionID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
+	}
+
+	azureAccount := model.NewAzureSubscriptionAccount(name, subscriptionID)
 
 	// fill in account details
 	azureAccount.Description = accountDescription

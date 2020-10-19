@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
@@ -10,23 +11,29 @@ import (
 func GetStepsUsingRoleExample() {
 	var (
 		// Declare working variables
-		octopusURL    string = "https://youroctourl"
-		octopusAPIKey string = "API-YOURAPIKEY"
-		spaceName     string = "default"
-		roleName      string = "My role"
+		octopusURL string = "https://your_octopus_url"
+		apiKey     string = "API-YOUR_API_KEY"
+		spaceName  string = "space-id"
+		roleName   string = "role-name"
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
-
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceName)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	// Get projects
 	projects, err := client.Projects.GetAll()
-
 	if err != nil {
 		// TODO: handle error
+		return
 	}
 
 	// Loop through list

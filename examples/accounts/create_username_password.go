@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -9,23 +10,28 @@ import (
 
 func CreateUsernamePasswordExample() {
 	var (
-		octopusURL    string = "https://your_octopus_url"
-		octopusAPIKey string = "API-YOUR_API_KEY"
+		apiKey     string = "API-YOUR_API_KEY"
+		octopusURL string = "https://your_octopus_url"
+		spaceID    string = "space-id"
 
-		// Username/Password-specific values
+		// account values
+		name     string = "Username/Password Account"
 		username string = "account-username"
-
-		// Octopus Account values
-		accountName string = "Username/Password Account"
-		spaceName   string = "default"
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		_ = fmt.Errorf("error creating API client: %v", err)
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
 	}
 
-	usernamePasswordAccount := model.NewUsernamePasswordAccount(accountName)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
+	}
+
+	usernamePasswordAccount := model.NewUsernamePasswordAccount(name)
 
 	// fill in account details
 	usernamePasswordAccount.Username = username

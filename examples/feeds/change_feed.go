@@ -1,21 +1,31 @@
 package examples
 
-import "github.com/OctopusDeploy/go-octopusdeploy/client"
+import (
+	"fmt"
+	"net/url"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+)
 
 func ChangeFeedExample() {
 	var (
-		// Declare working variables
-		octopusURL    string = "https://youroctourl"
-		octopusAPIKey string = "API-YOURAPIKEY"
-
-		spaceName   string = "Default"
+		apiKey      string = "API-YOUR_API_KEY"
 		feedName    string = "nuget.org 3"
 		newFeedName string = "nuget.org feed"
+		octopusURL  string = "https://your_octopus_url"
+		spaceName   string = "Default"
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceName)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	// Get Feed instances that match the name provided
@@ -27,10 +37,10 @@ func ChangeFeedExample() {
 	// select a specific Feed instance
 	feed := feeds[0]
 
-	// Change feed name
+	// change feed name
 	feed.SetName(newFeedName)
 
-	// Update feed
+	// update feed
 	_, err = client.Feeds.Update(feed)
 	if err != nil {
 		// TODO: handle error

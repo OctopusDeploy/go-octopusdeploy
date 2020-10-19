@@ -1,28 +1,34 @@
 package examples
 
 import (
+	"fmt"
+	"net/url"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 )
 
 func CreateFeedExample() {
 	var (
-		// Declare working variables
-		octopusURL    string = "https://youroctourl"
-		octopusAPIKey string = "API-YOURAPIKEY"
-
-		spaceName      string = "Default"
+		apiKey         string = "API-YOUR_API_KEY"
 		feedName       string = "nuget.org 3"
+		feedPassword   string = "" // optional
 		feedURI        string = "https://api.nuget.org/v3/index.json"
+		feedUsername   string = "" // optional
+		octopusURL     string = "https://your_octopus_url"
+		spaceName      string = "Default"
 		useExtendedAPI bool   = false
-		// optional
-		feedUsername string = ""
-		feedPassword string = ""
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceName)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
 	}
 
 	nuGetFeed := model.NewNuGetFeed(feedName, feedURI)

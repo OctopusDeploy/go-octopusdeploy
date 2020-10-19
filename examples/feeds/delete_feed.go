@@ -1,20 +1,30 @@
 package examples
 
-import "github.com/OctopusDeploy/go-octopusdeploy/client"
+import (
+	"fmt"
+	"net/url"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
+)
 
 func DeleteFeedExample() {
 	var (
-		// Declare working variables
-		octopusURL    string = "https://youroctourl"
-		octopusAPIKey string = "API-YOURAPIKEY"
-
-		spaceName string = "Default"
-		feedName  string = "nuget to delete"
+		apiKey     string = "API-YOUR_API_KEY"
+		feedName   string = "nuget to delete"
+		octopusURL string = "https://your_octopus_url"
+		spaceName  string = "Default"
 	)
 
-	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
+	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceName)
+	if err != nil {
+		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	// Get Feed instances that match the name provided
