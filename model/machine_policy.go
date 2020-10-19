@@ -101,7 +101,7 @@ func (m *MachinePolicy) UnmarshalJSON(data []byte) error {
 		MachineConnectivityPolicy                     *MachineConnectivityPolicy `json:"MachineConnectivityPolicy"`
 		MachineHealthCheckPolicy                      *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
 		MachineUpdatePolicy                           *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
-		Name                                          string                     `json:"Name" validate:"required,notblank"`
+		Name                                          string                     `json:"Name"`
 		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
 		PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout" validate:"required"`
 		SpaceID                                       string                     `json:"SpaceId,omitempty"`
