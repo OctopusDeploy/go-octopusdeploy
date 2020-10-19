@@ -274,11 +274,8 @@ func TestMachineServiceUpdate(t *testing.T) {
 	require.NotNil(t, environmentService)
 
 	environment := CreateTestEnvironment(t, nil)
-	defer DeleteTestEnvironment(t, environmentService, environment)
 
 	expected := CreateTestDeploymentTarget(t, service, getRandomName(), environment)
-	defer DeleteTestDeploymentTarget(t, service, expected)
-
 	expected.Name = getRandomName()
 
 	endpoint, ok := expected.Endpoint.(model.OfflineDropEndpoint)
@@ -293,4 +290,10 @@ func TestMachineServiceUpdate(t *testing.T) {
 	require.NotNil(t, actual)
 
 	IsEqualDeploymentTargets(t, expected, actual)
+
+	err = DeleteTestDeploymentTarget(t, service, expected)
+	require.NoError(t, err)
+
+	err = DeleteTestEnvironment(t, environmentService, environment)
+	require.NoError(t, err)
 }
