@@ -5,43 +5,26 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type channelService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	versionRuleTestPath string
+
+	service
 }
 
-func newChannelService(sling *sling.Sling, uriTemplate string) *channelService {
-	if sling == nil {
-		sling = getDefaultClient()
+func newChannelService(sling *sling.Sling, uriTemplate string, versionRuleTestPath string) *channelService {
+	channelService := &channelService{
+		versionRuleTestPath: versionRuleTestPath,
 	}
+	channelService.service = newService(serviceChannelService, sling, uriTemplate, new(model.Channel))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &channelService{
-		name:        serviceChannelService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return channelService
 }
 
-func (s channelService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s channelService) getName() string {
-	return s.name
-}
-
-func (s channelService) getPagedResponse(path string) ([]model.Channel, error) {
-	resources := []model.Channel{}
+func (s channelService) getPagedResponse(path string) ([]*model.Channel, error) {
+	resources := []*model.Channel{}
 	loadNextPage := true
 
 	for loadNextPage {
@@ -58,10 +41,6 @@ func (s channelService) getPagedResponse(path string) ([]model.Channel, error) {
 	return resources, nil
 }
 
-func (s channelService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
 // Add creates a new channel.
 func (s channelService) Add(resource *model.Channel) (*model.Channel, error) {
 	path, err := getAddPath(s, resource)
@@ -69,7 +48,7 @@ func (s channelService) Add(resource *model.Channel) (*model.Channel, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Channel), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
@@ -77,22 +56,12 @@ func (s channelService) Add(resource *model.Channel) (*model.Channel, error) {
 	return resp.(*model.Channel), nil
 }
 
-// DeleteByID deletes the Channel that matches the input ID.
-func (s channelService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("channel", "ID", id)
-	}
-
-	return err
-}
-
 // GetAll returns all channels. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s channelService) GetAll() ([]model.Channel, error) {
+func (s channelService) GetAll() ([]*model.Channel, error) {
 	path, err := getPath(s)
 	if err != nil {
-		return []model.Channel{}, err
+		return []*model.Channel{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -108,17 +77,17 @@ func (s channelService) GetByID(id string) (*model.Channel, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Channel), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("channel", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.Channel), nil
 }
 
 // GetByPartialName performs a lookup and returns instances of a channel with a matching partial name.
-func (s channelService) GetByPartialName(name string) ([]model.Channel, error) {
+func (s channelService) GetByPartialName(name string) ([]*model.Channel, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return []model.Channel{}, err
+		return []*model.Channel{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -139,15 +108,19 @@ func (s channelService) GetProject(channel model.Channel) (*model.Project, error
 	return resp.(*model.Project), nil
 }
 
-func (s channelService) GetReleases(channel model.Channel) ([]model.Release, error) {
-	releases := []model.Release{}
+func (s channelService) GetReleases(channel *model.Channel) ([]*model.Release, error) {
+	if channel == nil {
+		return nil, createInvalidParameterError(operationGetReleases, parameterChannel)
+	}
+
+	releases := []*model.Release{}
 
 	err := validateInternalState(s)
 	if err != nil {
 		return releases, err
 	}
 
-	url, err := url.Parse(channel.Links["Releases"])
+	url, err := url.Parse(channel.Links[linkReleases])
 	if err != nil {
 		return releases, err
 	}
@@ -173,17 +146,15 @@ func (s channelService) GetReleases(channel model.Channel) ([]model.Release, err
 
 // Update modifies an Channel based on the one provided as input.
 func (s channelService) Update(resource model.Channel) (*model.Channel, error) {
-	path, err := getUpdatePath(s, resource)
+	path, err := getUpdatePath(s, &resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Channel), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Channel), nil
 }
-
-var _ ServiceInterface = &channelService{}

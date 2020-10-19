@@ -1,45 +1,53 @@
 package model
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
 	uuid "github.com/google/uuid"
 )
 
-func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UUID, applicationID uuid.UUID, password SensitiveValue) (*Account, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("NewAzureServicePrincipalAccount", "name")
-	}
+// AzureServicePrincipalAccount represents an Azure service principal account.
+type AzureServicePrincipalAccount struct {
+	AccountType             string          `json:"AccountType" validate:"required,eq=AzureServicePrincipal"`
+	ApplicationID           *uuid.UUID      `json:"ClientId" validate:"required"`
+	ApplicationPassword     *SensitiveValue `json:"Password" validate:"required"`
+	AuthenticationEndpoint  string          `json:"ActiveDirectoryEndpointBaseUri,omitempty" validate:"required_with=AzureEnvironment,omitempty,uri"`
+	AzureEnvironment        string          `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
+	ResourceManagerEndpoint string          `json:"ResourceManagementEndpointBaseUri,omitempty" validate:"required_with=AzureEnvironment,omitempty,uri"`
+	SubscriptionID          *uuid.UUID      `json:"SubscriptionNumber" validate:"required"`
+	TenantID                *uuid.UUID      `json:"TenantId" validate:"required"`
 
-	account, err := NewAccount(name, enum.AzureServicePrincipal)
-	if err != nil {
-		return nil, err
-	}
-
-	account.SubscriptionID = &subscriptionID
-	account.TenantID = &tenantID
-	account.ApplicationID = &applicationID
-	account.Password = &password
-
-	return account, nil
+	AccountResource
 }
 
-func validateAzureServicePrincipalAccount(account Account) error {
-	validate := validator.New()
-	err := validate.Struct(account)
+// NewAzureServicePrincipalAccount creates and initializes an Azure service
+// principal account.
+func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UUID, applicationID uuid.UUID, applicationPassword SensitiveValue) *AzureServicePrincipalAccount {
+	return &AzureServicePrincipalAccount{
+		AccountType:         "AzureServicePrincipal",
+		ApplicationID:       &applicationID,
+		ApplicationPassword: &applicationPassword,
+		SubscriptionID:      &subscriptionID,
+		TenantID:            &tenantID,
+		AccountResource:     *newAccountResource(name),
+	}
+}
 
+// GetAccountType returns the account type of this Azure service principal
+// account.
+func (a *AzureServicePrincipalAccount) GetAccountType() string {
+	return a.AccountType
+}
+
+// Validate checks the state of this Azure service principal account and
+// returns an error if invalid.
+func (a *AzureServicePrincipalAccount) Validate() error {
+	v := validator.New()
+	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
 		return err
 	}
-
-	validations := []error{
-		ValidateRequiredUUID("SubscriptionID", account.SubscriptionID),
-		ValidateRequiredUUID("ApplicationID", account.ApplicationID),
-		ValidateRequiredUUID("TenantID", account.TenantID),
-	}
-
-	return ValidateMultipleProperties(validations)
+	return v.Struct(a)
 }
+
+var _ IAccount = &AzureServicePrincipalAccount{}

@@ -3,17 +3,9 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestAccounts(t *testing.T) {
-	t.Run("Add", TestAccountServiceAdd)
-	t.Run("GetAll", TestAccountServiceGetAll)
-	t.Run("GetByName", TestAccountServiceGetByName)
-	t.Run("GetByType", TestAccountServiceGetByType)
-}
 
 func TestAccountServiceAdd(t *testing.T) {
 	octopusClient := getOctopusClient()
@@ -67,7 +59,7 @@ func TestAccountServiceGetByType(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	accounts, err := octopusClient.Accounts.GetByAccountType(enum.UsernamePassword)
+	accounts, err := octopusClient.Accounts.GetByAccountType("UsernamePassword")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, accounts)

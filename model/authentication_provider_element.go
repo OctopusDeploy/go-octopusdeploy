@@ -1,5 +1,6 @@
 package model
 
+// AuthenticationProviderElement represents an authentication provider element.
 type AuthenticationProviderElement struct {
 	CSSLinks          []string          `json:"CSSLinks"`
 	FormsLoginEnabled bool              `json:"FormsLoginEnabled"`

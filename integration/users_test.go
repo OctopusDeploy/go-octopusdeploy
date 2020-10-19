@@ -8,9 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func assertEqualUsers(t *testing.T, expected model.User, actual model.User) {
-	assert := assert.New(t)
-
+func assertEqualUsers(t *testing.T, expected *model.User, actual *model.User) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -20,27 +18,17 @@ func assertEqualUsers(t *testing.T, expected model.User, actual model.User) {
 	// this statement (above) is expected to succeed, but it fails due to these
 	// missing fields
 
-	assert.Equal(expected.CanPasswordBeEdited, actual.CanPasswordBeEdited)
-	assert.Equal(expected.DisplayName, actual.DisplayName)
-	assert.Equal(expected.EmailAddress, actual.EmailAddress)
-	assert.Equal(expected.ID, actual.ID)
-	assert.Equal(expected.Identities, actual.Identities)
-	assert.Equal(expected.IsActive, actual.IsActive)
-	assert.Equal(expected.IsRequestor, actual.IsRequestor)
-	assert.Equal(expected.IsService, actual.IsService)
-	assert.Equal(expected.Links, actual.Links)
-	assert.Equal(expected.Password, actual.Password)
-	assert.Equal(expected.Username, actual.Username)
-}
-
-func TestUsers(t *testing.T) {
-	t.Run("Add", TestUsersAdd)
-	t.Run("GetAll", TestUsersGetAll)
-	t.Run("GetAuthentication", TestUsersGetAuthentication)
-	t.Run("GetAuthenticationForUser", TestUsersGetAuthenticationForUser)
-	t.Run("GetByID", TestUsersGetByID)
-	t.Run("GetMe", TestUsersGetMe)
-	t.Run("GetSpaces", TestUsersGetSpaces)
+	assert.Equal(t, expected.CanPasswordBeEdited, actual.CanPasswordBeEdited)
+	assert.Equal(t, expected.DisplayName, actual.DisplayName)
+	assert.Equal(t, expected.EmailAddress, actual.EmailAddress)
+	assert.Equal(t, expected.ID, actual.ID)
+	assert.Equal(t, expected.Identities, actual.Identities)
+	assert.Equal(t, expected.IsActive, actual.IsActive)
+	assert.Equal(t, expected.IsRequestor, actual.IsRequestor)
+	assert.Equal(t, expected.IsService, actual.IsService)
+	assert.True(t, IsEqualLinks(expected.Links, actual.Links))
+	assert.Equal(t, expected.Password, actual.Password)
+	assert.Equal(t, expected.Username, actual.Username)
 }
 
 func TestUsersAdd(t *testing.T) {
@@ -53,16 +41,16 @@ func TestUsersAdd(t *testing.T) {
 	actual, err := octopusClient.Users.Add(user)
 	require.NoError(t, err)
 	require.NotNil(t, actual)
-	assert.NotEmpty(t, actual.LastModifiedBy)
-	assert.NotEmpty(t, actual.LastModifiedOn)
+	assert.NotEmpty(t, actual.GetLastModifiedBy())
+	assert.NotEmpty(t, actual.GetLastModifiedOn())
 
-	expected, err := octopusClient.Users.GetByID(actual.ID)
+	expected, err := octopusClient.Users.GetByID(actual.GetID())
 	require.NoError(t, err)
 	require.NotNil(t, actual)
 
-	assertEqualUsers(t, *expected, *actual)
+	assertEqualUsers(t, expected, actual)
 
-	err = octopusClient.Users.DeleteByID(actual.ID)
+	err = octopusClient.Users.DeleteByID(actual.GetID())
 	require.NoError(t, err)
 }
 
@@ -105,11 +93,11 @@ func TestUsersGetByID(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, expected)
 
-	actual, err := octopusClient.Users.GetByID(expected.ID)
+	actual, err := octopusClient.Users.GetByID(expected.GetID())
 	require.NoError(t, err)
 	require.NotEmpty(t, actual)
 
-	assertEqualUsers(t, *expected, *actual)
+	assertEqualUsers(t, expected, actual)
 }
 
 func TestUsersGetMe(t *testing.T) {
@@ -131,10 +119,33 @@ func TestUsersGetSpaces(t *testing.T) {
 
 	user, err := octopusClient.Users.GetMe()
 	require.NoError(t, err)
-	require.NotEmpty(t, user)
+	require.NotNil(t, user)
 
 	spaces, err := octopusClient.Users.GetSpaces(user)
 	require.NoError(t, err)
 	require.NotNil(t, spaces)
 	require.GreaterOrEqual(t, len(*spaces), 1)
+}
+
+func TestUsersUpdate(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	user := model.NewUser(getRandomName(), getRandomName())
+	user.Password = getRandomName()
+
+	actual, err := octopusClient.Users.Add(user)
+	require.NoError(t, err)
+	require.NotNil(t, actual)
+	assert.NotEmpty(t, actual.GetLastModifiedBy())
+	assert.NotEmpty(t, actual.GetLastModifiedOn())
+
+	expected, err := octopusClient.Users.GetByID(actual.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, actual)
+
+	assertEqualUsers(t, expected, actual)
+
+	err = octopusClient.Users.DeleteByID(actual.GetID())
+	require.NoError(t, err)
 }

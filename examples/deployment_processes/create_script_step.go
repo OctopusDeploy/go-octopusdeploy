@@ -38,21 +38,12 @@ func CreateScriptStepExample() {
 	}
 
 	// Create new step object
-	newStep, err := model.NewDeploymentStep(stepName)
-
-	if err != nil {
-		// TODO: handle error
-	}
-
+	newStep := model.NewDeploymentStep(stepName)
 	newStep.Condition = "Success"
 	newStep.Properties["Octopus.Action.TargetRoles"] = roleName
 
 	// Create new script action
-	stepAction, err := model.NewDeploymentAction(stepName)
-
-	if err != nil {
-		// TODO: handle error
-	}
+	stepAction := model.NewDeploymentAction(stepName)
 
 	stepAction.ActionType = "Octopus.Script"
 	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = scriptBody

@@ -3,6 +3,7 @@ package client
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,85 +15,95 @@ func createArtifactService(t *testing.T) *artifactService {
 	return service
 }
 
-func TestArtifactService(t *testing.T) {
-	t.Run("Delete", TestArtifactServiceDelete)
-	t.Run("GetByID", TestArtifactServiceGetByID)
-	t.Run("New", TestArtifactServiceNew)
+func CreateTestArtifact(t *testing.T, service *artifactService) model.IResource {
+	if service == nil {
+		service = createArtifactService(t)
+	}
+	require.NotNil(t, service)
+
+	filename := getRandomName()
+
+	artifact := model.NewArtifact(filename)
+	require.NotNil(t, artifact)
+
+	createdArtifact, err := service.Add(artifact)
+	require.NoError(t, err)
+	require.NotNil(t, createdArtifact)
+	require.NotEmpty(t, createdArtifact.GetID())
+
+	return createdArtifact
 }
 
-func TestArtifactServiceDelete(t *testing.T) {
-	assert := assert.New(t)
+func DeleteTestArtifact(t *testing.T, service *artifactService, artifact *model.Artifact) error {
+	if service == nil {
+		service = createArtifactService(t)
+	}
+	require.NotNil(t, service)
 
+	return service.DeleteByID(artifact.GetID())
+}
+
+func TestArtifactServiceGetAll(t *testing.T) {
 	service := createArtifactService(t)
 	require.NotNil(t, service)
 
-	err := service.DeleteByID(emptyString)
-	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+	// // create 30 test artifacts (to be deleted)
+	// for i := 0; i < 30; i++ {
+	// 	artifact := CreateTestArtifact(t, service)
+	// 	require.NotNil(t, artifact)
+	// }
 
-	err = service.DeleteByID(whitespaceString)
-	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+	artifacts, err := service.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, artifacts)
 
-	id := getRandomName()
-	err = service.DeleteByID(id)
-	assert.Equal(createResourceNotFoundError("artifact", "ID", id), err)
+	for _, artifact := range artifacts {
+		require.NotNil(t, artifact)
+		assert.NotEmpty(t, artifact.GetID())
+		err = DeleteTestArtifact(t, service, artifact)
+		assert.NoError(t, err)
+	}
 }
 
 func TestArtifactServiceGetByID(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createArtifactService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
-	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
-	assert.Nil(resource)
-
-	resource, err = service.GetByID(whitespaceString)
-	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
-	assert.Nil(resource)
-
-	id := getRandomName()
-	resource, err = service.GetByID(id)
-	assert.Equal(createResourceNotFoundError("artifact", "ID", id), err)
-	assert.Nil(resource)
-
 	resources, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resources)
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
 	if len(resources) > 0 {
-		resourceToCompare, err := service.GetByID(resources[0].ID)
-		assert.NoError(err)
-		assert.EqualValues(resources[0], *resourceToCompare)
+		resourceToCompare, err := service.GetByID(resources[0].GetID())
+		require.NoError(t, err)
+		assert.EqualValues(t, resources[0], resourceToCompare)
 	}
 }
 
 func TestArtifactServiceGetByPartialName(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createArtifactService(t)
 	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName(emptyString)
-	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	assert.NotNil(resources)
-	assert.Len(resources, 0)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.NotNil(t, resources)
+	assert.Len(t, resources, 0)
 
 	resources, err = service.GetByPartialName(whitespaceString)
-	assert.Equal(err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	assert.NotNil(resources)
-	assert.Len(resources, 0)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.NotNil(t, resources)
+	assert.Len(t, resources, 0)
 
 	resources, err = service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resources)
+	assert.NoError(t, err)
+	assert.NotNil(t, resources)
 
 	// TODO
 
 	// if len(resources) > 0 {
 	// 	resourcesToCompare, err := service.GetByPartialName(resources[0].Name)
-	// 	assert.NoError(err)
-	// 	assert.EqualValues(resourcesToCompare[0], resources[0])
+	// 	assert.NoError(t, err)
+	// 	assert.EqualValues(t, resourcesToCompare[0], resources[0])
 	// }
 }
 

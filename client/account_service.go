@@ -1,55 +1,62 @@
 package client
 
 import (
-	"strings"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
+	"github.com/jinzhu/copier"
 )
 
-// accountService handles communication with Account-related methods of the Octopus API.
+// accountService handles communication with account-related methods of the
+// Octopus API.
 type accountService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	service
 }
 
-// newAccountService returns an accountService with a preconfigured client.
+// newAccountService returns an account service with a preconfigured client.
 func newAccountService(sling *sling.Sling, uriTemplate string) *accountService {
-	if sling == nil {
-		sling = getDefaultClient()
-	}
+	accountService := &accountService{}
+	accountService.service = newService(serviceAccountService, sling, uriTemplate, new(model.Account))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &accountService{
-		name:        serviceAccountService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return accountService
 }
 
-func (s accountService) getClient() *sling.Sling {
-	return s.sling
+func toAccountResource(account model.IAccount) model.IAccount {
+	var accountResource model.IAccount
+	switch account.GetAccountType() {
+	case "AmazonWebServicesAccount":
+		accountResource = new(model.AmazonWebServicesAccount)
+	case "AzureServicePrincipal":
+		accountResource = new(model.AzureServicePrincipalAccount)
+	case "AzureSubscription":
+		accountResource = new(model.AzureSubscriptionAccount)
+	case "SshKeyPair":
+		accountResource = new(model.SSHKeyAccount)
+	case "Token":
+		accountResource = new(model.TokenAccount)
+	case "UsernamePassword":
+		accountResource = new(model.UsernamePasswordAccount)
+	}
+
+	copier.Copy(accountResource, account)
+	return accountResource
 }
 
-func (s accountService) getName() string {
-	return s.name
+func toAccountArray(accounts []*model.Account) []model.IAccount {
+	items := []model.IAccount{}
+	for _, account := range accounts {
+		items = append(items, toAccountResource(account))
+	}
+	return items
 }
 
-func (s accountService) getPagedResponse(path string) ([]model.Account, error) {
-	resources := []model.Account{}
+func (s *accountService) getPagedResponse(path string) ([]model.IAccount, error) {
+	resources := []*model.Account{}
 	loadNextPage := true
 
 	for loadNextPage {
 		resp, err := apiGet(s.getClient(), new(model.Accounts), path)
 		if err != nil {
-			return resources, err
+			return toAccountArray(resources), err
 		}
 
 		responseList := resp.(*model.Accounts)
@@ -57,49 +64,55 @@ func (s accountService) getPagedResponse(path string) ([]model.Account, error) {
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return resources, nil
-}
-
-func (s accountService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
+	return toAccountArray(resources), nil
 }
 
 // Add creates a new account.
-func (s accountService) Add(resource *model.Account) (*model.Account, error) {
+func (s *accountService) Add(resource model.IAccount) (model.IAccount, error) {
+	if resource == nil {
+		return nil, createInvalidParameterError(operationAdd, "resource")
+	}
+
 	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Account), path)
+	var account interface{}
+	switch resource.GetAccountType() {
+	case "AmazonWebServicesAccount":
+		account = new(model.AmazonWebServicesAccount)
+	case "AzureServicePrincipal":
+		account = new(model.AzureServicePrincipalAccount)
+	case "AzureSubscription":
+		account = new(model.AzureSubscriptionAccount)
+	case "SshKeyPair":
+		account = new(model.SSHKeyAccount)
+	case "Token":
+		account = new(model.TokenAccount)
+	case "UsernamePassword":
+		account = new(model.UsernamePasswordAccount)
+	}
+
+	resp, err := apiAdd(s.getClient(), resource, account, path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*model.Account), nil
-}
-
-// DeleteByID deletes the account that matches the input ID.
-func (s accountService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("account", "ID", id)
-	}
-
-	return err
+	return resp.(model.IAccount), nil
 }
 
 // GetAll returns all accounts. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s accountService) GetAll() ([]model.Account, error) {
-	items := []model.Account{}
+func (s *accountService) GetAll() ([]model.IAccount, error) {
+	items := []*model.Account{}
 	path, err := getAllPath(s)
 	if err != nil {
-		return items, err
+		return toAccountArray(items), err
 	}
 
 	_, err = apiGet(s.getClient(), &items, path)
-	return items, err
+	return toAccountArray(items), err
 }
 
 // GetByID returns the account that matches the input ID. If one cannot be
@@ -110,68 +123,70 @@ func (s accountService) GetByID(id string) (*model.Account, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(model.Account), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
-		return nil, createResourceNotFoundError("account", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.Account), nil
 }
 
 // GetByIDs returns the accounts that match the input IDs.
-func (s accountService) GetByIDs(ids []string) ([]model.Account, error) {
+func (s *accountService) GetByIDs(ids []string) ([]model.IAccount, error) {
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
-		return []model.Account{}, err
+		return []model.IAccount{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
-// GetByAccountType performs a lookup and returns the Accounts with a matching AccountType.
-func (s accountService) GetByAccountType(accountType enum.AccountType) ([]model.Account, error) {
+// GetByAccountType performs a lookup and returns the accounts with a matching
+// account type.
+func (s *accountService) GetByAccountType(accountType string) ([]model.IAccount, error) {
 	path, err := getByAccountTypePath(s, accountType)
 	if err != nil {
-		return []model.Account{}, err
+		return []model.IAccount{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
 // GetByName performs a lookup and returns a single instance of an account with a matching name.
-func (s accountService) GetByName(name string) (*model.Account, error) {
-	resourceList, err := s.GetByPartialName(name)
+func (s *accountService) GetByName(name string) (model.IAccount, error) {
+	accounts, err := s.GetByPartialName(name)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, resource := range resourceList {
-		if resource.Name == name {
-			return &resource, nil
+	for _, account := range accounts {
+		if account.GetName() == name {
+			return toAccountResource(account), nil
 		}
 	}
 
 	return nil, nil
 }
 
-// GetByPartialName performs a lookup and returns instances of an Account with a matching partial name.
-func (s accountService) GetByPartialName(name string) ([]model.Account, error) {
+// GetByPartialName performs a lookup and returns instances of an account with
+// a matching partial name.
+func (s *accountService) GetByPartialName(name string) ([]model.IAccount, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return []model.Account{}, err
+		return []model.IAccount{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
 // GetUsages lists the projects and deployments which are using an account.
-func (s accountService) GetUsages(account model.Account) (*model.AccountUsage, error) {
+func (s *accountService) GetUsages(account model.IAccount) (*model.AccountUsage, error) {
 	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
 	}
 
-	path := account.Links[linkUsages]
+	path := account.GetLinks()[linkUsages]
 
 	resp, err := apiGet(s.getClient(), new(model.AccountUsage), path)
 	if err != nil {
@@ -182,18 +197,36 @@ func (s accountService) GetUsages(account model.Account) (*model.AccountUsage, e
 }
 
 // Update modifies an account based on the one provided as input.
-func (s accountService) Update(resource model.Account) (*model.Account, error) {
-	path, err := getUpdatePath(s, resource)
+func (s *accountService) Update(account model.IAccount) (model.IAccount, error) {
+	if account == nil {
+		return nil, createInvalidParameterError(operationUpdate, parameterAccount)
+	}
+
+	path, err := getUpdatePath(s, account)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Account), path)
+	var resourceAccount interface{}
+	switch account.GetAccountType() {
+	case "AmazonWebServicesAccount":
+		resourceAccount = new(model.AmazonWebServicesAccount)
+	case "AzureServicePrincipal":
+		resourceAccount = new(model.AzureServicePrincipalAccount)
+	case "AzureSubscription":
+		resourceAccount = new(model.AzureSubscriptionAccount)
+	case "SshKeyPair":
+		resourceAccount = new(model.SSHKeyAccount)
+	case "Token":
+		resourceAccount = new(model.TokenAccount)
+	case "UsernamePassword":
+		resourceAccount = new(model.UsernamePasswordAccount)
+	}
+
+	resp, err := apiUpdate(s.getClient(), account, resourceAccount, path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*model.Account), nil
+	return resp.(model.IAccount), nil
 }
-
-var _ ServiceInterface = &accountService{}

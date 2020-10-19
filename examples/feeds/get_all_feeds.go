@@ -16,22 +16,20 @@ func GetAllFeedsExample() {
 	)
 
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
-
 	if err != nil {
 		// TODO: handle error
 	}
 
 	// Get all Feeds
 	feeds, err := client.Feeds.GetAll()
-
 	if err != nil {
 		// TODO: handle error
 	}
 
 	for _, feed := range feeds {
-		fmt.Printf("Feed ID: %s\n", feed.ID)
-		fmt.Printf("Feed Name: %s\n", feed.Name)
-		fmt.Printf("Feed Type: %s\n", feed.FeedType)
+		fmt.Printf("Feed ID: %s\n", feed.GetID())
+		fmt.Printf("Feed Name: %s\n", feed.GetName())
+		fmt.Printf("Feed Type: %s\n", feed.GetFeedType())
 		fmt.Println()
 	}
 }

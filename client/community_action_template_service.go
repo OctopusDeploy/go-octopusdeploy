@@ -1,40 +1,20 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 // communityActionTemplateService handles communication with Account-related methods of the Octopus API.
 type communityActionTemplateService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	service
 }
 
 // newCommunityActionTemplateService returns an communityActionTemplateService with a preconfigured client.
 func newCommunityActionTemplateService(sling *sling.Sling, uriTemplate string) *communityActionTemplateService {
-	if sling == nil {
-		sling = getDefaultClient()
-	}
-
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
 	return &communityActionTemplateService{
-		name:        serviceCommunityActionTemplateService,
-		sling:       sling,
-		uriTemplate: template,
+		service: newService(serviceCommunityActionTemplateService, sling, uriTemplate, new(model.CommunityActionTemplate)),
 	}
-}
-
-func (s communityActionTemplateService) getClient() *sling.Sling {
-	return s.sling
 }
 
 func (s communityActionTemplateService) getInstallationPath(resource model.CommunityActionTemplate) (string, error) {
@@ -49,7 +29,7 @@ func (s communityActionTemplateService) getInstallationPath(resource model.Commu
 	}
 
 	values := make(map[string]interface{})
-	values[parameterID] = resource.ID
+	values[parameterID] = resource.GetID()
 
 	path, err := s.getURITemplate().Expand(values)
 	path = path + "/installation"
@@ -57,12 +37,8 @@ func (s communityActionTemplateService) getInstallationPath(resource model.Commu
 	return path, err
 }
 
-func (s communityActionTemplateService) getName() string {
-	return s.name
-}
-
-func (s communityActionTemplateService) getPagedResponse(path string) ([]model.CommunityActionTemplate, error) {
-	resources := []model.CommunityActionTemplate{}
+func (s communityActionTemplateService) getPagedResponse(path string) ([]*model.CommunityActionTemplate, error) {
+	resources := []*model.CommunityActionTemplate{}
 	loadNextPage := true
 
 	for loadNextPage {
@@ -79,26 +55,12 @@ func (s communityActionTemplateService) getPagedResponse(path string) ([]model.C
 	return resources, nil
 }
 
-func (s communityActionTemplateService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
-// DeleteByID deletes the community action template that matches the input ID.
-func (s communityActionTemplateService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("community action template", "ID", id)
-	}
-
-	return err
-}
-
 // GetAll returns all community action templates. If none can be found or an
 // error occurs, it returns an empty collection.
-func (s communityActionTemplateService) GetAll() ([]model.CommunityActionTemplate, error) {
+func (s communityActionTemplateService) GetAll() ([]*model.CommunityActionTemplate, error) {
 	path, err := getPath(s)
 	if err != nil {
-		return []model.CommunityActionTemplate{}, err
+		return []*model.CommunityActionTemplate{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -114,17 +76,17 @@ func (s communityActionTemplateService) GetByID(id string) (*model.CommunityActi
 
 	resp, err := apiGet(s.getClient(), new(model.CommunityActionTemplate), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("community action template", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.CommunityActionTemplate), nil
 }
 
 // GetByIDs returns the accounts that match the input IDs.
-func (s communityActionTemplateService) GetByIDs(ids []string) ([]model.CommunityActionTemplate, error) {
+func (s communityActionTemplateService) GetByIDs(ids []string) ([]*model.CommunityActionTemplate, error) {
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
-		return []model.CommunityActionTemplate{}, err
+		return []*model.CommunityActionTemplate{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -148,11 +110,11 @@ func (s communityActionTemplateService) GetByName(name string) (*model.Community
 
 	for _, item := range collection {
 		if item.Name == name {
-			return &item, nil
+			return item, nil
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, operationGetByName, name)
+	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
 }
 
 // Install installs a community step template.
@@ -162,7 +124,7 @@ func (s communityActionTemplateService) Install(resource model.CommunityActionTe
 		return nil, err
 	}
 
-	resp, err := apiPost(s.getClient(), resource, new(model.CommunityActionTemplate), path)
+	resp, err := apiPost(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
@@ -178,12 +140,10 @@ func (s communityActionTemplateService) Update(resource model.CommunityActionTem
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.CommunityActionTemplate), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.CommunityActionTemplate), nil
 }
-
-var _ ServiceInterface = &communityActionTemplateService{}

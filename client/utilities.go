@@ -10,13 +10,10 @@ import (
 	"github.com/dghubble/sling"
 )
 
-func isNil(i model.ResourceInterface) bool {
+func isNil(i model.IResource) bool {
 	var ret bool
 
 	switch i.(type) {
-	case *model.Account:
-		v := i.(*model.Account)
-		ret = v == nil
 	case *model.ActionTemplate:
 		v := i.(*model.ActionTemplate)
 		ret = v == nil
@@ -50,6 +47,9 @@ func isNil(i model.ResourceInterface) bool {
 	case *model.DeploymentStep:
 		v := i.(*model.DeploymentStep)
 		ret = v == nil
+	case *model.DeploymentTarget:
+		v := i.(*model.DeploymentTarget)
+		ret = v == nil
 	case *model.Environment:
 		v := i.(*model.Environment)
 		ret = v == nil
@@ -74,14 +74,8 @@ func isNil(i model.ResourceInterface) bool {
 	case *model.MachineConnectionStatus:
 		v := i.(*model.MachineConnectionStatus)
 		ret = v == nil
-	case *model.MachineEndpoint:
-		v := i.(*model.MachineEndpoint)
-		ret = v == nil
 	case *model.MachinePolicy:
 		v := i.(*model.MachinePolicy)
-		ret = v == nil
-	case *model.Machine:
-		v := i.(*model.Machine)
 		ret = v == nil
 	case *model.ProjectGroup:
 		v := i.(*model.ProjectGroup)
@@ -98,11 +92,17 @@ func isNil(i model.ResourceInterface) bool {
 	case *model.RootResource:
 		v := i.(*model.RootResource)
 		ret = v == nil
+	case *model.Runbook:
+		v := i.(*model.Runbook)
+		ret = v == nil
 	case *model.Space:
 		v := i.(*model.Space)
 		ret = v == nil
 	case *model.TagSet:
 		v := i.(*model.TagSet)
+		ret = v == nil
+	case *model.Team:
+		v := i.(*model.Team)
 		ret = v == nil
 	case *model.Tenant:
 		v := i.(*model.Tenant)
@@ -172,7 +172,7 @@ func createClientInitializationError(methodName string) error {
 }
 
 func createResourceNotFoundError(name string, identifier string, value string) error {
-	return fmt.Errorf("%s %s (%s) could not be found", name, identifier, value)
+	return fmt.Errorf("the service, %s could not find the %s (%s)", name, identifier, value)
 }
 
 func createValidationFailureError(methodName string, err error) error {

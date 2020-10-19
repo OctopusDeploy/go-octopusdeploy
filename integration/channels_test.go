@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -25,38 +26,24 @@ func TestAddAndDeleteAndGetValidChannel(t *testing.T) {
 	octopusClient := getOctopusClient()
 
 	projects, err := octopusClient.Projects.GetAll()
-
-	assert.NoError(t, err)
-	assert.NotNil(t, projects)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, projects)
 
 	for _, project := range projects {
-		channel, err := model.NewChannel(channelName, channelDescription, project.ID)
-
-		assert.NoError(t, err)
-		assert.NotNil(t, channel)
-
-		if err != nil {
-			return
-		}
+		channel := model.NewChannel(channelName, channelDescription, project.ID)
+		require.NotNil(t, channel)
 
 		createdChannel, err := octopusClient.Channels.Add(channel)
-
-		assert.NoError(t, err)
-		assert.NotNil(t, createdChannel)
+		require.NoError(t, err)
+		require.NotNil(t, createdChannel)
 
 		err = octopusClient.Channels.DeleteByID(createdChannel.ID)
-
-		assert.NoError(t, err)
-		assert.NotNil(t, createdChannel)
+		require.NoError(t, err)
+		require.NotNil(t, createdChannel)
 
 		deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.ID)
-
-		assert.Error(t, err)
-		assert.Nil(t, deletedChannel)
+		require.Error(t, err)
+		require.Nil(t, deletedChannel)
 	}
 }
 
@@ -64,40 +51,26 @@ func TestAddAndDeleteValidChannel(t *testing.T) {
 	octopusClient := getOctopusClient()
 
 	projects, err := octopusClient.Projects.GetAll()
-
-	assert.NoError(t, err)
-	assert.NotNil(t, projects)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, projects)
 
 	for _, project := range projects {
-		channel, err := model.NewChannel(channelName, channelDescription, project.ID)
+		channel := model.NewChannel(channelName, channelDescription, project.ID)
 		channel.IsDefault = true
-
-		assert.NoError(t, err)
-		assert.NotNil(t, channel)
-
-		if err != nil {
-			return
-		}
+		require.NotNil(t, channel)
 
 		createdChannel, err := octopusClient.Channels.Add(channel)
-
-		assert.NoError(t, err)
-		assert.NotNil(t, createdChannel)
+		require.NoError(t, err)
+		require.NotNil(t, createdChannel)
 
 		if !channel.IsDefault {
 			err = octopusClient.Channels.DeleteByID(createdChannel.ID)
-
-			assert.NoError(t, err)
-			assert.NotNil(t, createdChannel)
+			require.NoError(t, err)
+			require.NotNil(t, createdChannel)
 
 			deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.ID)
-
-			assert.Error(t, err)
-			assert.Nil(t, deletedChannel)
+			require.Error(t, err)
+			require.Nil(t, deletedChannel)
 		}
 	}
 }

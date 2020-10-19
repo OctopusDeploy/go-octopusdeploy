@@ -9,6 +9,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -18,23 +19,12 @@ const (
 
 func TestInterruptionsGetAll(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/interruptions", http.StatusOK, getInterruptionsResponseJSON)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, client)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	interruptions, err := client.Interruptions.GetAll()
+	require.NoError(t, err)
 
-	assert.NoError(t, err)
-
-	if err != nil {
-		return
-	}
-
-	assert.Nil(t, err)
 	assert.Equal(t, 1, len(interruptions))
 	assert.Equal(t, interruptionTitle, (interruptions)[0].Title)
 	assert.Equal(t, interruptionID, (interruptions)[0].ID)
@@ -45,112 +35,69 @@ func TestInterruptionsGetAll(t *testing.T) {
 }
 
 func TestInterruptionsGet(t *testing.T) {
-	assert := assert.New(t)
-
 	interruptionID := interruptionID
 	client, err := client.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID, http.StatusOK, interruptionJSON)
-
-	assert.NoError(err)
-	assert.NotNil(client)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	interruption, err := client.Interruptions.GetByID(interruptionID)
+	require.NoError(t, err)
+	require.NotNil(t, interruption)
 
-	assert.NoError(err)
-	assert.NotNil(interruption)
-
-	if err != nil {
-		return
-	}
-
-	assert.Equal(interruptionTitle, interruption.Title)
-	assert.Equal(interruptionID, interruption.ID)
-	assert.Equal(true, interruption.IsPending)
-	assert.Equal("/api/interruptions/Interruptions-1", interruption.Links["Self"])
-	assert.Equal("/api/interruptions/Interruptions-1/submit", interruption.Links["Submit"])
-	assert.Equal("/api/interruptions/Interruptions-1/responsible", interruption.Links["Responsible"])
+	assert.Equal(t, interruptionTitle, interruption.Title)
+	assert.Equal(t, interruptionID, interruption.ID)
+	assert.Equal(t, true, interruption.IsPending)
+	assert.Equal(t, "/api/interruptions/Interruptions-1", interruption.Links["Self"])
+	assert.Equal(t, "/api/interruptions/Interruptions-1/submit", interruption.Links["Submit"])
+	assert.Equal(t, "/api/interruptions/Interruptions-1/responsible", interruption.Links["Responsible"])
 }
 
 func TestInterruptionsTakeResponsibility(t *testing.T) {
-	assert := assert.New(t)
-
 	interruptionID := interruptionID
 	client, err := client.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
-
-	assert.NoError(err)
-	assert.NotNil(client)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	interruption, err := getInterruptonFromJSON(interruptionJSON)
-
-	assert.NoError(err)
-	assert.NotNil(interruption)
+	require.NoError(t, err)
+	require.NotNil(t, interruption)
 
 	user, err := client.Interruptions.TakeResponsibility(interruption)
-
-	assert.NoError(err)
-	assert.Equal("user@example.com", user.EmailAddress)
-	assert.Equal("user@example.com", user.Username)
-	assert.Equal("Users-1", user.ID)
-	assert.Equal("User Name", user.DisplayName)
+	require.NoError(t, err)
+	require.Equal(t, "user@example.com", user.EmailAddress)
+	require.Equal(t, "user@example.com", user.Username)
+	require.Equal(t, "Users-1", user.ID)
+	require.Equal(t, "User Name", user.DisplayName)
 }
 
 func TestInterruptionsGetResponsibilities(t *testing.T) {
-	assert := assert.New(t)
-
 	interruptionID := "Interruptions-1"
 	client, err := client.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
-
-	assert.NoError(err)
-	assert.NotNil(client)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	interruption, err := getInterruptonFromJSON(interruptionJSON)
-
-	assert.NoError(err)
-	assert.NotNil(interruption)
+	require.NoError(t, err)
+	require.NotNil(t, interruption)
 
 	user, err := client.Interruptions.GetResponsibility(interruption)
-
-	assert.NoError(err)
-	assert.NotNil(user)
-
-	if err != nil {
-		return
-	}
-
-	assert.Equal("user@example.com", user.EmailAddress)
-	assert.Equal("user@example.com", user.Username)
-	assert.Equal("Users-1", user.ID)
-	assert.Equal("User Name", user.DisplayName)
+	require.NoError(t, err)
+	require.NotNil(t, user)
+	require.Equal(t, "user@example.com", user.EmailAddress)
+	require.Equal(t, "user@example.com", user.Username)
+	require.Equal(t, "Users-1", user.ID)
+	require.Equal(t, "User Name", user.DisplayName)
 }
 
 func TestInterruptionsSubmit(t *testing.T) {
-	assert := assert.New(t)
-
 	interruptionID := "Interruptions-1"
 	client, err := client.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/submit", http.StatusOK, interruptionSubmittedJSON)
-
-	assert.NoError(err)
-	assert.NotNil(client)
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, client)
 
 	interruption, err := getInterruptonFromJSON(interruptionJSON)
-
-	assert.NoError(err)
-	assert.NotNil(interruption)
+	require.NoError(t, err)
+	require.NotNil(t, interruption)
 
 	submitRequest := model.InterruptionSubmitRequest{
 		Instructions: "Approve The Deployment",
@@ -159,16 +106,10 @@ func TestInterruptionsSubmit(t *testing.T) {
 	}
 
 	i, err := client.Interruptions.Submit(interruption, &submitRequest)
-
-	assert.NoError(err)
-	assert.NotNil(i)
-
-	if err != nil {
-		return
-	}
-
-	assert.Equal(false, i.IsPending)
-	assert.Equal("Interruptions-1", i.ID)
+	require.NoError(t, err)
+	require.NotNil(t, i)
+	require.Equal(t, false, i.IsPending)
+	require.Equal(t, "Interruptions-1", i.ID)
 }
 
 var getInterruptionsResponseJSON = fmt.Sprintf(`

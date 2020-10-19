@@ -42,7 +42,7 @@ func TestProjectGroupGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.ProjectGroups.GetByID(id)
-	require.Equal(t, createResourceNotFoundError("project group", "ID", id), err)
+	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
 	require.Nil(t, resource)
 }
 
@@ -97,15 +97,9 @@ func TestProjectGroupUpdate(t *testing.T) {
 	projectGroup.Description = newDescription
 
 	updatedProjectGroup, err := octopusClient.ProjectGroups.Update(*projectGroup)
-
-	assert.NoError(t, err, "error when updating projectgroup")
-
-	if err != nil {
-		return
-	}
-
-	assert.Equal(t, newProjectGroupName, updatedProjectGroup.Name, "projectgroup name was not updated")
-	assert.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")
+	require.NoError(t, err, "error when updating projectgroup")
+	require.Equal(t, newProjectGroupName, updatedProjectGroup.Name, "projectgroup name was not updated")
+	require.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")
 }
 
 func createTestProjectGroup(t *testing.T, octopusClient *client.Client, projectGroupName string) *model.ProjectGroup {

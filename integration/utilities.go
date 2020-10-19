@@ -2,6 +2,7 @@ package integration
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -35,9 +36,13 @@ func createClientInitializationError(methodName string) error {
 }
 
 func createResourceNotFoundError(name string, identifier string, value string) error {
-	return fmt.Errorf("%s %s (%s) could not be found", name, identifier, value)
+	return fmt.Errorf("the service, %s could not find the %s (%s)", name, identifier, value)
 }
 
 func createValidationFailureError(methodName string, err error) error {
 	return fmt.Errorf("validation failure in %s; %v", methodName, err)
+}
+
+func IsEqualLinks(linksA map[string]string, linksB map[string]string) bool {
+	return reflect.DeepEqual(linksA, linksB)
 }

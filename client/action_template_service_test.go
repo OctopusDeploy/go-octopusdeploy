@@ -1,7 +1,6 @@
 package client
 
 import (
-	"net/url"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
@@ -10,122 +9,111 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createActionTemplate(t *testing.T) (*model.ActionTemplate, error) {
-	resource, err := model.NewActionTemplate(getRandomName(), model.ActionTypeOctopusScript)
-	assert.NoError(t, err)
-	assert.NotNil(t, resource)
+func createActionTemplate(t *testing.T) *model.ActionTemplate {
+	resource := model.NewActionTemplate(getRandomName(), model.ActionTypeOctopusScript)
+	require.NotNil(t, resource)
 
 	resource.Properties = map[string]model.PropertyValue{}
 	resource.Properties[model.ActionTypeOctopusActionScriptBody] = model.PropertyValue(getRandomName())
 
-	return resource, err
+	return resource
 }
 
 func createActionTemplateService(t *testing.T) *actionTemplateService {
-	categoriesURL, _ := url.Parse(TestURIActionTemplatesCategories)
-	searchURL, _ := url.Parse(TestURIActionTemplatesSearch)
-	versionedLogoURL, _ := url.Parse(TestURIActionTemplateVersionedLogo)
+	categoriesPath := TestURIActionTemplatesCategories
+	logoPath := TestURIActionTemplatesLogo
+	searchPath := TestURIActionTemplatesSearch
+	versionedLogoPath := TestURIActionTemplateVersionedLogo
 
-	service := newActionTemplateService(nil, TestURIActionTemplates, *categoriesURL, *searchURL, *versionedLogoURL)
+	service := newActionTemplateService(nil, TestURIActionTemplates, categoriesPath, logoPath, searchPath, versionedLogoPath)
 	testNewService(t, service, TestURIActionTemplates, serviceActionTemplateService)
 	return service
 }
 
-func TestActionTemplateService(t *testing.T) {
-	t.Run("Add", TestActionTemplateServiceAdd)
-	t.Run("Delete", TestActionTemplateServiceDelete)
-	t.Run("GetByID", TestActionTemplateServiceGetByID)
-	t.Run("GetCategories", TestActionTemplateServiceGetCategories)
-	t.Run("New", TestActionTemplateServiceNew)
-	t.Run("Search", TestActionTemplateServiceSearch)
+func IsEqualActionTemplates(t *testing.T, expected *model.ActionTemplate, actual *model.ActionTemplate) {
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
+
+	// IResource
+	assert.Equal(t, expected.GetID(), actual.GetID())
+	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+
+	// ActionTemplate
+	assert.Equal(t, expected.ActionType, actual.ActionType)
+	assert.Equal(t, expected.CommunityActionTemplateID, actual.CommunityActionTemplateID)
+	assert.Equal(t, expected.Description, actual.Description)
+	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.Packages, actual.Packages)
+	assert.Equal(t, expected.Parameters, actual.Parameters)
+	assert.Equal(t, expected.Properties, actual.Properties)
+	assert.Equal(t, expected.SpaceID, actual.SpaceID)
+	assert.Equal(t, expected.Version, actual.Version)
 }
 
 func TestActionTemplateServiceAdd(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
-	assert.Nil(resource)
+	assert.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	assert.Nil(t, resource)
 
 	invalidResource := &model.ActionTemplate{}
 	resource, err = service.Add(invalidResource)
-	assert.Equal(createValidationFailureError("Add", invalidResource.Validate()), err)
-	assert.Nil(resource)
+	assert.Equal(t, createValidationFailureError("Add", invalidResource.Validate()), err)
+	assert.Nil(t, resource)
 
-	resource, err = createActionTemplate(t)
-	assert.NoError(err)
-	assert.NotNil(resource)
-
-	if err != nil {
-		return
-	}
+	resource = createActionTemplate(t)
+	require.NotNil(t, resource)
 
 	resource, err = service.Add(resource)
-	assert.NoError(err)
-	assert.NotNil(resource)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
 
-	err = service.DeleteByID(resource.ID)
-	assert.NoError(err)
-}
-
-func TestActionTemplateServiceDelete(t *testing.T) {
-	assert := assert.New(t)
-
-	service := createActionTemplateService(t)
-	require.NotNil(t, service)
-
-	err := service.DeleteByID(emptyString)
-	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
-
-	err = service.DeleteByID(whitespaceString)
-	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
-
-	id := getRandomName()
-	err = service.DeleteByID(id)
-	assert.Equal(createResourceNotFoundError("action template", "ID", id), err)
+	err = service.DeleteByID(resource.GetID())
+	assert.NoError(t, err)
 }
 
 func TestActionTemplateServiceGetCategories(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.GetCategories()
-	assert.NoError(err)
-	assert.NotEmpty(resource)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resource)
 }
 
 func TestActionTemplateServiceGetByID(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
-	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
-	assert.Nil(resource)
+	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
-	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
-	assert.Nil(resource)
+	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Nil(t, resource)
 
 	id := getRandomName()
 	resource, err = service.GetByID(id)
-	assert.Equal(createResourceNotFoundError("action template", "ID", id), err)
-	assert.Nil(resource)
+	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	require.Nil(t, resource)
 
 	resources, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resources)
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
-	if len(resources) > 0 {
-		resourceToCompare, err := service.GetByID(resources[0].ID)
-		assert.NoError(err)
-		assert.EqualValues(resources[0], *resourceToCompare)
+	for _, resource := range resources {
+		resourceToCompare, err := service.GetByID(resource.GetID())
+		require.NoError(t, err)
+		IsEqualActionTemplates(t, resource, resourceToCompare)
 	}
 }
 
@@ -134,38 +122,38 @@ func TestActionTemplateServiceNew(t *testing.T) {
 	client := &sling.Sling{}
 	uriTemplate := emptyString
 	serviceName := serviceActionTemplateService
-	categoriesURL := url.URL{}
-	searchURL := url.URL{}
-	versionedLogoURL := url.URL{}
+	categoriesPath := emptyString
+	logoPath := emptyString
+	searchPath := emptyString
+	versionedLogoPath := emptyString
 
 	testCases := []struct {
-		name             string
-		f                func(*sling.Sling, string, url.URL, url.URL, url.URL) *actionTemplateService
-		client           *sling.Sling
-		uriTemplate      string
-		categoriesURL    url.URL
-		searchURL        url.URL
-		versionedLogoURL url.URL
+		name              string
+		f                 func(*sling.Sling, string, string, string, string, string) *actionTemplateService
+		client            *sling.Sling
+		uriTemplate       string
+		categoriesPath    string
+		logoPath          string
+		searchPath        string
+		versionedLogoPath string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate, categoriesURL, searchURL, versionedLogoURL},
-		{"EmptyURITemplate", serviceFunction, client, emptyString, categoriesURL, searchURL, versionedLogoURL},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, categoriesURL, searchURL, versionedLogoURL},
+		{"NilClient", serviceFunction, nil, uriTemplate, categoriesPath, logoPath, searchPath, versionedLogoPath},
+		{"EmptyURITemplate", serviceFunction, client, emptyString, categoriesPath, logoPath, searchPath, versionedLogoPath},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, categoriesPath, logoPath, searchPath, versionedLogoPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			service := tc.f(tc.client, tc.uriTemplate, tc.categoriesURL, tc.searchURL, tc.versionedLogoURL)
+			service := tc.f(tc.client, tc.uriTemplate, tc.categoriesPath, tc.logoPath, tc.searchPath, tc.versionedLogoPath)
 			testNewService(t, service, uriTemplate, serviceName)
 		})
 	}
 }
 
 func TestActionTemplateServiceSearch(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.Search()
-	assert.NoError(err)
-	assert.NotEmpty(resource)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resource)
 }

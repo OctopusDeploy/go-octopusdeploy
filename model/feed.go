@@ -1,89 +1,58 @@
 package model
 
-import (
-	"time"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
-	"github.com/go-playground/validator/v10"
-)
-
-type Feeds struct {
-	Items []Feed `json:"Items"`
-	PagedResults
-}
+import "github.com/go-playground/validator/v10"
 
 type Feed struct {
-	AccessKey                         string         `json:"AccessKey,omitempty"`
-	APIVersion                        string         `json:"ApiVersion,omitempty"`
-	DeleteUnreleasedPackagesAfterDays int            `json:"DeleteUnreleasedPackagesAfterDays,omitempty"`
-	DownloadAttempts                  int            `json:"DownloadAttempts,omitempty"`
-	DownloadRetryBackoffSeconds       int            `json:"DownloadRetryBackoffSeconds,omitempty"`
-	EnhancedMode                      bool           `json:"EnhancedMode,omitempty"`
-	FeedType                          enum.FeedType  `json:"FeedType,omitempty"`
-	FeedURI                           string         `json:"FeedUri,omitempty"`
-	IsBuiltInRepoSyncEnabled          bool           `json:"IsBuiltInRepoSyncEnabled,omitempty"`
-	Name                              string         `json:"Name,omitempty"`
-	Password                          SensitiveValue `json:"Password,omitempty"`
-	PackageAcquisitionLocationOptions []string       `json:"PackageAcquisitionLocationOptions,omitempty"`
-	Region                            string         `json:"Region,omitempty"`
-	RegistryPath                      string         `json:"RegistryPath,omitempty"`
-	SecretKey                         SensitiveValue `json:"SecretKey,omitempty"`
-	SpaceID                           string         `json:"SpaceId,omitempty"`
-	Username                          string         `json:"Username,omitempty"`
+	AccessKey                         string          `json:"AccessKey,omitempty"`
+	APIVersion                        string          `json:"ApiVersion,omitempty"`
+	DeleteUnreleasedPackagesAfterDays *int            `json:"DeleteUnreleasedPackagesAfterDays,omitempty"`
+	DownloadAttempts                  int             `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds       int             `json:"DownloadRetryBackoffSeconds"`
+	EnhancedMode                      bool            `json:"EnhancedMode"`
+	FeedType                          string          `json:"FeedType,omitempty"`
+	FeedURI                           *string         `json:"FeedUri,omitempty"`
+	IsBuiltInRepoSyncEnabled          bool            `json:"IsBuiltInRepoSyncEnabled,omitempty"`
+	Name                              string          `json:"Name"`
+	Password                          *SensitiveValue `json:"Password,omitempty"`
+	PackageAcquisitionLocationOptions []string        `json:"PackageAcquisitionLocationOptions,omitempty"`
+	Region                            string          `json:"Region,omitempty"`
+	RegistryPath                      string          `json:"RegistryPath,omitempty"`
+	SecretKey                         *SensitiveValue `json:"SecretKey,omitempty"`
+	SpaceID                           string          `json:"SpaceId,omitempty"`
+	Username                          string          `json:"Username,omitempty"`
 
 	Resource
 }
 
-// GetID returns the ID value of the Feed.
-func (resource Feed) GetID() string {
-	return resource.ID
+type Feeds struct {
+	Items []*Feed `json:"Items"`
+	PagedResults
 }
 
-// GetLastModifiedBy returns the name of the account that modified the value of this Feed.
-func (resource Feed) GetLastModifiedBy() string {
-	return resource.LastModifiedBy
-}
-
-// GetLastModifiedOn returns the time when the value of this Feed was changed.
-func (resource Feed) GetLastModifiedOn() *time.Time {
-	return resource.LastModifiedOn
-}
-
-// GetLinks returns the associated links with the value of this Feed.
-func (resource Feed) GetLinks() map[string]string {
-	return resource.Links
-}
-
-func (resource Feed) SetID(id string) {
-	resource.ID = id
-}
-
-func (resource Feed) SetLastModifiedBy(name string) {
-	resource.LastModifiedBy = name
-}
-
-func (resource Feed) SetLastModifiedOn(time *time.Time) {
-	resource.LastModifiedOn = time
-}
-
-// Validate checks the state of the Feed and returns an error if invalid.
-func (resource Feed) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(resource)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func NewFeed(name string, feedType enum.FeedType, feedURI string) *Feed {
+func NewFeed(name string, feedType string, feedURI string) *Feed {
 	return &Feed{
-		Name:     name,
 		FeedType: feedType,
-		FeedURI:  feedURI,
+		FeedURI:  &feedURI,
+		Name:     name,
+		Resource: *newResource(),
 	}
 }
 
-var _ ResourceInterface = &Feed{}
+func (f *Feed) GetFeedType() string {
+	return f.FeedType
+}
+
+func (f *Feed) GetName() string {
+	return f.Name
+}
+
+func (f *Feed) SetName(name string) {
+	f.Name = name
+}
+
+// Validate checks the state of the feed and returns an error if invalid.
+func (f Feed) Validate() error {
+	return validator.New().Struct(f)
+}
+
+var _ IFeed = &Feed{}

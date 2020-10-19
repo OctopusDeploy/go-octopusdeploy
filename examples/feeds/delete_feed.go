@@ -27,7 +27,7 @@ func DeleteFeedExample() {
 	feed := feeds[0]
 
 	// Delete feed
-	err = client.Feeds.DeleteByID(feed.ID)
+	err = client.Feeds.DeleteByID(feed.GetID())
 	if err != nil {
 		// TODO: handle error
 	}

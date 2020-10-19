@@ -2,7 +2,6 @@ package examples
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	uuid "github.com/google/uuid"
 )
@@ -13,19 +12,19 @@ func CreateAzureServicePrincipalExample() {
 		octopusAPIKey string = "API-YOURAPIKEY"
 
 		// Azure specific details
-		azureSubscriptionID uuid.UUID            = uuid.MustParse("Subscription UUID")
 		azureApplicationID  uuid.UUID            = uuid.MustParse("Client UUID")
-		azureTenantID       uuid.UUID            = uuid.MustParse("Tenant UUID")
 		azureSecret         model.SensitiveValue = model.NewSensitiveValue("Secret")
+		azureSubscriptionID uuid.UUID            = uuid.MustParse("Subscription UUID")
+		azureTenantID       uuid.UUID            = uuid.MustParse("Tenant UUID")
 
 		// Octopus Account details
-		spaceName           string                      = "default"
-		accountName         string                      = "Azure Account"
-		accountDescription  string                      = "My Azure Account"
-		tenantParticipation enum.TenantedDeploymentMode = enum.Untenanted
-		tenantTags          []string                    = nil
-		tenantIDs           []string                    = nil
-		environmentIDs      []string                    = nil
+		spaceName           string   = "default"
+		accountName         string   = "Azure Account"
+		accountDescription  string   = "My Azure Account"
+		tenantParticipation string   = "Untenanted"
+		tenantTags          []string = nil
+		tenantIDs           []string = nil
+		environmentIDs      []string = nil
 	)
 
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
@@ -34,7 +33,7 @@ func CreateAzureServicePrincipalExample() {
 		// TODO: handle error
 	}
 
-	azureAccount, err := model.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
+	azureAccount := model.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
 
 	if err != nil {
 		// TODO: handle error
@@ -42,7 +41,7 @@ func CreateAzureServicePrincipalExample() {
 
 	// Fill in account details
 	azureAccount.Description = accountDescription
-	azureAccount.TenantedDeploymentParticipation = tenantParticipation
+	azureAccount.TenantedDeploymentMode = tenantParticipation
 	azureAccount.TenantTags = tenantTags
 	azureAccount.TenantIDs = tenantIDs
 	azureAccount.EnvironmentIDs = environmentIDs

@@ -2,13 +2,12 @@ package model
 
 import (
 	"time"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 )
 
+// ActivityLogEntry represents an activity log entry.
 type ActivityLogEntry struct {
-	Category    enum.ActivityLogCategory `json:"Category,omitempty"`
-	Detail      string                   `json:"Detail,omitempty"`
-	MessageText string                   `json:"MessageText,omitempty"`
-	OccurredAt  time.Time                `json:"OccurredAt,omitempty"`
+	Category    string    `json:"Category,omitempty" validate:"required,oneof=Abandoned Alert Error Fatal Finished Gap Highlight Info Planned Trace Updated Verbose Wait Warning"`
+	Detail      string    `json:"Detail,omitempty"`
+	MessageText string    `json:"MessageText,omitempty"`
+	OccurredAt  time.Time `json:"OccurredAt,omitempty"`
 }

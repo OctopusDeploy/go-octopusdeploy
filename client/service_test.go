@@ -1,42 +1,53 @@
 package client
 
 import (
+	"log"
+	"net/http"
+	"net/url"
+	"os"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
-	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestGetOperations(t *testing.T) {
-	testCases := []struct {
-		name        string
-		f           func(*sling.Sling, string) *accountService
-		uriTemplate string
-	}{
-		{"Accounts", newAccountService, TestURIAccounts},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			service := tc.f(nil, tc.uriTemplate)
+func getClient() *Client {
+	octopusURL := os.Getenv("OCTOPUS_URL")
+	octopusAPIKey := os.Getenv("OCTOPUS_APIKEY")
 
-			assert.NotNil(t, service)
-			if service == nil {
-				return
-			}
-		})
+	if isEmpty(octopusURL) || isEmpty(octopusAPIKey) {
+		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
 	}
+
+	// NOTE: You can direct traffic through a proxy trace like Fiddler
+	// Everywhere by preconfiguring the client to route traffic through a
+	// proxy.
+
+	proxyStr := "http://127.0.0.1:5555"
+	proxyURL, err := url.Parse(proxyStr)
+	if err != nil {
+		log.Println(err)
+	}
+
+	tr := &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+	}
+	httpClient := http.Client{Transport: tr}
+
+	octopusClient, err := NewClient(&httpClient, octopusURL, octopusAPIKey, emptyString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return octopusClient
 }
 
-func testNewService(t *testing.T, service ServiceInterface, uriTemplate string, serviceName string) {
-	assert := assert.New(t)
-
-	assert.NotNil(service)
-	assert.NotNil(service.getClient())
+func testNewService(t *testing.T, service IService, uriTemplate string, serviceName string) {
+	require.NotNil(t, service)
+	require.NotNil(t, service.getClient())
 
 	template, err := uritemplates.Parse(uriTemplate)
-	assert.NoError(err)
-
-	assert.Equal(service.getURITemplate(), template)
-	assert.Equal(service.getName(), serviceName)
+	require.NoError(t, err)
+	require.Equal(t, service.getURITemplate(), template)
+	require.Equal(t, service.getName(), serviceName)
 }

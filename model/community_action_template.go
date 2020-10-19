@@ -1,13 +1,9 @@
 package model
 
-import (
-	"time"
-
-	"github.com/go-playground/validator/v10"
-)
+import "github.com/go-playground/validator/v10"
 
 type CommunityActionTemplates struct {
-	Items []CommunityActionTemplate `json:"Items"`
+	Items []*CommunityActionTemplate `json:"Items"`
 	PagedResults
 }
 
@@ -15,8 +11,8 @@ type CommunityActionTemplate struct {
 	Author      string                           `json:"Author,omitempty"`
 	Description string                           `json:"Description,omitempty"`
 	HistoryURL  string                           `json:"HistoryUrl,omitempty"`
-	Name        string                           `json:"Name,omitempty"`
-	Parameters  []*ActionTemplateParameter       `json:"Parameters"`
+	Name        string                           `json:"Name" validate:"required"`
+	Parameters  []ActionTemplateParameter        `json:"Parameters"`
 	Properties  map[string]PropertyValueResource `json:"Properties,omitempty"`
 	Type        string                           `json:"Type,omitempty"`
 	Version     int32                            `json:"Version,omitempty"`
@@ -25,63 +21,17 @@ type CommunityActionTemplate struct {
 	Resource
 }
 
-// NewCommunityActionTemplate initializes a community action template. If any
-// input parameters are invalid, it will return nil and an error.
-func NewCommunityActionTemplate(name string) (*CommunityActionTemplate, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("CommunityActionTemplate", "name")
-	}
-
+// NewCommunityActionTemplate initializes a community action template.
+func NewCommunityActionTemplate(name string) *CommunityActionTemplate {
 	return &CommunityActionTemplate{
-		Name: name,
-	}, nil
-}
-
-// GetID returns the ID value of the CommunityActionTemplate.
-func (resource CommunityActionTemplate) GetID() string {
-	return resource.ID
-}
-
-// GetLastModifiedBy returns the name of the account that modified the value of this CommunityActionTemplate.
-func (resource CommunityActionTemplate) GetLastModifiedBy() string {
-	return resource.LastModifiedBy
-}
-
-// GetLastModifiedOn returns the time when the value of this CommunityActionTemplate was changed.
-func (resource CommunityActionTemplate) GetLastModifiedOn() *time.Time {
-	return resource.LastModifiedOn
-}
-
-// GetLinks returns the associated links with the value of this CommunityActionTemplate.
-func (resource CommunityActionTemplate) GetLinks() map[string]string {
-	return resource.Links
-}
-
-// SetID
-func (resource CommunityActionTemplate) SetID(id string) {
-	resource.ID = id
-}
-
-// SetLastModifiedBy
-func (resource CommunityActionTemplate) SetLastModifiedBy(name string) {
-	resource.LastModifiedBy = name
-}
-
-// SetLastModifiedOn
-func (resource CommunityActionTemplate) SetLastModifiedOn(time *time.Time) {
-	resource.LastModifiedOn = time
-}
-
-// Validate checks the state of the CommunityActionTemplate and returns an error if invalid.
-func (resource CommunityActionTemplate) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(resource)
-
-	if err != nil {
-		return err
+		Name:       name,
+		Parameters: []ActionTemplateParameter{},
+		Properties: map[string]PropertyValueResource{},
+		Resource:   *newResource(),
 	}
-
-	return nil
 }
 
-var _ ResourceInterface = &CommunityActionTemplate{}
+// Validate checks the state of the lifecycle and returns an error if invalid.
+func (c *CommunityActionTemplate) Validate() error {
+	return validator.New().Struct(c)
+}

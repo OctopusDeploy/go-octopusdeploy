@@ -17,12 +17,8 @@ type DeploymentAction struct {
 }
 
 // NewDeploymentAction initializes a DeploymentAction with a name.
-func NewDeploymentAction(name string) (*DeploymentAction, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("NewDeploymentAction", "name")
-	}
-
+func NewDeploymentAction(name string) *DeploymentAction {
 	return &DeploymentAction{
 		Name: name,
-	}, nil
+	}
 }

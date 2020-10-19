@@ -11,51 +11,36 @@ func CreateFeedExample() {
 		octopusURL    string = "https://youroctourl"
 		octopusAPIKey string = "API-YOURAPIKEY"
 
-		spaceName                   string = "Default"
-		feedName                    string = "nuget.org 3"
-		feedURI                     string = "https://api.nuget.org/v3/index.json"
-		downloadAttempts            int    = 5
-		downloadRetryBackoffSeconds int    = 10
-		useExtendedAPI              bool   = false
+		spaceName      string = "Default"
+		feedName       string = "nuget.org 3"
+		feedURI        string = "https://api.nuget.org/v3/index.json"
+		useExtendedAPI bool   = false
 		// optional
 		feedUsername string = ""
 		feedPassword string = ""
 	)
 
 	client, err := client.NewClient(nil, octopusURL, octopusAPIKey, spaceName)
-
 	if err != nil {
 		// TODO: handle error
 	}
 
-	space, err := client.Spaces.GetByName(spaceName)
-
+	nuGetFeed := model.NewNuGetFeed(feedName, feedURI)
 	if err != nil {
 		// TODO: handle error
 	}
 
-	feedResource := model.NewNuGetFeed(feedName)
-
-	if err != nil {
-		// TODO: handle error
-	}
-
-	feedResource.SpaceID = space.ID
-	feedResource.FeedURI = feedURI
-	feedResource.DownloadAttempts = downloadAttempts
-	feedResource.DownloadRetryBackoffSeconds = downloadRetryBackoffSeconds
-	feedResource.EnhancedMode = useExtendedAPI
+	nuGetFeed.EnhancedMode = useExtendedAPI
 
 	if len(feedUsername) > 0 {
-		feedResource.Username = feedUsername
+		nuGetFeed.Username = feedUsername
 	}
-
 	if len(feedPassword) > 0 {
-		feedResource.Password = model.NewSensitiveValue(feedPassword)
+		password := model.NewSensitiveValue(feedPassword)
+		nuGetFeed.Password = &password
 	}
 
-	_, err = client.Feeds.Add(*feedResource)
-
+	_, err = client.Feeds.Add(nuGetFeed)
 	if err != nil {
 		// TODO: handle error
 	}

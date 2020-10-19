@@ -1,7 +1,11 @@
 package model
 
-import "github.com/OctopusDeploy/go-octopusdeploy/enum"
-
 type MachineConnectivityPolicy struct {
-	MachineConnectivityBehavior enum.MachineConnectivityBehavior `json:"MachineConnectivityBehavior,omitempty"`
+	MachineConnectivityBehavior string `json:"MachineConnectivityBehavior" validate:"oneof=ExpectedToBeOnline MayBeOfflineAndCanBeSkipped"`
+}
+
+func NewMachineConnectivityPolicy() *MachineConnectivityPolicy {
+	return &MachineConnectivityPolicy{
+		MachineConnectivityBehavior: "ExpectedToBeOnline",
+	}
 }

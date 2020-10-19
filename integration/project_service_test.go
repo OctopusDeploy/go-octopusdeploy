@@ -41,7 +41,7 @@ func TestProjectGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.Projects.GetByID(id)
-	require.Equal(t, createResourceNotFoundError("project", "ID", id), err)
+	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
 	require.Nil(t, resource)
 }
 
@@ -98,16 +98,10 @@ func TestProjectUpdate(t *testing.T) {
 	project.ProjectConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 
 	updatedProject, err := octopusClient.Projects.Update(project)
-
-	assert.NoError(t, err, "error when updating project")
-
-	if err != nil {
-		return
-	}
-
-	assert.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
-	assert.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
-	assert.Equal(t, newSkipMachineBehavior, project.ProjectConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name was not updated")
+	require.NoError(t, err)
+	require.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
+	require.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
+	require.Equal(t, newSkipMachineBehavior, project.ProjectConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name was not updated")
 }
 
 func TestProjectGetByName(t *testing.T) {
@@ -118,8 +112,8 @@ func TestProjectGetByName(t *testing.T) {
 	defer cleanProject(t, octopusClient, project.ID)
 
 	foundProject, err := octopusClient.Projects.GetByName(project.Name)
-	assert.NoError(t, err, "error when looking for project when not expected")
-	assert.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
+	require.NoError(t, err, "error when looking for project when not expected")
+	require.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
 }
 
 func createTestProject(t *testing.T, octopusClient *client.Client, projectName string) model.Project {
@@ -140,7 +134,6 @@ func createTestProject(t *testing.T, octopusClient *client.Client, projectName s
 
 func getTestProject(projectName string) model.Project {
 	p := model.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
-
 	return *p
 }
 

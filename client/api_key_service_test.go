@@ -35,39 +35,41 @@ func TestNewAPIKeyService(t *testing.T) {
 
 func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 	service := createAPIKeyService(t)
-	assert := assert.New(t)
-
 	resource, err := service.GetByUserID(emptyString)
 
-	assert.Equal(err, createInvalidParameterError(operationGetByUserID, parameterUserID))
-	assert.Nil(resource)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByUserID, parameterUserID))
+	assert.Nil(t, resource)
 
 	resource, err = service.GetByUserID(whitespaceString)
 
-	assert.Equal(err, createInvalidParameterError(operationGetByUserID, parameterUserID))
-	assert.Nil(resource)
+	assert.Equal(t, err, createInvalidParameterError(operationGetByUserID, parameterUserID))
+	assert.Nil(t, resource)
 }
 
 func TestAPIKeyServiceDeleteByID(t *testing.T) {
 	service := createAPIKeyService(t)
-	assert := assert.New(t)
-
 	user := createServiceAccountUser(t)
-	resource, err := model.NewAPIKey(getRandomName(), user.ID)
+	resource := model.NewAPIKey(getRandomName(), user.ID)
+	assert.NotNil(t, resource)
 
-	assert.NoError(err)
-	assert.NotNil(resource)
-
-	resource, err = service.Create(resource)
-
-	assert.NoError(err)
-	assert.NotNil(resource)
+	resource, err := service.Create(resource)
+	assert.NoError(t, err)
+	assert.NotNil(t, resource)
 }
 
 func createServiceAccountUser(t *testing.T) *model.User {
-	service := newUserService(nil, TestURIUsers)
-	assert := assert.New(t)
-
+	service := newUserService(nil,
+		TestURIUsers,
+		TestURIAPIKeys,
+		TestURIAuthenticateOctopusID,
+		TestURICurrentUser,
+		TestURIExternalUserSearch,
+		TestURIRegister,
+		TestURISignIn,
+		TestURISignOut,
+		TestURIUserAuthentication,
+		TestURIUserIdentityMetadata,
+	)
 	testNewService(t, service, TestURIUsers, serviceUserService)
 
 	user := model.NewUser(getRandomName(), getRandomName())
@@ -75,8 +77,8 @@ func createServiceAccountUser(t *testing.T) *model.User {
 	assert.NotNil(t, user)
 
 	resource, err := service.Add(user)
-	assert.NoError(err)
-	assert.NotNil(resource)
+	assert.NoError(t, err)
+	assert.NotNil(t, resource)
 
 	return resource
 }

@@ -11,6 +11,12 @@ type AzureWebAppEndpoint struct {
 
 // NewAzureWebAppEndpoint creates a new endpoint for Azure web apps.
 func NewAzureWebAppEndpoint() *AzureWebAppEndpoint {
-	resource := &AzureWebAppEndpoint{}
-	return resource
+	azureWebAppEndpoint := &AzureWebAppEndpoint{
+		endpoint: *newEndpoint("AzureWebApp"),
+	}
+
+	return azureWebAppEndpoint
 }
+
+var _ IResource = &AzureWebAppEndpoint{}
+var _ IEndpoint = &AzureWebAppEndpoint{}

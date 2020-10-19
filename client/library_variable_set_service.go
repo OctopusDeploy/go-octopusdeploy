@@ -1,46 +1,23 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type libraryVariableSetService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	service
 }
 
 func newLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *libraryVariableSetService {
-	if sling == nil {
-		sling = getDefaultClient()
-	}
+	libraryVariableSetService := &libraryVariableSetService{}
+	libraryVariableSetService.service = newService(serviceLibraryVariableSetService, sling, uriTemplate, new(model.LibraryVariableSet))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &libraryVariableSetService{
-		name:        serviceLibraryVariableSetService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return libraryVariableSetService
 }
 
-func (s libraryVariableSetService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s libraryVariableSetService) getName() string {
-	return s.name
-}
-
-func (s libraryVariableSetService) getPagedResponse(path string) ([]model.LibraryVariableSet, error) {
-	resources := []model.LibraryVariableSet{}
+func (s libraryVariableSetService) getPagedResponse(path string) ([]*model.LibraryVariableSet, error) {
+	resources := []*model.LibraryVariableSet{}
 	loadNextPage := true
 
 	for loadNextPage {
@@ -57,10 +34,6 @@ func (s libraryVariableSetService) getPagedResponse(path string) ([]model.Librar
 	return resources, nil
 }
 
-func (s libraryVariableSetService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
 // GetByID returns the library variable set that matches the input ID. If one
 // cannot be found, it returns nil and an error.
 func (s libraryVariableSetService) GetByID(id string) (*model.LibraryVariableSet, error) {
@@ -71,7 +44,7 @@ func (s libraryVariableSetService) GetByID(id string) (*model.LibraryVariableSet
 
 	resp, err := apiGet(s.getClient(), new(model.LibraryVariableSet), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("library variable set", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.LibraryVariableSet), nil
@@ -79,8 +52,8 @@ func (s libraryVariableSetService) GetByID(id string) (*model.LibraryVariableSet
 
 // GetAll returns all library variable sets. If none can be found or an error
 // occurs, it returns an empty collection.
-func (s libraryVariableSetService) GetAll() ([]model.LibraryVariableSet, error) {
-	items := []model.LibraryVariableSet{}
+func (s libraryVariableSetService) GetAll() ([]*model.LibraryVariableSet, error) {
+	items := []*model.LibraryVariableSet{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -91,10 +64,10 @@ func (s libraryVariableSetService) GetAll() ([]model.LibraryVariableSet, error) 
 }
 
 // GetByPartialName performs a lookup and returns a list of library variable sets with a matching partial name.
-func (s libraryVariableSetService) GetByPartialName(name string) ([]model.LibraryVariableSet, error) {
+func (s libraryVariableSetService) GetByPartialName(name string) ([]*model.LibraryVariableSet, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return []model.LibraryVariableSet{}, err
+		return []*model.LibraryVariableSet{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -107,37 +80,29 @@ func (s libraryVariableSetService) Add(resource *model.LibraryVariableSet) (*mod
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.LibraryVariableSet), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.LibraryVariableSet), nil
-}
-
-// DeleteByID deletes the library variable set that matches the input ID.
-func (s libraryVariableSetService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("library variable set", "ID", id)
-	}
-
-	return err
 }
 
 // Update modifies a library variable set based on the one provided as input.
-func (s libraryVariableSetService) Update(resource model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
-	path, err := getUpdatePath(s, resource)
+func (s libraryVariableSetService) Update(libraryVariableSet *model.LibraryVariableSet) (*model.LibraryVariableSet, error) {
+	if libraryVariableSet == nil {
+		return nil, createInvalidParameterError(operationUpdate, parameterLibraryVariableSet)
+	}
+
+	path, err := getUpdatePath(s, libraryVariableSet)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.LibraryVariableSet), path)
+	resp, err := apiUpdate(s.getClient(), libraryVariableSet, new(model.LibraryVariableSet), path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.LibraryVariableSet), nil
 }
-
-var _ ServiceInterface = &libraryVariableSetService{}

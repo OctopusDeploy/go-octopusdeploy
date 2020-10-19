@@ -5,43 +5,24 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type projectService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	experimentalSummariesPath string
+	pulsePath                 string
+
+	service
 }
 
-func newProjectService(sling *sling.Sling, uriTemplate string) *projectService {
-	if sling == nil {
-		sling = getDefaultClient()
+func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string, experimentalSummariesPath string) *projectService {
+	projectService := &projectService{
+		experimentalSummariesPath: experimentalSummariesPath,
+		pulsePath:                 pulsePath,
 	}
+	projectService.service = newService(serviceProjectService, sling, uriTemplate, new(model.Project))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &projectService{
-		name:        serviceProjectService,
-		sling:       sling,
-		uriTemplate: template,
-	}
-}
-
-func (s projectService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s projectService) getName() string {
-	return s.name
-}
-
-func (s projectService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
+	return projectService
 }
 
 // GetByID returns the project that matches the input ID. If one cannot be
@@ -54,7 +35,7 @@ func (s projectService) GetByID(id string) (*model.Project, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Project), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("project", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.Project), nil
@@ -62,8 +43,8 @@ func (s projectService) GetByID(id string) (*model.Project, error) {
 
 // GetAll returns all projects. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s projectService) GetAll() ([]model.Project, error) {
-	items := []model.Project{}
+func (s projectService) GetAll() ([]*model.Project, error) {
+	items := []*model.Project{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -92,15 +73,15 @@ func (s projectService) GetByName(name string) (*model.Project, error) {
 
 	for _, item := range collection {
 		if item.Name == name {
-			return &item, nil
+			return item, nil
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, operationGetByName, name)
+	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
 }
 
-func (s projectService) GetChannels(project model.Project) ([]model.Channel, error) {
-	channels := []model.Channel{}
+func (s projectService) GetChannels(project model.Project) ([]*model.Channel, error) {
+	channels := []*model.Channel{}
 
 	err := validateInternalState(s)
 
@@ -147,7 +128,7 @@ func (s projectService) GetSummary(project model.Project) (*model.ProjectSummary
 	return resp.(*model.ProjectSummary), nil
 }
 
-func (s projectService) GetReleases(project model.Project) ([]model.Release, error) {
+func (s projectService) GetReleases(project model.Project) ([]*model.Release, error) {
 	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
@@ -161,7 +142,7 @@ func (s projectService) GetReleases(project model.Project) ([]model.Release, err
 
 	path := strings.Split(url.Path, "{")[0]
 
-	p := []model.Release{}
+	p := []*model.Release{}
 	loadNextPage := true
 
 	for loadNextPage {
@@ -185,37 +166,25 @@ func (s projectService) Add(resource *model.Project) (*model.Project, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Project), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Project), nil
-}
-
-// DeleteByID deletes the project that matches the input ID.
-func (s projectService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("project", "ID", id)
-	}
-
-	return err
 }
 
 // Update modifies a project based on the one provided as input.
 func (s projectService) Update(resource model.Project) (*model.Project, error) {
-	path, err := getUpdatePath(s, resource)
+	path, err := getUpdatePath(s, &resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Project), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Project), nil
 }
-
-var _ ServiceInterface = &projectService{}

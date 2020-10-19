@@ -15,64 +15,49 @@ func createCommunityActionTemplateService(t *testing.T) *communityActionTemplate
 	return service
 }
 
-func TestCommunityActionTemplateService(t *testing.T) {
-	t.Run("GetAll", TestCommunityActionTemplateServiceGetAll)
-	t.Run("GetByID", TestCommunityActionTemplateServiceGetByID)
-	t.Run("GetByName", TestCommunityActionTemplateServiceGetByName)
-	t.Run("Install", TestCommunityActionTemplateServiceInstall)
-	t.Run("New", TestCommunityActionTemplateServiceNew)
-	t.Run("Parameters", TestCommunityActionTemplateServiceParameters)
-}
-
 func TestCommunityActionTemplateServiceGetByID(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resourceList)
+	assert.NoError(t, err)
+	assert.NotNil(t, resourceList)
 
 	if len(resourceList) > 0 {
 		resourceToCompare, err := service.GetByID(resourceList[0].ID)
-		assert.NoError(err)
-		assert.EqualValues(resourceList[0], *resourceToCompare)
+		assert.NoError(t, err)
+		assert.EqualValues(t, resourceList[0], *resourceToCompare)
 	}
 
 	value := getRandomName()
 	resource, err := service.GetByID(value)
 
-	assert.Equal(err, createResourceNotFoundError("community action template", "ID", value))
-	assert.Nil(resource)
+	assert.Equal(t, err, createResourceNotFoundError(service.getName(), "ID", value))
+	assert.Nil(t, resource)
 }
 
 func TestCommunityActionTemplateServiceGetByName(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resourceList)
+	assert.NoError(t, err)
+	assert.NotNil(t, resourceList)
 
 	if len(resourceList) > 0 {
 		resourceToCompare, err := service.GetByName(resourceList[0].Name)
-		assert.NoError(err)
-		assert.EqualValues(*resourceToCompare, resourceList[0])
+		assert.NoError(t, err)
+		assert.EqualValues(t, *resourceToCompare, resourceList[0])
 	}
 }
 
 func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resourceList, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resourceList)
+	assert.NoError(t, err)
+	assert.NotNil(t, resourceList)
 }
 
 func TestCommunityActionTemplateServiceNew(t *testing.T) {
@@ -112,29 +97,16 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 			t.Parallel()
 
 			service := createCommunityActionTemplateService(t)
-			assert := assert.New(t)
-
-			assert.NotNil(service)
-			if service == nil {
-				return
-			}
+			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-
-			assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
-			assert.Nil(resource)
-
-			err = service.DeleteByID(tc.parameter)
-
-			assert.Error(err)
-			assert.Equal(err, createInvalidParameterError(operationDeleteByID, parameterID))
+			assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+			assert.Nil(t, resource)
 		})
 	}
 }
 
 func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
 
@@ -153,22 +125,19 @@ func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
 	}
 
 	resourceListToCompare, err := service.GetByIDs(ids[0:2])
-	assert.NoError(err)
-	assert.NotNil(resourceListToCompare)
-	assert.Equal(2, len(resourceListToCompare))
+	assert.NoError(t, err)
+	assert.NotNil(t, resourceListToCompare)
+	assert.Equal(t, 2, len(resourceListToCompare))
 }
 
 func TestCommunityActionTemplateServiceInstall(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.Install(model.CommunityActionTemplate{})
-	assert.Error(err)
-	assert.Nil(resource)
+	require.Error(t, err)
+	require.Nil(t, resource)
 
-	resource, err = model.NewCommunityActionTemplate(getRandomName())
-	require.NoError(t, err)
+	resource = model.NewCommunityActionTemplate(getRandomName())
 	require.NotNil(t, resource)
 }

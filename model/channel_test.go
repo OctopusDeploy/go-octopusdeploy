@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -14,26 +15,18 @@ var (
 
 func TestEmptyChannel(t *testing.T) {
 	channel := &Channel{}
-
-	assert.NotNil(t, channel)
 	assert.Error(t, channel.Validate())
 }
 
 func TestChannelWithName(t *testing.T) {
 	channel := &Channel{Name: channelName}
-
-	assert.NotNil(t, channel)
 	assert.Error(t, channel.Validate())
 }
 
 func TestNewChannelWithEmptyName(t *testing.T) {
-	channel, err := NewChannel(emptyString, channelDescription, channelProjectID)
+	channel := NewChannel(emptyString, channelDescription, channelProjectID)
+	require.Error(t, channel.Validate())
 
-	assert.Error(t, err)
-	assert.Nil(t, channel)
-
-	channel, err = NewChannel(whitespaceString, channelDescription, channelProjectID)
-
-	assert.Error(t, err)
-	assert.Nil(t, channel)
+	channel = NewChannel(whitespaceString, channelDescription, channelProjectID)
+	require.Error(t, channel.Validate())
 }

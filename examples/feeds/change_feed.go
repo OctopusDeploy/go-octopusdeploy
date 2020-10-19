@@ -28,7 +28,7 @@ func ChangeFeedExample() {
 	feed := feeds[0]
 
 	// Change feed name
-	feed.Name = newFeedName
+	feed.SetName(newFeedName)
 
 	// Update feed
 	_, err = client.Feeds.Update(feed)

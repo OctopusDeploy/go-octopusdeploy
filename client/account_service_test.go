@@ -3,20 +3,156 @@ package client
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/dghubble/sling"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createAccount(t *testing.T) (*model.Account, error) {
-	resource, err := model.NewUsernamePasswordAccount(getRandomName())
-	assert.NoError(t, err)
-	assert.NotNil(t, resource)
-	assert.NoError(t, resource.Validate())
+func CreateTestAmazonWebServicesAccount(t *testing.T, service *accountService) model.IAccount {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
 
-	return resource, err
+	accessKey := getRandomName()
+	name := getRandomName()
+	secretKey := model.NewSensitiveValue(getRandomName())
+
+	account := model.NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	require.NoError(t, account.Validate())
+
+	createdAccount, err := service.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, createdAccount)
+	require.NotEmpty(t, createdAccount.GetID())
+	require.Equal(t, "AmazonWebServicesAccount", createdAccount.GetAccountType())
+	require.Equal(t, name, createdAccount.GetName())
+
+	return createdAccount
+}
+
+func CreateTestAzureServicePrincipalAccount(t *testing.T, service *accountService) model.IAccount {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
+
+	applicationID := uuid.New()
+	applicationPassword := model.NewSensitiveValue(getRandomName())
+	azureEnvironment := getRandomAzureEnvironment()
+	name := getRandomName()
+	subscriptionID := uuid.New()
+	tenantID := uuid.New()
+
+	account := model.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
+
+	// set Azure environment fields
+	if !isEmpty(azureEnvironment.Name) {
+		account.AzureEnvironment = azureEnvironment.Name
+		account.AuthenticationEndpoint = azureEnvironment.AuthenticationEndpoint
+		account.ResourceManagerEndpoint = azureEnvironment.ResourceManagerEndpoint
+	}
+
+	require.NoError(t, account.Validate())
+
+	createdAccount, err := service.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, createdAccount)
+	require.NotEmpty(t, createdAccount.GetID())
+	require.Equal(t, "AzureServicePrincipal", createdAccount.GetAccountType())
+	require.Equal(t, name, createdAccount.GetName())
+
+	return createdAccount
+}
+
+func CreateTestAzureSubscriptionAccount(t *testing.T, service *accountService) model.IAccount {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
+
+	azureEnvironment := getRandomAzureEnvironment()
+	name := getRandomName()
+	subscriptionID := uuid.New()
+
+	account := model.NewAzureSubscriptionAccount(name, subscriptionID)
+
+	// set Azure environment fields
+	if !isEmpty(azureEnvironment.Name) {
+		account.AzureEnvironment = azureEnvironment.Name
+		account.ManagementEndpoint = azureEnvironment.ManagementEndpoint
+		account.StorageEndpointSuffix = azureEnvironment.StorageEndpointSuffix
+	}
+
+	require.NoError(t, account.Validate())
+
+	resource, err := service.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
+}
+
+func CreateTestSSHKeyAccount(t *testing.T, service *accountService) model.IAccount {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
+
+	name := getRandomName()
+	username := getRandomName()
+	privateKeyFile := model.NewSensitiveValue(getRandomName())
+
+	account := model.NewSSHKeyAccount(name, username, privateKeyFile)
+
+	require.NoError(t, account.Validate())
+
+	resource, err := service.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
+}
+
+func CreateTestTokenAccount(t *testing.T, service *accountService) model.IAccount {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
+
+	name := getRandomName()
+	token := model.NewSensitiveValue(getRandomName())
+
+	account := model.NewTokenAccount(name, token)
+
+	require.NoError(t, account.Validate())
+
+	resource, err := service.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
+}
+
+func CreateTestUsernamePasswordAccount(t *testing.T, service *accountService) model.IAccount {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
+
+	name := getRandomName()
+
+	account := model.NewUsernamePasswordAccount(name)
+
+	require.NoError(t, account.Validate())
+
+	resource, err := service.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
 }
 
 func createAccountService(t *testing.T) *accountService {
@@ -25,106 +161,188 @@ func createAccountService(t *testing.T) *accountService {
 	return service
 }
 
-func TestAccountService(t *testing.T) {
-	t.Run("Add", TestAccountServiceAdd)
-	t.Run("Delete", TestAccountServiceDelete)
-	t.Run("GetByAccountType", TestAccountServiceGetByAccountType)
-	t.Run("GetAll", TestAccountServiceGetAll)
-	t.Run("GetByID", TestAccountServiceGetByID)
-	t.Run("GetByName", TestAccountServiceGetByName)
-	t.Run("New", TestAccountServiceNew)
-	t.Run("Parameters", TestAccountServiceParameters)
-	t.Run("Update", TestAccountServiceUpdateWithEmptyAccount)
-	t.Run("Usage", TestAccountServiceGetUsages)
+func DeleteTestAccount(t *testing.T, service *accountService, account model.IAccount) error {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
+
+	return service.DeleteByID(account.GetID())
+}
+
+func IsEqualAccounts(t *testing.T, expected model.IAccount, actual model.IAccount) {
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
+
+	// IResource
+	assert.Equal(t, expected.GetID(), actual.GetID())
+	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+
+	// IAccount
+	assert.Equal(t, expected.GetAccountType(), actual.GetAccountType())
+	assert.Equal(t, expected.GetName(), actual.GetName())
+}
+
+func UpdateAccount(t *testing.T, service *accountService, account model.IAccount) model.IAccount {
+	if service == nil {
+		service = createAccountService(t)
+	}
+	require.NotNil(t, service)
+
+	updatedAccount, err := service.Update(account)
+	assert.NoError(t, err)
+	require.NotNil(t, updatedAccount)
+
+	return updatedAccount.(model.IAccount)
+}
+
+func ValidateAccount(t *testing.T, account model.IAccount) {
+	require.NoError(t, account.Validate())
+	require.NotEmpty(t, account.GetID())
+	require.NotEmpty(t, account.GetLastModifiedBy())
+	require.NotEmpty(t, account.GetLastModifiedOn())
+	require.NotEmpty(t, account.GetLinks())
+
+	baseAccount, ok := account.(*model.Account)
+	if ok {
+		require.NotEmpty(t, baseAccount.SpaceID)
+	} else {
+		switch account.GetAccountType() {
+		case "AmazonWebServicesAccount":
+			ValidateAmazonWebServicesAccount(t, account.(*model.AmazonWebServicesAccount))
+		case "AzureServicePrincipal":
+			ValidateAzureServicePrincipalAccount(t, account.(*model.AzureServicePrincipalAccount))
+		case "AzureSubscription":
+			ValidateAzureSubscriptionAccount(t, account.(*model.AzureSubscriptionAccount))
+		case "SshKeyPair":
+			ValidateSSHKeyAccount(t, account.(*model.SSHKeyAccount))
+		case "Token":
+			ValidateTokenAccount(t, account.(*model.TokenAccount))
+		case "UsernamePassword":
+			ValidateUsernamePasswordAccount(t, account.(*model.UsernamePasswordAccount))
+		}
+	}
+}
+
+func ValidateAmazonWebServicesAccount(t *testing.T, account *model.AmazonWebServicesAccount) {
+	require.NotEmpty(t, account.SpaceID)
+}
+
+func ValidateAzureServicePrincipalAccount(t *testing.T, account *model.AzureServicePrincipalAccount) {
+	require.NotEmpty(t, account.SpaceID)
+}
+
+func ValidateAzureSubscriptionAccount(t *testing.T, account *model.AzureSubscriptionAccount) {
+	require.NotEmpty(t, account.SpaceID)
+}
+
+func ValidateSSHKeyAccount(t *testing.T, account *model.SSHKeyAccount) {
+	require.NotEmpty(t, account.SpaceID)
+}
+
+func ValidateTokenAccount(t *testing.T, account *model.TokenAccount) {
+	require.NotEmpty(t, account.SpaceID)
+}
+
+func ValidateUsernamePasswordAccount(t *testing.T, account *model.UsernamePasswordAccount) {
+	require.NotEmpty(t, account.SpaceID)
 }
 
 func TestAccountServiceAdd(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createAccountService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	assert.Equal(err, createInvalidParameterError(operationAdd, parameterResource))
-	assert.Nil(resource)
+	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	require.Nil(t, resource)
 
-	invalidResource := &model.Account{}
-	resource, err = service.Add(invalidResource)
-	assert.Equal(createValidationFailureError("Add", invalidResource.Validate()), err)
-	assert.Nil(resource)
+	resource, err = service.Add(&model.Account{})
+	require.Error(t, err)
+	require.Nil(t, resource)
 
-	resource, err = createAccount(t)
-	require.NoError(t, err)
-	require.NotNil(t, resource)
+	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, service)
+	ValidateAccount(t, amazonWebServicesAccount)
+	defer DeleteTestAccount(t, service, amazonWebServicesAccount)
 
-	resource, err = service.Add(resource)
-	assert.NoError(err)
-	assert.NotNil(resource)
+	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, service)
+	ValidateAccount(t, azureServicePrincipalAccount)
+	defer DeleteTestAccount(t, service, azureServicePrincipalAccount)
 
-	err = service.DeleteByID(resource.ID)
-	assert.NoError(err)
+	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, service)
+	ValidateAccount(t, azureSubscriptionAccount)
+	defer DeleteTestAccount(t, service, azureSubscriptionAccount)
+
+	sshKeyAccount := CreateTestSSHKeyAccount(t, service)
+	ValidateAccount(t, sshKeyAccount)
+	defer DeleteTestAccount(t, service, sshKeyAccount)
+
+	tokenAccount := CreateTestTokenAccount(t, service)
+	ValidateAccount(t, tokenAccount)
+	defer DeleteTestAccount(t, service, tokenAccount)
+
+	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, service)
+	ValidateAccount(t, usernamePasswordAccount)
+	defer DeleteTestAccount(t, service, usernamePasswordAccount)
 }
 
-func TestAccountServiceDelete(t *testing.T) {
-	assert := assert.New(t)
-
+func TestAccountServiceDeleteAll(t *testing.T) {
 	service := createAccountService(t)
 	require.NotNil(t, service)
 
-	err := service.DeleteByID(emptyString)
-	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
+	accounts, err := service.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, accounts)
 
-	err = service.DeleteByID(whitespaceString)
-	assert.Equal(createInvalidParameterError(operationDeleteByID, parameterID), err)
-
-	id := getRandomName()
-	err = service.DeleteByID(id)
-	assert.Equal(createResourceNotFoundError("account", "ID", id), err)
+	for _, account := range accounts {
+		defer DeleteTestAccount(t, service, account)
+	}
 }
 
 func TestAccountServiceGetAll(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createAccountService(t)
 	require.NotNil(t, service)
 
 	resources, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resources)
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		assert.NotNil(resource)
-		assert.NotEmpty(resource.ID)
+		require.NotNil(t, resource)
+		assert.NotEmpty(t, resource.GetID())
 	}
 }
 
 func TestAccountServiceGetByID(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createAccountService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
-	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
-	assert.Nil(resource)
+	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
-	assert.Equal(createInvalidParameterError(operationGetByID, parameterID), err)
-	assert.Nil(resource)
+	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Nil(t, resource)
 
 	id := getRandomName()
 	resource, err = service.GetByID(id)
-	assert.Equal(createResourceNotFoundError("account", "ID", id), err)
-	assert.Nil(resource)
+	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	require.Nil(t, resource)
 
 	resources, err := service.GetAll()
-	assert.NoError(err)
-	assert.NotNil(resources)
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
-	if len(resources) > 0 {
-		resourceToCompare, err := service.GetByID(resources[0].ID)
-		assert.NoError(err)
-		assert.EqualValues(resources[0], *resourceToCompare)
+	for _, resource := range resources {
+		resourceToCompare, err := service.GetByID(resource.GetID())
+		require.NoError(t, err)
+		IsEqualAccounts(t, resource, resourceToCompare)
 	}
 }
 
@@ -153,42 +371,85 @@ func TestAccountServiceNew(t *testing.T) {
 }
 
 func TestAccountServiceGetByAccountType(t *testing.T) {
-	assert := assert.New(t)
-
 	service := createAccountService(t)
 	require.NotNil(t, service)
 
-	for _, typeName := range enum.AccountTypeNames() {
-		accountType, err := enum.ParseAccountType(typeName)
+	accountTypes := []string{"None", "UsernamePassword", "SshKeyPair", "AzureSubscription", "AzureServicePrincipal", "AmazonWebServicesAccount", "AmazonWebServicesRoleAccount", "Token"}
+
+	for _, accountType := range accountTypes {
+		accounts, err := service.GetByAccountType(accountType)
 		require.NoError(t, err)
+		require.NotNil(t, accounts)
 
-		resourceList, err := service.GetByAccountType(accountType)
-		assert.NoError(err)
-
-		if len(resourceList) > 0 {
-			resourceToCompare, err := service.GetByID(resourceList[0].ID)
-			assert.NoError(err)
-			assert.EqualValues(resourceList[0], *resourceToCompare)
+		for _, account := range accounts {
+			accountToCompare, err := service.GetByID(account.GetID())
+			require.NoError(t, err)
+			IsEqualAccounts(t, account, accountToCompare)
 		}
 	}
 }
 
 func TestAccountServiceGetByName(t *testing.T) {
 	service := createAccountService(t)
-	assert := assert.New(t)
-
 	require.NotNil(t, service)
 
-	resourceList, err := service.GetAll()
+	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, service)
+	ValidateAccount(t, amazonWebServicesAccount)
+	defer DeleteTestAccount(t, service, amazonWebServicesAccount)
 
-	assert.NoError(err)
-	assert.NotNil(resourceList)
+	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, service)
+	ValidateAccount(t, azureServicePrincipalAccount)
+	defer DeleteTestAccount(t, service, azureServicePrincipalAccount)
 
-	if len(resourceList) > 0 {
-		resourceToCompare, err := service.GetByName(resourceList[0].Name)
+	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, service)
+	ValidateAccount(t, azureSubscriptionAccount)
+	defer DeleteTestAccount(t, service, azureSubscriptionAccount)
 
-		assert.NoError(err)
-		assert.EqualValues(*resourceToCompare, resourceList[0])
+	sshKeyAccount := CreateTestSSHKeyAccount(t, service)
+	ValidateAccount(t, sshKeyAccount)
+	defer DeleteTestAccount(t, service, sshKeyAccount)
+
+	tokenAccount := CreateTestTokenAccount(t, service)
+	ValidateAccount(t, tokenAccount)
+	defer DeleteTestAccount(t, service, tokenAccount)
+
+	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, service)
+	ValidateAccount(t, usernamePasswordAccount)
+	defer DeleteTestAccount(t, service, usernamePasswordAccount)
+
+	accounts, err := service.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, accounts)
+
+	for _, account := range accounts {
+		accountToCompare, err := service.GetByName(account.GetName())
+		require.NoError(t, err)
+		IsEqualAccounts(t, account, accountToCompare)
+	}
+}
+
+func TestAccountServiceGetByPartialName(t *testing.T) {
+	service := createAccountService(t)
+	require.NotNil(t, service)
+
+	accounts, err := service.GetByPartialName(emptyString)
+	require.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	require.NotNil(t, accounts)
+	require.Len(t, accounts, 0)
+
+	accounts, err = service.GetByPartialName(whitespaceString)
+	require.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	require.NotNil(t, accounts)
+	require.Len(t, accounts, 0)
+
+	accounts, err = service.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, accounts)
+
+	for _, account := range accounts {
+		namedAccounts, err := service.GetByPartialName(account.GetName())
+		require.NoError(t, err)
+		require.NotNil(t, namedAccounts)
 	}
 }
 
@@ -202,102 +463,124 @@ func TestAccountServiceParameters(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
 			service := createAccountService(t)
-			assert := assert.New(t)
-
-			assert.NotNil(service)
-			if service == nil {
-				return
-			}
+			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-
-			assert.Equal(err, createInvalidParameterError(operationGetByID, parameterID))
-			assert.Nil(resource)
+			require.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+			require.Nil(t, resource)
 
 			resourceList, err := service.GetByPartialName(tc.parameter)
-
-			assert.Equal(createInvalidParameterError(operationGetByPartialName, parameterName), err)
-			assert.NotNil(resourceList)
+			require.Equal(t, createInvalidParameterError(operationGetByPartialName, parameterName), err)
+			require.NotNil(t, resourceList)
 
 			err = service.DeleteByID(tc.parameter)
-
-			assert.Error(err)
-			assert.Equal(err, createInvalidParameterError(operationDeleteByID, parameterID))
+			require.Error(t, err)
+			require.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
 		})
 	}
 }
 
 func TestAccountServiceGetUsages(t *testing.T) {
 	service := createAccountService(t)
-	assert := assert.New(t)
+	require.NotNil(t, service)
 
 	accounts, err := service.GetAll()
-
-	assert.NoError(err)
+	require.NoError(t, err)
 
 	if len(accounts) > 0 {
 		accountUsages, err := service.GetUsages(accounts[0])
-
-		assert.NoError(err)
-		assert.NotNil(accountUsages)
+		require.NoError(t, err)
+		require.NotNil(t, accountUsages)
 	}
 }
 
 func TestAccountServiceGetByIDs(t *testing.T) {
 	service := createAccountService(t)
-	assert := assert.New(t)
+	require.NotNil(t, service)
 
-	resourceList, err := service.GetAll()
+	accounts, err := service.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, accounts)
 
-	assert.NoError(err)
-	assert.NotNil(resourceList)
-
-	idList := []string{}
-	for _, resource := range resourceList {
-		idList = append(idList, resource.ID)
+	ids := []string{}
+	for _, account := range accounts {
+		ids = append(ids, account.GetID())
 	}
 
-	resourceListToCompare, err := service.GetByIDs(idList)
-
-	assert.NoError(err)
-	assert.Equal(len(resourceList), len(resourceListToCompare))
+	accountsByIDs, err := service.GetByIDs(ids)
+	require.NoError(t, err)
+	require.GreaterOrEqual(t, len(accounts), len(accountsByIDs))
 }
 
 func TestAccountServiceUpdateWithEmptyAccount(t *testing.T) {
 	service := createAccountService(t)
-	assert := assert.New(t)
+	require.NotNil(t, service)
 
-	account, err := service.Update(model.Account{})
+	account, err := service.Update(nil)
+	require.Error(t, err)
+	require.Nil(t, account)
 
-	assert.Error(err)
-	assert.Nil(account)
+	account, err = service.Update(&model.Account{})
+	require.Error(t, err)
+	require.Nil(t, account)
+
+	account, err = service.Update(&model.AmazonWebServicesAccount{})
+	require.Error(t, err)
+	require.Nil(t, account)
+
+	account, err = service.Update(&model.AzureServicePrincipalAccount{})
+	require.Error(t, err)
+	require.Nil(t, account)
+
+	account, err = service.Update(&model.AzureSubscriptionAccount{})
+	require.Error(t, err)
+	require.Nil(t, account)
+
+	account, err = service.Update(&model.TokenAccount{})
+	require.Error(t, err)
+	require.Nil(t, account)
+
+	account, err = service.Update(&model.UsernamePasswordAccount{})
+	require.Error(t, err)
+	require.Nil(t, account)
 }
 
 func TestAccountServiceUpdate(t *testing.T) {
 	service := createAccountService(t)
-	assert := assert.New(t)
+	require.NotNil(t, service)
 
-	resource, err := model.NewUsernamePasswordAccount(getRandomName())
+	expected := CreateTestAzureServicePrincipalAccount(t, service)
+	actual := UpdateAccount(t, service, expected)
+	IsEqualAccounts(t, expected, actual)
+	ValidateAccount(t, actual)
+	defer DeleteTestAccount(t, service, expected)
 
-	assert.NoError(err)
-	assert.NotNil(resource)
+	expected = CreateTestAzureSubscriptionAccount(t, service)
+	expected.SetName(getRandomName())
+	actual = UpdateAccount(t, service, expected)
+	IsEqualAccounts(t, expected, actual)
+	ValidateAccount(t, actual)
+	defer DeleteTestAccount(t, service, expected)
 
-	if err != nil {
-		return
-	}
+	expected = CreateTestSSHKeyAccount(t, service)
+	expected.SetName(getRandomName())
+	actual = UpdateAccount(t, service, expected)
+	IsEqualAccounts(t, expected, actual)
+	ValidateAccount(t, actual)
+	defer DeleteTestAccount(t, service, expected)
 
-	resourceToCompare, err := service.Add(resource)
+	expected = CreateTestTokenAccount(t, service)
+	expected.SetName(getRandomName())
+	actual = UpdateAccount(t, service, expected)
+	IsEqualAccounts(t, expected, actual)
+	ValidateAccount(t, actual)
+	defer DeleteTestAccount(t, service, expected)
 
-	assert.NoError(err)
-	assert.NotNil(resourceToCompare)
-
-	resourceToCompare.Name = getRandomName()
-
-	updatedResource, err := service.Update(*resourceToCompare)
-
-	assert.NoError(err)
-	assert.Equal(resourceToCompare.Name, updatedResource.Name)
+	expected = CreateTestUsernamePasswordAccount(t, service)
+	expected.SetName(getRandomName())
+	actual = UpdateAccount(t, service, expected)
+	IsEqualAccounts(t, expected, actual)
+	ValidateAccount(t, actual)
+	defer DeleteTestAccount(t, service, expected)
 }

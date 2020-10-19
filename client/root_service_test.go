@@ -4,9 +4,29 @@ import (
 	"testing"
 
 	"github.com/dghubble/sling"
+	"github.com/stretchr/testify/require"
 )
 
-func TestNewRootService(t *testing.T) {
+func createRootService(t *testing.T) *rootService {
+	service := newRootService(nil, TestURIRoot)
+	testNewService(t, service, TestURIRoot, serviceRootService)
+	return service
+}
+
+func BenchmarkRootServiceGet(b *testing.B) {
+	newRootService(nil, TestURIRoot).Get()
+}
+
+func TestRootServiceGet(t *testing.T) {
+	service := createRootService(t)
+	require.NotNil(t, service)
+
+	resource, err := service.Get()
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+}
+
+func TestRootServiceNew(t *testing.T) {
 	serviceFunction := newRootService
 	client := &sling.Sling{}
 	uriTemplate := emptyString

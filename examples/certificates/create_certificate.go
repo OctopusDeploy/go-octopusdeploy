@@ -45,11 +45,7 @@ func CreateCertificateExample() {
 	// Create certificate object
 	certificateData := model.NewSensitiveValue(base64Certificate)
 	password := model.NewSensitiveValue(pfxFilePassword)
-	octopusCertificate, err := model.NewCertificate(certificateName, certificateData, password)
-
-	if err != nil {
-		// TODO: handle error
-	}
+	octopusCertificate := model.NewCertificate(certificateName, certificateData, password)
 
 	_, err = client.Certificates.Add(octopusCertificate)
 

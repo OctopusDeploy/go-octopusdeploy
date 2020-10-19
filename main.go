@@ -168,7 +168,7 @@ func main() {
 	OutputAsJSON(client.Environments.GetAll())
 	OutputAsJSON(client.Feeds.GetAll())
 	OutputAsJSON(client.Interruptions.GetAll())
-	OutputAsJSON(client.LibraryVariableSets.GetAll())
+	OutputAsJSON(client.LibraryVariables.GetAll())
 	OutputAsJSON(client.Lifecycles.GetAll())
 	OutputAsJSON(client.Machines.GetAll())
 	OutputAsJSON(client.MachinePolicies.GetAll())
@@ -192,7 +192,7 @@ func main() {
 	// stop the task queue before deleting the space
 	fmt.Print("Stopping task queue... ")
 	space.TaskQueueStopped = true
-	updatedSpace, err := client.Spaces.Update(*space)
+	updatedSpace, err := client.Spaces.Update(space)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -231,7 +231,9 @@ func main() {
 		}
 	}
 
-	e := model.NewEnvironment("Test Environment GoLang", "Test environment created by go-octopusdeploy", false)
+	e := model.NewEnvironment("Test Environment (OK to Delete)")
+	e.Description = "Test environment created by go-octopusdeploy"
+	e.UseGuidedFailure = false
 	err = e.Validate()
 
 	if err != nil {

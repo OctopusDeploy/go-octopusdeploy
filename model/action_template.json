@@ -1,0 +1,150 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "ActionTemplate": {
+            "required": [
+                "Name",
+                "ActionType"
+            ],
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Description": {
+                    "type": "string"
+                },
+                "ActionType": {
+                    "type": "string"
+                },
+                "Version": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "CommunityActionTemplateId": {
+                    "type": "string"
+                },
+                "Packages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PackageReference"
+                    }
+                },
+                "Properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/PropertyValue"
+                    },
+                    "readOnly": true
+                },
+                "Parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ActionTemplateParameter"
+                    },
+                    "readOnly": true
+                },
+                "SpaceId": {
+                    "type": "string"
+                },
+                "LastModifiedOn": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "LastModifiedBy": {
+                    "type": "string"
+                },
+                "Links": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "ActionTemplateParameter": {
+            "type": "object",
+            "properties": {
+                "Id": {
+                    "type": "string"
+                },
+                "Name": {
+                    "type": "string"
+                },
+                "Label": {
+                    "type": "string"
+                },
+                "HelpText": {
+                    "type": "string"
+                },
+                "DefaultValue": {
+                    "$ref": "#/definitions/PropertyValue"
+                },
+                "DisplaySettings": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "PackageReference": {
+            "type": "object",
+            "properties": {
+                "PackageId": {
+                    "type": "string"
+                },
+                "FeedId": {
+                    "type": "string"
+                },
+                "AcquisitionLocation": {
+                    "type": "string"
+                },
+                "Properties": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "Id": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "Name": {
+                    "type": "string"
+                }
+            }
+        },
+        "PropertyValue": {
+            "type": "object",
+            "properties": {
+                "IsSensitive": {
+                    "type": "boolean",
+                    "readOnly": true
+                },
+                "Value": {
+                    "type": "string",
+                    "readOnly": true
+                },
+                "SensitiveValue": {
+                    "$ref": "#/definitions/SensitiveValue",
+                    "readOnly": true
+                }
+            }
+        },
+        "SensitiveValue": {
+            "type": "object",
+            "properties": {
+                "HasValue": {
+                    "type": "boolean"
+                },
+                "NewValue": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

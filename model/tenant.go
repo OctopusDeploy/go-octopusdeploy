@@ -1,13 +1,9 @@
 package model
 
-import (
-	"time"
-
-	"github.com/go-playground/validator/v10"
-)
+import "github.com/go-playground/validator/v10"
 
 type Tenants struct {
-	Items []Tenant `json:"Items"`
+	Items []*Tenant `json:"Items"`
 	PagedResults
 }
 
@@ -25,53 +21,13 @@ type Tenant struct {
 // NewTenant initializes a Tenant with a name and a description.
 func NewTenant(name string, description string) *Tenant {
 	return &Tenant{
-		Name:        name,
 		Description: description,
+		Name:        name,
+		Resource:    *newResource(),
 	}
 }
 
-// GetID returns the ID value of the Tenant.
-func (resource Tenant) GetID() string {
-	return resource.ID
+// Validate checks the state of the tenant and returns an error if invalid.
+func (t Tenant) Validate() error {
+	return validator.New().Struct(t)
 }
-
-// GetLastModifiedBy returns the name of the account that modified the value of this Tenant.
-func (resource Tenant) GetLastModifiedBy() string {
-	return resource.LastModifiedBy
-}
-
-// GetLastModifiedOn returns the time when the value of this Tenant was changed.
-func (resource Tenant) GetLastModifiedOn() *time.Time {
-	return resource.LastModifiedOn
-}
-
-// GetLinks returns the associated links with the value of this Tenant.
-func (resource Tenant) GetLinks() map[string]string {
-	return resource.Links
-}
-
-func (resource Tenant) SetID(id string) {
-	resource.ID = id
-}
-
-func (resource Tenant) SetLastModifiedBy(name string) {
-	resource.LastModifiedBy = name
-}
-
-func (resource Tenant) SetLastModifiedOn(time *time.Time) {
-	resource.LastModifiedOn = time
-}
-
-// Validate checks the state of the Tenant and returns an error if invalid.
-func (resource Tenant) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(resource)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-var _ ResourceInterface = &Tenant{}

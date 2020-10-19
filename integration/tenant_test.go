@@ -38,8 +38,6 @@ func createTenant(tenantName string) model.Tenant {
 }
 
 func isEqualTenants(t *testing.T, expected model.Tenant, actual model.Tenant) {
-	assert := assert.New(t)
-
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -49,22 +47,14 @@ func isEqualTenants(t *testing.T, expected model.Tenant, actual model.Tenant) {
 	// this statement (above) is expected to succeed, but it fails due to these
 	// missing fields
 
-	assert.Equal(expected.ClonedFromTenantID, actual.ClonedFromTenantID)
-	assert.Equal(expected.Description, actual.Description)
-	assert.Equal(expected.ID, actual.ID)
-	assert.Equal(expected.Links, actual.Links)
-	assert.Equal(expected.Name, actual.Name)
-	assert.Equal(expected.ProjectEnvironments, actual.ProjectEnvironments)
-	assert.Equal(expected.SpaceID, actual.SpaceID)
-	assert.Equal(expected.TenantTags, actual.TenantTags)
-}
-
-func TestTenants(t *testing.T) {
-	t.Run("AddAndDelete", TestTenantAddAndDelete)
-	t.Run("AddGetAndDelete", TestTenantAddGetAndDelete)
-	t.Run("GetAll", TestTenantGetAll)
-	t.Run("GetByPartialName", TestTenantGetByPartialName)
-	t.Run("Update", TestTenantUpdate)
+	assert.Equal(t, expected.ClonedFromTenantID, actual.ClonedFromTenantID)
+	assert.Equal(t, expected.Description, actual.Description)
+	assert.Equal(t, expected.ID, actual.ID)
+	assert.Equal(t, expected.Links, actual.Links)
+	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.ProjectEnvironments, actual.ProjectEnvironments)
+	assert.Equal(t, expected.SpaceID, actual.SpaceID)
+	assert.Equal(t, expected.TenantTags, actual.TenantTags)
 }
 
 func TestTenantAddAndDelete(t *testing.T) {

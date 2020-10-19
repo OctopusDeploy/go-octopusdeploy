@@ -1,5 +1,7 @@
 package model
 
+import "github.com/go-playground/validator/v10"
+
 type ServiceFabricEndpoint struct {
 	AadClientCredentialSecret   string         `json:"AadClientCredentialSecret,omitempty"`
 	AadCredentialType           string         `json:"AadCredentialType,omitempty" validate:"omitempty,oneof=ClientCredential UserCredential"`
@@ -16,7 +18,13 @@ type ServiceFabricEndpoint struct {
 }
 
 func NewServiceFabricEndpoint() *ServiceFabricEndpoint {
-	resource := &ServiceFabricEndpoint{}
+	return &ServiceFabricEndpoint{
+		endpoint: *newEndpoint("AzureServiceFabricCluster"),
+	}
+}
 
-	return resource
+// Validate checks the state of the service fabric endpoint and returns an
+// error if invalid.
+func (s *ServiceFabricEndpoint) Validate() error {
+	return validator.New().Struct(s)
 }

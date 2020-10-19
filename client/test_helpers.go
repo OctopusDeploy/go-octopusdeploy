@@ -14,6 +14,7 @@ func (s roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 	return s(r)
 }
 
+// GetFakeOctopusClient -
 func GetFakeOctopusClient(t *testing.T, apiPath string, statusCode int, responseBody string) (*Client, error) {
 	httpClient := http.Client{}
 	httpClient.Transport = roundTripFunc(func(request *http.Request) (*http.Response, error) {

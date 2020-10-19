@@ -1,5 +1,6 @@
 package model
 
+// ActionTemplateSearch represents an action template search.
 type ActionTemplateSearch struct {
 	Author                    string            `json:"Author,omitempty"`
 	Categories                []string          `json:"Categories"`

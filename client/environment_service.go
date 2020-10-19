@@ -1,46 +1,29 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type environmentService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	sortOrderPath string
+	summaryPath   string
+
+	service
 }
 
-func newEnvironmentService(sling *sling.Sling, uriTemplate string) *environmentService {
-	if sling == nil {
-		sling = getDefaultClient()
+func newEnvironmentService(sling *sling.Sling, uriTemplate string, sortOrderPath string, summaryPath string) *environmentService {
+	environmentService := &environmentService{
+		sortOrderPath: sortOrderPath,
+		summaryPath:   summaryPath,
 	}
+	environmentService.service = newService(serviceEnvironmentService, sling, uriTemplate, new(model.Environment))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &environmentService{
-		name:        serviceEnvironmentService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return environmentService
 }
 
-func (s environmentService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s environmentService) getName() string {
-	return s.name
-}
-
-func (s environmentService) getPagedResponse(path string) ([]model.Environment, error) {
-	resources := []model.Environment{}
+func (s environmentService) getPagedResponse(path string) ([]*model.Environment, error) {
+	resources := []*model.Environment{}
 	loadNextPage := true
 
 	for loadNextPage {
@@ -57,18 +40,18 @@ func (s environmentService) getPagedResponse(path string) ([]model.Environment, 
 	return resources, nil
 }
 
-func (s environmentService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
 // Add creates a new environment.
-func (s environmentService) Add(resource *model.Environment) (*model.Environment, error) {
-	path, err := getAddPath(s, resource)
+func (s environmentService) Add(environment *model.Environment) (*model.Environment, error) {
+	if environment == nil {
+		return nil, createInvalidParameterError("Add", parameterEnvironment)
+	}
+
+	path, err := getAddPath(s, environment)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Environment), path)
+	resp, err := apiAdd(s.getClient(), environment, new(model.Environment), path)
 	if err != nil {
 		return nil, err
 	}
@@ -76,20 +59,10 @@ func (s environmentService) Add(resource *model.Environment) (*model.Environment
 	return resp.(*model.Environment), nil
 }
 
-// DeleteByID deletes the environment that matches the input ID.
-func (s environmentService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("environment", "ID", id)
-	}
-
-	return err
-}
-
 // GetAll returns all environments. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s environmentService) GetAll() ([]model.Environment, error) {
-	items := []model.Environment{}
+func (s environmentService) GetAll() ([]*model.Environment, error) {
+	items := []*model.Environment{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -109,45 +82,58 @@ func (s environmentService) GetByID(id string) (*model.Environment, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Environment), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("environment", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.Environment), nil
 }
 
 // GetByIDs returns the environments that match the input IDs.
-func (s environmentService) GetByIDs(ids []string) ([]model.Environment, error) {
+func (s environmentService) GetByIDs(ids []string) ([]*model.Environment, error) {
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
-		return []model.Environment{}, err
+		return []*model.Environment{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
 // GetByName returns the environments with a matching partial name.
-func (s environmentService) GetByName(name string) ([]model.Environment, error) {
+func (s environmentService) GetByName(name string) ([]*model.Environment, error) {
 	path, err := getByNamePath(s, name)
 	if err != nil {
-		return []model.Environment{}, err
+		return []*model.Environment{}, err
+	}
+
+	return s.getPagedResponse(path)
+}
+
+// GetByPartialName performs a lookup and returns enironments with a matching
+// partial name.
+func (s environmentService) GetByPartialName(name string) ([]*model.Environment, error) {
+	path, err := getByPartialNamePath(s, name)
+	if err != nil {
+		return []*model.Environment{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
 // Update modifies an environment based on the one provided as input.
-func (s environmentService) Update(resource model.Environment) (*model.Environment, error) {
-	path, err := getUpdatePath(s, resource)
+func (s environmentService) Update(environment *model.Environment) (*model.Environment, error) {
+	if environment == nil {
+		return nil, createInvalidParameterError(operationUpdate, parameterEnvironment)
+	}
+
+	path, err := getUpdatePath(s, environment)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Environment), path)
+	resp, err := apiUpdate(s.getClient(), environment, new(model.Environment), path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Environment), nil
 }
-
-var _ ServiceInterface = &environmentService{}

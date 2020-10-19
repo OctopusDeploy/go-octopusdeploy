@@ -10,10 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLifecycles(t *testing.T) {
-	t.Run("Get", TestLifecycleGet)
-}
-
 func TestLifecycleGet(t *testing.T) {
 	client, err := client.GetFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
 	assert.NotNil(t, client)
@@ -107,14 +103,6 @@ const getLifecycleResponseJSON = `
     "Projects": "/api/lifecycles/Lifecycles-41/projects"
   }
 }`
-
-func TestValidateLifecycleValuesJustANamePasses(t *testing.T) {
-	lifecycle := &model.Lifecycle{
-		Name: "My Lifecycle",
-	}
-
-	assert.NoError(t, lifecycle.Validate())
-}
 
 func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
 	lifecycle := &model.Lifecycle{

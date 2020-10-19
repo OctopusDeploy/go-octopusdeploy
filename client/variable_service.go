@@ -2,10 +2,8 @@ package client
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -18,40 +16,18 @@ func (e errInvalidvariableServiceParameter) Error() string {
 }
 
 type variableService struct {
-	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	namesPath   string
+	previewPath string
+
+	service
 }
 
-func newVariableService(sling *sling.Sling, uriTemplate string) *variableService {
-	if sling == nil {
-		sling = getDefaultClient()
-	}
-
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
+func newVariableService(sling *sling.Sling, uriTemplate string, namesPath string, previewPath string) *variableService {
 	return &variableService{
-		name:        serviceVariableService,
-		path:        strings.TrimSpace(uriTemplate),
-		sling:       sling,
-		uriTemplate: template,
+		namesPath:   namesPath,
+		previewPath: previewPath,
+		service:     newService(serviceVariableService, sling, uriTemplate, new(model.Variable)),
 	}
-}
-
-func (s variableService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s variableService) getName() string {
-	return s.name
-}
-
-func (s variableService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
 }
 
 // GetAll fetches an entire VariableSet from Octopus Deploy for a given Project ID.
@@ -65,7 +41,7 @@ func (s variableService) GetAll(projectID string) (*model.Variables, error) {
 		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
 	}
 
-	path := trimTemplate(s.path)
+	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/variableset-%s", projectID)
 
 	resp, err := apiGet(s.getClient(), new(model.Variables), path)
@@ -263,7 +239,7 @@ func (s variableService) Update(projectID string, variableSet *model.Variables) 
 		return nil, errInvalidvariableServiceParameter{parameterName: "variableSet"}
 	}
 
-	path := trimTemplate(s.path)
+	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/variableset-%s", projectID)
 
 	resp, err := apiUpdate(s.getClient(), variableSet, new(model.Variables), path)
@@ -375,4 +351,4 @@ func (s variableService) MatchesScope(variableScope *model.VariableScope, define
 	return matched, &matchedScopes, nil
 }
 
-var _ ServiceInterface = &variableService{}
+var _ IService = &variableService{}

@@ -1,48 +1,21 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 // projectGroupService handles communication with ProjectGroup-related methods of the Octopus API.
 type projectGroupService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	service
 }
 
 // newProjectGroupService returns a projectGroupService with a preconfigured client.
 func newProjectGroupService(sling *sling.Sling, uriTemplate string) *projectGroupService {
-	if sling == nil {
-		sling = getDefaultClient()
-	}
+	projectGroupService := &projectGroupService{}
+	projectGroupService.service = newService(serviceProjectGroupService, sling, uriTemplate, new(model.ProjectGroup))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &projectGroupService{
-		name:        serviceProjectGroupService,
-		sling:       sling,
-		uriTemplate: template,
-	}
-}
-
-func (s projectGroupService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s projectGroupService) getName() string {
-	return s.name
-}
-
-func (s projectGroupService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
+	return projectGroupService
 }
 
 // Add creates a new project group.
@@ -52,22 +25,12 @@ func (s projectGroupService) Add(resource *model.ProjectGroup) (*model.ProjectGr
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.ProjectGroup), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.ProjectGroup), nil
-}
-
-// DeleteByID deletes the project group that matches the input ID.
-func (s projectGroupService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("project group", "ID", id)
-	}
-
-	return err
 }
 
 // GetByID returns the project group that matches the input ID. If one cannot
@@ -78,9 +41,9 @@ func (s projectGroupService) GetByID(id string) (*model.ProjectGroup, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(model.ProjectGroup), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
-		return nil, createResourceNotFoundError("project group", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.ProjectGroup), nil
@@ -88,8 +51,8 @@ func (s projectGroupService) GetByID(id string) (*model.ProjectGroup, error) {
 
 // GetAll returns all project groups. If none can be found or an error occurs,
 // it returns an empty collection.
-func (s projectGroupService) GetAll() ([]model.ProjectGroup, error) {
-	items := []model.ProjectGroup{}
+func (s projectGroupService) GetAll() ([]*model.ProjectGroup, error) {
+	items := []*model.ProjectGroup{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -101,17 +64,15 @@ func (s projectGroupService) GetAll() ([]model.ProjectGroup, error) {
 
 // Update modifies a project group based on the one provided as input.
 func (s projectGroupService) Update(resource model.ProjectGroup) (*model.ProjectGroup, error) {
-	path, err := getUpdatePath(s, resource)
+	path, err := getUpdatePath(s, &resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.ProjectGroup), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.ProjectGroup), nil
 }
-
-var _ ServiceInterface = &projectGroupService{}

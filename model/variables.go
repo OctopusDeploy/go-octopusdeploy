@@ -1,9 +1,5 @@
 package model
 
-import (
-	"github.com/go-playground/validator/v10"
-)
-
 type Variables struct {
 	ID          string      `json:"Id"`
 	OwnerID     string      `json:"OwnerId"`
@@ -23,18 +19,8 @@ type Variable struct {
 	Scope       *VariableScope         `json:"Scope,omitempty"`
 	Type        string                 `json:"Type"`
 	Value       string                 `json:"Value"`
-}
 
-func (t *Variable) Validate() error {
-	validate := validator.New()
-
-	err := validate.Struct(t)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	Resource
 }
 
 func NewVariable(name, valuetype, value, description string, scope *VariableScope, sensitive bool) *Variable {
@@ -45,5 +31,6 @@ func NewVariable(name, valuetype, value, description string, scope *VariableScop
 		Type:        valuetype,
 		IsSensitive: sensitive,
 		Scope:       scope,
+		Resource:    *newResource(),
 	}
 }

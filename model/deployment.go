@@ -39,70 +39,25 @@ type Deployment struct {
 	Resource
 }
 
-// Deployments defines a collection of Deployment instances with built-in support for paged results.
+// Deployments defines a collection of deployment instances with built-in
+// support for paged results.
 type Deployments struct {
-	Items []Deployment `json:"Items"`
+	Items []*Deployment `json:"Items"`
 	PagedResults
 }
 
-// NewDeployment initializes a Deployment with a name, environment ID, and release ID.
-func NewDeployment(name string, environmentID string, releaseID string) (*Deployment, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("NewDeployment", "name")
-	}
-
+// NewDeployment initializes a deployment with a name, environment ID, and
+// release ID.
+func NewDeployment(name string, environmentID string, releaseID string) *Deployment {
 	return &Deployment{
 		EnvironmentID: &environmentID,
 		Name:          name,
 		ReleaseID:     &releaseID,
-	}, nil
-}
-
-// GetID returns the ID value of the Deployment.
-func (resource Deployment) GetID() string {
-	return resource.ID
-}
-
-// GetLastModifiedBy returns the name of the account that modified the value of this Deployment.
-func (resource Deployment) GetLastModifiedBy() string {
-	return resource.LastModifiedBy
-}
-
-// GetLastModifiedOn returns the time when the value of this Deployment was changed.
-func (resource Deployment) GetLastModifiedOn() *time.Time {
-	return resource.LastModifiedOn
-}
-
-// GetLinks returns the associated links with the value of this Deployment.
-func (resource Deployment) GetLinks() map[string]string {
-	return resource.Links
-}
-
-func (resource Deployment) SetID(id string) {
-	resource.ID = id
-}
-
-func (resource Deployment) SetLastModifiedBy(name string) {
-	resource.LastModifiedBy = name
-}
-
-func (resource Deployment) SetLastModifiedOn(time *time.Time) {
-	resource.LastModifiedOn = time
-}
-
-// Validate checks the state of the Deployment and returns an error if invalid.
-func (resource Deployment) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(resource)
-
-	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
-		return err
+		Resource:      *newResource(),
 	}
-
-	return nil
 }
 
-var _ ResourceInterface = &Deployment{}
+// Validate checks the state of the deployment and returns an error if invalid.
+func (d *Deployment) Validate() error {
+	return validator.New().Struct(d)
+}

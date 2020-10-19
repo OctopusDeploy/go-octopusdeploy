@@ -1,80 +1,232 @@
 package model
 
 import (
-	"time"
+	"encoding/json"
 
 	"github.com/go-playground/validator/v10"
 )
 
-// Machines defines a collection of machines with built-in support for paged results from the API.
-type Machines struct {
-	Items []Machine `json:"Items"`
+// machines defines a collection of machines with built-in support for paged
+// results from the API.
+type machines struct {
+	Items []machine `json:"Items"`
 	PagedResults
 }
 
-// Machine represents deployment targets (or machine).
-type Machine struct {
-	DeploymentMode    string           `json:"TenantedDeploymentParticipation,omitempty" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
-	Endpoint          *MachineEndpoint `json:"Endpoint" validate:"required"`
-	EnvironmentIDs    []string         `json:"EnvironmentIds"`
-	HasLatestCalamari bool             `json:"HasLatestCalamari"`
-	HealthStatus      string           `json:"HealthStatus,omitempty"`
-	IsDisabled        bool             `json:"IsDisabled"`
-	IsInProcess       bool             `json:"IsInProcess"`
-	MachinePolicyID   string           `json:"MachinePolicyId,omitempty"`
-	Name              string           `json:"Name,omitempty"`
-	OperatingSystem   string           `json:"OperatingSystem,omitempty"`
-	Roles             []string         `json:"Roles"`
-	ShellName         string           `json:"ShellName,omitempty"`
-	ShellVersion      string           `json:"ShellVersion,omitempty"`
-	Status            string           `json:"Status,omitempty"`
-	StatusSummary     string           `json:"StatusSummary,omitempty"`
-	TenantIDs         []string         `json:"TenantIds"`
-	TenantTags        []string         `json:"TenantTags"`
-	Thumbprint        string           `json:"Thumbprint,omitempty"`
-	URI               string           `json:"Uri,omitempty" validate:"omitempty,uri"`
+// machine represents a machine on which Octopus can orchestrate actions. May
+// either be a deployment target or a worker. It may either correspond to a
+// running instance of the tentacle agent ("TentacleActive" and
+// "TentaclePassive" communication styles), or an agentless target accessed
+// using a protocol like SSH.
+type machine struct {
+	Endpoint          IEndpoint `json:"Endpoint" validate:"required"`
+	HasLatestCalamari bool      `json:"HasLatestCalamari"`
+	HealthStatus      string    `json:"HealthStatus,omitempty" validate:"omitempty,oneof=HasWarnings Healthy Unavailable Unhealthy Unknown"`
+	IsDisabled        bool      `json:"IsDisabled"`
+	IsInProcess       bool      `json:"IsInProcess"`
+	MachinePolicyID   string    `json:"MachinePolicyId,omitempty"`
+	Name              string    `json:"Name"`
+	OperatingSystem   string    `json:"OperatingSystem,omitempty"`
+	ShellName         string    `json:"ShellName,omitempty"`
+	ShellVersion      string    `json:"ShellVersion,omitempty"`
+	Status            string    `json:"Status,omitempty" validate:"omitempty,oneof=CalamariNeedsUpgrade Disabled NeedsUpgrade Offline Online Unknown"`
+	StatusSummary     string    `json:"StatusSummary,omitempty"`
+	Thumbprint        string    `json:"Thumbprint,omitempty"`
+	URI               string    `json:"Uri,omitempty" validate:"omitempty,uri"`
 
 	Resource
 }
 
-func NewMachine(name string, isDisabled bool, environments []string, roles []string, machinePolicy string, deploymentMode string, tenantIDs []string, tenantTags []string) (*Machine, error) {
-	return &Machine{
-		DeploymentMode:  deploymentMode,
-		EnvironmentIDs:  environments,
-		IsDisabled:      isDisabled,
-		MachinePolicyID: machinePolicy,
+func newMachine(name string, endpoint IEndpoint) *machine {
+	return &machine{
+		Endpoint:        endpoint,
 		Name:            name,
-		Roles:           roles,
-		TenantIDs:       tenantIDs,
-		TenantTags:      tenantTags,
-	}, nil
+		OperatingSystem: "Unknown",
+		ShellName:       "Unknown",
+		ShellVersion:    "Unknown",
+		Resource:        *newResource(),
+	}
 }
 
-// GetID returns the ID value of the Machine.
-func (resource Machine) GetID() string {
-	return resource.ID
+// MarshalJSON returns a machine as its JSON encoding.
+func (m *machine) MarshalJSON() ([]byte, error) {
+	machine := struct {
+		Endpoint          IEndpoint `json:"Endpoint" validate:"required"`
+		HasLatestCalamari bool      `json:"HasLatestCalamari"`
+		HealthStatus      string    `json:"HealthStatus,omitempty" validate:"omitempty,oneof=HasWarnings Healthy Unavailable Unhealthy Unknown"`
+		IsDisabled        bool      `json:"IsDisabled"`
+		IsInProcess       bool      `json:"IsInProcess"`
+		MachinePolicyID   string    `json:"MachinePolicyId,omitempty"`
+		Name              string    `json:"Name,omitempty"`
+		OperatingSystem   string    `json:"OperatingSystem,omitempty"`
+		ShellName         string    `json:"ShellName,omitempty"`
+		ShellVersion      string    `json:"ShellVersion,omitempty"`
+		Status            string    `json:"Status,omitempty" validate:"omitempty,oneof=CalamariNeedsUpgrade Disabled NeedsUpgrade Offline Online Unknown"`
+		StatusSummary     string    `json:"StatusSummary,omitempty"`
+		Thumbprint        string    `json:"Thumbprint,omitempty"`
+		URI               string    `json:"Uri,omitempty" validate:"omitempty,uri"`
+		Resource
+	}{
+		Endpoint:          m.Endpoint,
+		HasLatestCalamari: m.HasLatestCalamari,
+		HealthStatus:      m.HealthStatus,
+		IsDisabled:        m.IsDisabled,
+		IsInProcess:       m.IsInProcess,
+		MachinePolicyID:   m.MachinePolicyID,
+		Name:              m.Name,
+		OperatingSystem:   m.OperatingSystem,
+		ShellName:         m.ShellName,
+		ShellVersion:      m.ShellVersion,
+		Status:            m.Status,
+		StatusSummary:     m.StatusSummary,
+		Thumbprint:        m.Thumbprint,
+		URI:               m.URI,
+		Resource:          m.Resource,
+	}
+
+	return json.Marshal(machine)
 }
 
-// GetLastModifiedBy returns the name of the account that modified the value of this Machine.
-func (resource Machine) GetLastModifiedBy() string {
-	return resource.LastModifiedBy
+// UnmarshalJSON sets this machine to its representation in JSON.
+func (m *machine) UnmarshalJSON(b []byte) error {
+	var fields struct {
+		HasLatestCalamari bool   `json:"HasLatestCalamari"`
+		HealthStatus      string `json:"HealthStatus,omitempty" validate:"omitempty,oneof=HasWarnings Healthy Unavailable Unhealthy Unknown"`
+		IsDisabled        bool   `json:"IsDisabled"`
+		IsInProcess       bool   `json:"IsInProcess"`
+		MachinePolicyID   string `json:"MachinePolicyId,omitempty"`
+		Name              string `json:"Name,omitempty"`
+		OperatingSystem   string `json:"OperatingSystem,omitempty"`
+		ShellName         string `json:"ShellName,omitempty"`
+		ShellVersion      string `json:"ShellVersion,omitempty"`
+		Status            string `json:"Status,omitempty" validate:"omitempty,oneof=CalamariNeedsUpgrade Disabled NeedsUpgrade Offline Online Unknown"`
+		StatusSummary     string `json:"StatusSummary,omitempty"`
+		Thumbprint        string `json:"Thumbprint,omitempty"`
+		URI               string `json:"Uri,omitempty" validate:"omitempty,uri"`
+		Resource
+	}
+	err := json.Unmarshal(b, &fields)
+	if err != nil {
+		return err
+	}
+
+	m.HasLatestCalamari = fields.HasLatestCalamari
+	m.HealthStatus = fields.HealthStatus
+	m.IsDisabled = fields.IsDisabled
+	m.IsInProcess = fields.IsInProcess
+	m.MachinePolicyID = fields.MachinePolicyID
+	m.Name = fields.Name
+	m.OperatingSystem = fields.OperatingSystem
+	m.ShellName = fields.ShellName
+	m.ShellVersion = fields.ShellVersion
+	m.Status = fields.Status
+	m.StatusSummary = fields.StatusSummary
+	m.Thumbprint = fields.Thumbprint
+	m.URI = fields.URI
+	m.Resource = fields.Resource
+
+	var machine map[string]*json.RawMessage
+	err = json.Unmarshal(b, &machine)
+	if err != nil {
+		return err
+	}
+
+	var endpoint *json.RawMessage
+	var endpointProperties map[string]*json.RawMessage
+	var communicationStyle string
+
+	if machine["Endpoint"] != nil {
+		endpointValue := machine["Endpoint"]
+
+		err = json.Unmarshal(*endpointValue, &endpoint)
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(*endpoint, &endpointProperties)
+		if err != nil {
+			return err
+		}
+
+		if endpointProperties["CommunicationStyle"] != nil {
+			cs := endpointProperties["CommunicationStyle"]
+			json.Unmarshal(*cs, &communicationStyle)
+		}
+	}
+
+	switch communicationStyle {
+	case "AzureCloudService":
+		var serviceFabricEndpoint ServiceFabricEndpoint
+		err := json.Unmarshal(*endpoint, &serviceFabricEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = serviceFabricEndpoint
+	case "AzureServiceFabricCluster":
+		var serviceFabricEndpoint ServiceFabricEndpoint
+		err := json.Unmarshal(*endpoint, &serviceFabricEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = serviceFabricEndpoint
+	case "AzureWebApp":
+		var azureWebAppEndpoint AzureWebAppEndpoint
+		err := json.Unmarshal(*endpoint, &azureWebAppEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = azureWebAppEndpoint
+	case "Kubernetes":
+		var kubernetesEndpoint *KubernetesEndpoint
+		err := json.Unmarshal(*endpoint, &kubernetesEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = kubernetesEndpoint
+	case "None":
+		var cloudRegionEndpoint CloudRegionEndpoint
+		err := json.Unmarshal(*endpoint, &cloudRegionEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = cloudRegionEndpoint
+	case "OfflineDrop":
+		var offlineDropEndpoint OfflineDropEndpoint
+		err := json.Unmarshal(*endpoint, &offlineDropEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = offlineDropEndpoint
+	case "Ssh":
+		var sshEndpoint *SSHEndpoint
+		err := json.Unmarshal(*endpoint, &sshEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = sshEndpoint
+	case "TentacleActive":
+		var pollingTentacleEndpoint PollingTentacleEndpoint
+		err := json.Unmarshal(*endpoint, &pollingTentacleEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = pollingTentacleEndpoint
+	case "TentaclePassive":
+		var listeningTentacleEndpoint ListeningTentacleEndpoint
+		err := json.Unmarshal(*endpoint, &listeningTentacleEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = listeningTentacleEndpoint
+	}
+
+	return nil
 }
 
-// GetLastModifiedOn returns the time when the value of this Machine was changed.
-func (resource Machine) GetLastModifiedOn() *time.Time {
-	return resource.LastModifiedOn
-}
-
-// GetLinks returns the associated links with the value of this Machine.
-func (resource Machine) GetLinks() map[string]string {
-	return resource.Links
-}
-
-// Validate checks the state of the Machine and returns an error if invalid.
-func (resource Machine) Validate() error {
+// Validate checks the state of the machine and returns an error if invalid.
+func (m machine) Validate() error {
 	validate := validator.New()
-	err := validate.Struct(resource)
-
+	err := validate.Struct(m)
 	if err != nil {
 		if _, ok := err.(*validator.InvalidValidationError); ok {
 			return nil
@@ -85,5 +237,3 @@ func (resource Machine) Validate() error {
 
 	return nil
 }
-
-var _ ResourceInterface = &Machine{}

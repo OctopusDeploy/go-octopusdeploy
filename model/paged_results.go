@@ -1,11 +1,11 @@
 package model
 
 type PagedResults struct {
-	ItemType       string `json:"ItemType"`
-	TotalResults   int    `json:"TotalResults"`
-	NumberOfPages  int    `json:"NumberOfPages"`
-	LastPageNumber int    `json:"LastPageNumber"`
-	ItemsPerPage   int    `json:"ItemsPerPage"`
 	IsStale        bool   `json:"IsStale"`
+	ItemsPerPage   int    `json:"ItemsPerPage"`
+	ItemType       string `json:"ItemType"`
+	LastPageNumber int    `json:"LastPageNumber"`
 	Links          Links  `json:"Links"`
+	NumberOfPages  int    `json:"NumberOfPages"`
+	TotalResults   int    `json:"TotalResults"`
 }

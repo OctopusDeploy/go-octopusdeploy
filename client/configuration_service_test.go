@@ -11,21 +11,23 @@ func TestNewConfigurationService(t *testing.T) {
 	serviceFunction := newConfigurationService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
+	versionControlClearCachePath := emptyString
 	serviceName := serviceConfigurationService
 
 	testCases := []struct {
-		name        string
-		f           func(*sling.Sling, string) *configurationService
-		client      *sling.Sling
-		uriTemplate string
+		name                         string
+		f                            func(*sling.Sling, string, string) *configurationService
+		client                       *sling.Sling
+		uriTemplate                  string
+		versionControlClearCachePath string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", serviceFunction, nil, uriTemplate, versionControlClearCachePath},
+		{"EmptyURITemplate", serviceFunction, client, emptyString, versionControlClearCachePath},
+		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, versionControlClearCachePath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			service := tc.f(tc.client, tc.uriTemplate)
+			service := tc.f(tc.client, tc.uriTemplate, tc.versionControlClearCachePath)
 			testNewService(t, service, uriTemplate, serviceName)
 		})
 	}
@@ -67,7 +69,7 @@ func TestConfigurationServiceGetWithEmptyID(t *testing.T) {
 }
 
 func createConfigurationService(t *testing.T) *configurationService {
-	service := newConfigurationService(nil, TestURIConfiguration)
+	service := newConfigurationService(nil, TestURIConfiguration, TestURIVersionControlClearCache)
 	testNewService(t, service, TestURIConfiguration, serviceConfigurationService)
 	return service
 }

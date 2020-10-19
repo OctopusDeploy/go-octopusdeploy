@@ -2,206 +2,155 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
-	"time"
 
 	"github.com/go-playground/validator/v10"
 )
 
 type KubernetesEndpoint struct {
-	Authentication      EndpointAuthentication
-	ClusterCertificate  string
-	ClusterURL          url.URL `json:"ClusterUrl" validate:"required,url"`
-	CommunicationStyle  string  `validate:"required,eq=Kubernetes"`
-	Container           DeploymentActionContainer
-	DefaultWorkerPoolID string `json:"DefaultWorkerPoolId" validate:"required"`
-	Namespace           string
-	ProxyID             string `json:"ProxyId"`
-	RunningInContainer  bool
-	SkipTLSVerification string `json:"SkipTlsVerification"`
+	Authentication      EndpointAuthentication    `json:"Authentication,omitempty"`
+	ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
+	ClusterURL          *url.URL                  `json:"ClusterUrl" validate:"required,url"`
+	CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
+	Container           DeploymentActionContainer `json:"Container,omitempty"`
+	DefaultWorkerPoolID string                    `json:"DefaultWorkerPoolId,omitempty"`
+	Namespace           string                    `json:"Namespace,omitempty"`
+	ProxyID             string                    `json:"ProxyId,omitempty"`
+	RunningInContainer  bool                      `json:"RunningInContainer"`
+	SkipTLSVerification bool                      `json:"SkipTlsVerification"`
 
-	endpoint
+	Resource
 }
 
-func NewKubernetesEndpoint(clusterURL url.URL, defaultWorkerPoolID string) *KubernetesEndpoint {
-	// TODO: validate clusterURL
-	// TODO: validate defaultWorkerPoolID
-	kubernetesEndpoint := &KubernetesEndpoint{
-		ClusterURL:          clusterURL,
-		CommunicationStyle:  "Kubernetes",
-		DefaultWorkerPoolID: defaultWorkerPoolID,
+// NewKubernetesEndpoint creates and initializes a new Kubernetes endpoint.
+func NewKubernetesEndpoint(clusterURL url.URL) *KubernetesEndpoint {
+	return &KubernetesEndpoint{
+		ClusterURL:         &clusterURL,
+		CommunicationStyle: "Kubernetes",
+		Resource:           *newResource(),
 	}
-	kubernetesEndpoint.endpoint.CommunicationStyle = kubernetesEndpoint.CommunicationStyle
-	return kubernetesEndpoint
 }
 
-// GetID returns the ID value of the Kubernetes endpoint.
-func (resource KubernetesEndpoint) GetID() string {
-	return resource.ID
+// GetCommunicationStyle returns the communication style of this endpoint.
+func (s *KubernetesEndpoint) GetCommunicationStyle() string {
+	return s.CommunicationStyle
 }
 
-// GetLastModifiedBy returns the name of the account that modified the value of
-// this Kubernetes endpoint.
-func (resource KubernetesEndpoint) GetLastModifiedBy() string {
-	return resource.LastModifiedBy
-}
-
-// GetLastModifiedOn returns the time when the value of this Kubernetes
-// endpoint was changed.
-func (resource KubernetesEndpoint) GetLastModifiedOn() *time.Time {
-	return resource.LastModifiedOn
-}
-
-// GetLinks returns the associated links with the value of this Kubernetes
+// GetDefaultWorkerPoolID returns the default worker pool ID of this Kubernetes
 // endpoint.
-func (resource KubernetesEndpoint) GetLinks() map[string]string {
-	return resource.Links
+func (k *KubernetesEndpoint) GetDefaultWorkerPoolID() string {
+	return k.DefaultWorkerPoolID
 }
 
-func (e KubernetesEndpoint) MarshalJSON() ([]byte, error) {
-	resource := struct {
-		Authentication      EndpointAuthentication
-		ClusterCertificate  string
-		ClusterURL          string `json:"ClusterUrl"`
-		CommunicationStyle  string
-		Container           DeploymentActionContainer
-		DefaultWorkerPoolID string `json:"DefaultWorkerPoolId"`
-		Namespace           string
-		ProxyID             string `json:"ProxyId"`
-		RunningInContainer  bool
-		SkipTLSVerification string `json:"SkipTlsVerification"`
-		endpoint
+// GetProxyID returns the proxy ID associated with this Kubernetes endpoint.
+func (k *KubernetesEndpoint) GetProxyID() string {
+	return k.ProxyID
+}
+
+// SetDefaultWorkerPoolID sets the default worker pool ID of this Kubernetes
+// endpoint.
+func (k *KubernetesEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID string) {
+	k.DefaultWorkerPoolID = defaultWorkerPoolID
+}
+
+// SetProxyID sets the proxy ID associated with this Kubernetes endpoint.
+func (k *KubernetesEndpoint) SetProxyID(proxyID string) {
+	k.ProxyID = proxyID
+}
+
+// MarshalJSON returns a Kubernetes endpoint as its JSON encoding.
+func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
+	kubernetesEndpoint := struct {
+		Authentication      EndpointAuthentication    `json:"Authentication,omitempty"`
+		ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
+		ClusterURL          string                    `json:"ClusterUrl"`
+		CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
+		Container           DeploymentActionContainer `json:"Container,omitempty"`
+		DefaultWorkerPoolID string                    `json:"DefaultWorkerPoolId"`
+		Namespace           string                    `json:"Namespace,omitempty"`
+		ProxyID             string                    `json:"ProxyId,omitempty"`
+		RunningInContainer  bool                      `json:"RunningInContainer"`
+		SkipTLSVerification string                    `json:"SkipTlsVerification"`
+		Resource
 	}{
-		Authentication:      e.Authentication,
-		ClusterCertificate:  e.ClusterCertificate,
-		ClusterURL:          e.ClusterURL.String(),
-		CommunicationStyle:  e.CommunicationStyle,
-		Container:           e.Container,
-		DefaultWorkerPoolID: e.DefaultWorkerPoolID,
-		Namespace:           e.Namespace,
-		ProxyID:             e.ProxyID,
-		RunningInContainer:  e.RunningInContainer,
-		SkipTLSVerification: e.SkipTLSVerification,
-		endpoint:            e.endpoint,
+		Authentication:      k.Authentication,
+		ClusterCertificate:  k.ClusterCertificate,
+		ClusterURL:          k.ClusterURL.String(),
+		CommunicationStyle:  k.CommunicationStyle,
+		Container:           k.Container,
+		DefaultWorkerPoolID: k.DefaultWorkerPoolID,
+		Namespace:           k.Namespace,
+		ProxyID:             k.ProxyID,
+		RunningInContainer:  k.RunningInContainer,
+		SkipTLSVerification: strings.Title(strconv.FormatBool(k.SkipTLSVerification)),
+		Resource:            k.Resource,
 	}
 
-	return json.Marshal(resource)
+	return json.Marshal(kubernetesEndpoint)
 }
 
-func (e *KubernetesEndpoint) UnmarshalJSON(j []byte) error {
-	s := strings.TrimSpace(string(j))
-
-	var rawStrings map[string]interface{}
-	err := json.Unmarshal([]byte(s), &rawStrings)
+// UnmarshalJSON sets this Kubernetes endpoint to its representation in JSON.
+func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
+	var fields struct {
+		Authentication      EndpointAuthentication    `json:"Authentication,omitempty"`
+		ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
+		ClusterURL          string                    `json:"ClusterUrl" validate:"required,url"`
+		CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
+		Container           DeploymentActionContainer `json:"Container,omitempty"`
+		DefaultWorkerPoolID string                    `json:"DefaultWorkerPoolId"`
+		Namespace           string                    `json:"Namespace,omitempty"`
+		ProxyID             string                    `json:"ProxyId,omitempty"`
+		RunningInContainer  bool                      `json:"RunningInContainer"`
+		SkipTLSVerification string                    `json:"SkipTlsVerification"`
+		Resource
+	}
+	err := json.Unmarshal(data, &fields)
 	if err != nil {
 		return err
 	}
 
-	for k, v := range rawStrings {
-		if k == "Authentication" {
-			authentication := v.(map[string]interface{})
-			for authKey, authValue := range authentication {
-				if authKey == "AccountId" {
-					e.Authentication.AccountID = authValue.(string)
-				}
-				if authKey == "ClientCertificate" {
-					e.Authentication.ClientCertificate = authValue.(string)
-				}
-				if authKey == "AuthenticationType" {
-					e.Authentication.AuthenticationType = authValue.(string)
-				}
-			}
-		}
-		if k == "ClusterCertificate" {
-			e.ClusterCertificate = v.(string)
-		}
-		if k == "ClusterUrl" {
-			rawURL := v.(string)
-			u, err := url.Parse(rawURL)
-			if err != nil {
-				return err
-			}
-			e.ClusterURL = *u
-		}
-		if k == "CommunicationStyle" {
-			e.CommunicationStyle = v.(string)
-		}
-		if k == "Container" {
-			container := v.(map[string]interface{})
-			for containerKey, containerValue := range container {
-				if containerKey == "Image" {
-					if containerValue != nil {
-						image := containerValue.(string)
-						e.Container.Image = &image
-					}
-				}
-				if containerKey == "FeedId" {
-					if containerValue != nil {
-						feedID := containerValue.(string)
-						e.Container.FeedID = &feedID
-					}
-				}
-			}
-		}
-		if k == "DefaultWorkerPoolId" {
-			e.DefaultWorkerPoolID = v.(string)
-		}
-		if k == "Id" {
-			if v != nil {
-				e.ID = v.(string)
-			}
-		}
-		if k == "LastModifiedOn" {
-			if v != nil {
-				e.LastModifiedOn = v.(*time.Time)
-			}
-		}
-		if k == "LastModifiedBy" {
-			if v != nil {
-				e.LastModifiedBy = v.(string)
-			}
-		}
-		if k == "Links" {
-			links := v.(map[string]interface{})
-			if len(links) > 0 {
-				fmt.Println(links)
-			}
-		}
-		if k == "Namespace" {
-			e.Namespace = v.(string)
-		}
-		if k == "ProxyId" {
-			e.ProxyID = v.(string)
-		}
-		if k == "RunningInContainer" {
-			e.RunningInContainer = v.(bool)
-		}
-		if k == "SkipTlsVerification" {
-			e.SkipTLSVerification = v.(string)
-		}
+	// validate JSON representation
+	validate := validator.New()
+	err = validate.Struct(fields)
+	if err != nil {
+		return err
 	}
+
+	// return error if unable to parse cluster URL string
+	u, err := url.Parse(fields.ClusterURL)
+	if err != nil {
+		return err
+	}
+
+	if !isEmpty(fields.SkipTLSVerification) {
+		skipTLSVerification, err := strconv.ParseBool(fields.SkipTLSVerification)
+		if err != nil {
+			return err
+		}
+		k.SkipTLSVerification = skipTLSVerification
+	}
+
+	k.Authentication = fields.Authentication
+	k.ClusterCertificate = fields.ClusterCertificate
+	k.ClusterURL = u
+	k.Container = fields.Container
+	k.DefaultWorkerPoolID = fields.DefaultWorkerPoolID
+	k.Namespace = fields.Namespace
+	k.ProxyID = fields.ProxyID
+	k.RunningInContainer = fields.RunningInContainer
+	k.Resource = fields.Resource
 
 	return nil
 }
 
 // Validate checks the state of the Kubernetes endpoint and returns an error if
 // invalid.
-func (resource KubernetesEndpoint) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(resource)
-
-	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
-
-		return err
-	}
-
-	return nil
+func (k *KubernetesEndpoint) Validate() error {
+	return validator.New().Struct(k)
 }
 
-var _ ResourceInterface = &KubernetesEndpoint{}
-var _ EndpointInterface = &KubernetesEndpoint{}
+var _ IEndpoint = &KubernetesEndpoint{}
+var _ IEndpointWithProxy = &KubernetesEndpoint{}
+var _ IRunsOnAWorker = &KubernetesEndpoint{}

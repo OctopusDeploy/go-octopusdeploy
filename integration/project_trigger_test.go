@@ -9,13 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestProjectTriggers(t *testing.T) {
-	t.Run("AddGetAndDelete", TestProjectTriggerAddGetAndDelete)
-	t.Run("GetThatDoesNotExist", TestProjectTriggerGetThatDoesNotExist)
-	t.Run("GetAll", TestProjectTriggerGetAll)
-	t.Run("Update", TestProjectTriggerUpdate)
-}
-
 func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
@@ -47,7 +40,7 @@ func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.ProjectTriggers.GetByID(id)
-	require.Equal(t, createResourceNotFoundError("project trigger", "ID", id), err)
+	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
 	require.Nil(t, resource)
 }
 

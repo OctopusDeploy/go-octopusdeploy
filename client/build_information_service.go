@@ -1,45 +1,20 @@
 package client
 
 import (
-	"strings"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type buildInformationService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	bulkPath string
+
+	service
 }
 
-func newBuildInformationService(sling *sling.Sling, uriTemplate string) *buildInformationService {
-	if sling == nil {
-		sling = getDefaultClient()
+func newBuildInformationService(sling *sling.Sling, uriTemplate string, bulkPath string) *buildInformationService {
+	buildInformationService := &buildInformationService{
+		bulkPath: bulkPath,
 	}
+	buildInformationService.service = newService(serviceBuildInformationService, sling, uriTemplate, nil)
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &buildInformationService{
-		name:        serviceBuildInformationService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return buildInformationService
 }
-
-func (s buildInformationService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s buildInformationService) getName() string {
-	return s.name
-}
-
-func (s buildInformationService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
-var _ ServiceInterface = &buildInformationService{}

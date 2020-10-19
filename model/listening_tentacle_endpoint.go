@@ -2,93 +2,73 @@ package model
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
-	"strings"
-	"time"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type ListeningTentacleEndpoint struct {
-	ProxyID string  `json:"ProxyId"`
-	URI     url.URL `json:"Uri" validate:"required,uri"`
+	ProxyID string   `json:"ProxyId,omitempty"`
+	URI     *url.URL `json:"Uri" validate:"required,uri"`
 
 	tentacleEndpoint
 }
 
-func NewListeningTentacleEndpoint(uri url.URL, thumbprint string) *ListeningTentacleEndpoint {
-	resource := &ListeningTentacleEndpoint{}
-	resource.CommunicationStyle = "TentaclePassive"
-	resource.Thumbprint = thumbprint
-	resource.URI = uri
-
-	return resource
+func NewListeningTentacleEndpoint(uri *url.URL, thumbprint string) *ListeningTentacleEndpoint {
+	return &ListeningTentacleEndpoint{
+		URI:              uri,
+		tentacleEndpoint: *newTentacleEndpoint("TentaclePassive", thumbprint),
+	}
 }
 
-func (e ListeningTentacleEndpoint) MarshalJSON() ([]byte, error) {
-	resource := struct {
-		ProxyID string `json:"ProxyId"`
-		URI     string `json:"Uri"`
-		endpoint
+func (l ListeningTentacleEndpoint) MarshalJSON() ([]byte, error) {
+	listeningTentacleEndpoint := struct {
+		ProxyID string `json:"ProxyId,omitempty"`
+		URI     string `json:"Uri" validate:"required,uri"`
+		tentacleEndpoint
 	}{
-		ProxyID:  e.ProxyID,
-		URI:      e.URI.String(),
-		endpoint: e.endpoint,
+		ProxyID:          l.ProxyID,
+		URI:              l.URI.String(),
+		tentacleEndpoint: l.tentacleEndpoint,
 	}
 
-	return json.Marshal(resource)
+	return json.Marshal(listeningTentacleEndpoint)
 }
 
-func (e *ListeningTentacleEndpoint) UnmarshalJSON(j []byte) error {
-	s := strings.TrimSpace(string(j))
-
-	var rawStrings map[string]interface{}
-	err := json.Unmarshal([]byte(s), &rawStrings)
+// UnmarshalJSON sets this listening tentacle endpoint to its representation in
+// JSON.
+func (l *ListeningTentacleEndpoint) UnmarshalJSON(b []byte) error {
+	var fields struct {
+		ProxyID string `json:"ProxyId,omitempty"`
+		URI     string `json:"Uri" validate:"required,uri"`
+		tentacleEndpoint
+	}
+	err := json.Unmarshal(b, &fields)
 	if err != nil {
 		return err
 	}
 
-	for k, v := range rawStrings {
-		if k == "CommunicationStyle" {
-			e.CommunicationStyle = v.(string)
-		}
-		if k == "Id" {
-			if v != nil {
-				e.ID = v.(string)
-			}
-		}
-		if k == "LastModifiedOn" {
-			if v != nil {
-				e.LastModifiedOn = v.(*time.Time)
-			}
-		}
-		if k == "LastModifiedBy" {
-			if v != nil {
-				e.LastModifiedBy = v.(string)
-			}
-		}
-		if k == "Links" {
-			links := v.(map[string]interface{})
-			if len(links) > 0 {
-				fmt.Println(links)
-			}
-		}
-		if k == "ProxyId" {
-			if v != nil {
-				e.ProxyID = v.(string)
-			}
-		}
-		if k == "URI" {
-			rawURL := v.(string)
-			u, err := url.Parse(rawURL)
-			if err != nil {
-				return err
-			}
-			e.URI = *u
-		}
+	// validate JSON representation
+	validate := validator.New()
+	err = validate.Struct(fields)
+	if err != nil {
+		return err
 	}
+
+	l.ProxyID = fields.ProxyID
+	l.tentacleEndpoint = fields.tentacleEndpoint
+
+	u, err := url.Parse(fields.URI)
+	if err != nil {
+		return err
+	}
+	l.URI = u
 
 	return nil
 }
 
-var _ ResourceInterface = &ListeningTentacleEndpoint{}
-var _ EndpointInterface = &ListeningTentacleEndpoint{}
+// Validate checks the state of the listening tentacle endpoint and returns an
+// error if invalid.
+func (l *ListeningTentacleEndpoint) Validate() error {
+	return validator.New().Struct(l)
+}

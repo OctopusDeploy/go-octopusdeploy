@@ -1,6 +1,6 @@
 package model
 
-type VariableSetResource struct {
+type VariableSet struct {
 	OwnerID     string               `json:"OwnerId,omitempty"`
 	ScopeValues *VariableScopeValues `json:"ScopeValues,omitempty"`
 	SpaceID     string               `json:"SpaceId,omitempty"`
@@ -8,4 +8,10 @@ type VariableSetResource struct {
 	Version     int32                `json:"Version,omitempty"`
 
 	Resource
+}
+
+func NewVariableSet() *VariableSet {
+	return &VariableSet{
+		Resource: *newResource(),
+	}
 }

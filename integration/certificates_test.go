@@ -26,14 +26,9 @@ func TestCertAddAndDelete(t *testing.T) {
 	certName := getRandomName()
 
 	expected, err := getTestCert1(t, certName)
-
-	assert.NoError(t, err)
-	assert.NotNil(t, expected)
-	assert.NoError(t, expected.Validate())
-
-	if err != nil {
-		return
-	}
+	require.NoError(t, err)
+	require.NotNil(t, expected)
+	require.NoError(t, expected.Validate())
 
 	actual := createTestCert(t, octopusClient, certName)
 	defer cleanCert(t, octopusClient, actual.ID)
@@ -101,23 +96,16 @@ func replaceCert(t *testing.T, octopusClient *client.Client, originalCert *model
 }
 
 func getTestCert1(t *testing.T, certName string) (*model.Certificate, error) {
-	certificate, err := model.NewCertificate(certName, testCert1, model.SensitiveValue{})
-
-	assert.NoError(t, err)
-	assert.NotNil(t, certificate)
-	assert.NoError(t, certificate.Validate())
-
-	if err != nil {
-		return nil, err
-	}
+	certificate := model.NewCertificate(certName, testCert1, model.SensitiveValue{})
+	require.NotNil(t, certificate)
+	require.NoError(t, certificate.Validate())
 
 	return certificate, nil
 }
 
 func getTestCertReplace(t *testing.T) (*model.ReplacementCertificate, error) {
 	certificateReplace := model.NewReplacementCertificate(testCert2Data, testCert2Password)
-
-	assert.NotNil(t, certificateReplace)
+	require.NotNil(t, certificateReplace)
 
 	return certificateReplace, nil
 }

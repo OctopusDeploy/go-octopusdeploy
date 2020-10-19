@@ -1,9 +1,16 @@
 package model
 
-// NewSensitiveValue initializes a SensitiveValue
+// NewSensitiveValue creates and initializes a sensitive value.
 func NewSensitiveValue(newValue string) SensitiveValue {
+	if len(newValue) == 0 {
+		return SensitiveValue{
+			HasValue: false,
+			NewValue: nil,
+		}
+	}
+
 	return SensitiveValue{
-		HasValue: len(newValue) > 0,
+		HasValue: true,
 		NewValue: &newValue,
 	}
 }

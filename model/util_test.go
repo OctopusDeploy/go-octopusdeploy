@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"testing"
 
 	uuid "github.com/google/uuid"
@@ -8,6 +9,12 @@ import (
 )
 
 var propertyName = "fake-property-name"
+
+func getRandomName() string {
+	fullName := fmt.Sprintf("test-id %s", uuid.New())
+	fullName = fullName[0:44] //Some names in Octopus have a max limit of 50 characters (such as Environment Name)
+	return fullName
+}
 
 func TestValidateRequiredUUID(t *testing.T) {
 	uuidToTest := uuid.Nil
@@ -81,7 +88,8 @@ func TestValidateSemanticVersion(t *testing.T) {
 }
 
 func TestValidateRequiredSensitiveValue(t *testing.T) {
-	sensitiveValue := NewSensitiveValue("test-value")
+	newValue := getRandomName()
+	sensitiveValue := NewSensitiveValue(newValue)
 
 	err := ValidateRequiredSensitiveValue(emptyString, sensitiveValue)
 	assert.Error(t, err)

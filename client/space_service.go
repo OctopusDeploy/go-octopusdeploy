@@ -1,46 +1,41 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type spaceService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	homePath string
+
+	service
 }
 
-func newSpaceService(sling *sling.Sling, uriTemplate string) *spaceService {
-	if sling == nil {
-		sling = getDefaultClient()
+func newSpaceService(sling *sling.Sling, uriTemplate string, homePath string) *spaceService {
+	spaceService := &spaceService{
+		homePath: homePath,
+	}
+	spaceService.service = newService(serviceSpaceService, sling, uriTemplate, new(model.Space))
+
+	return spaceService
+}
+
+func (s spaceService) getPagedResponse(path string) ([]*model.Space, error) {
+	resources := []*model.Space{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(model.Spaces), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*model.Spaces)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &spaceService{
-		name:        serviceSpaceService,
-		sling:       sling,
-		uriTemplate: template,
-	}
-}
-
-func (s spaceService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s spaceService) getName() string {
-	return s.name
-}
-
-func (s spaceService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
+	return resources, nil
 }
 
 // Add creates a new space.
@@ -50,22 +45,12 @@ func (s spaceService) Add(resource *model.Space) (*model.Space, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Space), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Space), nil
-}
-
-// DeleteByID deletes the space that matches the input ID.
-func (s spaceService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("space", "ID", id)
-	}
-
-	return err
 }
 
 // GetByID returns the space that matches the input ID. If one cannot be found,
@@ -76,9 +61,9 @@ func (s spaceService) GetByID(id string) (*model.Space, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(model.Space), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
-		return nil, createResourceNotFoundError("space", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.Space), nil
@@ -86,8 +71,8 @@ func (s spaceService) GetByID(id string) (*model.Space, error) {
 
 // GetAll returns all spaces. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s spaceService) GetAll() ([]model.Space, error) {
-	items := []model.Space{}
+func (s spaceService) GetAll() ([]*model.Space, error) {
+	items := []*model.Space{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -116,26 +101,34 @@ func (s spaceService) GetByName(name string) (*model.Space, error) {
 
 	for _, item := range collection {
 		if item.Name == name {
-			return &item, nil
+			return item, nil
 		}
 	}
 
-	return nil, createItemNotFoundError(s.name, operationGetByName, name)
+	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
+}
+
+// GetByPartialName performs a lookup and returns spaces with a matching partial name.
+func (s spaceService) GetByPartialName(name string) ([]*model.Space, error) {
+	path, err := getByPartialNamePath(s, name)
+	if err != nil {
+		return []*model.Space{}, err
+	}
+
+	return s.getPagedResponse(path)
 }
 
 // Update modifies a space based on the one provided as input.
-func (s spaceService) Update(resource model.Space) (*model.Space, error) {
+func (s spaceService) Update(resource *model.Space) (*model.Space, error) {
 	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Space), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Space), nil
 }
-
-var _ ServiceInterface = &spaceService{}

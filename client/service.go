@@ -1,7 +1,8 @@
 package client
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
@@ -12,16 +13,57 @@ const (
 	whitespaceString string = " "
 )
 
-// ServiceInterface defines the contract for all services that communicate with
-// the Octopus API.
-type ServiceInterface interface {
+// IService defines the contract for all services that communicate with the
+// Octopus API.
+type IService interface {
 	getClient() *sling.Sling
 	getName() string
+	getPath() string
 	getURITemplate() *uritemplates.UriTemplate
 }
 
-func getAddPath(s ServiceInterface, r model.ResourceInterface) (string, error) {
-	if isNil(r) {
+type service struct {
+	Name        string
+	Path        string
+	Sling       *sling.Sling
+	URITemplate *uritemplates.UriTemplate
+	itemType    model.IResource
+}
+
+func newService(name string, sling *sling.Sling, uriTemplate string, itemType model.IResource) service {
+	if sling == nil {
+		sling = getDefaultClient()
+	}
+
+	template, _ := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+
+	return service{
+		itemType:    itemType,
+		Name:        name,
+		Path:        strings.TrimSpace(uriTemplate),
+		Sling:       sling,
+		URITemplate: template,
+	}
+}
+
+func (s service) getClient() *sling.Sling {
+	return s.Sling
+}
+
+func (s service) getName() string {
+	return s.Name
+}
+
+func (s service) getPath() string {
+	return s.Path
+}
+
+func (s service) getURITemplate() *uritemplates.UriTemplate {
+	return s.URITemplate
+}
+
+func getAddPath(s IService, r model.IResource) (string, error) {
+	if r == nil || isNil(r) {
 		return emptyString, createInvalidParameterError(operationAdd, parameterResource)
 	}
 
@@ -39,7 +81,7 @@ func getAddPath(s ServiceInterface, r model.ResourceInterface) (string, error) {
 	return s.getURITemplate().Expand(values)
 }
 
-func getPath(s ServiceInterface) (string, error) {
+func getPath(s IService) (string, error) {
 	err := validateInternalState(s)
 	if err != nil {
 		return emptyString, err
@@ -49,7 +91,7 @@ func getPath(s ServiceInterface) (string, error) {
 	return s.getURITemplate().Expand(values)
 }
 
-func getAllPath(s ServiceInterface) (string, error) {
+func getAllPath(s IService) (string, error) {
 	err := validateInternalState(s)
 	if err != nil {
 		return emptyString, err
@@ -64,7 +106,7 @@ func getAllPath(s ServiceInterface) (string, error) {
 	return path + "/all", nil
 }
 
-func getByIDPath(s ServiceInterface, id string) (string, error) {
+func getByIDPath(s IService, id string) (string, error) {
 	if isEmpty(id) {
 		return emptyString, createInvalidParameterError(operationGetByID, parameterID)
 	}
@@ -80,7 +122,7 @@ func getByIDPath(s ServiceInterface, id string) (string, error) {
 	return s.getURITemplate().Expand(values)
 }
 
-func getByIDsPath(s ServiceInterface, ids []string) (string, error) {
+func getByIDsPath(s IService, ids []string) (string, error) {
 	if len(ids) == 0 {
 		return s.getURITemplate().Expand(make(map[string]interface{}))
 	}
@@ -105,7 +147,7 @@ func getByIDsPath(s ServiceInterface, ids []string) (string, error) {
 	return s.getURITemplate().Expand(values)
 }
 
-func getByNamePath(s ServiceInterface, name string) (string, error) {
+func getByNamePath(s IService, name string) (string, error) {
 	if isEmpty(name) {
 		return emptyString, createInvalidParameterError(operationGetByName, parameterName)
 	}
@@ -121,7 +163,7 @@ func getByNamePath(s ServiceInterface, name string) (string, error) {
 	return s.getURITemplate().Expand(values)
 }
 
-func getByPartialNamePath(s ServiceInterface, name string) (string, error) {
+func getByPartialNamePath(s IService, name string) (string, error) {
 	if isEmpty(name) {
 		return emptyString, createInvalidParameterError(operationGetByPartialName, parameterName)
 	}
@@ -137,7 +179,7 @@ func getByPartialNamePath(s ServiceInterface, name string) (string, error) {
 	return s.getURITemplate().Expand(values)
 }
 
-func getByAccountTypePath(s ServiceInterface, accountType enum.AccountType) (string, error) {
+func getByAccountTypePath(s IService, accountType string) (string, error) {
 	err := validateInternalState(s)
 	if err != nil {
 		return emptyString, err
@@ -149,7 +191,7 @@ func getByAccountTypePath(s ServiceInterface, accountType enum.AccountType) (str
 	return s.getURITemplate().Expand(values)
 }
 
-func deleteByID(s ServiceInterface, id string) error {
+func (s *service) deleteByID(id string) error {
 	if isEmpty(id) {
 		return createInvalidParameterError(operationDeleteByID, parameterID)
 	}
@@ -170,7 +212,7 @@ func deleteByID(s ServiceInterface, id string) error {
 	return apiDelete(s.getClient(), path)
 }
 
-func getUpdatePath(s ServiceInterface, r model.ResourceInterface) (string, error) {
+func getUpdatePath(s IService, r model.IResource) (string, error) {
 	if isNil(r) {
 		return emptyString, createInvalidParameterError(operationUpdate, parameterResource)
 	}
@@ -190,7 +232,7 @@ func getUpdatePath(s ServiceInterface, r model.ResourceInterface) (string, error
 	return s.getURITemplate().Expand(values)
 }
 
-func validateInternalState(s ServiceInterface) error {
+func validateInternalState(s IService) error {
 	if s.getClient() == nil {
 		return createInvalidClientStateError(s.getName())
 	}
@@ -204,3 +246,15 @@ func validateInternalState(s ServiceInterface) error {
 
 	return err
 }
+
+// DeleteByID deletes the resource that matches the input ID.
+func (s *service) DeleteByID(id string) error {
+	err := s.deleteByID(id)
+	if err == ErrItemNotFound {
+		return createResourceNotFoundError(s.getName(), "ID", id)
+	}
+
+	return err
+}
+
+var _ IService = &service{}

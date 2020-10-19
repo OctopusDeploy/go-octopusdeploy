@@ -2,6 +2,7 @@ package model
 
 import "time"
 
+// ActivityLogElement represents an activity log element.
 type ActivityLogElement struct {
 	Category    string    `json:"Category,omitempty"`
 	Detail      string    `json:"Detail,omitempty"`

@@ -11,7 +11,7 @@ func TestNewDeploymentProcessService(t *testing.T) {
 	serviceFunction := newDeploymentProcessService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceDeploymentProcessService
+	serviceName := serviceDeploymentProcesseService
 
 	testCases := []struct {
 		name        string

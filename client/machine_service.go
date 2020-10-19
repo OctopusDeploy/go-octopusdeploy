@@ -1,55 +1,40 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type machineService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	discoverMachinePath  string
+	operatingSystemsPath string
+	shellsPath           string
+
+	service
 }
 
-func newMachineService(sling *sling.Sling, uriTemplate string) *machineService {
-	if sling == nil {
-		sling = getDefaultClient()
+func newMachineService(sling *sling.Sling, uriTemplate string, discoverMachinePath string, operatingSystemsPath string, shellsPath string) *machineService {
+	machineService := &machineService{
+		discoverMachinePath:  discoverMachinePath,
+		operatingSystemsPath: operatingSystemsPath,
+		shellsPath:           shellsPath,
 	}
+	machineService.service = newService(serviceMachineService, sling, uriTemplate, new(model.DeploymentTarget))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &machineService{
-		name:        serviceMachineService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return machineService
 }
 
-func (s machineService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s machineService) getName() string {
-	return s.name
-}
-
-func (s machineService) getPagedResponse(path string) ([]model.Machine, error) {
-	resources := []model.Machine{}
+func (s machineService) getPagedResponse(path string) ([]*model.DeploymentTarget, error) {
+	resources := []*model.DeploymentTarget{}
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(model.Machines), path)
+		resp, err := apiGet(s.getClient(), new(model.DeploymentTargets), path)
 		if err != nil {
 			return resources, err
 		}
 
-		responseList := resp.(*model.Machines)
+		responseList := resp.(*model.DeploymentTargets)
 		resources = append(resources, responseList.Items...)
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
@@ -57,55 +42,41 @@ func (s machineService) getPagedResponse(path string) ([]model.Machine, error) {
 	return resources, nil
 }
 
-func (s machineService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
 // Add creates a new machine.
-func (s machineService) Add(resource *model.Machine) (*model.Machine, error) {
+func (s machineService) Add(resource *model.DeploymentTarget) (*model.DeploymentTarget, error) {
 	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Machine), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*model.Machine), nil
-}
-
-// DeleteByID deletes the machine that matches the input ID.
-func (s machineService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("machine", "ID", id)
-	}
-
-	return err
+	return resp.(*model.DeploymentTarget), nil
 }
 
 // GetByID returns the machine that matches the input ID. If one cannot be
 // found, it returns nil and an error.
-func (s machineService) GetByID(id string) (*model.Machine, error) {
+func (s machineService) GetByID(id string) (*model.DeploymentTarget, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(model.Machine), path)
+	resp, err := apiGet(s.getClient(), new(model.DeploymentTarget), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("machine", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
-	return resp.(*model.Machine), nil
+	return resp.(*model.DeploymentTarget), nil
 }
 
 // GetAll returns all machines. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s machineService) GetAll() ([]model.Machine, error) {
-	items := []model.Machine{}
+func (s machineService) GetAll() ([]*model.DeploymentTarget, error) {
+	items := []*model.DeploymentTarget{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -116,10 +87,10 @@ func (s machineService) GetAll() ([]model.Machine, error) {
 }
 
 // GetByName performs a lookup and returns the Machine with a matching name.
-func (s machineService) GetByName(name string) ([]model.Machine, error) {
+func (s machineService) GetByName(name string) ([]*model.DeploymentTarget, error) {
 	path, err := getByNamePath(s, name)
 	if err != nil {
-		return []model.Machine{}, err
+		return []*model.DeploymentTarget{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -127,28 +98,28 @@ func (s machineService) GetByName(name string) ([]model.Machine, error) {
 
 // GetByPartialName performs a lookup and returns the machine with a matching
 // partial name.
-func (s machineService) GetByPartialName(name string) ([]model.Machine, error) {
+func (s machineService) GetByPartialName(name string) ([]*model.DeploymentTarget, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return []model.Machine{}, err
+		return []*model.DeploymentTarget{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
 // Update updates an existing machine in Octopus Deploy
-func (s machineService) Update(resource model.Machine) (*model.Machine, error) {
-	path, err := getUpdatePath(s, resource)
+func (s machineService) Update(resource model.DeploymentTarget) (*model.DeploymentTarget, error) {
+	path, err := getUpdatePath(s, &resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Machine), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*model.Machine), nil
+	return resp.(*model.DeploymentTarget), nil
 }
 
-var _ ServiceInterface = &machineService{}
+var _ IService = &machineService{}

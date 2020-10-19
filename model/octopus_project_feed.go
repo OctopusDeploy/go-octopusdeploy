@@ -1,16 +1,39 @@
 package model
 
-import "github.com/OctopusDeploy/go-octopusdeploy/enum"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
+)
 
-func NewOctopusProjectFeed(name string) (*Feed, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("NewOctopusProjectFeed", "name")
-	}
+// OctopusProjectFeed represents an Octopus project feed.
+type OctopusProjectFeed struct {
+	FeedType string `json:"FeedType" validate:"required,eq=OctopusProject"`
 
-	feed := &Feed{
-		FeedType: enum.OctopusProject,
-		Name:     name,
-	}
-
-	return feed, nil
+	FeedResource
 }
+
+// NewOctopusProjectFeed creates and initializes a Octopus project feed.
+func NewOctopusProjectFeed(name string, feedURI string) *OctopusProjectFeed {
+	return &OctopusProjectFeed{
+		FeedType:     feedOctopusProject,
+		FeedResource: *newFeedResource(name),
+	}
+}
+
+// GetFeedType returns the feed type of this Octopus project feed.
+func (o *OctopusProjectFeed) GetFeedType() string {
+	return o.FeedType
+}
+
+// Validate checks the state of this Octopus project feed and returns an error
+// if invalid.
+func (o *OctopusProjectFeed) Validate() error {
+	v := validator.New()
+	err := v.RegisterValidation("notblank", validators.NotBlank)
+	if err != nil {
+		return err
+	}
+	return v.Struct(o)
+}
+
+var _ IFeed = &OctopusProjectFeed{}

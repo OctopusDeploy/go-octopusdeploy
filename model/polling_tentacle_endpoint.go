@@ -1,15 +1,16 @@
 package model
 
-type PollingTentacleEndpoint struct {
-	URI string `json:"Uri" validate:"uri"`
+import "net/url"
 
-	tentacleEndpoint
+type PollingTentacleEndpoint struct {
+	URI *url.URL `json:"Uri" validate:"required,uri"`
+
+	tentacleEndpoint `validate:"required"`
 }
 
-func NewPollingTentacleEndpoint(thumbprint string) *PollingTentacleEndpoint {
-	resource := &PollingTentacleEndpoint{}
-	resource.CommunicationStyle = "TentacleActive"
-	resource.Thumbprint = thumbprint
-
-	return resource
+func NewPollingTentacleEndpoint(uri *url.URL, thumbprint string) *PollingTentacleEndpoint {
+	return &PollingTentacleEndpoint{
+		tentacleEndpoint: *newTentacleEndpoint("TentacleActive", thumbprint),
+		URI:              uri,
+	}
 }

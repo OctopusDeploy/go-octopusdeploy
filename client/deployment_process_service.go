@@ -1,54 +1,26 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type deploymentProcessService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	service
 }
 
 func newDeploymentProcessService(sling *sling.Sling, uriTemplate string) *deploymentProcessService {
-	if sling == nil {
-		sling = getDefaultClient()
-	}
-
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
 	return &deploymentProcessService{
-		name:        serviceDeploymentProcessService,
-		sling:       sling,
-		uriTemplate: template,
+		service: newService(serviceDeploymentProcesseService, sling, uriTemplate, new(model.DeploymentProcess)),
 	}
-}
-
-func (s deploymentProcessService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s deploymentProcessService) getName() string {
-	return s.name
-}
-
-func (s deploymentProcessService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
 }
 
 // GetAll returns all deployment processes. If none can be found or an error
 // occurs, it returns an empty collection.
-func (s deploymentProcessService) GetAll() ([]model.DeploymentProcess, error) {
+func (s deploymentProcessService) GetAll() ([]*model.DeploymentProcess, error) {
 	path, err := getPath(s)
 	if err != nil {
-		return []model.DeploymentProcess{}, err
+		return []*model.DeploymentProcess{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -62,21 +34,21 @@ func (s deploymentProcessService) GetByID(id string) (*model.DeploymentProcess, 
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(model.DeploymentProcess), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
-		return nil, createResourceNotFoundError("deployment process", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.DeploymentProcess), nil
 }
 
 func (s deploymentProcessService) Update(resource model.DeploymentProcess) (*model.DeploymentProcess, error) {
-	path, err := getUpdatePath(s, resource)
+	path, err := getUpdatePath(s, &resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.DeploymentProcess), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +56,8 @@ func (s deploymentProcessService) Update(resource model.DeploymentProcess) (*mod
 	return resp.(*model.DeploymentProcess), nil
 }
 
-func (s deploymentProcessService) getPagedResponse(path string) ([]model.DeploymentProcess, error) {
-	resources := []model.DeploymentProcess{}
+func (s deploymentProcessService) getPagedResponse(path string) ([]*model.DeploymentProcess, error) {
+	resources := []*model.DeploymentProcess{}
 	loadNextPage := true
 
 	for loadNextPage {
@@ -101,5 +73,3 @@ func (s deploymentProcessService) getPagedResponse(path string) ([]model.Deploym
 
 	return resources, nil
 }
-
-var _ ServiceInterface = &deploymentProcessService{}

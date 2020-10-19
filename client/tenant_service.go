@@ -1,34 +1,27 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type tenantService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	missingVariablesPath string
+	statusPath           string
+	tagTestPath          string
+
+	service
 }
 
-func newTenantService(sling *sling.Sling, uriTemplate string) *tenantService {
-	if sling == nil {
-		sling = getDefaultClient()
+func newTenantService(sling *sling.Sling, uriTemplate string, missingVariablesPath string, statusPath string, tagTestPath string) *tenantService {
+	tenantService := &tenantService{
+		missingVariablesPath: missingVariablesPath,
+		statusPath:           statusPath,
+		tagTestPath:          tagTestPath,
 	}
+	tenantService.service = newService(serviceTenantService, sling, uriTemplate, new(model.Tenant))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
-	return &tenantService{
-		name:        serviceTenantService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return tenantService
 }
 
 func (s tenantService) getByProjectIDPath(id string) (string, error) {
@@ -47,16 +40,8 @@ func (s tenantService) getByProjectIDPath(id string) (string, error) {
 	return s.getURITemplate().Expand(values)
 }
 
-func (s tenantService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s tenantService) getName() string {
-	return s.name
-}
-
-func (s tenantService) getPagedResponse(path string) ([]model.Tenant, error) {
-	resources := []model.Tenant{}
+func (s tenantService) getPagedResponse(path string) ([]*model.Tenant, error) {
+	resources := []*model.Tenant{}
 	loadNextPage := true
 
 	for loadNextPage {
@@ -73,10 +58,6 @@ func (s tenantService) getPagedResponse(path string) ([]model.Tenant, error) {
 	return resources, nil
 }
 
-func (s tenantService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
-}
-
 // Add creates a new Tenant.
 func (s tenantService) Add(resource *model.Tenant) (*model.Tenant, error) {
 	path, err := getAddPath(s, resource)
@@ -84,7 +65,7 @@ func (s tenantService) Add(resource *model.Tenant) (*model.Tenant, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Tenant), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
@@ -92,20 +73,10 @@ func (s tenantService) Add(resource *model.Tenant) (*model.Tenant, error) {
 	return resp.(*model.Tenant), nil
 }
 
-// DeleteByID deletes the tenant that matches the input ID.
-func (s tenantService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("tenant", "ID", id)
-	}
-
-	return err
-}
-
 // GetAll returns all tenants. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s tenantService) GetAll() ([]model.Tenant, error) {
-	items := []model.Tenant{}
+func (s tenantService) GetAll() ([]*model.Tenant, error) {
+	items := []*model.Tenant{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -125,17 +96,17 @@ func (s tenantService) GetByID(id string) (*model.Tenant, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Tenant), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("tenant", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*model.Tenant), nil
 }
 
 // GetByIDs returns the accounts that match the input IDs.
-func (s tenantService) GetByIDs(ids []string) ([]model.Tenant, error) {
+func (s tenantService) GetByIDs(ids []string) ([]*model.Tenant, error) {
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
-		return []model.Tenant{}, err
+		return []*model.Tenant{}, err
 	}
 
 	return s.getPagedResponse(path)
@@ -143,10 +114,10 @@ func (s tenantService) GetByIDs(ids []string) ([]model.Tenant, error) {
 
 // GetByProjectID performs a lookup and returns all tenants with a matching
 // project ID.
-func (s tenantService) GetByProjectID(id string) ([]model.Tenant, error) {
+func (s tenantService) GetByProjectID(id string) ([]*model.Tenant, error) {
 	path, err := s.getByProjectIDPath(id)
 	if err != nil {
-		return []model.Tenant{}, nil
+		return []*model.Tenant{}, nil
 	}
 
 	return s.getPagedResponse(path)
@@ -154,10 +125,10 @@ func (s tenantService) GetByProjectID(id string) ([]model.Tenant, error) {
 
 // GetByPartialName performs a lookup and returns all tenants with a matching
 // partial name.
-func (s tenantService) GetByPartialName(name string) ([]model.Tenant, error) {
+func (s tenantService) GetByPartialName(name string) ([]*model.Tenant, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return []model.Tenant{}, nil
+		return []*model.Tenant{}, nil
 	}
 
 	return s.getPagedResponse(path)
@@ -165,17 +136,15 @@ func (s tenantService) GetByPartialName(name string) ([]model.Tenant, error) {
 
 // Update modifies a tenant based on the one provided as input.
 func (s tenantService) Update(resource model.Tenant) (*model.Tenant, error) {
-	path, err := getUpdatePath(s, resource)
+	path, err := getUpdatePath(s, &resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Tenant), path)
+	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Tenant), nil
 }
-
-var _ ServiceInterface = &tenantService{}

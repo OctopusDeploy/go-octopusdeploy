@@ -1,52 +1,44 @@
 package client
 
 import (
-	"strings"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
+// feedService handles communication with feed-related methods of the Octopus
+// API.
 type feedService struct {
-	name        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	builtInFeedStats string
+
+	service
 }
 
-func newFeedService(sling *sling.Sling, uriTemplate string) *feedService {
-	if sling == nil {
-		sling = getDefaultClient()
+// newFeedService returns an feed service with a preconfigured client.
+func newFeedService(sling *sling.Sling, uriTemplate string, builtInFeedStats string) *feedService {
+	feedService := &feedService{
+		builtInFeedStats: builtInFeedStats,
 	}
+	feedService.service = newService(serviceFeedService, sling, uriTemplate, new(model.Feed))
 
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
+	return feedService
+}
+
+func toFeedArray(feeds []*model.Feed) []model.IFeed {
+	items := []model.IFeed{}
+	for _, feed := range feeds {
+		items = append(items, feed)
 	}
-
-	return &feedService{
-		name:        serviceFeedService,
-		sling:       sling,
-		uriTemplate: template,
-	}
+	return items
 }
 
-func (s feedService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s feedService) getName() string {
-	return s.name
-}
-
-func (s feedService) getPagedResponse(path string) ([]model.Feed, error) {
-	resources := []model.Feed{}
+func (s feedService) getPagedResponse(path string) ([]model.IFeed, error) {
+	resources := []*model.Feed{}
 	loadNextPage := true
 
 	for loadNextPage {
 		resp, err := apiGet(s.getClient(), new(model.Feeds), path)
 		if err != nil {
-			return resources, err
+			return toFeedArray(resources), err
 		}
 
 		responseList := resp.(*model.Feeds)
@@ -54,41 +46,69 @@ func (s feedService) getPagedResponse(path string) ([]model.Feed, error) {
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return resources, nil
-}
-
-func (s feedService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
+	return toFeedArray(resources), nil
 }
 
 // Add creates a new feed.
-func (s feedService) Add(resource model.Feed) (*model.Feed, error) {
-	path, err := getAddPath(s, resource)
+func (s feedService) Add(feed model.IFeed) (model.IFeed, error) {
+	if feed == nil {
+		return nil, createInvalidParameterError(operationAdd, parameterFeed)
+	}
+
+	if isEmpty(feed.GetFeedType()) {
+		return nil, createInvalidParameterError(operationAdd, parameterFeed)
+	}
+
+	path, err := getAddPath(s, feed)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(model.Feed), path)
+	var feedResource interface{}
+	switch feed.GetFeedType() {
+	case feedAwsElasticContainerRegistry:
+		feedResource = new(model.AwsElasticContainerRegistry)
+	case feedBuiltIn:
+		feedResource = new(model.BuiltInFeed)
+	case feedDocker:
+		feedResource = new(model.DockerContainerRegistry)
+	case feedGitHub:
+		feedResource = new(model.GitHubRepositoryFeed)
+	case feedHelm:
+		feedResource = new(model.HelmFeed)
+	case feedMaven:
+		feedResource = new(model.MavenFeed)
+	case feedNuGet:
+		feedResource = new(model.NuGetFeed)
+	case feedOctopusProject:
+		feedResource = new(model.OctopusProjectFeed)
+	}
+
+	resp, err := apiAdd(s.getClient(), feed, feedResource, path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*model.Feed), nil
+	return resp.(model.IFeed), nil
 }
 
-// DeleteByID deletes the feed that matches the input ID.
-func (s feedService) DeleteByID(id string) error {
-	err := deleteByID(s, id)
-	if err == ErrItemNotFound {
-		return createResourceNotFoundError("feed", "ID", id)
+// GetAll returns all feeds. If none can be found or an error occurs, it
+// returns an empty collection.
+func (s feedService) GetAll() ([]model.IFeed, error) {
+	path, err := getAllPath(s)
+	if err != nil {
+		return []model.IFeed{}, err
 	}
 
-	return err
+	var feeds []*model.Feed
+	_, err = apiGet(s.getClient(), &feeds, path)
+
+	return toFeedArray(feeds), err
 }
 
 // GetByID returns the feed that matches the input ID. If one cannot be found,
 // it returns nil and an error.
-func (s feedService) GetByID(id string) (*model.Feed, error) {
+func (s feedService) GetByID(id string) (model.IFeed, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
@@ -96,48 +116,38 @@ func (s feedService) GetByID(id string) (*model.Feed, error) {
 
 	resp, err := apiGet(s.getClient(), new(model.Feed), path)
 	if err != nil {
-		return nil, createResourceNotFoundError("feed", "ID", id)
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
-	return resp.(*model.Feed), nil
+	return resp.(model.IFeed), nil
 }
 
-// GetAll returns all feeds. If none can be found or an error occurs, it
-// returns an empty collection.
-func (s feedService) GetAll() ([]model.Feed, error) {
-	items := []model.Feed{}
-	path, err := getAllPath(s)
-	if err != nil {
-		return items, err
-	}
-
-	_, err = apiGet(s.getClient(), &items, path)
-	return items, err
-}
-
-// GetByPartialName performs a lookup and returns the Feed with a matching name.
-func (s feedService) GetByPartialName(name string) ([]model.Feed, error) {
+// GetByPartialName performs a lookup and returns instances of an feed with a
+// matching partial name.
+func (s feedService) GetByPartialName(name string) ([]model.IFeed, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return []model.Feed{}, err
+		return []model.IFeed{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
 // Update modifies a feed based on the one provided as input.
-func (s feedService) Update(resource model.Feed) (*model.Feed, error) {
-	path, err := getUpdatePath(s, resource)
+func (s feedService) Update(feed model.IFeed) (model.IFeed, error) {
+	if feed == nil {
+		return nil, createInvalidParameterError(operationUpdate, parameterFeed)
+	}
+
+	path, err := getUpdatePath(s, feed)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(model.Feed), path)
+	resp, err := apiUpdate(s.getClient(), feed, new(model.Feed), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*model.Feed), nil
+	return resp.(model.IFeed), nil
 }
-
-var _ ServiceInterface = &feedService{}

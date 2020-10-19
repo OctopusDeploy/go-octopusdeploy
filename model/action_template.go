@@ -1,14 +1,11 @@
 package model
 
-import (
-	"time"
+import "github.com/go-playground/validator/v10"
 
-	"github.com/go-playground/validator/v10"
-)
-
-// ActionTemplates defines a collection of ActionTemplate items with built-in support for paged results.
+// ActionTemplates defines a collection of action templates with built-in
+// support for paged results.
 type ActionTemplates struct {
-	Items []ActionTemplate `json:"Items"`
+	Items []*ActionTemplate `json:"Items"`
 	PagedResults
 }
 
@@ -18,8 +15,8 @@ type ActionTemplate struct {
 	CommunityActionTemplateID string                     `json:"CommunityActionTemplateId,omitempty"`
 	Description               string                     `json:"Description,omitempty"`
 	Name                      string                     `json:"Name" validate:"required"`
-	Packages                  []*PackageReference        `json:"Packages"`
-	Parameters                []*ActionTemplateParameter `json:"Parameters"`
+	Packages                  []*PackageReference        `json:"Packages,omitempty"`
+	Parameters                []*ActionTemplateParameter `json:"Parameters,omitempty"`
 	Properties                map[string]PropertyValue   `json:"Properties,omitempty"`
 	SpaceID                   string                     `json:"SpaceId,omitempty"`
 	Version                   int32                      `json:"Version,omitempty"`
@@ -28,65 +25,16 @@ type ActionTemplate struct {
 }
 
 // NewActionTemplate creates and initializes an action template.
-func NewActionTemplate(name string, actionType string) (*ActionTemplate, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("NewActionTemplate", "name")
-	}
-
+func NewActionTemplate(name string, actionType string) *ActionTemplate {
 	return &ActionTemplate{
-		Name:       name,
 		ActionType: actionType,
-	}, nil
-}
-
-// GetID returns the ID value of the ActionTemplate.
-func (resource ActionTemplate) GetID() string {
-	return resource.ID
-}
-
-// GetLastModifiedBy returns the name of the account that modified the value of this ActionTemplate.
-func (resource ActionTemplate) GetLastModifiedBy() string {
-	return resource.LastModifiedBy
-}
-
-// GetLastModifiedOn returns the time when the value of this ActionTemplate was changed.
-func (resource ActionTemplate) GetLastModifiedOn() *time.Time {
-	return resource.LastModifiedOn
-}
-
-// GetLinks returns the associated links with the value of this ActionTemplate.
-func (resource ActionTemplate) GetLinks() map[string]string {
-	return resource.Links
-}
-
-// SetID
-func (resource ActionTemplate) SetID(id string) {
-	resource.ID = id
-}
-
-// SetLastModifiedBy
-func (resource ActionTemplate) SetLastModifiedBy(name string) {
-	resource.LastModifiedBy = name
-}
-
-// SetLastModifiedOn
-func (resource ActionTemplate) SetLastModifiedOn(time *time.Time) {
-	resource.LastModifiedOn = time
-}
-
-// Validate checks the state of the ActionTemplate and returns an error if invalid.
-func (resource ActionTemplate) Validate() error {
-	validate := validator.New()
-	err := validate.Struct(resource)
-
-	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
-		return err
+		Name:       name,
+		Resource:   *newResource(),
 	}
-
-	return nil
 }
 
-var _ ResourceInterface = &ActionTemplate{}
+// Validate checks the state of the ActionTemplate and returns an error if
+// invalid.
+func (a *ActionTemplate) Validate() error {
+	return validator.New().Struct(a)
+}

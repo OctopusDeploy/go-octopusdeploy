@@ -1,40 +1,47 @@
 package model
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/enum"
 	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
 	uuid "github.com/google/uuid"
 )
 
-func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID) (*Account, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError("NewAzureSubscriptionAccount", "name")
-	}
+// AzureSubscriptionAccount represents an Azure subscription account.
+type AzureSubscriptionAccount struct {
+	AccountType           string          `json:"AccountType" validate:"required,eq=AzureSubscription"`
+	AzureEnvironment      string          `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
+	CertificateBytes      *SensitiveValue `json:"CertificateBytes,omitempty"`
+	CertificateThumbprint string          `json:"CertificateThumbprint,omitempty"`
+	ManagementEndpoint    string          `json:"ServiceManagementEndpointBaseUri,omitempty" validate:"omitempty,uri"`
+	StorageEndpointSuffix string          `json:"ServiceManagementEndpointSuffix,omitempty" validate:"omitempty,hostname"`
+	SubscriptionID        *uuid.UUID      `json:"SubscriptionNumber" validate:"required"`
 
-	account, err := NewAccount(name, enum.AzureSubscription)
-	if err != nil {
-		return nil, err
-	}
-
-	account.SubscriptionID = &subscriptionID
-
-	return account, nil
+	AccountResource
 }
 
-func validateAzureSubscriptionAccount(account Account) error {
-	validate := validator.New()
-	err := validate.Struct(account)
+// NewAzureSubscriptionAccount creates and initializes an Azure subscription
+// account with a name.
+func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID) *AzureSubscriptionAccount {
+	return &AzureSubscriptionAccount{
+		AccountType:     "AzureSubscription",
+		SubscriptionID:  &subscriptionID,
+		AccountResource: *newAccountResource(name),
+	}
+}
 
+// GetAccountType returns the account type for this account.
+func (a *AzureSubscriptionAccount) GetAccountType() string {
+	return a.AccountType
+}
+
+// Validate checks the state of this account and returns an error if invalid.
+func (a *AzureSubscriptionAccount) Validate() error {
+	v := validator.New()
+	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
-		if _, ok := err.(*validator.InvalidValidationError); ok {
-			return nil
-		}
 		return err
 	}
-
-	validations := []error{
-		ValidateRequiredUUID("SubscriptionID", account.SubscriptionID),
-	}
-
-	return ValidateMultipleProperties(validations)
+	return v.Struct(a)
 }
+
+var _ IAccount = &AzureSubscriptionAccount{}

@@ -2,54 +2,25 @@ package client
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 // apiKeyService handles communication with API key-related methods of the Octopus API.
 type apiKeyService struct {
-	name        string                    `validate:"required"`
-	path        string                    `validate:"required"`
-	sling       *sling.Sling              `validate:"required"`
-	uriTemplate *uritemplates.UriTemplate `validate:"required"`
+	service
 }
 
 // newAPIKeyService returns an apiKeyService with a preconfigured client.
 func newAPIKeyService(sling *sling.Sling, uriTemplate string) *apiKeyService {
-	if sling == nil {
-		sling = getDefaultClient()
-	}
-
-	template, err := uritemplates.Parse(strings.TrimSpace(uriTemplate))
-	if err != nil {
-		return nil
-	}
-
 	return &apiKeyService{
-		name:        serviceAPIKeyService,
-		path:        strings.TrimSpace(uriTemplate),
-		sling:       sling,
-		uriTemplate: template,
+		service: newService(serviceAPIKeyService, sling, uriTemplate, new(model.APIKey)),
 	}
-}
-
-func (s apiKeyService) getClient() *sling.Sling {
-	return s.sling
-}
-
-func (s apiKeyService) getName() string {
-	return s.name
-}
-
-func (s apiKeyService) getURITemplate() *uritemplates.UriTemplate {
-	return s.uriTemplate
 }
 
 // GetByUserID lists all API keys for a user, returning the most recent results first.
-func (s apiKeyService) GetByUserID(userID string) (*[]model.APIKey, error) {
+func (s apiKeyService) GetByUserID(userID string) ([]*model.APIKey, error) {
 	if isEmpty(userID) {
 		return nil, createInvalidParameterError(operationGetByUserID, parameterUserID)
 	}
@@ -59,9 +30,9 @@ func (s apiKeyService) GetByUserID(userID string) (*[]model.APIKey, error) {
 		return nil, err
 	}
 
-	var p []model.APIKey
+	var p []*model.APIKey
 
-	path := trimTemplate(s.path)
+	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/%s/apikeys", userID)
 
 	loadNextPage := true
@@ -77,7 +48,7 @@ func (s apiKeyService) GetByUserID(userID string) (*[]model.APIKey, error) {
 		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
 
-	return &p, nil
+	return p, nil
 }
 
 // GetByID the API key that belongs to the user by its ID.
@@ -95,7 +66,7 @@ func (s apiKeyService) GetByID(userID string, apiKeyID string) (*model.APIKey, e
 		return nil, err
 	}
 
-	path := trimTemplate(s.path)
+	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"%s/apikeys/%s", userID, apiKeyID)
 
 	resp, err := apiGet(s.getClient(), new(model.APIKey), path)
@@ -121,7 +92,7 @@ func (s apiKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 		return nil, err
 	}
 
-	path := trimTemplate(s.path)
+	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/%s/apikeys", apiKey.UserID)
 
 	resp, err := apiPost(s.getClient(), apiKey, new(model.APIKey), path)
@@ -131,5 +102,3 @@ func (s apiKeyService) Create(apiKey *model.APIKey) (*model.APIKey, error) {
 
 	return resp.(*model.APIKey), nil
 }
-
-var _ ServiceInterface = &apiKeyService{}

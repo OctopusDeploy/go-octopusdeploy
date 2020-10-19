@@ -8,12 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDeploymentProcesses(t *testing.T) {
-	t.Run("Get", TestDeploymentProcessGet)
-	t.Run("GetAll", TestDeploymentProcessGetAll)
-	t.Run("Update", TestDeploymentProcessUpdate)
-}
-
 func TestDeploymentProcessGet(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
@@ -60,23 +54,23 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 		t.Fatalf("Retrieving deployment processes failed when it shouldn't: %s", err)
 	}
 
-	deploymentActionWindowsService := &model.DeploymentAction{
+	deploymentActionWindowService := &model.DeploymentAction{
 		Name:       "Install Windows Service",
-		ActionType: "Octopus.WindowsService",
+		ActionType: "Octopus.WindowService",
 		Properties: map[string]string{
-			"Octopus.Action.WindowsService.CreateOrUpdateService":                       "True",
-			"Octopus.Action.WindowsService.ServiceAccount":                              "LocalSystem",
-			"Octopus.Action.WindowsService.StartMode":                                   "auto",
+			"Octopus.Action.WindowService.CreateOrUpdateService":                        "True",
+			"Octopus.Action.WindowService.ServiceAccount":                               "LocalSystem",
+			"Octopus.Action.WindowService.StartMode":                                    "auto",
 			"Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles":   "True",
 			"Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings": "True",
-			"Octopus.Action.EnabledFeatures":                                            "Octopus.Features.WindowsService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles",
+			"Octopus.Action.EnabledFeatures":                                            "Octopus.Features.WindowService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles",
 			"Octopus.Action.Package.FeedId":                                             "feeds-nugetfeed",
 			"Octopus.Action.Package.DownloadOnTentacle":                                 "False",
 			"Octopus.Action.Package.PackageId":                                          "Newtonsoft.Json",
-			"Octopus.Action.WindowsService.ServiceName":                                 "My service name",
-			"Octopus.Action.WindowsService.DisplayName":                                 "my display name",
-			"Octopus.Action.WindowsService.Description":                                 "my desc",
-			"Octopus.Action.WindowsService.ExecutablePath":                              "bin\\Myservice.exe",
+			"Octopus.Action.WindowService.ServiceName":                                  "My service name",
+			"Octopus.Action.WindowService.DisplayName":                                  "my display name",
+			"Octopus.Action.WindowService.Description":                                  "my desc",
+			"Octopus.Action.WindowService.ExecutablePath":                               "bin\\Myservice.exe",
 			"Octopus.Action.SubstituteInFiles.Enabled":                                  "True",
 			"Octopus.Action.SubstituteInFiles.TargetFiles":                              "*.sh",
 		},
@@ -89,7 +83,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 		},
 	}
 
-	step1.Actions = append(step1.Actions, *deploymentActionWindowsService)
+	step1.Actions = append(step1.Actions, *deploymentActionWindowService)
 
 	deploymentProcess.Steps = append(deploymentProcess.Steps, *step1)
 
