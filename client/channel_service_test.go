@@ -25,22 +25,8 @@ func TestChannelServiceAdd(t *testing.T) {
 
 	invalidResource := &model.Channel{}
 	resource, err = service.Add(invalidResource)
-	assert.Equal(t, createValidationFailureError("Add", invalidResource.Validate()), err)
+	assert.Equal(t, createValidationFailureError(operationAdd, invalidResource.Validate()), err)
 	assert.Nil(t, resource)
-}
-
-func TestChannelServiceGetAll(t *testing.T) {
-	service := createChannelService(t)
-	require.NotNil(t, service)
-
-	resources, err := service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resources)
-
-	for _, resource := range resources {
-		assert.NotNil(t, resource)
-		assert.NotEmpty(t, resource.ID)
-	}
 }
 
 func TestChannelServiceGetByID(t *testing.T) {
@@ -54,21 +40,6 @@ func TestChannelServiceGetByID(t *testing.T) {
 	resource, err = service.GetByID(whitespaceString)
 	assert.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
 	assert.Nil(t, resource)
-
-	id := getRandomName()
-	resource, err = service.GetByID(id)
-	assert.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
-	assert.Nil(t, resource)
-
-	resources, err := service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resources)
-
-	if len(resources) > 0 {
-		resourceToCompare, err := service.GetByID(resources[0].ID)
-		assert.NoError(t, err)
-		assert.EqualValues(t, resources[0], *resourceToCompare)
-	}
 }
 
 func TestChannelServiceGetByPartialName(t *testing.T) {
@@ -84,22 +55,6 @@ func TestChannelServiceGetByPartialName(t *testing.T) {
 	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
 	assert.NotNil(t, resources)
 	assert.Len(t, resources, 0)
-
-	name := getRandomName()
-	resources, err = service.GetByPartialName(name)
-	assert.NoError(t, err)
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-
-	resources, err = service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resources)
-
-	if len(resources) > 0 {
-		resourcesToCompare, err := service.GetByPartialName(resources[0].Name)
-		assert.NoError(t, err)
-		assert.EqualValues(t, resourcesToCompare[0], resources[0])
-	}
 }
 
 func TestChannelServiceNew(t *testing.T) {
