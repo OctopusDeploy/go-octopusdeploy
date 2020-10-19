@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -34,7 +35,13 @@ func getClient() *Client {
 	}
 	httpClient := http.Client{Transport: tr}
 
-	octopusClient, err := NewClient(&httpClient, octopusURL, octopusAPIKey, emptyString)
+	apiURL, err := url.Parse(octopusURL)
+	if err != nil {
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return nil
+	}
+
+	octopusClient, err := NewClient(&httpClient, apiURL, octopusAPIKey, emptyString)
 	if err != nil {
 		log.Fatal(err)
 	}
