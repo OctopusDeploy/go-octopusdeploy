@@ -94,8 +94,8 @@ type Client struct {
 
 // NewClient returns a new Octopus API client. If a nil client is provided, a
 // new http.Client will be used.
-func NewClient(httpClient *http.Client, octopusURL string, apiKey string, spaceID string) (*Client, error) {
-	if isEmpty(octopusURL) {
+func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string) (*Client, error) {
+	if apiURL == nil {
 		return nil, createInvalidParameterError(clientNewClient, parameterOctopusURL)
 	}
 
@@ -107,12 +107,7 @@ func NewClient(httpClient *http.Client, octopusURL string, apiKey string, spaceI
 		return nil, createInvalidParameterError(clientNewClient, parameterAPIKey)
 	}
 
-	_, err := url.Parse(octopusURL)
-	if err != nil {
-		return nil, createInvalidParameterError(clientNewClient, parameterOctopusURL)
-	}
-
-	baseURLWithAPI := strings.TrimRight(octopusURL, "/")
+	baseURLWithAPI := strings.TrimRight(apiURL.String(), "/")
 	baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
 
 	if httpClient == nil {
@@ -714,7 +709,7 @@ func apiDelete(sling *sling.Sling, path string) error {
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 	if apiErrorCheck !=
-	 nil {
+		nil {
 		return apiErrorCheck
 	}
 
