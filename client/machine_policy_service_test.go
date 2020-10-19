@@ -146,7 +146,8 @@ func TestMachinePolicyServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	resource = CreateTestMachinePolicy(t, service)
-	defer DeleteTestMachinePolicy(t, service, *resource)
+	err = DeleteTestMachinePolicy(t, service, *resource)
+	require.NoError(t, err)
 }
 
 func TestMachinePolicyServiceDeleteAll(t *testing.T) {
@@ -158,7 +159,8 @@ func TestMachinePolicyServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		defer DeleteTestMachinePolicy(t, service, *resource)
+		err = DeleteTestMachinePolicy(t, service, *resource)
+		require.NoError(t, err)
 	}
 }
 
@@ -201,6 +203,15 @@ func TestMachinePolicyServiceGetByID(t *testing.T) {
 		require.NoError(t, err)
 		IsEqualMachinePolicies(t, resource, resourceToCompare)
 	}
+}
+
+func TestMachinePolicyServiceGetTemplate(t *testing.T) {
+	service := createMachinePolicyService(t)
+	require.NotNil(t, service)
+
+	machinePolicy, err := service.GetTemplate()
+	require.NoError(t, err)
+	require.NotNil(t, machinePolicy)
 }
 
 func TestMachinePolicyServiceParameters(t *testing.T) {
