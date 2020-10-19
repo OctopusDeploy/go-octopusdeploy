@@ -57,6 +57,19 @@ func (s machinePolicyService) Add(resource *model.MachinePolicy) (*model.Machine
 	return resp.(*model.MachinePolicy), nil
 }
 
+// GetAll returns all machine policies. If none can be found or an error
+// occurs, it returns an empty collection.
+func (s machinePolicyService) GetAll() ([]*model.MachinePolicy, error) {
+	items := []*model.MachinePolicy{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
+}
+
 // GetByID returns the machine policy that matches the input ID. If one cannot
 // be found, it returns nil and an error.
 func (s machinePolicyService) GetByID(id string) (*model.MachinePolicy, error) {
@@ -73,19 +86,6 @@ func (s machinePolicyService) GetByID(id string) (*model.MachinePolicy, error) {
 	return resp.(*model.MachinePolicy), nil
 }
 
-// GetAll returns all machine policies. If none can be found or an error
-// occurs, it returns an empty collection.
-func (s machinePolicyService) GetAll() ([]*model.MachinePolicy, error) {
-	items := []*model.MachinePolicy{}
-	path, err := getAllPath(s)
-	if err != nil {
-		return items, err
-	}
-
-	_, err = apiGet(s.getClient(), &items, path)
-	return items, err
-}
-
 // GetByPartialName performs a lookup and returns machine policies with a
 // matching partial name.
 func (s machinePolicyService) GetByPartialName(name string) ([]*model.MachinePolicy, error) {
@@ -95,6 +95,15 @@ func (s machinePolicyService) GetByPartialName(name string) ([]*model.MachinePol
 	}
 
 	return s.getPagedResponse(path)
+}
+
+func (s machinePolicyService) GetTemplate() (*model.MachinePolicy, error) {
+	resp, err := apiGet(s.getClient(), s.itemType, s.templatePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.MachinePolicy), nil
 }
 
 // Update modifies a machine policy based on the one provided as input.
