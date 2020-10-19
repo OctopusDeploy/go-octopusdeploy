@@ -15,7 +15,7 @@ func newRootService(sling *sling.Sling, uriTemplate string) *rootService {
 	}
 }
 
-func (s rootService) Get() (*RootResource, error) {
+func (s rootService) Get() (*model.RootResource, error) {
 	path, err := getPath(s)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func (s rootService) Get() (*RootResource, error) {
 		return nil, err
 	}
 
-	return resp.(*RootResource), nil
+	return resp.(*model.RootResource), nil
 }
 
 var _ IService = &rootService{}
