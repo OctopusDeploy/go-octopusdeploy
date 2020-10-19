@@ -61,6 +61,16 @@ func (s workerService) Add(worker *model.Worker) (*model.Worker, error) {
 	return resp.(*model.Worker), nil
 }
 
+func (s workerService) DiscoverWorker() ([]string, error) {
+	resp, err := apiGet(s.getClient(), new([]string), s.discoverWorkerPath)
+	if err != nil {
+		return nil, err
+	}
+
+	response := resp.(*[]string)
+	return *response, nil
+}
+
 // GetAll returns all workers. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s workerService) GetAll() ([]*model.Worker, error) {
@@ -136,10 +146,30 @@ func (s workerService) Update(worker *model.Worker) (*model.Worker, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), worker, new(model.Worker), path)
+	resp, err := apiUpdate(s.getClient(), worker, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*model.Worker), nil
+}
+
+func (s workerService) GetWorkerOperatingSystems() ([]string, error) {
+	resp, err := apiGet(s.getClient(), new([]string), s.operatingSystemsPath)
+	if err != nil {
+		return nil, err
+	}
+
+	response := resp.(*[]string)
+	return *response, nil
+}
+
+func (s workerService) GetWorkerShells() ([]string, error) {
+	resp, err := apiGet(s.getClient(), new([]string), s.shellsPath)
+	if err != nil {
+		return nil, err
+	}
+
+	response := resp.(*[]string)
+	return *response, nil
 }
