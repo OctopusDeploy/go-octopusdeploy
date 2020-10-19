@@ -16,6 +16,25 @@ func newRunbookService(sling *sling.Sling, uriTemplate string) *runbookService {
 	return runbookService
 }
 
+// Add returns the runbook that matches the input ID.
+func (s runbookService) Add(runbook *model.Runbook) (*model.Runbook, error) {
+	if runbook == nil {
+		return nil, createInvalidParameterError("Add", "runbook")
+	}
+
+	path, err := getAddPath(s, runbook)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), runbook, s.itemType, path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*model.Runbook), nil
+}
+
 // GetAll returns all runbooks. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s runbookService) GetAll() ([]*model.Runbook, error) {
@@ -45,18 +64,18 @@ func (s runbookService) GetByID(id string) (*model.Runbook, error) {
 	return resp.(*model.Runbook), nil
 }
 
-// Add returns the runbook that matches the input ID.
-func (s runbookService) Add(runbook *model.Runbook) (*model.Runbook, error) {
+// Update modifies a runbook based on the one provided as input.
+func (s runbookService) Update(runbook *model.Runbook) (*model.Runbook, error) {
 	if runbook == nil {
-		return nil, createInvalidParameterError("Add", "runbook")
+		return nil, createInvalidParameterError(operationUpdate, parameterRunbook)
 	}
 
-	path, err := getAddPath(s, runbook)
+	path, err := getUpdatePath(s, runbook)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), runbook, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), runbook, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
