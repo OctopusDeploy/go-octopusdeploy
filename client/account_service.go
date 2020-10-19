@@ -133,6 +133,10 @@ func (s accountService) GetByID(id string) (*model.Account, error) {
 
 // GetByIDs returns the accounts that match the input IDs.
 func (s *accountService) GetByIDs(ids []string) ([]model.IAccount, error) {
+	if len(ids) == 0 {
+		return []model.IAccount{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []model.IAccount{}, err

@@ -90,6 +90,10 @@ func (s environmentService) GetByID(id string) (*model.Environment, error) {
 
 // GetByIDs returns the environments that match the input IDs.
 func (s environmentService) GetByIDs(ids []string) ([]*model.Environment, error) {
+	if len(ids) == 0 {
+		return []*model.Environment{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []*model.Environment{}, err

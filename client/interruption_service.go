@@ -51,6 +51,10 @@ func (s interruptionService) GetByID(id string) (*model.Interruption, error) {
 
 // GetByIDs gets a list of interruptions that match the input IDs.
 func (s interruptionService) GetByIDs(ids []string) ([]*model.Interruption, error) {
+	if len(ids) == 0 {
+		return []*model.Interruption{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []*model.Interruption{}, err

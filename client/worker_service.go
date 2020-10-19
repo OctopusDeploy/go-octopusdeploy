@@ -92,6 +92,10 @@ func (s workerService) GetByID(id string) (*model.Worker, error) {
 
 // GetByIDs returns the workers that match the input IDs.
 func (s workerService) GetByIDs(ids []string) ([]*model.Worker, error) {
+	if len(ids) == 0 {
+		return []*model.Worker{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []*model.Worker{}, err

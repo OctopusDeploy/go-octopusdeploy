@@ -71,6 +71,10 @@ func (s deploymentService) GetByID(id string) (*model.Deployment, error) {
 
 // GetByIDs gets a list of deployments that match the input IDs.
 func (s deploymentService) GetByIDs(ids []string) ([]*model.Deployment, error) {
+	if len(ids) == 0 {
+		return []*model.Deployment{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []*model.Deployment{}, err

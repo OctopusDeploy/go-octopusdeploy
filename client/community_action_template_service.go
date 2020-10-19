@@ -84,6 +84,10 @@ func (s communityActionTemplateService) GetByID(id string) (*model.CommunityActi
 
 // GetByIDs returns the accounts that match the input IDs.
 func (s communityActionTemplateService) GetByIDs(ids []string) ([]*model.CommunityActionTemplate, error) {
+	if len(ids) == 0 {
+		return []*model.CommunityActionTemplate{}, nil
+	}
+
 	path, err := getByIDsPath(s, ids)
 	if err != nil {
 		return []*model.CommunityActionTemplate{}, err
