@@ -1,8 +1,8 @@
 package integration
 
 import (
+	"fmt"
 	"log"
-	"net/http"
 	"net/url"
 	"os"
 
@@ -12,28 +12,34 @@ import (
 
 func getOctopusClient() *client.Client {
 	octopusURL := os.Getenv("OCTOPUS_URL")
-	octopusAPIKey := os.Getenv("OCTOPUS_APIKEY")
+	apiKey := os.Getenv("OCTOPUS_APIKEY")
 
-	if isEmpty(octopusURL) || isEmpty(octopusAPIKey) {
+	if isEmpty(octopusURL) || isEmpty(apiKey) {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
+	}
+
+	apiURL, err := url.Parse(octopusURL)
+	if err != nil {
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return nil
 	}
 
 	// NOTE: You can direct traffic through a proxy trace like Fiddler
 	// Everywhere by preconfiguring the client to route traffic through a
 	// proxy.
 
-	proxyStr := "http://127.0.0.1:5555"
-	proxyURL, err := url.Parse(proxyStr)
-	if err != nil {
-		log.Println(err)
-	}
+	// proxyStr := "http://127.0.0.1:5555"
+	// proxyURL, err := url.Parse(proxyStr)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
-	tr := &http.Transport{
-		Proxy: http.ProxyURL(proxyURL),
-	}
-	httpClient := http.Client{Transport: tr}
+	// tr := &http.Transport{
+	// 	Proxy: http.ProxyURL(proxyURL),
+	// }
+	// httpClient := http.Client{Transport: tr}
 
-	octopusClient, err := client.NewClient(&httpClient, octopusURL, octopusAPIKey, emptyString)
+	octopusClient, err := client.NewClient(nil, apiURL, apiKey, emptyString)
 	if err != nil {
 		log.Fatal(err)
 	}
