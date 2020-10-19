@@ -29,7 +29,8 @@ func GetAllFeedsExample() {
 	// Get all Feeds
 	feeds, err := client.Feeds.GetAll()
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error getting feeds: %v", err)
+		return
 	}
 
 	for _, feed := range feeds {

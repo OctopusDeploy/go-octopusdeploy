@@ -29,13 +29,10 @@ func CreateFeedExample() {
 	client, err := client.NewClient(nil, apiURL, apiKey, spaceName)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
+		return
 	}
 
 	nuGetFeed := model.NewNuGetFeed(feedName, feedURI)
-	if err != nil {
-		// TODO: handle error
-	}
-
 	nuGetFeed.EnhancedMode = useExtendedAPI
 
 	if len(feedUsername) > 0 {
@@ -48,6 +45,7 @@ func CreateFeedExample() {
 
 	_, err = client.Feeds.Add(nuGetFeed)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error creating feed: %v", err)
+		return
 	}
 }

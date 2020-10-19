@@ -30,7 +30,8 @@ func DeleteFeedExample() {
 	// Get Feed instances that match the name provided
 	feeds, err := client.Feeds.GetByPartialName(feedName)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error getting feed: %v", err)
+		return
 	}
 
 	// select a specific Feed instance
@@ -39,6 +40,7 @@ func DeleteFeedExample() {
 	// Delete feed
 	err = client.Feeds.DeleteByID(feed.GetID())
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error deleting feed: %v", err)
+		return
 	}
 }
