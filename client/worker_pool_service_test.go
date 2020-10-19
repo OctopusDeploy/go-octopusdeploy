@@ -114,10 +114,12 @@ func TestWorkerPoolServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	dynamicWorkerPool := CreateTestDynamicWorkerPool(t, service)
-	defer DeleteTestWorkerPool(t, service, dynamicWorkerPool)
+	err = DeleteTestWorkerPool(t, service, dynamicWorkerPool)
+	require.NoError(t, err)
 
 	staticWorkerPool := CreateTestStaticWorkerPool(t, service)
-	defer DeleteTestWorkerPool(t, service, staticWorkerPool)
+	err = DeleteTestWorkerPool(t, service, staticWorkerPool)
+	require.NoError(t, err)
 }
 
 func TestWorkerPoolServiceAddGetDelete(t *testing.T) {
