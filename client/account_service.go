@@ -117,7 +117,7 @@ func (s *accountService) GetAll() ([]model.IAccount, error) {
 
 // GetByID returns the account that matches the input ID. If one cannot be
 // found, it returns nil and an error.
-func (s accountService) GetByID(id string) (*model.Account, error) {
+func (s accountService) GetByID(id string) (model.IAccount, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (s accountService) GetByID(id string) (*model.Account, error) {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
-	return resp.(*model.Account), nil
+	return resp.(model.IAccount), nil
 }
 
 // GetByIDs returns the accounts that match the input IDs.
