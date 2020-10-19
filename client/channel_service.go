@@ -93,7 +93,11 @@ func (s channelService) GetByPartialName(name string) ([]*model.Channel, error) 
 	return s.getPagedResponse(path)
 }
 
-func (s channelService) GetProject(channel model.Channel) (*model.Project, error) {
+func (s channelService) GetProject(channel *model.Channel) (*model.Project, error) {
+	if channel == nil {
+		return nil, createInvalidParameterError(operationGetReleases, parameterChannel)
+	}
+
 	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
