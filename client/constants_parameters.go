@@ -21,6 +21,7 @@ const (
 	parameterPartialName            string = "partialName"
 	parameterPath                   string = "path"
 	parameterProjectID              string = "projectID"
+	parameterProject                string = "project"
 	parameterReplacementCertificate string = "replacementCertificate"
 	parameterResource               string = "resource"
 	parameterRunbook                string = "runbook"
