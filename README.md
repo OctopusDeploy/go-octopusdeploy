@@ -13,7 +13,8 @@ This client is used by the [Octopus Deploy Terraform Provider](https://github.co
 | Accounts | `AmazonWebServicesAccount`<br>`AzureServicePrincipalAccount`<br>`AzureSubscriptionAccount`<br>`SSHKeyAccount`<br>`TokenAccount`<br>`UsernamePasswordAccount` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByIDs`<br>`GetByAccountType`<br>`GetByName`<br>`GetByPartialName`<br>`GetUsages`<br>`Update` |
 | Action Templates | `ActionTemplate`<br>`ActionTemplateCategory`<br>`ActionTemplateParameter`<br>`ActionTemplateSearch` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetCategories`<br>`GetByID`<br>`GetByName`<br>`Search`<br>`Update` |
 | Channels | `Channel` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByPartialName`<br>`GetProject`<br>`GetReleases`<br>`Update` |
-| Feeds | `AwsElasticContainerRegistry`<br>`BuiltInFeed`<br>`DockerContainerRegistry`<br>`GitHubRepositoryFeed`<br>`HelmFeed`<br>`MavenFeed`<br>`NuGetFeed`<br>`OctopusProjectFeed` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByPartialName`<br>`Update` |
+| Feeds | `AwsElasticContainerRegistry`<br>`BuiltInFeed`<br>`DockerContainerRegistry`<br>`GitHubRepositoryFeed`<br>`HelmFeed`<br>`MavenFeed`<br>`NuGetFeed`<br>`OctopusProjectFeed` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByName`<br>`GetByPartialName`<br>`Update` |
+| Machines | `DeploymentTarget` | `Add`<br>`DeleteByID`<br>`GetAll<br>`GetByID`<br>`Update` |
 | Runbooks | `Runbook` | `Add`<br>`DeleteByID`<br>`GetAll<br>`GetByID`<br>`Update` |
 | Spaces | `Space` | `Add` |
 | Teams | `Team` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByPartialName`<br>`Update` |
