@@ -166,11 +166,13 @@ func TestFeedServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	expected := CreateTestNuGetFeed(t, service)
-	defer DeleteTestFeed(t, service, expected)
 
 	actual, err := service.GetByID(expected.GetID())
 	require.NoError(t, err)
 	IsEqualFeeds(t, expected, actual)
+
+	err = DeleteTestFeed(t, service, expected)
+	require.NoError(t, err)
 }
 
 func TestFeedServiceDelete(t *testing.T) {
