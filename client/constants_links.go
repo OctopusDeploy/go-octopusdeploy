@@ -106,6 +106,7 @@ const (
 	linkSpaces                            string = "Spaces"
 	linkSubmit                            string = "Submit"
 	linkSubscriptions                     string = "Subscriptions"
+	linkSummary                           string = "Summary"
 	linkTagSets                           string = "TagSets"
 	linkTagSetSortOrder                   string = "TagSetSortOrder"
 	linkTasks                             string = "Tasks"
