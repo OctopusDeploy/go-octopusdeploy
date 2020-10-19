@@ -41,7 +41,7 @@ func TestProjectGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.Projects.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	require.Equal(t, createResourceNotFoundError("ProjectService", "ID", id), err)
 	require.Nil(t, resource)
 }
 
