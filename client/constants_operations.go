@@ -15,6 +15,7 @@ const (
 	operationGetByPartialName string = "GetByPartialName"
 	operationGetByProjectID   string = "GetByProjectID"
 	operationGetByUserID      string = "GetByUserID"
+	operationGetChannels      string = "GetChannels"
 	operationGetReleases      string = "GetReleases"
 	operationGetSummary       string = "GetSummary"
 	operationInstall          string = "Install"
