@@ -80,7 +80,11 @@ func (s projectService) GetByName(name string) (*model.Project, error) {
 	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
 }
 
-func (s projectService) GetChannels(project model.Project) ([]*model.Channel, error) {
+func (s projectService) GetChannels(project *model.Project) ([]*model.Channel, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(operationGetChannels, parameterProject)
+	}
+
 	channels := []*model.Channel{}
 
 	err := validateInternalState(s)
@@ -132,7 +136,11 @@ func (s projectService) GetSummary(project *model.Project) (*model.ProjectSummar
 	return resp.(*model.ProjectSummary), nil
 }
 
-func (s projectService) GetReleases(project model.Project) ([]*model.Release, error) {
+func (s projectService) GetReleases(project *model.Project) ([]*model.Release, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(operationGetReleases, parameterProject)
+	}
+
 	err := validateInternalState(s)
 	if err != nil {
 		return nil, err
