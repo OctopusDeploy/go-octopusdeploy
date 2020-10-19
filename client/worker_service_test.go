@@ -102,7 +102,8 @@ func TestWorkerServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	worker := CreateTestWorker(t, service)
-	defer DeleteTestWorker(t, service, worker)
+	err = DeleteTestWorker(t, service, worker)
+	require.NoError(t, err)
 }
 
 func TestWorkerServiceAddGetDelete(t *testing.T) {
@@ -161,7 +162,21 @@ func TestWorkerServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, workers)
 
 	for _, worker := range workers {
-		defer DeleteTestWorker(t, service, worker)
+		err = DeleteTestWorker(t, service, worker)
+		require.NoError(t, err)
+	}
+}
+
+func TestWorkerServiceDiscoverWorker(t *testing.T) {
+	service := createWorkerService(t)
+	require.NotNil(t, service)
+
+	workers, err := service.DiscoverWorker()
+	require.NoError(t, err)
+	require.NotNil(t, workers)
+
+	for _, worker := range workers {
+		t.Log(worker)
 	}
 }
 
@@ -181,8 +196,9 @@ func TestWorkerServiceGetAll(t *testing.T) {
 
 	for _, worker := range workers {
 		require.NotNil(t, worker)
-		assert.NotEmpty(t, worker.GetID())
-		defer DeleteTestWorker(t, service, worker)
+		require.NotEmpty(t, worker.GetID())
+		err = DeleteTestWorker(t, service, worker)
+		require.NoError(t, err)
 	}
 }
 
@@ -269,6 +285,32 @@ func TestWorkerServiceGetByPartialName(t *testing.T) {
 		namedWorkers, err := service.GetByPartialName(worker.Name)
 		require.NoError(t, err)
 		require.NotNil(t, namedWorkers)
+	}
+}
+
+func TestWorkerServiceGetWorkerOperatingSystems(t *testing.T) {
+	service := createWorkerService(t)
+	require.NotNil(t, service)
+
+	workerOperatingSystems, err := service.GetWorkerOperatingSystems()
+	require.NoError(t, err)
+	require.NotNil(t, workerOperatingSystems)
+
+	for _, workerOperatingSystem := range workerOperatingSystems {
+		t.Log(workerOperatingSystem)
+	}
+}
+
+func TestWorkerServiceGetWorkerShells(t *testing.T) {
+	service := createWorkerService(t)
+	require.NotNil(t, service)
+
+	workerShells, err := service.GetWorkerShells()
+	require.NoError(t, err)
+	require.NotNil(t, workerShells)
+
+	for _, workerShell := range workerShells {
+		t.Log(workerShell)
 	}
 }
 
