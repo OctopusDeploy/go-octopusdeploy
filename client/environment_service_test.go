@@ -102,7 +102,8 @@ func TestEnvironmentServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	environment := CreateTestEnvironment(t, service)
-	defer DeleteTestEnvironment(t, service, environment)
+	err = DeleteTestEnvironment(t, service, environment)
+	require.NoError(t, err)
 }
 
 func TestEnvironmentServiceAddGetDelete(t *testing.T) {
@@ -119,11 +120,13 @@ func TestEnvironmentServiceAddGetDelete(t *testing.T) {
 	require.Nil(t, resource)
 
 	environment := CreateTestEnvironment(t, service)
-	defer DeleteTestEnvironment(t, service, environment)
 
 	environment, err = service.GetByID(environment.ID)
 	require.NoError(t, err)
 	require.NotNil(t, environment)
+
+	err = DeleteTestEnvironment(t, service, environment)
+	require.NoError(t, err)
 }
 
 func TestEnvironmentServiceDelete(t *testing.T) {
@@ -150,7 +153,8 @@ func TestEnvironmentServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, environments)
 
 	for _, environment := range environments {
-		defer DeleteTestEnvironment(t, service, environment)
+		err = DeleteTestEnvironment(t, service, environment)
+		require.NoError(t, err)
 	}
 }
 
@@ -169,9 +173,8 @@ func TestEnvironmentServiceGetAll(t *testing.T) {
 	require.NotNil(t, environments)
 
 	for _, environment := range environments {
-		require.NotNil(t, environment)
-		assert.NotEmpty(t, environment.GetID())
-		defer DeleteTestEnvironment(t, service, environment)
+		err = DeleteTestEnvironment(t, service, environment)
+		require.NoError(t, err)
 	}
 }
 
@@ -284,7 +287,8 @@ func TestEnvironmentServiceUpdate(t *testing.T) {
 	require.NotNil(t, service)
 
 	environment := CreateTestEnvironment(t, service)
-	defer DeleteTestEnvironment(t, service, environment)
+	err := DeleteTestEnvironment(t, service, environment)
+	require.NoError(t, err)
 
 	newAllowDynamicInfrastructure := createRandomBoolean()
 	newDescription := getRandomName()
