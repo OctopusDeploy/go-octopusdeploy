@@ -16,6 +16,7 @@ const (
 	operationGetByProjectID   string = "GetByProjectID"
 	operationGetByUserID      string = "GetByUserID"
 	operationGetReleases      string = "GetReleases"
+	operationGetSummary       string = "GetSummary"
 	operationInstall          string = "Install"
 	operationReplace          string = "Replace"
 	operationUpdate           string = "Update"
