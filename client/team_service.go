@@ -49,7 +49,21 @@ func (s teamService) Add(resource *model.Team) (*model.Team, error) {
 	return resp.(*model.Team), nil
 }
 
-// GetByID returns the team that matches the input ID. If one cannot be found, it returns nil and an error.
+// GetAll returns all teams. If none can be found or an error occurs, it
+// returns an empty collection.
+func (s teamService) GetAll() ([]*model.Team, error) {
+	items := []*model.Team{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
+}
+
+// GetByID returns the team that matches the input ID. If one cannot be found,
+// it returns nil and an error.
 func (s teamService) GetByID(id string) (*model.Team, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
@@ -64,19 +78,8 @@ func (s teamService) GetByID(id string) (*model.Team, error) {
 	return resp.(*model.Team), nil
 }
 
-// GetAll returns all teams. If none can be found or an error occurs, it returns an empty collection.
-func (s teamService) GetAll() ([]*model.Team, error) {
-	items := []*model.Team{}
-	path, err := getAllPath(s)
-	if err != nil {
-		return items, err
-	}
-
-	_, err = apiGet(s.getClient(), &items, path)
-	return items, err
-}
-
-// GetByPartialName performs a lookup and returns teams with a matching partial name.
+// GetByPartialName performs a lookup and returns teams with a matching partial
+// name.
 func (s teamService) GetByPartialName(name string) ([]*model.Team, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
