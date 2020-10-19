@@ -6,14 +6,21 @@ A Go client for the [Octopus Deploy](https://octopus.com/) API.
 
 This client is used by the [Octopus Deploy Terraform Provider](https://github.com/OctopusDeploy/terraform-provider-octopusdeploy).
 
-## Supported Octopus Types and API Operations
+## Supported Types and Operations
 
-| Service       | Operations     |
-| :- | :- |
-| Accounts | `Add`, `DeleteByID` `GetAll`, `GetByID`, `GetByIDs`, `GetByAccountType`, `GetByName`, `GetByPartialName`, `GetUsages`, `Update` |
-| Action Templates | `Add`, `DeleteByID`, `GetAll`, `GetCategories`, `GetByID`, `GetByName`, `Search`, `Update` |
-| Channels | `Add`, `DeleteByID`, `GetAll`, `GetByID`, `GetByPartialName`, `GetProject`, `GetReleases`, `Update` |
-| Feeds | `Add`, `DeleteByID`, `GetAll`, `GetByID`, `GetByPartialName`, `Update` |
+| Service | Types | Operations |
+| :- | :- | :- |
+| Accounts | `AmazonWebServicesAccount`<br>`AzureServicePrincipalAccount`<br>`AzureSubscriptionAccount`<br>`SSHKeyAccount`<br>`TokenAccount`<br>`UsernamePasswordAccount` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByIDs`<br>`GetByAccountType`<br>`GetByName`<br>`GetByPartialName`<br>`GetUsages`<br>`Update` |
+| Action Templates | `ActionTemplate`<br>`ActionTemplateCategory`<br>`ActionTemplateParameter`<br>`ActionTemplateSearch` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetCategories`<br>`GetByID`<br>`GetByName`<br>`Search`<br>`Update` |
+| Channels | `Channel` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByPartialName`<br>`GetProject`<br>`GetReleases`<br>`Update` |
+| Feeds | `AwsElasticContainerRegistry`<br>`BuiltInFeed`<br>`DockerContainerRegistry`<br>`GitHubRepositoryFeed`<br>`HelmFeed`<br>`MavenFeed`<br>`NuGetFeed`<br>`OctopusProjectFeed` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByName`<br>`GetByPartialName`<br>`Update` |
+| Machines | `DeploymentTarget`<br>`MachinePolicy` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`Update` |
+| Runbooks | `Runbook` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`Update` |
+| Spaces | `Space` | `Add` |
+| Teams | `Team` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByPartialName`<br>`Update` |
+| Users | `User`<br>`UserAuthentication` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetAuthentication`<br>`GetAuthenticationForUser`<br>`GetByID`<br>`GetMe`<br>`GetSpaces`<br>`Update` |
+| Worker Pools | * | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByIDs`<br>`GetByName`<br>`GetByPartialName`<br>`Update` |
+| Workers | * | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByIDs`<br>`GetByName`<br>`GetByPartialName`<br>`Update` |
 
 ## Contributing
 
