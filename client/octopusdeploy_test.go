@@ -19,7 +19,7 @@ func TestNewClient(t *testing.T) {
 		name    string
 		isValid bool
 		client  *http.Client
-		url     string
+		url     *url.URL
 		apiKey  string
 		spaceID string
 	}{
