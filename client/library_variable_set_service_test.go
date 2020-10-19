@@ -96,12 +96,14 @@ func TestLibraryVariableSetServiceSetAddGetDelete(t *testing.T) {
 
 	resource = CreateTestLibraryVariableSet(t, service)
 	require.NotNil(t, resource)
-	defer DeleteTestLibraryVariableSet(t, service, resource)
 
 	resourceToCompare, err := service.GetByID(resource.GetID())
 	require.NoError(t, err)
 	require.NotNil(t, resourceToCompare)
 	IsEqualLibraryVariableSets(t, resource, resourceToCompare)
+
+	err = DeleteTestLibraryVariableSet(t, service, resource)
+	require.NoError(t, err)
 }
 
 func TestLibraryVariableSetServiceAdd(t *testing.T) {
