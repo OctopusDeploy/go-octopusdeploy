@@ -35,7 +35,8 @@ func TestAccountResource(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
 			accountResourceInline := &AccountResource{
-				Name: tc.Name,
+				AccountType: "None",
+				Name:        tc.Name,
 			}
 			accountResourceWithNew := newAccountResource(tc.Name, "None")
 			accountResourceInline.SpaceID = tc.SpaceID
