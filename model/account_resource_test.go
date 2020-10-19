@@ -37,7 +37,7 @@ func TestAccountResource(t *testing.T) {
 			accountResourceInline := &AccountResource{
 				Name: tc.Name,
 			}
-			accountResourceWithNew := newAccountResource(tc.Name)
+			accountResourceWithNew := newAccountResource(tc.Name, "None")
 			accountResourceInline.SpaceID = tc.SpaceID
 			accountResourceWithNew.SpaceID = tc.SpaceID
 			accountResourceInline.TenantedDeploymentMode = tc.TenantedDeploymentMode

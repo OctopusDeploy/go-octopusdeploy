@@ -59,9 +59,19 @@ func (a *Account) GetAccountType() string {
 	return a.AccountType
 }
 
+// GetDescription returns the description of this account.
+func (a *Account) GetDescription() string {
+	return a.Description
+}
+
 // GetName returns the name of this account.
 func (a *Account) GetName() string {
 	return a.Name
+}
+
+// SetDescription sets the description of the account.
+func (a *Account) SetDescription(description string) {
+	a.Description = description
 }
 
 // SetName sets the name of this account.

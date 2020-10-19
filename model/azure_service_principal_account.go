@@ -8,7 +8,6 @@ import (
 
 // AzureServicePrincipalAccount represents an Azure service principal account.
 type AzureServicePrincipalAccount struct {
-	AccountType             string          `json:"AccountType" validate:"required,eq=AzureServicePrincipal"`
 	ApplicationID           *uuid.UUID      `json:"ClientId" validate:"required"`
 	ApplicationPassword     *SensitiveValue `json:"Password" validate:"required"`
 	AuthenticationEndpoint  string          `json:"ActiveDirectoryEndpointBaseUri,omitempty" validate:"required_with=AzureEnvironment,omitempty,uri"`
@@ -24,25 +23,19 @@ type AzureServicePrincipalAccount struct {
 // principal account.
 func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UUID, applicationID uuid.UUID, applicationPassword SensitiveValue) *AzureServicePrincipalAccount {
 	return &AzureServicePrincipalAccount{
-		AccountType:         "AzureServicePrincipal",
 		ApplicationID:       &applicationID,
 		ApplicationPassword: &applicationPassword,
 		SubscriptionID:      &subscriptionID,
 		TenantID:            &tenantID,
-		AccountResource:     *newAccountResource(name),
+		AccountResource:     *newAccountResource(name, accountTypeAzureServicePrincipal),
 	}
-}
-
-// GetAccountType returns the account type of this Azure service principal
-// account.
-func (a *AzureServicePrincipalAccount) GetAccountType() string {
-	return a.AccountType
 }
 
 // Validate checks the state of this Azure service principal account and
 // returns an error if invalid.
 func (a *AzureServicePrincipalAccount) Validate() error {
 	v := validator.New()
+	v.RegisterStructValidation(validateAzureServicePrincipalAccount, AzureServicePrincipalAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -50,4 +43,9 @@ func (a *AzureServicePrincipalAccount) Validate() error {
 	return v.Struct(a)
 }
 
-var _ IAccount = &AzureServicePrincipalAccount{}
+func validateAzureServicePrincipalAccount(sl validator.StructLevel) {
+	account := sl.Current().Interface().(AzureServicePrincipalAccount)
+	if account.AccountType != accountTypeAzureServicePrincipal {
+		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
+	}
+}

@@ -20,25 +20,25 @@ func TestSSHKeyAccountTypes(t *testing.T) {
 	account.AccountType = "none"
 	assert.Error(t, account.Validate())
 
-	account.AccountType = "UsernamePassword"
+	account.AccountType = accountTypeUsernamePassword
 	assert.Error(t, account.Validate())
 
-	account.AccountType = "AzureSubscription"
+	account.AccountType = accountTypeAzureSubscription
 	assert.Error(t, account.Validate())
 
-	account.AccountType = "AzureServicePrincipal"
+	account.AccountType = accountTypeAzureServicePrincipal
 	assert.Error(t, account.Validate())
 
-	account.AccountType = "AmazonWebServicesAccount"
+	account.AccountType = accountTypeAmazonWebServicesAccount
 	assert.Error(t, account.Validate())
 
 	account.AccountType = "AmazonWebServicesRoleAccount"
 	assert.Error(t, account.Validate())
 
-	account.AccountType = "Token"
+	account.AccountType = accountTypeToken
 	assert.Error(t, account.Validate())
 
-	account.AccountType = "SshKeyPair"
+	account.AccountType = accountTypeSshKeyPair
 	assert.NoError(t, account.Validate())
 
 	account.AccountType = "sshKeyPair"

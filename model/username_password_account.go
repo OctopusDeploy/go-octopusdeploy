@@ -7,9 +7,8 @@ import (
 
 // UsernamePasswordAccount represents a username/password account.
 type UsernamePasswordAccount struct {
-	AccountType string          `json:"AccountType" validate:"required,eq=UsernamePassword"`
-	Username    string          `json:"Username,omitempty"`
-	Password    *SensitiveValue `json:"Password,omitempty"`
+	Username string          `json:"Username,omitempty"`
+	Password *SensitiveValue `json:"Password,omitempty"`
 
 	AccountResource
 }
@@ -18,19 +17,14 @@ type UsernamePasswordAccount struct {
 // account with a name.
 func NewUsernamePasswordAccount(name string) *UsernamePasswordAccount {
 	return &UsernamePasswordAccount{
-		AccountType:     "UsernamePassword",
-		AccountResource: *newAccountResource(name),
+		AccountResource: *newAccountResource(name, accountTypeUsernamePassword),
 	}
-}
-
-// GetAccountType returns the account type for this account.
-func (u *UsernamePasswordAccount) GetAccountType() string {
-	return u.AccountType
 }
 
 // Validate checks the state of this account and returns an error if invalid.
 func (u *UsernamePasswordAccount) Validate() error {
 	v := validator.New()
+	v.RegisterStructValidation(validateUsernamePasswordAccount, UsernamePasswordAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -38,4 +32,9 @@ func (u *UsernamePasswordAccount) Validate() error {
 	return v.Struct(u)
 }
 
-var _ IAccount = &UsernamePasswordAccount{}
+func validateUsernamePasswordAccount(sl validator.StructLevel) {
+	account := sl.Current().Interface().(UsernamePasswordAccount)
+	if account.AccountType != accountTypeUsernamePassword {
+		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
+	}
+}

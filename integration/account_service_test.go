@@ -1,20 +1,20 @@
-package client
+package integration
 
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-	"github.com/dghubble/sling"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestAmazonWebServicesAccount(t *testing.T, service *accountService) model.IAccount {
-	if service == nil {
-		service = createAccountService(t)
+func CreateTestAmazonWebServicesAccount(t *testing.T, client *client.Client) model.IAccount {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
 	accessKey := getRandomName()
 	name := getRandomName()
@@ -23,7 +23,7 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, service *accountService) m
 	account := model.NewAmazonWebServicesAccount(name, accessKey, secretKey)
 	require.NoError(t, account.Validate())
 
-	createdAccount, err := service.Add(account)
+	createdAccount, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, createdAccount)
 	require.NotEmpty(t, createdAccount.GetID())
@@ -33,11 +33,11 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, service *accountService) m
 	return createdAccount
 }
 
-func CreateTestAzureServicePrincipalAccount(t *testing.T, service *accountService) model.IAccount {
-	if service == nil {
-		service = createAccountService(t)
+func CreateTestAzureServicePrincipalAccount(t *testing.T, client *client.Client) model.IAccount {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
 	applicationID := uuid.New()
 	applicationPassword := model.NewSensitiveValue(getRandomName())
@@ -57,7 +57,7 @@ func CreateTestAzureServicePrincipalAccount(t *testing.T, service *accountServic
 
 	require.NoError(t, account.Validate())
 
-	createdAccount, err := service.Add(account)
+	createdAccount, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, createdAccount)
 	require.NotEmpty(t, createdAccount.GetID())
@@ -67,11 +67,11 @@ func CreateTestAzureServicePrincipalAccount(t *testing.T, service *accountServic
 	return createdAccount
 }
 
-func CreateTestAzureSubscriptionAccount(t *testing.T, service *accountService) model.IAccount {
-	if service == nil {
-		service = createAccountService(t)
+func CreateTestAzureSubscriptionAccount(t *testing.T, client *client.Client) model.IAccount {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
 	azureEnvironment := getRandomAzureEnvironment()
 	name := getRandomName()
@@ -88,18 +88,18 @@ func CreateTestAzureSubscriptionAccount(t *testing.T, service *accountService) m
 
 	require.NoError(t, account.Validate())
 
-	resource, err := service.Add(account)
+	resource, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
 
 	return resource
 }
 
-func CreateTestSSHKeyAccount(t *testing.T, service *accountService) model.IAccount {
-	if service == nil {
-		service = createAccountService(t)
+func CreateTestSSHKeyAccount(t *testing.T, client *client.Client) model.IAccount {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
 	name := getRandomName()
 	username := getRandomName()
@@ -109,18 +109,18 @@ func CreateTestSSHKeyAccount(t *testing.T, service *accountService) model.IAccou
 
 	require.NoError(t, account.Validate())
 
-	resource, err := service.Add(account)
+	resource, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
 
 	return resource
 }
 
-func CreateTestTokenAccount(t *testing.T, service *accountService) model.IAccount {
-	if service == nil {
-		service = createAccountService(t)
+func CreateTestTokenAccount(t *testing.T, client *client.Client) model.IAccount {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
 	name := getRandomName()
 	token := model.NewSensitiveValue(getRandomName())
@@ -129,18 +129,18 @@ func CreateTestTokenAccount(t *testing.T, service *accountService) model.IAccoun
 
 	require.NoError(t, account.Validate())
 
-	resource, err := service.Add(account)
+	resource, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
 
 	return resource
 }
 
-func CreateTestUsernamePasswordAccount(t *testing.T, service *accountService) model.IAccount {
-	if service == nil {
-		service = createAccountService(t)
+func CreateTestUsernamePasswordAccount(t *testing.T, client *client.Client) model.IAccount {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
 	name := getRandomName()
 
@@ -148,26 +148,20 @@ func CreateTestUsernamePasswordAccount(t *testing.T, service *accountService) mo
 
 	require.NoError(t, account.Validate())
 
-	resource, err := service.Add(account)
+	resource, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
 
 	return resource
 }
 
-func createAccountService(t *testing.T) *accountService {
-	service := newAccountService(nil, TestURIAccounts)
-	testNewService(t, service, TestURIAccounts, serviceAccountService)
-	return service
-}
-
-func DeleteTestAccount(t *testing.T, service *accountService, account model.IAccount) error {
-	if service == nil {
-		service = createAccountService(t)
+func DeleteTestAccount(t *testing.T, client *client.Client, account model.IAccount) error {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
-	return service.DeleteByID(account.GetID())
+	return client.Accounts.DeleteByID(account.GetID())
 }
 
 func IsEqualAccounts(t *testing.T, expected model.IAccount, actual model.IAccount) {
@@ -189,13 +183,13 @@ func IsEqualAccounts(t *testing.T, expected model.IAccount, actual model.IAccoun
 	assert.Equal(t, expected.GetName(), actual.GetName())
 }
 
-func UpdateAccount(t *testing.T, service *accountService, account model.IAccount) model.IAccount {
-	if service == nil {
-		service = createAccountService(t)
+func UpdateAccount(t *testing.T, client *client.Client, account model.IAccount) model.IAccount {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, service)
+	require.NotNil(t, client)
 
-	updatedAccount, err := service.Update(account)
+	updatedAccount, err := client.Accounts.Update(account)
 	assert.NoError(t, err)
 	require.NotNil(t, updatedAccount)
 
@@ -255,67 +249,59 @@ func ValidateUsernamePasswordAccount(t *testing.T, account *model.UsernamePasswo
 }
 
 func TestAccountServiceAdd(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
-	require.Nil(t, resource)
-
-	resource, err = service.Add(&model.Account{})
-	require.Error(t, err)
-	require.Nil(t, resource)
-
-	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, service)
+	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, client)
 	ValidateAccount(t, amazonWebServicesAccount)
-	err = DeleteTestAccount(t, service, amazonWebServicesAccount)
+	err := DeleteTestAccount(t, client, amazonWebServicesAccount)
 	require.NoError(t, err)
 
-	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, service)
+	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, client)
 	ValidateAccount(t, azureServicePrincipalAccount)
-	err = DeleteTestAccount(t, service, azureServicePrincipalAccount)
+	err = DeleteTestAccount(t, client, azureServicePrincipalAccount)
 	require.NoError(t, err)
 
-	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, service)
+	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, client)
 	ValidateAccount(t, azureSubscriptionAccount)
-	err = DeleteTestAccount(t, service, azureSubscriptionAccount)
+	err = DeleteTestAccount(t, client, azureSubscriptionAccount)
 	require.NoError(t, err)
 
-	sshKeyAccount := CreateTestSSHKeyAccount(t, service)
+	sshKeyAccount := CreateTestSSHKeyAccount(t, client)
 	ValidateAccount(t, sshKeyAccount)
-	err = DeleteTestAccount(t, service, sshKeyAccount)
+	err = DeleteTestAccount(t, client, sshKeyAccount)
 	require.NoError(t, err)
 
-	tokenAccount := CreateTestTokenAccount(t, service)
+	tokenAccount := CreateTestTokenAccount(t, client)
 	ValidateAccount(t, tokenAccount)
-	err = DeleteTestAccount(t, service, tokenAccount)
+	err = DeleteTestAccount(t, client, tokenAccount)
 	require.NoError(t, err)
 
-	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, service)
+	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, client)
 	ValidateAccount(t, usernamePasswordAccount)
-	err = DeleteTestAccount(t, service, usernamePasswordAccount)
+	err = DeleteTestAccount(t, client, usernamePasswordAccount)
 	require.NoError(t, err)
 }
 
 func TestAccountServiceDeleteAll(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	accounts, err := service.GetAll()
+	accounts, err := client.Accounts.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, accounts)
 
 	for _, account := range accounts {
-		err = DeleteTestAccount(t, service, account)
+		err = DeleteTestAccount(t, client, account)
 		require.NoError(t, err)
 	}
 }
 
 func TestAccountServiceGetAll(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	resources, err := service.GetAll()
+	resources, err := client.Accounts.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, resources)
 
@@ -326,70 +312,38 @@ func TestAccountServiceGetAll(t *testing.T) {
 }
 
 func TestAccountServiceGetByID(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
-
-	resource, err := service.GetByID(emptyString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
-	require.Nil(t, resource)
-
-	resource, err = service.GetByID(whitespaceString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
-	require.Nil(t, resource)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
 	id := getRandomName()
-	resource, err = service.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	resource, err := client.Accounts.GetByID(id)
+	require.Equal(t, createResourceNotFoundError("AccountService", "ID", id), err)
 	require.Nil(t, resource)
 
-	resources, err := service.GetAll()
+	resources, err := client.Accounts.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		resourceToCompare, err := service.GetByID(resource.GetID())
+		resourceToCompare, err := client.Accounts.GetByID(resource.GetID())
 		require.NoError(t, err)
 		IsEqualAccounts(t, resource, resourceToCompare)
 	}
 }
 
-func TestAccountServiceNew(t *testing.T) {
-	serviceFunction := newAccountService
-	client := &sling.Sling{}
-	uriTemplate := emptyString
-	serviceName := serviceAccountService
-
-	testCases := []struct {
-		name        string
-		f           func(*sling.Sling, string) *accountService
-		client      *sling.Sling
-		uriTemplate string
-	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
-		})
-	}
-}
-
 func TestAccountServiceGetByAccountType(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
 	accountTypes := []string{"None", accountTypeUsernamePassword, accountTypeSshKeyPair, accountTypeAzureSubscription, accountTypeAzureServicePrincipal, accountTypeAmazonWebServicesAccount, "AmazonWebServicesRoleAccount", accountTypeToken}
 
 	for _, accountType := range accountTypes {
-		accounts, err := service.GetByAccountType(accountType)
+		accounts, err := client.Accounts.GetByAccountType(accountType)
 		require.NoError(t, err)
 		require.NotNil(t, accounts)
 
 		for _, account := range accounts {
-			accountToCompare, err := service.GetByID(account.GetID())
+			accountToCompare, err := client.Accounts.GetByID(account.GetID())
 			require.NoError(t, err)
 			IsEqualAccounts(t, account, accountToCompare)
 		}
@@ -397,122 +351,84 @@ func TestAccountServiceGetByAccountType(t *testing.T) {
 }
 
 func TestAccountServiceGetByName(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, service)
+	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount(t, client)
 	ValidateAccount(t, amazonWebServicesAccount)
-	err := DeleteTestAccount(t, service, amazonWebServicesAccount)
+	err := DeleteTestAccount(t, client, amazonWebServicesAccount)
 	require.NoError(t, err)
 
-	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, service)
+	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, client)
 	ValidateAccount(t, azureServicePrincipalAccount)
-	err = DeleteTestAccount(t, service, azureServicePrincipalAccount)
+	err = DeleteTestAccount(t, client, azureServicePrincipalAccount)
 	require.NoError(t, err)
 
-	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, service)
+	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, client)
 	ValidateAccount(t, azureSubscriptionAccount)
-	err = DeleteTestAccount(t, service, azureSubscriptionAccount)
+	err = DeleteTestAccount(t, client, azureSubscriptionAccount)
 	require.NoError(t, err)
 
-	sshKeyAccount := CreateTestSSHKeyAccount(t, service)
+	sshKeyAccount := CreateTestSSHKeyAccount(t, client)
 	ValidateAccount(t, sshKeyAccount)
-	err = DeleteTestAccount(t, service, sshKeyAccount)
+	err = DeleteTestAccount(t, client, sshKeyAccount)
 	require.NoError(t, err)
 
-	tokenAccount := CreateTestTokenAccount(t, service)
+	tokenAccount := CreateTestTokenAccount(t, client)
 	ValidateAccount(t, tokenAccount)
-	err = DeleteTestAccount(t, service, tokenAccount)
+	err = DeleteTestAccount(t, client, tokenAccount)
 	require.NoError(t, err)
 
-	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, service)
+	usernamePasswordAccount := CreateTestUsernamePasswordAccount(t, client)
 	ValidateAccount(t, usernamePasswordAccount)
-	err = DeleteTestAccount(t, service, usernamePasswordAccount)
+	err = DeleteTestAccount(t, client, usernamePasswordAccount)
 	require.NoError(t, err)
 
-	accounts, err := service.GetAll()
+	accounts, err := client.Accounts.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, accounts)
 
 	for _, account := range accounts {
-		accountToCompare, err := service.GetByName(account.GetName())
+		accountToCompare, err := client.Accounts.GetByName(account.GetName())
 		require.NoError(t, err)
 		IsEqualAccounts(t, account, accountToCompare)
 	}
 }
 
 func TestAccountServiceGetByPartialName(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	accounts, err := service.GetByPartialName(emptyString)
-	require.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	require.NotNil(t, accounts)
-	require.Len(t, accounts, 0)
-
-	accounts, err = service.GetByPartialName(whitespaceString)
-	require.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	require.NotNil(t, accounts)
-	require.Len(t, accounts, 0)
-
-	accounts, err = service.GetAll()
+	accounts, err := client.Accounts.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, accounts)
 
 	for _, account := range accounts {
-		namedAccounts, err := service.GetByPartialName(account.GetName())
+		namedAccounts, err := client.Accounts.GetByPartialName(account.GetName())
 		require.NoError(t, err)
 		require.NotNil(t, namedAccounts)
 	}
 }
 
-func TestAccountServiceParameters(t *testing.T) {
-	testCases := []struct {
-		name      string
-		parameter string
-	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			service := createAccountService(t)
-			require.NotNil(t, service)
-
-			resource, err := service.GetByID(tc.parameter)
-			require.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
-			require.Nil(t, resource)
-
-			resourceList, err := service.GetByPartialName(tc.parameter)
-			require.Equal(t, createInvalidParameterError(operationGetByPartialName, parameterName), err)
-			require.NotNil(t, resourceList)
-
-			err = service.DeleteByID(tc.parameter)
-			require.Error(t, err)
-			require.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
-		})
-	}
-}
-
 func TestAccountServiceGetUsages(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	accounts, err := service.GetAll()
+	accounts, err := client.Accounts.GetAll()
 	require.NoError(t, err)
 
 	if len(accounts) > 0 {
-		accountUsages, err := service.GetUsages(accounts[0])
+		accountUsages, err := client.Accounts.GetUsages(accounts[0])
 		require.NoError(t, err)
 		require.NotNil(t, accountUsages)
 	}
 }
 
 func TestAccountServiceGetByIDs(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	accounts, err := service.GetAll()
+	accounts, err := client.Accounts.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, accounts)
 
@@ -521,84 +437,51 @@ func TestAccountServiceGetByIDs(t *testing.T) {
 		ids = append(ids, account.GetID())
 	}
 
-	accountsByIDs, err := service.GetByIDs(ids)
+	accountsByIDs, err := client.Accounts.GetByIDs(ids)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(accounts), len(accountsByIDs))
 }
 
-func TestAccountServiceUpdateWithEmptyAccount(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
-
-	account, err := service.Update(nil)
-	require.Error(t, err)
-	require.Nil(t, account)
-
-	account, err = service.Update(&model.Account{})
-	require.Error(t, err)
-	require.Nil(t, account)
-
-	account, err = service.Update(&model.AmazonWebServicesAccount{})
-	require.Error(t, err)
-	require.Nil(t, account)
-
-	account, err = service.Update(&model.AzureServicePrincipalAccount{})
-	require.Error(t, err)
-	require.Nil(t, account)
-
-	account, err = service.Update(&model.AzureSubscriptionAccount{})
-	require.Error(t, err)
-	require.Nil(t, account)
-
-	account, err = service.Update(&model.TokenAccount{})
-	require.Error(t, err)
-	require.Nil(t, account)
-
-	account, err = service.Update(&model.UsernamePasswordAccount{})
-	require.Error(t, err)
-	require.Nil(t, account)
-}
-
 func TestAccountServiceUpdate(t *testing.T) {
-	service := createAccountService(t)
-	require.NotNil(t, service)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	expected := CreateTestAzureServicePrincipalAccount(t, service)
-	actual := UpdateAccount(t, service, expected)
+	expected := CreateTestAzureServicePrincipalAccount(t, client)
+	actual := UpdateAccount(t, client, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	err := DeleteTestAccount(t, service, expected)
+	err := DeleteTestAccount(t, client, expected)
 	require.NoError(t, err)
 
-	expected = CreateTestAzureSubscriptionAccount(t, service)
+	expected = CreateTestAzureSubscriptionAccount(t, client)
 	expected.SetName(getRandomName())
-	actual = UpdateAccount(t, service, expected)
+	actual = UpdateAccount(t, client, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	err = DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, client, expected)
 	require.NoError(t, err)
 
-	expected = CreateTestSSHKeyAccount(t, service)
+	expected = CreateTestSSHKeyAccount(t, client)
 	expected.SetName(getRandomName())
-	actual = UpdateAccount(t, service, expected)
+	actual = UpdateAccount(t, client, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	err = DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, client, expected)
 	require.NoError(t, err)
 
-	expected = CreateTestTokenAccount(t, service)
+	expected = CreateTestTokenAccount(t, client)
 	expected.SetName(getRandomName())
-	actual = UpdateAccount(t, service, expected)
+	actual = UpdateAccount(t, client, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	err = DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, client, expected)
 	require.NoError(t, err)
 
-	expected = CreateTestUsernamePasswordAccount(t, service)
+	expected = CreateTestUsernamePasswordAccount(t, client)
 	expected.SetName(getRandomName())
-	actual = UpdateAccount(t, service, expected)
+	actual = UpdateAccount(t, client, expected)
 	IsEqualAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
-	err = DeleteTestAccount(t, service, expected)
+	err = DeleteTestAccount(t, client, expected)
 	require.NoError(t, err)
 }

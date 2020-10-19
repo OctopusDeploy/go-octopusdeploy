@@ -7,7 +7,6 @@ import (
 
 // SSHKeyAccount represents a SSH key pair account.
 type SSHKeyAccount struct {
-	AccountType          string          `json:"AccountType" validate:"required,eq=SshKeyPair"`
 	PrivateKeyFile       *SensitiveValue `json:"PrivateKeyFile" validate:"required"`
 	PrivateKeyPassphrase *SensitiveValue `json:"PrivateKeyPassphrase,omitempty"`
 	Username             string          `json:"Username" validate:"required"`
@@ -19,21 +18,16 @@ type SSHKeyAccount struct {
 // username, and private key file.
 func NewSSHKeyAccount(name string, username string, privateKeyFile SensitiveValue) *SSHKeyAccount {
 	return &SSHKeyAccount{
-		AccountType:     "SshKeyPair",
 		Username:        username,
 		PrivateKeyFile:  &privateKeyFile,
-		AccountResource: *newAccountResource(name),
+		AccountResource: *newAccountResource(name, accountTypeSshKeyPair),
 	}
-}
-
-// GetAccountType returns the account type for this account.
-func (s *SSHKeyAccount) GetAccountType() string {
-	return s.AccountType
 }
 
 // Validate checks the state of this account and returns an error if invalid.
 func (s *SSHKeyAccount) Validate() error {
 	v := validator.New()
+	v.RegisterStructValidation(validateSSHKeyAccount, SSHKeyAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -41,4 +35,9 @@ func (s *SSHKeyAccount) Validate() error {
 	return v.Struct(s)
 }
 
-var _ IAccount = &SSHKeyAccount{}
+func validateSSHKeyAccount(sl validator.StructLevel) {
+	account := sl.Current().Interface().(SSHKeyAccount)
+	if account.AccountType != accountTypeSshKeyPair {
+		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
+	}
+}

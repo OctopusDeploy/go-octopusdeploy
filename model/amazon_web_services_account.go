@@ -7,9 +7,8 @@ import (
 
 // AmazonWebServicesAccount represents an Amazon Web Services (AWS) account.
 type AmazonWebServicesAccount struct {
-	AccountType string          `json:"AccountType" validate:"required,eq=AmazonWebServicesAccount"`
-	AccessKey   string          `json:"AccessKey,omitempty" validate:"required"`
-	SecretKey   *SensitiveValue `json:"SecretKey,omitempty" validate:"required"`
+	AccessKey string          `json:"AccessKey,omitempty" validate:"required"`
+	SecretKey *SensitiveValue `json:"SecretKey,omitempty" validate:"required"`
 
 	AccountResource
 }
@@ -18,21 +17,16 @@ type AmazonWebServicesAccount struct {
 // name, access key, and secret key.
 func NewAmazonWebServicesAccount(name string, accessKey string, secretKey SensitiveValue) *AmazonWebServicesAccount {
 	return &AmazonWebServicesAccount{
-		AccountType:     "AmazonWebServicesAccount",
 		AccessKey:       accessKey,
 		SecretKey:       &secretKey,
-		AccountResource: *newAccountResource(name),
+		AccountResource: *newAccountResource(name, accountTypeAmazonWebServicesAccount),
 	}
-}
-
-// GetAccountType returns the account type for this account.
-func (a *AmazonWebServicesAccount) GetAccountType() string {
-	return a.AccountType
 }
 
 // Validate checks the state of this account and returns an error if invalid.
 func (a *AmazonWebServicesAccount) Validate() error {
 	v := validator.New()
+	v.RegisterStructValidation(validateAmazonWebServicesAccount, AmazonWebServicesAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -40,4 +34,9 @@ func (a *AmazonWebServicesAccount) Validate() error {
 	return v.Struct(a)
 }
 
-var _ IAccount = &AmazonWebServicesAccount{}
+func validateAmazonWebServicesAccount(sl validator.StructLevel) {
+	account := sl.Current().Interface().(AmazonWebServicesAccount)
+	if account.AccountType != accountTypeAmazonWebServicesAccount {
+		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
+	}
+}

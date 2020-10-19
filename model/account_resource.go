@@ -7,6 +7,7 @@ import (
 
 // AccountResource is the embedded struct used for all accounts.
 type AccountResource struct {
+	AccountType            string   `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount Token"`
 	Description            string   `json:"Description,omitempty"`
 	EnvironmentIDs         []string `json:"EnvironmentIds,omitempty"`
 	Name                   string   `json:"Name" validate:"required,notblank"`
@@ -19,8 +20,9 @@ type AccountResource struct {
 }
 
 // newAccountResource creates and initializes an account resource.
-func newAccountResource(name string) *AccountResource {
+func newAccountResource(name string, accountType string) *AccountResource {
 	return &AccountResource{
+		AccountType:            accountType,
 		EnvironmentIDs:         []string{},
 		Name:                   name,
 		TenantedDeploymentMode: "Untenanted",
@@ -30,9 +32,24 @@ func newAccountResource(name string) *AccountResource {
 	}
 }
 
+// GetAccountType returns the type of this account resource.
+func (a *AccountResource) GetAccountType() string {
+	return a.AccountType
+}
+
+// GetDescription returns the description of the account resource.
+func (a *AccountResource) GetDescription() string {
+	return a.Description
+}
+
 // GetName returns the name of the account resource.
 func (a *AccountResource) GetName() string {
 	return a.Name
+}
+
+// SetDescription sets the description of the account resource.
+func (a *AccountResource) SetDescription(description string) {
+	a.Description = description
 }
 
 // SetName sets the name of the account resource.
@@ -51,4 +68,4 @@ func (a *AccountResource) Validate() error {
 	return v.Struct(a)
 }
 
-var _ IHasName = &AccountResource{}
+var _ IAccount = &AccountResource{}

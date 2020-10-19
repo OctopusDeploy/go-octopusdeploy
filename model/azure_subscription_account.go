@@ -8,7 +8,6 @@ import (
 
 // AzureSubscriptionAccount represents an Azure subscription account.
 type AzureSubscriptionAccount struct {
-	AccountType           string          `json:"AccountType" validate:"required,eq=AzureSubscription"`
 	AzureEnvironment      string          `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
 	CertificateBytes      *SensitiveValue `json:"CertificateBytes,omitempty"`
 	CertificateThumbprint string          `json:"CertificateThumbprint,omitempty"`
@@ -23,20 +22,15 @@ type AzureSubscriptionAccount struct {
 // account with a name.
 func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID) *AzureSubscriptionAccount {
 	return &AzureSubscriptionAccount{
-		AccountType:     "AzureSubscription",
 		SubscriptionID:  &subscriptionID,
-		AccountResource: *newAccountResource(name),
+		AccountResource: *newAccountResource(name, accountTypeAzureSubscription),
 	}
-}
-
-// GetAccountType returns the account type for this account.
-func (a *AzureSubscriptionAccount) GetAccountType() string {
-	return a.AccountType
 }
 
 // Validate checks the state of this account and returns an error if invalid.
 func (a *AzureSubscriptionAccount) Validate() error {
 	v := validator.New()
+	v.RegisterStructValidation(validateAzureSubscriptionAccount, AzureSubscriptionAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -44,4 +38,9 @@ func (a *AzureSubscriptionAccount) Validate() error {
 	return v.Struct(a)
 }
 
-var _ IAccount = &AzureSubscriptionAccount{}
+func validateAzureSubscriptionAccount(sl validator.StructLevel) {
+	account := sl.Current().Interface().(AzureSubscriptionAccount)
+	if account.AccountType != accountTypeAzureSubscription {
+		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
+	}
+}

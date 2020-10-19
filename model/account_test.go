@@ -25,7 +25,7 @@ func TestAccountWithName(t *testing.T) {
 }
 
 func TestAccountWithAccountType(t *testing.T) {
-	account := &Account{AccountType: "UsernamePassword"}
+	account := &Account{AccountType: accountTypeUsernamePassword}
 
 	require.NotNil(t, account)
 	assert.Error(t, account.Validate())
@@ -33,7 +33,7 @@ func TestAccountWithAccountType(t *testing.T) {
 
 func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
 	account := &Account{
-		AccountType:            "UsernamePassword",
+		AccountType:            accountTypeUsernamePassword,
 		Name:                   accountName,
 		TenantedDeploymentMode: "Untenanted",
 	}
@@ -43,26 +43,26 @@ func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
 }
 
 func TestNewAccountForAzureServicePrincipalAccountWithInvalidParameters(t *testing.T) {
-	account := NewAccount(accountName, "AzureServicePrincipal")
+	account := NewAccount(accountName, accountTypeAzureServicePrincipal)
 	require.NoError(t, account.Validate())
 }
 
 func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidSubscriptionNumber(t *testing.T) {
-	account := NewAccount(accountName, "AzureServicePrincipal")
+	account := NewAccount(accountName, accountTypeAzureServicePrincipal)
 	subscriptionID := uuid.New()
 	account.SubscriptionID = &subscriptionID
 	require.NoError(t, account.Validate())
 }
 
 func TestNewAccountForAzureServicePrincipalAccountWithInvalidClientID(t *testing.T) {
-	account := NewAccount(accountName, "AzureServicePrincipal")
+	account := NewAccount(accountName, accountTypeAzureServicePrincipal)
 	subscriptionID := uuid.New()
 	account.SubscriptionID = &subscriptionID
 	assert.NoError(t, account.Validate())
 }
 
 func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidProperties(t *testing.T) {
-	account := NewAccount(accountName, "AzureServicePrincipal")
+	account := NewAccount(accountName, accountTypeAzureServicePrincipal)
 	subscriptionID := uuid.New()
 	account.SubscriptionID = &subscriptionID
 	applicationID := uuid.New()

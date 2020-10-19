@@ -4,6 +4,8 @@ import "time"
 
 type IAccount interface {
 	GetAccountType() string
+	GetDescription() string
+	SetDescription(string)
 
 	IHasName
 	IResource

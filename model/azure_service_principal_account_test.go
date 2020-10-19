@@ -8,7 +8,7 @@ import (
 )
 
 func TestAzureServicePrincipalAccount(t *testing.T) {
-	accountType := "AzureServicePrincipal"
+	accountType := accountTypeAzureServicePrincipal
 	applicationID := uuid.New()
 	applicationPassword := NewSensitiveValue(getRandomName())
 	authenticationEndpoint := "https://login.microsoftonline.com/"
@@ -55,7 +55,6 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
 			azureServicePrincipalAccount := &AzureServicePrincipalAccount{
-				AccountType:             tc.AccountType,
 				ApplicationID:           tc.ApplicationID,
 				ApplicationPassword:     tc.ApplicationPassword,
 				AuthenticationEndpoint:  tc.AuthenticationEndpoint,
@@ -64,6 +63,7 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 				SubscriptionID:          tc.SubscriptionID,
 				TenantID:                tc.TenantID,
 			}
+			azureServicePrincipalAccount.AccountType = tc.AccountType
 			azureServicePrincipalAccount.Name = tc.Name
 			azureServicePrincipalAccount.SpaceID = tc.SpaceID
 			azureServicePrincipalAccount.TenantedDeploymentMode = tc.TenantedDeploymentMode

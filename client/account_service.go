@@ -23,17 +23,17 @@ func newAccountService(sling *sling.Sling, uriTemplate string) *accountService {
 func toAccountResource(account model.IAccount) model.IAccount {
 	var accountResource model.IAccount
 	switch account.GetAccountType() {
-	case "AmazonWebServicesAccount":
+	case accountTypeAmazonWebServicesAccount:
 		accountResource = new(model.AmazonWebServicesAccount)
-	case "AzureServicePrincipal":
+	case accountTypeAzureServicePrincipal:
 		accountResource = new(model.AzureServicePrincipalAccount)
-	case "AzureSubscription":
+	case accountTypeAzureSubscription:
 		accountResource = new(model.AzureSubscriptionAccount)
-	case "SshKeyPair":
+	case accountTypeSshKeyPair:
 		accountResource = new(model.SSHKeyAccount)
-	case "Token":
+	case accountTypeToken:
 		accountResource = new(model.TokenAccount)
-	case "UsernamePassword":
+	case accountTypeUsernamePassword:
 		accountResource = new(model.UsernamePasswordAccount)
 	}
 
@@ -70,7 +70,7 @@ func (s *accountService) getPagedResponse(path string) ([]model.IAccount, error)
 // Add creates a new account.
 func (s *accountService) Add(resource model.IAccount) (model.IAccount, error) {
 	if resource == nil {
-		return nil, createInvalidParameterError(operationAdd, "resource")
+		return nil, createInvalidParameterError(operationAdd, parameterResource)
 	}
 
 	path, err := getAddPath(s, resource)
@@ -80,17 +80,17 @@ func (s *accountService) Add(resource model.IAccount) (model.IAccount, error) {
 
 	var account interface{}
 	switch resource.GetAccountType() {
-	case "AmazonWebServicesAccount":
+	case accountTypeAmazonWebServicesAccount:
 		account = new(model.AmazonWebServicesAccount)
-	case "AzureServicePrincipal":
+	case accountTypeAzureServicePrincipal:
 		account = new(model.AzureServicePrincipalAccount)
-	case "AzureSubscription":
+	case accountTypeAzureSubscription:
 		account = new(model.AzureSubscriptionAccount)
-	case "SshKeyPair":
+	case accountTypeSshKeyPair:
 		account = new(model.SSHKeyAccount)
-	case "Token":
+	case accountTypeToken:
 		account = new(model.TokenAccount)
-	case "UsernamePassword":
+	case accountTypeUsernamePassword:
 		account = new(model.UsernamePasswordAccount)
 	}
 
@@ -213,17 +213,17 @@ func (s *accountService) Update(account model.IAccount) (model.IAccount, error) 
 
 	var resourceAccount interface{}
 	switch account.GetAccountType() {
-	case "AmazonWebServicesAccount":
+	case accountTypeAmazonWebServicesAccount:
 		resourceAccount = new(model.AmazonWebServicesAccount)
-	case "AzureServicePrincipal":
+	case accountTypeAzureServicePrincipal:
 		resourceAccount = new(model.AzureServicePrincipalAccount)
-	case "AzureSubscription":
+	case accountTypeAzureSubscription:
 		resourceAccount = new(model.AzureSubscriptionAccount)
-	case "SshKeyPair":
+	case accountTypeSshKeyPair:
 		resourceAccount = new(model.SSHKeyAccount)
-	case "Token":
+	case accountTypeToken:
 		resourceAccount = new(model.TokenAccount)
-	case "UsernamePassword":
+	case accountTypeUsernamePassword:
 		resourceAccount = new(model.UsernamePasswordAccount)
 	}
 

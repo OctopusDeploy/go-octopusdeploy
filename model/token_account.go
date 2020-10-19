@@ -7,8 +7,7 @@ import (
 
 // TokenAccount represents a token account.
 type TokenAccount struct {
-	AccountType string          `json:"AccountType" validate:"required,eq=Token"`
-	Token       *SensitiveValue `json:"Token,omitempty" validate:"required"`
+	Token *SensitiveValue `json:"Token,omitempty" validate:"required"`
 
 	AccountResource
 }
@@ -17,20 +16,15 @@ type TokenAccount struct {
 // token.
 func NewTokenAccount(name string, token SensitiveValue) *TokenAccount {
 	return &TokenAccount{
-		AccountType:     "Token",
 		Token:           &token,
-		AccountResource: *newAccountResource(name),
+		AccountResource: *newAccountResource(name, accountTypeToken),
 	}
-}
-
-// GetAccountType returns the account type for this account.
-func (t *TokenAccount) GetAccountType() string {
-	return t.AccountType
 }
 
 // Validate checks the state of this account and returns an error if invalid.
 func (t *TokenAccount) Validate() error {
 	v := validator.New()
+	v.RegisterStructValidation(validateTokenAccount, TokenAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -38,4 +32,9 @@ func (t *TokenAccount) Validate() error {
 	return v.Struct(t)
 }
 
-var _ IAccount = &TokenAccount{}
+func validateTokenAccount(sl validator.StructLevel) {
+	account := sl.Current().Interface().(TokenAccount)
+	if account.AccountType != accountTypeToken {
+		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
+	}
+}
