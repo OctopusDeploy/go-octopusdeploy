@@ -3,6 +3,7 @@ package client
 import (
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -31,7 +32,11 @@ func GetFakeOctopusClient(t *testing.T, apiPath string, statusCode int, response
 		}, nil
 	})
 
-	url := os.Getenv(clientURLEnvironmentVariable)
+	url, err := url.Parse(os.Getenv(clientURLEnvironmentVariable))
+	if err != nil {
+		return nil, err
+	}
+
 	apiKey := os.Getenv(clientAPIKeyEnvironmentVariable)
 
 	octopusClient, err := NewClient(&httpClient, url, apiKey, emptyString)
