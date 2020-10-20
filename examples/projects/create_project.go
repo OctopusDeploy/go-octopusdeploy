@@ -13,9 +13,7 @@ func CreateProjectExample() {
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		name           string = "project-name"
-		lifecycleID    string = "lifecycle-id"
-		projectGroupID string = "project-group-id"
+		name string = "project-name"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -30,8 +28,25 @@ func CreateProjectExample() {
 		return
 	}
 
-	// NOTE: the lifecycle and project group (below) can be obtained through the
-	// respective services in the client
+	// NOTE: a lifecycle is obtained through the Lifecycles service API
+	//
+	// lifecycles, err = client.Lifecycles.GetAll()
+	// lifecycle, err = client.Lifecycles.GetByID(id)
+	// lifecycles, err = client.Lifecycles.GetByPartialName(name)
+	//
+	// the lifecycle ID value (below) is obtained via GetID()
+
+	lifecycleID := "lifecycle-id"
+
+	// NOTE: a project group is obtained through the ProjectGroups service API
+	//
+	// projectGroups, err = client.ProjectGroups.GetAll()
+	// projectGroup, err = client.ProjectGroups.GetByID(id)
+	// projectGroups, err = client.ProjectGroups.GetByPartialName(name)
+	//
+	// the project group ID value (below) is obtained via GetID()
+
+	projectGroupID := "project-group-id"
 
 	// create project
 	project := octopusdeploy.NewProject(name, lifecycleID, projectGroupID)
