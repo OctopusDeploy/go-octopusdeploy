@@ -18,6 +18,7 @@ const (
 	parameterMachinePolicy          string = "machinePolicy"
 	parameterName                   string = "name"
 	parameterOctopusURL             string = "octopusURL"
+	parameterPackage                string = "package"
 	parameterPartialName            string = "partialName"
 	parameterPath                   string = "path"
 	parameterProjectID              string = "projectID"
