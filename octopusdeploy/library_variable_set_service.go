@@ -33,17 +33,16 @@ func (s libraryVariableSetService) getPagedResponse(path string) ([]*LibraryVari
 	return resources, nil
 }
 
-// GetByID returns the library variable set that matches the input ID. If one
-// cannot be found, it returns nil and an error.
-func (s libraryVariableSetService) GetByID(id string) (*LibraryVariableSet, error) {
-	path, err := getByIDPath(s, id)
+// Add creates a new library variable set.
+func (s libraryVariableSetService) Add(resource *LibraryVariableSet) (*LibraryVariableSet, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(LibraryVariableSet), path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*LibraryVariableSet), nil
@@ -62,6 +61,22 @@ func (s libraryVariableSetService) GetAll() ([]*LibraryVariableSet, error) {
 	return items, err
 }
 
+// GetByID returns the library variable set that matches the input ID. If one
+// cannot be found, it returns nil and an error.
+func (s libraryVariableSetService) GetByID(id string) (*LibraryVariableSet, error) {
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.getClient(), new(LibraryVariableSet), path)
+	if err != nil {
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+	}
+
+	return resp.(*LibraryVariableSet), nil
+}
+
 // GetByPartialName performs a lookup and returns a list of library variable sets with a matching partial name.
 func (s libraryVariableSetService) GetByPartialName(name string) ([]*LibraryVariableSet, error) {
 	path, err := getByPartialNamePath(s, name)
@@ -70,21 +85,6 @@ func (s libraryVariableSetService) GetByPartialName(name string) ([]*LibraryVari
 	}
 
 	return s.getPagedResponse(path)
-}
-
-// Add creates a new library variable set.
-func (s libraryVariableSetService) Add(resource *LibraryVariableSet) (*LibraryVariableSet, error) {
-	path, err := getAddPath(s, resource)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*LibraryVariableSet), nil
 }
 
 // Update modifies a library variable set based on the one provided as input.
@@ -98,7 +98,7 @@ func (s libraryVariableSetService) Update(libraryVariableSet *LibraryVariableSet
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), libraryVariableSet, new(LibraryVariableSet), path)
+	resp, err := apiUpdate(s.getClient(), libraryVariableSet, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
