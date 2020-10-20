@@ -157,7 +157,6 @@ func TestTeamServiceGetAll(t *testing.T) {
 		resourceToCompare, err := service.GetByID(resource.GetID())
 		require.NoError(t, err)
 		IsEqualTeams(t, resource, resourceToCompare)
-
 	}
 }
 
