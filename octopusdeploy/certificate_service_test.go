@@ -119,14 +119,15 @@ func TestCertificateServiceGetByPartialName(t *testing.T) {
 	assert.NotNil(t, resources)
 	assert.Len(t, resources, 0)
 
-	resources, err = service.GetAll()
+	certificates, err := service.GetAll()
 	assert.NoError(t, err)
-	assert.NotNil(t, resources)
+	assert.NotNil(t, certificates)
 
-	if len(resources) > 0 {
-		resourcesToCompare, err := service.GetByPartialName(resources[0].Name)
-		assert.NoError(t, err)
-		assert.EqualValues(t, resourcesToCompare[0], resources[0])
+	for _, certificate := range certificates {
+		certificateToCompare, err := service.GetByPartialName(certificate.Name)
+		require.NoError(t, err)
+		require.NotEmpty(t, certificateToCompare)
+		assert.Equal(t, certificate.GetID(), certificateToCompare[0].GetID())
 	}
 }
 
