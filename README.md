@@ -10,8 +10,7 @@ A Go client for the [Octopus Deploy](https://octopus.com/) API. This client is u
 import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 ```
 
-The [Octopus REST API](https://octopus.com/docs/octopus-rest-api) is exposed
-through service fields of the client:
+The [Octopus REST API](https://octopus.com/docs/octopus-rest-api) is exposed through service fields of the client. An API key is required to communicate with the API (see [How to Create an API Key](https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key) for more information).
 
 ```go
 apiKey := "API-YOUR_API_KEY"
@@ -34,8 +33,7 @@ if err != nil {
 }
 ```
 
-Once the client has been initialized, APIs can be targeted through the model
-and services available:
+Once the client has been initialized, APIs can be targeted through the model and services available:
 
 ```go
 usernamePasswordAccount := octopusdeploy.NewUsernamePasswordAccount(name)
@@ -47,8 +45,6 @@ if err != nil {
 }
 ```
 
-Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by
-most services exposed through the client. These operations are configured at
-runtime since the Octopus REST API is hypermedia-driven. Numerous code samples
-that showcase the API and this client are available in the
-[examples](/examples) directory.
+Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by most services that are exposed through the client. These operations are configured at runtime since the Octopus REST API is hypermedia-driven.
+
+Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory.
