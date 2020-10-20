@@ -2,7 +2,7 @@ package octopusdeploy
 
 import "time"
 
-type PackageVersionBuildInformation struct {
+type BuildInformation struct {
 	Branch                string           `json:"Branch,omitempty"`
 	BuildEnvironment      string           `json:"BuildEnvironment,omitempty"`
 	BuildNumber           string           `json:"BuildNumber,omitempty"`
@@ -22,8 +22,8 @@ type PackageVersionBuildInformation struct {
 	Resource
 }
 
-func NewPackageVersionBuildInformation() *PackageVersionBuildInformation {
-	return &PackageVersionBuildInformation{
+func NewBuildInformation() *BuildInformation {
+	return &BuildInformation{
 		Resource: *newResource(),
 	}
 }
