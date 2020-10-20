@@ -33,17 +33,16 @@ func (s lifecycleService) getPagedResponse(path string) ([]*Lifecycle, error) {
 	return resources, nil
 }
 
-// GetByID returns the lifecycle that matches the input ID. If one cannot be
-// found, it returns nil and an error.
-func (s lifecycleService) GetByID(id string) (*Lifecycle, error) {
-	path, err := getByIDPath(s, id)
+// Add creates a new lifecycle.
+func (s lifecycleService) Add(resource *Lifecycle) (*Lifecycle, error) {
+	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Lifecycle), nil
@@ -62,7 +61,24 @@ func (s lifecycleService) GetAll() ([]*Lifecycle, error) {
 	return items, err
 }
 
-// GetByPartialName performs a lookup and returns instances of a Lifecycle with a matching partial name.
+// GetByID returns the lifecycle that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func (s lifecycleService) GetByID(id string) (*Lifecycle, error) {
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.getClient(), s.itemType, path)
+	if err != nil {
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+	}
+
+	return resp.(*Lifecycle), nil
+}
+
+// GetByPartialName performs a lookup and returns a collection of lifecycles
+// with a matching partial name.
 func (s lifecycleService) GetByPartialName(name string) ([]*Lifecycle, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
@@ -70,21 +86,6 @@ func (s lifecycleService) GetByPartialName(name string) ([]*Lifecycle, error) {
 	}
 
 	return s.getPagedResponse(path)
-}
-
-// Add creates a new lifecycle.
-func (s lifecycleService) Add(resource *Lifecycle) (*Lifecycle, error) {
-	path, err := getAddPath(s, resource)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*Lifecycle), nil
 }
 
 // Update modifies a lifecycle based on the one provided as input.
