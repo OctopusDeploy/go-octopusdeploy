@@ -29,6 +29,10 @@ type service struct {
 	itemType    IResource
 }
 
+type canDeleteService struct {
+	service
+}
+
 func newService(name string, sling *sling.Sling, uriTemplate string, itemType IResource) service {
 	if sling == nil {
 		sling = getDefaultClient()
@@ -247,7 +251,7 @@ func validateInternalState(s IService) error {
 }
 
 // DeleteByID deletes the resource that matches the input ID.
-func (s *service) DeleteByID(id string) error {
+func (s *canDeleteService) DeleteByID(id string) error {
 	err := s.deleteByID(id)
 	if err == ErrItemNotFound {
 		return createResourceNotFoundError(s.getName(), "ID", id)
