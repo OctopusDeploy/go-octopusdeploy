@@ -44,12 +44,6 @@ if err != nil {
 }
 ```
 
-Most services support conducting CRUD operations through methods like `Add`,
-`DeleteByID`, `GetByID`, and `Update`.
-
-Numerous code samples that showcase the API and this client are available in
-the [examples](/examples) directory.
-
-## Contributing
-
-💻 Want to out? Check out [CONTRIBUTING.md](CONTRIBUTING.md).
+Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by
+most services exposed through the client. Numerous code samples that showcase
+the API and this client are available in the [examples](/examples) directory.
