@@ -100,7 +100,7 @@ func updateProject(client *octopusdeploy.Client, project *octopusdeploy.Project)
 	}
 
 	project.Description = "This is the new description..."
-	project, err := client.Projects.Update(*project)
+	project, err := client.Projects.Update(project)
 
 	if err != nil {
 		fmt.Println(err.Error())
