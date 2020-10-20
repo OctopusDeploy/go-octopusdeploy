@@ -6,13 +6,13 @@ A Go client for the [Octopus Deploy](https://octopus.com/) API. This client is u
 
 ## Usage
 
-```
+```go
 import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 ```
 
 APIs are exposed as services and made available through the client:
 
-```
+```go
 apiKey := "API-YOUR_API_KEY"
 octopusURL := "https://your_octopus_url"
 spaceID := "space-id" // can also be blank to assume the default space
@@ -33,7 +33,7 @@ if err != nil {
 
 Once the client has been initialized (as above), APIs can be made:
 
-```
+```go
 usernamePasswordAccount := octopusdeploy.NewUsernamePasswordAccount(name)
 usernamePasswordAccount.Username = username
 
