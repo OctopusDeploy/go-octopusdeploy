@@ -73,7 +73,7 @@ func (s communityActionTemplateService) GetByID(id string) (*CommunityActionTemp
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(CommunityActionTemplate), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

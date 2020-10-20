@@ -40,7 +40,7 @@ func (s interruptionService) GetByID(id string) (*Interruption, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(Interruption), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

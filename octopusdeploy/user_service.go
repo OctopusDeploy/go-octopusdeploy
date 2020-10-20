@@ -129,7 +129,7 @@ func (s userService) GetByID(id string) (*User, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(User), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError("user", "ID", id)
 	}

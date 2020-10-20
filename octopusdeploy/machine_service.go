@@ -64,7 +64,7 @@ func (s machineService) GetByID(id string) (*DeploymentTarget, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(DeploymentTarget), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

@@ -73,7 +73,7 @@ func (s certificateService) GetByID(id string) (*Certificate, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(Certificate), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

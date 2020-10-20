@@ -55,7 +55,7 @@ func (s runbookService) GetByID(id string) (*Runbook, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(Runbook), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError("runbook", "ID", id)
 	}

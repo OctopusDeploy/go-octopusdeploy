@@ -91,7 +91,7 @@ func (s workerService) GetByID(id string) (*Worker, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(Worker), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
