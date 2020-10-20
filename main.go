@@ -168,7 +168,7 @@ func main() {
 	OutputAsJSON(client.Environments.GetAll())
 	OutputAsJSON(client.Feeds.GetAll())
 	OutputAsJSON(client.Interruptions.GetAll())
-	OutputAsJSON(client.LibraryVariables.GetAll())
+	OutputAsJSON(client.LibraryVariableSets.GetAll())
 	OutputAsJSON(client.Lifecycles.GetAll())
 	OutputAsJSON(client.Machines.GetAll())
 	OutputAsJSON(client.MachinePolicies.GetAll())
