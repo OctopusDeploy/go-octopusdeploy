@@ -186,13 +186,13 @@ func (s projectService) Add(resource *Project) (*Project, error) {
 }
 
 // Update modifies a project based on the one provided as input.
-func (s projectService) Update(resource Project) (*Project, error) {
-	path, err := getUpdatePath(s, &resource)
+func (s projectService) Update(project *Project) (*Project, error) {
+	path, err := getUpdatePath(s, project)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), project, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
