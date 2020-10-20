@@ -17,6 +17,24 @@ func newProjectGroupService(sling *sling.Sling, uriTemplate string) *projectGrou
 	return projectGroupService
 }
 
+func (s projectGroupService) getPagedResponse(path string) ([]*ProjectGroup, error) {
+	resources := []*ProjectGroup{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := apiGet(s.getClient(), new(ProjectGroups), path)
+		if err != nil {
+			return resources, err
+		}
+
+		responseList := resp.(*ProjectGroups)
+		resources = append(resources, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resources, nil
+}
+
 // Add creates a new project group.
 func (s projectGroupService) Add(resource *ProjectGroup) (*ProjectGroup, error) {
 	path, err := getAddPath(s, resource)
@@ -30,6 +48,19 @@ func (s projectGroupService) Add(resource *ProjectGroup) (*ProjectGroup, error) 
 	}
 
 	return resp.(*ProjectGroup), nil
+}
+
+// GetAll returns all project groups. If none can be found or an error occurs,
+// it returns an empty collection.
+func (s projectGroupService) GetAll() ([]*ProjectGroup, error) {
+	items := []*ProjectGroup{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByID returns the project group that matches the input ID. If one cannot
@@ -48,17 +79,15 @@ func (s projectGroupService) GetByID(id string) (*ProjectGroup, error) {
 	return resp.(*ProjectGroup), nil
 }
 
-// GetAll returns all project groups. If none can be found or an error occurs,
-// it returns an empty collection.
-func (s projectGroupService) GetAll() ([]*ProjectGroup, error) {
-	items := []*ProjectGroup{}
-	path, err := getAllPath(s)
+// GetByPartialName performs a lookup and returns a collection of project
+// groups with a matching partial name.
+func (s projectGroupService) GetByPartialName(name string) ([]*ProjectGroup, error) {
+	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return items, err
+		return []*ProjectGroup{}, err
 	}
 
-	_, err = apiGet(s.getClient(), &items, path)
-	return items, err
+	return s.getPagedResponse(path)
 }
 
 // Update modifies a project group based on the one provided as input.
