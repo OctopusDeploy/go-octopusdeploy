@@ -31,7 +31,8 @@ if err != nil {
 }
 ```
 
-Once the client has been initialized (as above), APIs can be made:
+Once the client has been initialized, APIs can be targeted through the model
+and services available:
 
 ```go
 usernamePasswordAccount := octopusdeploy.NewUsernamePasswordAccount(name)
@@ -43,23 +44,11 @@ if err != nil {
 }
 ```
 
-A variety of code samples that showcase the API and this client are available in the [examples](/examples) directory.
+Most services support conducting CRUD operations through methods like `Add`,
+`DeleteByID`, `GetByID`, and `Update`.
 
-## Supported Types and Operations
-
-| Service | Types | Operations |
-| :- | :- | :- |
-| Accounts | `AmazonWebServicesAccount`<br>`AzureServicePrincipalAccount`<br>`AzureSubscriptionAccount`<br>`SSHKeyAccount`<br>`TokenAccount`<br>`UsernamePasswordAccount` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByIDs`<br>`GetByAccountType`<br>`GetByName`<br>`GetByPartialName`<br>`GetUsages`<br>`Update` |
-| Action Templates | `ActionTemplate`<br>`ActionTemplateCategory`<br>`ActionTemplateParameter`<br>`ActionTemplateSearch` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetCategories`<br>`GetByID`<br>`GetByName`<br>`Search`<br>`Update` |
-| Channels | `Channel` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByPartialName`<br>`GetProject`<br>`GetReleases`<br>`Update` |
-| Feeds | `AwsElasticContainerRegistry`<br>`BuiltInFeed`<br>`DockerContainerRegistry`<br>`GitHubRepositoryFeed`<br>`HelmFeed`<br>`MavenFeed`<br>`NuGetFeed`<br>`OctopusProjectFeed` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByName`<br>`GetByPartialName`<br>`Update` |
-| Machines | `DeploymentTarget`<br>`MachinePolicy` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`Update` |
-| Runbooks | `Runbook` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`Update` |
-| Spaces | `Space` | `Add` |
-| Teams | `Team` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByPartialName`<br>`Update` |
-| Users | `User`<br>`UserAuthentication` | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetAuthentication`<br>`GetAuthenticationForUser`<br>`GetByID`<br>`GetMe`<br>`GetSpaces`<br>`Update` |
-| Worker Pools | * | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByIDs`<br>`GetByName`<br>`GetByPartialName`<br>`Update` |
-| Workers | * | `Add`<br>`DeleteByID`<br>`GetAll`<br>`GetByID`<br>`GetByIDs`<br>`GetByName`<br>`GetByPartialName`<br>`Update` |
+Numerous code samples that showcase the API and this client are available in
+the [examples](/examples) directory.
 
 ## Contributing
 
