@@ -14,7 +14,7 @@ func newBuildInformationService(sling *sling.Sling, uriTemplate string, bulkPath
 	buildInformationService := &buildInformationService{
 		bulkPath: bulkPath,
 	}
-	buildInformationService.service = newService(serviceBuildInformationService, sling, uriTemplate, nil)
+	buildInformationService.service = newService(serviceBuildInformationService, sling, uriTemplate, new(BuildInformation))
 
 	return buildInformationService
 }
