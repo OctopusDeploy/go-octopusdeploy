@@ -26,7 +26,7 @@ func GetAllFeedsExample() {
 		return
 	}
 
-	// Get all Feeds
+	// Get all feeds
 	feeds, err := client.Feeds.GetAll()
 	if err != nil {
 		_ = fmt.Errorf("error getting feeds: %v", err)

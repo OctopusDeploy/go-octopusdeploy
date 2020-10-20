@@ -11,3 +11,7 @@ type DisplayInfo struct {
 	Required              bool                   `json:"Required,omitempty"`
 	ShowCopyToClipboard   bool                   `json:"ShowCopyToClipboard,omitempty"`
 }
+
+func NewDisplayInfo() *DisplayInfo {
+	return &DisplayInfo{}
+}

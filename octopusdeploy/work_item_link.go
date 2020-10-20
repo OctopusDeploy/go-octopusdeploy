@@ -6,3 +6,7 @@ type WorkItemLink struct {
 	LinkURL     string `json:"LinkUrl,omitempty"`
 	Source      string `json:"Source,omitempty"`
 }
+
+func NewWorkItemLink() *WorkItemLink {
+	return &WorkItemLink{}
+}

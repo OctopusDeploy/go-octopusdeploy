@@ -7,14 +7,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-func GetAccountByIDExample() {
+func GetLibraryVariableSetByIDExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		// account values
-		accountID string = "account-id"
+		// library variable set values
+		libraryVariableSetID string = "libraryVariableSet-id"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -29,12 +29,12 @@ func GetAccountByIDExample() {
 		return
 	}
 
-	// get account by its ID
-	account, err := client.Accounts.GetByID(accountID)
+	// get library variable set by its ID
+	libraryVariableSet, err := client.LibraryVariableSets.GetByID(libraryVariableSetID)
 	if err != nil {
-		_ = fmt.Errorf("error getting account: %v", err)
+		_ = fmt.Errorf("error getting library variable set: %v", err)
 		return
 	}
 
-	fmt.Printf("account: (%s)\n", account.GetID())
+	fmt.Printf("library variable set: (%s)\n", libraryVariableSet.GetID())
 }

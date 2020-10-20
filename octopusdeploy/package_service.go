@@ -19,6 +19,22 @@ func newPackageService(sling *sling.Sling, uriTemplate string, deltaSignaturePat
 		deltaUploadPath:    deltaUploadPath,
 		notesListPath:      notesListPath,
 		uploadPath:         uploadPath,
-		service:            newService(servicePackageService, sling, uriTemplate, nil),
+		service:            newService(servicePackageService, sling, uriTemplate, new(Package)),
 	}
+}
+
+// GetByID returns the package that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func (s packageService) GetByID(id string) (*Package, error) {
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiGet(s.getClient(), s.itemType, path)
+	if err != nil {
+		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+	}
+
+	return resp.(*Package), nil
 }

@@ -7,14 +7,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-func GetAccountByIDExample() {
+func GetProjectByIDExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		// account values
-		accountID string = "account-id"
+		// project values
+		projectID string = "project-id"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -29,12 +29,12 @@ func GetAccountByIDExample() {
 		return
 	}
 
-	// get account by its ID
-	account, err := client.Accounts.GetByID(accountID)
+	// get project by its ID
+	project, err := client.Projects.GetByID(projectID)
 	if err != nil {
-		_ = fmt.Errorf("error getting account: %v", err)
+		_ = fmt.Errorf("error getting project: %v", err)
 		return
 	}
 
-	fmt.Printf("account: (%s)\n", account.GetID())
+	fmt.Printf("project: (%s)\n", project.GetID())
 }

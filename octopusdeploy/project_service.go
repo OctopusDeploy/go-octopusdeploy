@@ -32,7 +32,7 @@ func (s projectService) GetByID(id string) (*Project, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(Project), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

@@ -5,3 +5,7 @@ type CommitDetails struct {
 	ID      string `json:"Id,omitempty"`
 	LinkURL string `json:"LinkUrl,omitempty"`
 }
+
+func NewCommitDetails() *CommitDetails {
+	return &CommitDetails{}
+}

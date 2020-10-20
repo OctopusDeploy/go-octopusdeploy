@@ -5,3 +5,7 @@ type PropertyMetadata struct {
 	Name        string       `json:"Name,omitempty"`
 	Type        string       `json:"Type,omitempty"`
 }
+
+func NewPropertyMetadata() *PropertyMetadata {
+	return &PropertyMetadata{}
+}

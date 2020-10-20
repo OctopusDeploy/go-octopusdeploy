@@ -5,3 +5,7 @@ type ConnectivityCheck struct {
 	Title                  string   `json:"Title,omitempty"`
 	URL                    string   `json:"Url,omitempty"`
 }
+
+func NewConnectivityCheck() *ConnectivityCheck {
+	return &ConnectivityCheck{}
+}

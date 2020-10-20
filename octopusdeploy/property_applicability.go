@@ -8,6 +8,10 @@ type PropertyApplicability struct {
 	Mode                   string      `json:"Mode,omitempty" validate:"required,oneof=ApplicableIfHasAnyValue ApplicableIfHasNoValue ApplicableIfNotSpecificValue ApplicableIfSpecificValue"`
 }
 
+func NewPropertyApplicability() *PropertyApplicability {
+	return &PropertyApplicability{}
+}
+
 // Validate checks the state of the property applicability and returns an error
 // if invalid.
 func (p PropertyApplicability) Validate() error {

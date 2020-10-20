@@ -7,14 +7,13 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-func GetAccountByIDExample() {
+func GetSpaceByIDExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"
 		octopusURL string = "https://your_octopus_url"
-		spaceID    string = "space-id"
 
-		// account values
-		accountID string = "account-id"
+		// space values
+		spaceID string = "space-id"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -23,18 +22,18 @@ func GetAccountByIDExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, "")
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	// get account by its ID
-	account, err := client.Accounts.GetByID(accountID)
+	// get space by its ID
+	space, err := client.Spaces.GetByID(spaceID)
 	if err != nil {
-		_ = fmt.Errorf("error getting account: %v", err)
+		_ = fmt.Errorf("error getting space: %v", err)
 		return
 	}
 
-	fmt.Printf("account: (%s)\n", account.GetID())
+	fmt.Printf("space: (%s)\n", space.GetID())
 }
