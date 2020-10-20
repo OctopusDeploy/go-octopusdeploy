@@ -18,7 +18,7 @@ const (
 	serviceDashboardConfigurationService        string = "DashboardConfigurationService"
 	serviceDashboardService                     string = "DashboardService"
 	serviceDeploymentService                    string = "DeploymentService"
-	serviceDeploymentProcesseService            string = "DeploymentProcesseService"
+	serviceDeploymentProcessesService           string = "DeploymentProcessesService"
 	serviceDynamicExtensionService              string = "DynamicExtensionService"
 	serviceEnvironmentService                   string = "EnvironmentService"
 	serviceEventService                         string = "EventService"
