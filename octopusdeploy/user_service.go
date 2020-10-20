@@ -159,20 +159,17 @@ func (s userService) GetSpaces(user *User) ([]*Spaces, error) {
 		return nil, createInvalidParameterError("GetSpaces", "user")
 	}
 
+	items := []*Spaces{}
 	err := validateInternalState(s)
 	if err != nil {
-		return nil, err
+		return items, err
 	}
 
 	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/%s/spaces", user.ID)
 
-	resp, err := apiGet(s.getClient(), new([]Spaces), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.([]*Spaces), nil
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // Update modifies a user based on the one provided as input.
