@@ -8,7 +8,7 @@ type environmentService struct {
 	sortOrderPath string
 	summaryPath   string
 
-	service
+	canDeleteService
 }
 
 func newEnvironmentService(sling *sling.Sling, uriTemplate string, sortOrderPath string, summaryPath string) *environmentService {

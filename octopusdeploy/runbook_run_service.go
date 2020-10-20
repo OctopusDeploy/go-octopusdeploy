@@ -3,7 +3,7 @@ package octopusdeploy
 import "github.com/dghubble/sling"
 
 type runbookRunService struct {
-	service
+	canDeleteService
 }
 
 func newRunbookRunService(sling *sling.Sling, uriTemplate string) *runbookRunService {

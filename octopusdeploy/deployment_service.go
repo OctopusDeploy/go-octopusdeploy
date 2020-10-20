@@ -7,7 +7,7 @@ import (
 // deploymentService handles communication for any operations in the Octopus
 // API that pertain to deployments.
 type deploymentService struct {
-	service
+	canDeleteService
 }
 
 // newDeploymentService returns a deploymentService with a preconfigured

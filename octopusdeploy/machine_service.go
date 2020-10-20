@@ -9,7 +9,7 @@ type machineService struct {
 	operatingSystemsPath string
 	shellsPath           string
 
-	service
+	canDeleteService
 }
 
 func newMachineService(sling *sling.Sling, uriTemplate string, discoverMachinePath string, operatingSystemsPath string, shellsPath string) *machineService {

@@ -5,7 +5,7 @@ import "github.com/dghubble/sling"
 type octopusServerNodeService struct {
 	clusterSummaryPath string
 
-	service
+	canDeleteService
 }
 
 func newOctopusServerNodeService(sling *sling.Sling, uriTemplate string, clusterSummaryPath string) *octopusServerNodeService {

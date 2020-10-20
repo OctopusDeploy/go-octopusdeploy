@@ -8,7 +8,7 @@ import (
 
 // certificateService handles communication with Certificate-related methods of the Octopus API.
 type certificateService struct {
-	service
+	canDeleteService
 }
 
 // newCertificateService returns an certificateService with a preconfigured client.

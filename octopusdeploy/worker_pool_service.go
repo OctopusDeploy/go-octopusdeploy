@@ -10,7 +10,7 @@ type workerPoolService struct {
 	summaryPath            string
 	supportedTypesPath     string
 
-	service
+	canDeleteService
 }
 
 func newWorkerPoolService(sling *sling.Sling, uriTemplate string, dynamicWorkerTypesPath string, sortOrderPath string, summaryPath string, supportedTypesPath string) *workerPoolService {

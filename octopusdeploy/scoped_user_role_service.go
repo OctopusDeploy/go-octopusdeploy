@@ -3,7 +3,7 @@ package octopusdeploy
 import "github.com/dghubble/sling"
 
 type scopedUserRoleService struct {
-	service
+	canDeleteService
 }
 
 func newScopedUserRoleService(sling *sling.Sling, uriTemplate string) *scopedUserRoleService {

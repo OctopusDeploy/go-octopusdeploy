@@ -5,7 +5,7 @@ import (
 )
 
 type runbookService struct {
-	service
+	canDeleteService
 }
 
 func newRunbookService(sling *sling.Sling, uriTemplate string) *runbookService {

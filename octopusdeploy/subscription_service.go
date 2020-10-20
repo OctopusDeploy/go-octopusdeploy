@@ -3,7 +3,7 @@ package octopusdeploy
 import "github.com/dghubble/sling"
 
 type subscriptionService struct {
-	service
+	canDeleteService
 }
 
 func newSubscriptionService(sling *sling.Sling, uriTemplate string) *subscriptionService {

@@ -7,7 +7,7 @@ import (
 type machinePolicyService struct {
 	templatePath string
 
-	service
+	canDeleteService
 }
 
 func newMachinePolicyService(sling *sling.Sling, uriTemplate string, templatePath string) *machinePolicyService {

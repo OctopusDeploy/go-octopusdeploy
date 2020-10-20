@@ -7,7 +7,7 @@ import (
 type tagSetService struct {
 	sortOrderPath string
 
-	service
+	canDeleteService
 }
 
 func newTagSetService(sling *sling.Sling, uriTemplate string, sortOrderPath string) *tagSetService {

@@ -5,7 +5,7 @@ import (
 )
 
 type lifecycleService struct {
-	service
+	canDeleteService
 }
 
 func newLifecycleService(sling *sling.Sling, uriTemplate string) *lifecycleService {

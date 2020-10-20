@@ -7,7 +7,7 @@ import (
 type spaceService struct {
 	homePath string
 
-	service
+	canDeleteService
 }
 
 func newSpaceService(sling *sling.Sling, uriTemplate string, homePath string) *spaceService {

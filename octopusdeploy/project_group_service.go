@@ -6,7 +6,7 @@ import (
 
 // projectGroupService handles communication with ProjectGroup-related methods of the Octopus API.
 type projectGroupService struct {
-	service
+	canDeleteService
 }
 
 // newProjectGroupService returns a projectGroupService with a preconfigured client.

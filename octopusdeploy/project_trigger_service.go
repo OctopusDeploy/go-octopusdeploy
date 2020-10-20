@@ -5,7 +5,7 @@ import (
 )
 
 type projectTriggerService struct {
-	service
+	canDeleteService
 }
 
 func newProjectTriggerService(sling *sling.Sling, uriTemplate string) *projectTriggerService {

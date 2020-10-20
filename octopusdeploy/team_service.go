@@ -5,7 +5,7 @@ import (
 )
 
 type teamService struct {
-	service
+	canDeleteService
 }
 
 func newTeamService(sling *sling.Sling, uriTemplate string) *teamService {

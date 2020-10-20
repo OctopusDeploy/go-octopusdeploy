@@ -9,7 +9,7 @@ import (
 type feedService struct {
 	builtInFeedStats string
 
-	service
+	canDeleteService
 }
 
 // newFeedService returns an feed service with a preconfigured client.

@@ -11,7 +11,7 @@ type projectService struct {
 	experimentalSummariesPath string
 	pulsePath                 string
 
-	service
+	canDeleteService
 }
 
 func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string, experimentalSummariesPath string) *projectService {

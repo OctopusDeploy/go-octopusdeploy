@@ -9,7 +9,7 @@ type tenantService struct {
 	statusPath           string
 	tagTestPath          string
 
-	service
+	canDeleteService
 }
 
 func newTenantService(sling *sling.Sling, uriTemplate string, missingVariablesPath string, statusPath string, tagTestPath string) *tenantService {

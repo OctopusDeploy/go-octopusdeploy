@@ -12,7 +12,7 @@ type actionTemplateService struct {
 	searchPath        string
 	versionedLogoPath string
 
-	service
+	canDeleteService
 }
 
 // newActionTemplateService returns an actionTemplateService with a

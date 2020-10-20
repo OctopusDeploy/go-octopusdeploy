@@ -7,7 +7,7 @@ import (
 type buildInformationService struct {
 	bulkPath string
 
-	service
+	canDeleteService
 }
 
 func newBuildInformationService(sling *sling.Sling, uriTemplate string, bulkPath string) *buildInformationService {

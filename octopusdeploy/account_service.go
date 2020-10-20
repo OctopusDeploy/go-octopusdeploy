@@ -8,7 +8,7 @@ import (
 // accountService handles communication with account-related methods of the
 // Octopus API.
 type accountService struct {
-	service
+	canDeleteService
 }
 
 // newAccountService returns an account service with a preconfigured client.

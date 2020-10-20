@@ -10,7 +10,7 @@ import (
 type channelService struct {
 	versionRuleTestPath string
 
-	service
+	canDeleteService
 }
 
 func newChannelService(sling *sling.Sling, uriTemplate string, versionRuleTestPath string) *channelService {

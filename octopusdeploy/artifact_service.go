@@ -7,7 +7,7 @@ import (
 // actionTemplateService handles communication for any operations in the
 // Octopus API that pertain to artifacts.
 type artifactService struct {
-	service
+	canDeleteService
 }
 
 // newArtifactService returns an artifactService with a preconfigured client.

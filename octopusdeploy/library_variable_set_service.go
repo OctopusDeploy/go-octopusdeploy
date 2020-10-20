@@ -5,7 +5,7 @@ import (
 )
 
 type libraryVariableSetService struct {
-	service
+	canDeleteService
 }
 
 func newLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *libraryVariableSetService {
@@ -69,7 +69,7 @@ func (s libraryVariableSetService) GetByID(id string) (*LibraryVariableSet, erro
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(LibraryVariableSet), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

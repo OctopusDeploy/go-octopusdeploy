@@ -9,7 +9,7 @@ type workerService struct {
 	operatingSystemsPath string
 	shellsPath           string
 
-	service
+	canDeleteService
 }
 
 func newWorkerService(sling *sling.Sling, uriTemplate string, discoverWorkerPath string, operatingSystemsPath string, shellsPath string) *workerService {
