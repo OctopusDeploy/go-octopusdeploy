@@ -78,6 +78,9 @@ func isNil(i IResource) bool {
 	case *MachinePolicy:
 		v := i.(*MachinePolicy)
 		ret = v == nil
+	case *Package:
+		v := i.(*Package)
+		ret = v == nil
 	case *ProjectGroup:
 		v := i.(*ProjectGroup)
 		ret = v == nil
