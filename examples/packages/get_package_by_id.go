@@ -30,11 +30,11 @@ func GetPackageByIDExample() {
 	}
 
 	// get package by its ID
-	package, err := client.Packages.GetByID(packageID)
+	octopusPackage, err := client.Packages.GetByID(packageID)
 	if err != nil {
 		_ = fmt.Errorf("error getting package: %v", err)
 		return
 	}
 
-	fmt.Printf("package: (%s)\n", package.GetID())
+	fmt.Printf("package: (%s)\n", octopusPackage.GetID())
 }
