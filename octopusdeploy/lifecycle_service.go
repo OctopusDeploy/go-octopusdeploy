@@ -41,7 +41,7 @@ func (s lifecycleService) GetByID(id string) (*Lifecycle, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(Lifecycle), path)
+	resp, err := apiGet(s.getClient(), s.itemType, path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -87,14 +87,14 @@ func (s lifecycleService) Add(resource *Lifecycle) (*Lifecycle, error) {
 	return resp.(*Lifecycle), nil
 }
 
-// Update modifies a Lifecycle based on the one provided as input.
-func (s lifecycleService) Update(resource Lifecycle) (*Lifecycle, error) {
-	path, err := getUpdatePath(s, &resource)
+// Update modifies a lifecycle based on the one provided as input.
+func (s lifecycleService) Update(lifecycle *Lifecycle) (*Lifecycle, error) {
+	path, err := getUpdatePath(s, lifecycle)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), lifecycle, s.itemType, path)
 	if err != nil {
 		return nil, err
 	}
