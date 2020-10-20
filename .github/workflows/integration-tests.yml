@@ -18,11 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
-      - name: Build client module
-        run: go build -v ./client
-
-      - name: Build model module
-        run: go build -v ./model
+      - name: Build octopusdeploy module
+        run: go build -v ./octopusdeploy
 
       - name: Start the Octopus container
         run: cd ./tests && docker-compose up --detach
