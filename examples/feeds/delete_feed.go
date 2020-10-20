@@ -10,9 +10,9 @@ import (
 func DeleteFeedExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"
-		feedName   string = "nuget to delete"
+		feedName   string = "nuget (ok to delete)"
 		octopusURL string = "https://your_octopus_url"
-		spaceName  string = "Default"
+		spaceName  string = "space-id"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -27,20 +27,22 @@ func DeleteFeedExample() {
 		return
 	}
 
-	// Get Feed instances that match the name provided
+	// get feeds that match the name provided
 	feeds, err := client.Feeds.GetByPartialName(feedName)
 	if err != nil {
 		_ = fmt.Errorf("error getting feed: %v", err)
 		return
 	}
 
-	// select a specific Feed instance
+	// select a specific feed
 	feed := feeds[0]
 
-	// Delete feed
+	// delete feed
 	err = client.Feeds.DeleteByID(feed.GetID())
 	if err != nil {
 		_ = fmt.Errorf("error deleting feed: %v", err)
 		return
 	}
+
+	fmt.Printf("feed deleted: (%s)\n", feed.GetID())
 }

@@ -42,7 +42,7 @@ type Client struct {
 	IssueTrackers                  *issueTrackerService
 	JiraIntegration                *jiraIntegrationService
 	LetsEncryptConfiguration       *letsEncryptConfigurationService
-	LibraryVariables               *libraryVariableSetService
+	LibraryVariableSets            *libraryVariableSetService
 	Licenses                       *licenseService
 	Lifecycles                     *lifecycleService
 	MachinePolicies                *machinePolicyService
@@ -625,7 +625,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		IssueTrackers:                  newIssueTrackerService(base, issueTrackersPath),
 		JiraIntegration:                newJiraIntegrationService(base, jiraIntegrationPath, jiraConnectAppCredentialsTestPath, jiraCredentialsTestPath),
 		LetsEncryptConfiguration:       newLetsEncryptConfigurationService(base, letsEncryptConfigurationPath),
-		LibraryVariables:               newLibraryVariableSetService(base, libraryVariablesPath),
+		LibraryVariableSets:            newLibraryVariableSetService(base, libraryVariablesPath),
 		Licenses:                       newLicenseService(base, licensesPath, currentLicensePath, currentLicenseStatusPath),
 		Lifecycles:                     newLifecycleService(base, lifecyclesPath),
 		MachinePolicies:                newMachinePolicyService(base, machinePoliciesPath, machinePolicyTemplatePath),
