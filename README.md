@@ -10,7 +10,8 @@ A Go client for the [Octopus Deploy](https://octopus.com/) API. This client is u
 import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 ```
 
-APIs are exposed as services and made available through the client:
+The [Octopus REST API](https://octopus.com/docs/octopus-rest-api) is exposed
+through service fields of the client:
 
 ```go
 apiKey := "API-YOUR_API_KEY"
@@ -45,5 +46,7 @@ if err != nil {
 ```
 
 Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by
-most services exposed through the client. Numerous code samples that showcase
-the API and this client are available in the [examples](/examples) directory.
+most services exposed through the client. These operations are configured at
+runtime since the Octopus REST API is hypermedia-driven. Numerous code samples
+that showcase the API and this client are available in the
+[examples](/examples) directory.
