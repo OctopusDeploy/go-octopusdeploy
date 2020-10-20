@@ -131,10 +131,12 @@ func TestWorkerServiceAddGetDelete(t *testing.T) {
 		workerPool, err := workerPoolService.GetByID(id)
 		require.NoError(t, err)
 
-		defer DeleteTestWorkerPool(t, workerPoolService, workerPool)
+		err = DeleteTestWorkerPool(t, workerPoolService, workerPool)
+		require.NoError(t, err)
 	}
 
-	DeleteTestWorker(t, service, worker)
+	err = DeleteTestWorker(t, service, worker)
+	require.NoError(t, err)
 }
 
 func TestWorkerServiceDelete(t *testing.T) {
