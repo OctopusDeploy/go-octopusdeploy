@@ -118,7 +118,8 @@ func TestLibraryVariableSetServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	resource = CreateTestLibraryVariableSet(t, service)
-	defer DeleteTestLibraryVariableSet(t, service, resource)
+	err = DeleteTestLibraryVariableSet(t, service, resource)
+	require.NoError(t, err)
 }
 
 func TestLibraryVariableSetServiceDeleteAll(t *testing.T) {
@@ -130,7 +131,8 @@ func TestLibraryVariableSetServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		defer DeleteTestLibraryVariableSet(t, service, resource)
+		err = DeleteTestLibraryVariableSet(t, service, resource)
+		assert.NoError(t, err)
 	}
 }
 
