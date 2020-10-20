@@ -24,7 +24,9 @@ if err != nil {
     return
 }
 
-// first parameter is http.Client if you wish to override the default
+// the first parameter for NewClient can accept a http.Client if you wish to
+// override the default; also, the spaceID may be an empty string (i.e. "") if
+// you wish to load the default space
 client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 if err != nil {
     _ = fmt.Errorf("error creating API client: %v", err)
