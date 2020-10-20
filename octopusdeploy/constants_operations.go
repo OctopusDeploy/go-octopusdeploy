@@ -1,0 +1,26 @@
+package octopusdeploy
+
+const (
+	operationAdd                      string = "Add"
+	operationAPIAdd                   string = "apiAdd"
+	operationAPIDelete                string = "apiDelete"
+	operationAPIGet                   string = "apiGet"
+	operationAPIPost                  string = "apiPost"
+	operationAPIUpdate                string = "apiUpdate"
+	operationDeleteByID               string = "DeleteByID"
+	operationGet                      string = "Get"
+	operationGetAuthentication        string = "GetAuthentication"
+	operationGetAuthenticationForUser string = "GetAuthenticationForUser"
+	operationGetByID                  string = "GetByID"
+	operationGetByIDs                 string = "GetByIDs"
+	operationGetByName                string = "GetByName"
+	operationGetByPartialName         string = "GetByPartialName"
+	operationGetByProjectID           string = "GetByProjectID"
+	operationGetByUserID              string = "GetByUserID"
+	operationGetChannels              string = "GetChannels"
+	operationGetReleases              string = "GetReleases"
+	operationGetSummary               string = "GetSummary"
+	operationInstall                  string = "Install"
+	operationReplace                  string = "Replace"
+	operationUpdate                   string = "Update"
+)

@@ -3,8 +3,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -15,9 +14,9 @@ var testCert2Data = `MIIOSQIBAzCCDg8GCSqGSIb3DQEHAaCCDgAEgg38MIIN+DCCCK8GCSqGSIb
 const testCert2Thumbprint = `0454EAD1FC6F3F60F22AE82230165C14C4FD7FA7`
 const testCert2Password = `HCWVMo7u`
 
-var testCert1 = model.SensitiveValue{NewValue: &testCert1Data}
+var testCert1 = octopusdeploy.SensitiveValue{NewValue: &testCert1Data}
 
-// var testCert2 = model.SensitiveValue{NewValue: &testCert2Data}
+// var testCert2 = SensitiveValue{NewValue: &testCert2Data}
 
 func TestCertAddAndDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
@@ -59,7 +58,7 @@ func TestCertAddAndReplace(t *testing.T) {
 	assert.NotEmpty(t, actualCert2.ID, "certificate doesn't contain an ID from the octopus server")
 }
 
-func createTestCert(t *testing.T, octopusClient *client.Client, certName string) model.Certificate {
+func createTestCert(t *testing.T, octopusClient *octopusdeploy.Client, certName string) octopusdeploy.Certificate {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -78,7 +77,7 @@ func createTestCert(t *testing.T, octopusClient *client.Client, certName string)
 	return *cert
 }
 
-func replaceCert(t *testing.T, octopusClient *client.Client, originalCert *model.Certificate) model.Certificate {
+func replaceCert(t *testing.T, octopusClient *octopusdeploy.Client, originalCert *octopusdeploy.Certificate) octopusdeploy.Certificate {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -95,22 +94,22 @@ func replaceCert(t *testing.T, octopusClient *client.Client, originalCert *model
 	return *cert
 }
 
-func getTestCert1(t *testing.T, certName string) (*model.Certificate, error) {
-	certificate := model.NewCertificate(certName, testCert1, model.SensitiveValue{})
+func getTestCert1(t *testing.T, certName string) (*octopusdeploy.Certificate, error) {
+	certificate := octopusdeploy.NewCertificate(certName, testCert1, octopusdeploy.SensitiveValue{})
 	require.NotNil(t, certificate)
 	require.NoError(t, certificate.Validate())
 
 	return certificate, nil
 }
 
-func getTestCertReplace(t *testing.T) (*model.ReplacementCertificate, error) {
-	certificateReplace := model.NewReplacementCertificate(testCert2Data, testCert2Password)
+func getTestCertReplace(t *testing.T) (*octopusdeploy.ReplacementCertificate, error) {
+	certificateReplace := octopusdeploy.NewReplacementCertificate(testCert2Data, testCert2Password)
 	require.NotNil(t, certificateReplace)
 
 	return certificateReplace, nil
 }
 
-func cleanCert(t *testing.T, octopusClient *client.Client, certID string) {
+func cleanCert(t *testing.T, octopusClient *octopusdeploy.Client, certID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func GetStepsUsingPackageExample() {
@@ -22,7 +22,7 @@ func GetStepsUsingPackageExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return

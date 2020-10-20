@@ -3,14 +3,13 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestAmazonWebServicesAccount(t *testing.T, client *client.Client) model.IAccount {
+func CreateTestAmazonWebServicesAccount(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -18,9 +17,9 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, client *client.Client) mod
 
 	accessKey := getRandomName()
 	name := getRandomName()
-	secretKey := model.NewSensitiveValue(getRandomName())
+	secretKey := octopusdeploy.NewSensitiveValue(getRandomName())
 
-	account := model.NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	account := octopusdeploy.NewAmazonWebServicesAccount(name, accessKey, secretKey)
 	require.NoError(t, account.Validate())
 
 	createdAccount, err := client.Accounts.Add(account)
@@ -33,20 +32,20 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, client *client.Client) mod
 	return createdAccount
 }
 
-func CreateTestAzureServicePrincipalAccount(t *testing.T, client *client.Client) model.IAccount {
+func CreateTestAzureServicePrincipalAccount(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
 	applicationID := uuid.New()
-	applicationPassword := model.NewSensitiveValue(getRandomName())
+	applicationPassword := octopusdeploy.NewSensitiveValue(getRandomName())
 	azureEnvironment := getRandomAzureEnvironment()
 	name := getRandomName()
 	subscriptionID := uuid.New()
 	tenantID := uuid.New()
 
-	account := model.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
+	account := octopusdeploy.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
 
 	// set Azure environment fields
 	if !isEmpty(azureEnvironment.Name) {
@@ -67,7 +66,7 @@ func CreateTestAzureServicePrincipalAccount(t *testing.T, client *client.Client)
 	return createdAccount
 }
 
-func CreateTestAzureSubscriptionAccount(t *testing.T, client *client.Client) model.IAccount {
+func CreateTestAzureSubscriptionAccount(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -77,7 +76,7 @@ func CreateTestAzureSubscriptionAccount(t *testing.T, client *client.Client) mod
 	name := getRandomName()
 	subscriptionID := uuid.New()
 
-	account := model.NewAzureSubscriptionAccount(name, subscriptionID)
+	account := octopusdeploy.NewAzureSubscriptionAccount(name, subscriptionID)
 
 	// set Azure environment fields
 	if !isEmpty(azureEnvironment.Name) {
@@ -95,7 +94,7 @@ func CreateTestAzureSubscriptionAccount(t *testing.T, client *client.Client) mod
 	return resource
 }
 
-func CreateTestSSHKeyAccount(t *testing.T, client *client.Client) model.IAccount {
+func CreateTestSSHKeyAccount(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -103,9 +102,9 @@ func CreateTestSSHKeyAccount(t *testing.T, client *client.Client) model.IAccount
 
 	name := getRandomName()
 	username := getRandomName()
-	privateKeyFile := model.NewSensitiveValue(getRandomName())
+	privateKeyFile := octopusdeploy.NewSensitiveValue(getRandomName())
 
-	account := model.NewSSHKeyAccount(name, username, privateKeyFile)
+	account := octopusdeploy.NewSSHKeyAccount(name, username, privateKeyFile)
 
 	require.NoError(t, account.Validate())
 
@@ -116,16 +115,16 @@ func CreateTestSSHKeyAccount(t *testing.T, client *client.Client) model.IAccount
 	return resource
 }
 
-func CreateTestTokenAccount(t *testing.T, client *client.Client) model.IAccount {
+func CreateTestTokenAccount(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
 	name := getRandomName()
-	token := model.NewSensitiveValue(getRandomName())
+	token := octopusdeploy.NewSensitiveValue(getRandomName())
 
-	account := model.NewTokenAccount(name, token)
+	account := octopusdeploy.NewTokenAccount(name, token)
 
 	require.NoError(t, account.Validate())
 
@@ -136,7 +135,7 @@ func CreateTestTokenAccount(t *testing.T, client *client.Client) model.IAccount 
 	return resource
 }
 
-func CreateTestUsernamePasswordAccount(t *testing.T, client *client.Client) model.IAccount {
+func CreateTestUsernamePasswordAccount(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -144,7 +143,7 @@ func CreateTestUsernamePasswordAccount(t *testing.T, client *client.Client) mode
 
 	name := getRandomName()
 
-	account := model.NewUsernamePasswordAccount(name)
+	account := octopusdeploy.NewUsernamePasswordAccount(name)
 
 	require.NoError(t, account.Validate())
 
@@ -155,7 +154,7 @@ func CreateTestUsernamePasswordAccount(t *testing.T, client *client.Client) mode
 	return resource
 }
 
-func DeleteTestAccount(t *testing.T, client *client.Client, account model.IAccount) error {
+func DeleteTestAccount(t *testing.T, client *octopusdeploy.Client, account octopusdeploy.IAccount) error {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -164,7 +163,7 @@ func DeleteTestAccount(t *testing.T, client *client.Client, account model.IAccou
 	return client.Accounts.DeleteByID(account.GetID())
 }
 
-func IsEqualAccounts(t *testing.T, expected model.IAccount, actual model.IAccount) {
+func IsEqualAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octopusdeploy.IAccount) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -183,7 +182,7 @@ func IsEqualAccounts(t *testing.T, expected model.IAccount, actual model.IAccoun
 	assert.Equal(t, expected.GetName(), actual.GetName())
 }
 
-func UpdateAccount(t *testing.T, client *client.Client, account model.IAccount) model.IAccount {
+func UpdateAccount(t *testing.T, client *octopusdeploy.Client, account octopusdeploy.IAccount) octopusdeploy.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -193,58 +192,58 @@ func UpdateAccount(t *testing.T, client *client.Client, account model.IAccount) 
 	assert.NoError(t, err)
 	require.NotNil(t, updatedAccount)
 
-	return updatedAccount.(model.IAccount)
+	return updatedAccount.(octopusdeploy.IAccount)
 }
 
-func ValidateAccount(t *testing.T, account model.IAccount) {
+func ValidateAccount(t *testing.T, account octopusdeploy.IAccount) {
 	require.NoError(t, account.Validate())
 	require.NotEmpty(t, account.GetID())
 	require.NotEmpty(t, account.GetLastModifiedBy())
 	require.NotEmpty(t, account.GetLastModifiedOn())
 	require.NotEmpty(t, account.GetLinks())
 
-	baseAccount, ok := account.(*model.Account)
+	baseAccount, ok := account.(*octopusdeploy.Account)
 	if ok {
 		require.NotEmpty(t, baseAccount.SpaceID)
 	} else {
 		switch account.GetAccountType() {
 		case accountTypeAmazonWebServicesAccount:
-			ValidateAmazonWebServicesAccount(t, account.(*model.AmazonWebServicesAccount))
+			ValidateAmazonWebServicesAccount(t, account.(*octopusdeploy.AmazonWebServicesAccount))
 		case accountTypeAzureServicePrincipal:
-			ValidateAzureServicePrincipalAccount(t, account.(*model.AzureServicePrincipalAccount))
+			ValidateAzureServicePrincipalAccount(t, account.(*octopusdeploy.AzureServicePrincipalAccount))
 		case accountTypeAzureSubscription:
-			ValidateAzureSubscriptionAccount(t, account.(*model.AzureSubscriptionAccount))
+			ValidateAzureSubscriptionAccount(t, account.(*octopusdeploy.AzureSubscriptionAccount))
 		case accountTypeSshKeyPair:
-			ValidateSSHKeyAccount(t, account.(*model.SSHKeyAccount))
+			ValidateSSHKeyAccount(t, account.(*octopusdeploy.SSHKeyAccount))
 		case accountTypeToken:
-			ValidateTokenAccount(t, account.(*model.TokenAccount))
+			ValidateTokenAccount(t, account.(*octopusdeploy.TokenAccount))
 		case accountTypeUsernamePassword:
-			ValidateUsernamePasswordAccount(t, account.(*model.UsernamePasswordAccount))
+			ValidateUsernamePasswordAccount(t, account.(*octopusdeploy.UsernamePasswordAccount))
 		}
 	}
 }
 
-func ValidateAmazonWebServicesAccount(t *testing.T, account *model.AmazonWebServicesAccount) {
+func ValidateAmazonWebServicesAccount(t *testing.T, account *octopusdeploy.AmazonWebServicesAccount) {
 	require.NotEmpty(t, account.SpaceID)
 }
 
-func ValidateAzureServicePrincipalAccount(t *testing.T, account *model.AzureServicePrincipalAccount) {
+func ValidateAzureServicePrincipalAccount(t *testing.T, account *octopusdeploy.AzureServicePrincipalAccount) {
 	require.NotEmpty(t, account.SpaceID)
 }
 
-func ValidateAzureSubscriptionAccount(t *testing.T, account *model.AzureSubscriptionAccount) {
+func ValidateAzureSubscriptionAccount(t *testing.T, account *octopusdeploy.AzureSubscriptionAccount) {
 	require.NotEmpty(t, account.SpaceID)
 }
 
-func ValidateSSHKeyAccount(t *testing.T, account *model.SSHKeyAccount) {
+func ValidateSSHKeyAccount(t *testing.T, account *octopusdeploy.SSHKeyAccount) {
 	require.NotEmpty(t, account.SpaceID)
 }
 
-func ValidateTokenAccount(t *testing.T, account *model.TokenAccount) {
+func ValidateTokenAccount(t *testing.T, account *octopusdeploy.TokenAccount) {
 	require.NotEmpty(t, account.SpaceID)
 }
 
-func ValidateUsernamePasswordAccount(t *testing.T, account *model.UsernamePasswordAccount) {
+func ValidateUsernamePasswordAccount(t *testing.T, account *octopusdeploy.UsernamePasswordAccount) {
 	require.NotEmpty(t, account.SpaceID)
 }
 

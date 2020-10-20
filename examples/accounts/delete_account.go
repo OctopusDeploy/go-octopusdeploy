@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func DeleteAccountExample() {
@@ -23,14 +23,14 @@ func DeleteAccountExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
 	// delete account
-	err := client.Accounts.DeleteByID(accountID)
+	err = client.Accounts.DeleteByID(accountID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting account: %v", err)
 		return

@@ -4,8 +4,7 @@ import (
 	// "fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -102,7 +101,7 @@ func TestProjectGroupUpdate(t *testing.T) {
 	require.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")
 }
 
-func createTestProjectGroup(t *testing.T, octopusClient *client.Client, projectGroupName string) *model.ProjectGroup {
+func createTestProjectGroup(t *testing.T, octopusClient *octopusdeploy.Client, projectGroupName string) *octopusdeploy.ProjectGroup {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -118,13 +117,13 @@ func createTestProjectGroup(t *testing.T, octopusClient *client.Client, projectG
 	return createdProjectGroup
 }
 
-func getTestProjectGroup(projectGroupName string) model.ProjectGroup {
-	p := model.NewProjectGroup(projectGroupName)
+func getTestProjectGroup(projectGroupName string) octopusdeploy.ProjectGroup {
+	p := octopusdeploy.NewProjectGroup(projectGroupName)
 
 	return *p
 }
 
-func cleanProjectGroup(t *testing.T, octopusClient *client.Client, projectGroupID string) {
+func cleanProjectGroup(t *testing.T, octopusClient *octopusdeploy.Client, projectGroupID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}

@@ -6,11 +6,10 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-func getOctopusClient() *client.Client {
+func getOctopusClient() *octopusdeploy.Client {
 	octopusURL := os.Getenv("OCTOPUS_URL")
 	apiKey := os.Getenv("OCTOPUS_APIKEY")
 
@@ -39,7 +38,7 @@ func getOctopusClient() *client.Client {
 	// }
 	// httpClient := http.Client{Transport: tr}
 
-	octopusClient, err := client.NewClient(nil, apiURL, apiKey, emptyString)
+	octopusClient, err := octopusdeploy.NewClient(nil, apiURL, apiKey, emptyString)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,7 +46,7 @@ func getOctopusClient() *client.Client {
 	return octopusClient
 }
 
-func generateSensitiveValue() model.SensitiveValue {
-	sensitiveValue := model.NewSensitiveValue(getRandomName())
+func generateSensitiveValue() octopusdeploy.SensitiveValue {
+	sensitiveValue := octopusdeploy.NewSensitiveValue(getRandomName())
 	return sensitiveValue
 }

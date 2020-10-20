@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func CreateAmazonWebServicesAccountExample() {
@@ -15,8 +14,8 @@ func CreateAmazonWebServicesAccountExample() {
 		spaceID    string = "space-id"
 
 		// AWS-specific values
-		accessKey string               = "access-key"
-		secretKey model.SensitiveValue = model.NewSensitiveValue("secret-key")
+		accessKey string                       = "access-key"
+		secretKey octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("secret-key")
 
 		// account values
 		accountName        string = "AWS Account"
@@ -29,13 +28,13 @@ func CreateAmazonWebServicesAccountExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	awsAccount := model.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)
+	awsAccount := octopusdeploy.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)
 
 	// fill in account details
 	awsAccount.Description = accountDescription
@@ -47,7 +46,7 @@ func CreateAmazonWebServicesAccountExample() {
 	}
 
 	// type conversion required to access AWS-specific fields
-	awsAccount = createdAccount.(*model.AmazonWebServicesAccount)
+	awsAccount = createdAccount.(*octopusdeploy.AmazonWebServicesAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", awsAccount.ID)

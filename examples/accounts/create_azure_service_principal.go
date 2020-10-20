@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	uuid "github.com/google/uuid"
 )
 
@@ -16,10 +15,10 @@ func CreateAzureServicePrincipalExample() {
 		spaceID    string = "space-id"
 
 		// Azure-specific values
-		azureApplicationID  uuid.UUID            = uuid.MustParse("client-UUID")
-		azureSecret         model.SensitiveValue = model.NewSensitiveValue("azure-secret")
-		azureSubscriptionID uuid.UUID            = uuid.MustParse("subscription-UUID")
-		azureTenantID       uuid.UUID            = uuid.MustParse("tenant-UUID")
+		azureApplicationID  uuid.UUID                    = uuid.MustParse("client-UUID")
+		azureSecret         octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("azure-secret")
+		azureSubscriptionID uuid.UUID                    = uuid.MustParse("subscription-UUID")
+		azureTenantID       uuid.UUID                    = uuid.MustParse("tenant-UUID")
 
 		// account values
 		accountName        string   = "Azure Account"
@@ -35,13 +34,13 @@ func CreateAzureServicePrincipalExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	azureAccount := model.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
+	azureAccount := octopusdeploy.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
 
 	// fill in account details
 	azureAccount.Description = accountDescription
@@ -56,7 +55,7 @@ func CreateAzureServicePrincipalExample() {
 	}
 
 	// type conversion required to access Username/Password-specific fields
-	azureAccount = createdAccount.(*model.AzureServicePrincipalAccount)
+	azureAccount = createdAccount.(*octopusdeploy.AzureServicePrincipalAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", azureAccount.ID)

@@ -3,8 +3,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -116,7 +115,7 @@ func TestProjectGetByName(t *testing.T) {
 	require.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
 }
 
-func createTestProject(t *testing.T, octopusClient *client.Client, projectName string) model.Project {
+func createTestProject(t *testing.T, octopusClient *octopusdeploy.Client, projectName string) octopusdeploy.Project {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -132,12 +131,12 @@ func createTestProject(t *testing.T, octopusClient *client.Client, projectName s
 	return *createdProject
 }
 
-func getTestProject(projectName string) model.Project {
-	p := model.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
+func getTestProject(projectName string) octopusdeploy.Project {
+	p := octopusdeploy.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
 	return *p
 }
 
-func cleanProject(t *testing.T, octopusClient *client.Client, projectID string) {
+func cleanProject(t *testing.T, octopusClient *octopusdeploy.Client, projectID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}

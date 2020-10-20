@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://octopus.com/2020/property-value.json",
+    "title": "Property Value",
+    "description": "Represents a property value",
+    "type": "object",
+    "properties": {
+        "IsSensitive": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "Value": {
+            "type": "string",
+            "readOnly": true
+          },
+          "SensitiveValue": {
+            "$ref": "#/definitions/SensitiveValue",
+            "readOnly": true
+          }
+      }
+}

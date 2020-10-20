@@ -4,14 +4,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestLibraryVariablesGet(t *testing.T) {
-	client, err := client.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariables-41", http.StatusOK, getLibraryVariablesResponseJSON)
+	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariables-41", http.StatusOK, getLibraryVariablesResponseJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
@@ -39,14 +38,14 @@ const getLibraryVariablesResponseJSON = `
 
 func TestValidateLibraryVariablesValuesJustANamePasses(t *testing.T) {
 
-	libraryVariables := model.NewLibraryVariableSet("My Set")
+	libraryVariables := octopusdeploy.NewLibraryVariableSet("My Set")
 
-	assert.Nil(t, model.ValidateLibraryVariableSetValues(libraryVariables))
+	assert.Nil(t, octopusdeploy.ValidateLibraryVariableSetValues(libraryVariables))
 }
 
 func TestValidateLibraryVariablesValuesMissingNameFails(t *testing.T) {
 
-	libraryVariables := &model.LibraryVariableSet{}
+	libraryVariables := &octopusdeploy.LibraryVariableSet{}
 
-	assert.Error(t, model.ValidateLibraryVariableSetValues(libraryVariables))
+	assert.Error(t, octopusdeploy.ValidateLibraryVariableSetValues(libraryVariables))
 }

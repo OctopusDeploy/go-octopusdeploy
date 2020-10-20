@@ -3,7 +3,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,7 +30,7 @@ func TestAddAndDeleteAndGetValidChannel(t *testing.T) {
 	require.NotNil(t, projects)
 
 	for _, project := range projects {
-		channel := model.NewChannel(channelName, channelDescription, project.ID)
+		channel := octopusdeploy.NewChannel(channelName, channelDescription, project.ID)
 		require.NotNil(t, channel)
 
 		createdChannel, err := octopusClient.Channels.Add(channel)
@@ -55,7 +55,7 @@ func TestAddAndDeleteValidChannel(t *testing.T) {
 	require.NotNil(t, projects)
 
 	for _, project := range projects {
-		channel := model.NewChannel(channelName, channelDescription, project.ID)
+		channel := octopusdeploy.NewChannel(channelName, channelDescription, project.ID)
 		channel.IsDefault = true
 		require.NotNil(t, channel)
 

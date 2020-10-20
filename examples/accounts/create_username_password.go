@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func CreateUsernamePasswordExample() {
@@ -25,13 +24,13 @@ func CreateUsernamePasswordExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	usernamePasswordAccount := model.NewUsernamePasswordAccount(name)
+	usernamePasswordAccount := octopusdeploy.NewUsernamePasswordAccount(name)
 
 	// fill in account details
 	usernamePasswordAccount.Username = username
@@ -43,7 +42,7 @@ func CreateUsernamePasswordExample() {
 	}
 
 	// type conversion required to access Username/Password-specific fields
-	usernamePasswordAccount = createdAccount.(*model.UsernamePasswordAccount)
+	usernamePasswordAccount = createdAccount.(*octopusdeploy.UsernamePasswordAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", usernamePasswordAccount.ID)

@@ -3,12 +3,12 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func assertEqualUsers(t *testing.T, expected *model.User, actual *model.User) {
+func assertEqualUsers(t *testing.T, expected *octopusdeploy.User, actual *octopusdeploy.User) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -35,7 +35,7 @@ func TestUsersAdd(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	user := model.NewUser(getRandomName(), getRandomName())
+	user := octopusdeploy.NewUser(getRandomName(), getRandomName())
 	user.Password = getRandomName()
 
 	actual, err := octopusClient.Users.Add(user)
@@ -124,14 +124,14 @@ func TestUsersGetSpaces(t *testing.T) {
 	spaces, err := octopusClient.Users.GetSpaces(user)
 	require.NoError(t, err)
 	require.NotNil(t, spaces)
-	require.GreaterOrEqual(t, len(*spaces), 1)
+	require.GreaterOrEqual(t, len(spaces), 1)
 }
 
 func TestUsersUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	user := model.NewUser(getRandomName(), getRandomName())
+	user := octopusdeploy.NewUser(getRandomName(), getRandomName())
 	user.Password = getRandomName()
 
 	actual, err := octopusClient.Users.Add(user)

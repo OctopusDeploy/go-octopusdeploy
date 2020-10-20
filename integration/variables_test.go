@@ -3,8 +3,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -24,7 +23,7 @@ func TestVarAddAndDelete(t *testing.T) {
 	assert.NotEmpty(t, actual.ID, "variable doesn't contain an ID from the octopus server")
 }
 
-func createTestVariable(t *testing.T, projectID, variableName string) model.Variable {
+func createTestVariable(t *testing.T, projectID, variableName string) octopusdeploy.Variable {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
@@ -41,22 +40,22 @@ func createTestVariable(t *testing.T, projectID, variableName string) model.Vari
 	}
 
 	t.Fatalf("Unable to locate variable named %s after creationg", variableName)
-	return model.Variable{} //Blank variable to return
+	return octopusdeploy.Variable{} //Blank variable to return
 }
 
-func getTestVariable(variableName string) model.Variable {
-	v := model.NewVariable(variableName, "string", "octo-test value", "octo-test description", nil, false)
+func getTestVariable(variableName string) octopusdeploy.Variable {
+	v := octopusdeploy.NewVariable(variableName, "string", "octo-test value", "octo-test description", nil, false)
 
 	return *v
 }
 
-func createVarTestProject(t *testing.T, octopusClient *client.Client, projectName string) model.Project {
+func createVarTestProject(t *testing.T, octopusClient *octopusdeploy.Client, projectName string) octopusdeploy.Project {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
 	require.NotNil(t, octopusClient)
 
-	p := model.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
+	p := octopusdeploy.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
 	createdProject, err := octopusClient.Projects.Add(p)
 
 	if err != nil {
@@ -66,7 +65,7 @@ func createVarTestProject(t *testing.T, octopusClient *client.Client, projectNam
 	return *createdProject
 }
 
-func cleanVar(t *testing.T, octopusClient *client.Client, varID string, projID string) {
+func cleanVar(t *testing.T, octopusClient *octopusdeploy.Client, varID string, projID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}

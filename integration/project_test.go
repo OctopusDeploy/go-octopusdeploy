@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -84,7 +84,7 @@ func TestGetChannelsForProject(t *testing.T) {
 }
 
 func TestProjectGet(t *testing.T) {
-	client, err := client.GetFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
+	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 

@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://octopus.com/2020/package-reference.json",
+    "title": "Package Reference",
+    "description": "Represents a package reference",
+    "type": "object",
+    "properties": {
+        "ID": {
+            "type": "string"
+        },
+        "Name": {
+            "type": "string"
+        },
+        "Label": {
+            "type": "string"
+        },
+        "HelpText": {
+            "type": "string"
+        },
+        "DefaultValue": {
+            "$ref": "property_value.json"
+        },
+        "DisplaySettings": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        }
+    }
+}

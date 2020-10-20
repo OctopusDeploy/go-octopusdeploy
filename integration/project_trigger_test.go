@@ -3,8 +3,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -40,7 +39,7 @@ func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.ProjectTriggers.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	require.Equal(t, createResourceNotFoundError(serviceProjectTriggerService, "ID", id), err)
 	require.Nil(t, resource)
 }
 
@@ -101,7 +100,7 @@ func TestProjectTriggerUpdate(t *testing.T) {
 	assert.Equal(t, newIsDisabled, updatedProjectTrigger.IsDisabled, "projecttrigger isdisabled setting not updated")
 }
 
-func createTestProjectTrigger(t *testing.T, octopusClient *client.Client, trigger *model.ProjectTrigger) *model.ProjectTrigger {
+func createTestProjectTrigger(t *testing.T, octopusClient *octopusdeploy.Client, trigger *octopusdeploy.ProjectTrigger) *octopusdeploy.ProjectTrigger {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -116,11 +115,11 @@ func createTestProjectTrigger(t *testing.T, octopusClient *client.Client, trigge
 	return createdProjectTrigger
 }
 
-func getTestProjectTrigger(projectID string) *model.ProjectTrigger {
-	return model.NewProjectDeploymentTargetTrigger(getRandomName(), projectID, false, []string{"Role1", "Role2"}, []string{"Machine"}, []string{"MachineCleanupFailed"})
+func getTestProjectTrigger(projectID string) *octopusdeploy.ProjectTrigger {
+	return octopusdeploy.NewProjectDeploymentTargetTrigger(getRandomName(), projectID, false, []string{"Role1", "Role2"}, []string{"Machine"}, []string{"MachineCleanupFailed"})
 }
 
-func cleanProjectTrigger(t *testing.T, octopusClient *client.Client, projectTriggerID string) {
+func cleanProjectTrigger(t *testing.T, octopusClient *octopusdeploy.Client, projectTriggerID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}

@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func CreateScriptStepExample() {
@@ -26,7 +25,7 @@ func CreateScriptStepExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
@@ -47,12 +46,12 @@ func CreateScriptStepExample() {
 	}
 
 	// Create new step object
-	newStep := model.NewDeploymentStep(stepName)
+	newStep := octopusdeploy.NewDeploymentStep(stepName)
 	newStep.Condition = "Success"
 	newStep.Properties["Octopus.Action.TargetRoles"] = roleName
 
 	// Create new script action
-	stepAction := model.NewDeploymentAction(stepName)
+	stepAction := octopusdeploy.NewDeploymentAction(stepName)
 
 	stepAction.ActionType = "Octopus.Script"
 	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = scriptBody

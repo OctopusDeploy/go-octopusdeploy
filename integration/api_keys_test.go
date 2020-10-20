@@ -3,8 +3,7 @@ package integration
 // import (
 // 	"testing"
 
-// 	"github.com/OctopusDeploy/go-octopusdeploy/model"
-// 	"github.com/stretchr/testify/assert"
+// // 	"github.com/stretchr/testify/assert"
 // 	"github.com/stretchr/testify/require"
 // )
 
@@ -12,14 +11,14 @@ package integration
 // 	octopusClient := getOctopusClient()
 // 	require.NotNil(t, octopusClient)
 
-// 	user := model.NewUser(getRandomName(), getRandomName())
+// 	user := NewUser(getRandomName(), getRandomName())
 // 	user.IsService = true
 
 // 	user, err := octopusClient.Users.Add(user)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, user)
 
-// 	apiKey := model.NewAPIKey(getRandomName(), user.ID)
+// 	apiKey := NewAPIKey(getRandomName(), user.ID)
 // 	require.NotNil(t, apiKey)
 
 // 	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)
@@ -34,7 +33,7 @@ package integration
 // 	octopusClient := getOctopusClient()
 // 	require.NotNil(t, octopusClient)
 
-// 	user := model.NewUser(getRandomName(), getRandomName())
+// 	user := NewUser(getRandomName(), getRandomName())
 // 	user.IsService = true
 
 // 	user, err := octopusClient.Users.Add(user)
@@ -58,7 +57,7 @@ package integration
 // 	octopusClient := getOctopusClient()
 // 	require.NotNil(t, octopusClient)
 
-// 	user := model.NewUser(getRandomName(), getRandomName())
+// 	user := NewUser(getRandomName(), getRandomName())
 // 	user.IsService = true
 // 	assert.NotNil(t, user)
 
@@ -66,7 +65,7 @@ package integration
 // 	require.NoError(t, err)
 // 	require.NotNil(t, user)
 
-// 	apiKey := model.NewAPIKey(getRandomName(), user.ID)
+// 	apiKey := NewAPIKey(getRandomName(), user.ID)
 // 	require.NotNil(t, apiKey)
 
 // 	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)

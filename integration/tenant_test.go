@@ -3,13 +3,12 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func cleanTenant(t *testing.T, octopusClient *client.Client, tenantID string) {
+func cleanTenant(t *testing.T, octopusClient *octopusdeploy.Client, tenantID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -19,25 +18,35 @@ func cleanTenant(t *testing.T, octopusClient *client.Client, tenantID string) {
 	assert.NoError(t, err)
 }
 
-func createTestTenant(t *testing.T, octopusClient *client.Client, name string) model.Tenant {
+func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.Client) *octopusdeploy.Tenant {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
 	require.NotNil(t, octopusClient)
 
-	p := createTenant(name)
-	resource, err := octopusClient.Tenants.Add(&p)
+	name := getRandomName()
+	lifecycleID := getRandomName()
+
+	tenant := octopusdeploy.NewTenant(name, lifecycleID)
+
+	createdTenant, err := octopusClient.Tenants.Add(tenant)
 	require.NoError(t, err)
+	require.NotNil(t, createdTenant)
+	require.NotEmpty(t, createdTenant.GetID())
 
-	return *resource
+	return createdTenant
 }
 
-func createTenant(tenantName string) model.Tenant {
-	p := model.NewTenant(tenantName, "Lifecycles-1")
-	return *p
+func DeleteTestTenant(t *testing.T, octopusClient *octopusdeploy.Client, tenant *octopusdeploy.Tenant) error {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
+
+	return octopusClient.Tenants.DeleteByID(tenant.GetID())
 }
 
-func isEqualTenants(t *testing.T, expected model.Tenant, actual model.Tenant) {
+func IsEqualTenants(t *testing.T, expected *octopusdeploy.Tenant, actual *octopusdeploy.Tenant) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -57,51 +66,37 @@ func isEqualTenants(t *testing.T, expected model.Tenant, actual model.Tenant) {
 	assert.Equal(t, expected.TenantTags, actual.TenantTags)
 }
 
-func TestTenantAddAndDelete(t *testing.T) {
-	tenantName := getRandomName()
-	expected := createTenant(tenantName)
-	actual := createTestTenant(t, nil, tenantName)
-
-	defer cleanTenant(t, nil, actual.ID)
-
-	assert.Equal(t, expected.Name, actual.Name, "tenant name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "tenant doesn't contain an ID from the octopus server")
-}
-
 func TestTenantAddGetAndDelete(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	expected := createTestTenant(t, octopusClient, getRandomName())
+	expected := CreateTestTenant(t, octopusClient)
 	defer cleanTenant(t, octopusClient, expected.ID)
 
 	actual, err := octopusClient.Tenants.GetByID(expected.ID)
 	assert.NoError(t, err)
-	isEqualTenants(t, expected, *actual)
+	IsEqualTenants(t, expected, actual)
 }
 
-func TestTenantGetAll(t *testing.T) {
+func TestTenantServiceGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	const count int = 32
-	expected := map[string]model.Tenant{}
-	for i := 0; i < count; i++ {
-		resource := createTestTenant(t, octopusClient, getRandomName())
-		defer cleanTenant(t, octopusClient, resource.ID)
-		expected[resource.ID] = resource
+	// create 30 test tenants (to be deleted)
+	for i := 0; i < 30; i++ {
+		tenant := CreateTestTenant(t, octopusClient)
+		require.NotNil(t, tenant)
 	}
 
-	resources, err := octopusClient.Tenants.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resources)
-	assert.GreaterOrEqual(t, len(resources), count)
+	tenants, err := octopusClient.Tenants.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, tenants)
 
-	for _, actual := range resources {
-		_, ok := expected[actual.ID]
-		if ok {
-			isEqualTenants(t, expected[actual.ID], actual)
-		}
+	for _, tenant := range tenants {
+		require.NotNil(t, tenant)
+		require.NotEmpty(t, tenant.GetID())
+		err = DeleteTestTenant(t, octopusClient, tenant)
+		require.NoError(t, err)
 	}
 }
 
@@ -109,7 +104,7 @@ func TestTenantGetByPartialName(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	expected := createTestTenant(t, octopusClient, getRandomName())
+	expected := CreateTestTenant(t, octopusClient)
 	defer cleanTenant(t, octopusClient, expected.ID)
 
 	resources, err := octopusClient.Tenants.GetByPartialName(expected.Name)
@@ -117,7 +112,7 @@ func TestTenantGetByPartialName(t *testing.T) {
 	assert.NotNil(t, resources)
 
 	for _, actual := range resources {
-		isEqualTenants(t, expected, actual)
+		IsEqualTenants(t, expected, actual)
 	}
 }
 
@@ -125,7 +120,7 @@ func TestTenantUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	expected := createTestTenant(t, octopusClient, getRandomName())
+	expected := CreateTestTenant(t, octopusClient)
 	defer cleanTenant(t, octopusClient, expected.ID)
 
 	expected.Name = getRandomName()
@@ -135,5 +130,5 @@ func TestTenantUpdate(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, actual)
 
-	isEqualTenants(t, expected, *actual)
+	IsEqualTenants(t, expected, actual)
 }

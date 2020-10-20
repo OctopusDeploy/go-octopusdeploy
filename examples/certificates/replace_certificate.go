@@ -7,8 +7,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 // ReplaceCertificateExample shows how to replace an existing certificate using go-octopusdeploy.
@@ -28,7 +27,7 @@ func ReplaceCertificateExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
@@ -57,7 +56,7 @@ func ReplaceCertificateExample() {
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
 
 	// Replace certificate
-	replacementCertificate := model.NewReplacementCertificate(base64Certificate, pfxFilePassword)
+	replacementCertificate := octopusdeploy.NewReplacementCertificate(base64Certificate, pfxFilePassword)
 	_, err = client.Certificates.Replace(certificate.ID, replacementCertificate)
 	if err != nil {
 		// TODO: handle error

@@ -1,0 +1,28 @@
+{
+    "$schema": "./action_template.json",
+    "id": "ActionScript-1",
+    "name": "action-template-name",
+    "description": "This is the description",
+    "actionType": "Octopus.Script",
+    "version": 0,
+    "communityActionTemplateID": null,
+    "packages": [
+        {
+            "ID": "test"
+        }
+    ],
+    "properties": {
+        "Octopus.Action.Script.ScriptSource": "Inline",
+        "Octopus.Action.Script.Syntax": "CSharp",
+        "Octopus.Action.Script.ScriptBody": "Console.WriteLine(\"Hello\")"
+    },
+    "parameters": [],
+    "spaceID": "Spaces-1",
+    "links": {
+        "Self": "/api/Spaces-1/actiontemplates/ActionTemplates-2",
+        "Usage": "/api/Spaces-1/actiontemplates/ActionTemplates-2/usage",
+        "Logo": "/api/Spaces-1/actiontemplates/ActionTemplates-2/logo?cb=2020.4.6",
+        "ActionsUpdate": "/api/Spaces-1/actiontemplates/ActionTemplates-2/actionsUpdate",
+        "Versions": "/api/Spaces-1/actiontemplates/ActionTemplates-2/versions/{version}"
+    }
+}

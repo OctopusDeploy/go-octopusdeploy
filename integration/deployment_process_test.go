@@ -3,7 +3,7 @@ package integration
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/model"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -54,7 +54,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 		t.Fatalf("Retrieving deployment processes failed when it shouldn't: %s", err)
 	}
 
-	deploymentActionWindowService := &model.DeploymentAction{
+	deploymentActionWindowService := &octopusdeploy.DeploymentAction{
 		Name:       "Install Windows Service",
 		ActionType: "Octopus.WindowService",
 		Properties: map[string]string{
@@ -76,7 +76,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 		},
 	}
 
-	step1 := &model.DeploymentStep{
+	step1 := &octopusdeploy.DeploymentStep{
 		Name: "My First Step",
 		Properties: map[string]string{
 			"Octopus.Action.TargetRoles": "octopus-server",
