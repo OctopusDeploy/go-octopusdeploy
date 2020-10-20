@@ -27,7 +27,7 @@ func CreateTestSpace(t *testing.T, service *spaceService) *Space {
 	space := NewSpace(name)
 	require.NoError(t, space.Validate())
 
-	space.SpaceManagersTeamMembers = append(space.SpaceManagersTeamMembers, user.GetID())
+	space.SpaceManagersTeamMembers = []string{user.GetID()}
 
 	createdSpace, err := service.Add(space)
 	require.NoError(t, err)
@@ -96,17 +96,19 @@ func TestSpaceSetAddGetDelete(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, resource)
 
-	resource = CreateTestSpace(t, service)
-	require.NotNil(t, resource)
-	defer DeleteTestSpace(t, service, *resource)
+	space := CreateTestSpace(t, service)
+	require.NotNil(t, space)
 
-	resourceToCompare, err := service.GetByID(resource.GetID())
+	spaceToCompare, err := service.GetByID(space.GetID())
 	require.NoError(t, err)
-	require.NotNil(t, resourceToCompare)
-	IsEqualSpaces(t, resource, resourceToCompare)
+	require.NotNil(t, spaceToCompare)
+	IsEqualSpaces(t, space, spaceToCompare)
 
-	resource.TaskQueueStopped = true
-	UpdateTestSpace(t, service, resource)
+	space.TaskQueueStopped = true
+	UpdateTestSpace(t, service, space)
+
+	err = DeleteTestSpace(t, service, *space)
+	require.NoError(t, err)
 }
 
 func TestSpaceServiceAdd(t *testing.T) {
