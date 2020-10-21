@@ -13,14 +13,14 @@ func TestVarAddAndDelete(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	varProj := createVarTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, varProj.ID)
+	defer cleanProject(t, octopusClient, varProj.GetID())
 	varName := getRandomVarName()
 	expected := getTestVariable(varName)
-	actual := createTestVariable(t, varProj.ID, varName)
-	defer cleanVar(t, octopusClient, actual.ID, varProj.ID)
+	actual := createTestVariable(t, varProj.GetID(), varName)
+	defer cleanVar(t, octopusClient, actual.GetID(), varProj.GetID())
 
 	assert.Equal(t, expected.Name, actual.Name, "variable name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "variable doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actual.GetID(), "variable doesn't contain an ID from the octopus server")
 }
 
 func createTestVariable(t *testing.T, projectID, variableName string) octopusdeploy.Variable {

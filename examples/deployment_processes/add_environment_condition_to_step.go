@@ -39,7 +39,7 @@ func AddEnvironmentConditionToStepExample() {
 			// TODO: handle error
 		}
 
-		environmentIDs = append(environmentIDs, environments[0].ID)
+		environmentIDs = append(environmentIDs, environments[0].GetID())
 	}
 
 	project, err := client.Projects.GetByName(projectName)

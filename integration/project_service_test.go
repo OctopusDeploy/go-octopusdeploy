@@ -16,10 +16,10 @@ func TestProjectAddAndDelete(t *testing.T) {
 	expected := getTestProject(projectName)
 	actual := createTestProject(t, octopusClient, projectName)
 
-	defer cleanProject(t, octopusClient, actual.ID)
+	defer cleanProject(t, octopusClient, actual.GetID())
 
 	assert.Equal(t, expected.Name, actual.Name, "project name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "project doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actual.GetID(), "project doesn't contain an ID from the octopus server")
 }
 
 func TestProjectAddGetAndDelete(t *testing.T) {
@@ -27,9 +27,9 @@ func TestProjectAddGetAndDelete(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
-	getProject, err := octopusClient.Projects.GetByID(project.ID)
+	getProject, err := octopusClient.Projects.GetByID(project.GetID())
 	assert.NoError(t, err, "there was an error raised getting project when there should not be")
 	assert.Equal(t, project.Name, getProject.Name)
 }
@@ -53,7 +53,7 @@ func TestProjectGetAll(t *testing.T) {
 	sum := 0
 	for i := 0; i < projectsToCreate; i++ {
 		project := createTestProject(t, octopusClient, getRandomName())
-		defer cleanProject(t, octopusClient, project.ID)
+		defer cleanProject(t, octopusClient, project.GetID())
 		sum += i
 	}
 
@@ -70,7 +70,7 @@ func TestProjectGetAll(t *testing.T) {
 	}
 
 	additionalProject := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, additionalProject.ID)
+	defer cleanProject(t, octopusClient, additionalProject.GetID())
 
 	allProjectsAfterCreatingAdditional, err := octopusClient.Projects.GetAll()
 	if err != nil {
@@ -86,7 +86,7 @@ func TestProjectUpdate(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
 	newProjectName := getRandomName()
 	const newDescription = "this should be updated"
@@ -108,14 +108,14 @@ func TestProjectGetByName(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
 	foundProject, err := octopusClient.Projects.GetByName(project.Name)
 	require.NoError(t, err, "error when looking for project when not expected")
 	require.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
 }
 
-func createTestProject(t *testing.T, octopusClient *octopusdeploy.Client, projectName string) octopusdeploy.Project {
+func createTestProject(t *testing.T, octopusClient *octopusdeploy.Client, projectName string) *octopusdeploy.Project {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -128,7 +128,7 @@ func createTestProject(t *testing.T, octopusClient *octopusdeploy.Client, projec
 		t.Fatalf("creating project %s failed when it shouldn't: %s", projectName, err)
 	}
 
-	return *createdProject
+	return createdProject
 }
 
 func getTestProject(projectName string) octopusdeploy.Project {

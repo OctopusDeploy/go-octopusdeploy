@@ -19,10 +19,10 @@ func TestLifecycleAddAndDelete(t *testing.T) {
 
 	actual := createTestLifecycle(t, octopusClient, lifecycleName)
 
-	defer cleanLifecycle(t, octopusClient, actual.ID)
+	defer cleanLifecycle(t, octopusClient, actual.GetID())
 
 	assert.Equal(t, expected.Name, actual.Name, "lifecycle name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "lifecycle doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actual.GetID(), "lifecycle doesn't contain an ID from the octopus server")
 }
 
 func TestLifecycleAddGetAndDelete(t *testing.T) {
@@ -30,9 +30,9 @@ func TestLifecycleAddGetAndDelete(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	lifecycle := createTestLifecycle(t, octopusClient, getRandomName())
-	defer cleanLifecycle(t, octopusClient, lifecycle.ID)
+	defer cleanLifecycle(t, octopusClient, lifecycle.GetID())
 
-	getLifecycle, err := octopusClient.Lifecycles.GetByID(lifecycle.ID)
+	getLifecycle, err := octopusClient.Lifecycles.GetByID(lifecycle.GetID())
 	assert.NoError(t, err, "there was an error raised getting lifecycle when there should not be")
 	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
 }
@@ -56,7 +56,7 @@ func TestLifecycleGetAll(t *testing.T) {
 	sum := 0
 	for i := 0; i < lifecyclesToCreate; i++ {
 		lifecycle := createTestLifecycle(t, octopusClient, getRandomName())
-		defer cleanLifecycle(t, octopusClient, lifecycle.ID)
+		defer cleanLifecycle(t, octopusClient, lifecycle.GetID())
 		sum += i
 	}
 
@@ -73,7 +73,7 @@ func TestLifecycleGetAll(t *testing.T) {
 	}
 
 	additionalLifecycle := createTestLifecycle(t, octopusClient, getRandomName())
-	defer cleanLifecycle(t, octopusClient, additionalLifecycle.ID)
+	defer cleanLifecycle(t, octopusClient, additionalLifecycle.GetID())
 
 	allLifecyclesAfterCreatingAdditional, err := octopusClient.Lifecycles.GetAll()
 	if err != nil {
@@ -89,7 +89,7 @@ func TestLifecycleUpdate(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	lifecycle := createTestLifecycle(t, octopusClient, getRandomName())
-	defer cleanLifecycle(t, octopusClient, lifecycle.ID)
+	defer cleanLifecycle(t, octopusClient, lifecycle.GetID())
 
 	newLifecycleName := getRandomName()
 	const newDescription = "this should be updated"
@@ -109,7 +109,7 @@ func TestLifecycleGetByPartialName(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	createdLifecycle := createTestLifecycle(t, octopusClient, getRandomName())
-	defer cleanLifecycle(t, octopusClient, createdLifecycle.ID)
+	defer cleanLifecycle(t, octopusClient, createdLifecycle.GetID())
 
 	lifecycleList, err := octopusClient.Lifecycles.GetByPartialName(createdLifecycle.Name)
 	require.NoError(t, err, "error when looking for lifecycle when not expected")
@@ -123,7 +123,7 @@ func TestLifecycleGetByPartialName(t *testing.T) {
 	t.Errorf("lifecycle not found when searching by its name (%s)", createdLifecycle.Name)
 }
 
-func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.Client, lifecycleName string) octopusdeploy.Lifecycle {
+func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.Client, lifecycleName string) *octopusdeploy.Lifecycle {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -135,7 +135,7 @@ func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.Client, life
 	createdLifecycle, err := octopusClient.Lifecycles.Add(p)
 	require.NoError(t, err)
 
-	return *createdLifecycle
+	return createdLifecycle
 }
 
 func getTestLifecycle(name string) *octopusdeploy.Lifecycle {

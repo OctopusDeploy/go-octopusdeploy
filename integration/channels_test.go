@@ -30,18 +30,18 @@ func TestAddAndDeleteAndGetValidChannel(t *testing.T) {
 	require.NotNil(t, projects)
 
 	for _, project := range projects {
-		channel := octopusdeploy.NewChannel(channelName, channelDescription, project.ID)
+		channel := octopusdeploy.NewChannel(channelName, channelDescription, project.GetID())
 		require.NotNil(t, channel)
 
 		createdChannel, err := octopusClient.Channels.Add(channel)
 		require.NoError(t, err)
 		require.NotNil(t, createdChannel)
 
-		err = octopusClient.Channels.DeleteByID(createdChannel.ID)
+		err = octopusClient.Channels.DeleteByID(createdChannel.GetID())
 		require.NoError(t, err)
 		require.NotNil(t, createdChannel)
 
-		deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.ID)
+		deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.GetID())
 		require.Error(t, err)
 		require.Nil(t, deletedChannel)
 	}
@@ -55,7 +55,7 @@ func TestAddAndDeleteValidChannel(t *testing.T) {
 	require.NotNil(t, projects)
 
 	for _, project := range projects {
-		channel := octopusdeploy.NewChannel(channelName, channelDescription, project.ID)
+		channel := octopusdeploy.NewChannel(channelName, channelDescription, project.GetID())
 		channel.IsDefault = true
 		require.NotNil(t, channel)
 
@@ -64,11 +64,11 @@ func TestAddAndDeleteValidChannel(t *testing.T) {
 		require.NotNil(t, createdChannel)
 
 		if !channel.IsDefault {
-			err = octopusClient.Channels.DeleteByID(createdChannel.ID)
+			err = octopusClient.Channels.DeleteByID(createdChannel.GetID())
 			require.NoError(t, err)
 			require.NotNil(t, createdChannel)
 
-			deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.ID)
+			deletedChannel, err := octopusClient.Channels.GetByID(createdChannel.GetID())
 			require.Error(t, err)
 			require.Nil(t, deletedChannel)
 		}

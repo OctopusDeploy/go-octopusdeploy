@@ -30,10 +30,10 @@ func TestCertAddAndDelete(t *testing.T) {
 	require.NoError(t, expected.Validate())
 
 	actual := createTestCert(t, octopusClient, certName)
-	defer cleanCert(t, octopusClient, actual.ID)
+	defer cleanCert(t, octopusClient, actual.GetID())
 
 	assert.Equal(t, expected.Name, actual.Name, "certificate name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "certificate doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actual.GetID(), "certificate doesn't contain an ID from the octopus server")
 }
 
 func TestCertAddAndReplace(t *testing.T) {
@@ -49,13 +49,13 @@ func TestCertAddAndReplace(t *testing.T) {
 
 	actualCert1 := createTestCert(t, octopusClient, certName)
 	assert.Equal(t, expectedCert1.Name, actualCert1.Name, "certificate name doesn't match expected")
-	assert.NotEmpty(t, actualCert1.ID, "certificate doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actualCert1.GetID(), "certificate doesn't contain an ID from the octopus server")
 
 	actualCert2 := replaceCert(t, octopusClient, &actualCert1)
-	defer cleanCert(t, octopusClient, actualCert2.ID)
+	defer cleanCert(t, octopusClient, actualCert2.GetID())
 
 	assert.Equal(t, testCert2Thumbprint, actualCert2.Thumbprint, "certificate name doesn't match expected")
-	assert.NotEmpty(t, actualCert2.ID, "certificate doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actualCert2.GetID(), "certificate doesn't contain an ID from the octopus server")
 }
 
 func createTestCert(t *testing.T, octopusClient *octopusdeploy.Client, certName string) octopusdeploy.Certificate {
@@ -87,7 +87,7 @@ func replaceCert(t *testing.T, octopusClient *octopusdeploy.Client, originalCert
 	require.NoError(t, err)
 	require.NotNil(t, certificateReplace)
 
-	cert, err := octopusClient.Certificates.Replace(originalCert.ID, certificateReplace)
+	cert, err := octopusClient.Certificates.Replace(originalCert.GetID(), certificateReplace)
 	require.NoError(t, err)
 	require.NotNil(t, cert)
 

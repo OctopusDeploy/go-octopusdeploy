@@ -28,7 +28,7 @@ func TestChannelServiceGetAll(t *testing.T) {
 
 	for _, channel := range channels {
 		assert.NotNil(t, channel)
-		assert.NotEmpty(t, channel.ID)
+		assert.NotEmpty(t, channel.GetID())
 	}
 }
 
@@ -46,7 +46,7 @@ func TestChannelServiceGetByID(t *testing.T) {
 	assert.NotNil(t, channels)
 
 	for _, channel := range channels {
-		channelToCompare, err := octopusClient.Channels.GetByID(channel.ID)
+		channelToCompare, err := octopusClient.Channels.GetByID(channel.GetID())
 		assert.NoError(t, err)
 		assert.EqualValues(t, channel, channelToCompare)
 	}

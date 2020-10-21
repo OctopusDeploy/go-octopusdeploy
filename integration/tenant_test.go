@@ -58,7 +58,7 @@ func IsEqualTenants(t *testing.T, expected *octopusdeploy.Tenant, actual *octopu
 
 	assert.Equal(t, expected.ClonedFromTenantID, actual.ClonedFromTenantID)
 	assert.Equal(t, expected.Description, actual.Description)
-	assert.Equal(t, expected.ID, actual.ID)
+	assert.Equal(t, expected.GetID(), actual.GetID())
 	assert.Equal(t, expected.Links, actual.Links)
 	assert.Equal(t, expected.Name, actual.Name)
 	assert.Equal(t, expected.ProjectEnvironments, actual.ProjectEnvironments)
@@ -71,9 +71,9 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	expected := CreateTestTenant(t, octopusClient)
-	defer cleanTenant(t, octopusClient, expected.ID)
+	defer cleanTenant(t, octopusClient, expected.GetID())
 
-	actual, err := octopusClient.Tenants.GetByID(expected.ID)
+	actual, err := octopusClient.Tenants.GetByID(expected.GetID())
 	assert.NoError(t, err)
 	IsEqualTenants(t, expected, actual)
 }
@@ -105,7 +105,7 @@ func TestTenantGetByPartialName(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	expected := CreateTestTenant(t, octopusClient)
-	defer cleanTenant(t, octopusClient, expected.ID)
+	defer cleanTenant(t, octopusClient, expected.GetID())
 
 	resources, err := octopusClient.Tenants.GetByPartialName(expected.Name)
 	assert.NoError(t, err)
@@ -121,7 +121,7 @@ func TestTenantUpdate(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	expected := CreateTestTenant(t, octopusClient)
-	defer cleanTenant(t, octopusClient, expected.ID)
+	defer cleanTenant(t, octopusClient, expected.GetID())
 
 	expected.Name = getRandomName()
 	expected.Description = getRandomName()

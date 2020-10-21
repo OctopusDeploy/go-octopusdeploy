@@ -14,17 +14,17 @@ func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 
 	// need a project to add a trigger to
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
-	toCreateTrigger := getTestProjectTrigger(project.ID)
+	toCreateTrigger := getTestProjectTrigger(project.GetID())
 	toCreateTrigger.Filter.Roles = []string{"MyRole1", "MyRole2"}
 	toCreateTrigger.Filter.EventGroups = []string{"Machine"}
 	toCreateTrigger.Action.ShouldRedeployWhenMachineHasBeenDeployedTo = true
 
 	projectTrigger := createTestProjectTrigger(t, octopusClient, toCreateTrigger)
-	defer cleanProjectTrigger(t, octopusClient, projectTrigger.ID)
+	defer cleanProjectTrigger(t, octopusClient, projectTrigger.GetID())
 
-	getProjectTrigger, err := octopusClient.ProjectTriggers.GetByID(projectTrigger.ID)
+	getProjectTrigger, err := octopusClient.ProjectTriggers.GetByID(projectTrigger.GetID())
 
 	assert.NoError(t, err, "there was an error raised getting projecttrigger when there should not be")
 	assert.Equal(t, getProjectTrigger.Name, getProjectTrigger.Name)
@@ -48,11 +48,11 @@ func TestProjectTriggerGetAll(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
-	trigger := getTestProjectTrigger(project.ID)
+	trigger := getTestProjectTrigger(project.GetID())
 	createdTrigger := createTestProjectTrigger(t, octopusClient, trigger)
-	defer cleanProjectTrigger(t, octopusClient, createdTrigger.ID)
+	defer cleanProjectTrigger(t, octopusClient, createdTrigger.GetID())
 
 	allProjectsTriggers, err := octopusClient.ProjectTriggers.GetAll()
 	if err != nil {
@@ -61,10 +61,10 @@ func TestProjectTriggerGetAll(t *testing.T) {
 
 	numberOfProjectTriggers := len(allProjectsTriggers)
 
-	additionalTrigger := getTestProjectTrigger(project.ID)
+	additionalTrigger := getTestProjectTrigger(project.GetID())
 	additionalTrigger.Name = getRandomName()
 	createdAdditionalTrigger := createTestProjectTrigger(t, octopusClient, additionalTrigger)
-	defer cleanProjectTrigger(t, octopusClient, createdAdditionalTrigger.ID)
+	defer cleanProjectTrigger(t, octopusClient, createdAdditionalTrigger.GetID())
 
 	allProjectTriggersAfterCreatingAdditional, err := octopusClient.ProjectTriggers.GetAll()
 	if err != nil {
@@ -80,9 +80,9 @@ func TestProjectTriggerUpdate(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
-	trigger := getTestProjectTrigger(project.ID)
+	trigger := getTestProjectTrigger(project.GetID())
 	createdTrigger := createTestProjectTrigger(t, octopusClient, trigger)
 
 	newProjectTriggerName := getRandomName()

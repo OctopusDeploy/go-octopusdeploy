@@ -26,7 +26,7 @@ func TestInterruptionsGetAll(t *testing.T) {
 
 	assert.Equal(t, 1, len(interruptions))
 	assert.Equal(t, interruptionTitle, (interruptions)[0].Title)
-	assert.Equal(t, interruptionID, (interruptions)[0].ID)
+	assert.Equal(t, interruptionID, (interruptions)[0].GetID())
 	assert.Equal(t, true, (interruptions)[0].IsPending)
 	assert.Equal(t, "/api/interruptions/Interruptions-1", (interruptions)[0].Links["Self"])
 	assert.Equal(t, "/api/interruptions/Interruptions-1/submit", (interruptions)[0].Links["Submit"])
@@ -44,7 +44,7 @@ func TestInterruptionsGet(t *testing.T) {
 	require.NotNil(t, interruption)
 
 	assert.Equal(t, interruptionTitle, interruption.Title)
-	assert.Equal(t, interruptionID, interruption.ID)
+	assert.Equal(t, interruptionID, interruption.GetID())
 	assert.Equal(t, true, interruption.IsPending)
 	assert.Equal(t, "/api/interruptions/Interruptions-1", interruption.Links["Self"])
 	assert.Equal(t, "/api/interruptions/Interruptions-1/submit", interruption.Links["Submit"])
@@ -65,7 +65,7 @@ func TestInterruptionsTakeResponsibility(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "user@example.com", user.EmailAddress)
 	require.Equal(t, "user@example.com", user.Username)
-	require.Equal(t, "Users-1", user.ID)
+	require.Equal(t, "Users-1", user.GetID())
 	require.Equal(t, "User Name", user.DisplayName)
 }
 
@@ -84,7 +84,7 @@ func TestInterruptionsGetResponsibilities(t *testing.T) {
 	require.NotNil(t, user)
 	require.Equal(t, "user@example.com", user.EmailAddress)
 	require.Equal(t, "user@example.com", user.Username)
-	require.Equal(t, "Users-1", user.ID)
+	require.Equal(t, "Users-1", user.GetID())
 	require.Equal(t, "User Name", user.DisplayName)
 }
 
@@ -108,7 +108,7 @@ func TestInterruptionsSubmit(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, i)
 	require.Equal(t, false, i.IsPending)
-	require.Equal(t, "Interruptions-1", i.ID)
+	require.Equal(t, "Interruptions-1", i.GetID())
 }
 
 var getInterruptionsResponseJSON = fmt.Sprintf(`

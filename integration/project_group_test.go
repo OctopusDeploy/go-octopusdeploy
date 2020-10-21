@@ -17,10 +17,10 @@ func TestProjectGroupAddAndDelete(t *testing.T) {
 	expected := getTestProjectGroup(projectGroupName)
 	actual := createTestProjectGroup(t, octopusClient, projectGroupName)
 
-	defer cleanProjectGroup(t, octopusClient, actual.ID)
+	defer cleanProjectGroup(t, octopusClient, actual.GetID())
 
 	assert.Equal(t, expected.Name, actual.Name, "projectgroup name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "projectgroup doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actual.GetID(), "projectgroup doesn't contain an ID from the octopus server")
 }
 
 func TestProjectGroupAddGetAndDelete(t *testing.T) {
@@ -28,9 +28,9 @@ func TestProjectGroupAddGetAndDelete(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	projectGroup := createTestProjectGroup(t, octopusClient, getRandomName())
-	defer cleanProjectGroup(t, octopusClient, projectGroup.ID)
+	defer cleanProjectGroup(t, octopusClient, projectGroup.GetID())
 
-	getProjectGroup, err := octopusClient.ProjectGroups.GetByID(projectGroup.ID)
+	getProjectGroup, err := octopusClient.ProjectGroups.GetByID(projectGroup.GetID())
 	assert.NoError(t, err, "there was an error raised getting projectgroup when there should not be")
 	assert.Equal(t, projectGroup.Name, getProjectGroup.Name)
 }
@@ -54,7 +54,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 	sum := 0
 	for i := 0; i < projectsGroupsToCreate; i++ {
 		projectGroup := createTestProjectGroup(t, octopusClient, getRandomName())
-		defer cleanProjectGroup(t, octopusClient, projectGroup.ID)
+		defer cleanProjectGroup(t, octopusClient, projectGroup.GetID())
 		sum += i
 	}
 
@@ -71,7 +71,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 	}
 
 	additionalProjectGroup := createTestProjectGroup(t, octopusClient, getRandomName())
-	defer cleanProjectGroup(t, octopusClient, additionalProjectGroup.ID)
+	defer cleanProjectGroup(t, octopusClient, additionalProjectGroup.GetID())
 
 	allProjectGroupsAfterCreatingAdditional, err := octopusClient.ProjectGroups.GetAll()
 	if err != nil {
@@ -87,7 +87,7 @@ func TestProjectGroupUpdate(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	projectGroup := createTestProjectGroup(t, octopusClient, getRandomName())
-	defer cleanProjectGroup(t, octopusClient, projectGroup.ID)
+	defer cleanProjectGroup(t, octopusClient, projectGroup.GetID())
 
 	newProjectGroupName := getRandomName()
 	const newDescription = "this should be updated"

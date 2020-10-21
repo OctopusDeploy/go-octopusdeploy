@@ -13,11 +13,11 @@ func TestDeploymentProcessGet(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
 	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
-	assert.Equal(t, project.DeploymentProcessID, deploymentProcess.ID)
+	assert.Equal(t, project.DeploymentProcessID, deploymentProcess.GetID())
 	assert.NoError(t, err, "there should be error raised getting a projects deployment process")
 }
 
@@ -26,7 +26,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	require.NotNil(t, octopusClient)
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
 	allDeploymentProcess, err := octopusClient.DeploymentProcesses.GetAll()
 	require.NoError(t, err)
@@ -34,7 +34,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	numberOfDeploymentProcesses := len(allDeploymentProcess)
 
 	additionalProject := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, additionalProject.ID)
+	defer cleanProject(t, octopusClient, additionalProject.GetID())
 
 	allDeploymentProcessAfterCreatingAdditional, err := octopusClient.DeploymentProcesses.GetAll()
 	require.NoError(t, err)
@@ -46,7 +46,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
 
 	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.ID)
+	defer cleanProject(t, octopusClient, project.GetID())
 
 	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
