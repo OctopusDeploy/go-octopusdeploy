@@ -14,7 +14,7 @@ import (
 func CreateCertificateExample() {
 	var (
 		apiKey          string = "API-YOUR_API_KEY"
-		certificateName string = "MyCertificate"
+		certificateName string = "certificate-name"
 		octopusURL      string = "https://your_octopus_url"
 		pfxFilePath     string = "path\\to\\pfxfile.pfx"
 		pfxFilePassword string = "PFX-file-password"
@@ -34,28 +34,31 @@ func CreateCertificateExample() {
 	}
 
 	file, err := os.Open(pfxFilePath)
-
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error opening private key: %v", err)
+		return
 	}
 
 	data, err := ioutil.ReadAll(file)
-
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error reading file: %v", err)
+		return
 	}
 
-	// Convert file to base64
+	// certificate properties
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
-
-	// Create certificate object
 	certificateData := octopusdeploy.NewSensitiveValue(base64Certificate)
 	password := octopusdeploy.NewSensitiveValue(pfxFilePassword)
-	octopusCertificate := octopusdeploy.NewCertificate(certificateName, certificateData, password)
 
-	_, err = client.Certificates.Add(octopusCertificate)
+	// create certificate
+	certificate := octopusdeploy.NewCertificate(certificateName, certificateData, password)
 
+	// create certificate through Add(); returns error if fails
+	createdCertificate, err := client.Certificates.Add(certificate)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error adding certificate: %v", err)
 	}
+
+	// work with created certificate
+	fmt.Printf("certificate created: (%s)\n", createdCertificate.GetID())
 }
