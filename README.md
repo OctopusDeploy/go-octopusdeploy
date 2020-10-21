@@ -47,4 +47,4 @@ if err != nil {
 
 Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by most services that are exposed through the client. These operations are configured at runtime since the Octopus REST API is hypermedia-driven.
 
-Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory.
+Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory. There are also many [integration](/integration) and unit tests available to examine that demonstrate the capabilities of this API client.
