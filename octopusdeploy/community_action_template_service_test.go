@@ -14,51 +14,6 @@ func createCommunityActionTemplateService(t *testing.T) *communityActionTemplate
 	return service
 }
 
-func TestCommunityActionTemplateServiceGetByID(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	require.NotNil(t, service)
-
-	resourceList, err := service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resourceList)
-
-	if len(resourceList) > 0 {
-		resourceToCompare, err := service.GetByID(resourceList[0].ID)
-		assert.NoError(t, err)
-		assert.EqualValues(t, resourceList[0], *resourceToCompare)
-	}
-
-	value := getRandomName()
-	resource, err := service.GetByID(value)
-
-	assert.Equal(t, err, createResourceNotFoundError(service.getName(), "ID", value))
-	assert.Nil(t, resource)
-}
-
-func TestCommunityActionTemplateServiceGetByName(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	require.NotNil(t, service)
-
-	resourceList, err := service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resourceList)
-
-	if len(resourceList) > 0 {
-		resourceToCompare, err := service.GetByName(resourceList[0].Name)
-		assert.NoError(t, err)
-		assert.EqualValues(t, *resourceToCompare, resourceList[0])
-	}
-}
-
-func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	require.NotNil(t, service)
-
-	resourceList, err := service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resourceList)
-}
-
 func TestCommunityActionTemplateServiceNew(t *testing.T) {
 	serviceFunction := newCommunityActionTemplateService
 	client := &sling.Sling{}
@@ -93,8 +48,6 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
 			service := createCommunityActionTemplateService(t)
 			require.NotNil(t, service)
 
@@ -105,30 +58,6 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 	}
 }
 
-func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
-	service := createCommunityActionTemplateService(t)
-	require.NotNil(t, service)
-
-	resources, err := service.GetAll()
-	require.NoError(t, err)
-	require.NotNil(t, resources)
-
-	ids := []string{}
-	for _, resource := range resources {
-		ids = append(ids, resource.ID)
-	}
-
-	// no need to test if ID collection size is less than 2
-	if len(ids) < 2 {
-		return
-	}
-
-	resourceListToCompare, err := service.GetByIDs(ids[0:2])
-	assert.NoError(t, err)
-	assert.NotNil(t, resourceListToCompare)
-	assert.Equal(t, 2, len(resourceListToCompare))
-}
-
 func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
@@ -136,7 +65,4 @@ func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	resource, err := service.Install(CommunityActionTemplate{})
 	require.Error(t, err)
 	require.Nil(t, resource)
-
-	resource = NewCommunityActionTemplate(getRandomName())
-	require.NotNil(t, resource)
 }
