@@ -43,5 +43,5 @@ func CreateSSHKeyAccountExample() {
 	sshKeyAccount = createdAccount.(*octopusdeploy.SSHKeyAccount)
 
 	// work with created account
-	fmt.Printf("account created: (%s)\n", sshKeyAccount.ID)
+	fmt.Printf("account created: (%s)\n", sshKeyAccount.GetID())
 }

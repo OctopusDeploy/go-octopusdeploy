@@ -45,5 +45,5 @@ func CreateUsernamePasswordExample() {
 	usernamePasswordAccount = createdAccount.(*octopusdeploy.UsernamePasswordAccount)
 
 	// work with created account
-	fmt.Printf("account created: (%s)\n", usernamePasswordAccount.ID)
+	fmt.Printf("account created: (%s)\n", usernamePasswordAccount.GetID())
 }

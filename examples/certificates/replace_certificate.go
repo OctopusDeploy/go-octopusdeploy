@@ -57,7 +57,7 @@ func ReplaceCertificateExample() {
 
 	// Replace certificate
 	replacementCertificate := octopusdeploy.NewReplacementCertificate(base64Certificate, pfxFilePassword)
-	_, err = client.Certificates.Replace(certificate.ID, replacementCertificate)
+	_, err = client.Certificates.Replace(certificate.GetID(), replacementCertificate)
 	if err != nil {
 		// TODO: handle error
 	}

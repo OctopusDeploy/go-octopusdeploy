@@ -49,5 +49,5 @@ func CreateAmazonWebServicesAccountExample() {
 	awsAccount = createdAccount.(*octopusdeploy.AmazonWebServicesAccount)
 
 	// work with created account
-	fmt.Printf("account created: (%s)\n", awsAccount.ID)
+	fmt.Printf("account created: (%s)\n", awsAccount.GetID())
 }

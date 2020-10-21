@@ -58,5 +58,5 @@ func CreateAzureServicePrincipalExample() {
 	azureAccount = createdAccount.(*octopusdeploy.AzureServicePrincipalAccount)
 
 	// work with created account
-	fmt.Printf("account created: (%s)\n", azureAccount.ID)
+	fmt.Printf("account created: (%s)\n", azureAccount.GetID())
 }
