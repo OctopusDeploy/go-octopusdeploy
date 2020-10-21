@@ -82,20 +82,24 @@ func TestTenantServiceGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
+	tenants := []octopusdeploy.Tenant{}
+
 	// create 30 test tenants (to be deleted)
 	for i := 0; i < 30; i++ {
 		tenant := CreateTestTenant(t, octopusClient)
 		require.NotNil(t, tenant)
+		tenants = append(tenants, *tenant)
 	}
 
-	tenants, err := octopusClient.Tenants.GetAll()
+	allTenants, err := octopusClient.Tenants.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, tenants)
+	require.NotNil(t, allTenants)
+	require.True(t, len(allTenants) >= 30)
 
 	for _, tenant := range tenants {
 		require.NotNil(t, tenant)
 		require.NotEmpty(t, tenant.GetID())
-		err = DeleteTestTenant(t, octopusClient, tenant)
+		err = DeleteTestTenant(t, octopusClient, &tenant)
 		require.NoError(t, err)
 	}
 }

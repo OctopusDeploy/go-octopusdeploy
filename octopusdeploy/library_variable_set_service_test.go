@@ -140,20 +140,25 @@ func TestLibraryVariableSetServiceGetAll(t *testing.T) {
 	service := createLibraryVariableSetService(t)
 	require.NotNil(t, service)
 
+	libraryVariableSets := []LibraryVariableSet{}
+
 	// create 30 test library variable sets (to be deleted)
 	for i := 0; i < 30; i++ {
-		resource := CreateTestLibraryVariableSet(t, service)
-		require.NotNil(t, resource)
-		defer DeleteTestLibraryVariableSet(t, service, resource)
+		libraryVariableSet := CreateTestLibraryVariableSet(t, service)
+		require.NotNil(t, libraryVariableSet)
+		libraryVariableSets = append(libraryVariableSets, *libraryVariableSet)
 	}
 
-	resources, err := service.GetAll()
+	allLibraryVariableSets, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, resources)
+	require.NotNil(t, allLibraryVariableSets)
+	require.True(t, len(allLibraryVariableSets) >= 30)
 
-	for _, resource := range resources {
-		require.NotNil(t, resource)
-		assert.NotEmpty(t, resource.GetID())
+	for _, libraryVariableSet := range libraryVariableSets {
+		require.NotNil(t, libraryVariableSet)
+		require.NotEmpty(t, libraryVariableSet.GetID())
+		err = DeleteTestLibraryVariableSet(t, service, &libraryVariableSet)
+		require.NoError(t, err)
 	}
 }
 

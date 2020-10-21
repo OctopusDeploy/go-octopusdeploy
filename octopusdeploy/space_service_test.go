@@ -38,7 +38,7 @@ func CreateTestSpace(t *testing.T, service *spaceService) *Space {
 	return createdSpace
 }
 
-func DeleteTestSpace(t *testing.T, service *spaceService, space Space) error {
+func DeleteTestSpace(t *testing.T, service *spaceService, space *Space) error {
 	require.NotNil(t, space)
 
 	if service == nil {
@@ -107,7 +107,7 @@ func TestSpaceSetAddGetDelete(t *testing.T) {
 	space.TaskQueueStopped = true
 	UpdateTestSpace(t, service, space)
 
-	err = DeleteTestSpace(t, service, *space)
+	err = DeleteTestSpace(t, service, space)
 	require.NoError(t, err)
 }
 
@@ -124,7 +124,7 @@ func TestSpaceServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	resource = CreateTestSpace(t, service)
-	defer DeleteTestSpace(t, service, *resource)
+	defer DeleteTestSpace(t, service, resource)
 }
 
 func TestSpaceServiceDeleteAll(t *testing.T) {
@@ -136,7 +136,7 @@ func TestSpaceServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		defer DeleteTestSpace(t, service, *resource)
+		defer DeleteTestSpace(t, service, resource)
 	}
 }
 
@@ -144,20 +144,25 @@ func TestSpaceServiceGetAll(t *testing.T) {
 	service := createSpaceService(t)
 	require.NotNil(t, service)
 
-	// create 30 test library variable sets (to be deleted)
+	spaces := []Space{}
+
+	// create 30 test spaces (to be deleted)
 	for i := 0; i < 30; i++ {
-		resource := CreateTestSpace(t, service)
-		require.NotNil(t, resource)
-		defer DeleteTestSpace(t, service, *resource)
+		space := CreateTestSpace(t, service)
+		require.NotNil(t, space)
+		spaces = append(spaces, *space)
 	}
 
-	resources, err := service.GetAll()
+	allSpaces, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, resources)
+	require.NotNil(t, allSpaces)
+	require.True(t, len(allSpaces) >= 30)
 
-	for _, resource := range resources {
-		require.NotNil(t, resource)
-		assert.NotEmpty(t, resource.GetID())
+	for _, space := range spaces {
+		require.NotNil(t, space)
+		require.NotEmpty(t, space.GetID())
+		err = DeleteTestSpace(t, service, &space)
+		require.NoError(t, err)
 	}
 }
 
@@ -286,5 +291,5 @@ func TestSpaceServiceUpdate(t *testing.T) {
 	expected := CreateTestSpace(t, service)
 	actual := UpdateTestSpace(t, service, expected)
 	IsEqualSpaces(t, expected, actual)
-	defer DeleteTestSpace(t, service, *expected)
+	defer DeleteTestSpace(t, service, expected)
 }

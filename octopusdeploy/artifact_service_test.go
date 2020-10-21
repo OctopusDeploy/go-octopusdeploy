@@ -14,7 +14,7 @@ func createArtifactService(t *testing.T) *artifactService {
 	return service
 }
 
-func CreateTestArtifact(t *testing.T, service *artifactService) IResource {
+func CreateTestArtifact(t *testing.T, service *artifactService) *Artifact {
 	if service == nil {
 		service = createArtifactService(t)
 	}
@@ -46,21 +46,25 @@ func TestArtifactServiceGetAll(t *testing.T) {
 	service := createArtifactService(t)
 	require.NotNil(t, service)
 
-	// // create 30 test artifacts (to be deleted)
-	// for i := 0; i < 30; i++ {
-	// 	artifact := CreateTestArtifact(t, service)
-	// 	require.NotNil(t, artifact)
-	// }
+	artifacts := []Artifact{}
 
-	artifacts, err := service.GetAll()
+	// create 30 test artifacts (to be deleted)
+	for i := 0; i < 30; i++ {
+		artifact := CreateTestArtifact(t, service)
+		require.NotNil(t, artifact)
+		artifacts = append(artifacts, *artifact)
+	}
+
+	allArtifacts, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, artifacts)
+	require.NotNil(t, allArtifacts)
+	require.True(t, len(allArtifacts) >= 30)
 
 	for _, artifact := range artifacts {
 		require.NotNil(t, artifact)
-		assert.NotEmpty(t, artifact.GetID())
-		err = DeleteTestArtifact(t, service, artifact)
-		assert.NoError(t, err)
+		require.NotEmpty(t, artifact.GetID())
+		err = DeleteTestArtifact(t, service, &artifact)
+		require.NoError(t, err)
 	}
 }
 

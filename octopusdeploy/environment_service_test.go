@@ -159,18 +159,24 @@ func TestEnvironmentServiceGetAll(t *testing.T) {
 	service := createEnvironmentService(t)
 	require.NotNil(t, service)
 
+	environments := []Environment{}
+
 	// create 30 test environments (to be deleted)
 	for i := 0; i < 30; i++ {
 		environment := CreateTestEnvironment(t, service)
 		require.NotNil(t, environment)
+		environments = append(environments, *environment)
 	}
 
-	environments, err := service.GetAll()
+	allEnvironments, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, environments)
+	require.NotNil(t, allEnvironments)
+	require.True(t, len(allEnvironments) >= 30)
 
 	for _, environment := range environments {
-		err = DeleteTestEnvironment(t, service, environment)
+		require.NotNil(t, environment)
+		require.NotEmpty(t, environment.GetID())
+		err = DeleteTestEnvironment(t, service, &environment)
 		require.NoError(t, err)
 	}
 }

@@ -34,7 +34,7 @@ func CreateTestTeam(t *testing.T, service *teamService) *Team {
 	return createdTeam
 }
 
-func DeleteTestTeam(t *testing.T, service *teamService, team Team) error {
+func DeleteTestTeam(t *testing.T, service *teamService, team *Team) error {
 	require.NotNil(t, team)
 
 	if service == nil {
@@ -101,7 +101,7 @@ func TestTeamSetAddGetDelete(t *testing.T) {
 
 	resource = CreateTestTeam(t, service)
 	require.NotNil(t, resource)
-	defer DeleteTestTeam(t, service, *resource)
+	defer DeleteTestTeam(t, service, resource)
 
 	resourceToCompare, err := service.GetByID(resource.GetID())
 	require.NoError(t, err)
@@ -122,7 +122,8 @@ func TestTeamServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	resource = CreateTestTeam(t, service)
-	defer DeleteTestTeam(t, service, *resource)
+	err = DeleteTestTeam(t, service, resource)
+	require.NoError(t, err)
 }
 
 func TestTeamServiceDeleteAll(t *testing.T) {
@@ -134,7 +135,8 @@ func TestTeamServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		defer DeleteTestTeam(t, service, *resource)
+		err = DeleteTestTeam(t, service, resource)
+		require.NoError(t, err)
 	}
 }
 
@@ -142,21 +144,25 @@ func TestTeamServiceGetAll(t *testing.T) {
 	service := createTeamService(t)
 	require.NotNil(t, service)
 
-	// create 30 test library variable sets (to be deleted)
+	teams := []Team{}
+
+	// create 30 test teams (to be deleted)
 	for i := 0; i < 30; i++ {
-		resource := CreateTestTeam(t, service)
-		require.NotNil(t, resource)
-		defer DeleteTestTeam(t, service, *resource)
+		team := CreateTestTeam(t, service)
+		require.NotNil(t, team)
+		teams = append(teams, *team)
 	}
 
-	resources, err := service.GetAll()
+	allTeams, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, resources)
+	require.NotNil(t, allTeams)
+	require.True(t, len(allTeams) >= 30)
 
-	for _, resource := range resources {
-		resourceToCompare, err := service.GetByID(resource.GetID())
+	for _, team := range teams {
+		require.NotNil(t, team)
+		require.NotEmpty(t, team.GetID())
+		err = DeleteTestTeam(t, service, &team)
 		require.NoError(t, err)
-		IsEqualTeams(t, resource, resourceToCompare)
 	}
 }
 
@@ -283,5 +289,5 @@ func TestTeamServiceUpdate(t *testing.T) {
 	expected := CreateTestTeam(t, service)
 	actual := UpdateTeam(t, service, expected)
 	IsEqualTeams(t, expected, actual)
-	defer DeleteTestTeam(t, service, *expected)
+	defer DeleteTestTeam(t, service, expected)
 }

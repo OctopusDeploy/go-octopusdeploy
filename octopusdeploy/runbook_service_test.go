@@ -48,12 +48,17 @@ func CreateTestRunbook(t *testing.T, service *runbookService, lifecycle *Lifecyc
 }
 
 func DeleteTestRunbook(t *testing.T, service *runbookService, runbook *Runbook) error {
+	require.NotNil(t, runbook)
+
 	if service == nil {
 		service = createRunbookService(t)
 	}
 	require.NotNil(t, service)
 
-	return service.DeleteByID(runbook.GetID())
+	err := service.DeleteByID(runbook.GetID())
+	assert.NoError(t, err)
+
+	return err
 }
 
 func TestRunbookServiceDeleteAll(t *testing.T) {
@@ -72,18 +77,25 @@ func TestRunbookServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, nil, project)
 
+	runbooks := []Runbook{}
+
 	// create 30 test runbooks (to be deleted)
 	for i := 0; i < 30; i++ {
 		runbook := CreateTestRunbook(t, runbookService, lifecycle, projectGroup, project)
 		require.NotNil(t, runbook)
+		runbooks = append(runbooks, *runbook)
 	}
 
-	runbooks, err := runbookService.GetAll()
+	allRunbooks, err := runbookService.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, runbooks)
+	require.NotNil(t, allRunbooks)
+	require.True(t, len(allRunbooks) >= 30)
 
 	for _, runbook := range runbooks {
-		defer DeleteTestRunbook(t, runbookService, runbook)
+		require.NotNil(t, runbook)
+		require.NotEmpty(t, runbook.GetID())
+		err = DeleteTestRunbook(t, runbookService, &runbook)
+		require.NoError(t, err)
 	}
 }
 
