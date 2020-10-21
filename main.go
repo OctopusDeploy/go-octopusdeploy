@@ -31,7 +31,6 @@ func OutputAsJSON(resource interface{}, err error) {
 // CreateSpace creates a test space and outputs the results to the console.
 func CreateSpace(client *octopusdeploy.Client) (*octopusdeploy.Space, error) {
 	fmt.Println("Creating a new space...")
-
 	if client.Spaces == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client.Spaces (nil)"))
 		os.Exit(3)
@@ -93,7 +92,6 @@ func createProject(client *octopusdeploy.Client) *octopusdeploy.Project {
 
 func updateProject(client *octopusdeploy.Client, project *octopusdeploy.Project) *octopusdeploy.Project {
 	fmt.Println("Updating a project...")
-
 	if client == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client (nil)"))
 		return nil
@@ -114,9 +112,7 @@ func updateProject(client *octopusdeploy.Client, project *octopusdeploy.Project)
 
 func deleteProject(client *octopusdeploy.Client, project *octopusdeploy.Project) {
 	fmt.Println("Deleting a project...")
-
-	err := client.Projects.DeleteByID(project.ID)
-
+	err := client.Projects.DeleteByID(project.GetID())
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -131,19 +127,23 @@ func main() {
 		return
 	}
 
+	fmt.Println("Creating API client...")
 	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, "")
 	if err != nil {
-		_ = fmt.Errorf("error creating API client: %v", err)
+		fmt.Println(fmt.Errorf("error creating API client: %v", err))
 		return
 	}
+	fmt.Println("API client created.")
 
 	user := octopusdeploy.NewUser("askdhj", "aklsjd")
 	user.Password = "asdaasdkhwjerlkqjh987123"
 
+	fmt.Println("Creating user...")
 	newUser, err := client.Users.Add(user)
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println("User created.")
 
 	jsonData := octopusdeploy.PrettyJSON(newUser)
 	fmt.Println(jsonData)
@@ -200,8 +200,7 @@ func main() {
 		fmt.Println("done.")
 	}
 
-	err = client.Spaces.DeleteByID(updatedSpace.ID)
-
+	err = client.Spaces.DeleteByID(updatedSpace.GetID())
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -220,10 +219,9 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else { //This isn't idomatic go, but it allows the demo to continue if the create fails
-		fmt.Printf("Created Project ID %s", project.ID)
+		fmt.Printf("Created Project ID %s", project.GetID())
 
-		project, err := client.Projects.GetByID(project.ID)
-
+		project, err := client.Projects.GetByID(project.GetID())
 		if err != nil {
 			fmt.Println(err.Error())
 		} else { //This isn't idomatic go, but it allows the demo to continue if the create fails
@@ -245,9 +243,8 @@ func main() {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		fmt.Printf("Created Project ID %s", createdEnvironment.ID)
-		environment, err := client.Environments.GetByID(createdEnvironment.ID)
-
+		fmt.Printf("Created project (ID: %s)", createdEnvironment.GetID())
+		environment, err := client.Environments.GetByID(createdEnvironment.GetID())
 		if err != nil {
 			fmt.Println(err.Error())
 		}
