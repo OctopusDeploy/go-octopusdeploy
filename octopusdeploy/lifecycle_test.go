@@ -18,13 +18,13 @@ func TestLifecycleNew(t *testing.T) {
 	require.NoError(t, lifecycle.Validate())
 
 	lifecycle = Lifecycle{
-		Resource: Resource{},
+		resource: resource{},
 	}
 	require.Error(t, lifecycle.Validate())
 
 	lifecycle = Lifecycle{
 		Name:     name,
-		Resource: Resource{},
+		resource: resource{},
 	}
 	require.NoError(t, lifecycle.Validate())
 

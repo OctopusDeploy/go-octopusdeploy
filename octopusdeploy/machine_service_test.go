@@ -32,11 +32,11 @@ func CreateTestDeploymentTarget(t *testing.T, service *machineService, name stri
 	_, err := io.WriteString(h, name)
 	require.NoError(t, err)
 
-	_, err = io.WriteString(h, environment.ID)
+	_, err = io.WriteString(h, environment.GetID())
 	require.NoError(t, err)
 
 	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
-	environmentIDs := []string{environment.ID}
+	environmentIDs := []string{environment.GetID()}
 	roles := []string{"Prod"}
 
 	endpoint := NewOfflineDropEndpoint()
@@ -128,7 +128,7 @@ func TestMachineServiceAddGetDelete(t *testing.T) {
 	environment := CreateTestEnvironment(t, nil)
 	expected := CreateTestDeploymentTarget(t, service, getRandomName(), environment)
 
-	actual, err := service.GetByID(expected.ID)
+	actual, err := service.GetByID(expected.GetID())
 	require.NoError(t, err)
 	IsEqualDeploymentTargets(t, expected, actual)
 
@@ -175,14 +175,13 @@ func TestMachineServiceGetAll(t *testing.T) {
 	require.NotNil(t, environmentService)
 
 	environment := CreateTestEnvironment(t, nil)
-	defer DeleteTestEnvironment(t, environmentService, environment)
 
 	const count int = 32
 	expected := map[string]*DeploymentTarget{}
 	for i := 0; i < count; i++ {
 		deploymentTarget := CreateTestDeploymentTarget(t, service, getRandomName(), environment)
 		defer DeleteTestDeploymentTarget(t, service, deploymentTarget)
-		expected[deploymentTarget.ID] = deploymentTarget
+		expected[deploymentTarget.GetID()] = deploymentTarget
 	}
 
 	resources, err := service.GetAll()
@@ -191,11 +190,14 @@ func TestMachineServiceGetAll(t *testing.T) {
 	require.GreaterOrEqual(t, len(resources), count)
 
 	for _, actual := range resources {
-		_, ok := expected[actual.ID]
+		_, ok := expected[actual.GetID()]
 		if ok {
-			IsEqualDeploymentTargets(t, expected[actual.ID], actual)
+			IsEqualDeploymentTargets(t, expected[actual.GetID()], actual)
 		}
 	}
+
+	err = DeleteTestEnvironment(t, environmentService, environment)
+	require.NoError(t, err)
 }
 
 func TestMachineServiceGetByID(t *testing.T) {
@@ -229,7 +231,7 @@ func TestMachineServiceGetByID(t *testing.T) {
 	require.NotNil(t, machines)
 
 	for _, machine := range machines {
-		machineToCompare, err := service.GetByID(machine.ID)
+		machineToCompare, err := service.GetByID(machine.GetID())
 		assert.NoError(t, err)
 		IsEqualDeploymentTargets(t, machine, machineToCompare)
 	}

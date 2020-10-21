@@ -23,8 +23,8 @@ func TestListeningTentacleEndpointMarshalJSON(t *testing.T) {
 	listeningTentacleEndpoint := NewListeningTentacleEndpoint(url, "thumbprint")
 	listeningTentacleEndpoint.CertificateSignatureAlgorithm = "fake-algorithm-1"
 	listeningTentacleEndpoint.ID = "endpoint-123"
-	listeningTentacleEndpoint.LastModifiedBy = "john.smith@example.com"
-	listeningTentacleEndpoint.LastModifiedOn = &lastModifiedOn
+	listeningTentacleEndpoint.ModifiedBy = "john.smith@example.com"
+	listeningTentacleEndpoint.ModifiedOn = &lastModifiedOn
 	listeningTentacleEndpoint.Links = links
 	listeningTentacleEndpoint.ProxyID = "fake-proxy-id"
 	listeningTentacleEndpoint.TentacleVersionDetails = NewTentacleVersionDetails(&version, true, true, false)
@@ -58,9 +58,9 @@ func TestListeningTentacleEndpointUnmarshalJSON(t *testing.T) {
 	url, _ := url.Parse("https://example.com")
 
 	assert.Equal(t, "fake-algorithm-1", listeningTentacleEndpoint.CertificateSignatureAlgorithm)
-	assert.Equal(t, "endpoint-123", listeningTentacleEndpoint.ID)
-	assert.Equal(t, "john.smith@example.com", listeningTentacleEndpoint.LastModifiedBy)
-	assert.Equal(t, &lastModifiedOn, listeningTentacleEndpoint.LastModifiedOn)
+	assert.Equal(t, "endpoint-123", listeningTentacleEndpoint.GetID())
+	assert.Equal(t, "john.smith@example.com", listeningTentacleEndpoint.GetModifiedBy())
+	assert.Equal(t, &lastModifiedOn, listeningTentacleEndpoint.GetModifiedOn())
 	assert.Equal(t, links, listeningTentacleEndpoint.Links)
 	assert.Equal(t, "fake-proxy-id", listeningTentacleEndpoint.ProxyID)
 	assert.Equal(t, tentacleVersionDetails, listeningTentacleEndpoint.TentacleVersionDetails)

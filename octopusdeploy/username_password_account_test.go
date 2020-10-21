@@ -13,15 +13,10 @@ func TestUsernamePasswordAccountNew(t *testing.T) {
 
 	require.NotNil(t, usernamePasswordAccount)
 	require.NoError(t, usernamePasswordAccount.Validate())
-	require.Equal(t, emptyString, usernamePasswordAccount.Description)
 	require.Equal(t, emptyString, usernamePasswordAccount.GetDescription())
-	require.Equal(t, emptyString, usernamePasswordAccount.ID)
 	require.Equal(t, emptyString, usernamePasswordAccount.GetID())
-	require.Equal(t, name, usernamePasswordAccount.Name)
 	require.Equal(t, name, usernamePasswordAccount.GetName())
-	require.Equal(t, accountTypeUsernamePassword, usernamePasswordAccount.AccountType)
 	require.Equal(t, accountTypeUsernamePassword, usernamePasswordAccount.GetAccountType())
-	require.NotNil(t, usernamePasswordAccount.Links)
 	require.NotNil(t, usernamePasswordAccount.GetLinks())
 }
 

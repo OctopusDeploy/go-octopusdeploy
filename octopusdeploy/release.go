@@ -18,12 +18,12 @@ type Release struct {
 	SpaceID                            string                                   `json:"SpaceId,omitempty"`
 	Version                            *string                                  `json:"Version"`
 
-	Resource
+	resource
 }
 
 func NewRelease() *Release {
 	return &Release{
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

@@ -21,7 +21,7 @@ type ActionTemplate struct {
 	SpaceID                   string                     `json:"SpaceId,omitempty"`
 	Version                   int32                      `json:"Version,omitempty"`
 
-	Resource
+	resource
 }
 
 // NewActionTemplate creates and initializes an action template.
@@ -29,7 +29,7 @@ func NewActionTemplate(name string, actionType string) *ActionTemplate {
 	return &ActionTemplate{
 		ActionType: actionType,
 		Name:       name,
-		Resource:   *newResource(),
+		resource:   *newResource(),
 	}
 }
 

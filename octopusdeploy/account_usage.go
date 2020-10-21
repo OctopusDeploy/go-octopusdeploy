@@ -11,13 +11,13 @@ type AccountUsage struct {
 	RunbookSnapshots    []*RunbookSnapshotUsage         `json:"RunbookSnapshots,omitempty"`
 	Targets             []*TargetUsageEntry             `json:"Targets,omitempty"`
 
-	Resource
+	resource
 }
 
 // NewAccountUsage initializes an AccountUsage.
 func NewAccountUsage() *AccountUsage {
 	accountUsage := &AccountUsage{
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 
 	return accountUsage

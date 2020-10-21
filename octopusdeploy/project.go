@@ -37,7 +37,7 @@ type Project struct {
 	VersionControlSettings          *VersionControlSettings      `json:"VersionControlSettings,omitempty"`
 	VersioningStrategy              VersioningStrategy           `json:"VersioningStrategy"`
 
-	Resource
+	resource
 }
 
 func NewProject(name, lifeCycleID, projectGroupID string) *Project {
@@ -54,7 +54,7 @@ func NewProject(name, lifeCycleID, projectGroupID string) *Project {
 		VersioningStrategy: VersioningStrategy{
 			Template: "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
 		},
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

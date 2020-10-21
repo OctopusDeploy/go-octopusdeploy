@@ -18,14 +18,14 @@ package integration
 // 	require.NoError(t, err)
 // 	require.NotNil(t, user)
 
-// 	apiKey := NewAPIKey(getRandomName(), user.ID)
+// 	apiKey := NewAPIKey(getRandomName(), user.id)
 // 	require.NotNil(t, apiKey)
 
 // 	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, createdAPIKey)
 
-// 	err = octopusClient.Users.DeleteByID(user.ID)
+// 	err = octopusClient.Users.DeleteByID(user.id)
 // 	assert.NoError(t, err)
 // }
 
@@ -40,16 +40,16 @@ package integration
 // 	require.NoError(t, err)
 // 	require.NotNil(t, user)
 
-// 	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.ID)
+// 	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.id)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, apiKeys)
 
 // 	for _, apiKey := range *apiKeys {
-// 		key, _ := octopusClient.APIKeys.GetByID(user.ID, apiKey.ID)
+// 		key, _ := octopusClient.APIKeys.GetByID(user.id, apiKey.id)
 // 		assert.NotNil(t, key)
 // 	}
 
-// 	err = octopusClient.Users.DeleteByID(user.ID)
+// 	err = octopusClient.Users.DeleteByID(user.id)
 // 	assert.NoError(t, err)
 // }
 
@@ -65,22 +65,22 @@ package integration
 // 	require.NoError(t, err)
 // 	require.NotNil(t, user)
 
-// 	apiKey := NewAPIKey(getRandomName(), user.ID)
+// 	apiKey := NewAPIKey(getRandomName(), user.id)
 // 	require.NotNil(t, apiKey)
 
 // 	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, createdAPIKey)
 
-// 	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.ID)
+// 	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.id)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, apiKeys)
 
 // 	for _, apiKey := range *apiKeys {
 // 		assert.NotNil(t, apiKey)
-// 		assert.NotNil(t, apiKey.ID)
+// 		assert.NotNil(t, apiKey.id)
 // 	}
 
-// 	err = octopusClient.Users.DeleteByID(user.ID)
+// 	err = octopusClient.Users.DeleteByID(user.id)
 // 	assert.NoError(t, err)
 // }

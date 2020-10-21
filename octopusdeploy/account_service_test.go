@@ -204,8 +204,8 @@ func UpdateAccount(t *testing.T, service *accountService, account IAccount) IAcc
 func ValidateAccount(t *testing.T, account IAccount) {
 	require.NoError(t, account.Validate())
 	require.NotEmpty(t, account.GetID())
-	require.NotEmpty(t, account.GetLastModifiedBy())
-	require.NotEmpty(t, account.GetLastModifiedOn())
+	require.NotEmpty(t, account.GetModifiedBy())
+	require.NotEmpty(t, account.GetModifiedOn())
 	require.NotEmpty(t, account.GetLinks())
 
 	baseAccount, ok := account.(*Account)

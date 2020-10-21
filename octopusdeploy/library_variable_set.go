@@ -17,14 +17,14 @@ type LibraryVariableSet struct {
 	Templates     []*ActionTemplateParameter `json:"Templates,omitempty"`
 	VariableSetID string                     `json:"VariableSetId,omitempty"`
 
-	Resource
+	resource
 }
 
 func NewLibraryVariableSet(name string) *LibraryVariableSet {
 	return &LibraryVariableSet{
 		ContentType: "Variables",
 		Name:        name,
-		Resource:    *newResource(),
+		resource:    *newResource(),
 	}
 }
 

@@ -18,7 +18,6 @@ func TestAzureSubscriptionAccountNew(t *testing.T) {
 	require.NoError(t, azureSubscriptionAccount.Validate())
 	require.Equal(t, emptyString, azureSubscriptionAccount.Description)
 	require.Equal(t, emptyString, azureSubscriptionAccount.GetDescription())
-	require.Equal(t, emptyString, azureSubscriptionAccount.ID)
 	require.Equal(t, emptyString, azureSubscriptionAccount.GetID())
 	require.Equal(t, name, azureSubscriptionAccount.Name)
 	require.Equal(t, name, azureSubscriptionAccount.GetName())

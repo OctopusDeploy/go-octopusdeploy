@@ -42,29 +42,29 @@ func TestWorkersUnmarshalJSON(t *testing.T) {
 
 	endpoint := NewListeningTentacleEndpoint(url, "0E80575D3BD8D30854802A4F8340A2E23AE961FD")
 	endpoint.ID = "endpoint-123"
-	endpoint.LastModifiedBy = "john.smith@example.com"
-	endpoint.LastModifiedOn = &endpointLastModifiedOn
+	endpoint.ModifiedBy = "john.smith@example.com"
+	endpoint.ModifiedOn = &endpointLastModifiedOn
 	endpoint.ProxyID = "fake-proxy-id"
 	endpoint.TentacleVersionDetails = NewTentacleVersionDetails(&version, true, true, false)
 
 	listeningTentacleEndpoint := tentaclePassiveWorker.Endpoint.(ListeningTentacleEndpoint)
 
 	assert.Equal(t, endpoint.CertificateSignatureAlgorithm, listeningTentacleEndpoint.CertificateSignatureAlgorithm)
-	assert.Equal(t, endpoint.ID, listeningTentacleEndpoint.ID)
-	assert.Equal(t, endpoint.LastModifiedBy, listeningTentacleEndpoint.LastModifiedBy)
-	assert.Equal(t, endpoint.LastModifiedOn, listeningTentacleEndpoint.LastModifiedOn)
+	assert.Equal(t, endpoint.GetID(), listeningTentacleEndpoint.GetID())
+	assert.Equal(t, endpoint.GetModifiedBy(), listeningTentacleEndpoint.GetModifiedBy())
+	assert.Equal(t, endpoint.GetModifiedOn(), listeningTentacleEndpoint.GetModifiedOn())
 	assert.Equal(t, endpoint.Links, listeningTentacleEndpoint.Links)
 	assert.Equal(t, endpoint.ProxyID, listeningTentacleEndpoint.ProxyID)
-	assert.Equal(t, endpoint.Resource, listeningTentacleEndpoint.Resource)
+	assert.Equal(t, endpoint.resource, listeningTentacleEndpoint.resource)
 	assert.Equal(t, endpoint.TentacleVersionDetails, listeningTentacleEndpoint.TentacleVersionDetails)
 	assert.Equal(t, endpoint.Thumbprint, listeningTentacleEndpoint.Thumbprint)
 	assert.Equal(t, endpoint.URI, listeningTentacleEndpoint.URI)
-	assert.Equal(t, "alice.smith@example.com", tentaclePassiveWorker.LastModifiedBy)
-	assert.Equal(t, &lastModifiedOn, tentaclePassiveWorker.LastModifiedOn)
+	assert.Equal(t, "alice.smith@example.com", tentaclePassiveWorker.GetModifiedBy())
+	assert.Equal(t, &lastModifiedOn, tentaclePassiveWorker.GetModifiedOn())
 	assert.Equal(t, links, tentaclePassiveWorker.Links)
 	assert.False(t, tentaclePassiveWorker.HasLatestCalamari)
 	assert.Equal(t, "Unknown", tentaclePassiveWorker.HealthStatus)
-	assert.Equal(t, "Workers-1", tentaclePassiveWorker.ID)
+	assert.Equal(t, "Workers-1", tentaclePassiveWorker.GetID())
 	assert.False(t, tentaclePassiveWorker.IsDisabled)
 	assert.False(t, tentaclePassiveWorker.IsInProcess)
 	assert.Equal(t, "MachinePolicies-1", tentaclePassiveWorker.MachinePolicyID)

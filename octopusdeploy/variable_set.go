@@ -7,11 +7,11 @@ type VariableSet struct {
 	Variables   []*Variable          `json:"Variables"`
 	Version     int32                `json:"Version,omitempty"`
 
-	Resource
+	resource
 }
 
 func NewVariableSet() *VariableSet {
 	return &VariableSet{
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }

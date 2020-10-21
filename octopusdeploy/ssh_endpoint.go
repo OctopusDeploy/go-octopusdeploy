@@ -21,7 +21,7 @@ type SSHEndpoint struct {
 	ProxyID            string   `json:"ProxyId,omitempty"`
 	URI                *url.URL `json:"Uri"`
 
-	Resource
+	resource
 }
 
 // NewSSHEndpoint creates and initializes a new SSH endpoint.
@@ -31,7 +31,7 @@ func NewSSHEndpoint(host string, port int, fingerprint string) *SSHEndpoint {
 		Fingerprint:        fingerprint,
 		Host:               host,
 		Port:               port,
-		Resource:           *newResource(),
+		resource:           *newResource(),
 	}
 
 	url, _ := url.Parse("ssh://" + host + ":" + strconv.Itoa(port) + "/")
@@ -75,7 +75,7 @@ func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 		Port               int
 		ProxyID            string `json:"ProxyId,omitempty"`
 		URI                string `json:"Uri"`
-		Resource
+		resource
 	}{
 		AccountID:          s.AccountID,
 		ComunicationStyle:  s.CommunicationStyle,
@@ -85,7 +85,7 @@ func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 		Port:               s.Port,
 		ProxyID:            s.ProxyID,
 		URI:                s.URI.String(),
-		Resource:           s.Resource,
+		resource:           s.resource,
 	}
 
 	return json.Marshal(sshEndpoint)
@@ -107,7 +107,7 @@ func (s *SSHEndpoint) UnmarshalJSON(b []byte) error {
 		Port               int
 		ProxyID            string `json:"ProxyId,omitempty"`
 		URI                string `json:"Uri"`
-		Resource
+		resource
 	}
 	err := json.Unmarshal(b, &fields)
 	if err != nil {
@@ -135,7 +135,7 @@ func (s *SSHEndpoint) UnmarshalJSON(b []byte) error {
 	s.Host = fields.Host
 	s.Port = fields.Port
 	s.ProxyID = fields.ProxyID
-	s.Resource = fields.Resource
+	s.resource = fields.resource
 	s.URI = u
 
 	return nil

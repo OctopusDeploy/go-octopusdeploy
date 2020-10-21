@@ -13,12 +13,12 @@ type RootResource struct {
 	IsEarlyAccessProgram bool       `json:"IsEarlyAccessProgram"`
 	HasLongTermSupport   bool       `json:"HasLongTermSupport"`
 
-	Resource
+	resource
 }
 
 func NewRootResource() *RootResource {
 	return &RootResource{
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

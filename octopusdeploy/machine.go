@@ -34,7 +34,7 @@ type machine struct {
 	Thumbprint        string    `json:"Thumbprint,omitempty"`
 	URI               string    `json:"Uri,omitempty" validate:"omitempty,uri"`
 
-	Resource
+	resource
 }
 
 func newMachine(name string, endpoint IEndpoint) *machine {
@@ -44,7 +44,7 @@ func newMachine(name string, endpoint IEndpoint) *machine {
 		OperatingSystem: "Unknown",
 		ShellName:       "Unknown",
 		ShellVersion:    "Unknown",
-		Resource:        *newResource(),
+		resource:        *newResource(),
 	}
 }
 
@@ -65,7 +65,7 @@ func (m *machine) MarshalJSON() ([]byte, error) {
 		StatusSummary     string    `json:"StatusSummary,omitempty"`
 		Thumbprint        string    `json:"Thumbprint,omitempty"`
 		URI               string    `json:"Uri,omitempty" validate:"omitempty,uri"`
-		Resource
+		resource
 	}{
 		Endpoint:          m.Endpoint,
 		HasLatestCalamari: m.HasLatestCalamari,
@@ -81,7 +81,7 @@ func (m *machine) MarshalJSON() ([]byte, error) {
 		StatusSummary:     m.StatusSummary,
 		Thumbprint:        m.Thumbprint,
 		URI:               m.URI,
-		Resource:          m.Resource,
+		resource:          m.resource,
 	}
 
 	return json.Marshal(machine)
@@ -103,7 +103,7 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 		StatusSummary     string `json:"StatusSummary,omitempty"`
 		Thumbprint        string `json:"Thumbprint,omitempty"`
 		URI               string `json:"Uri,omitempty" validate:"omitempty,uri"`
-		Resource
+		resource
 	}
 	err := json.Unmarshal(b, &fields)
 	if err != nil {
@@ -123,7 +123,7 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 	m.StatusSummary = fields.StatusSummary
 	m.Thumbprint = fields.Thumbprint
 	m.URI = fields.URI
-	m.Resource = fields.Resource
+	m.resource = fields.resource
 
 	var machine map[string]*json.RawMessage
 	err = json.Unmarshal(b, &machine)

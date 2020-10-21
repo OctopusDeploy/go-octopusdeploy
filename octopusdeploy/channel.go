@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // Channels defines a collection of channels with built-in support for paged
@@ -14,15 +15,15 @@ type Channels struct {
 }
 
 type Channel struct {
-	Description string        `json:"Description"`
+	Description string        `json:"Description,omitempty"`
 	IsDefault   bool          `json:"IsDefault"`
-	LifecycleID string        `json:"LifecycleId"`
-	Name        string        `json:"Name" validate:"required"`
-	ProjectID   string        `json:"ProjectId" validate:"required"`
+	LifecycleID string        `json:"LifecycleId,omitempty"`
+	Name        string        `json:"Name" validate:"required,notblank"`
+	ProjectID   string        `json:"ProjectId" validate:"required,notblank"`
 	Rules       []ChannelRule `json:"Rules,omitempty"`
 	TenantTags  []string      `json:"TenantTags,omitempty"`
 
-	Resource
+	resource
 }
 
 func NewChannel(name string, description string, projectID string) *Channel {
@@ -32,11 +33,16 @@ func NewChannel(name string, description string, projectID string) *Channel {
 		ProjectID:   projectID,
 		Rules:       []ChannelRule{},
 		TenantTags:  []string{},
-		Resource:    *newResource(),
+		resource:    *newResource(),
 	}
 }
 
 // Validate checks the state of the channel and returns an error if invalid.
 func (c Channel) Validate() error {
-	return validator.New().Struct(c)
+	v := validator.New()
+	err := v.RegisterValidation("notblank", validators.NotBlank)
+	if err != nil {
+		return err
+	}
+	return v.Struct(c)
 }

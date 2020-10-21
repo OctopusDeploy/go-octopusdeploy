@@ -7,17 +7,16 @@ import (
 )
 
 type testExampleWithResource struct {
-	Resource
+	resource
 }
 
 func TestResourceEmbedding(t *testing.T) {
 	example := &testExampleWithResource{}
 
 	assert.Empty(t, example.GetID())
-	assert.Empty(t, example.GetLastModifiedBy())
-	assert.Empty(t, example.GetLastModifiedOn())
+	assert.Empty(t, example.GetModifiedBy())
+	assert.Empty(t, example.GetModifiedOn())
 	assert.Empty(t, example.GetLinks())
 
-	example.SetID("id-value")
 	assert.Equal(t, "id-value", example.GetID())
 }

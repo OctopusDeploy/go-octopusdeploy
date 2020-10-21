@@ -14,7 +14,7 @@ type Environment struct {
 	SortOrder                  int    `json:"SortOrder"`
 	UseGuidedFailure           bool   `json:"UseGuidedFailure"`
 
-	Resource
+	resource
 }
 
 func NewEnvironment(name string) *Environment {
@@ -23,7 +23,7 @@ func NewEnvironment(name string) *Environment {
 		Name:                       name,
 		SortOrder:                  0,
 		UseGuidedFailure:           false,
-		Resource:                   *newResource(),
+		resource:                   *newResource(),
 	}
 }
 

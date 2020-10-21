@@ -7,64 +7,47 @@ import (
 )
 
 type Resources struct {
-	Items []*Resource `json:"Items"`
+	Items []*resource `json:"Items"`
 	PagedResults
 }
 
-type Resource struct {
-	ID             string            `json:"Id,omitempty"`
-	LastModifiedBy string            `json:"LastModifiedBy,omitempty"`
-	LastModifiedOn *time.Time        `json:"LastModifiedOn,omitempty"`
-	Links          map[string]string `json:"Links,omitempty"`
+type resource struct {
+	ID         string            `json:"Id,omitempty"`
+	ModifiedBy string            `json:"LastModifiedBy,omitempty"`
+	ModifiedOn *time.Time        `json:"LastModifiedOn,omitempty"`
+	Links      map[string]string `json:"Links,omitempty"`
 }
 
-func newResource() *Resource {
-	return &Resource{
+func newResource() *resource {
+	return &resource{
 		Links: map[string]string{},
 	}
 }
 
 // GetID returns the ID value of the resource.
-func (r *Resource) GetID() string {
+func (r *resource) GetID() string {
 	return r.ID
 }
 
-// GetLastModifiedBy returns the name of the account that modified the value of
+// GetModifiedBy returns the name of the account that modified the value of
 // this resource.
-func (r *Resource) GetLastModifiedBy() string {
-	return r.LastModifiedBy
+func (r *resource) GetModifiedBy() string {
+	return r.ModifiedBy
 }
 
-// GetLastModifiedOn returns the time when the value of this resource was
-// changed.
-func (r *Resource) GetLastModifiedOn() *time.Time {
-	return r.LastModifiedOn
+// GetModifiedOn returns the time when the value of this resource was changed.
+func (r *resource) GetModifiedOn() *time.Time {
+	return r.ModifiedOn
 }
 
 // GetLinks returns the associated links with the value of this resource.
-func (r *Resource) GetLinks() map[string]string {
+func (r *resource) GetLinks() map[string]string {
 	return r.Links
 }
 
-// SetID sets the ID value of this resource.
-func (r *Resource) SetID(id string) {
-	r.ID = id
-}
-
-// SetLastModifiedBy sets the name of the account that modified the value of
-// this resource.
-func (r *Resource) SetLastModifiedBy(name string) {
-	r.LastModifiedBy = name
-}
-
-// SetLastModifiedOn sets the time when the value of this resource was changed.
-func (r *Resource) SetLastModifiedOn(time *time.Time) {
-	r.LastModifiedOn = time
-}
-
 // Validate checks the state of the resource and returns an error if invalid.
-func (r *Resource) Validate() error {
+func (r *resource) Validate() error {
 	return validator.New().Struct(r)
 }
 
-var _ IResource = &Resource{}
+var _ IResource = &resource{}

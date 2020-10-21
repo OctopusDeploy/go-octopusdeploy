@@ -14,7 +14,7 @@ type WorkerPoolResource struct {
 	SpaceID       string `json:"SpaceId,omitempty" validate:"omitempty,notblank"`
 	SortOrder     int    `json:"SortOrder"`
 
-	Resource
+	resource
 }
 
 // newWorkerPoolResource creates and initializes a worker pool resource.
@@ -23,7 +23,7 @@ func newWorkerPoolResource(name string) *WorkerPoolResource {
 		CanAddWorkers: false,
 		Name:          name,
 		SortOrder:     0,
-		Resource:      *newResource(),
+		resource:      *newResource(),
 	}
 }
 

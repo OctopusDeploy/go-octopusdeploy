@@ -16,7 +16,7 @@ type AccountResource struct {
 	TenantIDs              []string `json:"TenantIds,omitempty"`
 	TenantTags             []string `json:"TenantTags,omitempty"`
 
-	Resource
+	resource
 }
 
 // newAccountResource creates and initializes an account resource.
@@ -28,7 +28,7 @@ func newAccountResource(name string, accountType string) *AccountResource {
 		TenantedDeploymentMode: "Untenanted",
 		TenantIDs:              []string{},
 		TenantTags:             []string{},
-		Resource:               *newResource(),
+		resource:               *newResource(),
 	}
 }
 

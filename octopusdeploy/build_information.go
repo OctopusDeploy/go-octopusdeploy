@@ -19,11 +19,11 @@ type BuildInformation struct {
 	Version               string           `json:"Version,omitempty"`
 	WorkItems             []*WorkItemLink  `json:"WorkItems"`
 
-	Resource
+	resource
 }
 
 func NewBuildInformation() *BuildInformation {
 	return &BuildInformation{
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }

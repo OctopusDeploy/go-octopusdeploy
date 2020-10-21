@@ -21,7 +21,7 @@ type KubernetesEndpoint struct {
 	RunningInContainer  bool                      `json:"RunningInContainer"`
 	SkipTLSVerification bool                      `json:"SkipTlsVerification"`
 
-	Resource
+	resource
 }
 
 // NewKubernetesEndpoint creates and initializes a new Kubernetes endpoint.
@@ -29,7 +29,7 @@ func NewKubernetesEndpoint(clusterURL url.URL) *KubernetesEndpoint {
 	return &KubernetesEndpoint{
 		ClusterURL:         &clusterURL,
 		CommunicationStyle: "Kubernetes",
-		Resource:           *newResource(),
+		resource:           *newResource(),
 	}
 }
 
@@ -73,7 +73,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 		ProxyID             string                    `json:"ProxyId,omitempty"`
 		RunningInContainer  bool                      `json:"RunningInContainer"`
 		SkipTLSVerification string                    `json:"SkipTlsVerification"`
-		Resource
+		resource
 	}{
 		Authentication:      k.Authentication,
 		ClusterCertificate:  k.ClusterCertificate,
@@ -85,7 +85,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 		ProxyID:             k.ProxyID,
 		RunningInContainer:  k.RunningInContainer,
 		SkipTLSVerification: strings.Title(strconv.FormatBool(k.SkipTLSVerification)),
-		Resource:            k.Resource,
+		resource:            k.resource,
 	}
 
 	return json.Marshal(kubernetesEndpoint)
@@ -104,7 +104,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		ProxyID             string                    `json:"ProxyId,omitempty"`
 		RunningInContainer  bool                      `json:"RunningInContainer"`
 		SkipTLSVerification string                    `json:"SkipTlsVerification"`
-		Resource
+		resource
 	}
 	err := json.Unmarshal(data, &fields)
 	if err != nil {
@@ -140,7 +140,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	k.Namespace = fields.Namespace
 	k.ProxyID = fields.ProxyID
 	k.RunningInContainer = fields.RunningInContainer
-	k.Resource = fields.Resource
+	k.resource = fields.resource
 
 	return nil
 }

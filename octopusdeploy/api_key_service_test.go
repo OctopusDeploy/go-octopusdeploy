@@ -3,7 +3,6 @@ package octopusdeploy
 import (
 	"testing"
 
-
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )
@@ -48,7 +47,7 @@ func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 func TestAPIKeyServiceDeleteByID(t *testing.T) {
 	service := createAPIKeyService(t)
 	user := createServiceAccountUser(t)
-	resource := NewAPIKey(getRandomName(), user.ID)
+	resource := NewAPIKey(getRandomName(), user.GetID())
 	assert.NotNil(t, resource)
 
 	resource, err := service.Create(resource)

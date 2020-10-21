@@ -7,14 +7,14 @@ import "github.com/go-playground/validator/v10"
 type endpoint struct {
 	CommunicationStyle string `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
 
-	Resource
+	resource
 }
 
 // newEndpoint creates and initializes a new endpoint.
 func newEndpoint(communicationStyle string) *endpoint {
 	endpoint := &endpoint{
 		CommunicationStyle: communicationStyle,
-		Resource:           *newResource(),
+		resource:           *newResource(),
 	}
 	return endpoint
 }

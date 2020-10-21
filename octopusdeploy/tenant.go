@@ -15,7 +15,7 @@ type Tenant struct {
 	ClonedFromTenantID  string              `json:"ClonedFromTenantId"`
 	Description         string              `json:"Description"`
 
-	Resource
+	resource
 }
 
 // NewTenant initializes a Tenant with a name and a description.
@@ -23,7 +23,7 @@ func NewTenant(name string, description string) *Tenant {
 	return &Tenant{
 		Description: description,
 		Name:        name,
-		Resource:    *newResource(),
+		resource:    *newResource(),
 	}
 }
 

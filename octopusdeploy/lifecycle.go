@@ -18,7 +18,7 @@ type Lifecycle struct {
 	TentacleRetentionPolicy RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
 	Phases                  []Phase         `json:"Phases"`
 
-	Resource
+	resource
 }
 
 const (
@@ -38,7 +38,7 @@ func NewLifecycle(name string) *Lifecycle {
 			Unit:           RetentionUnitDays,
 			QuantityToKeep: 30,
 		},
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

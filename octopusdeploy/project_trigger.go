@@ -12,7 +12,7 @@ type ProjectTrigger struct {
 	Name       string               `json:"Name"`
 	ProjectID  string               `json:"ProjectId,omitempty"`
 
-	Resource
+	resource
 }
 
 func (t *ProjectTrigger) AddEventGroups(eventGroups []string) {
@@ -37,6 +37,6 @@ func NewProjectDeploymentTargetTrigger(name, projectID string, shouldRedeploy bo
 		},
 		Name:      name,
 		ProjectID: projectID,
-		Resource:  *newResource(),
+		resource:  *newResource(),
 	}
 }

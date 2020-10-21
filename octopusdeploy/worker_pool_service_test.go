@@ -355,7 +355,7 @@ func TestWorkerPoolServiceNew(t *testing.T) {
 // 	require.NotNil(t, updatedWorkerPool)
 
 // 	require.NotEmpty(t, updatedWorkerPool.GetID())
-// 	require.Equal(t, updatedWorkerPool.ID, updatedWorkerPool.GetID())
+// 	require.Equal(t, updatedWorkerPool.id, updatedWorkerPool.GetID())
 // 	require.Equal(t, newAllowDynamicInfrastructure, updatedWorkerPool.AllowDynamicInfrastructure)
 // 	require.Equal(t, newDescription, updatedWorkerPool.Description)
 // 	require.Equal(t, newName, updatedWorkerPool.Name)

@@ -60,11 +60,9 @@ func IsEqualEnvironments(t *testing.T, expected *Environment, actual *Environmen
 	// missing fields
 
 	// IResource
-	assert.Equal(t, expected.ID, actual.ID)
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.Equal(t, expected.Links, actual.Links)
 	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
-	assert.Equal(t, expected.Resource, actual.Resource)
+	assert.Equal(t, expected.resource, actual.resource)
 
 	// Environment
 	assert.Equal(t, expected.AllowDynamicInfrastructure, actual.AllowDynamicInfrastructure)
@@ -120,7 +118,7 @@ func TestEnvironmentServiceAddGetDelete(t *testing.T) {
 
 	environment := CreateTestEnvironment(t, service)
 
-	environment, err = service.GetByID(environment.ID)
+	environment, err = service.GetByID(environment.GetID())
 	require.NoError(t, err)
 	require.NotNil(t, environment)
 
@@ -305,7 +303,7 @@ func TestEnvironmentServiceUpdate(t *testing.T) {
 	require.NotNil(t, updatedEnvironment)
 
 	require.NotEmpty(t, updatedEnvironment.GetID())
-	require.Equal(t, updatedEnvironment.ID, updatedEnvironment.GetID())
+	require.Equal(t, updatedEnvironment.GetID(), updatedEnvironment.GetID())
 	require.Equal(t, newAllowDynamicInfrastructure, updatedEnvironment.AllowDynamicInfrastructure)
 	require.Equal(t, newDescription, updatedEnvironment.Description)
 	require.Equal(t, newName, updatedEnvironment.Name)

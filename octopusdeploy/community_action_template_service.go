@@ -117,7 +117,7 @@ func (s communityActionTemplateService) GetByName(name string) (*CommunityAction
 		}
 	}
 
-	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
+	return nil, createResourceNotFoundError(s.getName(), parameterName, name)
 }
 
 // Install installs a community step template.

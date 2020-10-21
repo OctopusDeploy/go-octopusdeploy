@@ -34,7 +34,7 @@ type Account struct {
 	Token                   *SensitiveValue `json:"Token,omitempty"`
 	Username                string          `json:"Username,omitempty"`
 
-	Resource
+	resource
 }
 
 // Accounts defines a collection of accounts with built-in support for paged
@@ -50,7 +50,7 @@ func NewAccount(name string, accountType string) *Account {
 		AccountType:            accountType,
 		Name:                   name,
 		TenantedDeploymentMode: "Untenanted",
-		Resource:               *newResource(),
+		resource:               *newResource(),
 	}
 }
 

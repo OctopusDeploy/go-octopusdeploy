@@ -17,14 +17,14 @@ func TestRunbookProcessServiceGetAll(t *testing.T) {
 	service := createRunbookProcessService(t)
 	require.NotNil(t, service)
 
-	resources, err := service.GetAll()
+	runbookProcesses, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, resources)
+	require.NotNil(t, runbookProcesses)
 
-	for _, resource := range resources {
-		resourceToCompare, err := service.GetByID(resource.ID)
+	for _, runbookProcess := range runbookProcesses {
+		runbookProcessToCompare, err := service.GetByID(runbookProcess.GetID())
 		require.NoError(t, err)
-		require.NotNil(t, resourceToCompare)
+		require.NotNil(t, runbookProcessToCompare)
 	}
 }
 

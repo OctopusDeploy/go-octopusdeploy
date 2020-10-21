@@ -20,14 +20,14 @@ type Artifact struct {
 	Source           string     `json:"Source,omitempty"`
 	SpaceID          string     `json:"SpaceId,omitempty"`
 
-	Resource
+	resource
 }
 
 // NewArtifact creates and initializes an artifact.
 func NewArtifact(filename string) *Artifact {
 	return &Artifact{
 		Filename: filename,
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

@@ -17,7 +17,6 @@ func TestTokenAccountNew(t *testing.T) {
 	require.NoError(t, tokenAccount.Validate())
 	require.Equal(t, emptyString, tokenAccount.Description)
 	require.Equal(t, emptyString, tokenAccount.GetDescription())
-	require.Equal(t, emptyString, tokenAccount.ID)
 	require.Equal(t, emptyString, tokenAccount.GetID())
 	require.Equal(t, name, tokenAccount.Name)
 	require.Equal(t, name, tokenAccount.GetName())

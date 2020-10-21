@@ -38,7 +38,7 @@ type Certificate struct {
 	Thumbprint               string          `json:"Thumbprint,omitempty"`
 	Version                  int             `json:"Version,omitempty"`
 
-	Resource
+	resource
 }
 
 // NewCertificate initializes a Certificate with a name and credentials.
@@ -48,7 +48,7 @@ func NewCertificate(name string, certificateData SensitiveValue, password Sensit
 		CertificateData:        &certificateData,
 		Password:               &password,
 		TenantedDeploymentMode: "Untenanted",
-		Resource:               *newResource(),
+		resource:               *newResource(),
 	}
 }
 

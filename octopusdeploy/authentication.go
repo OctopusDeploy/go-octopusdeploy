@@ -6,11 +6,11 @@ type Authentication struct {
 	AuthenticationProviders                             []*AuthenticationProviderElement `json:"AuthenticationProviders"`
 	AutoLoginEnabled                                    bool                             `json:"AutoLoginEnabled"`
 
-	Resource
+	resource
 }
 
 func NewAuthentication() *Authentication {
 	return &Authentication{
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }

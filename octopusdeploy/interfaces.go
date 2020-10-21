@@ -60,12 +60,9 @@ type IHasSpace interface {
 // IResource defines the interface for all resources.
 type IResource interface {
 	GetID() string
-	GetLastModifiedBy() string
-	GetLastModifiedOn() *time.Time
+	GetModifiedBy() string
+	GetModifiedOn() *time.Time
 	GetLinks() map[string]string
-	SetID(id string)
-	SetLastModifiedBy(name string)
-	SetLastModifiedOn(*time.Time)
 	Validate() error
 }
 

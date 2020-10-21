@@ -72,8 +72,8 @@ func TestSSHKeyAccountMarshalJSON(t *testing.T) {
 	account.Description = "account-description"
 	account.EnvironmentIDs = environmentIDs
 	account.ID = "account-id"
-	account.LastModifiedBy = "john.smith@example.com"
-	account.LastModifiedOn = &lastModifiedOn
+	account.ModifiedBy = "john.smith@example.com"
+	account.ModifiedOn = &lastModifiedOn
 	account.Links = links
 	account.PrivateKeyPassphrase = &privateKeyPassphrase
 	account.SpaceID = "space-id"
@@ -120,10 +120,10 @@ func TestSSHKeyAccountUnmarshalJSON(t *testing.T) {
 		"tenant-tag-2",
 	}
 
-	assert.Equal(t, "account-id", account.ID)
+	assert.Equal(t, "account-id", account.GetID())
 	assert.Equal(t, environmentIDs, account.EnvironmentIDs)
-	assert.Equal(t, lastModifiedOn, *account.LastModifiedOn)
-	assert.Equal(t, "john.smith@example.com", account.LastModifiedBy)
+	assert.Equal(t, lastModifiedOn, *account.GetModifiedOn())
+	assert.Equal(t, "john.smith@example.com", account.GetModifiedBy())
 	assert.Equal(t, links, account.Links)
 	assert.Equal(t, privateKeyFile, *account.PrivateKeyFile)
 	assert.Equal(t, privateKeyPassphrase, *account.PrivateKeyPassphrase)

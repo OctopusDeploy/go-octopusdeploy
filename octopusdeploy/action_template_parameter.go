@@ -8,11 +8,11 @@ type ActionTemplateParameter struct {
 	Label           string                 `json:"Label,omitempty"`
 	Name            string                 `json:"Name,omitempty"`
 
-	Resource
+	resource
 }
 
 func NewActionTemplateParameter() *ActionTemplateParameter {
 	return &ActionTemplateParameter{
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }

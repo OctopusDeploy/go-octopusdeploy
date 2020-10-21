@@ -15,14 +15,14 @@ type Space struct {
 	SpaceManagersTeams       []string `json:"SpaceManagersTeams,omitempty"`
 	TaskQueueStopped         bool     `json:"TaskQueueStopped,omitempty"`
 
-	Resource
+	resource
 }
 
 // NewSpace initializes a Space with a name.
 func NewSpace(name string) *Space {
 	return &Space{
 		Name:     name,
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

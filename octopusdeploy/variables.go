@@ -20,7 +20,7 @@ type Variable struct {
 	Type        string                 `json:"Type"`
 	Value       string                 `json:"Value"`
 
-	Resource
+	resource
 }
 
 func NewVariable(name, valuetype, value, description string, scope *VariableScope, sensitive bool) *Variable {
@@ -31,6 +31,6 @@ func NewVariable(name, valuetype, value, description string, scope *VariableScop
 		Type:        valuetype,
 		IsSensitive: sensitive,
 		Scope:       scope,
-		Resource:    *newResource(),
+		resource:    *newResource(),
 	}
 }

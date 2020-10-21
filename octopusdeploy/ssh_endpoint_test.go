@@ -31,8 +31,8 @@ func CreateTestSSHEndpoint(t *testing.T) *SSHEndpoint {
 	sshEndpoint.AccountID = accountID
 	sshEndpoint.DotNetCorePlatform = dotNetCorePlatform
 	sshEndpoint.ID = id
-	sshEndpoint.LastModifiedBy = lastModifiedBy
-	sshEndpoint.LastModifiedOn = &lastModifiedOn
+	sshEndpoint.ModifiedBy = lastModifiedBy
+	sshEndpoint.ModifiedOn = &lastModifiedOn
 	sshEndpoint.Links = links
 	sshEndpoint.ProxyID = proxyID
 

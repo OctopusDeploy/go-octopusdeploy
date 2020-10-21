@@ -32,8 +32,8 @@ func CreateTestKubernetesEndpoint(t *testing.T) *KubernetesEndpoint {
 	kubernetesEndpoint.ClusterCertificate = clusterCertificate
 	kubernetesEndpoint.Authentication = *authentication
 	kubernetesEndpoint.ID = id
-	kubernetesEndpoint.LastModifiedBy = lastModifiedBy
-	kubernetesEndpoint.LastModifiedOn = &lastModifiedOn
+	kubernetesEndpoint.ModifiedBy = lastModifiedBy
+	kubernetesEndpoint.ModifiedOn = &lastModifiedOn
 	kubernetesEndpoint.Links = links
 	kubernetesEndpoint.ProxyID = proxyID
 
@@ -66,8 +66,8 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	resource.Container.FeedID = &feedID
 	resource.DefaultWorkerPoolID = "default-worker-pool-id"
 	resource.ID = id
-	resource.LastModifiedBy = "john.smith@example.com"
-	resource.LastModifiedOn = &lastModifiedOn
+	resource.ModifiedBy = "john.smith@example.com"
+	resource.ModifiedOn = &lastModifiedOn
 	resource.Links = links
 	resource.Namespace = "namespace-test"
 	resource.SkipTLSVerification = true
@@ -142,9 +142,9 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 	assert.False(t, resource.SkipTLSVerification)
 
 	// resource
-	assert.Equal(t, "endpoint-1", resource.ID)
-	assert.Equal(t, "john.smith@example.com", resource.LastModifiedBy)
-	assert.Equal(t, &lastModifiedOn, resource.LastModifiedOn)
+	assert.Equal(t, "endpoint-1", resource.GetID())
+	assert.Equal(t, "john.smith@example.com", resource.GetModifiedBy())
+	assert.Equal(t, &lastModifiedOn, resource.GetModifiedOn())
 	assert.Equal(t, links, resource.Links)
 }
 

@@ -15,7 +15,7 @@ type WorkerPool struct {
 	WorkerPoolType string `json:"WorkerPoolType" validate:"required,oneof=DynamicWorkerPool StaticWorkerPool"`
 	WorkerType     string `json:"WorkerType" validate:"required,oneof=Ubuntu1804 UbuntuDefault Windows2016 Windows2019 WindowsDefault"`
 
-	Resource
+	resource
 }
 
 type WorkerPools struct {
@@ -27,7 +27,7 @@ type WorkerPools struct {
 func newWorkerPool(name string) *WorkerPool {
 	return &WorkerPool{
 		Name:     name,
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

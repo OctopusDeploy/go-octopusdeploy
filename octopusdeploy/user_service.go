@@ -111,7 +111,7 @@ func (s userService) GetAuthenticationForUser(user *User) (*UserAuthentication, 
 	}
 
 	path := trimTemplate(s.getPath())
-	path = fmt.Sprintf(path+"/authentication/%s", user.ID)
+	path = fmt.Sprintf(path+"/authentication/%s", user.GetID())
 
 	resp, err := apiGet(s.getClient(), new(UserAuthentication), path)
 	if err != nil {
@@ -166,7 +166,7 @@ func (s userService) GetSpaces(user *User) ([]*Spaces, error) {
 	}
 
 	path := trimTemplate(s.getPath())
-	path = fmt.Sprintf(path+"/%s/spaces", user.ID)
+	path = fmt.Sprintf(path+"/%s/spaces", user.GetID())
 
 	_, err = apiGet(s.getClient(), &items, path)
 	return items, err

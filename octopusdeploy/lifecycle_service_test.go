@@ -77,7 +77,7 @@ func TestLifecycleServiceGetByID(t *testing.T) {
 	require.NotEmpty(t, resourceList)
 
 	for _, resource := range resourceList {
-		resourceToCompare, err := service.GetByID(resource.ID)
+		resourceToCompare, err := service.GetByID(resource.GetID())
 		assert.NoError(t, err)
 		assert.Equal(t, resource, resourceToCompare)
 	}
@@ -103,23 +103,17 @@ func TestLifecycleServiceStringParameters(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := createLifecycleService(t)
-			assert.NotNil(t, service)
-			if service == nil {
-				return
-			}
+			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-
 			assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
 			assert.Nil(t, resource)
 
 			resourceList, err := service.GetByPartialName(tc.parameter)
-
 			assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
 			assert.NotNil(t, resourceList)
 
 			err = service.DeleteByID(tc.parameter)
-
 			assert.Error(t, err)
 			assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
 		})
@@ -146,7 +140,7 @@ func TestLifecycleServiceAdd(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, resource)
 
-	err = service.DeleteByID(resource.ID)
+	err = service.DeleteByID(resource.GetID())
 
 	assert.NoError(t, err)
 }
@@ -168,8 +162,7 @@ func TestLifecycleServiceGetWithEmptyID(t *testing.T) {
 func TestLifecycleServiceUpdateWithEmptyLifecycle(t *testing.T) {
 	service := createLifecycleService(t)
 
-	account, err := service.Update(Lifecycle{})
-
+	lifecycle, err := service.Update(&Lifecycle{})
 	assert.Error(t, err)
-	assert.Nil(t, account)
+	assert.Nil(t, lifecycle)
 }

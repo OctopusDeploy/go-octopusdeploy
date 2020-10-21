@@ -66,7 +66,6 @@ func IsEqualWorkers(t *testing.T, expected *Worker, actual *Worker) {
 	// missing fields
 
 	// IResource
-	assert.Equal(t, expected.ID, actual.ID)
 	assert.Equal(t, expected.GetID(), actual.GetID())
 	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
 

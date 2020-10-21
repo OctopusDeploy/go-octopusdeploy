@@ -67,7 +67,7 @@ func TestCertificateServiceGetAll(t *testing.T) {
 
 	for _, resource := range resources {
 		assert.NotNil(t, resource)
-		assert.NotEmpty(t, resource.ID)
+		assert.NotEmpty(t, resource.GetID())
 	}
 }
 
@@ -93,7 +93,7 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	assert.NotNil(t, resources)
 
 	if len(resources) > 0 {
-		resourceToCompare, err := service.GetByID(resources[0].ID)
+		resourceToCompare, err := service.GetByID(resources[0].GetID())
 		assert.NoError(t, err)
 		assert.EqualValues(t, resources[0], resourceToCompare)
 	}

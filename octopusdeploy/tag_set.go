@@ -9,13 +9,13 @@ type TagSet struct {
 	Name string `json:"Name"`
 	Tags []Tag  `json:"Tags,omitempty"`
 
-	Resource
+	resource
 }
 
 // NewTagSet initializes a TagSet with a name.
 func NewTagSet(name string) *TagSet {
 	return &TagSet{
 		Name:     name,
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }

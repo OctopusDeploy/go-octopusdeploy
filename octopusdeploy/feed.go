@@ -21,7 +21,7 @@ type Feed struct {
 	SpaceID                           string          `json:"SpaceId,omitempty"`
 	Username                          string          `json:"Username,omitempty"`
 
-	Resource
+	resource
 }
 
 type Feeds struct {
@@ -34,7 +34,7 @@ func NewFeed(name string, feedType string, feedURI string) *Feed {
 		FeedType: feedType,
 		FeedURI:  &feedURI,
 		Name:     name,
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

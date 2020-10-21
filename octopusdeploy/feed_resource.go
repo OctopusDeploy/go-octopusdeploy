@@ -13,7 +13,7 @@ type FeedResource struct {
 	Password                          *SensitiveValue `json:"Password,omitempty"`
 	Username                          string          `json:"Username,omitempty"`
 
-	Resource
+	resource
 }
 
 // newFeedResource creates and initializes a feed resource.
@@ -21,7 +21,7 @@ func newFeedResource(name string) *FeedResource {
 	return &FeedResource{
 		Name:                              name,
 		PackageAcquisitionLocationOptions: []string{},
-		Resource:                          *newResource(),
+		resource:                          *newResource(),
 	}
 }
 

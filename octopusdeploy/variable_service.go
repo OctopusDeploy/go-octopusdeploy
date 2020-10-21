@@ -72,7 +72,7 @@ func (s variableService) GetByID(projectID string, variableID string) (*Variable
 	}
 
 	for _, variable := range variables.Variables {
-		if variable.ID == variableID {
+		if variable.GetID() == variableID {
 			return &variable, nil
 		}
 	}
@@ -173,7 +173,7 @@ func (s variableService) UpdateSingle(projectID string, variable *Variable) (*Va
 
 	var found bool
 	for i, existingVar := range variables.Variables {
-		if existingVar.ID == variable.ID {
+		if existingVar.GetID() == variable.ID {
 			variables.Variables[i] = *variable
 			found = true
 		}
@@ -209,7 +209,7 @@ func (s variableService) DeleteSingle(projectID string, variableID string) (*Var
 
 	var found bool
 	for i, existingVar := range variables.Variables {
-		if existingVar.ID == variableID {
+		if existingVar.GetID() == variableID {
 			variables.Variables = append(variables.Variables[:i], variables.Variables[i+1:]...)
 			found = true
 		}

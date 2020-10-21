@@ -11,12 +11,12 @@ type ProjectGroup struct {
 	Name              string   `json:"Name,omitempty" validate:"required"`
 	RetentionPolicyID string   `json:"RetentionPolicyId,omitempty"`
 
-	Resource
+	resource
 }
 
 func NewProjectGroup(name string) *ProjectGroup {
 	return &ProjectGroup{
 		Name:     name,
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }

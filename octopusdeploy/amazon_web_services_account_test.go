@@ -18,7 +18,6 @@ func TestAmazonWebServicesAccountNew(t *testing.T) {
 	require.NoError(t, amazonWebServicesAccount.Validate())
 	require.Equal(t, emptyString, amazonWebServicesAccount.Description)
 	require.Equal(t, emptyString, amazonWebServicesAccount.GetDescription())
-	require.Equal(t, emptyString, amazonWebServicesAccount.ID)
 	require.Equal(t, emptyString, amazonWebServicesAccount.GetID())
 	require.Equal(t, name, amazonWebServicesAccount.Name)
 	require.Equal(t, name, amazonWebServicesAccount.GetName())

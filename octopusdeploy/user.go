@@ -18,7 +18,7 @@ type User struct {
 	Password            string     `json:"Password,omitempty" validate:"max=20"`
 	Username            string     `json:"Username,omitempty"`
 
-	Resource
+	resource
 }
 
 // NewUser initializes a user with an username and a display name.
@@ -26,6 +26,6 @@ func NewUser(username string, displayName string) *User {
 	return &User{
 		DisplayName: displayName,
 		Username:    username,
-		Resource:    *newResource(),
+		resource:    *newResource(),
 	}
 }

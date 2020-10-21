@@ -19,13 +19,13 @@ type Team struct {
 	Name                   string                `json:"Name" validate:"required"`
 	SpaceID                string                `json:"SpaceId,omitempty"`
 
-	Resource
+	resource
 }
 
 func NewTeam(name string) *Team {
 	return &Team{
 		Name:     name,
-		Resource: *newResource(),
+		resource: *newResource(),
 	}
 }
 

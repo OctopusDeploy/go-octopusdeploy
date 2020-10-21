@@ -7,26 +7,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	channelName        = "Channel Name"
-	channelDescription = "This is the channel description."
-	channelProjectID   = "ProjectID-123"
-)
-
 func TestEmptyChannel(t *testing.T) {
 	channel := &Channel{}
 	assert.Error(t, channel.Validate())
 }
 
 func TestChannelWithName(t *testing.T) {
-	channel := &Channel{Name: channelName}
+	name := getRandomName()
+	channel := &Channel{Name: name}
 	assert.Error(t, channel.Validate())
 }
 
 func TestNewChannelWithEmptyName(t *testing.T) {
-	channel := NewChannel(emptyString, channelDescription, channelProjectID)
+	description := getRandomName()
+	projectID := getRandomName()
+
+	channel := NewChannel(emptyString, description, projectID)
 	require.Error(t, channel.Validate())
 
-	channel = NewChannel(whitespaceString, channelDescription, channelProjectID)
+	channel = NewChannel(whitespaceString, description, projectID)
 	require.Error(t, channel.Validate())
 }
