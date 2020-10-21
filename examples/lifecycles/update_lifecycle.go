@@ -46,5 +46,5 @@ func UpdateLifecycleExample() {
 		return
 	}
 
-	fmt.Printf("lifecycle updated: (%s)\n", updatedLifecycle.GetLastModifiedOn())
+	fmt.Printf("lifecycle updated: (%s)\n", updatedLifecycle.GetModifiedOn())
 }

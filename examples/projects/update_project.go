@@ -46,5 +46,5 @@ func UpdateProjectExample() {
 		return
 	}
 
-	fmt.Printf("project updated: (%s)\n", updatedProject.GetLastModifiedOn())
+	fmt.Printf("project updated: (%s)\n", updatedProject.GetModifiedOn())
 }
