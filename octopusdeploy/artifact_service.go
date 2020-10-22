@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 )
 
 // actionTemplateService handles communication for any operations in the
@@ -43,12 +44,31 @@ func (s artifactService) Add(resource *Artifact) (*Artifact, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(Artifact), path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*Artifact), nil
+}
+
+// Get returns a collection of artifacts based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s artifactService) Get(artifactsQuery ArtifactsQuery) (*Artifacts, error) {
+	v, _ := query.Values(artifactsQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	resp, err := apiGet(s.getClient(), new(Artifacts), path)
+	if err != nil {
+		return &Artifacts{}, err
+	}
+
+	return resp.(*Artifacts), nil
 }
 
 // GetAll returns all artifacts. If none can be found or an error occurs, it
@@ -70,22 +90,12 @@ func (s artifactService) GetByID(id string) (*Artifact, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(Artifact), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*Artifact), nil
-}
-
-// GetByPartialName performs a lookup and returns all instances of Artifact with a matching partial name.
-func (s artifactService) GetByPartialName(name string) ([]*Artifact, error) {
-	path, err := getByPartialNamePath(s, name)
-	if err != nil {
-		return []*Artifact{}, err
-	}
-
-	return s.getPagedResponse(path)
 }
 
 // Update modifies an Artifact based on the one provided as input.
@@ -95,7 +105,7 @@ func (s artifactService) Update(resource Artifact) (*Artifact, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(Artifact), path)
 	if err != nil {
 		return nil, err
 	}
