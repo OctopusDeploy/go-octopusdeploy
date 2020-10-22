@@ -31,6 +31,10 @@ func (a *AmazonWebServicesAccount) Validate() error {
 	if err != nil {
 		return err
 	}
+	err = v.RegisterValidation("notall", NotAll)
+	if err != nil {
+		return err
+	}
 	return v.Struct(a)
 }
 
