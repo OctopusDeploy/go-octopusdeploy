@@ -164,6 +164,10 @@ func trimTemplate(uri string) string {
 	return strings.Split(uri, "{")[0]
 }
 
+func createBuiltInTeamsCannotDeleteError() error {
+	return fmt.Errorf("The built-in teams cannot be deleted.")
+}
+
 func createInvalidParameterError(methodName string, parameterName string) error {
 	return fmt.Errorf("%s: the input parameter (%s) is invalid", methodName, parameterName)
 }
