@@ -83,33 +83,6 @@ func TestArtifactServiceGetByID(t *testing.T) {
 	}
 }
 
-func TestArtifactServiceGetByPartialName(t *testing.T) {
-	service := createArtifactService(t)
-	require.NotNil(t, service)
-
-	resources, err := service.GetByPartialName(emptyString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-
-	resources, err = service.GetByPartialName(whitespaceString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-
-	resources, err = service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, resources)
-
-	// TODO
-
-	// if len(resources) > 0 {
-	// 	resourcesToCompare, err := service.GetByPartialName(resources[0].Name)
-	// 	assert.NoError(t, err)
-	// 	assert.EqualValues(t, resourcesToCompare[0], resources[0])
-	// }
-}
-
 func TestArtifactServiceNew(t *testing.T) {
 	serviceFunction := newArtifactService
 	client := &sling.Sling{}
