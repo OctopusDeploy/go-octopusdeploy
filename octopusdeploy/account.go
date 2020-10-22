@@ -18,7 +18,7 @@ type Account struct {
 	CertificateThumbprint   string          `json:"CertificateThumbprint,omitempty"`
 	Description             string          `json:"Description,omitempty"`
 	EnvironmentIDs          []string        `json:"EnvironmentIds,omitempty"`
-	Name                    string          `json:"Name" validate:"required"`
+	Name                    string          `json:"Name" validate:"required,notall"`
 	PrivateKeyFile          *SensitiveValue `json:"PrivateKeyFile,omitempty"`
 	PrivateKeyPassphrase    *SensitiveValue `json:"PrivateKeyPassphrase,omitempty"`
 	ResourceManagerEndpoint string          `json:"ResourceManagementEndpointBaseUri,omitempty"`
@@ -35,13 +35,6 @@ type Account struct {
 	Username                string          `json:"Username,omitempty"`
 
 	resource
-}
-
-// Accounts defines a collection of accounts with built-in support for paged
-// results.
-type Accounts struct {
-	Items []*Account `json:"Items"`
-	PagedResults
 }
 
 // NewAccount creates and initializes an account with a name and type.
@@ -81,7 +74,12 @@ func (a *Account) SetName(name string) {
 
 // Validate checks the state of the account and returns an error if invalid.
 func (a *Account) Validate() error {
-	return validator.New().Struct(a)
+	v := validator.New()
+	err := v.RegisterValidation("notall", NotAll)
+	if err != nil {
+		return err
+	}
+	return v.Struct(a)
 }
 
 var _ IAccount = &Account{}
