@@ -6,11 +6,13 @@ type ProjectTriggers struct {
 }
 
 type ProjectTrigger struct {
-	Action     ProjectTriggerAction `json:"Action"`
-	Filter     ProjectTriggerFilter `json:"Filter"`
-	IsDisabled bool                 `json:"IsDisabled,omitempty"`
-	Name       string               `json:"Name"`
-	ProjectID  string               `json:"ProjectId,omitempty"`
+	Action      ProjectTriggerAction `json:"Action"`
+	Description string               `json:"Description,omitempty"`
+	Filter      ProjectTriggerFilter `json:"Filter"`
+	IsDisabled  bool                 `json:"IsDisabled,omitempty"`
+	Name        string               `json:"Name"`
+	ProjectID   string               `json:"ProjectId,omitempty"`
+	SpaceID     string               `json:"SpaceId,omitempty"`
 
 	resource
 }
