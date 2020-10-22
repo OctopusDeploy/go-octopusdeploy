@@ -18,7 +18,7 @@ type Channel struct {
 	Description string        `json:"Description,omitempty"`
 	IsDefault   bool          `json:"IsDefault"`
 	LifecycleID string        `json:"LifecycleId,omitempty"`
-	Name        string        `json:"Name" validate:"required,notblank"`
+	Name        string        `json:"Name" validate:"required,notblank,notall"`
 	ProjectID   string        `json:"ProjectId" validate:"required,notblank"`
 	Rules       []ChannelRule `json:"Rules,omitempty"`
 	TenantTags  []string      `json:"TenantTags,omitempty"`
@@ -41,6 +41,10 @@ func NewChannel(name string, description string, projectID string) *Channel {
 func (c Channel) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
+	if err != nil {
+		return err
+	}
+	err = v.RegisterValidation("notall", NotAll)
 	if err != nil {
 		return err
 	}
