@@ -109,7 +109,9 @@ func TestTeamServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, teams)
 
 	for _, team := range teams {
-		defer DeleteTestTeam(t, client, team)
+		if team.CanBeDeleted {
+			defer DeleteTestTeam(t, client, team)
+		}
 	}
 }
 
