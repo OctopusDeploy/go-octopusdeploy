@@ -18,5 +18,7 @@ func TestResourceEmbedding(t *testing.T) {
 	assert.Empty(t, example.GetModifiedOn())
 	assert.Empty(t, example.GetLinks())
 
+	example.ID = "id-value"
+
 	assert.Equal(t, "id-value", example.GetID())
 }
