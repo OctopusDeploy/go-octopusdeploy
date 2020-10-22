@@ -58,6 +58,23 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 	}
 }
 
+func TestCommunityActionTemplateServiceGet(t *testing.T) {
+	service := createCommunityActionTemplateService(t)
+	require.NotNil(t, service)
+
+	query := CommunityActionTemplatesQuery{
+		Skip: 1,
+		Take: 20,
+	}
+
+	communityActionTemplates, err := service.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, communityActionTemplates)
+	require.Equal(t, query.Take, len(communityActionTemplates.Items))
+
+	t.Log(len(communityActionTemplates.Items))
+}
+
 func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	service := createCommunityActionTemplateService(t)
 	require.NotNil(t, service)
