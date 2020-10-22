@@ -4,7 +4,7 @@
     "title": "Action Template",
     "description": "Represents an action template",
     "type": "object",
-    "required": [ "ID", "Name" ],
+    "required": [ "id", "name" ],
     "properties": {
         "id": {
             "description": "Unique identifier of the action template",
