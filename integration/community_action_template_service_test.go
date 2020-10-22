@@ -75,7 +75,6 @@ func TestCommunityActionTemplateServiceGet(t *testing.T) {
 	communityActionTemplates, err := octopusClient.CommunityActionTemplates.Get(query)
 	require.NoError(t, err)
 	require.NotNil(t, communityActionTemplates)
-	require.Equal(t, query.Take, len(communityActionTemplates.Items))
 }
 
 func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
@@ -84,7 +83,7 @@ func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
 
 	communityActionTemplates, err := octopusClient.CommunityActionTemplates.GetAll()
 	assert.NoError(t, err)
-	assert.NotEmpty(t, communityActionTemplates)
+	assert.NotNil(t, communityActionTemplates)
 }
 
 func TestCommunityActionTemplateServiceGetByIDs(t *testing.T) {
