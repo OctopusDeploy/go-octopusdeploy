@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 )
 
 // communityActionTemplateService handles communication with Account-related methods of the Octopus API.
@@ -54,6 +55,25 @@ func (s communityActionTemplateService) getPagedResponse(path string) ([]*Commun
 	return resources, nil
 }
 
+// Get returns a collection of community action templates based on the criteria
+// defined by its input query parameter. If an error occurs, an empty
+// collection is returned along with the associated error.
+func (s communityActionTemplateService) Get(communityActionTemplatesQuery CommunityActionTemplatesQuery) (*CommunityActionTemplates, error) {
+	v, _ := query.Values(communityActionTemplatesQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	resp, err := apiGet(s.getClient(), new(CommunityActionTemplates), path)
+	if err != nil {
+		return &CommunityActionTemplates{}, err
+	}
+
+	return resp.(*CommunityActionTemplates), nil
+}
+
 // GetAll returns all community action templates. If none can be found or an
 // error occurs, it returns an empty collection.
 func (s communityActionTemplateService) GetAll() ([]*CommunityActionTemplate, error) {
@@ -73,7 +93,7 @@ func (s communityActionTemplateService) GetByID(id string) (*CommunityActionTemp
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(CommunityActionTemplate), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -95,7 +115,8 @@ func (s communityActionTemplateService) GetByIDs(ids []string) ([]*CommunityActi
 	return s.getPagedResponse(path)
 }
 
-// GetByName performs a lookup and returns the CommunityActionTemplate with a matching name.
+// GetByName performs a lookup and returns the community action template with a
+// matching name.
 func (s communityActionTemplateService) GetByName(name string) (*CommunityActionTemplate, error) {
 	if isEmpty(name) {
 		return nil, createInvalidParameterError(operationGetByName, parameterName)
@@ -127,7 +148,7 @@ func (s communityActionTemplateService) Install(resource CommunityActionTemplate
 		return nil, err
 	}
 
-	resp, err := apiPost(s.getClient(), resource, s.itemType, path)
+	resp, err := apiPost(s.getClient(), resource, new(CommunityActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +164,7 @@ func (s communityActionTemplateService) Update(resource CommunityActionTemplate)
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(CommunityActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
