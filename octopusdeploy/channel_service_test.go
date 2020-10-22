@@ -41,21 +41,6 @@ func TestChannelServiceGetByID(t *testing.T) {
 	assert.Nil(t, resource)
 }
 
-func TestChannelServiceGetByPartialName(t *testing.T) {
-	service := createChannelService(t)
-	require.NotNil(t, service)
-
-	resources, err := service.GetByPartialName(emptyString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-
-	resources, err = service.GetByPartialName(whitespaceString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-}
-
 func TestChannelServiceNew(t *testing.T) {
 	serviceFunction := newChannelService
 	client := &sling.Sling{}
