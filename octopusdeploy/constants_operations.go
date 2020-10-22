@@ -7,6 +7,7 @@ const (
 	operationAPIGet                   string = "apiGet"
 	operationAPIPost                  string = "apiPost"
 	operationAPIUpdate                string = "apiUpdate"
+	operationDelete                   string = "Delete"
 	operationDeleteByID               string = "DeleteByID"
 	operationGet                      string = "Get"
 	operationGetAuthentication        string = "GetAuthentication"
