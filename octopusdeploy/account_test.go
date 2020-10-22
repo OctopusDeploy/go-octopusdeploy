@@ -8,33 +8,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestEmptyAccount(t *testing.T) {
+func TestAccount(t *testing.T) {
 	account := &Account{}
+	applicationID := uuid.New()
+	name := getRandomName()
+	subscriptionID := uuid.New()
+	tenantID := uuid.New()
 
 	require.NotNil(t, account)
 	assert.Error(t, account.Validate())
-}
 
-func TestAccountWithName(t *testing.T) {
-	name := getRandomName()
-	account := &Account{
+	account = &Account{
 		Name: name,
 	}
 
 	require.NotNil(t, account)
 	assert.Error(t, account.Validate())
-}
 
-func TestAccountWithAccountType(t *testing.T) {
-	account := &Account{AccountType: accountTypeUsernamePassword}
+	account = &Account{AccountType: accountTypeUsernamePassword}
 
 	require.NotNil(t, account)
 	assert.Error(t, account.Validate())
-}
 
-func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
-	name := getRandomName()
-	account := &Account{
+	account = &Account{
 		AccountType:            accountTypeUsernamePassword,
 		Name:                   name,
 		TenantedDeploymentMode: "Untenanted",
@@ -42,38 +38,39 @@ func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
 
 	require.NotNil(t, account)
 	assert.NoError(t, account.Validate())
-}
 
-func TestNewAccountForAzureServicePrincipalAccountWithInvalidParameters(t *testing.T) {
-	name := getRandomName()
-	account := NewAccount(name, accountTypeAzureServicePrincipal)
+	account = &Account{
+		AccountType:            accountTypeUsernamePassword,
+		Name:                   "All",
+		TenantedDeploymentMode: "Untenanted",
+	}
+
+	require.NotNil(t, account)
+	assert.Error(t, account.Validate())
+
+	account = &Account{
+		AccountType:            accountTypeUsernamePassword,
+		Name:                   "all",
+		TenantedDeploymentMode: "Untenanted",
+	}
+
+	require.NotNil(t, account)
+	assert.Error(t, account.Validate())
+
+	account = NewAccount(name, accountTypeAzureServicePrincipal)
 	require.NoError(t, account.Validate())
-}
 
-func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidSubscriptionNumber(t *testing.T) {
-	name := getRandomName()
-	account := NewAccount(name, accountTypeAzureServicePrincipal)
-	subscriptionID := uuid.New()
+	account = NewAccount(name, accountTypeAzureServicePrincipal)
 	account.SubscriptionID = &subscriptionID
 	require.NoError(t, account.Validate())
-}
 
-func TestNewAccountForAzureServicePrincipalAccountWithInvalidClientID(t *testing.T) {
-	name := getRandomName()
-	account := NewAccount(name, accountTypeAzureServicePrincipal)
-	subscriptionID := uuid.New()
+	account = NewAccount(name, accountTypeAzureServicePrincipal)
 	account.SubscriptionID = &subscriptionID
 	assert.NoError(t, account.Validate())
-}
 
-func TestNewAccountForAzureServicePrincipalAccountOnlyWithValidProperties(t *testing.T) {
-	name := getRandomName()
-	account := NewAccount(name, accountTypeAzureServicePrincipal)
-	subscriptionID := uuid.New()
+	account = NewAccount(name, accountTypeAzureServicePrincipal)
 	account.SubscriptionID = &subscriptionID
-	applicationID := uuid.New()
 	account.ApplicationID = &applicationID
-	tenantID := uuid.New()
 	account.TenantID = &tenantID
 	assert.NoError(t, account.Validate())
 }
