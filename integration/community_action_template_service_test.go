@@ -63,6 +63,21 @@ func TestCommunityActionTemplateServiceGetBy(t *testing.T) {
 	}
 }
 
+func TestCommunityActionTemplateServiceGet(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	query := octopusdeploy.CommunityActionTemplatesQuery{
+		Skip: 1,
+		Take: 20,
+	}
+
+	communityActionTemplates, err := octopusClient.CommunityActionTemplates.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, communityActionTemplates)
+	require.Equal(t, query.Take, len(communityActionTemplates.Items))
+}
+
 func TestCommunityActionTemplateServiceGetAll(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
