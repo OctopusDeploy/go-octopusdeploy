@@ -26,7 +26,7 @@ func (s runbookService) Add(runbook *Runbook) (*Runbook, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), runbook, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), runbook, new(Runbook), path)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (s runbookService) GetByID(id string) (*Runbook, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(Runbook), path)
 	if err != nil {
 		return nil, createResourceNotFoundError("runbook", "ID", id)
 	}
@@ -74,7 +74,7 @@ func (s runbookService) Update(runbook *Runbook) (*Runbook, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), runbook, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), runbook, new(Runbook), path)
 	if err != nil {
 		return nil, err
 	}

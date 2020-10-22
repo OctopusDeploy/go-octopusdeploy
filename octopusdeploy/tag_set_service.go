@@ -26,7 +26,7 @@ func (s tagSetService) Add(resource *TagSet) (*TagSet, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(TagSet), path)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (s tagSetService) GetByID(id string) (*TagSet, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(TagSet), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -96,7 +96,7 @@ func (s tagSetService) Update(resource TagSet) (*TagSet, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(TagSet), path)
 	if err != nil {
 		return nil, err
 	}

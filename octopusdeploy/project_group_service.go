@@ -42,7 +42,7 @@ func (s projectGroupService) Add(resource *ProjectGroup) (*ProjectGroup, error) 
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(ProjectGroup), path)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (s projectGroupService) GetByID(id string) (*ProjectGroup, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(ProjectGroup), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -97,7 +97,7 @@ func (s projectGroupService) Update(resource ProjectGroup) (*ProjectGroup, error
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(ProjectGroup), path)
 	if err != nil {
 		return nil, err
 	}

@@ -48,7 +48,7 @@ func (s machinePolicyService) Add(resource *MachinePolicy) (*MachinePolicy, erro
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(MachinePolicy), path)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (s machinePolicyService) GetByID(id string) (*MachinePolicy, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(MachinePolicy), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -97,7 +97,7 @@ func (s machinePolicyService) GetByPartialName(name string) ([]*MachinePolicy, e
 }
 
 func (s machinePolicyService) GetTemplate() (*MachinePolicy, error) {
-	resp, err := apiGet(s.getClient(), s.itemType, s.templatePath)
+	resp, err := apiGet(s.getClient(), new(MachinePolicy), s.templatePath)
 	if err != nil {
 		return nil, err
 	}

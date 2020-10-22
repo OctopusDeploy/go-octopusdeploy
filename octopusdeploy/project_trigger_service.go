@@ -41,7 +41,7 @@ func (s projectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(ProjectTrigger), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -81,7 +81,7 @@ func (s projectTriggerService) Add(resource *ProjectTrigger) (*ProjectTrigger, e
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (s projectTriggerService) Update(resource ProjectTrigger) (*ProjectTrigger,
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
 	}

@@ -20,7 +20,7 @@ func (s rootService) Get() (*RootResource, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(RootResource), path)
 	if err != nil {
 		return nil, err
 	}

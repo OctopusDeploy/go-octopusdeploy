@@ -50,7 +50,7 @@ func (s environmentService) Add(environment *Environment) (*Environment, error) 
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), environment, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), environment, new(Environment), path)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (s environmentService) GetByID(id string) (*Environment, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(Environment), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

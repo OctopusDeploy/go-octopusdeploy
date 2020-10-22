@@ -44,7 +44,7 @@ func (s spaceService) Add(resource *Space) (*Space, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(Space), path)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (s spaceService) GetByID(id string) (*Space, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(Space), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -124,7 +124,7 @@ func (s spaceService) Update(resource *Space) (*Space, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(Space), path)
 	if err != nil {
 		return nil, err
 	}

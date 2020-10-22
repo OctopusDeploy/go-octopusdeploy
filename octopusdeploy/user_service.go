@@ -62,7 +62,7 @@ func (s userService) Add(user *User) (*User, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), user, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), user, new(User), path)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (s userService) GetByID(id string) (*User, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(User), path)
 	if err != nil {
 		return nil, createResourceNotFoundError("user", "ID", id)
 	}
@@ -146,7 +146,7 @@ func (s userService) GetMe() (*User, error) {
 	path := trimTemplate(s.getPath())
 	path = path + "/me"
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(User), path)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func (s userService) Update(resource User) (*User, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(User), path)
 	if err != nil {
 		return nil, err
 	}

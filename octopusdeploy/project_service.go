@@ -32,7 +32,7 @@ func (s projectService) GetByID(id string) (*Project, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(Project), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -177,7 +177,7 @@ func (s projectService) Add(resource *Project) (*Project, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(Project), path)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func (s projectService) Update(project *Project) (*Project, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), project, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), project, new(Project), path)
 	if err != nil {
 		return nil, err
 	}

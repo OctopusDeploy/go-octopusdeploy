@@ -40,7 +40,7 @@ func (s libraryVariableSetService) Add(resource *LibraryVariableSet) (*LibraryVa
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(LibraryVariableSet), path)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (s libraryVariableSetService) GetByID(id string) (*LibraryVariableSet, erro
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(LibraryVariableSet), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -98,7 +98,7 @@ func (s libraryVariableSetService) Update(libraryVariableSet *LibraryVariableSet
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), libraryVariableSet, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), libraryVariableSet, new(LibraryVariableSet), path)
 	if err != nil {
 		return nil, err
 	}

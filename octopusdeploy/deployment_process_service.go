@@ -33,7 +33,7 @@ func (s deploymentProcessService) GetByID(id string) (*DeploymentProcess, error)
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(DeploymentProcess), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -47,7 +47,7 @@ func (s deploymentProcessService) Update(resource DeploymentProcess) (*Deploymen
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(DeploymentProcess), path)
 	if err != nil {
 		return nil, err
 	}

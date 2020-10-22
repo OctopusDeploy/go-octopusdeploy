@@ -40,7 +40,7 @@ func (s teamService) Add(resource *Team) (*Team, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(Team), path)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (s teamService) GetByID(id string) (*Team, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(Team), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

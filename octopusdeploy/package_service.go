@@ -52,7 +52,7 @@ func (s packageService) Add(octopusPackage *Package) (*Package, error) {
 
 	path += "/raw"
 
-	resp, err := apiAdd(s.getClient(), octopusPackage, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), octopusPackage, new(Package), path)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (s packageService) GetByID(id string) (*Package, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(Package), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -98,7 +98,7 @@ func (s packageService) Update(octopusPackage *Package) (*Package, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), octopusPackage, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), octopusPackage, new(Package), path)
 	if err != nil {
 		return nil, err
 	}

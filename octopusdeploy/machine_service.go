@@ -48,7 +48,7 @@ func (s machineService) Add(resource *DeploymentTarget) (*DeploymentTarget, erro
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(DeploymentTarget), path)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func (s machineService) GetByID(id string) (*DeploymentTarget, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(DeploymentTarget), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -113,7 +113,7 @@ func (s machineService) Update(resource DeploymentTarget) (*DeploymentTarget, er
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(DeploymentTarget), path)
 	if err != nil {
 		return nil, err
 	}

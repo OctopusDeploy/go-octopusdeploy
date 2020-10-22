@@ -24,7 +24,7 @@ func (s configurationService) GetByID(id string) (*ConfigurationSection, error) 
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(ConfigurationSection), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}

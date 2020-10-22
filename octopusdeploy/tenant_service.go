@@ -64,7 +64,7 @@ func (s tenantService) Add(resource *Tenant) (*Tenant, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(Tenant), path)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +144,7 @@ func (s tenantService) Update(resource *Tenant) (*Tenant, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(Tenant), path)
 	if err != nil {
 		return nil, err
 	}
