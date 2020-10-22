@@ -4,6 +4,12 @@
 
 A Go client for the [Octopus Deploy](https://octopus.com/) API. This client is used by the [Octopus Deploy Terraform Provider](https://github.com/OctopusDeploy/terraform-provider-octopusdeploy).
 
+## Install
+
+```
+go get "github.com/OctopusDeploy/go-octopusdeploy"
+```
+
 ## Usage
 
 ```go
