@@ -15,6 +15,7 @@ const (
 // IService defines the contract for all services that communicate with the
 // Octopus API.
 type IService interface {
+	getBasePath() string
 	getClient() *sling.Sling
 	getName() string
 	getPath() string
@@ -22,6 +23,7 @@ type IService interface {
 }
 
 type service struct {
+	BasePath    string
 	Name        string
 	Path        string
 	Sling       *sling.Sling
@@ -39,14 +41,20 @@ func newService(name string, sling *sling.Sling, uriTemplate string, itemType IR
 	}
 
 	template, _ := uritemplates.Parse(strings.TrimSpace(uriTemplate))
+	basePath, _ := template.Expand(make(map[string]interface{}))
 
 	return service{
 		itemType:    itemType,
+		BasePath:    basePath,
 		Name:        name,
 		Path:        strings.TrimSpace(uriTemplate),
 		Sling:       sling,
 		URITemplate: template,
 	}
+}
+
+func (s service) getBasePath() string {
+	return s.BasePath
 }
 
 func (s service) getClient() *sling.Sling {
@@ -100,13 +108,7 @@ func getAllPath(s IService) (string, error) {
 		return emptyString, err
 	}
 
-	values := make(map[string]interface{})
-	path, err := s.getURITemplate().Expand(values)
-	if err != nil {
-		return emptyString, err
-	}
-
-	return path + "/all", nil
+	return s.getBasePath() + "/all", nil
 }
 
 func getByIDPath(s IService, id string) (string, error) {
