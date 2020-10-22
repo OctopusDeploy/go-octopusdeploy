@@ -43,16 +43,28 @@ func CreateTestWorker(t *testing.T, service *workerService) *Worker {
 	require.NotNil(t, createdWorker)
 	require.NotEmpty(t, createdWorker.GetID())
 
+	// verify the add operation was successful
+	workerToCompare, err := service.GetByID(createdWorker.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, workerToCompare)
+	IsEqualWorkers(t, createdWorker, workerToCompare)
+
 	return createdWorker
 }
 
-func DeleteTestWorker(t *testing.T, service *workerService, worker *Worker) error {
+func DeleteTestWorker(t *testing.T, service *workerService, worker *Worker) {
 	if service == nil {
 		service = createWorkerService(t)
 	}
 	require.NotNil(t, service)
 
-	return service.DeleteByID(worker.GetID())
+	err := service.DeleteByID(worker.GetID())
+	require.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedWorker, err := service.GetByID(worker.GetID())
+	require.Error(t, err)
+	require.Nil(t, deletedWorker)
 }
 
 func IsEqualWorkers(t *testing.T, expected *Worker, actual *Worker) {
@@ -83,6 +95,12 @@ func UpdateWorker(t *testing.T, service *workerService, worker *Worker) *Worker 
 	assert.NoError(t, err)
 	require.NotNil(t, updatedWorker)
 
+	// verify the update operation was successful
+	workerToCompare, err := service.GetByID(updatedWorker.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, workerToCompare)
+	IsEqualWorkers(t, updatedWorker, workerToCompare)
+
 	return updatedWorker
 }
 
@@ -94,14 +112,12 @@ func TestWorkerServiceAdd(t *testing.T) {
 	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterWorker))
 	require.Nil(t, resource)
 
-	// TODO: test this call; it should NOT send anything via HTTP
 	resource, err = service.Add(&Worker{})
 	require.Error(t, err)
 	require.Nil(t, resource)
 
 	worker := CreateTestWorker(t, service)
-	err = DeleteTestWorker(t, service, worker)
-	require.NoError(t, err)
+	defer DeleteTestWorker(t, service, worker)
 }
 
 func TestWorkerServiceAddGetDelete(t *testing.T) {
@@ -116,12 +132,8 @@ func TestWorkerServiceAddGetDelete(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, resource)
 
-	resource = CreateTestWorker(t, service)
-
-	worker, err := service.GetByID(resource.GetID())
-	require.NoError(t, err)
-	require.NotNil(t, worker)
-	IsEqualWorkers(t, resource, worker)
+	worker := CreateTestWorker(t, service)
+	defer DeleteTestWorker(t, service, worker)
 
 	for _, id := range worker.WorkerPoolIDs {
 		workerPoolService := createWorkerPoolService(t)
@@ -129,13 +141,9 @@ func TestWorkerServiceAddGetDelete(t *testing.T) {
 
 		workerPool, err := workerPoolService.GetByID(id)
 		require.NoError(t, err)
-
-		err = DeleteTestWorkerPool(t, workerPoolService, workerPool)
-		require.NoError(t, err)
+		require.NotNil(t, workerPool)
+		defer DeleteTestWorkerPool(t, workerPoolService, workerPool)
 	}
-
-	err = DeleteTestWorker(t, service, worker)
-	require.NoError(t, err)
 }
 
 func TestWorkerServiceDelete(t *testing.T) {
@@ -162,8 +170,7 @@ func TestWorkerServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, workers)
 
 	for _, worker := range workers {
-		err = DeleteTestWorker(t, service, worker)
-		require.NoError(t, err)
+		defer DeleteTestWorker(t, service, worker)
 	}
 }
 
@@ -188,6 +195,7 @@ func TestWorkerServiceGetAll(t *testing.T) {
 	for i := 0; i < 30; i++ {
 		worker := CreateTestWorker(t, service)
 		require.NotNil(t, worker)
+		defer DeleteTestWorker(t, service, worker)
 	}
 
 	workers, err := service.GetAll()
@@ -197,8 +205,7 @@ func TestWorkerServiceGetAll(t *testing.T) {
 	for _, worker := range workers {
 		require.NotNil(t, worker)
 		require.NotEmpty(t, worker.GetID())
-		err = DeleteTestWorker(t, service, worker)
-		require.NoError(t, err)
+		defer DeleteTestWorker(t, service, worker)
 	}
 }
 
