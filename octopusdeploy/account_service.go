@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 	"github.com/jinzhu/copier"
 )
 
@@ -49,13 +50,13 @@ func toAccountArray(accounts []*Account) []IAccount {
 }
 
 func (s *accountService) getPagedResponse(path string) ([]IAccount, error) {
-	resources := []*Account{}
+	resources := []IAccount{}
 	loadNextPage := true
 
 	for loadNextPage {
 		resp, err := apiGet(s.getClient(), new(Accounts), path)
 		if err != nil {
-			return toAccountArray(resources), err
+			return resources, err
 		}
 
 		responseList := resp.(*Accounts)
@@ -63,7 +64,7 @@ func (s *accountService) getPagedResponse(path string) ([]IAccount, error) {
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
 
-	return toAccountArray(resources), nil
+	return resources, nil
 }
 
 // Add creates a new account.
@@ -101,28 +102,44 @@ func (s *accountService) Add(resource IAccount) (IAccount, error) {
 	return resp.(IAccount), nil
 }
 
+// Get returns a collection of accounts based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s accountService) Get(accountsQuery AccountsQuery) (*Accounts, error) {
+	v, _ := query.Values(accountsQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	resp, err := apiGet(s.getClient(), new(Accounts), path)
+	if err != nil {
+		return &Accounts{}, err
+	}
+
+	return resp.(*Accounts), nil
+}
+
 // GetAll returns all accounts. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s *accountService) GetAll() ([]IAccount, error) {
 	items := []*Account{}
-	path, err := getAllPath(s)
-	if err != nil {
-		return toAccountArray(items), err
-	}
+	path := s.BasePath + "/all"
 
-	_, err = apiGet(s.getClient(), &items, path)
+	_, err := apiGet(s.getClient(), &items, path)
 	return toAccountArray(items), err
 }
 
 // GetByID returns the account that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s accountService) GetByID(id string) (IAccount, error) {
-	path, err := getByIDPath(s, id)
-	if err != nil {
-		return nil, err
+	if isEmpty(id) {
+		return nil, createInvalidParameterError(operationGetByID, parameterID)
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	path := s.BasePath + "/" + id
+	resp, err := apiGet(s.getClient(), new(Account), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -130,67 +147,9 @@ func (s accountService) GetByID(id string) (IAccount, error) {
 	return resp.(IAccount), nil
 }
 
-// GetByIDs returns the accounts that match the input IDs.
-func (s *accountService) GetByIDs(ids []string) ([]IAccount, error) {
-	if len(ids) == 0 {
-		return []IAccount{}, nil
-	}
-
-	path, err := getByIDsPath(s, ids)
-	if err != nil {
-		return []IAccount{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
-// GetByAccountType performs a lookup and returns the accounts with a matching
-// account type.
-func (s *accountService) GetByAccountType(accountType string) ([]IAccount, error) {
-	path, err := getByAccountTypePath(s, accountType)
-	if err != nil {
-		return []IAccount{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
-// GetByName performs a lookup and returns a single instance of an account with a matching name.
-func (s *accountService) GetByName(name string) (IAccount, error) {
-	accounts, err := s.GetByPartialName(name)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, account := range accounts {
-		if account.GetName() == name {
-			return toAccountResource(account), nil
-		}
-	}
-
-	return nil, nil
-}
-
-// GetByPartialName performs a lookup and returns instances of an account with
-// a matching partial name.
-func (s *accountService) GetByPartialName(name string) ([]IAccount, error) {
-	path, err := getByPartialNamePath(s, name)
-	if err != nil {
-		return []IAccount{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
 // GetUsages lists the projects and deployments which are using an account.
 func (s *accountService) GetUsages(account IAccount) (*AccountUsage, error) {
-	err := validateInternalState(s)
-	if err != nil {
-		return nil, err
-	}
-
 	path := account.GetLinks()[linkUsages]
-
 	resp, err := apiGet(s.getClient(), new(AccountUsage), path)
 	if err != nil {
 		return nil, err
