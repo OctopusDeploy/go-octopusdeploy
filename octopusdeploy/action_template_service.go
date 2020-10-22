@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 )
 
 // actionTemplateService handles communication for any operations in the
@@ -54,7 +55,7 @@ func (s actionTemplateService) Add(resource *ActionTemplate) (*ActionTemplate, e
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(ActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -62,16 +63,32 @@ func (s actionTemplateService) Add(resource *ActionTemplate) (*ActionTemplate, e
 	return resp.(*ActionTemplate), nil
 }
 
+// Get returns a collection of action templates based on the criteria defined
+// by its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func (s actionTemplateService) Get(actionTemplatesQuery ActionTemplatesQuery) (*ActionTemplates, error) {
+	v, _ := query.Values(actionTemplatesQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	resp, err := apiGet(s.getClient(), new(ActionTemplates), path)
+	if err != nil {
+		return &ActionTemplates{}, err
+	}
+
+	return resp.(*ActionTemplates), nil
+}
+
 // GetAll returns all action templates. If none can be found or an error
 // occurs, it returns an empty collection.
 func (s actionTemplateService) GetAll() ([]*ActionTemplate, error) {
 	items := []*ActionTemplate{}
-	path, err := getAllPath(s)
-	if err != nil {
-		return items, err
-	}
+	path := s.BasePath + "/all"
 
-	_, err = apiGet(s.getClient(), &items, path)
+	_, err := apiGet(s.getClient(), &items, path)
 	return items, err
 }
 
@@ -99,7 +116,7 @@ func (s actionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	resp, err := apiGet(s.getClient(), new(ActionTemplate), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
@@ -107,7 +124,8 @@ func (s actionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 	return resp.(*ActionTemplate), nil
 }
 
-// Search lists all available action templates including built-in, custom, and community-contributed step templates.
+// Search lists all available action templates including built-in, custom, and
+// community-contributed step templates.
 func (s actionTemplateService) Search() ([]ActionTemplateSearch, error) {
 	items := new([]ActionTemplateSearch)
 
@@ -123,16 +141,6 @@ func (s actionTemplateService) Search() ([]ActionTemplateSearch, error) {
 	return *items, err
 }
 
-// GetByName returns the action templates with a matching partial name.
-func (s actionTemplateService) GetByName(name string) ([]*ActionTemplate, error) {
-	path, err := getByNamePath(s, name)
-	if err != nil {
-		return []*ActionTemplate{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
 // Update modifies an ActionTemplate based on the one provided as input.
 func (s actionTemplateService) Update(resource ActionTemplate) (*ActionTemplate, error) {
 	path, err := getUpdatePath(s, &resource)
@@ -140,7 +148,7 @@ func (s actionTemplateService) Update(resource ActionTemplate) (*ActionTemplate,
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(ActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
