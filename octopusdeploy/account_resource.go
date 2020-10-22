@@ -10,7 +10,7 @@ type AccountResource struct {
 	AccountType            string   `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount Token"`
 	Description            string   `json:"Description,omitempty"`
 	EnvironmentIDs         []string `json:"EnvironmentIds,omitempty"`
-	Name                   string   `json:"Name" validate:"required,notblank"`
+	Name                   string   `json:"Name" validate:"required,notblank,notall"`
 	SpaceID                string   `json:"SpaceId,omitempty" validate:"omitempty,notblank"`
 	TenantedDeploymentMode string   `json:"TenantedDeploymentParticipation" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
 	TenantIDs              []string `json:"TenantIds,omitempty"`
@@ -62,6 +62,10 @@ func (a *AccountResource) SetName(name string) {
 func (a *AccountResource) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
+	if err != nil {
+		return err
+	}
+	err = v.RegisterValidation("notall", NotAll)
 	if err != nil {
 		return err
 	}
