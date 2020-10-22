@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 )
 
 type channelService struct {
@@ -47,49 +48,57 @@ func (s channelService) Add(resource *Channel) (*Channel, error) {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, s.itemType, path)
+	resp, err := apiAdd(s.getClient(), resource, new(Channel), path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*Channel), nil
+}
+
+// Get returns a collection of channels based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s channelService) Get(channelsQuery ChannelsQuery) (*Channels, error) {
+	v, _ := query.Values(channelsQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	resp, err := apiGet(s.getClient(), new(Channels), path)
+	if err != nil {
+		return &Channels{}, err
+	}
+
+	return resp.(*Channels), nil
 }
 
 // GetAll returns all channels. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s channelService) GetAll() ([]*Channel, error) {
-	path, err := getPath(s)
-	if err != nil {
-		return []*Channel{}, err
-	}
+	items := []*Channel{}
+	path := s.BasePath + "/all"
 
-	return s.getPagedResponse(path)
+	_, err := apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByID returns the channel that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s channelService) GetByID(id string) (*Channel, error) {
-	path, err := getByIDPath(s, id)
-	if err != nil {
-		return nil, err
+	if isEmpty(id) {
+		return nil, createInvalidParameterError(operationGetByID, parameterID)
 	}
 
-	resp, err := apiGet(s.getClient(), s.itemType, path)
+	path := s.BasePath + "/" + id
+	resp, err := apiGet(s.getClient(), new(Channel), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
 	return resp.(*Channel), nil
-}
-
-// GetByPartialName performs a lookup and returns instances of a channel with a matching partial name.
-func (s channelService) GetByPartialName(name string) ([]*Channel, error) {
-	path, err := getByPartialNamePath(s, name)
-	if err != nil {
-		return []*Channel{}, err
-	}
-
-	return s.getPagedResponse(path)
 }
 
 func (s channelService) GetProject(channel *Channel) (*Project, error) {
@@ -154,7 +163,7 @@ func (s channelService) Update(resource Channel) (*Channel, error) {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, s.itemType, path)
+	resp, err := apiUpdate(s.getClient(), resource, new(Channel), path)
 	if err != nil {
 		return nil, err
 	}
