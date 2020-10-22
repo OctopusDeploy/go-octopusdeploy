@@ -36,7 +36,7 @@ func DeleteTestTeam(t *testing.T, client *octopusdeploy.Client, team *octopusdep
 	}
 	require.NotNil(t, client)
 
-	err := client.Teams.DeleteByID(team.GetID())
+	err := client.Teams.Delete(team)
 	assert.NoError(t, err)
 
 	// verify the delete operation was successful

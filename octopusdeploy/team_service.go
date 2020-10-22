@@ -48,6 +48,22 @@ func (s teamService) Add(resource *Team) (*Team, error) {
 	return resp.(*Team), nil
 }
 
+// Delete will delete a team if it is not a built-in team (i.e. the field,
+// CanBeDeleted is true). If the team cannot be deleted or an error occurs, it
+// returns an error.
+func (s teamService) Delete(team *Team) error {
+	if team == nil {
+		return createInvalidParameterError(operationDelete, parameterTeam)
+	}
+
+	if !team.CanBeDeleted {
+		return createBuiltInTeamsCannotDeleteError()
+	}
+
+	path := s.getBasePath() + "/" + team.GetID()
+	return apiDelete(s.getClient(), path)
+}
+
 // GetAll returns all teams. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s teamService) GetAll() ([]*Team, error) {
