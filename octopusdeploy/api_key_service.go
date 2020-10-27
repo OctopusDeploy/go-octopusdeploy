@@ -14,14 +14,14 @@ type apiKeyService struct {
 // newAPIKeyService returns an apiKeyService with a preconfigured client.
 func newAPIKeyService(sling *sling.Sling, uriTemplate string) *apiKeyService {
 	return &apiKeyService{
-		service: newService(serviceAPIKeyService, sling, uriTemplate, new(APIKey)),
+		service: newService(ServiceAPIKeyService, sling, uriTemplate),
 	}
 }
 
 // GetByUserID lists all API keys for a user, returning the most recent results first.
 func (s apiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
 	if isEmpty(userID) {
-		return nil, createInvalidParameterError(operationGetByUserID, parameterUserID)
+		return nil, createInvalidParameterError(OperationGetByUserID, ParameterUserID)
 	}
 
 	err := validateInternalState(s)
@@ -53,11 +53,11 @@ func (s apiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
 // GetByID the API key that belongs to the user by its ID.
 func (s apiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error) {
 	if isEmpty(userID) {
-		return nil, createInvalidParameterError(operationGetByID, parameterUserID)
+		return nil, createInvalidParameterError(OperationGetByID, ParameterUserID)
 	}
 
 	if isEmpty(apiKeyID) {
-		return nil, createInvalidParameterError(operationGetByID, parameterAPIKeyID)
+		return nil, createInvalidParameterError(OperationGetByID, ParameterAPIKeyID)
 	}
 
 	err := validateInternalState(s)

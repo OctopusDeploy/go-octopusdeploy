@@ -156,19 +156,19 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 
 	switch communicationStyle {
 	case "AzureCloudService":
-		var serviceFabricEndpoint ServiceFabricEndpoint
-		err := json.Unmarshal(*endpoint, &serviceFabricEndpoint)
+		var ServiceFabricEndpoint ServiceFabricEndpoint
+		err := json.Unmarshal(*endpoint, &ServiceFabricEndpoint)
 		if err != nil {
 			return err
 		}
-		m.Endpoint = serviceFabricEndpoint
+		m.Endpoint = ServiceFabricEndpoint
 	case "AzureServiceFabricCluster":
-		var serviceFabricEndpoint ServiceFabricEndpoint
-		err := json.Unmarshal(*endpoint, &serviceFabricEndpoint)
+		var ServiceFabricEndpoint ServiceFabricEndpoint
+		err := json.Unmarshal(*endpoint, &ServiceFabricEndpoint)
 		if err != nil {
 			return err
 		}
-		m.Endpoint = serviceFabricEndpoint
+		m.Endpoint = ServiceFabricEndpoint
 	case "AzureWebApp":
 		var azureWebAppEndpoint AzureWebAppEndpoint
 		err := json.Unmarshal(*endpoint, &azureWebAppEndpoint)

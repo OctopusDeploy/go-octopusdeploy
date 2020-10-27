@@ -15,6 +15,6 @@ func newServerStatuService(sling *sling.Sling, uriTemplate string, extensionStat
 		extensionStatsPath: extensionStatsPath,
 		healthStatusPath:   healthStatusPath,
 		timezonesPath:      timezonesPath,
-		service:            newService(serviceServerStatuService, sling, uriTemplate, nil),
+		service:            newService(ServiceServerStatuService, sling, uriTemplate),
 	}
 }

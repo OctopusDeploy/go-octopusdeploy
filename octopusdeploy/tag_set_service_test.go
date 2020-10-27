@@ -9,11 +9,11 @@ import (
 )
 
 func TestNewTagSetService(t *testing.T) {
-	serviceFunction := newTagSetService
+	ServiceFunction := newTagSetService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
 	sortOrderPath := emptyString
-	serviceName := serviceTagSetService
+	ServiceName := ServiceTagSetService
 
 	testCases := []struct {
 		name          string
@@ -22,14 +22,14 @@ func TestNewTagSetService(t *testing.T) {
 		uriTemplate   string
 		sortOrderPath string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate, sortOrderPath},
-		{"EmptyURITemplate", serviceFunction, client, emptyString, sortOrderPath},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, sortOrderPath},
+		{"NilClient", ServiceFunction, nil, uriTemplate, sortOrderPath},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString, sortOrderPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, sortOrderPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.sortOrderPath)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

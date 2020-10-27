@@ -10,7 +10,7 @@ type interruptionService struct {
 
 func newInterruptionService(sling *sling.Sling, uriTemplate string) *interruptionService {
 	return &interruptionService{
-		service: newService(serviceInterruptionService, sling, uriTemplate, new(Interruption)),
+		service: newService(ServiceInterruptionService, sling, uriTemplate),
 	}
 }
 

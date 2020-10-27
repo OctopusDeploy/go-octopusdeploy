@@ -10,15 +10,15 @@ import (
 
 func createCommunityActionTemplateService(t *testing.T) *communityActionTemplateService {
 	service := newCommunityActionTemplateService(nil, TestURICommunityActionTemplates)
-	testNewService(t, service, TestURICommunityActionTemplates, serviceCommunityActionTemplateService)
+	testNewService(t, service, TestURICommunityActionTemplates, ServiceCommunityActionTemplateService)
 	return service
 }
 
 func TestCommunityActionTemplateServiceNew(t *testing.T) {
-	serviceFunction := newCommunityActionTemplateService
+	ServiceFunction := newCommunityActionTemplateService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceCommunityActionTemplateService
+	ServiceName := ServiceCommunityActionTemplateService
 
 	testCases := []struct {
 		name        string
@@ -26,14 +26,14 @@ func TestCommunityActionTemplateServiceNew(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -52,7 +52,7 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+			assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 			assert.Nil(t, resource)
 		})
 	}

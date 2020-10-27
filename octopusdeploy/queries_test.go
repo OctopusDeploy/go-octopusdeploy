@@ -1,22 +1,20 @@
 package octopusdeploy
 
 import (
-	"fmt"
 	"net/url"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
-
-	"github.com/google/go-querystring/query"
 	"github.com/stretchr/testify/require"
 )
 
 type TestQuery struct {
-	AccountType string   `url:"accountType,omitempty"`
-	IDs         []string `url:"ids,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	AccountType string   `uri:"accountType"`
+	ID          string   `uri:"id"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 func TestFormatter(t *testing.T) {
@@ -38,11 +36,28 @@ func TestFormatter(t *testing.T) {
 
 	test := TestQuery{
 		AccountType: "UsernamePassword",
+		ID:          "foo",
 		IDs:         []string{"Foo", "Bar"},
 		PartialName: "Foo Bar",
+		Skip:        0,
 		Take:        20,
 	}
 
-	v, _ := query.Values(test)
-	fmt.Print(v.Encode())
+	values := make(map[string]interface{})
+	values["accountType"] = test.AccountType
+	values["id"] = test.ID
+	values["ids"] = "Foo,Bar"
+	values["partialName"] = test.PartialName
+	values["skip"] = test.Skip
+	values["take"] = test.Take
+
+	expected, err := template.Expand(values)
+	require.NoError(t, err)
+	require.NotNil(t, expected)
+
+	actual, err := template.Expand(test)
+	require.NoError(t, err)
+	require.NotNil(t, actual)
+
+	require.Equal(t, expected, actual)
 }

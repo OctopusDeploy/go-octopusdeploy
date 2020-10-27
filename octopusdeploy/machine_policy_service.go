@@ -14,7 +14,7 @@ func newMachinePolicyService(sling *sling.Sling, uriTemplate string, templatePat
 	machinePolicyService := &machinePolicyService{
 		templatePath: templatePath,
 	}
-	machinePolicyService.service = newService(serviceMachinePolicyService, sling, uriTemplate, new(MachinePolicy))
+	machinePolicyService.service = newService(ServiceMachinePolicyService, sling, uriTemplate)
 
 	return machinePolicyService
 }
@@ -40,7 +40,7 @@ func (s machinePolicyService) getPagedResponse(path string) ([]*MachinePolicy, e
 // Add creates a new machine policy.
 func (s machinePolicyService) Add(resource *MachinePolicy) (*MachinePolicy, error) {
 	if resource == nil {
-		return nil, createInvalidParameterError(operationAdd, parameterMachinePolicy)
+		return nil, createInvalidParameterError(OperationAdd, ParameterMachinePolicy)
 	}
 
 	path, err := getAddPath(s, resource)

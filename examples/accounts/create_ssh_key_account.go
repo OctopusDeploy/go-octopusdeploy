@@ -14,9 +14,9 @@ func CreateSSHKeyAccountExample() {
 		spaceID    string = "space-id"
 
 		// account values
-		name           string                       = "SSH Key Account"
-		privateKeyFile octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("private-key")
-		username       string                       = "account-username"
+		name           string                        = "SSH Key Account"
+		privateKeyFile *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("private-key")
+		username       string                        = "account-username"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -31,7 +31,11 @@ func CreateSSHKeyAccountExample() {
 		return
 	}
 
-	sshKeyAccount := octopusdeploy.NewSSHKeyAccount(name, username, privateKeyFile)
+	sshKeyAccount, err := octopusdeploy.NewSSHKeyAccount(name, username, privateKeyFile)
+	if err != nil {
+		_ = fmt.Errorf("error creating SSH key account: %v", err)
+		return
+	}
 
 	// create account
 	createdAccount, err := client.Accounts.Add(sshKeyAccount)

@@ -8,6 +8,6 @@ type letsEncryptConfigurationService struct {
 
 func newLetsEncryptConfigurationService(sling *sling.Sling, uriTemplate string) *letsEncryptConfigurationService {
 	return &letsEncryptConfigurationService{
-		service: newService(serviceLetsEncryptConfigurationService, sling, uriTemplate, nil),
+		service: newService(ServiceLetsEncryptConfigurationService, sling, uriTemplate),
 	}
 }

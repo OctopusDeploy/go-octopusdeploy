@@ -32,7 +32,7 @@ type Project struct {
 	Slug                            string                       `json:"Slug,omitempty"`
 	SpaceID                         string                       `json:"SpaceId,omitempty"`
 	Templates                       []*ActionTemplateParameter   `json:"Templates,omitempty"`
-	TenantedDeploymentMode          string                       `json:"TenantedDeploymentMode" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
+	TenantedDeploymentMode          TenantedDeploymentMode       `json:"TenantedDeploymentMode"`
 	VariableSetID                   string                       `json:"VariableSetId,omitempty"`
 	VersionControlSettings          *VersionControlSettings      `json:"VersionControlSettings,omitempty"`
 	VersioningStrategy              VersioningStrategy           `json:"VersioningStrategy"`
@@ -50,7 +50,7 @@ func NewProject(name, lifeCycleID, projectGroupID string) *Project {
 			SkipMachineBehavior:         "None",
 		},
 		ProjectGroupID:         projectGroupID,
-		TenantedDeploymentMode: "Untenanted",
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 		VersioningStrategy: VersioningStrategy{
 			Template: "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
 		},

@@ -18,14 +18,14 @@ func newTenantService(sling *sling.Sling, uriTemplate string, missingVariablesPa
 		statusPath:           statusPath,
 		tagTestPath:          tagTestPath,
 	}
-	tenantService.service = newService(serviceTenantService, sling, uriTemplate, new(Tenant))
+	tenantService.service = newService(ServiceTenantService, sling, uriTemplate)
 
 	return tenantService
 }
 
 func (s tenantService) getByProjectIDPath(id string) (string, error) {
 	if isEmpty(id) {
-		return emptyString, createInvalidParameterError(operationGetByProjectID, parameterID)
+		return emptyString, createInvalidParameterError(OperationGetByProjectID, ParameterID)
 	}
 
 	err := validateInternalState(s)
@@ -34,7 +34,7 @@ func (s tenantService) getByProjectIDPath(id string) (string, error) {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterProjectID] = id
+	values[ParameterProjectID] = id
 
 	return s.getURITemplate().Expand(values)
 }

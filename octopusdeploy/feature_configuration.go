@@ -8,6 +8,6 @@ type featuresConfigurationService struct {
 
 func newFeaturesConfigurationService(sling *sling.Sling, uriTemplate string) *featuresConfigurationService {
 	return &featuresConfigurationService{
-		service: newService(serviceFeaturesConfigurationService, sling, uriTemplate, nil),
+		service: newService(ServiceFeaturesConfigurationService, sling, uriTemplate),
 	}
 }

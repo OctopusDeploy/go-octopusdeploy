@@ -8,7 +8,7 @@ type runbookSnapshotService struct {
 
 func newRunbookSnapshotService(sling *sling.Sling, uriTemplate string) *runbookSnapshotService {
 	runbookSnapshotService := &runbookSnapshotService{}
-	runbookSnapshotService.service = newService(serviceRunbookSnapshotService, sling, uriTemplate, nil)
+	runbookSnapshotService.service = newService(ServiceRunbookSnapshotService, sling, uriTemplate)
 
 	return runbookSnapshotService
 }

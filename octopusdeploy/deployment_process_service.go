@@ -10,7 +10,7 @@ type deploymentProcessService struct {
 
 func newDeploymentProcessService(sling *sling.Sling, uriTemplate string) *deploymentProcessService {
 	return &deploymentProcessService{
-		service: newService(serviceDeploymentProcessesService, sling, uriTemplate, new(DeploymentProcess)),
+		service: newService(ServiceDeploymentProcessesService, sling, uriTemplate),
 	}
 }
 

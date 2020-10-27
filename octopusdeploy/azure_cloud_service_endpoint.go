@@ -16,11 +16,11 @@ type AzureCloudServiceEndpoint struct {
 // NewAzureCloudServiceEndpoint creates and initializes a new Azure cloud
 // service endpoint.
 func NewAzureCloudServiceEndpoint() *AzureCloudServiceEndpoint {
-	serviceFabricEndpoint := &AzureCloudServiceEndpoint{
+	ServiceFabricEndpoint := &AzureCloudServiceEndpoint{
 		endpoint: *newEndpoint("AzureCloudService"),
 	}
 
-	return serviceFabricEndpoint
+	return ServiceFabricEndpoint
 }
 
 // GetAccountID returns the account ID associated with this Azure cloud service

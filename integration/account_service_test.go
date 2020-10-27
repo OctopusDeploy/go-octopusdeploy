@@ -19,14 +19,16 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, client *octopusdeploy.Clie
 	name := getRandomName()
 	secretKey := octopusdeploy.NewSensitiveValue(getRandomName())
 
-	account := octopusdeploy.NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	account, err := octopusdeploy.NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	require.NotNil(t, account)
+	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
 	createdAccount, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, createdAccount)
 	require.NotEmpty(t, createdAccount.GetID())
-	require.Equal(t, accountTypeAmazonWebServicesAccount, createdAccount.GetAccountType())
+	require.Equal(t, octopusdeploy.AccountTypeAmazonWebServicesAccount, createdAccount.GetAccountType())
 	require.Equal(t, name, createdAccount.GetName())
 
 	return createdAccount
@@ -45,7 +47,11 @@ func CreateTestAzureServicePrincipalAccount(t *testing.T, client *octopusdeploy.
 	subscriptionID := uuid.New()
 	tenantID := uuid.New()
 
-	account := octopusdeploy.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
+	account, err := octopusdeploy.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
 
 	// set Azure environment fields
 	if !isEmpty(azureEnvironment.Name) {
@@ -60,7 +66,7 @@ func CreateTestAzureServicePrincipalAccount(t *testing.T, client *octopusdeploy.
 	require.NoError(t, err)
 	require.NotNil(t, createdAccount)
 	require.NotEmpty(t, createdAccount.GetID())
-	require.Equal(t, accountTypeAzureServicePrincipal, createdAccount.GetAccountType())
+	require.Equal(t, octopusdeploy.AccountTypeAzureServicePrincipal, createdAccount.GetAccountType())
 	require.Equal(t, name, createdAccount.GetName())
 
 	return createdAccount
@@ -76,7 +82,11 @@ func CreateTestAzureSubscriptionAccount(t *testing.T, client *octopusdeploy.Clie
 	name := getRandomName()
 	subscriptionID := uuid.New()
 
-	account := octopusdeploy.NewAzureSubscriptionAccount(name, subscriptionID)
+	account, err := octopusdeploy.NewAzureSubscriptionAccount(name, subscriptionID)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
 
 	// set Azure environment fields
 	if !isEmpty(azureEnvironment.Name) {
@@ -104,8 +114,10 @@ func CreateTestSSHKeyAccount(t *testing.T, client *octopusdeploy.Client) octopus
 	username := getRandomName()
 	privateKeyFile := octopusdeploy.NewSensitiveValue(getRandomName())
 
-	account := octopusdeploy.NewSSHKeyAccount(name, username, privateKeyFile)
+	account, err := octopusdeploy.NewSSHKeyAccount(name, username, privateKeyFile)
 
+	require.NotNil(t, account)
+	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
 	resource, err := client.Accounts.Add(account)
@@ -124,8 +136,10 @@ func CreateTestTokenAccount(t *testing.T, client *octopusdeploy.Client) octopusd
 	name := getRandomName()
 	token := octopusdeploy.NewSensitiveValue(getRandomName())
 
-	account := octopusdeploy.NewTokenAccount(name, token)
+	account, err := octopusdeploy.NewTokenAccount(name, token)
 
+	require.NotNil(t, account)
+	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
 	resource, err := client.Accounts.Add(account)
@@ -143,8 +157,9 @@ func CreateTestUsernamePasswordAccount(t *testing.T, client *octopusdeploy.Clien
 
 	name := getRandomName()
 
-	account := octopusdeploy.NewUsernamePasswordAccount(name)
-
+	account, err := octopusdeploy.NewUsernamePasswordAccount(name)
+	require.NotNil(t, account)
+	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
 	resource, err := client.Accounts.Add(account)
@@ -164,9 +179,9 @@ func DeleteTestAccount(t *testing.T, client *octopusdeploy.Client, account octop
 	assert.NoError(t, err)
 
 	// verify the delete operation was successful
-	accounts, err := client.Accounts.GetByID(account.GetID())
+	deletedAccount, err := client.Accounts.GetByID(account.GetID())
 	assert.Error(t, err)
-	assert.Nil(t, accounts)
+	assert.Nil(t, deletedAccount)
 }
 
 func IsEqualAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octopusdeploy.IAccount) {
@@ -195,7 +210,7 @@ func UpdateAccount(t *testing.T, client *octopusdeploy.Client, account octopusde
 	require.NotNil(t, client)
 
 	updatedAccount, err := client.Accounts.Update(account)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	require.NotNil(t, updatedAccount)
 
 	return updatedAccount.(octopusdeploy.IAccount)
@@ -203,54 +218,13 @@ func UpdateAccount(t *testing.T, client *octopusdeploy.Client, account octopusde
 
 func ValidateAccount(t *testing.T, account octopusdeploy.IAccount) {
 	require.NoError(t, account.Validate())
+	require.NotEmpty(t, account.GetLinks())
 	require.NotEmpty(t, account.GetID())
 	require.NotEmpty(t, account.GetModifiedBy())
 	require.NotEmpty(t, account.GetModifiedOn())
-	require.NotEmpty(t, account.GetLinks())
+	require.NotEmpty(t, account.GetSpaceID())
 
-	baseAccount, ok := account.(*octopusdeploy.Account)
-	if ok {
-		require.NotEmpty(t, baseAccount.SpaceID)
-	} else {
-		switch account.GetAccountType() {
-		case accountTypeAmazonWebServicesAccount:
-			ValidateAmazonWebServicesAccount(t, account.(*octopusdeploy.AmazonWebServicesAccount))
-		case accountTypeAzureServicePrincipal:
-			ValidateAzureServicePrincipalAccount(t, account.(*octopusdeploy.AzureServicePrincipalAccount))
-		case accountTypeAzureSubscription:
-			ValidateAzureSubscriptionAccount(t, account.(*octopusdeploy.AzureSubscriptionAccount))
-		case accountTypeSshKeyPair:
-			ValidateSSHKeyAccount(t, account.(*octopusdeploy.SSHKeyAccount))
-		case accountTypeToken:
-			ValidateTokenAccount(t, account.(*octopusdeploy.TokenAccount))
-		case accountTypeUsernamePassword:
-			ValidateUsernamePasswordAccount(t, account.(*octopusdeploy.UsernamePasswordAccount))
-		}
-	}
-}
-
-func ValidateAmazonWebServicesAccount(t *testing.T, account *octopusdeploy.AmazonWebServicesAccount) {
-	require.NotEmpty(t, account.SpaceID)
-}
-
-func ValidateAzureServicePrincipalAccount(t *testing.T, account *octopusdeploy.AzureServicePrincipalAccount) {
-	require.NotEmpty(t, account.SpaceID)
-}
-
-func ValidateAzureSubscriptionAccount(t *testing.T, account *octopusdeploy.AzureSubscriptionAccount) {
-	require.NotEmpty(t, account.SpaceID)
-}
-
-func ValidateSSHKeyAccount(t *testing.T, account *octopusdeploy.SSHKeyAccount) {
-	require.NotEmpty(t, account.SpaceID)
-}
-
-func ValidateTokenAccount(t *testing.T, account *octopusdeploy.TokenAccount) {
-	require.NotEmpty(t, account.SpaceID)
-}
-
-func ValidateUsernamePasswordAccount(t *testing.T, account *octopusdeploy.UsernamePasswordAccount) {
-	require.NotEmpty(t, account.SpaceID)
+	// TODO: validate other fields/methods
 }
 
 func TestAccountServiceDeleteAll(t *testing.T) {
@@ -272,7 +246,7 @@ func TestAccountServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := client.Accounts.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(serviceAccountService, "ID", id), err)
+	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceAccountService, "ID", id), err)
 	require.Nil(t, resource)
 }
 
@@ -309,7 +283,11 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, accounts)
 
 	for _, account := range accounts {
-		query := octopusdeploy.AccountsQuery{PartialName: account.GetName()}
+		name := account.GetName()
+		query := octopusdeploy.AccountsQuery{
+			PartialName: name,
+			Take:        1,
+		}
 		namedAccounts, err := client.Accounts.Get(query)
 		require.NoError(t, err)
 		require.NotNil(t, namedAccounts)
@@ -331,7 +309,15 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 		require.NotNil(t, accountUsages)
 	}
 
-	accountTypes := []string{"None", accountTypeUsernamePassword, accountTypeSshKeyPair, accountTypeAzureSubscription, accountTypeAzureServicePrincipal, accountTypeAmazonWebServicesAccount, "AmazonWebServicesRoleAccount", accountTypeToken}
+	accountTypes := []octopusdeploy.AccountType{
+		octopusdeploy.AccountTypeNone,
+		octopusdeploy.AccountTypeUsernamePassword,
+		octopusdeploy.AccountTypeSSHKeyPair,
+		octopusdeploy.AccountTypeAzureSubscription,
+		octopusdeploy.AccountTypeAzureServicePrincipal,
+		octopusdeploy.AccountTypeAmazonWebServicesAccount,
+		octopusdeploy.AccountTypeToken,
+	}
 
 	for _, accountType := range accountTypes {
 		query := octopusdeploy.AccountsQuery{AccountType: accountType}

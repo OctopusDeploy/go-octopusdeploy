@@ -13,6 +13,6 @@ type eventService struct {
 
 func newEventService(sling *sling.Sling, uriTemplate string, agentsPath string, categoriesPath string, documentTypesPath string, groupsPath string) *eventService {
 	return &eventService{
-		service: newService(serviceEventService, sling, uriTemplate, nil),
+		service: newService(ServiceEventService, sling, uriTemplate),
 	}
 }

@@ -22,30 +22,6 @@ func NewDeploymentProcess(projectID string) *DeploymentProcess {
 	}
 }
 
-type DeploymentStepPackageRequirement string
-
-const (
-	DeploymentStepPackageRequirementLetOctopusDecide         = DeploymentStepPackageRequirement("LetOctopusDecide")
-	DeploymentStepPackageRequirementBeforePackageAcquisition = DeploymentStepPackageRequirement("BeforePackageAcquisition")
-	DeploymentStepPackageRequirementAfterPackageAcquisition  = DeploymentStepPackageRequirement("AfterPackageAcquisition")
-)
-
-type DeploymentStepCondition string
-
-const (
-	DeploymentStepConditionSuccess  = DeploymentStepCondition("Success")
-	DeploymentStepConditionFailure  = DeploymentStepCondition("Failure")
-	DeploymentStepConditionAlways   = DeploymentStepCondition("Always")
-	DeploymentStepConditionVariable = DeploymentStepCondition("Variable")
-)
-
-type DeploymentStepStartTrigger string
-
-const (
-	DeploymentStepStartTriggerStartAfterPrevious = DeploymentStepStartTrigger("StartAfterPrevious")
-	DeploymentStepStartTriggerStartWithPrevious  = DeploymentStepStartTrigger("StartWithPrevious")
-)
-
 const (
 	PackageAcquisitionLocationServer          = "Server"
 	PackageAcquisitionLocationExecutionTarget = "ExecutionTarget"

@@ -2,85 +2,122 @@ package octopusdeploy
 
 import (
 	"testing"
+	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestTokenAccountNew(t *testing.T) {
+	accountType := AccountTypeToken
+	description := emptyString
+	environmentIDs := []string{}
 	name := getRandomName()
-	token := NewSensitiveValue("new-value")
+	spaceID := emptyString
+	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
+	token := NewSensitiveValue(getRandomName())
 
-	tokenAccount := NewTokenAccount(name, token)
+	account, err := NewTokenAccount(name, token)
 
-	require.NotNil(t, tokenAccount)
-	require.NoError(t, tokenAccount.Validate())
-	require.Equal(t, emptyString, tokenAccount.Description)
-	require.Equal(t, emptyString, tokenAccount.GetDescription())
-	require.Equal(t, emptyString, tokenAccount.GetID())
-	require.Equal(t, name, tokenAccount.Name)
-	require.Equal(t, name, tokenAccount.GetName())
-	require.Equal(t, accountTypeToken, tokenAccount.AccountType)
-	require.Equal(t, accountTypeToken, tokenAccount.GetAccountType())
-	require.NotNil(t, tokenAccount.Links)
-	require.NotNil(t, tokenAccount.GetLinks())
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	// resource
+	require.Equal(t, emptyString, account.ID)
+	require.Equal(t, emptyString, account.ModifiedBy)
+	require.Nil(t, account.ModifiedOn)
+	require.NotNil(t, account.Links)
+
+	// IResource
+	require.Equal(t, emptyString, account.GetID())
+	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Nil(t, account.GetModifiedOn())
+	require.NotNil(t, account.GetLinks())
+
+	// account
+	require.Equal(t, description, account.Description)
+	require.Equal(t, environmentIDs, account.EnvironmentIDs)
+	require.Equal(t, name, account.Name)
+	require.Equal(t, spaceID, account.SpaceID)
+	require.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
+
+	// IAccount
+	require.Equal(t, accountType, account.GetAccountType())
+	require.Equal(t, description, account.GetDescription())
+	require.Equal(t, name, account.GetName())
+
+	// TokenAccount
+	require.Equal(t, token, account.Token)
 }
 
-func TestTokenAccountSetDescription(t *testing.T) {
-	description := getRandomName()
+func TestTokenAccountNewWithConfigs(t *testing.T) {
+	environmentIDs := []string{getRandomName(), getRandomName()}
+	invalidID := getRandomName()
+	invalidModifiedBy := getRandomName()
+	invalidModifiedOn := time.Now()
+	invalidName := getRandomName()
 	name := getRandomName()
-	token := NewSensitiveValue("new-value")
+	description := "Description for " + name + " (OK to Delete)"
+	spaceID := getRandomName()
+	tenantedDeploymentMode := TenantedDeploymentMode("Tenanted")
+	token := NewSensitiveValue(getRandomName())
 
-	tokenAccount := NewTokenAccount(name, token)
-	tokenAccount.Description = description
+	options := func(a *TokenAccount) {
+		a.Description = description
+		a.EnvironmentIDs = environmentIDs
+		a.ID = invalidID
+		a.ModifiedBy = invalidModifiedBy
+		a.ModifiedOn = &invalidModifiedOn
+		a.Name = invalidName
+		a.SpaceID = spaceID
+		a.TenantedDeploymentMode = tenantedDeploymentMode
+		a.Token = token
+	}
 
-	require.NoError(t, tokenAccount.Validate())
-	require.Equal(t, description, tokenAccount.Description)
-	require.Equal(t, description, tokenAccount.GetDescription())
+	account, err := NewTokenAccount(name, token, options)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	// resource
+	require.Equal(t, emptyString, account.ID)
+	require.Equal(t, emptyString, account.ModifiedBy)
+	require.Nil(t, account.ModifiedOn)
+	require.NotNil(t, account.Links)
+
+	// IResource
+	require.Equal(t, emptyString, account.GetID())
+	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Nil(t, account.GetModifiedOn())
+	require.NotNil(t, account.GetLinks())
+
+	// account
+	require.Equal(t, description, account.Description)
+	require.Equal(t, environmentIDs, account.EnvironmentIDs)
+	require.Equal(t, name, account.Name)
+	require.Equal(t, spaceID, account.SpaceID)
+	require.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
+
+	// IAccount
+	require.Equal(t, AccountTypeToken, account.GetAccountType())
+	require.Equal(t, description, account.GetDescription())
+	require.Equal(t, name, account.GetName())
+
+	// TokenAccount
+	require.Equal(t, token, account.Token)
 }
 
 func TestTokenAccountSetName(t *testing.T) {
 	name := getRandomName()
-	token := NewSensitiveValue("new-value")
+	token := NewSensitiveValue(getRandomName())
 
-	tokenAccount := NewTokenAccount(name, token)
+	account, err := NewTokenAccount(name, token)
 
-	require.NoError(t, tokenAccount.Validate())
-	require.Equal(t, name, tokenAccount.Name)
-	require.Equal(t, name, tokenAccount.GetName())
-}
-
-func TestTokenAccountTypes(t *testing.T) {
-	name := getRandomName()
-	token := NewSensitiveValue("new-value")
-
-	account := NewTokenAccount(name, token)
+	require.NotNil(t, account)
+	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
-	account.AccountType = "None"
-	assert.Error(t, account.Validate())
-
-	account.AccountType = "none"
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeUsernamePassword
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeAzureSubscription
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeAzureServicePrincipal
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeAmazonWebServicesAccount
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeSshKeyPair
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeToken
-	assert.NoError(t, account.Validate())
-
-	account.AccountType = "token"
-	assert.Error(t, account.Validate())
+	require.Equal(t, name, account.Name)
+	require.Equal(t, name, account.GetName())
 }

@@ -11,6 +11,6 @@ type serverConfigurationService struct {
 func newServerConfigurationService(sling *sling.Sling, uriTemplate string, settingsPath string) *serverConfigurationService {
 	return &serverConfigurationService{
 		settingsPath: settingsPath,
-		service:      newService(serviceServerConfigurationService, sling, uriTemplate, nil),
+		service:      newService(ServiceServerConfigurationService, sling, uriTemplate),
 	}
 }

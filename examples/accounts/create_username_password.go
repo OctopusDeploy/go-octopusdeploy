@@ -14,6 +14,7 @@ func CreateUsernamePasswordExample() {
 		spaceID    string = "space-id"
 
 		// account values
+		password string = "password-value"
 		name     string = "Username/Password Account"
 		username string = "account-username"
 	)
@@ -30,10 +31,25 @@ func CreateUsernamePasswordExample() {
 		return
 	}
 
-	usernamePasswordAccount := octopusdeploy.NewUsernamePasswordAccount(name)
-
-	// fill in account details
+	// option 1: create a username/password account and assign values to fields
+	usernamePasswordAccount, err := octopusdeploy.NewUsernamePasswordAccount(name)
+	if err != nil {
+		_ = fmt.Errorf("error creating username/password account: %v", err)
+	}
+	usernamePasswordAccount.Password = octopusdeploy.NewSensitiveValue(password)
 	usernamePasswordAccount.Username = username
+
+	// option 2: create a username/password account and assign values to fields
+	// using the variadic configuration option
+	options := func(u *octopusdeploy.UsernamePasswordAccount) {
+		u.Password = octopusdeploy.NewSensitiveValue(password)
+		u.Username = username
+	}
+
+	usernamePasswordAccount, err = octopusdeploy.NewUsernamePasswordAccount(name, options)
+	if err != nil {
+		_ = fmt.Errorf("error creating username/password account: %v", err)
+	}
 
 	// create account
 	createdAccount, err := client.Accounts.Add(usernamePasswordAccount)

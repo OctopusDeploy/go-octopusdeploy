@@ -8,6 +8,6 @@ type scheduledProjectTriggerService struct {
 
 func newScheduledProjectTriggerService(sling *sling.Sling, uriTemplate string) *scheduledProjectTriggerService {
 	return &scheduledProjectTriggerService{
-		service: newService(serviceScheduledProjectTriggerService, sling, uriTemplate, nil),
+		service: newService(ServiceScheduledProjectTriggerService, sling, uriTemplate),
 	}
 }

@@ -11,7 +11,6 @@ type Variables struct {
 
 type Variable struct {
 	Description string                 `json:"Description"`
-	ID          string                 `json:"Id"`
 	IsEditable  bool                   `json:"IsEditable"`
 	IsSensitive bool                   `json:"IsSensitive"`
 	Name        string                 `json:"Name"`

@@ -4,14 +4,28 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/url"
 	"os"
+	"reflect"
 	"regexp"
 	"strings"
 
 	"github.com/dghubble/sling"
 )
 
-func isNil(i IResource) bool {
+func isNilFixed(i interface{}) bool {
+	if i == nil {
+		return true
+	}
+	switch reflect.TypeOf(i).Kind() {
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
+		return reflect.ValueOf(i).IsNil()
+	}
+	return false
+}
+
+func isNil(i interface{}) bool {
 	var ret bool
 
 	switch i.(type) {
@@ -93,6 +107,9 @@ func isNil(i IResource) bool {
 	case *Release:
 		v := i.(*Release)
 		ret = v == nil
+	case *ReleaseQuery:
+		v := i.(*ReleaseQuery)
+		ret = v == nil
 	case *RootResource:
 		v := i.(*RootResource)
 		ret = v == nil
@@ -149,15 +166,15 @@ func getDefaultClient() *sling.Sling {
 	// Everywhere by preconfiguring the client to route traffic through a
 	// proxy.
 
-	// proxyStr := "http://127.0.0.1:5555"
-	// proxyURL, _ := url.Parse(proxyStr)
+	proxyStr := "http://127.0.0.1:5555"
+	proxyURL, _ := url.Parse(proxyStr)
 
-	// tr := &http.Transport{
-	// 	Proxy: http.ProxyURL(proxyURL),
-	// }
-	// httpClient := http.Client{Transport: tr}
+	tr := &http.Transport{
+		Proxy: http.ProxyURL(proxyURL),
+	}
+	httpClient := http.Client{Transport: tr}
 
-	return sling.New().Client(nil).Base(octopusURL).Set(clientAPIKeyHTTPHeader, octopusAPIKey)
+	return sling.New().Client(&httpClient).Base(octopusURL).Set(clientAPIKeyHTTPHeader, octopusAPIKey)
 }
 
 func trimTemplate(uri string) string {
@@ -168,24 +185,28 @@ func createBuiltInTeamsCannotDeleteError() error {
 	return fmt.Errorf("The built-in teams cannot be deleted.")
 }
 
-func createInvalidParameterError(methodName string, parameterName string) error {
-	return fmt.Errorf("%s: the input parameter (%s) is invalid", methodName, parameterName)
+func createInvalidParameterError(methodName string, ParameterName string) error {
+	return fmt.Errorf("%s: the input parameter (%s) is invalid", methodName, ParameterName)
 }
 
-func createInvalidClientStateError(serviceName string) error {
-	return fmt.Errorf("%s: the state of the internal client is invalid", serviceName)
+func createInvalidClientStateError(ServiceName string) error {
+	return fmt.Errorf("%s: the state of the internal client is invalid", ServiceName)
 }
 
-func createInvalidPathError(serviceName string) error {
-	return fmt.Errorf("%s: the internal path is not set", serviceName)
+func createInvalidPathError(ServiceName string) error {
+	return fmt.Errorf("%s: the internal path is not set", ServiceName)
 }
 
-func createItemNotFoundError(serviceName string, methodName string, name string) error {
-	return fmt.Errorf("%s: the item (%s) via %s was not found", serviceName, name, methodName)
+func createItemNotFoundError(ServiceName string, methodName string, name string) error {
+	return fmt.Errorf("%s: the item (%s) via %s was not found", ServiceName, name, methodName)
 }
 
 func createClientInitializationError(methodName string) error {
 	return fmt.Errorf("%s: unable to initialize internal client", methodName)
+}
+
+func createRequiredParameterIsEmptyOrNilError(parameter string) error {
+	return fmt.Errorf("the required parameter, %s is nil or empty", parameter)
 }
 
 func createResourceNotFoundError(name string, identifier string, value string) error {
@@ -195,3 +216,8 @@ func createResourceNotFoundError(name string, identifier string, value string) e
 func createValidationFailureError(methodName string, err error) error {
 	return fmt.Errorf("validation failure in %s; %v", methodName, err)
 }
+
+func Bool(v bool) *bool       { return &v }
+func Int(v int) *int          { return &v }
+func Int64(v int64) *int64    { return &v }
+func String(v string) *string { return &v }

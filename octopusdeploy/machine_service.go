@@ -18,7 +18,7 @@ func newMachineService(sling *sling.Sling, uriTemplate string, discoverMachinePa
 		operatingSystemsPath: operatingSystemsPath,
 		shellsPath:           shellsPath,
 	}
-	machineService.service = newService(serviceMachineService, sling, uriTemplate, new(DeploymentTarget))
+	machineService.service = newService(ServiceMachineService, sling, uriTemplate)
 
 	return machineService
 }
@@ -107,8 +107,8 @@ func (s machineService) GetByPartialName(name string) ([]*DeploymentTarget, erro
 }
 
 // Update updates an existing machine in Octopus Deploy
-func (s machineService) Update(resource DeploymentTarget) (*DeploymentTarget, error) {
-	path, err := getUpdatePath(s, &resource)
+func (s machineService) Update(resource *DeploymentTarget) (*DeploymentTarget, error) {
+	path, err := getUpdatePath(s, resource)
 	if err != nil {
 		return nil, err
 	}

@@ -18,12 +18,12 @@ type AwsElasticContainerRegistry struct {
 
 // NewAwsElasticContainerRegistry creates and initializes an Amazon Web
 // Services (AWS) Elastic Container Registry (ECR).
-func NewAwsElasticContainerRegistry(name string, accessKey string, secretKey SensitiveValue, region string) *AwsElasticContainerRegistry {
+func NewAwsElasticContainerRegistry(name string, accessKey string, secretKey *SensitiveValue, region string) *AwsElasticContainerRegistry {
 	return &AwsElasticContainerRegistry{
 		AccessKey:    accessKey,
 		FeedType:     feedAwsElasticContainerRegistry,
 		Region:       region,
-		SecretKey:    &secretKey,
+		SecretKey:    secretKey,
 		FeedResource: *newFeedResource(name),
 	}
 }

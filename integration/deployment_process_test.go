@@ -9,50 +9,87 @@ import (
 )
 
 func TestDeploymentProcessGet(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
 	assert.Equal(t, project.DeploymentProcessID, deploymentProcess.GetID())
 	assert.NoError(t, err, "there should be error raised getting a projects deployment process")
 }
 
 func TestDeploymentProcessGetAll(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	allDeploymentProcess, err := octopusClient.DeploymentProcesses.GetAll()
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	allDeploymentProcess, err := client.DeploymentProcesses.GetAll()
 	require.NoError(t, err)
 
 	numberOfDeploymentProcesses := len(allDeploymentProcess)
 
-	additionalProject := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, additionalProject.GetID())
+	additionalProject, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, additionalProject)
+	defer DeleteTestProject(t, client, additionalProject)
 
-	allDeploymentProcessAfterCreatingAdditional, err := octopusClient.DeploymentProcesses.GetAll()
+	allDeploymentProcessAfterCreatingAdditional, err := client.DeploymentProcesses.GetAll()
 	require.NoError(t, err)
 
 	assert.Equal(t, len(allDeploymentProcessAfterCreatingAdditional), numberOfDeploymentProcesses+1, "created an additional project and expected number of deployment processes to increase by 1")
 }
 
 func TestDeploymentProcessUpdate(t *testing.T) {
-	octopusClient := getOctopusClient()
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	deploymentProcess, err := octopusClient.DeploymentProcesses.GetByID(project.DeploymentProcessID)
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	if err != nil {
-		t.Fatalf("Retrieving deployment processes failed when it shouldn't: %s", err)
-	}
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
+	require.NoError(t, err)
+	require.NotNil(t, deploymentProcess)
 
 	deploymentActionWindowService := &octopusdeploy.DeploymentAction{
 		Name:       "Install Windows Service",
@@ -87,7 +124,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 
 	deploymentProcess.Steps = append(deploymentProcess.Steps, *step1)
 
-	updated, err := octopusClient.DeploymentProcesses.Update(*deploymentProcess)
+	updated, err := client.DeploymentProcesses.Update(*deploymentProcess)
 
 	assert.NoError(t, err, "error when updating deployment process")
 	assert.Equal(t, updated.Steps[0].Properties, deploymentProcess.Steps[0].Properties)

@@ -8,7 +8,7 @@ type proxyService struct {
 
 func newProxyService(sling *sling.Sling, uriTemplate string) *proxyService {
 	proxyService := &proxyService{}
-	proxyService.service = newService(serviceProxyService, sling, uriTemplate, nil)
+	proxyService.service = newService(ServiceProxyService, sling, uriTemplate)
 
 	return proxyService
 }

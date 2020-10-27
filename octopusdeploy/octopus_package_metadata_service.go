@@ -8,6 +8,6 @@ type octopusPackageMetadataService struct {
 
 func newOctopusPackageMetadataService(sling *sling.Sling, uriTemplate string) *octopusPackageMetadataService {
 	return &octopusPackageMetadataService{
-		service: newService(serviceOctopusPackageMetadataService, sling, uriTemplate, nil),
+		service: newService(ServiceOctopusPackageMetadataService, sling, uriTemplate),
 	}
 }

@@ -13,6 +13,6 @@ func newMigrationService(sling *sling.Sling, uriTemplate string, migrationsImpor
 	return &migrationService{
 		migrationsImportPath:        migrationsImportPath,
 		migrationsPartialExportPath: migrationsPartialExportPath,
-		service:                     newService(serviceMigrationService, sling, uriTemplate, nil),
+		service:                     newService(ServiceMigrationService, sling, uriTemplate),
 	}
 }

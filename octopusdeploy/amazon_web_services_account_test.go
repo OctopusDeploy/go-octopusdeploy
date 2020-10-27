@@ -2,89 +2,113 @@ package octopusdeploy
 
 import (
 	"testing"
+	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestAmazonWebServicesAccountNew(t *testing.T) {
 	accessKey := getRandomName()
+	accountType := AccountTypeAmazonWebServicesAccount
+	description := emptyString
+	environmentIDs := []string{}
 	name := getRandomName()
 	secretKey := NewSensitiveValue(getRandomName())
+	spaceID := emptyString
+	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
 
-	amazonWebServicesAccount := NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	account, err := NewAmazonWebServicesAccount(name, accessKey, secretKey)
 
-	require.NotNil(t, amazonWebServicesAccount)
-	require.NoError(t, amazonWebServicesAccount.Validate())
-	require.Equal(t, emptyString, amazonWebServicesAccount.Description)
-	require.Equal(t, emptyString, amazonWebServicesAccount.GetDescription())
-	require.Equal(t, emptyString, amazonWebServicesAccount.GetID())
-	require.Equal(t, name, amazonWebServicesAccount.Name)
-	require.Equal(t, name, amazonWebServicesAccount.GetName())
-	require.Equal(t, accountTypeAmazonWebServicesAccount, amazonWebServicesAccount.AccountType)
-	require.Equal(t, accountTypeAmazonWebServicesAccount, amazonWebServicesAccount.GetAccountType())
-	require.NotNil(t, amazonWebServicesAccount.Links)
-	require.NotNil(t, amazonWebServicesAccount.GetLinks())
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	// resource
+	require.Equal(t, emptyString, account.ID)
+	require.Equal(t, emptyString, account.ModifiedBy)
+	require.Nil(t, account.ModifiedOn)
+	require.NotNil(t, account.Links)
+
+	// IResource
+	require.Equal(t, emptyString, account.GetID())
+	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Nil(t, account.GetModifiedOn())
+	require.NotNil(t, account.GetLinks())
+
+	// account
+	require.Equal(t, description, account.Description)
+	require.Equal(t, environmentIDs, account.EnvironmentIDs)
+	require.Equal(t, name, account.Name)
+	require.Equal(t, spaceID, account.SpaceID)
+	require.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
+
+	// IAccount
+	require.Equal(t, accountType, account.GetAccountType())
+	require.Equal(t, description, account.GetDescription())
+	require.Equal(t, name, account.GetName())
+
+	// AmazonWebServicesAccount
+	require.Equal(t, accessKey, account.AccessKey)
+	require.Equal(t, secretKey, account.SecretKey)
 }
 
-func TestAmazonWebServicesAccountSetDescription(t *testing.T) {
+func TestAmazonWebServicesAccountNewWithConfigs(t *testing.T) {
 	accessKey := getRandomName()
-	description := getRandomName()
+	accountType := AccountTypeAmazonWebServicesAccount
+	environmentIDs := []string{"environment-id-1", "environment-id-2"}
+	invalidID := getRandomName()
+	invalidModifiedBy := getRandomName()
+	invalidModifiedOn := time.Now()
+	invalidName := getRandomName()
 	name := getRandomName()
+	description := "Description for " + name + " (OK to Delete)"
 	secretKey := NewSensitiveValue(getRandomName())
+	spaceID := getRandomName()
+	tenantedDeploymentMode := TenantedDeploymentMode("Tenanted")
 
-	amazonWebServicesAccount := NewAmazonWebServicesAccount(name, accessKey, secretKey)
-	amazonWebServicesAccount.Description = description
+	options := func(a *AmazonWebServicesAccount) {
+		a.Description = description
+		a.EnvironmentIDs = environmentIDs
+		a.ID = invalidID
+		a.ModifiedBy = invalidModifiedBy
+		a.ModifiedOn = &invalidModifiedOn
+		a.Name = invalidName
+		a.SecretKey = secretKey
+		a.SpaceID = spaceID
+		a.TenantedDeploymentMode = tenantedDeploymentMode
+	}
 
-	require.NoError(t, amazonWebServicesAccount.Validate())
-	require.Equal(t, description, amazonWebServicesAccount.Description)
-	require.Equal(t, description, amazonWebServicesAccount.GetDescription())
-}
+	account, err := NewAmazonWebServicesAccount(name, accessKey, nil, options)
 
-func TestAmazonWebServicesAccountSetName(t *testing.T) {
-	accessKey := getRandomName()
-	name := getRandomName()
-	secretKey := NewSensitiveValue(getRandomName())
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
 
-	amazonWebServicesAccount := NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	// resource
+	require.Equal(t, emptyString, account.ID)
+	require.Equal(t, emptyString, account.ModifiedBy)
+	require.Nil(t, account.ModifiedOn)
+	require.NotNil(t, account.Links)
 
-	require.NoError(t, amazonWebServicesAccount.Validate())
-	require.Equal(t, name, amazonWebServicesAccount.Name)
-	require.Equal(t, name, amazonWebServicesAccount.GetName())
-}
+	// IResource
+	require.Equal(t, emptyString, account.GetID())
+	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Nil(t, account.GetModifiedOn())
+	require.NotNil(t, account.GetLinks())
 
-func TestAmazonWebServicesAccountTypes(t *testing.T) {
-	accessKey := getRandomName()
-	name := getRandomName()
-	secretKey := NewSensitiveValue(getRandomName())
+	// account
+	require.Equal(t, description, account.Description)
+	require.Equal(t, environmentIDs, account.EnvironmentIDs)
+	require.Equal(t, name, account.Name)
+	require.Equal(t, spaceID, account.SpaceID)
+	require.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
 
-	amazonWebServicesAccount := NewAmazonWebServicesAccount(name, accessKey, secretKey)
-	require.NoError(t, amazonWebServicesAccount.Validate())
+	// IAccount
+	require.Equal(t, accountType, account.GetAccountType())
+	require.Equal(t, description, account.GetDescription())
+	require.Equal(t, name, account.GetName())
 
-	amazonWebServicesAccount.AccountType = "None"
-	assert.Error(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = "none"
-	assert.Error(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = accountTypeAzureSubscription
-	assert.Error(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = accountTypeAzureServicePrincipal
-	assert.Error(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = accountTypeUsernamePassword
-	assert.Error(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = accountTypeSshKeyPair
-	assert.Error(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = accountTypeToken
-	assert.Error(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = accountTypeAmazonWebServicesAccount
-	assert.NoError(t, amazonWebServicesAccount.Validate())
-
-	amazonWebServicesAccount.AccountType = "amazonWebServicesAccount"
-	assert.Error(t, amazonWebServicesAccount.Validate())
+	// AmazonWebServicesAccount
+	require.Equal(t, accessKey, account.AccessKey)
+	require.Equal(t, secretKey, account.SecretKey)
 }

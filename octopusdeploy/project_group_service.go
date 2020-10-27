@@ -12,7 +12,7 @@ type projectGroupService struct {
 // newProjectGroupService returns a projectGroupService with a preconfigured client.
 func newProjectGroupService(sling *sling.Sling, uriTemplate string) *projectGroupService {
 	projectGroupService := &projectGroupService{}
-	projectGroupService.service = newService(serviceProjectGroupService, sling, uriTemplate, new(ProjectGroup))
+	projectGroupService.service = newService(ServiceProjectGroupService, sling, uriTemplate)
 
 	return projectGroupService
 }

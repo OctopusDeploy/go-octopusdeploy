@@ -7,11 +7,11 @@ import (
 )
 
 type errInvalidvariableServiceParameter struct {
-	parameterName string
+	ParameterName string
 }
 
 func (e errInvalidvariableServiceParameter) Error() string {
-	return fmt.Sprintf("variableService: invalid parameter, %s", e.parameterName)
+	return fmt.Sprintf("variableService: invalid parameter, %s", e.ParameterName)
 }
 
 type variableService struct {
@@ -25,7 +25,7 @@ func newVariableService(sling *sling.Sling, uriTemplate string, namesPath string
 	return &variableService{
 		namesPath:   namesPath,
 		previewPath: previewPath,
-		service:     newService(serviceVariableService, sling, uriTemplate, new(Variable)),
+		service:     newService(ServiceVariableService, sling, uriTemplate),
 	}
 }
 
@@ -37,7 +37,7 @@ func (s variableService) GetAll(projectID string) (*Variables, error) {
 	}
 
 	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
 	}
 
 	path := trimTemplate(s.getPath())
@@ -59,11 +59,11 @@ func (s variableService) GetByID(projectID string, variableID string) (*Variable
 	}
 
 	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
 	}
 
 	if isEmpty(variableID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "variableID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "variableID"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -90,15 +90,15 @@ func (s variableService) GetByName(projectID string, name string, scope *Variabl
 	}
 
 	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
 	}
 
 	if isEmpty(name) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "name"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "name"}
 	}
 
 	if scope == nil {
-		return nil, errInvalidvariableServiceParameter{parameterName: "scope"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "scope"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -132,11 +132,11 @@ func (s variableService) AddSingle(projectID string, variable *Variable) (*Varia
 	}
 
 	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
 	}
 
 	if variable == nil {
-		return nil, errInvalidvariableServiceParameter{parameterName: "variable"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "variable"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -158,11 +158,11 @@ func (s variableService) UpdateSingle(projectID string, variable *Variable) (*Va
 	}
 
 	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
 	}
 
 	if variable == nil {
-		return nil, errInvalidvariableServiceParameter{parameterName: "variable"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "variable"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -195,11 +195,11 @@ func (s variableService) DeleteSingle(projectID string, variableID string) (*Var
 	}
 
 	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
 	}
 
 	if isEmpty(variableID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "variableID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "variableID"}
 	}
 
 	variables, err := s.GetAll(projectID)
@@ -231,11 +231,11 @@ func (s variableService) Update(projectID string, variableSet *Variables) (*Vari
 	}
 
 	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{parameterName: "projectID"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
 	}
 
 	if variableSet == nil {
-		return nil, errInvalidvariableServiceParameter{parameterName: "variableSet"}
+		return nil, errInvalidvariableServiceParameter{ParameterName: "variableSet"}
 	}
 
 	path := trimTemplate(s.getPath())
@@ -260,7 +260,7 @@ func (s variableService) MatchesScope(variableScope *VariableScope, definedScope
 	}
 
 	if variableScope == nil {
-		return false, nil, errInvalidvariableServiceParameter{parameterName: "variableScope"}
+		return false, nil, errInvalidvariableServiceParameter{ParameterName: "variableScope"}
 	}
 
 	//If the scope supplied is nil then match everything

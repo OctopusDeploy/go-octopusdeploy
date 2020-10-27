@@ -8,6 +8,6 @@ type userOnboardingService struct {
 
 func newUserOnboardingService(sling *sling.Sling, uriTemplate string) *userOnboardingService {
 	return &userOnboardingService{
-		service: newService(serviceUserOnboardingService, sling, uriTemplate, nil),
+		service: newService(ServiceUserOnboardingService, sling, uriTemplate),
 	}
 }

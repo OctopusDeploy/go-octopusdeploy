@@ -8,6 +8,6 @@ type externalSecurityGroupProviderService struct {
 
 func newExternalSecurityGroupProviderService(sling *sling.Sling, uriTemplate string) *externalSecurityGroupProviderService {
 	return &externalSecurityGroupProviderService{
-		service: newService(serviceExternalSecurityGroupProviderService, sling, uriTemplate, nil),
+		service: newService(ServiceExternalSecurityGroupProviderService, sling, uriTemplate),
 	}
 }

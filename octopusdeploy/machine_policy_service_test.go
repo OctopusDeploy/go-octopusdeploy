@@ -10,7 +10,7 @@ import (
 
 func createMachinePolicyService(t *testing.T) *machinePolicyService {
 	service := newMachinePolicyService(nil, TestURIMachinePolicies, TestURIMachinePolicyTemplate)
-	testNewService(t, service, TestURIMachinePolicies, serviceMachinePolicyService)
+	testNewService(t, service, TestURIMachinePolicies, ServiceMachinePolicyService)
 	return service
 }
 
@@ -115,7 +115,7 @@ func TestMachinePolicySetAddGetDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterMachinePolicy))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterMachinePolicy))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&MachinePolicy{})
@@ -137,7 +137,7 @@ func TestMachinePolicyServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterMachinePolicy))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterMachinePolicy))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&MachinePolicy{})
@@ -234,34 +234,34 @@ func TestMachinePolicyServiceParameters(t *testing.T) {
 
 			if isEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
 
 				resourceList, err := service.GetByPartialName(tc.parameter)
-				require.Equal(t, createInvalidParameterError(operationGetByPartialName, parameterName), err)
+				require.Equal(t, createInvalidParameterError(OperationGetByPartialName, ParameterName), err)
 				require.NotNil(t, resourceList)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
+				require.Equal(t, err, createInvalidParameterError(OperationDeleteByID, ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createResourceNotFoundError(serviceMachinePolicyService, "ID", tc.parameter))
+				require.Equal(t, err, createResourceNotFoundError(ServiceMachinePolicyService, "ID", tc.parameter))
 				require.Nil(t, resource)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, createResourceNotFoundError(serviceMachinePolicyService, "ID", tc.parameter))
+				require.Equal(t, err, createResourceNotFoundError(ServiceMachinePolicyService, "ID", tc.parameter))
 			}
 		})
 	}
 }
 
 func TestMachinePolicyServiceNew(t *testing.T) {
-	serviceFunction := newMachinePolicyService
+	ServiceFunction := newMachinePolicyService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceMachinePolicyService
+	ServiceName := ServiceMachinePolicyService
 
 	testCases := []struct {
 		name         string
@@ -270,14 +270,14 @@ func TestMachinePolicyServiceNew(t *testing.T) {
 		uriTemplate  string
 		templatePath string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate, TestURIMachinePolicyTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString, TestURIMachinePolicyTemplate},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, TestURIMachinePolicyTemplate},
+		{"NilClient", ServiceFunction, nil, uriTemplate, TestURIMachinePolicyTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString, TestURIMachinePolicyTemplate},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, TestURIMachinePolicyTemplate},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.templatePath)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -287,12 +287,12 @@ func TestMachinePolicyGetByPartialName(t *testing.T) {
 	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName(emptyString)
-	require.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 
 	resources, err = service.GetByPartialName(whitespaceString)
-	require.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 

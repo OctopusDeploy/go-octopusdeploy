@@ -10,7 +10,7 @@ type teamService struct {
 
 func newTeamService(sling *sling.Sling, uriTemplate string) *teamService {
 	teamService := &teamService{}
-	teamService.service = newService(serviceTeamService, sling, uriTemplate, new(Team))
+	teamService.service = newService(ServiceTeamService, sling, uriTemplate)
 
 	return teamService
 }
@@ -53,7 +53,7 @@ func (s teamService) Add(resource *Team) (*Team, error) {
 // returns an error.
 func (s teamService) Delete(team *Team) error {
 	if team == nil {
-		return createInvalidParameterError(operationDelete, parameterTeam)
+		return createInvalidParameterError(OperationDelete, ParameterTeam)
 	}
 
 	if !team.CanBeDeleted {

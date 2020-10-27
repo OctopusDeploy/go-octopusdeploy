@@ -8,6 +8,6 @@ type workerToolsLatestImageService struct {
 
 func newWorkerToolsLatestImageService(sling *sling.Sling, uriTemplate string) *workerToolsLatestImageService {
 	return &workerToolsLatestImageService{
-		service: newService(serviceWorkerToolsLatestImageService, sling, uriTemplate, nil),
+		service: newService(ServiceWorkerToolsLatestImageService, sling, uriTemplate),
 	}
 }

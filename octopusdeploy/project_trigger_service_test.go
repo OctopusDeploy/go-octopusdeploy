@@ -8,10 +8,10 @@ import (
 )
 
 func TestNewProjectTriggerService(t *testing.T) {
-	serviceFunction := newProjectTriggerService
+	ServiceFunction := newProjectTriggerService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceProjectTriggerService
+	ServiceName := ServiceProjectTriggerService
 
 	testCases := []struct {
 		name        string
@@ -19,14 +19,14 @@ func TestNewProjectTriggerService(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -36,11 +36,11 @@ func TestProjectTriggerServiceGetWithEmptyID(t *testing.T) {
 
 	resource, err := service.GetByID(emptyString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 }

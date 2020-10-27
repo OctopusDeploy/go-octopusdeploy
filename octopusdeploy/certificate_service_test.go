@@ -28,7 +28,7 @@ func createCertificate(t *testing.T) (*Certificate, error) {
 
 func createCertificateService(t *testing.T) *certificateService {
 	service := newCertificateService(nil, TestURICertificates)
-	testNewService(t, service, TestURICertificates, serviceCertificateService)
+	testNewService(t, service, TestURICertificates, ServiceCertificateService)
 	return service
 }
 
@@ -37,7 +37,7 @@ func TestCertificateServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
 	require.Nil(t, resource)
 
 	invalidResource := &Certificate{}
@@ -76,11 +76,11 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
 	id := getRandomName()
@@ -104,12 +104,12 @@ func TestCertificateServiceGetByPartialName(t *testing.T) {
 	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName(emptyString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	assert.NotNil(t, resources)
 	assert.Len(t, resources, 0)
 
 	resources, err = service.GetByPartialName(whitespaceString)
-	assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	assert.NotNil(t, resources)
 	assert.Len(t, resources, 0)
 
@@ -132,10 +132,10 @@ func TestCertificateServiceGetByPartialName(t *testing.T) {
 }
 
 func TestCertificateServiceNew(t *testing.T) {
-	serviceFunction := newCertificateService
+	ServiceFunction := newCertificateService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceCertificateService
+	ServiceName := ServiceCertificateService
 
 	testCases := []struct {
 		name        string
@@ -143,14 +143,14 @@ func TestCertificateServiceNew(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -160,15 +160,15 @@ func TestCertificateServiceReplace(t *testing.T) {
 	require.NotNil(t, service)
 
 	certificate, err := service.Replace(emptyString, nil)
-	assert.Equal(t, err, createInvalidParameterError(operationReplace, parameterCertificateID))
+	assert.Equal(t, err, createInvalidParameterError(OperationReplace, ParameterCertificateID))
 	assert.Nil(t, certificate)
 
 	certificate, err = service.Replace(whitespaceString, nil)
-	assert.Equal(t, err, createInvalidParameterError(operationReplace, parameterCertificateID))
+	assert.Equal(t, err, createInvalidParameterError(OperationReplace, ParameterCertificateID))
 	assert.Nil(t, certificate)
 
 	certificate, err = service.Replace("fake-id-string", nil)
-	assert.Equal(t, err, createInvalidParameterError(operationReplace, parameterReplacementCertificate))
+	assert.Equal(t, err, createInvalidParameterError(OperationReplace, ParameterReplacementCertificate))
 	assert.Nil(t, certificate)
 
 	replacementCertificate := NewReplacementCertificate("fake-name-string", "fake-password-string")

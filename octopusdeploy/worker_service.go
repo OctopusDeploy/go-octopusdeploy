@@ -18,7 +18,7 @@ func newWorkerService(sling *sling.Sling, uriTemplate string, discoverWorkerPath
 		operatingSystemsPath: operatingSystemsPath,
 		shellsPath:           shellsPath,
 	}
-	workerService.service = newService(serviceWorkerService, sling, uriTemplate, new(Worker))
+	workerService.service = newService(ServiceWorkerService, sling, uriTemplate)
 
 	return workerService
 }
@@ -44,7 +44,7 @@ func (s workerService) getPagedResponse(path string) ([]*Worker, error) {
 // Add creates a new worker.
 func (s workerService) Add(worker *Worker) (*Worker, error) {
 	if worker == nil {
-		return nil, createInvalidParameterError("Add", parameterWorker)
+		return nil, createInvalidParameterError("Add", ParameterWorker)
 	}
 
 	path, err := getAddPath(s, worker)
@@ -137,7 +137,7 @@ func (s workerService) GetByPartialName(name string) ([]*Worker, error) {
 // Update modifies an worker based on the one provided as input.
 func (s workerService) Update(worker *Worker) (*Worker, error) {
 	if worker == nil {
-		return nil, createInvalidParameterError(operationUpdate, parameterWorker)
+		return nil, createInvalidParameterError(OperationUpdate, ParameterWorker)
 	}
 
 	path, err := getUpdatePath(s, worker)

@@ -8,11 +8,11 @@ import (
 )
 
 func TestNewConfigurationService(t *testing.T) {
-	serviceFunction := newConfigurationService
+	ServiceFunction := newConfigurationService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
 	versionControlClearCachePath := emptyString
-	serviceName := serviceConfigurationService
+	ServiceName := ServiceConfigurationService
 
 	testCases := []struct {
 		name                         string
@@ -21,14 +21,14 @@ func TestNewConfigurationService(t *testing.T) {
 		uriTemplate                  string
 		versionControlClearCachePath string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate, versionControlClearCachePath},
-		{"EmptyURITemplate", serviceFunction, client, emptyString, versionControlClearCachePath},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, versionControlClearCachePath},
+		{"NilClient", ServiceFunction, nil, uriTemplate, versionControlClearCachePath},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString, versionControlClearCachePath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, versionControlClearCachePath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.versionControlClearCachePath)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -59,17 +59,17 @@ func TestConfigurationServiceGetWithEmptyID(t *testing.T) {
 
 	resource, err := service.GetByID(emptyString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 }
 
 func createConfigurationService(t *testing.T) *configurationService {
 	service := newConfigurationService(nil, TestURIConfiguration, TestURIVersionControlClearCache)
-	testNewService(t, service, TestURIConfiguration, serviceConfigurationService)
+	testNewService(t, service, TestURIConfiguration, ServiceConfigurationService)
 	return service
 }

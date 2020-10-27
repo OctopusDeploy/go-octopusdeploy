@@ -9,22 +9,33 @@ import (
 )
 
 func TestProjectTriggerAddGetAndDelete(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	// need a project to add a trigger to
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
 
 	toCreateTrigger := getTestProjectTrigger(project.GetID())
 	toCreateTrigger.Filter.Roles = []string{"MyRole1", "MyRole2"}
 	toCreateTrigger.Filter.EventGroups = []string{"Machine"}
 	toCreateTrigger.Action.ShouldRedeployWhenMachineHasBeenDeployedTo = true
 
-	projectTrigger := createTestProjectTrigger(t, octopusClient, toCreateTrigger)
-	defer cleanProjectTrigger(t, octopusClient, projectTrigger.GetID())
+	projectTrigger := createTestProjectTrigger(t, client, toCreateTrigger)
+	defer cleanProjectTrigger(t, client, projectTrigger.GetID())
 
-	getProjectTrigger, err := octopusClient.ProjectTriggers.GetByID(projectTrigger.GetID())
+	getProjectTrigger, err := client.ProjectTriggers.GetByID(projectTrigger.GetID())
 
 	assert.NoError(t, err, "there was an error raised getting projecttrigger when there should not be")
 	assert.Equal(t, getProjectTrigger.Name, getProjectTrigger.Name)
@@ -39,34 +50,45 @@ func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.ProjectTriggers.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(serviceProjectTriggerService, "ID", id), err)
+	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceProjectTriggerService, "ID", id), err)
 	require.Nil(t, resource)
 }
 
 func TestProjectTriggerGetAll(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
 
 	trigger := getTestProjectTrigger(project.GetID())
-	createdTrigger := createTestProjectTrigger(t, octopusClient, trigger)
-	defer cleanProjectTrigger(t, octopusClient, createdTrigger.GetID())
+	createdTrigger := createTestProjectTrigger(t, client, trigger)
+	defer cleanProjectTrigger(t, client, createdTrigger.GetID())
 
-	allProjectsTriggers, err := octopusClient.ProjectTriggers.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all projectstriggers failed when it shouldn't: %s", err)
-	}
+	allProjectsTriggers, err := client.ProjectTriggers.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, allProjectsTriggers)
 
 	numberOfProjectTriggers := len(allProjectsTriggers)
 
 	additionalTrigger := getTestProjectTrigger(project.GetID())
 	additionalTrigger.Name = getRandomName()
-	createdAdditionalTrigger := createTestProjectTrigger(t, octopusClient, additionalTrigger)
-	defer cleanProjectTrigger(t, octopusClient, createdAdditionalTrigger.GetID())
+	createdAdditionalTrigger := createTestProjectTrigger(t, client, additionalTrigger)
+	defer cleanProjectTrigger(t, client, createdAdditionalTrigger.GetID())
 
-	allProjectTriggersAfterCreatingAdditional, err := octopusClient.ProjectTriggers.GetAll()
+	allProjectTriggersAfterCreatingAdditional, err := client.ProjectTriggers.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projectstriggers failed when it shouldn't: %s", err)
 	}
@@ -76,14 +98,26 @@ func TestProjectTriggerGetAll(t *testing.T) {
 }
 
 func TestProjectTriggerUpdate(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
 
 	trigger := getTestProjectTrigger(project.GetID())
-	createdTrigger := createTestProjectTrigger(t, octopusClient, trigger)
+	createdTrigger := createTestProjectTrigger(t, client, trigger)
 
 	newProjectTriggerName := getRandomName()
 	newProjectTriggerRole := []string{"Roley", "Roley 2"}
@@ -93,7 +127,7 @@ func TestProjectTriggerUpdate(t *testing.T) {
 	createdTrigger.Filter.Roles = newProjectTriggerRole
 	createdTrigger.IsDisabled = newIsDisabled
 
-	updatedProjectTrigger, err := octopusClient.ProjectTriggers.Update(*createdTrigger)
+	updatedProjectTrigger, err := client.ProjectTriggers.Update(*createdTrigger)
 	assert.NoError(t, err, "error when updating projecttrigger")
 	assert.Equal(t, newProjectTriggerName, updatedProjectTrigger.Name, "projecttrigger name was not updated")
 	assert.Equal(t, newProjectTriggerRole, updatedProjectTrigger.Filter.Roles, "projecttrigger roles was not updated")

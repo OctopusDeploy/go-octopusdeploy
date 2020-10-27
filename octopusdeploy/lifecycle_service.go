@@ -10,7 +10,7 @@ type lifecycleService struct {
 
 func newLifecycleService(sling *sling.Sling, uriTemplate string) *lifecycleService {
 	lifecycleService := &lifecycleService{}
-	lifecycleService.service = newService(serviceLifecycleService, sling, uriTemplate, new(Lifecycle))
+	lifecycleService.service = newService(ServiceLifecycleService, sling, uriTemplate)
 
 	return lifecycleService
 }

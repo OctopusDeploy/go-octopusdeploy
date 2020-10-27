@@ -8,25 +8,21 @@ import (
 )
 
 func TestAzureServicePrincipalAccount(t *testing.T) {
-	accountType := accountTypeAzureServicePrincipal
 	applicationID := uuid.New()
 	applicationPassword := NewSensitiveValue(getRandomName())
 	authenticationEndpoint := "https://login.microsoftonline.com/"
 	azureEnvironment := "AzureCloud"
-	invalidAccountType := "***"
 	invalidURI := "***"
-	invalidTenantedDeploymentMode := "***"
 	name := getRandomName()
 	resourceManagerEndpoint := "https://management.azure.com/"
 	spaceID := "space-id"
 	subscriptionID := uuid.New()
-	tenantedDeploymentMode := "Untenanted"
+	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
 	tenantID := uuid.New()
 
 	testCases := []struct {
 		TestName                string
 		IsError                 bool
-		AccountType             string
 		ApplicationID           *uuid.UUID
 		ApplicationPassword     *SensitiveValue
 		AuthenticationEndpoint  string
@@ -35,22 +31,20 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 		ResourceManagerEndpoint string
 		SpaceID                 string
 		SubscriptionID          *uuid.UUID
-		TenantedDeploymentMode  string
+		TenantedDeploymentMode  TenantedDeploymentMode
 		TenantID                *uuid.UUID
 	}{
-		{"Valid", false, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"EmptyName", true, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, emptyString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"WhitespaceName", true, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, whitespaceString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"EmptySpaceID", false, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, emptyString, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"WhitespaceSpaceID", true, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, whitespaceString, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"InvalidAccountType", true, invalidAccountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"NilApplicationPassword", true, accountType, &applicationID, nil, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"NilApplicationID", true, accountType, nil, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"NilSubscriptionID", true, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, nil, tenantedDeploymentMode, &tenantID},
-		{"NilTenantID", true, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, nil},
-		{"InvalidAuthenticationEndpoint", true, accountType, &applicationID, &applicationPassword, invalidURI, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"InvalidResourceManagerEndpoint", true, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, invalidURI, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"InvalidTenantedDeploymentMode", true, accountType, &applicationID, &applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, invalidTenantedDeploymentMode, &tenantID},
+		{"Valid", false, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"EmptyName", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, emptyString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"WhitespaceName", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, whitespaceString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"EmptySpaceID", false, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, emptyString, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"WhitespaceSpaceID", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, whitespaceString, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"NilApplicationPassword", true, &applicationID, nil, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"NilApplicationID", true, nil, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"NilSubscriptionID", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, nil, tenantedDeploymentMode, &tenantID},
+		{"NilTenantID", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, nil},
+		{"InvalidAuthenticationEndpoint", true, &applicationID, applicationPassword, invalidURI, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"InvalidResourceManagerEndpoint", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, invalidURI, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
@@ -63,7 +57,7 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 				SubscriptionID:          tc.SubscriptionID,
 				TenantID:                tc.TenantID,
 			}
-			azureServicePrincipalAccount.AccountType = tc.AccountType
+			azureServicePrincipalAccount.accountType = AccountType("AzureServicePrincipal")
 			azureServicePrincipalAccount.Name = tc.Name
 			azureServicePrincipalAccount.SpaceID = tc.SpaceID
 			azureServicePrincipalAccount.TenantedDeploymentMode = tc.TenantedDeploymentMode
@@ -72,7 +66,7 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 			} else {
 				require.NoError(t, azureServicePrincipalAccount.Validate())
 
-				require.Equal(t, tc.AccountType, azureServicePrincipalAccount.GetAccountType())
+				require.Equal(t, AccountType("AzureServicePrincipal"), azureServicePrincipalAccount.GetAccountType())
 				require.Equal(t, tc.Name, azureServicePrincipalAccount.GetName())
 			}
 			azureServicePrincipalAccount.SetName(tc.Name)
@@ -93,7 +87,9 @@ func TestAzureServicePrincipalAccountNew(t *testing.T) {
 	subscriptionID := uuid.New()
 	tenantID := uuid.New()
 
-	azureServicePrincipalAccount := NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
-	require.NotNil(t, azureServicePrincipalAccount)
-	require.NoError(t, azureServicePrincipalAccount.Validate())
+	account, err := NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
 }

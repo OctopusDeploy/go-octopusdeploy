@@ -7,10 +7,10 @@ import (
 )
 
 func TestNewAzureDevOpService(t *testing.T) {
-	serviceFunction := newAzureEnvironmentService
+	ServiceFunction := newAzureEnvironmentService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceAzureEnvironmentService
+	ServiceName := ServiceAzureEnvironmentService
 
 	testCases := []struct {
 		name        string
@@ -18,14 +18,14 @@ func TestNewAzureDevOpService(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

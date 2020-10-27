@@ -12,7 +12,7 @@ func newOctopusServerNodeService(sling *sling.Sling, uriTemplate string, cluster
 	octopusServerNodeService := &octopusServerNodeService{
 		clusterSummaryPath: clusterSummaryPath,
 	}
-	octopusServerNodeService.service = newService(serviceOctopusServerNodeService, sling, uriTemplate, nil)
+	octopusServerNodeService.service = newService(ServiceOctopusServerNodeService, sling, uriTemplate)
 
 	return octopusServerNodeService
 }

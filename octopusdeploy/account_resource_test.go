@@ -11,51 +11,46 @@ import (
 )
 
 func TestAccountResource(t *testing.T) {
-	invalidTenantedDeploymentMode := "***"
 	name := getRandomName()
 	spaceID := getRandomName()
-	tenantedDeploymentMode := "Untenanted"
+	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
 
 	testCases := []struct {
 		TestName               string
 		IsError                bool
 		Name                   string
 		SpaceID                string
-		TenantedDeploymentMode string
+		TenantedDeploymentMode TenantedDeploymentMode
 	}{
 		{"Valid", false, name, spaceID, tenantedDeploymentMode},
 		{"EmptyName", true, emptyString, spaceID, tenantedDeploymentMode},
 		{"WhitespaceName", true, whitespaceString, spaceID, tenantedDeploymentMode},
 		{"EmptySpaceID", false, name, emptyString, tenantedDeploymentMode},
 		{"WhitespaceSpaceID", true, name, whitespaceString, tenantedDeploymentMode},
-		{"EmptyTenantedDeploymentMode", true, name, spaceID, emptyString},
-		{"WhitespaceTenantedDeploymentMode", true, name, spaceID, whitespaceString},
-		{"InvalidTenantedDeploymentMode", true, name, spaceID, invalidTenantedDeploymentMode},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
-			accountResourceInline := &AccountResource{
-				AccountType: "None",
-				Name:        tc.Name,
+			accountInline := &account{
+				Name: tc.Name,
 			}
-			accountResourceWithNew := newAccountResource(tc.Name, "None")
-			accountResourceInline.SpaceID = tc.SpaceID
-			accountResourceWithNew.SpaceID = tc.SpaceID
-			accountResourceInline.TenantedDeploymentMode = tc.TenantedDeploymentMode
-			accountResourceWithNew.TenantedDeploymentMode = tc.TenantedDeploymentMode
+			accountWithNew := newAccount(tc.Name, "None")
+			accountInline.SpaceID = tc.SpaceID
+			accountWithNew.SpaceID = tc.SpaceID
+			accountInline.TenantedDeploymentMode = tc.TenantedDeploymentMode
+			accountWithNew.TenantedDeploymentMode = tc.TenantedDeploymentMode
 			if tc.IsError {
-				require.Error(t, accountResourceInline.Validate())
-				require.Error(t, accountResourceWithNew.Validate())
+				require.Error(t, accountInline.Validate())
+				require.Error(t, accountWithNew.Validate())
 			} else {
-				require.NoError(t, accountResourceInline.Validate())
-				require.NoError(t, accountResourceWithNew.Validate())
+				require.NoError(t, accountInline.Validate())
+				require.NoError(t, accountWithNew.Validate())
 			}
 		})
 	}
 }
 
 func TestAccountResourceAsJSON(t *testing.T) {
-	accountType := "None"
+	accountType := AccountType("None")
 	description := "description"
 	id := "id-value"
 	lastModifiedBy := "john.smith@example.com"
@@ -65,7 +60,7 @@ func TestAccountResourceAsJSON(t *testing.T) {
 		"Foo":  "/test-2",
 	}
 	spaceID := "space-id"
-	tenantedDeploymentMode := "Untenanted"
+	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
 	tenantIDs := []string{
 		"tenant-id-1",
 		"tenant-id-2",

@@ -14,7 +14,7 @@ type deploymentService struct {
 // client.
 func newDeploymentService(sling *sling.Sling, uriTemplate string) *deploymentService {
 	deploymentService := &deploymentService{}
-	deploymentService.service = newService(serviceDeploymentService, sling, uriTemplate, new(Deployment))
+	deploymentService.service = newService(ServiceDeploymentService, sling, uriTemplate)
 
 	return deploymentService
 }

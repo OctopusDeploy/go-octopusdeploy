@@ -8,6 +8,6 @@ type nuGetService struct {
 
 func newNuGetService(sling *sling.Sling, uriTemplate string) *nuGetService {
 	return &nuGetService{
-		service: newService(serviceNuGetService, sling, uriTemplate, nil),
+		service: newService(ServiceNuGetService, sling, uriTemplate),
 	}
 }

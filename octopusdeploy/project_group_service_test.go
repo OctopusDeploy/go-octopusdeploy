@@ -10,7 +10,7 @@ import (
 
 func createProjectGroupService(t *testing.T) *projectGroupService {
 	service := newProjectGroupService(nil, TestURIProjectGroups)
-	testNewService(t, service, TestURIProjectGroups, serviceProjectGroupService)
+	testNewService(t, service, TestURIProjectGroups, ServiceProjectGroupService)
 	return service
 }
 
@@ -46,10 +46,10 @@ func DeleteTestProjectGroup(t *testing.T, service *projectGroupService, projectG
 }
 
 func TestNewProjectGroupService(t *testing.T) {
-	serviceFunction := newProjectGroupService
+	ServiceFunction := newProjectGroupService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceProjectGroupService
+	ServiceName := ServiceProjectGroupService
 
 	testCases := []struct {
 		name        string
@@ -57,14 +57,14 @@ func TestNewProjectGroupService(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -74,11 +74,11 @@ func TestProjectGroupServiceGetWithEmptyID(t *testing.T) {
 
 	resource, err := service.GetByID(emptyString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 }

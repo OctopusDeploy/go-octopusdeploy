@@ -8,7 +8,7 @@ type scopedUserRoleService struct {
 
 func newScopedUserRoleService(sling *sling.Sling, uriTemplate string) *scopedUserRoleService {
 	scopedUserRoleService := &scopedUserRoleService{}
-	scopedUserRoleService.service = newService(serviceScopedUserRoleService, sling, uriTemplate, nil)
+	scopedUserRoleService.service = newService(ServiceScopedUserRoleService, sling, uriTemplate)
 
 	return scopedUserRoleService
 }

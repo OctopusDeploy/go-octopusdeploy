@@ -8,29 +8,52 @@ import (
 
 // AzureSubscriptionAccount represents an Azure subscription account.
 type AzureSubscriptionAccount struct {
-	AzureEnvironment      string          `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
-	CertificateBytes      *SensitiveValue `json:"CertificateBytes,omitempty"`
-	CertificateThumbprint string          `json:"CertificateThumbprint,omitempty"`
-	ManagementEndpoint    string          `json:"ServiceManagementEndpointBaseUri,omitempty" validate:"omitempty,uri"`
-	StorageEndpointSuffix string          `json:"ServiceManagementEndpointSuffix,omitempty" validate:"omitempty,hostname"`
-	SubscriptionID        *uuid.UUID      `json:"SubscriptionNumber" validate:"required"`
+	AzureEnvironment      string `validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
+	CertificateBytes      *SensitiveValue
+	CertificateThumbprint string
+	ManagementEndpoint    string     `validate:"omitempty,uri"`
+	StorageEndpointSuffix string     `validate:"omitempty,hostname"`
+	SubscriptionID        *uuid.UUID `validate:"required"`
 
-	AccountResource
+	account
 }
 
 // NewAzureSubscriptionAccount creates and initializes an Azure subscription
 // account with a name.
-func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID) *AzureSubscriptionAccount {
-	return &AzureSubscriptionAccount{
-		SubscriptionID:  &subscriptionID,
-		AccountResource: *newAccountResource(name, accountTypeAzureSubscription),
+func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID, options ...func(*AzureSubscriptionAccount)) (*AzureSubscriptionAccount, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
+
+	account := AzureSubscriptionAccount{
+		account: *newAccount(name, AccountType("AzureSubscription")),
+	}
+
+	// iterate through configuration options and set fields (without checks)
+	for _, option := range options {
+		option(&account)
+	}
+
+	// assign pre-determined values to "mandatory" fields
+	account.accountType = AccountType("AzureSubscription")
+	account.ID = emptyString
+	account.ModifiedBy = emptyString
+	account.ModifiedOn = nil
+	account.Name = name
+	account.SubscriptionID = &subscriptionID
+
+	// validate to ensure that all expectations are met
+	err := account.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &account, nil
 }
 
 // Validate checks the state of this account and returns an error if invalid.
 func (a *AzureSubscriptionAccount) Validate() error {
 	v := validator.New()
-	v.RegisterStructValidation(validateAzureSubscriptionAccount, AzureSubscriptionAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -40,11 +63,4 @@ func (a *AzureSubscriptionAccount) Validate() error {
 		return err
 	}
 	return v.Struct(a)
-}
-
-func validateAzureSubscriptionAccount(sl validator.StructLevel) {
-	account := sl.Current().Interface().(AzureSubscriptionAccount)
-	if account.AccountType != accountTypeAzureSubscription {
-		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
-	}
 }

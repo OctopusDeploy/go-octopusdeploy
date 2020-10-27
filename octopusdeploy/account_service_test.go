@@ -9,7 +9,7 @@ import (
 
 func createAccountService(t *testing.T) *accountService {
 	service := newAccountService(nil, TestURIAccounts)
-	testNewService(t, service, TestURIAccounts, serviceAccountService)
+	testNewService(t, service, TestURIAccounts, ServiceAccountService)
 	return service
 }
 
@@ -18,10 +18,10 @@ func TestAccountServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterAccount))
 	require.Nil(t, resource)
 
-	resource, err = service.Add(&Account{})
+	resource, err = service.Add(&AccountResource{})
 	require.Error(t, err)
 	require.Nil(t, resource)
 }
@@ -31,19 +31,19 @@ func TestAccountServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 }
 
 func TestAccountServiceNew(t *testing.T) {
-	serviceFunction := newAccountService
+	ServiceFunction := newAccountService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceAccountService
+	ServiceName := ServiceAccountService
 
 	testCases := []struct {
 		name        string
@@ -51,14 +51,14 @@ func TestAccountServiceNew(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -77,12 +77,12 @@ func TestAccountServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+			require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 			require.Nil(t, resource)
 
 			err = service.DeleteByID(tc.parameter)
 			require.Error(t, err)
-			require.Equal(t, createInvalidParameterError(operationDeleteByID, parameterID), err)
+			require.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
 		})
 	}
 }
@@ -95,7 +95,7 @@ func TestAccountServiceUpdateWithEmptyAccount(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, account)
 
-	account, err = service.Update(&Account{})
+	account, err = service.Update(&AccountResource{})
 	require.Error(t, err)
 	require.Nil(t, account)
 

@@ -10,7 +10,7 @@ type runbookProcessService struct {
 
 func newRunbookProcessService(sling *sling.Sling, uriTemplate string) *runbookProcessService {
 	return &runbookProcessService{
-		service: newService(serviceRunbookProcessService, sling, uriTemplate, nil),
+		service: newService(ServiceRunbookProcessService, sling, uriTemplate),
 	}
 }
 

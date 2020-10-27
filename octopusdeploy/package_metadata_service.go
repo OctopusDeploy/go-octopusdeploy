@@ -8,6 +8,6 @@ type packageMetadataService struct {
 
 func newPackageMetadataService(sling *sling.Sling, uriTemplate string) *packageMetadataService {
 	return &packageMetadataService{
-		service: newService(servicePackageMetadataService, sling, uriTemplate, nil),
+		service: newService(ServicePackageMetadataService, sling, uriTemplate),
 	}
 }

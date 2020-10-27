@@ -8,6 +8,6 @@ type tenantVariableService struct {
 
 func newTenantVariableService(sling *sling.Sling, uriTemplate string) *tenantVariableService {
 	return &tenantVariableService{
-		service: newService(serviceTenantVariableService, sling, uriTemplate, nil),
+		service: newService(ServiceTenantVariableService, sling, uriTemplate),
 	}
 }

@@ -13,14 +13,14 @@ type communityActionTemplateService struct {
 // newCommunityActionTemplateService returns an communityActionTemplateService with a preconfigured client.
 func newCommunityActionTemplateService(sling *sling.Sling, uriTemplate string) *communityActionTemplateService {
 	return &communityActionTemplateService{
-		service: newService(serviceCommunityActionTemplateService, sling, uriTemplate, new(CommunityActionTemplate)),
+		service: newService(ServiceCommunityActionTemplateService, sling, uriTemplate),
 	}
 }
 
 func (s communityActionTemplateService) getInstallationPath(resource CommunityActionTemplate) (string, error) {
 	err := resource.Validate()
 	if err != nil {
-		return emptyString, createValidationFailureError(operationInstall, err)
+		return emptyString, createValidationFailureError(OperationInstall, err)
 	}
 
 	err = validateInternalState(s)
@@ -29,7 +29,7 @@ func (s communityActionTemplateService) getInstallationPath(resource CommunityAc
 	}
 
 	values := make(map[string]interface{})
-	values[parameterID] = resource.GetID()
+	values[ParameterID] = resource.GetID()
 
 	path, err := s.getURITemplate().Expand(values)
 	path = path + "/installation"
@@ -119,7 +119,7 @@ func (s communityActionTemplateService) GetByIDs(ids []string) ([]*CommunityActi
 // matching name.
 func (s communityActionTemplateService) GetByName(name string) (*CommunityActionTemplate, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError(operationGetByName, parameterName)
+		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
 	err := validateInternalState(s)
@@ -138,7 +138,7 @@ func (s communityActionTemplateService) GetByName(name string) (*CommunityAction
 		}
 	}
 
-	return nil, createResourceNotFoundError(s.getName(), parameterName, name)
+	return nil, createResourceNotFoundError(s.getName(), ParameterName, name)
 }
 
 // Install installs a community step template.

@@ -27,7 +27,7 @@ func CreateTestPackage(t *testing.T, service *packageService) *Package {
 
 func createPackageService(t *testing.T) *packageService {
 	service := newPackageService(nil, TestURIPackages, TestURIPackageDeltaSignature, TestURIPackageDeltaUpload, TestURIPackageNotesList, TestURIPackagesBulk, TestURIPackageUpload)
-	testNewService(t, service, TestURIPackages, servicePackageService)
+	testNewService(t, service, TestURIPackages, ServicePackageService)
 	return service
 }
 
@@ -75,7 +75,7 @@ func TestPackageServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&Package{})
@@ -120,11 +120,11 @@ func TestPackageServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
 	id := getRandomName()
@@ -144,10 +144,10 @@ func TestPackageServiceGetByID(t *testing.T) {
 }
 
 func TestPackageServiceNew(t *testing.T) {
-	serviceFunction := newPackageService
+	ServiceFunction := newPackageService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := servicePackageService
+	ServiceName := ServicePackageService
 
 	testCases := []struct {
 		name        string
@@ -155,14 +155,14 @@ func TestPackageServiceNew(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, TestURIPackageDeltaSignature, TestURIPackageDeltaUpload, TestURIPackageNotesList, TestURIPackagesBulk, TestURIPackageUpload)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -181,12 +181,12 @@ func TestPackageServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			require.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+			require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 			require.Nil(t, resource)
 
 			err = service.DeleteByID(tc.parameter)
 			require.Error(t, err)
-			require.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
+			require.Equal(t, err, createInvalidParameterError(OperationDeleteByID, ParameterID))
 		})
 	}
 }

@@ -8,6 +8,6 @@ type dashboardConfigurationService struct {
 
 func newDashboardConfigurationService(sling *sling.Sling, uriTemplate string) *dashboardConfigurationService {
 	return &dashboardConfigurationService{
-		service: newService(serviceDashboardConfigurationService, sling, uriTemplate, nil),
+		service: newService(ServiceDashboardConfigurationService, sling, uriTemplate),
 	}
 }

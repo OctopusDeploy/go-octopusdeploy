@@ -9,11 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	projectName        = getRandomName()
-	projectDescription = getRandomName()
-)
-
 func TestAddNilProject(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
@@ -32,10 +27,6 @@ func TestGetSummary(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, projects)
 
-	if len(projects) == 0 {
-		return
-	}
-
 	for _, project := range projects {
 		summary, err := octopusClient.Projects.GetSummary(project)
 
@@ -43,22 +34,17 @@ func TestGetSummary(t *testing.T) {
 		assert.NotNil(t, summary)
 	}
 }
+
 func TestGetReleasesForProject(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
 	projects, err := octopusClient.Projects.GetAll()
-
 	assert.NoError(t, err)
 	assert.NotNil(t, projects)
 
-	if len(projects) == 0 {
-		return
-	}
-
 	for _, project := range projects {
 		releases, err := octopusClient.Projects.GetReleases(project)
-
 		assert.NoError(t, err)
 		assert.NotNil(t, releases)
 	}
@@ -71,10 +57,6 @@ func TestGetChannelsForProject(t *testing.T) {
 	projects, err := octopusClient.Projects.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, projects)
-
-	if len(projects) == 0 {
-		return
-	}
 
 	for _, project := range projects {
 		channels, err := octopusClient.Projects.GetChannels(project)

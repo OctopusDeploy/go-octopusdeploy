@@ -3,16 +3,17 @@ package octopusdeploy
 import "time"
 
 type IAccount interface {
-	GetAccountType() string
+	GetAccountType() AccountType
 	GetDescription() string
 	SetDescription(string)
 
 	IHasName
+	IHasSpace
 	IResource
 }
 
 type IDynamicWorkerPool interface {
-	GetWorkerType() string
+	GetWorkerType() WorkerType
 
 	IWorkerPool
 }
@@ -73,7 +74,8 @@ type IRunsOnAWorker interface {
 }
 
 type IWorkerPool interface {
-	GetWorkerPoolType() string
+	GetWorkerPoolType() WorkerPoolType
+	GetIsDefault() bool
 
 	IHasName
 	IResource

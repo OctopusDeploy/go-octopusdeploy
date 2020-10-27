@@ -29,6 +29,19 @@ func DeleteUserExample() {
 		return
 	}
 
+	// get the current user
+	user, err := client.Users.GetMe()
+	if err != nil {
+		_ = fmt.Errorf("error getting user: %v", err)
+		return
+	}
+
+	// A user attempting to delete itself will result in an error. The field,
+	// IsRequestor may be checked to see if this situation exists.
+	if user.IsRequestor {
+		return
+	}
+
 	// delete user
 	err = client.Users.DeleteByID(userID)
 	if err != nil {

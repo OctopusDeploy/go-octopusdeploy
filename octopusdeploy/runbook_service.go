@@ -10,7 +10,7 @@ type runbookService struct {
 
 func newRunbookService(sling *sling.Sling, uriTemplate string) *runbookService {
 	runbookService := &runbookService{}
-	runbookService.service = newService(serviceRunbookService, sling, uriTemplate, new(Runbook))
+	runbookService.service = newService(ServiceRunbookService, sling, uriTemplate)
 
 	return runbookService
 }
@@ -66,7 +66,7 @@ func (s runbookService) GetByID(id string) (*Runbook, error) {
 // Update modifies a runbook based on the one provided as input.
 func (s runbookService) Update(runbook *Runbook) (*Runbook, error) {
 	if runbook == nil {
-		return nil, createInvalidParameterError(operationUpdate, parameterRunbook)
+		return nil, createInvalidParameterError(OperationUpdate, ParameterRunbook)
 	}
 
 	path, err := getUpdatePath(s, runbook)

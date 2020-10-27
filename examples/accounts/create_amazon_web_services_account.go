@@ -14,8 +14,8 @@ func CreateAmazonWebServicesAccountExample() {
 		spaceID    string = "space-id"
 
 		// AWS-specific values
-		accessKey string                       = "access-key"
-		secretKey octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("secret-key")
+		accessKey string                        = "access-key"
+		secretKey *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("secret-key")
 
 		// account values
 		accountName        string = "AWS Account"
@@ -34,7 +34,11 @@ func CreateAmazonWebServicesAccountExample() {
 		return
 	}
 
-	awsAccount := octopusdeploy.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)
+	awsAccount, err := octopusdeploy.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)
+	if err != nil {
+		_ = fmt.Errorf("error creating AWS account: %v", err)
+		return
+	}
 
 	// fill in account details
 	awsAccount.Description = accountDescription

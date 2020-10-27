@@ -16,19 +16,19 @@ type DeploymentTargets struct {
 }
 
 type DeploymentTarget struct {
-	TenantedDeploymentMode string   `json:"TenantedDeploymentParticipation,omitempty" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
-	EnvironmentIDs         []string `json:"EnvironmentIds"`
-	Roles                  []string `json:"Roles"`
-	SpaceID                string   `json:"SpaceId,omitempty"`
-	TenantIDs              []string `json:"TenantIds"`
-	TenantTags             []string `json:"TenantTags"`
+	TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
+	EnvironmentIDs         []string               `json:"EnvironmentIds"`
+	Roles                  []string               `json:"Roles"`
+	SpaceID                string                 `json:"SpaceId,omitempty"`
+	TenantIDs              []string               `json:"TenantIds"`
+	TenantTags             []string               `json:"TenantTags"`
 
 	machine
 }
 
 func NewDeploymentTarget(name string, endpoint IEndpoint, environmentIDs []string, roles []string) *DeploymentTarget {
 	return &DeploymentTarget{
-		TenantedDeploymentMode: "Untenanted",
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 		EnvironmentIDs:         environmentIDs,
 		Roles:                  roles,
 		TenantIDs:              []string{},
@@ -40,12 +40,12 @@ func NewDeploymentTarget(name string, endpoint IEndpoint, environmentIDs []strin
 // MarshalJSON returns a deployment target as its JSON encoding.
 func (d *DeploymentTarget) MarshalJSON() ([]byte, error) {
 	deploymentTarget := struct {
-		TenantedDeploymentMode string   `json:"TenantedDeploymentParticipation,omitempty" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
-		EnvironmentIDs         []string `json:"EnvironmentIds"`
-		Roles                  []string `json:"Roles"`
-		SpaceID                string   `json:"SpaceId,omitempty"`
-		TenantIDs              []string `json:"TenantIds"`
-		TenantTags             []string `json:"TenantTags"`
+		TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
+		EnvironmentIDs         []string               `json:"EnvironmentIds"`
+		Roles                  []string               `json:"Roles"`
+		SpaceID                string                 `json:"SpaceId,omitempty"`
+		TenantIDs              []string               `json:"TenantIds"`
+		TenantTags             []string               `json:"TenantTags"`
 		machine
 	}{
 		TenantedDeploymentMode: d.TenantedDeploymentMode,

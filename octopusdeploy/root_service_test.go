@@ -9,7 +9,7 @@ import (
 
 func createRootService(t *testing.T) *rootService {
 	service := newRootService(nil, TestURIRoot)
-	testNewService(t, service, TestURIRoot, serviceRootService)
+	testNewService(t, service, TestURIRoot, ServiceRootService)
 	return service
 }
 
@@ -27,10 +27,10 @@ func TestRootServiceGet(t *testing.T) {
 }
 
 func TestRootServiceNew(t *testing.T) {
-	serviceFunction := newRootService
+	ServiceFunction := newRootService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceRootService
+	ServiceName := ServiceRootService
 
 	testCases := []struct {
 		name        string
@@ -38,14 +38,14 @@ func TestRootServiceNew(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

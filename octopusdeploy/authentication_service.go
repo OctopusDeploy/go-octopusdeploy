@@ -15,7 +15,7 @@ type authenticationService struct {
 func newAuthenticationService(sling *sling.Sling, uriTemplate string, loginInitiatedPath string) *authenticationService {
 	return &authenticationService{
 		loginInitiatedPath: loginInitiatedPath,
-		service:            newService(serviceAuthenticationService, sling, uriTemplate, new(Authentication)),
+		service:            newService(ServiceAuthenticationService, sling, uriTemplate),
 	}
 }
 

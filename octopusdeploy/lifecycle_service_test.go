@@ -10,7 +10,7 @@ import (
 
 func createLifecycleService(t *testing.T) *lifecycleService {
 	service := newLifecycleService(nil, TestURILifecycles)
-	testNewService(t, service, TestURILifecycles, serviceLifecycleService)
+	testNewService(t, service, TestURILifecycles, ServiceLifecycleService)
 	return service
 }
 
@@ -45,10 +45,10 @@ func DeleteTestLifecycle(t *testing.T, service *lifecycleService, lifecycle *Lif
 }
 
 func TestNewLifecycleService(t *testing.T) {
-	serviceFunction := newLifecycleService
+	ServiceFunction := newLifecycleService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceLifecycleService
+	ServiceName := ServiceLifecycleService
 
 	testCases := []struct {
 		name        string
@@ -56,14 +56,14 @@ func TestNewLifecycleService(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -106,16 +106,16 @@ func TestLifecycleServiceStringParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+			assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 			assert.Nil(t, resource)
 
 			resourceList, err := service.GetByPartialName(tc.parameter)
-			assert.Equal(t, err, createInvalidParameterError(operationGetByPartialName, parameterName))
+			assert.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 			assert.NotNil(t, resourceList)
 
 			err = service.DeleteByID(tc.parameter)
 			assert.Error(t, err)
-			assert.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
+			assert.Equal(t, err, createInvalidParameterError(OperationDeleteByID, ParameterID))
 		})
 	}
 }
@@ -124,7 +124,7 @@ func TestLifecycleServiceAdd(t *testing.T) {
 	service := createLifecycleService(t)
 	resource, err := service.Add(nil)
 
-	assert.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
 	assert.Nil(t, resource)
 
 	resource, err = service.Add(&Lifecycle{})
@@ -150,12 +150,12 @@ func TestLifecycleServiceGetWithEmptyID(t *testing.T) {
 
 	resource, err := service.GetByID(emptyString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
 
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 }
 

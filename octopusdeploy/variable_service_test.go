@@ -8,12 +8,12 @@ import (
 )
 
 func TestNewVariableService(t *testing.T) {
-	serviceFunction := newVariableService
+	ServiceFunction := newVariableService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
 	namesPath := emptyString
 	previewPath := emptyString
-	serviceName := serviceVariableService
+	ServiceName := ServiceVariableService
 
 	testCases := []struct {
 		name        string
@@ -23,14 +23,14 @@ func TestNewVariableService(t *testing.T) {
 		namesPath   string
 		previewPath string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate, namesPath, previewPath},
-		{"EmptyURITemplate", serviceFunction, client, emptyString, namesPath, previewPath},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, namesPath, previewPath},
+		{"NilClient", ServiceFunction, nil, uriTemplate, namesPath, previewPath},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString, namesPath, previewPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, namesPath, previewPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.namesPath, tc.previewPath)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

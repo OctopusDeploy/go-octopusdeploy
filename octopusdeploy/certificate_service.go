@@ -14,7 +14,7 @@ type certificateService struct {
 // newCertificateService returns an certificateService with a preconfigured client.
 func newCertificateService(sling *sling.Sling, uriTemplate string) *certificateService {
 	certificateService := &certificateService{}
-	certificateService.service = newService(serviceCertificateService, sling, uriTemplate, new(Certificate))
+	certificateService.service = newService(ServiceCertificateService, sling, uriTemplate)
 
 	return certificateService
 }
@@ -108,11 +108,11 @@ func (s certificateService) Update(resource Certificate) (*Certificate, error) {
 
 func (s certificateService) Replace(certificateID string, replacementCertificate *ReplacementCertificate) (*Certificate, error) {
 	if isEmpty(certificateID) {
-		return nil, createInvalidParameterError(operationReplace, parameterCertificateID)
+		return nil, createInvalidParameterError(OperationReplace, ParameterCertificateID)
 	}
 
 	if replacementCertificate == nil {
-		return nil, createInvalidParameterError(operationReplace, parameterReplacementCertificate)
+		return nil, createInvalidParameterError(OperationReplace, ParameterReplacementCertificate)
 	}
 
 	err := validateInternalState(s)

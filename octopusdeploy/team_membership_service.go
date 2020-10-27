@@ -11,6 +11,6 @@ type teamMembershipService struct {
 func newTeamMembershipService(sling *sling.Sling, uriTemplate string, previewTeamPath string) *teamMembershipService {
 	return &teamMembershipService{
 		previewTeamPath: previewTeamPath,
-		service:         newService(serviceTeamMembershipService, sling, uriTemplate, nil),
+		service:         newService(ServiceTeamMembershipService, sling, uriTemplate),
 	}
 }

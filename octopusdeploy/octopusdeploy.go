@@ -95,15 +95,15 @@ type Client struct {
 // new http.Client will be used.
 func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string) (*Client, error) {
 	if apiURL == nil {
-		return nil, createInvalidParameterError(clientNewClient, parameterOctopusURL)
+		return nil, createInvalidParameterError(clientNewClient, ParameterOctopusURL)
 	}
 
 	if isEmpty(apiKey) {
-		return nil, createInvalidParameterError(clientNewClient, parameterAPIKey)
+		return nil, createInvalidParameterError(clientNewClient, ParameterAPIKey)
 	}
 
 	if !isAPIKey(apiKey) {
-		return nil, createInvalidParameterError(clientNewClient, parameterAPIKey)
+		return nil, createInvalidParameterError(clientNewClient, ParameterAPIKey)
 	}
 
 	baseURLWithAPI := strings.TrimRight(apiURL.String(), "/")
@@ -676,14 +676,18 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 // APIError is a generic structure for containing errors for API operations.
 type APIError struct {
-	ErrorMessage  string   `json:"ErrorMessage"`
-	Errors        []string `json:"Errors"`
-	FullException string   `json:"FullException"`
+	Details         string   `json:"Details,omitempty"`
+	ErrorMessage    string   `json:"ErrorMessage,omitempty"`
+	Errors          []string `json:"Errors,omitempty"`
+	FullException   string   `json:"FullException,omitempty"`
+	HelpLink        string   `json:"HelpLink,omitempty"`
+	HelpText        string   `json:"HelpText,omitempty"`
+	ParsedHelpLinks []string `json:"ParsedHelpLinks,omitempty"`
 }
 
 // Error creates a predefined error for Octopus API responses.
 func (e APIError) Error() string {
-	return fmt.Sprintf("Octopus Deploy Error Response: %v %+v %v", e.ErrorMessage, e.Errors, e.FullException)
+	return fmt.Sprintf("Octopus API error: %v %+v %v", e.ErrorMessage, e.Errors, e.FullException)
 }
 
 // APIErrorChecker is a generic error handler for the OctopusDeploy API.
@@ -711,7 +715,7 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	}
 
 	if resp.StatusCode != wantedResponseCode {
-		return fmt.Errorf("cannot get item from endpoint %s. response from server %s", urlPath, resp.Status)
+		return octopusDeployError
 	}
 
 	return nil
@@ -730,17 +734,17 @@ func LoadNextPage(pagedResults PagedResults) (string, bool) {
 // Generic OctopusDeploy API Get Function.
 func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError(operationAPIGet, parameterSling)
+		return nil, createInvalidParameterError(OperationAPIGet, ParameterSling)
 	}
 
 	getClient := sling.New()
 	if getClient == nil {
-		return nil, createClientInitializationError(operationAPIGet)
+		return nil, createClientInitializationError(OperationAPIGet)
 	}
 
 	getClient = getClient.Get(path)
 	if getClient == nil {
-		return nil, createClientInitializationError(operationAPIGet)
+		return nil, createClientInitializationError(OperationAPIGet)
 	}
 
 	getClient.Set("User-Agent", "go-octopusdeploy")
@@ -762,28 +766,28 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
 func apiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError(operationAPIAdd, parameterSling)
+		return nil, createInvalidParameterError(OperationAPIAdd, ParameterSling)
 	}
 
 	if isEmpty(path) {
-		return nil, createInvalidParameterError(operationAPIAdd, parameterPath)
+		return nil, createInvalidParameterError(OperationAPIAdd, ParameterPath)
 	}
 
 	postClient := sling.New()
 	if postClient == nil {
-		return nil, createClientInitializationError(operationAPIAdd)
+		return nil, createClientInitializationError(OperationAPIAdd)
 	}
 
 	postClient = postClient.Post(path)
 	if postClient == nil {
-		return nil, createClientInitializationError(operationAPIAdd)
+		return nil, createClientInitializationError(OperationAPIAdd)
 	}
 
 	postClient.Set("User-Agent", "go-octopusdeploy")
 
 	request := postClient.BodyJSON(inputStruct)
 	if request == nil {
-		return nil, createClientInitializationError(operationAPIAdd)
+		return nil, createClientInitializationError(OperationAPIAdd)
 	}
 
 	octopusDeployError := new(APIError)
@@ -800,28 +804,28 @@ func apiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 // apiPost post to octopus and expect a 200 response code.
 func apiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError(operationAPIPost, parameterSling)
+		return nil, createInvalidParameterError(OperationAPIPost, ParameterSling)
 	}
 
 	if isEmpty(path) {
-		return nil, createInvalidParameterError(operationAPIPost, parameterPath)
+		return nil, createInvalidParameterError(OperationAPIPost, ParameterPath)
 	}
 
 	postClient := sling.New()
 	if postClient == nil {
-		return nil, createClientInitializationError(operationAPIPost)
+		return nil, createClientInitializationError(OperationAPIPost)
 	}
 
 	postClient = postClient.Post(path)
 	if postClient == nil {
-		return nil, createClientInitializationError(operationAPIPost)
+		return nil, createClientInitializationError(OperationAPIPost)
 	}
 
 	postClient.Set("User-Agent", "go-octopusdeploy")
 
 	request := postClient.BodyJSON(inputStruct)
 	if request == nil {
-		return nil, createClientInitializationError(operationAPIPost)
+		return nil, createClientInitializationError(OperationAPIPost)
 	}
 
 	octopusDeployError := new(APIError)
@@ -838,28 +842,28 @@ func apiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, 
 // Generic OctopusDeploy API Update Function.
 func apiUpdate(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, createInvalidParameterError(operationAPIUpdate, parameterSling)
+		return nil, createInvalidParameterError(OperationAPIUpdate, ParameterSling)
 	}
 
 	if isEmpty(path) {
-		return nil, createInvalidParameterError(operationAPIUpdate, parameterPath)
+		return nil, createInvalidParameterError(OperationAPIUpdate, ParameterPath)
 	}
 
 	putClient := sling.New()
 	if putClient == nil {
-		return nil, createClientInitializationError(operationAPIUpdate)
+		return nil, createClientInitializationError(OperationAPIUpdate)
 	}
 
 	putClient = putClient.Put(path)
 	if putClient == nil {
-		return nil, createClientInitializationError(operationAPIUpdate)
+		return nil, createClientInitializationError(OperationAPIUpdate)
 	}
 
 	putClient.Set("User-Agent", "go-octopusdeploy")
 
 	request := putClient.BodyJSON(inputStruct)
 	if request == nil {
-		return nil, createClientInitializationError(operationAPIUpdate)
+		return nil, createClientInitializationError(OperationAPIUpdate)
 	}
 
 	octopusDeployError := new(APIError)
@@ -876,21 +880,21 @@ func apiUpdate(sling *sling.Sling, inputStruct interface{}, resource interface{}
 // Generic OctopusDeploy API Delete Function.
 func apiDelete(sling *sling.Sling, path string) error {
 	if sling == nil {
-		return createInvalidParameterError(operationAPIDelete, parameterSling)
+		return createInvalidParameterError(OperationAPIDelete, ParameterSling)
 	}
 
 	if isEmpty(path) {
-		return createInvalidParameterError(operationAPIDelete, parameterPath)
+		return createInvalidParameterError(OperationAPIDelete, ParameterPath)
 	}
 
 	deleteClient := sling.New()
 	if deleteClient == nil {
-		return createClientInitializationError(operationAPIDelete)
+		return createClientInitializationError(OperationAPIDelete)
 	}
 
 	deleteClient = deleteClient.Delete(path)
 	if deleteClient == nil {
-		return createClientInitializationError(operationAPIDelete)
+		return createClientInitializationError(OperationAPIDelete)
 	}
 
 	deleteClient.Set("User-Agent", "go-octopusdeploy")

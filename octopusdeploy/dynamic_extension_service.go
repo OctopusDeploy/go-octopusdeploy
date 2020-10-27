@@ -15,6 +15,6 @@ func newDynamicExtensionService(sling *sling.Sling, uriTemplate string, features
 		featuresMetadataPath: featuresMetadataPath,
 		featuresValuesPath:   featuresValuesPath,
 		scriptsPath:          scriptsPath,
-		service:              newService(serviceDynamicExtensionService, sling, uriTemplate, nil),
+		service:              newService(ServiceDynamicExtensionService, sling, uriTemplate),
 	}
 }

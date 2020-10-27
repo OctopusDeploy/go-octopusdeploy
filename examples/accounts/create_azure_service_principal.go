@@ -15,10 +15,10 @@ func CreateAzureServicePrincipalExample() {
 		spaceID    string = "space-id"
 
 		// Azure-specific values
-		azureApplicationID  uuid.UUID                    = uuid.MustParse("client-UUID")
-		azureSecret         octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("azure-secret")
-		azureSubscriptionID uuid.UUID                    = uuid.MustParse("subscription-UUID")
-		azureTenantID       uuid.UUID                    = uuid.MustParse("tenant-UUID")
+		azureApplicationID  uuid.UUID                     = uuid.MustParse("client-UUID")
+		azureSecret         *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("azure-secret")
+		azureSubscriptionID uuid.UUID                     = uuid.MustParse("subscription-UUID")
+		azureTenantID       uuid.UUID                     = uuid.MustParse("tenant-UUID")
 
 		// account values
 		accountName        string   = "Azure Account"
@@ -40,7 +40,11 @@ func CreateAzureServicePrincipalExample() {
 		return
 	}
 
-	azureAccount := octopusdeploy.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
+	azureAccount, err := octopusdeploy.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
+	if err != nil {
+		_ = fmt.Errorf("error creating Azure service principal account: %v", err)
+		return
+	}
 
 	// fill in account details
 	azureAccount.Description = accountDescription

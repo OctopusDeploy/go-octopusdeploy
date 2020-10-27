@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,12 +19,12 @@ func createUserService(t *testing.T) *userService {
 		TestURISignOut,
 		TestURIUserAuthentication,
 		TestURIUserIdentityMetadata)
-	testNewService(t, service, TestURIUsers, serviceUserService)
+	testNewService(t, service, TestURIUsers, ServiceUserService)
 	return service
 }
 
 func TestUserService(t *testing.T) {
-	serviceFunction := newUserService
+	ServiceFunction := newUserService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
 	apiKeysPath := emptyString
@@ -37,7 +36,7 @@ func TestUserService(t *testing.T) {
 	signOutPath := emptyString
 	userAuthenticationPath := emptyString
 	userIdentityMetadataPath := emptyString
-	serviceName := serviceUserService
+	ServiceName := ServiceUserService
 
 	testCases := []struct {
 		name                      string
@@ -55,7 +54,7 @@ func TestUserService(t *testing.T) {
 		userIdentityMetadataPath  string
 	}{
 		{"NilClient",
-			serviceFunction,
+			ServiceFunction,
 			nil,
 			uriTemplate,
 			apiKeysPath,
@@ -68,7 +67,7 @@ func TestUserService(t *testing.T) {
 			userAuthenticationPath,
 			userIdentityMetadataPath},
 		{"EmptyURITemplate",
-			serviceFunction,
+			ServiceFunction,
 			client,
 			emptyString,
 			apiKeysPath,
@@ -81,7 +80,7 @@ func TestUserService(t *testing.T) {
 			userAuthenticationPath,
 			userIdentityMetadataPath},
 		{"URITemplateWithWhitespace",
-			serviceFunction,
+			ServiceFunction,
 			client,
 			whitespaceString,
 			apiKeysPath,
@@ -108,47 +107,9 @@ func TestUserService(t *testing.T) {
 				tc.userAuthenticationPath,
 				tc.userIdentityMetadataPath,
 			)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
-}
-
-func CreateTestUser(t *testing.T, service *userService) *User {
-	if service == nil {
-		service = createUserService(t)
-	}
-	require.NotNil(t, service)
-
-	username := getRandomName()
-	displayName := getRandomName()
-	password := getRandomName()
-
-	user := NewUser(username, displayName)
-	user.Password = password
-	require.NoError(t, user.Validate())
-
-	createdUser, err := service.Add(user)
-	require.NoError(t, err)
-	require.NotNil(t, createdUser)
-	require.NotEmpty(t, createdUser.GetID())
-	require.Equal(t, username, createdUser.Username)
-	require.Equal(t, displayName, createdUser.DisplayName)
-
-	return createdUser
-}
-
-func DeleteTestUser(t *testing.T, service *userService, user User) error {
-	require.NotNil(t, user)
-
-	if service == nil {
-		service = createUserService(t)
-	}
-	require.NotNil(t, service)
-
-	err := service.DeleteByID(user.GetID())
-	assert.NoError(t, err)
-
-	return err
 }
 
 func TestUserServiceGetByID(t *testing.T) {
@@ -162,20 +123,21 @@ func TestUserServiceGetByID(t *testing.T) {
 	user, err = service.GetByID(whitespaceString)
 	require.Error(t, err)
 	require.Nil(t, user)
-
-	users, err := service.GetAll()
-	for _, user := range users {
-		user, err := service.GetByID(user.GetID())
-		require.NoError(t, err)
-		require.NotNil(t, user)
-	}
 }
 
-func TestUserServiceGetMe(t *testing.T) {
+func TestUserServiceNilInputs(t *testing.T) {
 	service := createUserService(t)
 	require.NotNil(t, service)
 
-	user, err := service.GetMe()
-	require.NoError(t, err)
-	require.NotNil(t, user)
+	user, err := service.Add(nil)
+	require.Nil(t, user)
+	require.Equal(t, createInvalidParameterError(OperationAdd, ParameterUser), err)
+
+	apiKey, err := service.GetAPIKeyByID(nil, emptyString)
+	require.Nil(t, apiKey)
+	require.Equal(t, createInvalidParameterError(OperationGetAPIKeyByID, ParameterUser), err)
+
+	apiKeys, err := service.GetAPIKeys(nil)
+	require.Nil(t, apiKeys)
+	require.Equal(t, createInvalidParameterError(OperationGetAPIKeys, ParameterUser), err)
 }

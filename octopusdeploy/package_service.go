@@ -20,7 +20,7 @@ func newPackageService(sling *sling.Sling, uriTemplate string, deltaSignaturePat
 		notesListPath:      notesListPath,
 		uploadPath:         uploadPath,
 	}
-	packageService.service = newService(servicePackageService, sling, uriTemplate, new(Package))
+	packageService.service = newService(ServicePackageService, sling, uriTemplate)
 
 	return packageService
 }
@@ -90,7 +90,7 @@ func (s packageService) GetByID(id string) (*Package, error) {
 // Update modifies a package based on the one provided as input.
 func (s packageService) Update(octopusPackage *Package) (*Package, error) {
 	if octopusPackage == nil {
-		return nil, createInvalidParameterError(operationUpdate, parameterPackage)
+		return nil, createInvalidParameterError(OperationUpdate, ParameterPackage)
 	}
 
 	path, err := getUpdatePath(s, octopusPackage)

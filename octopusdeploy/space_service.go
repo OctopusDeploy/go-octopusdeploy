@@ -14,7 +14,7 @@ func newSpaceService(sling *sling.Sling, uriTemplate string, homePath string) *s
 	spaceService := &spaceService{
 		homePath: homePath,
 	}
-	spaceService.service = newService(serviceSpaceService, sling, uriTemplate, new(Space))
+	spaceService.service = newService(ServiceSpaceService, sling, uriTemplate)
 
 	return spaceService
 }
@@ -84,7 +84,7 @@ func (s spaceService) GetAll() ([]*Space, error) {
 // GetByName performs a lookup and returns the Space with a matching name.
 func (s spaceService) GetByName(name string) (*Space, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError(operationGetByName, parameterName)
+		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
 	err := validateInternalState(s)
@@ -104,7 +104,7 @@ func (s spaceService) GetByName(name string) (*Space, error) {
 		}
 	}
 
-	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
+	return nil, createItemNotFoundError(s.getName(), OperationGetByName, name)
 }
 
 // GetByPartialName performs a lookup and returns spaces with a matching partial name.

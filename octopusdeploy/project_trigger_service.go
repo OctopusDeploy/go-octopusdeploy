@@ -10,7 +10,7 @@ type projectTriggerService struct {
 
 func newProjectTriggerService(sling *sling.Sling, uriTemplate string) *projectTriggerService {
 	projectTriggerService := &projectTriggerService{}
-	projectTriggerService.service = newService(serviceProjectTriggerService, sling, uriTemplate, new(ProjectTrigger))
+	projectTriggerService.service = newService(ServiceProjectTriggerService, sling, uriTemplate)
 
 	return projectTriggerService
 }

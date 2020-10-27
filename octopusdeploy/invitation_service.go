@@ -8,6 +8,6 @@ type invitationService struct {
 
 func newInvitationService(sling *sling.Sling, uriTemplate string) *invitationService {
 	return &invitationService{
-		service: newService(serviceInvitationService, sling, uriTemplate, nil),
+		service: newService(ServiceInvitationService, sling, uriTemplate),
 	}
 }

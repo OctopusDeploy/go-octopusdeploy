@@ -39,7 +39,7 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 	}
 	a.PagedResults = pagedResults
 
-	var accountType string
+	var accountType AccountType
 	var itemsArray []*json.RawMessage
 	var items *json.RawMessage
 
@@ -70,42 +70,42 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 			}
 
 			switch accountType {
-			case accountTypeAmazonWebServicesAccount:
+			case AccountTypeAmazonWebServicesAccount:
 				var amazonWebServicesAccount *AmazonWebServicesAccount
 				err := json.Unmarshal(*account, &amazonWebServicesAccount)
 				if err != nil {
 					return err
 				}
 				a.Items = append(a.Items, amazonWebServicesAccount)
-			case accountTypeAzureServicePrincipal:
+			case AccountTypeAzureServicePrincipal:
 				var azureServicePrincipalAccount *AzureServicePrincipalAccount
 				err := json.Unmarshal(*account, &azureServicePrincipalAccount)
 				if err != nil {
 					return err
 				}
 				a.Items = append(a.Items, azureServicePrincipalAccount)
-			case accountTypeAzureSubscription:
+			case AccountTypeAzureSubscription:
 				var azureSubscriptionAccount *AzureSubscriptionAccount
 				err := json.Unmarshal(*account, &azureSubscriptionAccount)
 				if err != nil {
 					return err
 				}
 				a.Items = append(a.Items, azureSubscriptionAccount)
-			case accountTypeSshKeyPair:
+			case AccountTypeSSHKeyPair:
 				var sshKeyAccount *SSHKeyAccount
 				err := json.Unmarshal(*account, &sshKeyAccount)
 				if err != nil {
 					return err
 				}
 				a.Items = append(a.Items, sshKeyAccount)
-			case accountTypeToken:
+			case AccountTypeToken:
 				var tokenAccount *TokenAccount
 				err := json.Unmarshal(*account, &tokenAccount)
 				if err != nil {
 					return err
 				}
 				a.Items = append(a.Items, tokenAccount)
-			case accountTypeUsernamePassword:
+			case AccountTypeUsernamePassword:
 				var usernamePasswordAccount *UsernamePasswordAccount
 				err := json.Unmarshal(*account, &usernamePasswordAccount)
 				if err != nil {

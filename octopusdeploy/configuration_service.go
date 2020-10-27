@@ -13,7 +13,7 @@ type configurationService struct {
 func newConfigurationService(sling *sling.Sling, uriTemplate string, versionControlClearCachePath string) *configurationService {
 	return &configurationService{
 		versionControlClearCachePath: versionControlClearCachePath,
-		service:                      newService(serviceConfigurationService, sling, uriTemplate, nil),
+		service:                      newService(ServiceConfigurationService, sling, uriTemplate),
 	}
 }
 

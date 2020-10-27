@@ -9,7 +9,7 @@ import (
 
 func createTeamService(t *testing.T) *teamService {
 	service := newTeamService(nil, TestURITeams)
-	testNewService(t, service, TestURITeams, serviceTeamService)
+	testNewService(t, service, TestURITeams, ServiceTeamService)
 	return service
 }
 
@@ -18,7 +18,7 @@ func TestTeamSetAddGetDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&Team{})
@@ -31,7 +31,7 @@ func TestTeamServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&Team{})
@@ -55,34 +55,34 @@ func TestTeamServiceParameters(t *testing.T) {
 
 			if isEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
 
 				resourceList, err := service.GetByPartialName(tc.parameter)
-				require.Equal(t, createInvalidParameterError(operationGetByPartialName, parameterName), err)
+				require.Equal(t, createInvalidParameterError(OperationGetByPartialName, ParameterName), err)
 				require.NotNil(t, resourceList)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, createInvalidParameterError(operationDeleteByID, parameterID))
+				require.Equal(t, err, createInvalidParameterError(OperationDeleteByID, ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createResourceNotFoundError(serviceTeamService, "ID", tc.parameter))
+				require.Equal(t, err, createResourceNotFoundError(ServiceTeamService, "ID", tc.parameter))
 				require.Nil(t, resource)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, createResourceNotFoundError(serviceTeamService, "ID", tc.parameter))
+				require.Equal(t, err, createResourceNotFoundError(ServiceTeamService, "ID", tc.parameter))
 			}
 		})
 	}
 }
 
 func TestTeamServiceNew(t *testing.T) {
-	serviceFunction := newTeamService
+	ServiceFunction := newTeamService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceTeamService
+	ServiceName := ServiceTeamService
 
 	testCases := []struct {
 		name        string
@@ -90,14 +90,14 @@ func TestTeamServiceNew(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

@@ -11,6 +11,6 @@ type smtpConfigurationService struct {
 func newSMTPConfigurationService(sling *sling.Sling, uriTemplate string, isConfiguredPath string) *smtpConfigurationService {
 	return &smtpConfigurationService{
 		isConfiguredPath: isConfiguredPath,
-		service:          newService(serviceSMTPConfigurationService, sling, uriTemplate, nil),
+		service:          newService(ServiceSMTPConfigurationService, sling, uriTemplate),
 	}
 }

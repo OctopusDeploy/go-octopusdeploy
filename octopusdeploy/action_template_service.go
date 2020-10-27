@@ -25,27 +25,9 @@ func newActionTemplateService(sling *sling.Sling, uriTemplate string, categories
 		searchPath:        searchPath,
 		versionedLogoPath: versionedLogoPath,
 	}
-	actionTemplateService.service = newService(serviceActionTemplateService, sling, uriTemplate, new(ActionTemplate))
+	actionTemplateService.service = newService(ServiceActionTemplateService, sling, uriTemplate)
 
 	return actionTemplateService
-}
-
-func (s actionTemplateService) getPagedResponse(path string) ([]*ActionTemplate, error) {
-	resources := []*ActionTemplate{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(ActionTemplates), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*ActionTemplates)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new action template.

@@ -1,171 +1,118 @@
 package octopusdeploy
 
 import (
-	"encoding/json"
 	"testing"
 	"time"
 
-	"github.com/kinbiko/jsonassert"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestSSHKeyAccountTypes(t *testing.T) {
-	account := NewSSHKeyAccount("ssh-key-account-name", "ssh-key-account-username", NewSensitiveValue("new-value"))
-	require.NoError(t, account.Validate())
+func TestSSHKeyAccountNew(t *testing.T) {
+	accountType := AccountTypeSSHKeyPair
+	description := emptyString
+	environmentIDs := []string{}
+	name := getRandomName()
+	privateKeyFile := NewSensitiveValue(getRandomName())
+	var privateKeyPassphrase *SensitiveValue
+	spaceID := emptyString
+	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
+	username := getRandomName()
 
-	account.AccountType = "None"
-	assert.Error(t, account.Validate())
+	account, err := NewSSHKeyAccount(name, username, privateKeyFile)
 
-	account.AccountType = "none"
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeUsernamePassword
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeAzureSubscription
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeAzureServicePrincipal
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeAmazonWebServicesAccount
-	assert.Error(t, account.Validate())
-
-	account.AccountType = "AmazonWebServicesRoleAccount"
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeToken
-	assert.Error(t, account.Validate())
-
-	account.AccountType = accountTypeSshKeyPair
-	assert.NoError(t, account.Validate())
-
-	account.AccountType = "sshKeyPair"
-	assert.Error(t, account.Validate())
-}
-
-func TestSSHKeyAccountMarshalJSON(t *testing.T) {
-	account := NewSSHKeyAccount("account-name", "account-username", NewSensitiveValue("new-value"))
-
-	environmentIDs := []string{
-		"environment-id-1",
-		"environment-id-2",
-	}
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self": "/api/foo/bar/quux",
-		"test": "/api/xyzzy",
-	}
-
-	privateKeyPassphrase := NewSensitiveValue(emptyString)
-
-	tenantIDs := []string{
-		"tenant-id-1",
-		"tenant-id-2",
-	}
-	tenantTags := []string{
-		"tenant-tag-1",
-		"tenant-tag-2",
-	}
-
-	account.Description = "account-description"
-	account.EnvironmentIDs = environmentIDs
-	account.ID = "account-id"
-	account.ModifiedBy = "john.smith@example.com"
-	account.ModifiedOn = &lastModifiedOn
-	account.Links = links
-	account.PrivateKeyPassphrase = &privateKeyPassphrase
-	account.SpaceID = "space-id"
-	account.TenantIDs = tenantIDs
-	account.TenantTags = tenantTags
-
-	require.NoError(t, account.Validate())
-
-	jsonEncoding, err := json.Marshal(account)
-	require.NoError(t, err)
-	require.NotNil(t, jsonEncoding)
-
-	actual := string(jsonEncoding)
-
-	jsonassert.New(t).Assertf(actual, sshKeyAccountAsJSON)
-}
-
-func TestSSHKeyAccountUnmarshalJSON(t *testing.T) {
-	var account SSHKeyAccount
-	err := json.Unmarshal([]byte(sshKeyAccountAsJSON), &account)
-
-	require.NoError(t, err)
 	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
 
-	environmentIDs := []string{
-		"environment-id-1",
-		"environment-id-2",
-	}
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self": "/api/foo/bar/quux",
-		"test": "/api/xyzzy",
-	}
+	// resource
+	require.Equal(t, emptyString, account.ID)
+	require.Equal(t, emptyString, account.ModifiedBy)
+	require.Nil(t, account.ModifiedOn)
+	require.NotNil(t, account.Links)
 
-	privateKeyFile := NewSensitiveValue("new-value")
-	privateKeyPassphrase := NewSensitiveValue(emptyString)
+	// IResource
+	require.Equal(t, emptyString, account.GetID())
+	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Nil(t, account.GetModifiedOn())
+	require.NotNil(t, account.GetLinks())
 
-	tenantIDs := []string{
-		"tenant-id-1",
-		"tenant-id-2",
-	}
-	tenantTags := []string{
-		"tenant-tag-1",
-		"tenant-tag-2",
-	}
+	// account
+	require.Equal(t, description, account.Description)
+	require.Equal(t, environmentIDs, account.EnvironmentIDs)
+	require.Equal(t, name, account.Name)
+	require.Equal(t, spaceID, account.SpaceID)
+	require.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
 
-	assert.Equal(t, "account-id", account.GetID())
-	assert.Equal(t, environmentIDs, account.EnvironmentIDs)
-	assert.Equal(t, lastModifiedOn, *account.GetModifiedOn())
-	assert.Equal(t, "john.smith@example.com", account.GetModifiedBy())
-	assert.Equal(t, links, account.Links)
-	assert.Equal(t, privateKeyFile, *account.PrivateKeyFile)
-	assert.Equal(t, privateKeyPassphrase, *account.PrivateKeyPassphrase)
-	assert.Equal(t, "space-id", account.SpaceID)
-	assert.Equal(t, "Untenanted", account.TenantedDeploymentMode)
-	assert.Equal(t, tenantIDs, account.TenantIDs)
-	assert.Equal(t, tenantTags, account.TenantTags)
-	assert.Equal(t, "account-username", account.Username)
+	// IAccount
+	require.Equal(t, accountType, account.GetAccountType())
+	require.Equal(t, description, account.GetDescription())
+	require.Equal(t, name, account.GetName())
+
+	// SSHKeyAccount
+	require.Equal(t, privateKeyFile, account.PrivateKeyFile)
+	require.Equal(t, privateKeyPassphrase, account.PrivateKeyPassphrase)
+	require.Equal(t, username, account.Username)
 }
 
-const sshKeyAccountAsJSON string = `{
-	"AccountType": "SshKeyPair",
-	"Description": "account-description",
-	"EnvironmentIds": [
-		"environment-id-1",
-		"environment-id-2"
-	],
-	"Id": "account-id",
-	"LastModifiedOn": "2020-10-02T00:44:11.284Z",
-	"LastModifiedBy": "john.smith@example.com",
-	"Links": {
-		"Self": "/api/foo/bar/quux",
-		"test": "/api/xyzzy"
-	},
-	"Name": "account-name",
-	"PrivateKeyFile": {
-		"HasValue": true,
-		"NewValue": "new-value"
-	},
-	"PrivateKeyPassphrase": {
-		"HasValue": false,
-		"NewValue": null
-	},
-	"SpaceId": "space-id",
-	"TenantedDeploymentParticipation": "Untenanted",
-	"TenantIds": [
-		"tenant-id-1",
-		"tenant-id-2"
-	],
-	"TenantTags": [
-		"tenant-tag-1",
-		"tenant-tag-2"
-	],
-	"Username": "account-username"
-}`
+func TestSSHKeyAccountNewWithConfigs(t *testing.T) {
+	environmentIDs := []string{getRandomName(), getRandomName()}
+	invalidID := getRandomName()
+	invalidModifiedBy := getRandomName()
+	invalidModifiedOn := time.Now()
+	invalidName := getRandomName()
+	name := getRandomName()
+	description := "Description for " + name + " (OK to Delete)"
+	privateKeyFile := NewSensitiveValue(getRandomName())
+	privateKeyPassphrase := NewSensitiveValue(getRandomName())
+	spaceID := getRandomName()
+	tenantedDeploymentMode := TenantedDeploymentMode("Tenanted")
+	username := getRandomName()
+
+	options := func(a *SSHKeyAccount) {
+		a.Description = description
+		a.EnvironmentIDs = environmentIDs
+		a.ID = invalidID
+		a.ModifiedBy = invalidModifiedBy
+		a.ModifiedOn = &invalidModifiedOn
+		a.Name = invalidName
+		a.PrivateKeyFile = privateKeyFile
+		a.PrivateKeyPassphrase = privateKeyPassphrase
+		a.SpaceID = spaceID
+		a.TenantedDeploymentMode = tenantedDeploymentMode
+		a.Username = username
+	}
+
+	account, err := NewSSHKeyAccount(name, username, privateKeyFile, options)
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	// resource
+	require.Equal(t, emptyString, account.ID)
+	require.Equal(t, emptyString, account.ModifiedBy)
+	require.Nil(t, account.ModifiedOn)
+	require.NotNil(t, account.Links)
+
+	// IResource
+	require.Equal(t, emptyString, account.GetID())
+	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Nil(t, account.GetModifiedOn())
+	require.NotNil(t, account.GetLinks())
+
+	// account
+	require.Equal(t, description, account.Description)
+	require.Equal(t, environmentIDs, account.EnvironmentIDs)
+	require.Equal(t, name, account.Name)
+	require.Equal(t, spaceID, account.SpaceID)
+	require.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
+
+	// IAccount
+	require.Equal(t, AccountTypeSSHKeyPair, account.GetAccountType())
+	require.Equal(t, description, account.GetDescription())
+	require.Equal(t, name, account.GetName())
+
+	// SSHKeyAccount
+	require.Equal(t, privateKeyFile, account.PrivateKeyFile)
+	require.Equal(t, privateKeyPassphrase, account.PrivateKeyPassphrase)
+	require.Equal(t, username, account.Username)
+}

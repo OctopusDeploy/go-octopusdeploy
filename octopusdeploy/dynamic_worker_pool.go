@@ -6,10 +6,10 @@ import (
 )
 
 type DynamicWorkerPool struct {
-	WorkerPoolType string `json:"WorkerPoolType" validate:"required,eq=DynamicWorkerPool"`
-	WorkerType     string `json:"WorkerType" validate:"required,oneof=Ubuntu1804 UbuntuDefault Windows2016 Windows2019 WindowsDefault"`
+	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
+	WorkerType     WorkerType     `json:"WorkerType"`
 
-	WorkerPoolResource
+	WorkerPool
 }
 
 type DynamicWorkerPools struct {
@@ -18,21 +18,29 @@ type DynamicWorkerPools struct {
 }
 
 // NewDynamicWorkerPool creates and initializes a dynamic worker pool.
-func NewDynamicWorkerPool(name string, workerType string) *DynamicWorkerPool {
-	return &DynamicWorkerPool{
-		WorkerPoolType:     "DynamicWorkerPool",
-		WorkerType:         workerType,
-		WorkerPoolResource: *newWorkerPoolResource(name),
+func NewDynamicWorkerPool(name string, workerType WorkerType) (*DynamicWorkerPool, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
+
+	return &DynamicWorkerPool{
+		WorkerPoolType: WorkerPoolTypeDynamic,
+		WorkerType:     workerType,
+		WorkerPool:     *newWorkerPool(name),
+	}, nil
+}
+
+func (d *DynamicWorkerPool) GetIsDefault() bool {
+	return d.IsDefault
 }
 
 // GetWorkerPoolType returns the worker pool type for this worker pool.
-func (d *DynamicWorkerPool) GetWorkerPoolType() string {
+func (d *DynamicWorkerPool) GetWorkerPoolType() WorkerPoolType {
 	return d.WorkerPoolType
 }
 
 // GetWorkerType returns the worker type for this worker pool.
-func (d *DynamicWorkerPool) GetWorkerType() string {
+func (d *DynamicWorkerPool) GetWorkerType() WorkerType {
 	return d.WorkerType
 }
 

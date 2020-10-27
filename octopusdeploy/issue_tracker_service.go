@@ -8,6 +8,6 @@ type issueTrackerService struct {
 
 func newIssueTrackerService(sling *sling.Sling, uriTemplate string) *issueTrackerService {
 	return &issueTrackerService{
-		service: newService(serviceIssueTrackerService, sling, uriTemplate, nil),
+		service: newService(ServiceIssueTrackerService, sling, uriTemplate),
 	}
 }

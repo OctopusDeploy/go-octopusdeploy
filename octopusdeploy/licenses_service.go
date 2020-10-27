@@ -13,6 +13,6 @@ func newLicenseService(sling *sling.Sling, uriTemplate string, currentLicense st
 	return &licenseService{
 		currentLicense:       currentLicense,
 		currentLicenseStatus: currentLicenseStatus,
-		service:              newService(serviceLicenseService, sling, uriTemplate, nil),
+		service:              newService(ServiceLicenseService, sling, uriTemplate),
 	}
 }

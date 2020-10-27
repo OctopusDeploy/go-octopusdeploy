@@ -13,6 +13,6 @@ func newJiraIntegrationService(sling *sling.Sling, uriTemplate string, connectAp
 	return &jiraIntegrationService{
 		connectAppCredentialsTestPath: connectAppCredentialsTestPath,
 		credentialsTestPath:           credentialsTestPath,
-		service:                       newService(serviceJiraIntegrationService, sling, uriTemplate, nil),
+		service:                       newService(ServiceJiraIntegrationService, sling, uriTemplate),
 	}
 }

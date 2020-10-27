@@ -8,6 +8,6 @@ type machineRoleService struct {
 
 func newMachineRoleService(sling *sling.Sling, uriTemplate string) *machineRoleService {
 	return &machineRoleService{
-		service: newService(serviceMachineRoleService, sling, uriTemplate, nil),
+		service: newService(ServiceMachineRoleService, sling, uriTemplate),
 	}
 }

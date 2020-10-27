@@ -8,56 +8,152 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestProjectAddAndDelete(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+func AssertEqualProjects(t *testing.T, expected *octopusdeploy.Project, actual *octopusdeploy.Project) {
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
 
-	projectName := getRandomName()
-	expected := getTestProject(projectName)
-	actual := createTestProject(t, octopusClient, projectName)
+	// IResource
+	assert.Equal(t, expected.GetID(), actual.GetID())
+	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
 
-	defer cleanProject(t, octopusClient, actual.GetID())
-
-	assert.Equal(t, expected.Name, actual.Name, "project name doesn't match expected")
-	assert.NotEmpty(t, actual.GetID(), "project doesn't contain an ID from the octopus server")
+	// Project
+	assert.Equal(t, expected.AutoCreateRelease, actual.AutoCreateRelease)
+	assert.Equal(t, expected.AutoDeployReleaseOverrides, actual.AutoDeployReleaseOverrides)
+	assert.Equal(t, expected.ClonedFromProjectID, actual.ClonedFromProjectID)
+	assert.Equal(t, expected.DefaultGuidedFailureMode, actual.DefaultGuidedFailureMode)
+	assert.Equal(t, expected.DefaultToSkipIfAlreadyInstalled, actual.DefaultToSkipIfAlreadyInstalled)
+	assert.Equal(t, expected.DeploymentChangesTemplate, actual.DeploymentChangesTemplate)
+	assert.Equal(t, expected.DeploymentProcessID, actual.DeploymentProcessID)
+	assert.Equal(t, expected.Description, actual.Description)
+	assert.Equal(t, expected.DiscreteChannelRelease, actual.DiscreteChannelRelease)
+	assert.Equal(t, expected.ExtensionSettings, actual.ExtensionSettings)
+	assert.Equal(t, expected.IncludedLibraryVariableSetIDs, actual.IncludedLibraryVariableSetIDs)
+	assert.Equal(t, expected.IsDisabled, actual.IsDisabled)
+	assert.Equal(t, expected.IsVersionControlled, actual.IsVersionControlled)
+	assert.Equal(t, expected.LifecycleID, actual.LifecycleID)
+	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.ProjectConnectivityPolicy, actual.ProjectConnectivityPolicy)
+	assert.Equal(t, expected.ProjectGroupID, actual.ProjectGroupID)
+	assert.Equal(t, expected.ReleaseCreationStrategy, actual.ReleaseCreationStrategy)
+	assert.Equal(t, expected.ReleaseNotesTemplate, actual.ReleaseNotesTemplate)
+	assert.Equal(t, expected.Slug, actual.Slug)
+	assert.Equal(t, expected.SpaceID, actual.SpaceID)
+	assert.Equal(t, expected.Templates, actual.Templates)
+	assert.Equal(t, expected.TenantedDeploymentMode, actual.TenantedDeploymentMode)
+	assert.Equal(t, expected.VariableSetID, actual.VariableSetID)
+	assert.Equal(t, expected.VersionControlSettings, actual.VersionControlSettings)
+	assert.Equal(t, expected.VersioningStrategy, actual.VersioningStrategy)
 }
 
-func TestProjectAddGetAndDelete(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+func CreateTestProject(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup) (*octopusdeploy.Project, error) {
+	require.NotNil(t, lifecycle)
+	require.NotNil(t, projectGroup)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
 
-	getProject, err := octopusClient.Projects.GetByID(project.GetID())
-	assert.NoError(t, err, "there was an error raised getting project when there should not be")
-	assert.Equal(t, project.Name, getProject.Name)
+	name := getRandomName()
+
+	project := octopusdeploy.NewProject(name, lifecycle.GetID(), projectGroup.GetID())
+	require.NotNil(t, project)
+	require.NoError(t, project.Validate())
+
+	createdProject, err := client.Projects.Add(project)
+	require.NoError(t, err)
+	require.NotNil(t, createdProject)
+	require.NotEmpty(t, createdProject.GetID())
+
+	// verify the add operation was successful
+	projectToCompare, err := client.Projects.GetByID(createdProject.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, projectToCompare)
+	AssertEqualProjects(t, createdProject, projectToCompare)
+
+	return createdProject, nil
+}
+
+func DeleteTestProject(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) {
+	require.NotNil(t, project)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := client.Projects.DeleteByID(project.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedProject, err := client.Projects.GetByID(project.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedProject)
+}
+
+func TestProjectAddGetDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
 }
 
 func TestProjectGetThatDoesNotExist(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
 	id := getRandomName()
-	resource, err := octopusClient.Projects.GetByID(id)
-	require.Equal(t, createResourceNotFoundError("ProjectService", "ID", id), err)
+	resource, err := client.Projects.GetByID(id)
+	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceProjectService, "ID", id), err)
 	require.Nil(t, resource)
 }
 
 func TestProjectGetAll(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
 
 	// create many projects to test pagination
 	projectsToCreate := 32
 	sum := 0
 	for i := 0; i < projectsToCreate; i++ {
-		project := createTestProject(t, octopusClient, getRandomName())
-		defer cleanProject(t, octopusClient, project.GetID())
+		project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+		require.NoError(t, err)
+		require.NotNil(t, project)
+		defer DeleteTestProject(t, client, project)
+
 		sum += i
 	}
 
-	allProjects, err := octopusClient.Projects.GetAll()
+	allProjects, err := client.Projects.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
@@ -69,10 +165,12 @@ func TestProjectGetAll(t *testing.T) {
 		t.Fatalf("There should be at least %d projects created but there was only %d. Pagination is likely not working.", projectsToCreate, numberOfProjects)
 	}
 
-	additionalProject := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, additionalProject.GetID())
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
 
-	allProjectsAfterCreatingAdditional, err := octopusClient.Projects.GetAll()
+	allProjectsAfterCreatingAdditional, err := client.Projects.GetAll()
 	if err != nil {
 		t.Fatalf("Retrieving all projects failed when it shouldn't: %s", err)
 	}
@@ -82,11 +180,23 @@ func TestProjectGetAll(t *testing.T) {
 }
 
 func TestProjectUpdate(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
 
 	newProjectName := getRandomName()
 	const newDescription = "this should be updated"
@@ -96,7 +206,7 @@ func TestProjectUpdate(t *testing.T) {
 	project.Description = newDescription
 	project.ProjectConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 
-	updatedProject, err := octopusClient.Projects.Update(project)
+	updatedProject, err := client.Projects.Update(project)
 	require.NoError(t, err)
 	require.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
 	require.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
@@ -104,44 +214,30 @@ func TestProjectUpdate(t *testing.T) {
 }
 
 func TestProjectGetByName(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	project := createTestProject(t, octopusClient, getRandomName())
-	defer cleanProject(t, octopusClient, project.GetID())
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	foundProject, err := octopusClient.Projects.GetByName(project.Name)
-	require.NoError(t, err, "error when looking for project when not expected")
-	require.Equal(t, project.Name, foundProject.Name, "project not found when searching by its name")
-}
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-func createTestProject(t *testing.T, octopusClient *octopusdeploy.Client, projectName string) *octopusdeploy.Project {
-	if octopusClient == nil {
-		octopusClient = getOctopusClient()
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	query := octopusdeploy.ProjectsQuery{
+		Name: project.Name,
+		Take: 1,
 	}
-	require.NotNil(t, octopusClient)
 
-	p := getTestProject(projectName)
-	createdProject, err := octopusClient.Projects.Add(&p)
-
-	if err != nil {
-		t.Fatalf("creating project %s failed when it shouldn't: %s", projectName, err)
-	}
-
-	return createdProject
-}
-
-func getTestProject(projectName string) octopusdeploy.Project {
-	p := octopusdeploy.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
-	return *p
-}
-
-func cleanProject(t *testing.T, octopusClient *octopusdeploy.Client, projectID string) {
-	if octopusClient == nil {
-		octopusClient = getOctopusClient()
-	}
-	require.NotNil(t, octopusClient)
-
-	err := octopusClient.Projects.DeleteByID(projectID)
-	assert.NoError(t, err)
+	projects, err := client.Projects.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, projects)
 }

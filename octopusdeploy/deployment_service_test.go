@@ -20,6 +20,6 @@ func TestDeploymentServiceGetByIDs(t *testing.T) {
 
 func createDeploymentService(t *testing.T) *deploymentService {
 	service := newDeploymentService(nil, TestURIDeployments)
-	testNewService(t, service, TestURIDeployments, serviceDeploymentService)
+	testNewService(t, service, TestURIDeployments, ServiceDeploymentService)
 	return service
 }

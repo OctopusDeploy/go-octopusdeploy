@@ -8,6 +8,6 @@ type cloudTemplateService struct {
 
 func newCloudTemplateService(sling *sling.Sling, uriTemplate string) *cloudTemplateService {
 	return &cloudTemplateService{
-		service: newService(serviceCloudTemplateService, sling, uriTemplate, nil),
+		service: newService(ServiceCloudTemplateService, sling, uriTemplate),
 	}
 }

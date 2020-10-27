@@ -26,7 +26,7 @@ func TestCertificateWithNameAndCertificateData(t *testing.T) {
 	require.NotNil(t, sensitiveValue)
 
 	certificate := Certificate{
-		CertificateData:        &sensitiveValue,
+		CertificateData:        sensitiveValue,
 		Name:                   certificateName,
 		TenantedDeploymentMode: "Untenanted",
 	}

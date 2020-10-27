@@ -7,27 +7,58 @@ import (
 
 // SSHKeyAccount represents a SSH key pair account.
 type SSHKeyAccount struct {
-	PrivateKeyFile       *SensitiveValue `json:"PrivateKeyFile" validate:"required"`
-	PrivateKeyPassphrase *SensitiveValue `json:"PrivateKeyPassphrase,omitempty"`
-	Username             string          `json:"Username" validate:"required"`
+	PrivateKeyFile       *SensitiveValue `validate:"required"`
+	PrivateKeyPassphrase *SensitiveValue
+	Username             string `validate:"required"`
 
-	AccountResource
+	account
 }
 
 // NewSSHKeyAccount initializes and returns a SSH key pair account with a name,
 // username, and private key file.
-func NewSSHKeyAccount(name string, username string, privateKeyFile SensitiveValue) *SSHKeyAccount {
-	return &SSHKeyAccount{
-		Username:        username,
-		PrivateKeyFile:  &privateKeyFile,
-		AccountResource: *newAccountResource(name, accountTypeSshKeyPair),
+func NewSSHKeyAccount(name string, username string, privateKeyFile *SensitiveValue, options ...func(*SSHKeyAccount)) (*SSHKeyAccount, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
+
+	if isEmpty(username) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUsername)
+	}
+
+	if privateKeyFile == nil {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterPrivateKeyFile)
+	}
+
+	account := SSHKeyAccount{
+		account: *newAccount(name, AccountType("SshKeyPair")),
+	}
+
+	// iterate through configuration options and set fields (without checks)
+	for _, option := range options {
+		option(&account)
+	}
+
+	// assign pre-determined values to "mandatory" fields
+	account.accountType = AccountType("SshKeyPair")
+	account.ID = emptyString
+	account.ModifiedBy = emptyString
+	account.ModifiedOn = nil
+	account.PrivateKeyFile = privateKeyFile
+	account.Name = name
+	account.Username = username
+
+	// validate to ensure that all expectations are met
+	err := account.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &account, nil
 }
 
 // Validate checks the state of this account and returns an error if invalid.
 func (s *SSHKeyAccount) Validate() error {
 	v := validator.New()
-	v.RegisterStructValidation(validateSSHKeyAccount, SSHKeyAccount{})
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
 		return err
@@ -37,11 +68,4 @@ func (s *SSHKeyAccount) Validate() error {
 		return err
 	}
 	return v.Struct(s)
-}
-
-func validateSSHKeyAccount(sl validator.StructLevel) {
-	account := sl.Current().Interface().(SSHKeyAccount)
-	if account.AccountType != accountTypeSshKeyPair {
-		sl.ReportError(account.AccountType, "AccountType", "AccountType", "accounttype", accountTypeSshKeyPair)
-	}
 }

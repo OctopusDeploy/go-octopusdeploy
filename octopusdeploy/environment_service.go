@@ -16,7 +16,7 @@ func newEnvironmentService(sling *sling.Sling, uriTemplate string, sortOrderPath
 		sortOrderPath: sortOrderPath,
 		summaryPath:   summaryPath,
 	}
-	environmentService.service = newService(serviceEnvironmentService, sling, uriTemplate, new(Environment))
+	environmentService.service = newService(ServiceEnvironmentService, sling, uriTemplate)
 
 	return environmentService
 }
@@ -42,7 +42,7 @@ func (s environmentService) getPagedResponse(path string) ([]*Environment, error
 // Add creates a new environment.
 func (s environmentService) Add(environment *Environment) (*Environment, error) {
 	if environment == nil {
-		return nil, createInvalidParameterError(operationAdd, parameterEnvironment)
+		return nil, createInvalidParameterError(OperationAdd, ParameterEnvironment)
 	}
 
 	path, err := getAddPath(s, environment)
@@ -125,7 +125,7 @@ func (s environmentService) GetByPartialName(name string) ([]*Environment, error
 // Update modifies an environment based on the one provided as input.
 func (s environmentService) Update(environment *Environment) (*Environment, error) {
 	if environment == nil {
-		return nil, createInvalidParameterError(operationUpdate, parameterEnvironment)
+		return nil, createInvalidParameterError(OperationUpdate, ParameterEnvironment)
 	}
 
 	path, err := getUpdatePath(s, environment)

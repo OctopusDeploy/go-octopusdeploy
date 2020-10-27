@@ -10,6 +10,6 @@ type azureEnvironmentService struct {
 
 func newAzureEnvironmentService(sling *sling.Sling, uriTemplate string) *azureEnvironmentService {
 	return &azureEnvironmentService{
-		service: newService(serviceAzureEnvironmentService, sling, uriTemplate, nil),
+		service: newService(ServiceAzureEnvironmentService, sling, uriTemplate),
 	}
 }

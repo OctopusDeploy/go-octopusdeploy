@@ -29,7 +29,7 @@ func DeleteAccountExample() {
 		return
 	}
 
-	// delete account
+	// delete the account
 	err = client.Accounts.DeleteByID(accountID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting account: %v", err)

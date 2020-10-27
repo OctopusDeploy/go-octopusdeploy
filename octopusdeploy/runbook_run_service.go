@@ -8,7 +8,7 @@ type runbookRunService struct {
 
 func newRunbookRunService(sling *sling.Sling, uriTemplate string) *runbookRunService {
 	runbookRunService := &runbookRunService{}
-	runbookRunService.service = newService(serviceRunbookRunService, sling, uriTemplate, nil)
+	runbookRunService.service = newService(ServiceRunbookRunService, sling, uriTemplate)
 
 	return runbookRunService
 }

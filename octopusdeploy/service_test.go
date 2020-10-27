@@ -48,12 +48,12 @@ func getClient() *Client {
 	return octopusClient
 }
 
-func testNewService(t *testing.T, service IService, uriTemplate string, serviceName string) {
+func testNewService(t *testing.T, service IService, uriTemplate string, ServiceName string) {
 	require.NotNil(t, service)
 	require.NotNil(t, service.getClient())
 
 	template, err := uritemplates.Parse(uriTemplate)
 	require.NoError(t, err)
 	require.Equal(t, service.getURITemplate(), template)
-	require.Equal(t, service.getName(), serviceName)
+	require.Equal(t, service.getName(), ServiceName)
 }

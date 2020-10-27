@@ -66,7 +66,7 @@ func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
 	return nil
 }
 
-func ValidateRequiredSensitiveValue(propertyName string, sensitiveValue SensitiveValue) error {
+func ValidateRequiredSensitiveValue(propertyName string, sensitiveValue *SensitiveValue) error {
 	if isEmpty(propertyName) {
 		return createInvalidParameterError("ValidateRequiredSensitiveValue", "propertyName")
 	}

@@ -10,7 +10,7 @@ type libraryVariableSetService struct {
 
 func newLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *libraryVariableSetService {
 	libraryVariableSetService := &libraryVariableSetService{}
-	libraryVariableSetService.service = newService(serviceLibraryVariableSetService, sling, uriTemplate, new(LibraryVariableSet))
+	libraryVariableSetService.service = newService(ServiceLibraryVariableSetService, sling, uriTemplate)
 
 	return libraryVariableSetService
 }
@@ -90,7 +90,7 @@ func (s libraryVariableSetService) GetByPartialName(name string) ([]*LibraryVari
 // Update modifies a library variable set based on the one provided as input.
 func (s libraryVariableSetService) Update(libraryVariableSet *LibraryVariableSet) (*LibraryVariableSet, error) {
 	if libraryVariableSet == nil {
-		return nil, createInvalidParameterError(operationUpdate, parameterLibraryVariableSet)
+		return nil, createInvalidParameterError(OperationUpdate, ParameterLibraryVariableSet)
 	}
 
 	path, err := getUpdatePath(s, libraryVariableSet)

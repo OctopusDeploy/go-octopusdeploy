@@ -12,6 +12,6 @@ func newReportingService(sling *sling.Sling, uriTemplate string, deploymentsCoun
 	return &reportingService{
 		deploymentsCountedByWeekPath: deploymentsCountedByWeekPath,
 
-		service: newService(serviceReportingService, sling, uriTemplate, nil),
+		service: newService(ServiceReportingService, sling, uriTemplate),
 	}
 }

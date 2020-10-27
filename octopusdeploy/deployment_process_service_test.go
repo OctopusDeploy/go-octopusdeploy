@@ -4,21 +4,20 @@ import (
 	"testing"
 
 	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func createDeploymentProcessService(t *testing.T) *deploymentProcessService {
 	service := newDeploymentProcessService(nil, TestURIDeploymentProcesses)
-	testNewService(t, service, TestURIDeploymentProcesses, serviceDeploymentProcessesService)
+	testNewService(t, service, TestURIDeploymentProcesses, ServiceDeploymentProcessesService)
 	return service
 }
 
 func TestNewDeploymentProcessService(t *testing.T) {
-	serviceFunction := newDeploymentProcessService
+	ServiceFunction := newDeploymentProcessService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceDeploymentProcessesService
+	ServiceName := ServiceDeploymentProcessesService
 
 	testCases := []struct {
 		name        string
@@ -26,14 +25,14 @@ func TestNewDeploymentProcessService(t *testing.T) {
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", serviceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString},
+		{"NilClient", ServiceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -54,11 +53,11 @@ func TestDeploymentProcessServiceParameters(t *testing.T) {
 
 			if isEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
+				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
 			} else {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createResourceNotFoundError(serviceDeploymentProcessesService, "ID", tc.parameter))
+				require.Equal(t, err, createResourceNotFoundError(ServiceDeploymentProcessesService, "ID", tc.parameter))
 				require.Nil(t, resource)
 			}
 		})
@@ -69,12 +68,10 @@ func TestDeploymentProcessServiceGetWithEmptyID(t *testing.T) {
 	service := newDeploymentProcessService(&sling.Sling{}, emptyString)
 
 	resource, err := service.GetByID(emptyString)
-
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
-	assert.Nil(t, resource)
+	require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
+	require.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
-
-	assert.Equal(t, err, createInvalidParameterError(operationGetByID, parameterID))
-	assert.Nil(t, resource)
+	require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
+	require.Nil(t, resource)
 }

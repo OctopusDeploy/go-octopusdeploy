@@ -38,8 +38,7 @@ func CreateFeedExample() {
 		nuGetFeed.Username = feedUsername
 	}
 	if len(feedPassword) > 0 {
-		password := octopusdeploy.NewSensitiveValue(feedPassword)
-		nuGetFeed.Password = &password
+		nuGetFeed.Password = octopusdeploy.NewSensitiveValue(feedPassword)
 	}
 
 	_, err = client.Feeds.Add(nuGetFeed)

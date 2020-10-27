@@ -11,6 +11,6 @@ type taskService struct {
 func newTaskService(sling *sling.Sling, uriTemplate string, taskTypesPath string) *taskService {
 	return &taskService{
 		taskTypesPath: taskTypesPath,
-		service:       newService(serviceTaskService, sling, uriTemplate, nil),
+		service:       newService(ServiceTaskService, sling, uriTemplate),
 	}
 }

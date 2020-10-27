@@ -8,6 +8,6 @@ type schedulerService struct {
 
 func newSchedulerService(sling *sling.Sling, uriTemplate string) *schedulerService {
 	return &schedulerService{
-		service: newService(serviceSchedulerService, sling, uriTemplate, nil),
+		service: newService(ServiceSchedulerService, sling, uriTemplate),
 	}
 }

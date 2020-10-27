@@ -10,6 +10,6 @@ type azureDevOpsConnectivityCheckService struct {
 
 func newAzureDevOpsConnectivityCheckService(sling *sling.Sling, uriTemplate string) *azureDevOpsConnectivityCheckService {
 	return &azureDevOpsConnectivityCheckService{
-		service: newService(serviceAzureDevOpsConnectivityCheckService, sling, uriTemplate, nil),
+		service: newService(ServiceAzureDevOpsConnectivityCheckService, sling, uriTemplate),
 	}
 }

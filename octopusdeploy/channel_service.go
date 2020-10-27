@@ -1,9 +1,7 @@
 package octopusdeploy
 
 import (
-	"net/url"
-	"strings"
-
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -18,7 +16,7 @@ func newChannelService(sling *sling.Sling, uriTemplate string, versionRuleTestPa
 	channelService := &channelService{
 		versionRuleTestPath: versionRuleTestPath,
 	}
-	channelService.service = newService(serviceChannelService, sling, uriTemplate, new(Channel))
+	channelService.service = newService(ServiceChannelService, sling, uriTemplate)
 
 	return channelService
 }
@@ -89,7 +87,7 @@ func (s channelService) GetAll() ([]*Channel, error) {
 // found, it returns nil and an error.
 func (s channelService) GetByID(id string) (*Channel, error) {
 	if isEmpty(id) {
-		return nil, createInvalidParameterError(operationGetByID, parameterID)
+		return nil, createInvalidParameterError(OperationGetByID, ParameterID)
 	}
 
 	path := s.BasePath + "/" + id
@@ -103,15 +101,10 @@ func (s channelService) GetByID(id string) (*Channel, error) {
 
 func (s channelService) GetProject(channel *Channel) (*Project, error) {
 	if channel == nil {
-		return nil, createInvalidParameterError(operationGetReleases, parameterChannel)
+		return nil, createInvalidParameterError(OperationGetProject, ParameterChannel)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
-		return nil, err
-	}
-
-	path := channel.Links["Project"]
+	path := channel.GetLinks()[linkProjects]
 	resp, err := apiGet(s.getClient(), new(Project), path)
 	if err != nil {
 		return nil, err
@@ -120,40 +113,35 @@ func (s channelService) GetProject(channel *Channel) (*Project, error) {
 	return resp.(*Project), nil
 }
 
-func (s channelService) GetReleases(channel *Channel) ([]*Release, error) {
+func (s channelService) GetReleases(channel *Channel, releaseQuery ...*ReleaseQuery) (*Releases, error) {
 	if channel == nil {
-		return nil, createInvalidParameterError(operationGetReleases, parameterChannel)
+		return nil, createInvalidParameterError(OperationGetReleases, ParameterChannel)
 	}
 
-	releases := []*Release{}
-
-	err := validateInternalState(s)
+	uriTemplate, err := uritemplates.Parse(channel.GetLinks()[linkReleases])
 	if err != nil {
-		return releases, err
+		return &Releases{}, err
 	}
 
-	url, err := url.Parse(channel.Links[linkReleases])
+	values := make(map[string]interface{})
+	path, err := uriTemplate.Expand(values)
 	if err != nil {
-		return releases, err
+		return &Releases{}, err
 	}
 
-	path := strings.Split(url.Path, "{")[0]
-
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(Releases), path)
-
+	if releaseQuery != nil {
+		path, err = uriTemplate.Expand(releaseQuery[0])
 		if err != nil {
-			return releases, err
+			return &Releases{}, err
 		}
-
-		r := resp.(*Releases)
-		releases = append(releases, r.Items...)
-		path, loadNextPage = LoadNextPage(r.PagedResults)
 	}
 
-	return releases, nil
+	resp, err := apiGet(s.getClient(), new(Releases), path)
+	if err != nil {
+		return &Releases{}, err
+	}
+
+	return resp.(*Releases), nil
 }
 
 // Update modifies an Channel based on the one provided as input.

@@ -7,11 +7,11 @@ import (
 )
 
 func TestNewBuildInformationService(t *testing.T) {
-	serviceFunction := newBuildInformationService
+	ServiceFunction := newBuildInformationService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
 	bulkPath := emptyString
-	serviceName := serviceBuildInformationService
+	ServiceName := ServiceBuildInformationService
 
 	testCases := []struct {
 		name        string
@@ -20,20 +20,20 @@ func TestNewBuildInformationService(t *testing.T) {
 		uriTemplate string
 		bulkPath    string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate, bulkPath},
-		{"EmptyURITemplate", serviceFunction, client, emptyString, bulkPath},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, bulkPath},
+		{"NilClient", ServiceFunction, nil, uriTemplate, bulkPath},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString, bulkPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, bulkPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.bulkPath)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
 
 func createBuildInformationService(t *testing.T) *buildInformationService {
 	service := newBuildInformationService(nil, TestURIBuildInformation, TestURIBuildInformationBulk)
-	testNewService(t, service, TestURIBuildInformation, serviceBuildInformationService)
+	testNewService(t, service, TestURIBuildInformation, ServiceBuildInformationService)
 	return service
 }

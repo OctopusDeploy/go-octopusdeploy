@@ -5,25 +5,29 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// WorkerPoolResource is the embedded struct used for all worker pools.
 type WorkerPoolResource struct {
-	CanAddWorkers bool   `json:"CanAddWorkers"`
-	Description   string `json:"Description,omitempty"`
-	IsDefault     bool   `json:"IsDefault"`
-	Name          string `json:"Name" validate:"required,notblank"`
-	SpaceID       string `json:"SpaceId,omitempty" validate:"omitempty,notblank"`
-	SortOrder     int    `json:"SortOrder"`
+	CanAddWorkers  bool           `json:"CanAddWorkers"`
+	Description    string         `json:"Description,omitempty"`
+	IsDefault      bool           `json:"IsDefault"`
+	Name           string         `json:"Name" validate:"required,notblank"`
+	SpaceID        string         `json:"SpaceId,omitempty" validate:"omitempty,notblank"`
+	SortOrder      int            `json:"SortOrder"`
+	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
+	WorkerType     WorkerType     `json:"WorkerType"`
 
 	resource
+}
+
+type WorkerPoolResources struct {
+	Items []*WorkerPoolResource `json:"Items"`
+	PagedResults
 }
 
 // newWorkerPoolResource creates and initializes a worker pool resource.
 func newWorkerPoolResource(name string) *WorkerPoolResource {
 	return &WorkerPoolResource{
-		CanAddWorkers: false,
-		Name:          name,
-		SortOrder:     0,
-		resource:      *newResource(),
+		Name:     name,
+		resource: *newResource(),
 	}
 }
 
@@ -37,6 +41,20 @@ func (w *WorkerPoolResource) SetName(name string) {
 	w.Name = name
 }
 
+func (w *WorkerPoolResource) GetIsDefault() bool {
+	return w.IsDefault
+}
+
+// GetWorkerPoolType returns the worker type for this worker pool resource.
+func (w *WorkerPoolResource) GetWorkerPoolType() WorkerPoolType {
+	return w.WorkerPoolType
+}
+
+// GetWorkerType returns the worker type for this worker pool resource.
+func (w *WorkerPoolResource) GetWorkerType() WorkerType {
+	return w.WorkerType
+}
+
 // Validate checks the state of the worker pool resource and returns an error
 // if invalid.
 func (w *WorkerPoolResource) Validate() error {
@@ -48,4 +66,4 @@ func (w *WorkerPoolResource) Validate() error {
 	return v.Struct(w)
 }
 
-var _ IHasName = &WorkerPoolResource{}
+var _ IDynamicWorkerPool = &WorkerPoolResource{}

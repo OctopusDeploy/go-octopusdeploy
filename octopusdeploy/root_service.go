@@ -10,7 +10,7 @@ type rootService struct {
 
 func newRootService(sling *sling.Sling, uriTemplate string) *rootService {
 	return &rootService{
-		service: newService(serviceRootService, sling, uriTemplate, new(RootResource)),
+		service: newService(ServiceRootService, sling, uriTemplate),
 	}
 }
 

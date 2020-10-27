@@ -25,7 +25,7 @@ func createActionTemplateService(t *testing.T) *actionTemplateService {
 	versionedLogoPath := TestURIActionTemplateVersionedLogo
 
 	service := newActionTemplateService(nil, TestURIActionTemplates, categoriesPath, logoPath, searchPath, versionedLogoPath)
-	testNewService(t, service, TestURIActionTemplates, serviceActionTemplateService)
+	testNewService(t, service, TestURIActionTemplates, ServiceActionTemplateService)
 	return service
 }
 
@@ -60,7 +60,7 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	assert.Equal(t, err, createInvalidParameterError(operationAdd, parameterResource))
+	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
 	assert.Nil(t, resource)
 
 	invalidResource := &ActionTemplate{}
@@ -93,11 +93,11 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID(emptyString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
 	resource, err = service.GetByID(whitespaceString)
-	require.Equal(t, createInvalidParameterError(operationGetByID, parameterID), err)
+	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
 	id := getRandomName()
@@ -117,10 +117,10 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 }
 
 func TestActionTemplateServiceNew(t *testing.T) {
-	serviceFunction := newActionTemplateService
+	ServiceFunction := newActionTemplateService
 	client := &sling.Sling{}
 	uriTemplate := emptyString
-	serviceName := serviceActionTemplateService
+	ServiceName := ServiceActionTemplateService
 	categoriesPath := emptyString
 	logoPath := emptyString
 	searchPath := emptyString
@@ -136,14 +136,14 @@ func TestActionTemplateServiceNew(t *testing.T) {
 		searchPath        string
 		versionedLogoPath string
 	}{
-		{"NilClient", serviceFunction, nil, uriTemplate, categoriesPath, logoPath, searchPath, versionedLogoPath},
-		{"EmptyURITemplate", serviceFunction, client, emptyString, categoriesPath, logoPath, searchPath, versionedLogoPath},
-		{"URITemplateWithWhitespace", serviceFunction, client, whitespaceString, categoriesPath, logoPath, searchPath, versionedLogoPath},
+		{"NilClient", ServiceFunction, nil, uriTemplate, categoriesPath, logoPath, searchPath, versionedLogoPath},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString, categoriesPath, logoPath, searchPath, versionedLogoPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, categoriesPath, logoPath, searchPath, versionedLogoPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.categoriesPath, tc.logoPath, tc.searchPath, tc.versionedLogoPath)
-			testNewService(t, service, uriTemplate, serviceName)
+			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

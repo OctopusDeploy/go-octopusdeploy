@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 )
 
 type projectService struct {
@@ -19,9 +20,41 @@ func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string,
 		experimentalSummariesPath: experimentalSummariesPath,
 		pulsePath:                 pulsePath,
 	}
-	projectService.service = newService(serviceProjectService, sling, uriTemplate, new(Project))
+	projectService.service = newService(ServiceProjectService, sling, uriTemplate)
 
 	return projectService
+}
+
+// Get returns a collection of projects based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s projectService) Get(projectsQuery ProjectsQuery) (*Projects, error) {
+	v, _ := query.Values(projectsQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	resp, err := apiGet(s.getClient(), new(Projects), path)
+	if err != nil {
+		return &Projects{}, err
+	}
+
+	return resp.(*Projects), nil
+}
+
+// GetAll returns all projects. If none can be found or an error occurs, it
+// returns an empty collection.
+func (s projectService) GetAll() ([]*Project, error) {
+	items := []*Project{}
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
+
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByID returns the project that matches the input ID. If one cannot be
@@ -40,23 +73,10 @@ func (s projectService) GetByID(id string) (*Project, error) {
 	return resp.(*Project), nil
 }
 
-// GetAll returns all projects. If none can be found or an error occurs, it
-// returns an empty collection.
-func (s projectService) GetAll() ([]*Project, error) {
-	items := []*Project{}
-	path, err := getAllPath(s)
-	if err != nil {
-		return items, err
-	}
-
-	_, err = apiGet(s.getClient(), &items, path)
-	return items, err
-}
-
 // GetByName performs a lookup and returns the Project with a matching name.
 func (s projectService) GetByName(name string) (*Project, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError(operationGetByName, parameterName)
+		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
 	err := validateInternalState(s)
@@ -76,12 +96,12 @@ func (s projectService) GetByName(name string) (*Project, error) {
 		}
 	}
 
-	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
+	return nil, createItemNotFoundError(s.getName(), OperationGetByName, name)
 }
 
 func (s projectService) GetChannels(project *Project) ([]*Channel, error) {
 	if project == nil {
-		return nil, createInvalidParameterError(operationGetChannels, parameterProject)
+		return nil, createInvalidParameterError(OperationGetChannels, ParameterProject)
 	}
 
 	channels := []*Channel{}
@@ -118,7 +138,7 @@ func (s projectService) GetChannels(project *Project) ([]*Channel, error) {
 
 func (s projectService) GetSummary(project *Project) (*ProjectSummary, error) {
 	if project == nil {
-		return nil, createInvalidParameterError(operationGetSummary, parameterProject)
+		return nil, createInvalidParameterError(OperationGetSummary, ParameterProject)
 	}
 
 	err := validateInternalState(s)
@@ -137,7 +157,7 @@ func (s projectService) GetSummary(project *Project) (*ProjectSummary, error) {
 
 func (s projectService) GetReleases(project *Project) ([]*Release, error) {
 	if project == nil {
-		return nil, createInvalidParameterError(operationGetReleases, parameterProject)
+		return nil, createInvalidParameterError(OperationGetReleases, ParameterProject)
 	}
 
 	err := validateInternalState(s)

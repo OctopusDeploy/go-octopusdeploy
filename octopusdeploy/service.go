@@ -35,7 +35,7 @@ type canDeleteService struct {
 	service
 }
 
-func newService(name string, sling *sling.Sling, uriTemplate string, itemType IResource) service {
+func newService(name string, sling *sling.Sling, uriTemplate string) service {
 	if sling == nil {
 		sling = getDefaultClient()
 	}
@@ -44,7 +44,6 @@ func newService(name string, sling *sling.Sling, uriTemplate string, itemType IR
 	basePath, _ := template.Expand(make(map[string]interface{}))
 
 	return service{
-		itemType:    itemType,
 		BasePath:    basePath,
 		Name:        name,
 		Path:        strings.TrimSpace(uriTemplate),
@@ -75,12 +74,12 @@ func (s service) getURITemplate() *uritemplates.UriTemplate {
 
 func getAddPath(s IService, r IResource) (string, error) {
 	if r == nil || isNil(r) {
-		return emptyString, createInvalidParameterError(operationAdd, parameterResource)
+		return emptyString, createInvalidParameterError(OperationAdd, ParameterResource)
 	}
 
 	err := r.Validate()
 	if err != nil {
-		return emptyString, createValidationFailureError(operationAdd, err)
+		return emptyString, createValidationFailureError(OperationAdd, err)
 	}
 
 	err = validateInternalState(s)
@@ -113,7 +112,7 @@ func getAllPath(s IService) (string, error) {
 
 func getByIDPath(s IService, id string) (string, error) {
 	if isEmpty(id) {
-		return emptyString, createInvalidParameterError(operationGetByID, parameterID)
+		return emptyString, createInvalidParameterError(OperationGetByID, ParameterID)
 	}
 
 	err := validateInternalState(s)
@@ -122,7 +121,7 @@ func getByIDPath(s IService, id string) (string, error) {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterID] = id
+	values[ParameterID] = id
 
 	return s.getURITemplate().Expand(values)
 }
@@ -147,14 +146,14 @@ func getByIDsPath(s IService, ids []string) (string, error) {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterIDs] = idValues
+	values[ParameterIDs] = idValues
 
 	return s.getURITemplate().Expand(values)
 }
 
 func getByNamePath(s IService, name string) (string, error) {
 	if isEmpty(name) {
-		return emptyString, createInvalidParameterError(operationGetByName, parameterName)
+		return emptyString, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
 	err := validateInternalState(s)
@@ -163,14 +162,14 @@ func getByNamePath(s IService, name string) (string, error) {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterName] = name
+	values[ParameterName] = name
 
 	return s.getURITemplate().Expand(values)
 }
 
 func getByPartialNamePath(s IService, name string) (string, error) {
 	if isEmpty(name) {
-		return emptyString, createInvalidParameterError(operationGetByPartialName, parameterName)
+		return emptyString, createInvalidParameterError(OperationGetByPartialName, ParameterName)
 	}
 
 	err := validateInternalState(s)
@@ -179,7 +178,7 @@ func getByPartialNamePath(s IService, name string) (string, error) {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterPartialName] = name
+	values[ParameterPartialName] = name
 
 	return s.getURITemplate().Expand(values)
 }
@@ -191,14 +190,14 @@ func getByAccountTypePath(s IService, accountType string) (string, error) {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterAccountType] = accountType
+	values[ParameterAccountType] = accountType
 
 	return s.getURITemplate().Expand(values)
 }
 
 func (s *service) deleteByID(id string) error {
 	if isEmpty(id) {
-		return createInvalidParameterError(operationDeleteByID, parameterID)
+		return createInvalidParameterError(OperationDeleteByID, ParameterID)
 	}
 
 	err := validateInternalState(s)
@@ -207,7 +206,7 @@ func (s *service) deleteByID(id string) error {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterID] = id
+	values[ParameterID] = id
 
 	path, err := s.getURITemplate().Expand(values)
 	if err != nil {
@@ -219,12 +218,12 @@ func (s *service) deleteByID(id string) error {
 
 func getUpdatePath(s IService, r IResource) (string, error) {
 	if isNil(r) {
-		return emptyString, createInvalidParameterError(operationUpdate, parameterResource)
+		return emptyString, createInvalidParameterError(OperationUpdate, ParameterResource)
 	}
 
 	err := r.Validate()
 	if err != nil {
-		return emptyString, createValidationFailureError(operationUpdate, err)
+		return emptyString, createValidationFailureError(OperationUpdate, err)
 	}
 
 	err = validateInternalState(s)
@@ -233,7 +232,7 @@ func getUpdatePath(s IService, r IResource) (string, error) {
 	}
 
 	values := make(map[string]interface{})
-	values[parameterID] = r.GetID()
+	values[ParameterID] = r.GetID()
 	return s.getURITemplate().Expand(values)
 }
 

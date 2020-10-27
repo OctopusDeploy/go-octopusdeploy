@@ -35,7 +35,11 @@ func CreateAzureSubscriptionAccountExample() {
 		return
 	}
 
-	azureAccount := octopusdeploy.NewAzureSubscriptionAccount(name, subscriptionID)
+	azureAccount, err := octopusdeploy.NewAzureSubscriptionAccount(name, subscriptionID)
+	if err != nil {
+		_ = fmt.Errorf("error creating Azure subscription account: %v", err)
+		return
+	}
 
 	// fill in account details
 	azureAccount.Description = accountDescription

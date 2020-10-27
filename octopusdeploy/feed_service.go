@@ -17,7 +17,7 @@ func newFeedService(sling *sling.Sling, uriTemplate string, builtInFeedStats str
 	feedService := &feedService{
 		builtInFeedStats: builtInFeedStats,
 	}
-	feedService.service = newService(serviceFeedService, sling, uriTemplate, new(Feed))
+	feedService.service = newService(ServiceFeedService, sling, uriTemplate)
 
 	return feedService
 }
@@ -51,11 +51,11 @@ func (s feedService) getPagedResponse(path string) ([]IFeed, error) {
 // Add creates a new feed.
 func (s feedService) Add(feed IFeed) (IFeed, error) {
 	if feed == nil {
-		return nil, createInvalidParameterError(operationAdd, parameterFeed)
+		return nil, createInvalidParameterError(OperationAdd, ParameterFeed)
 	}
 
 	if isEmpty(feed.GetFeedType()) {
-		return nil, createInvalidParameterError(operationAdd, parameterFeed)
+		return nil, createInvalidParameterError(OperationAdd, ParameterFeed)
 	}
 
 	path, err := getAddPath(s, feed)
@@ -135,7 +135,7 @@ func (s feedService) GetByPartialName(name string) ([]IFeed, error) {
 // Update modifies a feed based on the one provided as input.
 func (s feedService) Update(feed IFeed) (IFeed, error) {
 	if feed == nil {
-		return nil, createInvalidParameterError(operationUpdate, parameterFeed)
+		return nil, createInvalidParameterError(OperationUpdate, ParameterFeed)
 	}
 
 	path, err := getUpdatePath(s, feed)

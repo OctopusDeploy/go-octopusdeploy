@@ -8,7 +8,7 @@ type subscriptionService struct {
 
 func newSubscriptionService(sling *sling.Sling, uriTemplate string) *subscriptionService {
 	subscriptionService := &subscriptionService{}
-	subscriptionService.service = newService(serviceSubscriptionService, sling, uriTemplate, nil)
+	subscriptionService.service = newService(ServiceSubscriptionService, sling, uriTemplate)
 
 	return subscriptionService
 }

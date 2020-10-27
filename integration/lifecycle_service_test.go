@@ -8,18 +8,82 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func AssertEqualLifecycles(t *testing.T, expected *octopusdeploy.Lifecycle, actual *octopusdeploy.Lifecycle) {
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
+
+	// IResource
+	assert.Equal(t, expected.GetID(), actual.GetID())
+	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+
+	// Lifecycle
+	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.Description, actual.Description)
+	assert.Equal(t, expected.ReleaseRetentionPolicy, actual.ReleaseRetentionPolicy)
+	assert.Equal(t, expected.TentacleRetentionPolicy, actual.TentacleRetentionPolicy)
+	assert.Equal(t, expected.Phases, actual.Phases)
+}
+
+func CreateTestLifecycle(t *testing.T, client *octopusdeploy.Client) (*octopusdeploy.Lifecycle, error) {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := getRandomName()
+
+	lifecycle := octopusdeploy.NewLifecycle(name)
+	require.NotNil(t, lifecycle)
+
+	createdLifecycle, err := client.Lifecycles.Add(lifecycle)
+	require.NoError(t, err)
+	require.NotNil(t, createdLifecycle)
+	require.NotEmpty(t, createdLifecycle.GetID())
+
+	// verify the add operation was successful
+	lifecycleToCompare, err := client.Lifecycles.GetByID(createdLifecycle.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, lifecycleToCompare)
+	AssertEqualLifecycles(t, createdLifecycle, lifecycleToCompare)
+
+	return createdLifecycle, nil
+}
+
+func DeleteTestLifecycle(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle) {
+	require.NotNil(t, lifecycle)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := client.Lifecycles.DeleteByID(lifecycle.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedLifecycle, err := client.Lifecycles.GetByID(lifecycle.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedLifecycle)
+}
+
 func TestLifecycleAddAndDelete(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
 	lifecycleName := getRandomName()
 
 	expected := getTestLifecycle(lifecycleName)
 	require.NotNil(t, expected)
 
-	actual := createTestLifecycle(t, octopusClient, lifecycleName)
+	actual := createTestLifecycle(t, client, lifecycleName)
 
-	defer cleanLifecycle(t, octopusClient, actual.GetID())
+	defer cleanLifecycle(t, client, actual.GetID())
 
 	assert.Equal(t, expected.Name, actual.Name, "lifecycle name doesn't match expected")
 	assert.NotEmpty(t, actual.GetID(), "lifecycle doesn't contain an ID from the octopus server")

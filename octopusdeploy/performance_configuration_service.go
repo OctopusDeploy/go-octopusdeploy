@@ -8,6 +8,6 @@ type performanceConfigurationService struct {
 
 func newPerformanceConfigurationService(sling *sling.Sling, uriTemplate string) *performanceConfigurationService {
 	return &performanceConfigurationService{
-		service: newService(servicePerformanceConfigurationService, sling, uriTemplate, nil),
+		service: newService(ServicePerformanceConfigurationService, sling, uriTemplate),
 	}
 }

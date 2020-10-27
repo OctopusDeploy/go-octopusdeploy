@@ -8,6 +8,6 @@ type permissionService struct {
 
 func newPermissionService(sling *sling.Sling, uriTemplate string) *permissionService {
 	return &permissionService{
-		service: newService(servicePermissionService, sling, uriTemplate, nil),
+		service: newService(ServicePermissionService, sling, uriTemplate),
 	}
 }

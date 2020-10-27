@@ -113,7 +113,7 @@ func getRandomDuration(mininum time.Duration) time.Duration {
 	return duration
 }
 
-func generateSensitiveValue() SensitiveValue {
+func generateSensitiveValue() *SensitiveValue {
 	sensitiveValue := NewSensitiveValue(getRandomName())
 	return sensitiveValue
 }

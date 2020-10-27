@@ -11,6 +11,6 @@ type dashboardService struct {
 func newDashboardService(sling *sling.Sling, uriTemplate string, dashboardDynamicPath string) *dashboardService {
 	return &dashboardService{
 		dashboardDynamicPath: dashboardDynamicPath,
-		service:              newService(serviceDashboardService, sling, uriTemplate, nil),
+		service:              newService(ServiceDashboardService, sling, uriTemplate),
 	}
 }

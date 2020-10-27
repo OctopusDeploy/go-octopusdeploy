@@ -14,7 +14,7 @@ var testCert2Data = `MIIOSQIBAzCCDg8GCSqGSIb3DQEHAaCCDgAEgg38MIIN+DCCCK8GCSqGSIb
 const testCert2Thumbprint = `0454EAD1FC6F3F60F22AE82230165C14C4FD7FA7`
 const testCert2Password = `HCWVMo7u`
 
-var testCert1 = octopusdeploy.SensitiveValue{NewValue: &testCert1Data}
+var testCert1 = &octopusdeploy.SensitiveValue{NewValue: &testCert1Data}
 
 // var testCert2 = SensitiveValue{NewValue: &testCert2Data}
 
@@ -95,7 +95,7 @@ func replaceCert(t *testing.T, octopusClient *octopusdeploy.Client, originalCert
 }
 
 func getTestCert1(t *testing.T, certName string) (*octopusdeploy.Certificate, error) {
-	certificate := octopusdeploy.NewCertificate(certName, testCert1, octopusdeploy.SensitiveValue{})
+	certificate := octopusdeploy.NewCertificate(certName, testCert1, &octopusdeploy.SensitiveValue{})
 	require.NotNil(t, certificate)
 	require.NoError(t, certificate.Validate())
 

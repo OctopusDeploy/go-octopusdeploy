@@ -2,49 +2,76 @@ package octopusdeploy
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/go-playground/validator/v10/non-standard/validators"
+	uuid "github.com/google/uuid"
 )
 
-// AccountResource is the embedded struct used for all accounts.
+// AccountResources defines a collection of account resources with built-in
+// support for paged results.
+type AccountResources struct {
+	Items []*AccountResource `json:"Items"`
+	PagedResults
+}
+
+// AccountResource represents account details used for deployments, including
+// username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type AccountResource struct {
-	AccountType            string   `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount Token"`
-	Description            string   `json:"Description,omitempty"`
-	EnvironmentIDs         []string `json:"EnvironmentIds,omitempty"`
-	Name                   string   `json:"Name" validate:"required,notblank,notall"`
-	SpaceID                string   `json:"SpaceId,omitempty" validate:"omitempty,notblank"`
-	TenantedDeploymentMode string   `json:"TenantedDeploymentParticipation" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
-	TenantIDs              []string `json:"TenantIds,omitempty"`
-	TenantTags             []string `json:"TenantTags,omitempty"`
+	AccessKey               string                 `json:"AccessKey,omitempty"`
+	AccountType             AccountType            `json:"AccountType"`
+	ApplicationID           *uuid.UUID             `json:"ClientId,omitempty"`
+	ApplicationPassword     *SensitiveValue        `json:"Password,omitempty"`
+	AuthenticationEndpoint  string                 `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
+	AzureEnvironment        string                 `json:"AzureEnvironment,omitempty"`
+	CertificateBytes        *SensitiveValue        `json:"CertificateBytes,omitempty"`
+	CertificateThumbprint   string                 `json:"CertificateThumbprint,omitempty"`
+	Description             string                 `json:"Description,omitempty"`
+	EnvironmentIDs          []string               `json:"EnvironmentIds,omitempty"`
+	Name                    string                 `json:"Name" validate:"required,notall"`
+	PrivateKeyFile          *SensitiveValue        `json:"PrivateKeyFile,omitempty"`
+	PrivateKeyPassphrase    *SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
+	ResourceManagerEndpoint string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
+	SecretKey               *SensitiveValue        `json:"SecretKey,omitempty"`
+	ManagementEndpoint      string                 `json:"ServiceManagementEndpointBaseUri,omitempty"`
+	StorageEndpointSuffix   string                 `json:"ServiceManagementEndpointSuffix,omitempty"`
+	SpaceID                 string                 `json:"SpaceId,omitempty"`
+	SubscriptionID          *uuid.UUID             `json:"SubscriptionNumber,omitempty"`
+	TenantedDeploymentMode  TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
+	TenantID                *uuid.UUID             `json:"TenantId,omitempty"`
+	TenantIDs               []string               `json:"TenantIds,omitempty"`
+	TenantTags              []string               `json:"TenantTags,omitempty"`
+	Token                   *SensitiveValue        `json:"Token,omitempty"`
+	Username                string                 `json:"Username,omitempty"`
 
 	resource
 }
 
-// newAccountResource creates and initializes an account resource.
-func newAccountResource(name string, accountType string) *AccountResource {
+// NewAccount creates and initializes an account resource with a name and type.
+func NewAccountResource(name string, accountType AccountType) *AccountResource {
 	return &AccountResource{
 		AccountType:            accountType,
-		EnvironmentIDs:         []string{},
 		Name:                   name,
 		TenantedDeploymentMode: "Untenanted",
-		TenantIDs:              []string{},
-		TenantTags:             []string{},
 		resource:               *newResource(),
 	}
 }
 
 // GetAccountType returns the type of this account resource.
-func (a *AccountResource) GetAccountType() string {
+func (a *AccountResource) GetAccountType() AccountType {
 	return a.AccountType
 }
 
-// GetDescription returns the description of the account resource.
+// GetDescription returns the description of this account resource.
 func (a *AccountResource) GetDescription() string {
 	return a.Description
 }
 
-// GetName returns the name of the account resource.
+// GetName returns the name of this account resource.
 func (a *AccountResource) GetName() string {
 	return a.Name
+}
+
+// GetSpaceID returns the space ID of this account resource.
+func (a *AccountResource) GetSpaceID() string {
+	return a.SpaceID
 }
 
 // SetDescription sets the description of the account resource.
@@ -52,20 +79,21 @@ func (a *AccountResource) SetDescription(description string) {
 	a.Description = description
 }
 
-// SetName sets the name of the account resource.
+// SetName sets the name of this account resource.
 func (a *AccountResource) SetName(name string) {
 	a.Name = name
+}
+
+// SetSpaceID sets the space ID of this account resource.
+func (a *AccountResource) SetSpaceID(spaceID string) {
+	a.SpaceID = spaceID
 }
 
 // Validate checks the state of the account resource and returns an error if
 // invalid.
 func (a *AccountResource) Validate() error {
 	v := validator.New()
-	err := v.RegisterValidation("notblank", validators.NotBlank)
-	if err != nil {
-		return err
-	}
-	err = v.RegisterValidation("notall", NotAll)
+	err := v.RegisterValidation("notall", NotAll)
 	if err != nil {
 		return err
 	}

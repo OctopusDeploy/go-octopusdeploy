@@ -6,9 +6,9 @@ import (
 )
 
 type StaticWorkerPool struct {
-	WorkerPoolType string `json:"WorkerPoolType" validate:"required,eq=StaticWorkerPool"`
+	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
 
-	WorkerPoolResource
+	WorkerPool
 }
 
 type StaticWorkerPools struct {
@@ -17,15 +17,23 @@ type StaticWorkerPools struct {
 }
 
 // NewStaticWorkerPool creates and initializes a static worker pool.
-func NewStaticWorkerPool(name string) *StaticWorkerPool {
-	return &StaticWorkerPool{
-		WorkerPoolType:     "StaticWorkerPool",
-		WorkerPoolResource: *newWorkerPoolResource(name),
+func NewStaticWorkerPool(name string) (*StaticWorkerPool, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
+
+	return &StaticWorkerPool{
+		WorkerPoolType: WorkerPoolTypeStatic,
+		WorkerPool:     *newWorkerPool(name),
+	}, nil
+}
+
+func (s *StaticWorkerPool) GetIsDefault() bool {
+	return s.IsDefault
 }
 
 // GetWorkerPoolType returns the worker type for this worker pool.
-func (s *StaticWorkerPool) GetWorkerPoolType() string {
+func (s *StaticWorkerPool) GetWorkerPoolType() WorkerPoolType {
 	return s.WorkerPoolType
 }
 

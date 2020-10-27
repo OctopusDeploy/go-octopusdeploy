@@ -14,7 +14,7 @@ type artifactService struct {
 // newArtifactService returns an artifactService with a preconfigured client.
 func newArtifactService(sling *sling.Sling, uriTemplate string) *artifactService {
 	artifactService := &artifactService{}
-	artifactService.service = newService(serviceArtifactService, sling, uriTemplate, new(Artifact))
+	artifactService.service = newService(ServiceArtifactService, sling, uriTemplate)
 
 	return artifactService
 }

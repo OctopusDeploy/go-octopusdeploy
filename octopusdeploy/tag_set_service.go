@@ -14,7 +14,7 @@ func newTagSetService(sling *sling.Sling, uriTemplate string, sortOrderPath stri
 	tagSetService := &tagSetService{
 		sortOrderPath: sortOrderPath,
 	}
-	tagSetService.service = newService(serviceTagSetService, sling, uriTemplate, new(TagSet))
+	tagSetService.service = newService(ServiceTagSetService, sling, uriTemplate)
 
 	return tagSetService
 }
@@ -66,7 +66,7 @@ func (s tagSetService) GetAll() ([]*TagSet, error) {
 // GetByName performs a lookup and returns the TagSet with a matching name.
 func (s tagSetService) GetByName(name string) (*TagSet, error) {
 	if isEmpty(name) {
-		return nil, createInvalidParameterError(operationGetByName, parameterName)
+		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
 	err := validateInternalState(s)
@@ -86,7 +86,7 @@ func (s tagSetService) GetByName(name string) (*TagSet, error) {
 		}
 	}
 
-	return nil, createItemNotFoundError(s.getName(), operationGetByName, name)
+	return nil, createItemNotFoundError(s.getName(), OperationGetByName, name)
 }
 
 // Update modifies a tag set based on the one provided as input.

@@ -2,575 +2,596 @@ package octopusdeploy
 
 // AccountsQuery represents parameters to query the Accounts service.
 type AccountsQuery struct {
-	AccountType string   `url:"accountType,omitempty"`
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	AccountType AccountType `url:"accountType,omitempty"`
+	IDs         []string    `url:"ids,omitempty"`
+	PartialName string      `url:"partialName,omitempty"`
+	Skip        int         `url:"skip,omitempty"`
+	Take        int         `url:"take,omitempty"`
 }
 
 type ActionTemplateLogoQuery struct {
-	CB       string `url:"cb,omitempty"`
-	TypeOrID string `url:"typeOrId,omitempty"`
+	CB       string `uri:"cb"`
+	TypeOrID string `uri:"typeOrId"`
 }
 
 // ActionTemplatesQuery represents parameters to query the ActionTemplates service.
 type ActionTemplatesQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type ActionTemplateVersionedLogoQuery struct {
-	CB       string `url:"cb,omitempty"`
-	TypeOrID string `url:"typeOrId,omitempty"`
-	Version  string `url:"version,omitempty"`
+	CB       string `uri:"cb"`
+	TypeOrID string `uri:"typeOrId"`
+	Version  string `uri:"version"`
+}
+
+type APIQuery struct {
+	Skip int `uri:"skip"`
+	Take int `uri:"take"`
 }
 
 type ArtifactsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	Order       string   `url:"order,omitempty"`
-	PartialName string   `url:"partialName,omitempty"`
-	Regarding   string   `url:"regarding,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	Order       string   `uri:"order"`
+	PartialName string   `uri:"partialName"`
+	Regarding   string   `uri:"regarding"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type BuildInformationQuery struct {
-	Filter        string `url:"filter,omitempty"`
-	Latest        string `url:"latest,omitempty"`
-	OverwriteMode string `url:"overwriteMode,omitempty"`
-	PackageID     string `url:"packageId,omitempty"`
-	Skip          int    `url:"skip,omitempty"`
-	Take          int    `url:"take,omitempty"`
+	Filter        string `uri:"filter"`
+	Latest        string `uri:"latest"`
+	OverwriteMode string `uri:"overwriteMode"`
+	PackageID     string `uri:"packageId"`
+	Skip          int    `uri:"skip"`
+	Take          int    `uri:"take"`
 }
 
 type BuildInformationBulkQuery struct {
-	IDs []string `url:"ids,omitempty,comma"`
+	IDs []string `uri:"ids"`
 }
 
 type CertificateConfigurationQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type CertificatesQuery struct {
-	Archived    string   `url:"archived,omitempty"`
-	FirstResult string   `url:"firstResult,omitempty"`
-	IDs         []string `url:"ids,omitempty,comma"`
-	OrderBy     string   `url:"orderBy,omitempty"`
-	PartialName string   `url:"partialName,omitempty"`
-	Search      string   `url:"search,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
-	Tenant      string   `url:"tenant,omitempty"`
+	Archived    string   `uri:"archived"`
+	FirstResult string   `uri:"firstResult"`
+	IDs         []string `uri:"ids"`
+	OrderBy     string   `uri:"orderBy"`
+	PartialName string   `uri:"partialName"`
+	Search      string   `uri:"search"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
+	Tenant      string   `uri:"tenant"`
 }
 
 type ChannelsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
+	IDs         []string `url:"ids,omitempty"`
 	PartialName string   `url:"partialName,omitempty"`
 	Skip        int      `url:"skip,omitempty"`
 	Take        int      `url:"take,omitempty"`
 }
 
 type CloudTemplateQuery struct {
-	FeedID    string `url:"feedId,omitempty"`
-	PackageID string `url:"packageId,omitempty"`
+	FeedID    string `uri:"feedId"`
+	PackageID string `uri:"packageId"`
 }
 
 type CommunityActionTemplatesQuery struct {
-	IDs  []string `url:"ids,omitempty,comma"`
-	Skip int      `url:"skip,omitempty"`
-	Take int      `url:"take,omitempty"`
+	IDs  []string `uri:"ids"`
+	Skip int      `uri:"skip"`
+	Take int      `uri:"take"`
 }
 
 type DashboardQuery struct {
-	IncludeLatest   bool     `url:"highestLatestVersionPerProjectAndEnvironment,omitempty"`
-	ProjectID       string   `url:"projectId,omitempty"`
-	SelectedTags    []string `url:"selectedTags,omitempty"`
-	SelectedTenants []string `url:"selectedTenants,omitempty"`
-	ShowAll         bool     `url:"showAll,omitempty"`
-	ReleaseID       string   `url:"releaseId,omitempty"`
+	IncludeLatest   bool     `uri:"highestLatestVersionPerProjectAndEnvironment"`
+	ProjectID       string   `uri:"projectId"`
+	SelectedTags    []string `uri:"selectedTags"`
+	SelectedTenants []string `uri:"selectedTenants"`
+	ShowAll         bool     `uri:"showAll"`
+	ReleaseID       string   `uri:"releaseId"`
 }
 
 type DashboardDynamicQuery struct {
-	Environments    []string `url:"environments,comma"`
-	IncludePrevious bool     `url:"includePrevious,omitempty"`
-	Projects        []string `url:"projects,comma"`
+	Environments    []string `uri:"environments"`
+	IncludePrevious bool     `uri:"includePrevious"`
+	Projects        []string `uri:"projects"`
 }
 
 type DeploymentProcessesQuery struct {
-	IDs  []string `url:"ids,omitempty,comma"`
-	Skip int      `url:"skip,omitempty"`
-	Take int      `url:"take,omitempty"`
+	IDs  []string `uri:"ids"`
+	Skip int      `uri:"skip"`
+	Take int      `uri:"take"`
+}
+
+type DeploymentQuery struct {
+	Skip int `uri:"skip"`
+	Take int `uri:"take"`
 }
 
 type DeploymentsQuery struct {
-	Channels     string   `url:"channels,omitempty"`
-	Environments []string `url:"environments,comma"`
-	IDs          []string `url:"ids,omitempty,comma"`
-	PartialName  string   `url:"partialName,omitempty"`
-	Projects     []string `url:"projects,comma"`
-	Skip         int      `url:"skip,omitempty"`
-	Take         int      `url:"take,omitempty"`
-	TaskState    string   `url:"taskState,omitempty"`
-	Tenants      []string `url:"tenants,comma"`
+	Channels     string   `uri:"channels"`
+	Environments []string `uri:"environments"`
+	IDs          []string `uri:"ids"`
+	PartialName  string   `uri:"partialName"`
+	Projects     []string `uri:"projects"`
+	Skip         int      `uri:"skip"`
+	Take         int      `uri:"take"`
+	TaskState    string   `uri:"taskState"`
+	Tenants      []string `uri:"tenants"`
 }
 
 type DiscoverMachineQuery struct {
-	Host    string `url:"host,omitempty"`
-	Port    int    `url:"port,omitempty"`
-	ProxyID string `url:"proxyId,omitempty"`
-	Type    string `url:"type,omitempty"`
+	Host    string `uri:"host"`
+	Port    int    `uri:"port"`
+	ProxyID string `uri:"proxyId"`
+	Type    string `uri:"type"`
 }
 
 type DiscoverWorkerQuery struct {
-	Host    string `url:"host,omitempty"`
-	Port    int    `url:"port,omitempty"`
-	ProxyID string `url:"proxyId,omitempty"`
-	Type    string `url:"type,omitempty"`
+	Host    string `uri:"host"`
+	Port    int    `uri:"port"`
+	ProxyID string `uri:"proxyId"`
+	Type    string `uri:"type"`
 }
 
 type EnvironmentsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	Name        string   `url:"name,omitempty"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	Name        string   `uri:"name"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type EnvironmentsSummaryQuery struct {
-	CommunicationStyles   []string `url:"commStyles,comma"`
-	HealthStatuses        []string `url:"healthStatuses,comma"`
-	HideEmptyEnvironments bool     `url:"hideEmptyEnvironments,omitempty"`
-	IDs                   []string `url:"ids,omitempty,comma"`
-	IsDisabled            bool     `url:"isDisabled,omitempty"`
-	MachinePartialName    string   `url:"machinePartialName,omitempty"`
-	PartialName           string   `url:"partialName,omitempty"`
-	Roles                 []string `url:"roles,comma"`
-	ShellNames            []string `url:"shellNames,comma"`
-	TenantIDs             []string `url:"tenantIds,comma"`
-	TenantTags            []string `url:"tenantTags,comma"`
+	CommunicationStyles   []string `uri:"commStyles"`
+	HealthStatuses        []string `uri:"healthStatuses"`
+	HideEmptyEnvironments bool     `uri:"hideEmptyEnvironments"`
+	IDs                   []string `uri:"ids"`
+	IsDisabled            bool     `uri:"isDisabled"`
+	MachinePartialName    string   `uri:"machinePartialName"`
+	PartialName           string   `uri:"partialName"`
+	Roles                 []string `uri:"roles"`
+	ShellNames            []string `uri:"shellNames"`
+	TenantIDs             []string `uri:"tenantIds"`
+	TenantTags            []string `uri:"tenantTags"`
 }
 
 type EventCategoriesQuery struct {
-	AppliesTo string `url:"appliesTo,omitempty"`
+	AppliesTo string `uri:"appliesTo"`
 }
 
 type EventGroupsQuery struct {
-	AppliesTo string `url:"appliesTo,omitempty"`
+	AppliesTo string `uri:"appliesTo"`
 }
 
 type EventsQuery struct {
-	AsCSV             string   `url:"asCsv,omitempty"`
-	DocumentTypes     []string `url:"documentTypes,comma"`
-	Environments      []string `url:"environments,comma"`
-	EventAgents       []string `url:"eventAgents,comma"`
-	EventCategories   []string `url:"eventCategories,comma"`
-	EventGroups       []string `url:"eventGroups,comma"`
-	ExcludeDifference bool     `url:"excludeDifference"`
-	From              string   `url:"from,omitempty"`
-	FromAutoID        string   `url:"fromAutoId,omitempty"`
-	IDs               []string `url:"ids,omitempty,comma"`
-	IncludeSystem     bool     `url:"includeSystem"`
-	Internal          string   `url:"interal,omitempty"`
-	Name              string   `url:"name,omitempty"`
-	PartialName       string   `url:"partialName,omitempty"`
-	ProjectGroups     []string `url:"projectGroups,comma"`
-	Projects          []string `url:"projects,comma"`
-	Regarding         string   `url:"regarding,omitempty"`
-	RegardingAny      string   `url:"regardingAny,omitempty"`
-	Skip              int      `url:"skip,omitempty"`
-	Spaces            []string `url:"spaces,comma"`
-	Take              int      `url:"take,omitempty"`
-	Tags              []string `url:"tags,comma"`
-	Tenants           []string `url:"tenants,comma"`
-	To                string   `url:"to,omitempty"`
-	ToAutoID          string   `url:"toAutoId,omitempty"`
-	User              string   `url:"user,omitempty"`
-	Users             []string `url:"users,omitempty"`
+	AsCSV             string   `uri:"asCsv"`
+	DocumentTypes     []string `uri:"documentTypes"`
+	Environments      []string `uri:"environments"`
+	EventAgents       []string `uri:"eventAgents"`
+	EventCategories   []string `uri:"eventCategories"`
+	EventGroups       []string `uri:"eventGroups"`
+	ExcludeDifference bool     `uri:"excludeDifference"`
+	From              string   `uri:"from"`
+	FromAutoID        string   `uri:"fromAutoId"`
+	IDs               []string `uri:"ids"`
+	IncludeSystem     bool     `uri:"includeSystem"`
+	Internal          string   `uri:"interal"`
+	Name              string   `uri:"name"`
+	PartialName       string   `uri:"partialName"`
+	ProjectGroups     []string `uri:"projectGroups"`
+	Projects          []string `uri:"projects"`
+	Regarding         string   `uri:"regarding"`
+	RegardingAny      string   `uri:"regardingAny"`
+	Skip              int      `uri:"skip"`
+	Spaces            []string `uri:"spaces"`
+	Take              int      `uri:"take"`
+	Tags              []string `uri:"tags"`
+	Tenants           []string `uri:"tenants"`
+	To                string   `uri:"to"`
+	ToAutoID          string   `uri:"toAutoId"`
+	User              string   `uri:"user"`
+	Users             []string `uri:"users"`
 }
 
 type ExternalUserSearchQuery struct {
-	PartialName string `url:"partialName,omitempty"`
+	PartialName string `uri:"partialName"`
 }
 
 type FeedsQuery struct {
-	FeedType    string   `url:"feedType,omitempty"`
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	FeedType    string   `uri:"feedType"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type InterruptionsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PendingOnly bool     `url:"pendingOnly,omitempty"`
-	Regarding   string   `url:"regarding,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PendingOnly bool     `uri:"pendingOnly"`
+	Regarding   string   `uri:"regarding"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type IssueTrackersQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type LibraryVariablesQuery struct {
-	ContentType string   `url:"contentType,omitempty"`
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	ContentType string   `uri:"contentType"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type LifecyclesQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type MachinePoliciesQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type MachinesQuery struct {
-	CommunicationStyles []string `url:"commStyles,comma"`
-	DeploymentID        string   `url:"deploymentId,omitempty"`
-	EnvironmentIDs      []string `url:"environmentIds,comma"`
-	HealthStatuses      []string `url:"healthStatuses,comma"`
-	IDs                 []string `url:"ids,omitempty,comma"`
-	IsDisabled          bool     `url:"isDisabled,omitempty"`
-	Name                string   `url:"name,omitempty"`
-	PartialName         string   `url:"partialName,omitempty"`
-	Roles               []string `url:"roles,comma"`
-	ShellNames          []string `url:"shellNames,comma"`
-	Skip                int      `url:"skip,omitempty"`
-	Take                int      `url:"take,omitempty"`
-	TenantIDs           []string `url:"tenantIds,comma"`
-	TenantTags          []string `url:"tenantTags,comma"`
-	Thumbprint          string   `url:"thumbprint,omitempty"`
+	CommunicationStyles []string `uri:"commStyles"`
+	DeploymentID        string   `uri:"deploymentId"`
+	EnvironmentIDs      []string `uri:"environmentIds"`
+	HealthStatuses      []string `uri:"healthStatuses"`
+	IDs                 []string `uri:"ids"`
+	IsDisabled          bool     `uri:"isDisabled"`
+	Name                string   `uri:"name"`
+	PartialName         string   `uri:"partialName"`
+	Roles               []string `uri:"roles"`
+	ShellNames          []string `uri:"shellNames"`
+	Skip                int      `uri:"skip"`
+	Take                int      `uri:"take"`
+	TenantIDs           []string `uri:"tenantIds"`
+	TenantTags          []string `uri:"tenantTags"`
+	Thumbprint          string   `uri:"thumbprint"`
 }
 
 type OctopusServerNodesQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type PackageDeltaSignatureQuery struct {
-	PackageID string `url:"packageId,omitempty"`
-	Version   string `url:"version,omitempty"`
+	PackageID string `uri:"packageId"`
+	Version   string `uri:"version"`
 }
 
 type PackageDeltaUploadQuery struct {
-	BaseVersion   string `url:"baseVersion,omitempty"`
-	OverwriteMode string `url:"overwriteMode,omitempty"`
-	PackageID     string `url:"packageId,omitempty"`
-	Replace       bool   `url:"replace,omitempty"`
+	BaseVersion   string `uri:"baseVersion"`
+	OverwriteMode string `uri:"overwriteMode"`
+	PackageID     string `uri:"packageId"`
+	Replace       bool   `uri:"replace"`
 }
 
 type PackageMetadataQuery struct {
-	Filter        string `url:"filter,omitempty"`
-	Latest        string `url:"latest,omitempty"`
-	OverwriteMode string `url:"overwriteMode,omitempty"`
-	Replace       bool   `url:"replace,omitempty"`
-	Skip          int    `url:"skip,omitempty"`
-	Take          int    `url:"take,omitempty"`
+	Filter        string `uri:"filter"`
+	Latest        string `uri:"latest"`
+	OverwriteMode string `uri:"overwriteMode"`
+	Replace       bool   `uri:"replace"`
+	Skip          int    `uri:"skip"`
+	Take          int    `uri:"take"`
 }
 
 type PackageNotesListQuery struct {
-	PackageIDs []string `url:"packageIds,comma"`
+	PackageIDs []string `uri:"packageIds"`
 }
 
 type PackagesQuery struct {
-	Filter         string `url:"filter,omitempty"`
-	IncludeNotes   bool   `url:"includeNotes,omitempty"`
-	Latest         string `url:"latest,omitempty"`
-	NuGetPackageID string `url:"nuGetPackageId,omitempty"`
-	Skip           int    `url:"skip,omitempty"`
-	Take           int    `url:"take,omitempty"`
+	Filter         string `uri:"filter"`
+	IncludeNotes   bool   `uri:"includeNotes"`
+	Latest         string `uri:"latest"`
+	NuGetPackageID string `uri:"nuGetPackageId"`
+	Skip           int    `uri:"skip"`
+	Take           int    `uri:"take"`
 }
 
 type PackagesBulkQuery struct {
-	IDs []string `url:"ids,omitempty,comma"`
+	IDs []string `uri:"ids"`
 }
 
 type PackageUploadQuery struct {
-	Replace       bool   `url:"replace,omitempty"`
-	OverwriteMode string `url:"overwriteMode,omitempty"`
+	Replace       bool   `uri:"replace"`
+	OverwriteMode string `uri:"overwriteMode"`
+}
+
+type UserQuery struct {
+	IncludeSystem bool     `uri:"includeSystem"`
+	Spaces        []string `uri:"spaces"`
 }
 
 type ProjectGroupsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type ProjectPulseQuery struct {
-	ProjectIDs []string `url:"projectIds,comma"`
+	ProjectIDs []string `uri:"projectIds"`
 }
 
 type ProjectsQuery struct {
-	ClonedFromProjectID string   `url:"clonedFromProjectId,omitempty"`
-	IDs                 []string `url:"ids,omitempty,comma"`
-	IsClone             bool     `url:"clone,omitempty"`
-	Name                string   `url:"name,omitempty"`
-	PartialName         string   `url:"partialName,omitempty"`
-	Skip                int      `url:"skip,omitempty"`
-	Take                int      `url:"take,omitempty"`
+	ClonedFromProjectID string   `uri:"clonedFromProjectId"`
+	IDs                 []string `uri:"ids"`
+	IsClone             bool     `uri:"clone"`
+	Name                string   `uri:"name"`
+	PartialName         string   `uri:"partialName"`
+	Skip                int      `uri:"skip"`
+	Take                int      `uri:"take"`
 }
 
 type ProjectsExperimentalSummariesQuery struct {
-	IDs []string `url:"ids,omitempty,comma"`
+	IDs []string `uri:"ids"`
 }
 
 type ProjectTriggersQuery struct {
-	IDs      []string `url:"ids,omitempty,comma"`
-	Runbooks []string `url:"runbooks,comma"`
-	Skip     int      `url:"skip,omitempty"`
-	Take     int      `url:"take,omitempty"`
+	IDs      []string `uri:"ids"`
+	Runbooks []string `uri:"runbooks"`
+	Skip     int      `uri:"skip"`
+	Take     int      `uri:"take"`
 }
 
 type ProxiesQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
+}
+
+type ReleaseQuery struct {
+	SearchByVersion string `uri:"searchByVersion"`
+	Skip            int    `uri:"skip"`
+	Take            int    `uri:"take"`
 }
 
 type ReleasesQuery struct {
-	IDs                []string `url:"ids,omitempty,comma"`
-	IgnoreChannelRules bool     `url:"ignoreChannelRules"`
-	Skip               int      `url:"skip,omitempty"`
-	Take               int      `url:"take,omitempty"`
+	IDs                []string `uri:"ids"`
+	IgnoreChannelRules bool     `uri:"ignoreChannelRules"`
+	Skip               int      `uri:"skip"`
+	Take               int      `uri:"take"`
 }
 
 type RunbookProcessesQuery struct {
-	IDs  []string `url:"ids,omitempty,comma"`
-	Skip int      `url:"skip,omitempty"`
-	Take int      `url:"take,omitempty"`
+	IDs  []string `uri:"ids"`
+	Skip int      `uri:"skip"`
+	Take int      `uri:"take"`
 }
 
 type RunbookRunsQuery struct {
-	Environments []string `url:"environments,comma"`
-	IDs          []string `url:"ids,omitempty,comma"`
-	PartialName  string   `url:"partialName,omitempty"`
-	Projects     []string `url:"projects,comma"`
-	Runbooks     []string `url:"runbooks,comma"`
-	Skip         int      `url:"skip,omitempty"`
-	Take         int      `url:"take,omitempty"`
-	TaskState    string   `url:"taskState,omitempty"`
-	Tenants      []string `url:"tenants,comma"`
+	Environments []string `uri:"environments"`
+	IDs          []string `uri:"ids"`
+	PartialName  string   `uri:"partialName"`
+	Projects     []string `uri:"projects"`
+	Runbooks     []string `uri:"runbooks"`
+	Skip         int      `uri:"skip"`
+	Take         int      `uri:"take"`
+	TaskState    string   `uri:"taskState"`
+	Tenants      []string `uri:"tenants"`
 }
 
 type RunbooksQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	IsClone     bool     `url:"clone,omitempty"`
-	PartialName string   `url:"partialName,omitempty"`
-	ProjectIDs  []string `url:"projectIds,comma"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	IsClone     bool     `uri:"clone"`
+	PartialName string   `uri:"partialName"`
+	ProjectIDs  []string `uri:"projectIds"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type RunbookSnapshotsQuery struct {
-	IDs     []string `url:"ids,omitempty,comma"`
-	Publish bool     `url:"publish,omitempty"`
-	Skip    int      `url:"skip,omitempty"`
-	Take    int      `url:"take,omitempty"`
+	IDs     []string `uri:"ids"`
+	Publish bool     `uri:"publish"`
+	Skip    int      `uri:"skip"`
+	Take    int      `uri:"take"`
 }
 
 type ScheduledProjectTriggersQuery struct {
-	IDs  []string `url:"ids,omitempty,comma"`
-	Skip int      `url:"skip,omitempty"`
-	Take int      `url:"take,omitempty"`
+	IDs  []string `uri:"ids"`
+	Skip int      `uri:"skip"`
+	Take int      `uri:"take"`
 }
 
 type SchedulerQuery struct {
-	Verbose bool   `url:"verbose,omitempty"`
-	Tail    string `url:"tail,omitempty"`
+	Verbose bool   `uri:"verbose"`
+	Tail    string `uri:"tail"`
 }
 
 type ScopedUserRolesQuery struct {
-	IDs           []string `url:"ids,omitempty,comma"`
-	IncludeSystem bool     `url:"includeSystem"`
-	PartialName   string   `url:"partialName,omitempty"`
-	Skip          int      `url:"skip,omitempty"`
-	Spaces        []string `url:"spaces,comma"`
-	Take          int      `url:"take,omitempty"`
+	IDs           []string `uri:"ids"`
+	IncludeSystem bool     `uri:"includeSystem"`
+	PartialName   string   `uri:"partialName"`
+	Skip          int      `uri:"skip"`
+	Spaces        []string `uri:"spaces"`
+	Take          int      `uri:"take"`
 }
 
 type SignInQuery struct {
-	ReturnURL string `url:"returnUrl,omitempty"`
+	ReturnURL string `uri:"returnUrl"`
 }
 
 type SpaceHomeQuery struct {
-	SpaceID string `url:"spaceId,omitempty"`
+	SpaceID string `uri:"spaceId"`
 }
 
 type SpacesQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	Name        string   `url:"name,omitempty"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	Name        string   `uri:"name"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type SubscriptionsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Spaces      []string `url:"spaces,comma"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Spaces      []string `uri:"spaces"`
+	Take        int      `uri:"take"`
 }
 
 type TagSetsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type TasksQuery struct {
-	Environment             string   `url:"environment,omitempty"`
-	HasPendingInterruptions bool     `url:"hasPendingInterruptions"`
-	HasWarningsOrErrors     bool     `url:"hasWarningsOrErrors"`
-	IDs                     []string `url:"ids,omitempty,comma"`
-	IncludeSystem           bool     `url:"includeSystem"`
-	IsActive                bool     `url:"active"`
-	IsRunning               bool     `url:"running"`
-	Name                    string   `url:"name,omitempty"`
-	Node                    string   `url:"node,omitempty"`
-	PartialName             string   `url:"partialName,omitempty"`
-	Project                 string   `url:"project,omitempty"`
-	Runbook                 string   `url:"runbook,omitempty"`
-	Skip                    int      `url:"skip,omitempty"`
-	Spaces                  []string `url:"spaces,comma"`
-	States                  []string `url:"states,comma"`
-	Take                    int      `url:"take,omitempty"`
-	Tenant                  string   `url:"tenant,omitempty"`
+	Environment             string   `uri:"environment"`
+	HasPendingInterruptions bool     `uri:"hasPendingInterruptions"`
+	HasWarningsOrErrors     bool     `uri:"hasWarningsOrErrors"`
+	IDs                     []string `uri:"ids"`
+	IncludeSystem           bool     `uri:"includeSystem"`
+	IsActive                bool     `uri:"active"`
+	IsRunning               bool     `uri:"running"`
+	Name                    string   `uri:"name"`
+	Node                    string   `uri:"node"`
+	PartialName             string   `uri:"partialName"`
+	Project                 string   `uri:"project"`
+	Runbook                 string   `uri:"runbook"`
+	Skip                    int      `uri:"skip"`
+	Spaces                  []string `uri:"spaces"`
+	States                  []string `uri:"states"`
+	Take                    int      `uri:"take"`
+	Tenant                  string   `uri:"tenant"`
 }
 
 type TeamMembershipQuery struct {
-	IncludeSystem bool     `url:"includeSystem"`
-	Spaces        []string `url:"spaces,comma"`
-	UserID        string   `url:"userId,omitempty"`
+	IncludeSystem bool     `uri:"includeSystem"`
+	Spaces        []string `uri:"spaces"`
+	UserID        string   `uri:"userId"`
 }
 
 type TeamsQuery struct {
-	IDs           []string `url:"ids,omitempty,comma"`
-	IncludeSystem bool     `url:"includeSystem"`
-	PartialName   string   `url:"partialName,omitempty"`
-	Skip          int      `url:"skip,omitempty"`
-	Spaces        []string `url:"spaces,comma"`
-	Take          int      `url:"take,omitempty"`
+	IDs           []string `uri:"ids"`
+	IncludeSystem bool     `uri:"includeSystem"`
+	PartialName   string   `uri:"partialName"`
+	Skip          int      `uri:"skip"`
+	Spaces        []string `uri:"spaces"`
+	Take          int      `uri:"take"`
 }
 
 type TenantsQuery struct {
-	ClonedFromTenantID string   `url:"clonedFromTenantId,omitempty"`
-	IDs                []string `url:"ids,omitempty,comma"`
-	IsClone            bool     `url:"clone,omitempty"`
-	Name               string   `url:"name,omitempty"`
-	PartialName        string   `url:"partialName,omitempty"`
-	ProjectID          string   `url:"projectId,omitempty"`
-	Skip               int      `url:"skip,omitempty"`
-	Tags               []string `url:"tags,comma"`
-	Take               int      `url:"take,omitempty"`
+	ClonedFromTenantID string   `uri:"clonedFromTenantId"`
+	IDs                []string `uri:"ids"`
+	IsClone            bool     `uri:"clone"`
+	Name               string   `uri:"name"`
+	PartialName        string   `uri:"partialName"`
+	ProjectID          string   `uri:"projectId"`
+	Skip               int      `uri:"skip"`
+	Tags               []string `uri:"tags"`
+	Take               int      `uri:"take"`
 }
 
 type TenantsMissingVariablesQuery struct {
-	EnvironmentID  []string `url:"environmentId,omitempty"`
-	IncludeDetails bool     `url:"includeDetails,omitempty"`
-	ProjectID      string   `url:"projectId,omitempty"`
-	TenantID       string   `url:"tenantId,omitempty"`
+	EnvironmentID  []string `uri:"environmentId"`
+	IncludeDetails bool     `uri:"includeDetails"`
+	ProjectID      string   `uri:"projectId"`
+	TenantID       string   `uri:"tenantId"`
 }
 
 type TenantVariablesQuery struct {
-	ProjectID string `url:"projectId,omitempty"`
+	ProjectID string `uri:"projectId"`
 }
 
 type UserRolesQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type UsersQuery struct {
-	Filter string   `url:"filter,omitempty"`
-	IDs    []string `url:"ids,omitempty,comma"`
-	Skip   int      `url:"skip,omitempty"`
-	Take   int      `url:"take,omitempty"`
+	Filter string   `uri:"filter"`
+	IDs    []string `uri:"ids"`
+	Skip   int      `uri:"skip"`
+	Take   int      `uri:"take"`
 }
 
 type VariableNamesQuery struct {
-	Project                   string `url:"project,omitempty"`
-	ProjectEnvironmentsFilter string `struct:"projectEnvironmentsFilter,omitempty"`
-	Runbook                   string `url:"runbook,omitempty"`
+	Project                   string `uri:"project"`
+	ProjectEnvironmentsFilter string `struct:"projectEnvironmentsFilter"`
+	Runbook                   string `uri:"runbook"`
 }
 
 type VariablePreviewQuery struct {
-	Action      string `url:"action,omitempty"`
-	Channel     string `url:"channel,omitempty"`
-	Environment string `url:"environment,omitempty"`
-	Machine     string `url:"machine,omitempty"`
-	Project     string `url:"project,omitempty"`
-	Role        string `url:"role,omitempty"`
-	Runbook     string `url:"runbook,omitempty"`
-	Tenant      string `url:"tenant,omitempty"`
+	Action      string `uri:"action"`
+	Channel     string `uri:"channel"`
+	Environment string `uri:"environment"`
+	Machine     string `uri:"machine"`
+	Project     string `uri:"project"`
+	Role        string `uri:"role"`
+	Runbook     string `uri:"runbook"`
+	Tenant      string `uri:"tenant"`
 }
 
 type VariablesQuery struct {
-	IDs []string `url:"ids,omitempty,comma"`
+	IDs []string `uri:"ids"`
 }
 
 type VersionRuleTestQuery struct {
-	FeetType      string `url:"feetType,omitempty"`
-	PreReleaseTag string `url:"preReleaseTag,omitempty"`
-	Version       string `url:"version,omitempty"`
-	VersionRange  string `url:"versionRange,omitempty"`
+	FeetType      string `uri:"feetType"`
+	PreReleaseTag string `uri:"preReleaseTag"`
+	Version       string `uri:"version"`
+	VersionRange  string `uri:"versionRange"`
 }
 
 type WorkerPoolsQuery struct {
-	IDs         []string `url:"ids,omitempty,comma"`
-	Name        string   `url:"name,omitempty"`
-	PartialName string   `url:"partialName,omitempty"`
-	Skip        int      `url:"skip,omitempty"`
-	Take        int      `url:"take,omitempty"`
+	IDs         []string `uri:"ids"`
+	Name        string   `uri:"name"`
+	PartialName string   `uri:"partialName"`
+	Skip        int      `uri:"skip"`
+	Take        int      `uri:"take"`
 }
 
 type WorkerPoolsSummaryQuery struct {
-	CommunicationStyles  []string `url:"commStyles,comma"`
-	HealthStatuses       []string `url:"healthStatuses,comma"`
-	HideEmptyWorkerPools bool     `url:"hideEmptyWorkerPools,omitempty"`
-	IDs                  []string `url:"ids,omitempty,comma"`
-	IsDisabled           bool     `url:"isDisabled,omitempty"`
-	MachinePartialName   string   `url:"machinePartialName,omitempty"`
-	PartialName          string   `url:"partialName,omitempty"`
-	ShellNames           []string `url:"shellNames,comma"`
+	CommunicationStyles  []string `uri:"commStyles"`
+	HealthStatuses       []string `uri:"healthStatuses"`
+	HideEmptyWorkerPools bool     `uri:"hideEmptyWorkerPools"`
+	IDs                  []string `uri:"ids"`
+	IsDisabled           bool     `uri:"isDisabled"`
+	MachinePartialName   string   `uri:"machinePartialName"`
+	PartialName          string   `uri:"partialName"`
+	ShellNames           []string `uri:"shellNames"`
 }
 
 type WorkersQuery struct {
-	CommunicationStyles []string `url:"commStyles,comma"`
-	HealthStatuses      []string `url:"healthStatuses,comma"`
-	IDs                 []string `url:"ids,omitempty,comma"`
-	IsDisabled          bool     `url:"isDisabled,omitempty"`
-	Name                string   `url:"name,omitempty"`
-	PartialName         string   `url:"partialName,omitempty"`
-	ShellNames          []string `url:"shellNames,comma"`
-	Skip                int      `url:"skip,omitempty"`
-	Take                int      `url:"take,omitempty"`
-	Thumbprint          string   `url:"thumbprint,omitempty"`
-	WorkerPoolIDs       []string `url:"workerPoolIds,omitempty"`
+	CommunicationStyles []string `uri:"commStyles"`
+	HealthStatuses      []string `uri:"healthStatuses"`
+	IDs                 []string `uri:"ids"`
+	IsDisabled          bool     `uri:"isDisabled"`
+	Name                string   `uri:"name"`
+	PartialName         string   `uri:"partialName"`
+	ShellNames          []string `uri:"shellNames"`
+	Skip                int      `uri:"skip"`
+	Take                int      `uri:"take"`
+	Thumbprint          string   `uri:"thumbprint"`
+	WorkerPoolIDs       []string `uri:"workerPoolIds"`
 }

@@ -9,6 +9,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func CreateTestChannel(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) (*octopusdeploy.Channel, error) {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := getRandomName()
+	description := "Description for " + name + " (OK to Delete)"
+
+	channel := octopusdeploy.NewChannel(name, description, project.GetID())
+
+	require.NotNil(t, channel)
+	require.NoError(t, channel.Validate())
+
+	createdChannel, err := client.Channels.Add(channel)
+	require.NoError(t, err)
+	require.NotNil(t, createdChannel)
+	require.NotEmpty(t, createdChannel.GetID())
+
+	// verify the add operation was successful
+	channelToCompare, err := client.Channels.GetByID(createdChannel.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, channelToCompare)
+	AssertEqualChannels(t, createdChannel, channelToCompare)
+
+	return createdChannel, nil
+}
+
 func DeleteTestChannel(t *testing.T, client *octopusdeploy.Client, channel *octopusdeploy.Channel) {
 	require.NotNil(t, channel)
 
@@ -25,12 +53,12 @@ func DeleteTestChannel(t *testing.T, client *octopusdeploy.Client, channel *octo
 	assert.NoError(t, err)
 
 	// verify the delete operation was successful
-	channels, err := client.Channels.GetByID(channel.GetID())
+	deletedChannel, err := client.Channels.GetByID(channel.GetID())
 	assert.Error(t, err)
-	assert.Nil(t, channels)
+	assert.Nil(t, deletedChannel)
 }
 
-func IsEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *octopusdeploy.Channel) {
+func AssertEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *octopusdeploy.Channel) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -54,6 +82,36 @@ func IsEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *octo
 	assert.True(t, reflect.DeepEqual(expected.TenantTags, actual.TenantTags))
 }
 
+func TestChannelServiceAddGetDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	lifecycle, err := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	require.NoError(t, err)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup, err := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	require.NoError(t, err)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	require.NoError(t, err)
+	defer DeleteTestProject(t, client, project)
+
+	channel, err := CreateTestChannel(t, client, project)
+	require.NotNil(t, channel)
+	require.NoError(t, err)
+	defer DeleteTestChannel(t, client, channel)
+
+	channelToCompare, err := client.Channels.GetByID(channel.GetID())
+	require.NotNil(t, channelToCompare)
+	require.NoError(t, err)
+	AssertEqualChannels(t, channel, channelToCompare)
+}
+
 func TestChannelServiceDeleteAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
@@ -67,70 +125,118 @@ func TestChannelServiceDeleteAll(t *testing.T) {
 	}
 }
 
-func TestChannelServiceAdd(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+func TestGetAllChannels(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-	emptyChannel := &octopusdeploy.Channel{}
-	channel, err := octopusClient.Channels.Add(emptyChannel)
-	assert.Equal(t, createValidationFailureError("Add", emptyChannel.Validate()), err)
-	assert.Nil(t, channel)
-}
-
-func TestChannelServiceGetAll(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
-
-	channels, err := octopusClient.Channels.GetAll()
+	channels, err := client.Channels.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, channels)
 
 	for _, channel := range channels {
-		assert.NotNil(t, channel)
-		assert.NotEmpty(t, channel.GetID())
+		assert.NoError(t, err)
+		assert.NotEmpty(t, channel)
+	}
+}
+
+func TestGetProject(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	channels, err := client.Channels.GetAll()
+	assert.NoError(t, err)
+	assert.NotNil(t, channels)
+
+	for _, channel := range channels {
+		project, err := client.Channels.GetProject(channel)
+
+		if err != nil {
+			assert.Nil(t, project)
+		} else {
+			assert.NotNil(t, project)
+		}
+	}
+}
+
+func TestChannelServiceGetReleases(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	channels, err := client.Channels.GetAll()
+	assert.NoError(t, err)
+	assert.NotNil(t, channels)
+
+	for _, channel := range channels {
+		releases, err := client.Channels.GetReleases(channel)
+		require.NotNil(t, releases)
+		require.NoError(t, err)
+
+		for _, release := range releases.Items {
+			releaseToCompare, err := client.Releases.GetByID(release.GetID())
+			require.NotNil(t, releaseToCompare)
+			require.NoError(t, err)
+			AssertEqualReleases(t, release, releaseToCompare)
+		}
+
+		releaseQuery := &octopusdeploy.ReleaseQuery{
+			SearchByVersion: "0.0.1",
+			Skip:            1,
+			Take:            1,
+		}
+
+		releases, err = client.Channels.GetReleases(channel, releaseQuery)
+		require.NotNil(t, releases)
+		require.NoError(t, err)
+
+		for _, release := range releases.Items {
+			releaseToCompare, err := client.Releases.GetByID(release.GetID())
+			require.NotNil(t, releaseToCompare)
+			require.NoError(t, err)
+			AssertEqualReleases(t, release, releaseToCompare)
+		}
 	}
 }
 
 func TestChannelServiceGetByID(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
 	id := getRandomName()
-	channel, err := octopusClient.Channels.GetByID(id)
-	assert.Equal(t, createResourceNotFoundError("ChannelService", "ID", id), err)
+	channel, err := client.Channels.GetByID(id)
+	assert.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceChannelService, "ID", id), err)
 	assert.Nil(t, channel)
 
-	channels, err := octopusClient.Channels.GetAll()
+	channels, err := client.Channels.GetAll()
 	assert.NoError(t, err)
 	assert.NotNil(t, channels)
 
 	for _, channel := range channels {
-		channelToCompare, err := octopusClient.Channels.GetByID(channel.GetID())
+		channelToCompare, err := client.Channels.GetByID(channel.GetID())
 		assert.NoError(t, err)
-		IsEqualChannels(t, channel, channelToCompare)
+		AssertEqualChannels(t, channel, channelToCompare)
 	}
 }
 
 func TestChannelServiceGetByPartialName(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
 	query := octopusdeploy.ChannelsQuery{PartialName: getRandomName()}
-	channels, err := octopusClient.Channels.Get(query)
-	assert.NoError(t, err)
-	assert.NotNil(t, channels)
-	assert.Len(t, channels.Items, 0)
+	channels, err := client.Channels.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, channels)
+	require.True(t, len(channels.Items) == 0)
 
-	allChannels, err := octopusClient.Channels.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, allChannels)
+	allChannels, err := client.Channels.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, allChannels)
 
 	for _, channel := range allChannels {
 		query := octopusdeploy.ChannelsQuery{PartialName: channel.Name}
-		channelsToCompare, err := octopusClient.Channels.Get(query)
-		assert.NoError(t, err)
-		assert.NotNil(t, channelsToCompare)
-		assert.NotNil(t, channelsToCompare.Items)
-		assert.True(t, len(channelsToCompare.Items) > 0)
+		channelsToCompare, err := client.Channels.Get(query)
+		require.NoError(t, err)
+		require.NotNil(t, channelsToCompare)
+		require.NotNil(t, channelsToCompare.Items)
+		require.True(t, len(channelsToCompare.Items) > 0)
 	}
 }
