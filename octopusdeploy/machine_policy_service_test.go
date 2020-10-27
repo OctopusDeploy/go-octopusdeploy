@@ -170,25 +170,17 @@ func TestMachinePolicyServiceGetAll(t *testing.T) {
 	service := createMachinePolicyService(t)
 	require.NotNil(t, service)
 
-	machinePolicies := []MachinePolicy{}
-
 	// create 30 test machine policies (to be deleted)
 	for i := 0; i < 30; i++ {
 		machinePolicy := CreateTestMachinePolicy(t, service)
 		require.NotNil(t, machinePolicy)
-		machinePolicies = append(machinePolicies, *machinePolicy)
+		defer DeleteTestMachinePolicy(t, service, machinePolicy)
 	}
 
 	allMachinePolicies, err := service.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, allMachinePolicies)
 	require.True(t, len(allMachinePolicies) >= 30)
-
-	for _, machinePolicy := range machinePolicies {
-		require.NotNil(t, machinePolicy)
-		require.NotEmpty(t, machinePolicy.GetID())
-		defer DeleteTestMachinePolicy(t, service, &machinePolicy)
-	}
 }
 
 func TestMachinePolicyServiceGetByID(t *testing.T) {
