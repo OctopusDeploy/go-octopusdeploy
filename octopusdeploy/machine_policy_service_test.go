@@ -52,7 +52,7 @@ func CreateTestMachinePolicy(t *testing.T, service *machinePolicyService) *Machi
 	return createdMachinePolicy
 }
 
-func DeleteTestMachinePolicy(t *testing.T, service *machinePolicyService, machinePolicy *MachinePolicy) error {
+func DeleteTestMachinePolicy(t *testing.T, service *machinePolicyService, machinePolicy *MachinePolicy) {
 	require.NotNil(t, machinePolicy)
 
 	if service == nil {
@@ -63,7 +63,10 @@ func DeleteTestMachinePolicy(t *testing.T, service *machinePolicyService, machin
 	err := service.DeleteByID(machinePolicy.GetID())
 	assert.NoError(t, err)
 
-	return err
+	// verify the delete operation was successful
+	deletedMachinePolicy, err := service.GetByID(machinePolicy.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedMachinePolicy)
 }
 
 func IsEqualMachinePolicies(t *testing.T, expected *MachinePolicy, actual *MachinePolicy) {
@@ -145,21 +148,21 @@ func TestMachinePolicyServiceAdd(t *testing.T) {
 	require.Nil(t, resource)
 
 	resource = CreateTestMachinePolicy(t, service)
-	err = DeleteTestMachinePolicy(t, service, resource)
-	require.NoError(t, err)
+	defer DeleteTestMachinePolicy(t, service, resource)
 }
 
 func TestMachinePolicyServiceDeleteAll(t *testing.T) {
 	service := createMachinePolicyService(t)
 	require.NotNil(t, service)
 
-	resources, err := service.GetAll()
+	machinePolicies, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, resources)
+	require.NotNil(t, machinePolicies)
 
-	for _, resource := range resources {
-		err = DeleteTestMachinePolicy(t, service, resource)
-		assert.NoError(t, err)
+	for _, machinePolicy := range machinePolicies {
+		if !machinePolicy.IsDefault {
+			defer DeleteTestMachinePolicy(t, service, machinePolicy)
+		}
 	}
 }
 
@@ -184,8 +187,7 @@ func TestMachinePolicyServiceGetAll(t *testing.T) {
 	for _, machinePolicy := range machinePolicies {
 		require.NotNil(t, machinePolicy)
 		require.NotEmpty(t, machinePolicy.GetID())
-		err = DeleteTestMachinePolicy(t, service, &machinePolicy)
-		require.NoError(t, err)
+		defer DeleteTestMachinePolicy(t, service, &machinePolicy)
 	}
 }
 

@@ -10,7 +10,7 @@ type FeedResource struct {
 	DownloadRetryBackoffSeconds       int             `json:"DownloadRetryBackoffSeconds"`
 	EnhancedMode                      bool            `json:"EnhancedMode"`
 	FeedType                          FeedType        `json:"FeedType,omitempty"`
-	FeedURI                           *string         `json:"FeedUri,omitempty"`
+	FeedURI                           string          `json:"FeedUri,omitempty"`
 	IsBuiltInRepoSyncEnabled          bool            `json:"IsBuiltInRepoSyncEnabled,omitempty"`
 	Name                              string          `json:"Name"`
 	Password                          *SensitiveValue `json:"Password,omitempty"`

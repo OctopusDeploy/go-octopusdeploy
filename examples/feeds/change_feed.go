@@ -28,15 +28,19 @@ func ChangeFeedExample() {
 		return
 	}
 
-	// Get Feed instances that match the name provided
-	feeds, err := client.Feeds.GetByPartialName(feedName)
+	query := octopusdeploy.FeedsQuery{
+		PartialName: feedName,
+	}
+
+	// get feeds that match the name provided
+	feeds, err := client.Feeds.Get(query)
 	if err != nil {
 		_ = fmt.Errorf("error getting feed: %v", err)
 		return
 	}
 
-	// select a specific Feed instance
-	feed := feeds[0]
+	// select a specific feed
+	feed := feeds.Items[0]
 
 	// change feed name
 	feed.SetName(newFeedName)

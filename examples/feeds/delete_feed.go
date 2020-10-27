@@ -27,15 +27,19 @@ func DeleteFeedExample() {
 		return
 	}
 
+	query := octopusdeploy.FeedsQuery{
+		PartialName: feedName,
+	}
+
 	// get feeds that match the name provided
-	feeds, err := client.Feeds.GetByPartialName(feedName)
+	feeds, err := client.Feeds.Get(query)
 	if err != nil {
 		_ = fmt.Errorf("error getting feed: %v", err)
 		return
 	}
 
 	// select a specific feed
-	feed := feeds[0]
+	feed := feeds.Items[0]
 
 	// delete feed
 	err = client.Feeds.DeleteByID(feed.GetID())

@@ -51,7 +51,7 @@ func CreateCertificateExample() {
 	password := octopusdeploy.NewSensitiveValue(pfxFilePassword)
 
 	// create certificate
-	certificate := octopusdeploy.NewCertificate(certificateName, certificateData, password)
+	certificate := octopusdeploy.NewCertificateResource(certificateName, certificateData, password)
 
 	// create certificate through Add(); returns error if fails
 	createdCertificate, err := client.Certificates.Add(certificate)

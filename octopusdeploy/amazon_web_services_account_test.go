@@ -78,10 +78,9 @@ func TestAmazonWebServicesAccountNewWithConfigs(t *testing.T) {
 		a.TenantedDeploymentMode = tenantedDeploymentMode
 	}
 
-	account, err := NewAmazonWebServicesAccount(name, accessKey, nil, options)
-
-	require.NotNil(t, account)
+	account, err := NewAmazonWebServicesAccount(name, accessKey, secretKey, options)
 	require.NoError(t, err)
+	require.NotNil(t, account)
 	require.NoError(t, account.Validate())
 
 	// resource

@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 	"github.com/jinzhu/copier"
 )
 
@@ -34,19 +35,19 @@ func toFeed(feedResource *FeedResource) (IFeed, error) {
 	case FeedTypeAwsElasticContainerRegistry:
 		feed = NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region)
 	case FeedTypeBuiltIn:
-		feed = NewBuiltInFeed(feedResource.GetName(), *feedResource.FeedURI)
+		feed = NewBuiltInFeed(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeDocker:
-		feed = NewDockerContainerRegistry(feedResource.GetName(), *feedResource.FeedURI)
+		feed = NewDockerContainerRegistry(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeGitHub:
-		feed = NewGitHubRepositoryFeed(feedResource.GetName(), *feedResource.FeedURI)
+		feed = NewGitHubRepositoryFeed(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeHelm:
-		feed = NewHelmFeed(feedResource.GetName(), *feedResource.FeedURI)
+		feed = NewHelmFeed(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeMaven:
-		feed = NewMavenFeed(feedResource.GetName(), *feedResource.FeedURI)
+		feed = NewMavenFeed(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeNuGet:
-		feed = NewNuGetFeed(feedResource.GetName(), *feedResource.FeedURI)
+		feed = NewNuGetFeed(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeOctopusProject:
-		feed = NewOctopusProjectFeed(feedResource.GetName(), *feedResource.FeedURI)
+		feed = NewOctopusProjectFeed(feedResource.GetName(), feedResource.FeedURI)
 	}
 
 	err = copier.Copy(feed, feedResource)
@@ -108,6 +109,25 @@ func (s feedService) Add(feed IFeed) (IFeed, error) {
 	}
 
 	return toFeed(response.(*FeedResource))
+}
+
+// Get returns a collection of feeds based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s feedService) Get(feedsQuery FeedsQuery) (*Feeds, error) {
+	v, _ := query.Values(feedsQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	response, err := apiGet(s.getClient(), new(FeedResources), path)
+	if err != nil {
+		return &Feeds{}, err
+	}
+
+	return toFeeds(response.(*FeedResources)), nil
 }
 
 // GetAll returns all feeds. If none can be found or an error occurs, it
