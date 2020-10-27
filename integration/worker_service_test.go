@@ -175,8 +175,8 @@ func TestWorkerServiceGetAll(t *testing.T) {
 	require.NotNil(t, staticWorkerPool)
 	defer DeleteTestWorkerPool(t, client, staticWorkerPool)
 
-	// create 30 test workers (to be deleted)
-	for i := 0; i < 30; i++ {
+	// create 10 test workers (to be deleted)
+	for i := 0; i < 10; i++ {
 		worker, err := CreateTestWorker(t, client, staticWorkerPool)
 		require.NoError(t, err)
 		require.NotNil(t, worker)
