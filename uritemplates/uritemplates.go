@@ -244,6 +244,8 @@ func (self *templatePart) expand(buf *bytes.Buffer, values map[string]interface{
 		switch v := value.(type) {
 		case string:
 			self.expandString(buf, term, v)
+		case []string:
+			buf.WriteString(term.name + "=" + strings.Join(v, "%2C"))
 		case []interface{}:
 			self.expandArray(buf, term, v)
 		case map[string]interface{}:
