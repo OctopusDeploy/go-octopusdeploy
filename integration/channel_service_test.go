@@ -9,55 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestChannel(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) (*octopusdeploy.Channel, error) {
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	name := getRandomName()
-	description := "Description for " + name + " (OK to Delete)"
-
-	channel := octopusdeploy.NewChannel(name, description, project.GetID())
-
-	require.NotNil(t, channel)
-	require.NoError(t, channel.Validate())
-
-	createdChannel, err := client.Channels.Add(channel)
-	require.NoError(t, err)
-	require.NotNil(t, createdChannel)
-	require.NotEmpty(t, createdChannel.GetID())
-
-	// verify the add operation was successful
-	channelToCompare, err := client.Channels.GetByID(createdChannel.GetID())
-	require.NoError(t, err)
-	require.NotNil(t, channelToCompare)
-	AssertEqualChannels(t, createdChannel, channelToCompare)
-
-	return createdChannel, nil
-}
-
-func DeleteTestChannel(t *testing.T, client *octopusdeploy.Client, channel *octopusdeploy.Channel) {
-	require.NotNil(t, channel)
-
-	if channel.IsDefault {
-		return
-	}
-
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	err := client.Channels.DeleteByID(channel.GetID())
-	assert.NoError(t, err)
-
-	// verify the delete operation was successful
-	deletedChannel, err := client.Channels.GetByID(channel.GetID())
-	assert.Error(t, err)
-	assert.Nil(t, deletedChannel)
-}
-
 func AssertEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *octopusdeploy.Channel) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
@@ -82,28 +33,72 @@ func AssertEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *
 	assert.True(t, reflect.DeepEqual(expected.TenantTags, actual.TenantTags))
 }
 
+func CreateTestChannel(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) *octopusdeploy.Channel {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := getRandomName()
+	description := "Description for " + name + " (OK to Delete)"
+
+	channel := octopusdeploy.NewChannel(name, description, project.GetID())
+	require.NotNil(t, channel)
+	require.NoError(t, channel.Validate())
+
+	createdChannel, err := client.Channels.Add(channel)
+	require.NoError(t, err)
+	require.NotNil(t, createdChannel)
+	require.NotEmpty(t, createdChannel.GetID())
+
+	// verify the add operation was successful
+	channelToCompare, err := client.Channels.GetByID(createdChannel.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, channelToCompare)
+	AssertEqualChannels(t, createdChannel, channelToCompare)
+
+	return createdChannel
+}
+
+func DeleteTestChannel(t *testing.T, client *octopusdeploy.Client, channel *octopusdeploy.Channel) {
+	require.NotNil(t, channel)
+
+	if channel.IsDefault {
+		return
+	}
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := client.Channels.DeleteByID(channel.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedChannel, err := client.Channels.GetByID(channel.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedChannel)
+}
+
 func TestChannelServiceAddGetDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
-	require.NoError(t, err)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
-	require.NoError(t, err)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
-	require.NoError(t, err)
 	defer DeleteTestProject(t, client, project)
 
-	channel, err := CreateTestChannel(t, client, project)
+	channel := CreateTestChannel(t, client, project)
 	require.NotNil(t, channel)
-	require.NoError(t, err)
 	defer DeleteTestChannel(t, client, channel)
 
 	channelToCompare, err := client.Channels.GetByID(channel.GetID())

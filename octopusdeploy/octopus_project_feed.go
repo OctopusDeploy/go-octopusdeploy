@@ -7,21 +7,18 @@ import (
 
 // OctopusProjectFeed represents an Octopus project feed.
 type OctopusProjectFeed struct {
-	FeedType string `json:"FeedType" validate:"required,eq=OctopusProject"`
-
-	FeedResource
+	Feed
 }
 
 // NewOctopusProjectFeed creates and initializes a Octopus project feed.
 func NewOctopusProjectFeed(name string, feedURI string) *OctopusProjectFeed {
 	return &OctopusProjectFeed{
-		FeedType:     feedOctopusProject,
-		FeedResource: *newFeedResource(name),
+		Feed: *newFeed(name, FeedTypeOctopusProject),
 	}
 }
 
 // GetFeedType returns the feed type of this Octopus project feed.
-func (o *OctopusProjectFeed) GetFeedType() string {
+func (o *OctopusProjectFeed) GetFeedType() FeedType {
 	return o.FeedType
 }
 

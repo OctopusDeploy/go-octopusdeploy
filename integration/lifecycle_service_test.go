@@ -30,7 +30,7 @@ func AssertEqualLifecycles(t *testing.T, expected *octopusdeploy.Lifecycle, actu
 	assert.Equal(t, expected.Phases, actual.Phases)
 }
 
-func CreateTestLifecycle(t *testing.T, client *octopusdeploy.Client) (*octopusdeploy.Lifecycle, error) {
+func CreateTestLifecycle(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Lifecycle {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -52,7 +52,7 @@ func CreateTestLifecycle(t *testing.T, client *octopusdeploy.Client) (*octopusde
 	require.NotNil(t, lifecycleToCompare)
 	AssertEqualLifecycles(t, createdLifecycle, lifecycleToCompare)
 
-	return createdLifecycle, nil
+	return createdLifecycle
 }
 
 func DeleteTestLifecycle(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle) {

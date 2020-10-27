@@ -12,18 +12,15 @@ func TestDeploymentProcessGet(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -37,18 +34,15 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -57,8 +51,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 
 	numberOfDeploymentProcesses := len(allDeploymentProcess)
 
-	additionalProject, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	additionalProject := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, additionalProject)
 	defer DeleteTestProject(t, client, additionalProject)
 
@@ -72,18 +65,15 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 

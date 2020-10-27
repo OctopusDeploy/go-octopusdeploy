@@ -19,17 +19,17 @@ func newCertificateService(sling *sling.Sling, uriTemplate string) *certificateS
 	return certificateService
 }
 
-func (s certificateService) getPagedResponse(path string) ([]*Certificate, error) {
-	resources := []*Certificate{}
+func (s certificateService) getPagedResponse(path string) ([]*CertificateResource, error) {
+	resources := []*CertificateResource{}
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(Certificates), path)
+		resp, err := apiGet(s.getClient(), new(CertificateResources), path)
 		if err != nil {
 			return resources, err
 		}
 
-		responseList := resp.(*Certificates)
+		responseList := resp.(*CertificateResources)
 		resources = append(resources, responseList.Items...)
 		path, loadNextPage = LoadNextPage(responseList.PagedResults)
 	}
@@ -38,24 +38,24 @@ func (s certificateService) getPagedResponse(path string) ([]*Certificate, error
 }
 
 // Add creates a new certificate.
-func (s certificateService) Add(resource *Certificate) (*Certificate, error) {
+func (s certificateService) Add(resource *CertificateResource) (*CertificateResource, error) {
 	path, err := getAddPath(s, resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(Certificate), path)
+	resp, err := apiAdd(s.getClient(), resource, new(CertificateResource), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*Certificate), nil
+	return resp.(*CertificateResource), nil
 }
 
 // GetAll returns all certificates. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s certificateService) GetAll() ([]*Certificate, error) {
-	items := []*Certificate{}
+func (s certificateService) GetAll() ([]*CertificateResource, error) {
+	items := []*CertificateResource{}
 	path, err := getAllPath(s)
 	if err != nil {
 		return items, err
@@ -67,46 +67,46 @@ func (s certificateService) GetAll() ([]*Certificate, error) {
 
 // GetByID returns the certificate that matches the input ID. If one cannot be
 // found, it returns nil and an error.
-func (s certificateService) GetByID(id string) (*Certificate, error) {
+func (s certificateService) GetByID(id string) (*CertificateResource, error) {
 	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiGet(s.getClient(), new(Certificate), path)
+	resp, err := apiGet(s.getClient(), new(CertificateResource), path)
 	if err != nil {
 		return nil, createResourceNotFoundError(s.getName(), "ID", id)
 	}
 
-	return resp.(*Certificate), nil
+	return resp.(*CertificateResource), nil
 }
 
 // GetByPartialName performs a lookup and returns instances of a Certificate with a matching partial name.
-func (s certificateService) GetByPartialName(name string) ([]*Certificate, error) {
+func (s certificateService) GetByPartialName(name string) ([]*CertificateResource, error) {
 	path, err := getByPartialNamePath(s, name)
 	if err != nil {
-		return []*Certificate{}, err
+		return []*CertificateResource{}, err
 	}
 
 	return s.getPagedResponse(path)
 }
 
 // Update modifies a Certificate based on the one provided as input.
-func (s certificateService) Update(resource Certificate) (*Certificate, error) {
+func (s certificateService) Update(resource CertificateResource) (*CertificateResource, error) {
 	path, err := getUpdatePath(s, &resource)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(Certificate), path)
+	resp, err := apiUpdate(s.getClient(), resource, new(CertificateResource), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*Certificate), nil
+	return resp.(*CertificateResource), nil
 }
 
-func (s certificateService) Replace(certificateID string, replacementCertificate *ReplacementCertificate) (*Certificate, error) {
+func (s certificateService) Replace(certificateID string, replacementCertificate *ReplacementCertificate) (*CertificateResource, error) {
 	if isEmpty(certificateID) {
 		return nil, createInvalidParameterError(OperationReplace, ParameterCertificateID)
 	}
@@ -123,7 +123,7 @@ func (s certificateService) Replace(certificateID string, replacementCertificate
 	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/%s/replace", certificateID)
 
-	_, err = apiPost(s.getClient(), replacementCertificate, new(Certificate), path)
+	_, err = apiPost(s.getClient(), replacementCertificate, new(CertificateResource), path)
 	if err != nil {
 		return nil, err
 	}

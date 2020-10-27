@@ -9,10 +9,9 @@ import (
 type GitHubRepositoryFeed struct {
 	DownloadAttempts            int    `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds int    `json:"DownloadRetryBackoffSeconds"`
-	FeedType                    string `json:"FeedType" validate:"required,eq=GitHub"`
 	FeedURI                     string `json:"FeedUri,omitempty"`
 
-	FeedResource
+	Feed
 }
 
 // NewGitHubRepositoryFeed creates and initializes a GitHub repository feed.
@@ -20,14 +19,13 @@ func NewGitHubRepositoryFeed(name string, feedURI string) *GitHubRepositoryFeed 
 	return &GitHubRepositoryFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
-		FeedType:                    feedGitHub,
 		FeedURI:                     feedURI,
-		FeedResource:                *newFeedResource(name),
+		Feed:                        *newFeed(name, FeedTypeGitHub),
 	}
 }
 
 // GetFeedType returns the feed type of this GitHub repository feed.
-func (g *GitHubRepositoryFeed) GetFeedType() string {
+func (g *GitHubRepositoryFeed) GetFeedType() FeedType {
 	return g.FeedType
 }
 

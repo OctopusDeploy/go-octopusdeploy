@@ -4,12 +4,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Certificates struct {
-	Items []*Certificate `json:"Items"`
+type CertificateResources struct {
+	Items []*CertificateResource `json:"Items"`
 	PagedResults
 }
 
-type Certificate struct {
+type CertificateResource struct {
 	Archived                 string                 `json:"Archived,omitempty"`
 	CertificateData          *SensitiveValue        `json:"CertificateData,omitempty" validate:"required"`
 	CertificateDataFormat    string                 `json:"CertificateDataFormat,omitempty"`
@@ -41,9 +41,10 @@ type Certificate struct {
 	resource
 }
 
-// NewCertificate initializes a Certificate with a name and credentials.
-func NewCertificate(name string, certificateData *SensitiveValue, password *SensitiveValue) *Certificate {
-	return &Certificate{
+// NewCertificateResource initializes a certificate resource with a name and
+// credentials.
+func NewCertificateResource(name string, certificateData *SensitiveValue, password *SensitiveValue) *CertificateResource {
+	return &CertificateResource{
 		Name:                   name,
 		CertificateData:        certificateData,
 		Password:               password,
@@ -52,7 +53,8 @@ func NewCertificate(name string, certificateData *SensitiveValue, password *Sens
 	}
 }
 
-// Validate checks the state of the certificate and returns an error if invalid.
-func (c Certificate) Validate() error {
+// Validate checks the state of the certificate resource and returns an error
+// if invalid.
+func (c CertificateResource) Validate() error {
 	return validator.New().Struct(c)
 }

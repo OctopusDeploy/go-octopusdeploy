@@ -22,7 +22,7 @@ func TestFeedServiceAdd(t *testing.T) {
 	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterFeed))
 	assert.Nil(t, feed)
 
-	feed, err = service.Add(&Feed{})
+	feed, err = service.Add(&FeedResource{})
 	require.Error(t, err)
 	require.Nil(t, feed)
 }

@@ -51,7 +51,7 @@ func AssertEqualProjects(t *testing.T, expected *octopusdeploy.Project, actual *
 	assert.Equal(t, expected.VersioningStrategy, actual.VersioningStrategy)
 }
 
-func CreateTestProject(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup) (*octopusdeploy.Project, error) {
+func CreateTestProject(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup) *octopusdeploy.Project {
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
 
@@ -77,7 +77,7 @@ func CreateTestProject(t *testing.T, client *octopusdeploy.Client, lifecycle *oc
 	require.NotNil(t, projectToCompare)
 	AssertEqualProjects(t, createdProject, projectToCompare)
 
-	return createdProject, nil
+	return createdProject
 }
 
 func DeleteTestProject(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) {
@@ -101,18 +101,15 @@ func TestProjectAddGetDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 }
@@ -131,13 +128,11 @@ func TestProjectGetAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
@@ -145,8 +140,7 @@ func TestProjectGetAll(t *testing.T) {
 	projectsToCreate := 32
 	sum := 0
 	for i := 0; i < projectsToCreate; i++ {
-		project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-		require.NoError(t, err)
+		project := CreateTestProject(t, client, lifecycle, projectGroup)
 		require.NotNil(t, project)
 		defer DeleteTestProject(t, client, project)
 
@@ -165,8 +159,7 @@ func TestProjectGetAll(t *testing.T) {
 		t.Fatalf("There should be at least %d projects created but there was only %d. Pagination is likely not working.", projectsToCreate, numberOfProjects)
 	}
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -183,18 +176,15 @@ func TestProjectUpdate(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -217,18 +207,15 @@ func TestProjectGetByName(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 

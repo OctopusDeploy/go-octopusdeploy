@@ -1,48 +1,58 @@
 package octopusdeploy
 
-import (
-	"github.com/go-playground/validator/v10"
-	"github.com/go-playground/validator/v10/non-standard/validators"
-)
+import "github.com/go-playground/validator/v10"
 
-// FeedResource is the embedded struct used for all feeds.
 type FeedResource struct {
-	Name                              string          `json:"Name" validate:"required,notblank"`
-	SpaceID                           string          `json:"SpaceId,omitempty"`
-	PackageAcquisitionLocationOptions []string        `json:"PackageAcquisitionLocationOptions,omitempty"`
+	AccessKey                         string          `json:"AccessKey,omitempty"`
+	APIVersion                        string          `json:"ApiVersion,omitempty"`
+	DeleteUnreleasedPackagesAfterDays *int            `json:"DeleteUnreleasedPackagesAfterDays,omitempty"`
+	DownloadAttempts                  int             `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds       int             `json:"DownloadRetryBackoffSeconds"`
+	EnhancedMode                      bool            `json:"EnhancedMode"`
+	FeedType                          FeedType        `json:"FeedType,omitempty"`
+	FeedURI                           *string         `json:"FeedUri,omitempty"`
+	IsBuiltInRepoSyncEnabled          bool            `json:"IsBuiltInRepoSyncEnabled,omitempty"`
+	Name                              string          `json:"Name"`
 	Password                          *SensitiveValue `json:"Password,omitempty"`
+	PackageAcquisitionLocationOptions []string        `json:"PackageAcquisitionLocationOptions,omitempty"`
+	Region                            string          `json:"Region,omitempty"`
+	RegistryPath                      string          `json:"RegistryPath,omitempty"`
+	SecretKey                         *SensitiveValue `json:"SecretKey,omitempty"`
+	SpaceID                           string          `json:"SpaceId,omitempty"`
 	Username                          string          `json:"Username,omitempty"`
 
 	resource
 }
 
-// newFeedResource creates and initializes a feed resource.
-func newFeedResource(name string) *FeedResource {
+type FeedResources struct {
+	Items []*FeedResource `json:"Items"`
+	PagedResults
+}
+
+func NewFeedResource(name string, feedType FeedType) *FeedResource {
 	return &FeedResource{
-		Name:                              name,
-		PackageAcquisitionLocationOptions: []string{},
-		resource:                          *newResource(),
+		FeedType: feedType,
+		Name:     name,
+		resource: *newResource(),
 	}
 }
 
-// GetName returns the name of the feed resource.
+func (f *FeedResource) GetFeedType() FeedType {
+	return f.FeedType
+}
+
 func (f *FeedResource) GetName() string {
 	return f.Name
 }
 
-// SetName sets the name of the account resource.
 func (f *FeedResource) SetName(name string) {
 	f.Name = name
 }
 
-// Validate checks the state of the feed and returns an error if invalid.
+// Validate checks the state of the feed resource and returns an error if
+// invalid.
 func (f FeedResource) Validate() error {
-	v := validator.New()
-	err := v.RegisterValidation("notblank", validators.NotBlank)
-	if err != nil {
-		return err
-	}
-	return v.Struct(f)
+	return validator.New().Struct(f)
 }
 
-var _ IHasName = &FeedResource{}
+var _ IFeed = &FeedResource{}

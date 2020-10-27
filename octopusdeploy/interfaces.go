@@ -41,7 +41,7 @@ type IEndpointWithProxy interface {
 }
 
 type IFeed interface {
-	GetFeedType() string
+	GetFeedType() FeedType
 	GetName() string
 	SetName(string)
 

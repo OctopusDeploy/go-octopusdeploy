@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -18,103 +19,140 @@ var testCert1 = &octopusdeploy.SensitiveValue{NewValue: &testCert1Data}
 
 // var testCert2 = SensitiveValue{NewValue: &testCert2Data}
 
-func TestCertAddAndDelete(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
+func AssertEqualCertificateResources(t *testing.T, expected *octopusdeploy.CertificateResource, actual *octopusdeploy.CertificateResource) {
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
 
-	certName := getRandomName()
+	// IResource
+	assert.Equal(t, expected.GetID(), actual.GetID())
+	assert.True(t, reflect.DeepEqual(expected.GetLinks(), actual.GetLinks()))
 
-	expected, err := getTestCert1(t, certName)
-	require.NoError(t, err)
-	require.NotNil(t, expected)
-	require.NoError(t, expected.Validate())
-
-	actual := createTestCert(t, octopusClient, certName)
-	defer cleanCert(t, octopusClient, actual.GetID())
-
-	assert.Equal(t, expected.Name, actual.Name, "certificate name doesn't match expected")
-	assert.NotEmpty(t, actual.GetID(), "certificate doesn't contain an ID from the octopus server")
+	// CertificateResource
+	assert.Equal(t, expected.Archived, actual.Archived)
+	assert.Equal(t, expected.CertificateData, actual.CertificateData)
+	assert.Equal(t, expected.CertificateDataFormat, actual.CertificateDataFormat)
+	assert.True(t, reflect.DeepEqual(expected.EnvironmentIDs, actual.EnvironmentIDs))
+	assert.Equal(t, expected.HasPrivateKey, actual.HasPrivateKey)
+	assert.Equal(t, expected.IsExpired, actual.IsExpired)
+	assert.Equal(t, expected.IssuerCommonName, actual.IssuerCommonName)
+	assert.Equal(t, expected.IssuerDistinguishedName, actual.IssuerDistinguishedName)
+	assert.Equal(t, expected.IssuerOrganization, actual.IssuerOrganization)
+	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.NotAfter, actual.NotAfter)
+	assert.Equal(t, expected.NotBefore, actual.NotBefore)
+	assert.Equal(t, expected.Notes, actual.Notes)
+	assert.Equal(t, expected.Password, actual.Password)
+	assert.Equal(t, expected.ReplacedBy, actual.ReplacedBy)
+	assert.Equal(t, expected.SerialNumber, actual.SerialNumber)
+	assert.Equal(t, expected.SignatureAlgorithmName, actual.SignatureAlgorithmName)
+	assert.True(t, reflect.DeepEqual(expected.SubjectAlternativeNames, actual.SubjectAlternativeNames))
+	assert.Equal(t, expected.SubjectDistinguishedName, actual.SubjectDistinguishedName)
+	assert.Equal(t, expected.SubjectCommonName, actual.SubjectCommonName)
+	assert.Equal(t, expected.SubjectOrganization, actual.SubjectOrganization)
+	assert.Equal(t, expected.SelfSigned, actual.SelfSigned)
+	assert.Equal(t, expected.TenantedDeploymentMode, actual.TenantedDeploymentMode)
+	assert.True(t, reflect.DeepEqual(expected.TenantIDs, actual.TenantIDs))
+	assert.True(t, reflect.DeepEqual(expected.TenantTags, actual.TenantTags))
+	assert.Equal(t, expected.Thumbprint, actual.Thumbprint)
+	assert.Equal(t, expected.Version, actual.Version)
 }
 
-func TestCertAddAndReplace(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
-
-	certName := getRandomName()
-
-	expectedCert1, err := getTestCert1(t, certName)
-	require.NoError(t, err)
-	require.NotNil(t, expectedCert1)
-	require.NoError(t, expectedCert1.Validate())
-
-	actualCert1 := createTestCert(t, octopusClient, certName)
-	assert.Equal(t, expectedCert1.Name, actualCert1.Name, "certificate name doesn't match expected")
-	assert.NotEmpty(t, actualCert1.GetID(), "certificate doesn't contain an ID from the octopus server")
-
-	actualCert2 := replaceCert(t, octopusClient, &actualCert1)
-	defer cleanCert(t, octopusClient, actualCert2.GetID())
-
-	assert.Equal(t, testCert2Thumbprint, actualCert2.Thumbprint, "certificate name doesn't match expected")
-	assert.NotEmpty(t, actualCert2.GetID(), "certificate doesn't contain an ID from the octopus server")
-}
-
-func createTestCert(t *testing.T, octopusClient *octopusdeploy.Client, certName string) octopusdeploy.Certificate {
-	if octopusClient == nil {
-		octopusClient = getOctopusClient()
+func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.CertificateResource {
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, octopusClient)
+	require.NotNil(t, client)
 
-	c, err := getTestCert1(t, certName)
-	if err != nil {
-		t.Fatalf("getting certificate %s failed when it shouldn't: %s", certName, err)
-	}
+	name := getRandomName()
 
-	cert, err := octopusClient.Certificates.Add(c)
-	if err != nil {
-		t.Fatalf("creating certificate %s failed when it shouldn't: %s", certName, err)
-	}
+	certificateData := octopusdeploy.NewSensitiveValue(testCert2Data)
+	require.NotNil(t, certificateData)
 
-	return *cert
-}
+	password := octopusdeploy.NewSensitiveValue(testCert2Password)
+	require.NotNil(t, password)
 
-func replaceCert(t *testing.T, octopusClient *octopusdeploy.Client, originalCert *octopusdeploy.Certificate) octopusdeploy.Certificate {
-	if octopusClient == nil {
-		octopusClient = getOctopusClient()
-	}
-	require.NotNil(t, octopusClient)
-
-	certificateReplace, err := getTestCertReplace(t)
-	require.NoError(t, err)
-	require.NotNil(t, certificateReplace)
-
-	cert, err := octopusClient.Certificates.Replace(originalCert.GetID(), certificateReplace)
-	require.NoError(t, err)
-	require.NotNil(t, cert)
-
-	return *cert
-}
-
-func getTestCert1(t *testing.T, certName string) (*octopusdeploy.Certificate, error) {
-	certificate := octopusdeploy.NewCertificate(certName, testCert1, &octopusdeploy.SensitiveValue{})
+	certificate := octopusdeploy.NewCertificateResource(name, certificateData, password)
 	require.NotNil(t, certificate)
 	require.NoError(t, certificate.Validate())
 
-	return certificate, nil
+	createdCertificate, err := client.Certificates.Add(certificate)
+	require.NoError(t, err)
+	require.NotNil(t, createdCertificate)
+	require.NotEmpty(t, createdCertificate.GetID())
+
+	// verify the add operation was successful
+	certificateToCompare, err := client.Certificates.GetByID(createdCertificate.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, certificateToCompare)
+	AssertEqualCertificateResources(t, createdCertificate, certificateToCompare)
+
+	return createdCertificate
 }
 
-func getTestCertReplace(t *testing.T) (*octopusdeploy.ReplacementCertificate, error) {
-	certificateReplace := octopusdeploy.NewReplacementCertificate(testCert2Data, testCert2Password)
-	require.NotNil(t, certificateReplace)
+func DeleteTestCertificateResource(t *testing.T, client *octopusdeploy.Client, certificate *octopusdeploy.CertificateResource) {
+	require.NotNil(t, certificate)
 
-	return certificateReplace, nil
-}
-
-func cleanCert(t *testing.T, octopusClient *octopusdeploy.Client, certID string) {
-	if octopusClient == nil {
-		octopusClient = getOctopusClient()
+	if client == nil {
+		client = getOctopusClient()
 	}
-	require.NotNil(t, octopusClient)
+	require.NotNil(t, client)
 
-	err := octopusClient.Certificates.DeleteByID(certID)
+	err := client.Certificates.DeleteByID(certificate.GetID())
 	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedCertificate, err := client.Certificates.GetByID(certificate.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedCertificate)
+}
+
+func TestCertificateServiceAddGetDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	certificate := CreateTestCertificateResource(t, client)
+	require.NotNil(t, certificate)
+	defer DeleteTestCertificateResource(t, client, certificate)
+
+	certificateToCompare, err := client.Certificates.GetByID(certificate.GetID())
+	require.NotNil(t, certificateToCompare)
+	require.NoError(t, err)
+	AssertEqualCertificateResources(t, certificate, certificateToCompare)
+}
+
+func TestCertificateServiceAddReplaceDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	certificate := CreateTestCertificateResource(t, client)
+	require.NotNil(t, certificate)
+	defer DeleteTestCertificateResource(t, client, certificate)
+
+	replacementCertificate := octopusdeploy.NewReplacementCertificate(testCert2Data, testCert2Password)
+	require.NotNil(t, replacementCertificate)
+
+	updatedCertificate, err := client.Certificates.Replace(certificate.GetID(), replacementCertificate)
+	require.NoError(t, err)
+	require.NotNil(t, updatedCertificate)
+	require.NotEmpty(t, updatedCertificate.GetID())
+	require.Equal(t, testCert2Thumbprint, updatedCertificate.Thumbprint)
+}
+
+func TestCertificateServiceDeleteAll(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	certificates, err := client.Certificates.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, certificates)
+
+	for _, certificate := range certificates {
+		defer DeleteTestCertificateResource(t, client, certificate)
+	}
 }

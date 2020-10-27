@@ -9,28 +9,26 @@ import (
 // Container Registry (ECR).
 type AwsElasticContainerRegistry struct {
 	AccessKey string          `json:"AccessKey,omitempty"`
-	FeedType  string          `json:"FeedType" validate:"required,eq=AwsElasticContainerRegistry"`
 	Region    string          `json:"Region"`
 	SecretKey *SensitiveValue `json:"SecretKey,omitempty"`
 
-	FeedResource
+	Feed
 }
 
 // NewAwsElasticContainerRegistry creates and initializes an Amazon Web
 // Services (AWS) Elastic Container Registry (ECR).
 func NewAwsElasticContainerRegistry(name string, accessKey string, secretKey *SensitiveValue, region string) *AwsElasticContainerRegistry {
 	return &AwsElasticContainerRegistry{
-		AccessKey:    accessKey,
-		FeedType:     feedAwsElasticContainerRegistry,
-		Region:       region,
-		SecretKey:    secretKey,
-		FeedResource: *newFeedResource(name),
+		AccessKey: accessKey,
+		Region:    region,
+		SecretKey: secretKey,
+		Feed:      *newFeed(name, FeedTypeAwsElasticContainerRegistry),
 	}
 }
 
 // GetFeedType returns the feed type of this Amazon Web Services (AWS) Elastic
 // Container Registry (ECR).
-func (a *AwsElasticContainerRegistry) GetFeedType() string {
+func (a *AwsElasticContainerRegistry) GetFeedType() FeedType {
 	return a.FeedType
 }
 

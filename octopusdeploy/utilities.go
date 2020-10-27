@@ -44,8 +44,8 @@ func isNil(i interface{}) bool {
 	case *Authentication:
 		v := i.(*Authentication)
 		ret = v == nil
-	case *Certificate:
-		v := i.(*Certificate)
+	case *CertificateResource:
+		v := i.(*CertificateResource)
 		ret = v == nil
 	case *Channel:
 		v := i.(*Channel)

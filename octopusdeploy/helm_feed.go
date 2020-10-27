@@ -7,23 +7,21 @@ import (
 
 // HelmFeed represents a Helm feed.
 type HelmFeed struct {
-	FeedType string `json:"FeedType" validate:"required,eq=Helm"`
-	FeedURI  string `json:"FeedUri,omitempty"`
+	FeedURI string `json:"FeedUri,omitempty"`
 
-	FeedResource
+	Feed
 }
 
 // NewHelmFeed creates and initializes a Helm feed.
 func NewHelmFeed(name string, feedURI string) *HelmFeed {
 	return &HelmFeed{
-		FeedType:     feedHelm,
-		FeedURI:      feedURI,
-		FeedResource: *newFeedResource(name),
+		FeedURI: feedURI,
+		Feed:    *newFeed(name, FeedTypeHelm),
 	}
 }
 
 // GetFeedType returns the feed type of this Helm feed.
-func (h *HelmFeed) GetFeedType() string {
+func (h *HelmFeed) GetFeedType() FeedType {
 	return h.FeedType
 }
 

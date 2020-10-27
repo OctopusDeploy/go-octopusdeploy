@@ -129,7 +129,7 @@ func TestFeedServiceAdd(t *testing.T) {
 	// the following code is commented out due to the validation conducted by
 	// the feed client
 
-	// feed = CreateTestAwsElasticContainerRegistry(t, client)
+	// feed := CreateTestAwsElasticContainerRegistry(t, client)
 	// require.NotNil(t, feed)
 	// defer DeleteTestFeed(t, client, feed)
 

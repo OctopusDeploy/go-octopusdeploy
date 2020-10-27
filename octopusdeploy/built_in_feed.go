@@ -7,13 +7,12 @@ import (
 
 // BuiltInFeed represents a built-in feed.
 type BuiltInFeed struct {
-	DeleteUnreleasedPackagesAfterDays *int   `json:"DeleteUnreleasedPackagesAfterDays,omitempty"`
-	DownloadAttempts                  int    `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds       int    `json:"DownloadRetryBackoffSeconds"`
-	FeedType                          string `json:"FeedType" validate:"required,eq=BuiltIn"`
-	IsBuiltInRepoSyncEnabled          bool   `json:"IsBuiltInRepoSyncEnabled"`
+	DeleteUnreleasedPackagesAfterDays *int `json:"DeleteUnreleasedPackagesAfterDays,omitempty"`
+	DownloadAttempts                  int  `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds       int  `json:"DownloadRetryBackoffSeconds"`
+	IsBuiltInRepoSyncEnabled          bool `json:"IsBuiltInRepoSyncEnabled"`
 
-	FeedResource
+	Feed
 }
 
 // NewBuiltInFeed creates and initializes a built-in feed.
@@ -21,14 +20,13 @@ func NewBuiltInFeed(name string, feedURI string) *BuiltInFeed {
 	return &BuiltInFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
-		FeedType:                    feedBuiltIn,
 		IsBuiltInRepoSyncEnabled:    false,
-		FeedResource:                *newFeedResource(name),
+		Feed:                        *newFeed(name, FeedTypeBuiltIn),
 	}
 }
 
 // GetFeedType returns the feed type of this built-in feed.
-func (b *BuiltInFeed) GetFeedType() string {
+func (b *BuiltInFeed) GetFeedType() FeedType {
 	return b.FeedType
 }
 

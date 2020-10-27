@@ -10,10 +10,9 @@ type NuGetFeed struct {
 	DownloadAttempts            int    `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds int    `json:"DownloadRetryBackoffSeconds"`
 	EnhancedMode                bool   `json:"EnhancedMode"`
-	FeedType                    string `json:"FeedType" validate:"required,eq=NuGet"`
 	FeedURI                     string `json:"FeedUri,omitempty"`
 
-	FeedResource
+	Feed
 }
 
 // NewNuGetFeed creates and initializes a NuGet feed.
@@ -22,14 +21,13 @@ func NewNuGetFeed(name string, feedURI string) *NuGetFeed {
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
 		EnhancedMode:                false,
-		FeedType:                    feedNuGet,
 		FeedURI:                     feedURI,
-		FeedResource:                *newFeedResource(name),
+		Feed:                        *newFeed(name, FeedTypeNuGet),
 	}
 }
 
 // GetFeedType returns the feed type of this NuGet feed.
-func (n *NuGetFeed) GetFeedType() string {
+func (n *NuGetFeed) GetFeedType() FeedType {
 	return n.FeedType
 }
 

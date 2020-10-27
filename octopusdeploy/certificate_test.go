@@ -6,30 +6,31 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var certificateName = "fake-certificate-name"
-var sensitiveValueTestValue = "fake-sensitive-value-name"
-
-func TestEmptyCertificate(t *testing.T) {
-	certificate := &Certificate{}
+func TestEmptyCertificateResource(t *testing.T) {
+	certificate := &CertificateResource{}
 	require.NotNil(t, certificate)
 	require.Error(t, certificate.Validate())
 }
 
-func TestCertificateWithOnlyName(t *testing.T) {
-	certificate := &Certificate{Name: certificateName}
+func TestCertificateResourceWithOnlyName(t *testing.T) {
+	name := getRandomName()
+	certificate := &CertificateResource{Name: name}
 	require.NotNil(t, certificate)
 	require.Error(t, certificate.Validate())
 }
 
-func TestCertificateWithNameAndCertificateData(t *testing.T) {
-	sensitiveValue := NewSensitiveValue(sensitiveValueTestValue)
+func TestCertificateResourceWithNameAndCertificateData(t *testing.T) {
+	name := getRandomName()
+	newValue := getRandomName()
+	sensitiveValue := NewSensitiveValue(newValue)
 	require.NotNil(t, sensitiveValue)
 
-	certificate := Certificate{
+	certificateResource := CertificateResource{
 		CertificateData:        sensitiveValue,
-		Name:                   certificateName,
-		TenantedDeploymentMode: "Untenanted",
+		Name:                   name,
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 	}
-	require.NotNil(t, certificate)
-	require.NoError(t, certificate.Validate())
+
+	require.NotNil(t, certificateResource)
+	require.NoError(t, certificateResource.Validate())
 }

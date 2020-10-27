@@ -37,7 +37,7 @@ func AssertEqualReleases(t *testing.T, expected *octopusdeploy.Release, actual *
 	assert.Equal(t, expected.Version, actual.Version)
 }
 
-func CreateTestRelease(t *testing.T, client *octopusdeploy.Client, channel *octopusdeploy.Channel, project *octopusdeploy.Project) (*octopusdeploy.Release, error) {
+func CreateTestRelease(t *testing.T, client *octopusdeploy.Client, channel *octopusdeploy.Channel, project *octopusdeploy.Project) *octopusdeploy.Release {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -61,7 +61,7 @@ func CreateTestRelease(t *testing.T, client *octopusdeploy.Client, channel *octo
 	require.NotNil(t, releaseToCompare)
 	AssertEqualReleases(t, createdRelease, releaseToCompare)
 
-	return createdRelease, nil
+	return createdRelease
 }
 
 func DeleteTestRelease(t *testing.T, client *octopusdeploy.Client, release *octopusdeploy.Release) {
@@ -85,28 +85,23 @@ func TestReleaseServiceAddGetDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	lifecycle, err := CreateTestLifecycle(t, client)
-	require.NoError(t, err)
+	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project, err := CreateTestProject(t, client, lifecycle, projectGroup)
-	require.NoError(t, err)
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
-	channel, err := CreateTestChannel(t, client, project)
-	require.NoError(t, err)
+	channel := CreateTestChannel(t, client, project)
 	require.NotNil(t, channel)
 	defer DeleteTestChannel(t, client, channel)
 
-	release, err := CreateTestRelease(t, client, channel, project)
-	require.NoError(t, err)
+	release := CreateTestRelease(t, client, channel, project)
 	require.NotNil(t, release)
 	defer DeleteTestRelease(t, client, release)
 

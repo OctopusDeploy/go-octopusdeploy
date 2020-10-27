@@ -9,10 +9,9 @@ import (
 type MavenFeed struct {
 	DownloadAttempts            int    `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds int    `json:"DownloadRetryBackoffSeconds"`
-	FeedType                    string `json:"FeedType" validate:"required,eq=Maven"`
 	FeedURI                     string `json:"FeedUri,omitempty"`
 
-	FeedResource
+	Feed
 }
 
 // NewMavenFeed creates and initializes a Maven feed.
@@ -20,14 +19,13 @@ func NewMavenFeed(name string, feedURI string) *MavenFeed {
 	return &MavenFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
-		FeedType:                    feedMaven,
 		FeedURI:                     feedURI,
-		FeedResource:                *newFeedResource(name),
+		Feed:                        *newFeed(name, FeedTypeMaven),
 	}
 }
 
 // GetFeedType returns the feed type of this Maven feed.
-func (m *MavenFeed) GetFeedType() string {
+func (m *MavenFeed) GetFeedType() FeedType {
 	return m.FeedType
 }
 

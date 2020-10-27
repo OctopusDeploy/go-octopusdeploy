@@ -8,24 +8,22 @@ import (
 // DockerContainerRegistry represents a Docker container registry.
 type DockerContainerRegistry struct {
 	APIVersion   string  `json:"ApiVersion,omitempty"`
-	FeedType     string  `json:"FeedType" validate:"required,eq=Docker"`
 	FeedURI      *string `json:"FeedUri,omitempty"`
 	RegistryPath string  `json:"RegistryPath,omitempty"`
 
-	FeedResource
+	Feed
 }
 
 // NewDockerContainerRegistry creates and initializes a Docker container
 // registry.
 func NewDockerContainerRegistry(name string, feedURI string) *DockerContainerRegistry {
 	return &DockerContainerRegistry{
-		FeedType:     feedDocker,
-		FeedResource: *newFeedResource(name),
+		Feed: *newFeed(name, FeedTypeDocker),
 	}
 }
 
 // GetFeedType returns the feed type of this Docker container registry.
-func (d *DockerContainerRegistry) GetFeedType() string {
+func (d *DockerContainerRegistry) GetFeedType() FeedType {
 	return d.FeedType
 }
 

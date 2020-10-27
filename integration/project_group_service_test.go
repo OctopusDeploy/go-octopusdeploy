@@ -30,7 +30,7 @@ func AssertEqualProjectGroups(t *testing.T, expected *octopusdeploy.ProjectGroup
 	assert.Equal(t, expected.RetentionPolicyID, actual.RetentionPolicyID)
 }
 
-func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.Client) (*octopusdeploy.ProjectGroup, error) {
+func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.ProjectGroup {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -52,7 +52,7 @@ func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.Client) (*octopu
 	require.NotNil(t, projectGroupToCompare)
 	AssertEqualProjectGroups(t, createdProjectGroup, projectGroupToCompare)
 
-	return createdProjectGroup, nil
+	return createdProjectGroup
 }
 
 func DeleteTestProjectGroup(t *testing.T, client *octopusdeploy.Client, projectGroup *octopusdeploy.ProjectGroup) {
@@ -76,8 +76,7 @@ func TestProjectGroupAddGetDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 }
@@ -100,8 +99,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 	projectsGroupsToCreate := 32
 	sum := 0
 	for i := 0; i < projectsGroupsToCreate; i++ {
-		projectGroup, err := CreateTestProjectGroup(t, client)
-		require.NoError(t, err)
+		projectGroup := CreateTestProjectGroup(t, client)
 		require.NotNil(t, projectGroup)
 		defer DeleteTestProjectGroup(t, client, projectGroup)
 		sum += i
@@ -119,8 +117,7 @@ func TestProjectGroupGetAll(t *testing.T) {
 		t.Fatalf("There should be at least %d project groups created but there was only %d. Pagination is likely not working.", projectsGroupsToCreate, numberOfProjectGroups)
 	}
 
-	additionalProjectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	additionalProjectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, additionalProjectGroup)
 	defer DeleteTestProjectGroup(t, client, additionalProjectGroup)
 
@@ -137,8 +134,7 @@ func TestProjectGroupUpdate(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	projectGroup, err := CreateTestProjectGroup(t, client)
-	require.NoError(t, err)
+	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
