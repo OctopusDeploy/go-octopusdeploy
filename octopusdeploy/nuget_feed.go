@@ -26,11 +26,6 @@ func NewNuGetFeed(name string, feedURI string) *NuGetFeed {
 	}
 }
 
-// GetFeedType returns the feed type of this NuGet feed.
-func (n *NuGetFeed) GetFeedType() FeedType {
-	return n.FeedType
-}
-
 // Validate checks the state of this NuGet feed and returns an error if invalid.
 func (n *NuGetFeed) Validate() error {
 	v := validator.New()
@@ -40,5 +35,3 @@ func (n *NuGetFeed) Validate() error {
 	}
 	return v.Struct(n)
 }
-
-var _ IFeed = &NuGetFeed{}

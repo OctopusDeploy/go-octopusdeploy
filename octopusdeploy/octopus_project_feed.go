@@ -17,11 +17,6 @@ func NewOctopusProjectFeed(name string, feedURI string) *OctopusProjectFeed {
 	}
 }
 
-// GetFeedType returns the feed type of this Octopus project feed.
-func (o *OctopusProjectFeed) GetFeedType() FeedType {
-	return o.FeedType
-}
-
 // Validate checks the state of this Octopus project feed and returns an error
 // if invalid.
 func (o *OctopusProjectFeed) Validate() error {
@@ -32,5 +27,3 @@ func (o *OctopusProjectFeed) Validate() error {
 	}
 	return v.Struct(o)
 }
-
-var _ IFeed = &OctopusProjectFeed{}

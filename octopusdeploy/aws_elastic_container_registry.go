@@ -26,12 +26,6 @@ func NewAwsElasticContainerRegistry(name string, accessKey string, secretKey *Se
 	}
 }
 
-// GetFeedType returns the feed type of this Amazon Web Services (AWS) Elastic
-// Container Registry (ECR).
-func (a *AwsElasticContainerRegistry) GetFeedType() FeedType {
-	return a.FeedType
-}
-
 // Validate checks the state of this Amazon Web Services (AWS) Elastic
 // Container Registry (ECR) and returns an error if invalid.
 func (a *AwsElasticContainerRegistry) Validate() error {
@@ -42,5 +36,3 @@ func (a *AwsElasticContainerRegistry) Validate() error {
 	}
 	return v.Struct(a)
 }
-
-var _ IFeed = &AwsElasticContainerRegistry{}

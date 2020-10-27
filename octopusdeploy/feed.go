@@ -32,6 +32,11 @@ func newFeed(name string, feedType FeedType) *Feed {
 	}
 }
 
+// GetFeedType returns the type of this feed.
+func (f *Feed) GetFeedType() FeedType {
+	return f.FeedType
+}
+
 // GetName returns the name of the feed.
 func (f *Feed) GetName() string {
 	return f.Name

@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
 	"os"
 	"reflect"
 	"regexp"
@@ -166,15 +164,15 @@ func getDefaultClient() *sling.Sling {
 	// Everywhere by preconfiguring the client to route traffic through a
 	// proxy.
 
-	proxyStr := "http://127.0.0.1:5555"
-	proxyURL, _ := url.Parse(proxyStr)
+	// proxyStr := "http://127.0.0.1:5555"
+	// proxyURL, _ := url.Parse(proxyStr)
 
-	tr := &http.Transport{
-		Proxy: http.ProxyURL(proxyURL),
-	}
-	httpClient := http.Client{Transport: tr}
+	// tr := &http.Transport{
+	// 	Proxy: http.ProxyURL(proxyURL),
+	// }
+	// httpClient := http.Client{Transport: tr}
 
-	return sling.New().Client(&httpClient).Base(octopusURL).Set(clientAPIKeyHTTPHeader, octopusAPIKey)
+	return sling.New().Client(nil).Base(octopusURL).Set(clientAPIKeyHTTPHeader, octopusAPIKey)
 }
 
 func trimTemplate(uri string) string {

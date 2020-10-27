@@ -20,11 +20,6 @@ func NewHelmFeed(name string, feedURI string) *HelmFeed {
 	}
 }
 
-// GetFeedType returns the feed type of this Helm feed.
-func (h *HelmFeed) GetFeedType() FeedType {
-	return h.FeedType
-}
-
 // Validate checks the state of this Helm feed and returns an error if invalid.
 func (h *HelmFeed) Validate() error {
 	v := validator.New()
@@ -34,5 +29,3 @@ func (h *HelmFeed) Validate() error {
 	}
 	return v.Struct(h)
 }
-
-var _ IFeed = &HelmFeed{}

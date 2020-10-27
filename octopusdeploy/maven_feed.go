@@ -24,11 +24,6 @@ func NewMavenFeed(name string, feedURI string) *MavenFeed {
 	}
 }
 
-// GetFeedType returns the feed type of this Maven feed.
-func (m *MavenFeed) GetFeedType() FeedType {
-	return m.FeedType
-}
-
 // Validate checks the state of this Maven feed and returns an error if invalid.
 func (m *MavenFeed) Validate() error {
 	v := validator.New()
@@ -38,5 +33,3 @@ func (m *MavenFeed) Validate() error {
 	}
 	return v.Struct(m)
 }
-
-var _ IFeed = &MavenFeed{}

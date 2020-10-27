@@ -24,11 +24,6 @@ func NewGitHubRepositoryFeed(name string, feedURI string) *GitHubRepositoryFeed 
 	}
 }
 
-// GetFeedType returns the feed type of this GitHub repository feed.
-func (g *GitHubRepositoryFeed) GetFeedType() FeedType {
-	return g.FeedType
-}
-
 // Validate checks the state of this GitHub repository feed and returns an
 // error if invalid.
 func (g *GitHubRepositoryFeed) Validate() error {
@@ -39,5 +34,3 @@ func (g *GitHubRepositoryFeed) Validate() error {
 	}
 	return v.Struct(g)
 }
-
-var _ IFeed = &GitHubRepositoryFeed{}

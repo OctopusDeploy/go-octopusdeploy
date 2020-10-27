@@ -22,11 +22,6 @@ func NewDockerContainerRegistry(name string, feedURI string) *DockerContainerReg
 	}
 }
 
-// GetFeedType returns the feed type of this Docker container registry.
-func (d *DockerContainerRegistry) GetFeedType() FeedType {
-	return d.FeedType
-}
-
 // Validate checks the state of this Docker container registry and returns an
 // error if invalid.
 func (d *DockerContainerRegistry) Validate() error {
@@ -37,5 +32,3 @@ func (d *DockerContainerRegistry) Validate() error {
 	}
 	return v.Struct(d)
 }
-
-var _ IFeed = &DockerContainerRegistry{}

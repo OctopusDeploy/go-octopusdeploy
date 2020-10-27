@@ -25,11 +25,6 @@ func NewBuiltInFeed(name string, feedURI string) *BuiltInFeed {
 	}
 }
 
-// GetFeedType returns the feed type of this built-in feed.
-func (b *BuiltInFeed) GetFeedType() FeedType {
-	return b.FeedType
-}
-
 // Validate checks the state of this built-in feed and returns an error if
 // invalid.
 func (b *BuiltInFeed) Validate() error {
@@ -40,5 +35,3 @@ func (b *BuiltInFeed) Validate() error {
 	}
 	return v.Struct(b)
 }
-
-var _ IFeed = &BuiltInFeed{}
