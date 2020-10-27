@@ -29,7 +29,7 @@ func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAc
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.accountType = AccountType("UsernamePassword")
+	account.AccountType = AccountType("UsernamePassword")
 	account.ID = emptyString
 	account.ModifiedBy = emptyString
 	account.ModifiedOn = nil

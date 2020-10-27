@@ -35,7 +35,7 @@ func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID, options 
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.accountType = AccountType("AzureSubscription")
+	account.AccountType = AccountType("AzureSubscription")
 	account.ID = emptyString
 	account.ModifiedBy = emptyString
 	account.ModifiedOn = nil

@@ -39,7 +39,7 @@ func NewSSHKeyAccount(name string, username string, privateKeyFile *SensitiveVal
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.accountType = AccountType("SshKeyPair")
+	account.AccountType = AccountType("SshKeyPair")
 	account.ID = emptyString
 	account.ModifiedBy = emptyString
 	account.ModifiedOn = nil

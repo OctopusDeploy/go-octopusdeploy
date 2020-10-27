@@ -40,7 +40,7 @@ func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tena
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.accountType = AccountType("AzureServicePrincipal")
+	account.AccountType = AccountType("AzureServicePrincipal")
 	account.ApplicationID = &applicationID
 	account.ApplicationPassword = applicationPassword
 	account.ID = emptyString

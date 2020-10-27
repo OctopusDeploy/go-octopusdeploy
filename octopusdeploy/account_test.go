@@ -21,13 +21,13 @@ func TestAccount(t *testing.T) {
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
 
-	a = &account{accountType: AccountTypeUsernamePassword}
+	a = &account{AccountType: AccountTypeUsernamePassword}
 
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
 
 	a = &account{
-		accountType:            AccountTypeUsernamePassword,
+		AccountType:            AccountTypeUsernamePassword,
 		Name:                   name,
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 	}
@@ -36,7 +36,7 @@ func TestAccount(t *testing.T) {
 	assert.NoError(t, a.Validate())
 
 	a = &account{
-		accountType:            AccountTypeUsernamePassword,
+		AccountType:            AccountTypeUsernamePassword,
 		Name:                   "All",
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 	}
@@ -45,7 +45,7 @@ func TestAccount(t *testing.T) {
 	assert.Error(t, a.Validate())
 
 	a = &account{
-		accountType:            AccountTypeUsernamePassword,
+		AccountType:            AccountTypeUsernamePassword,
 		Name:                   "all",
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 	}

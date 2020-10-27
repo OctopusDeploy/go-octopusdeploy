@@ -38,7 +38,7 @@ func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *Sensi
 
 	// assign pre-determined values to "mandatory" fields
 	account.AccessKey = accessKey
-	account.accountType = AccountType("AmazonWebServicesAccount")
+	account.AccountType = AccountType("AmazonWebServicesAccount")
 	account.ID = emptyString
 	account.ModifiedBy = emptyString
 	account.ModifiedOn = nil

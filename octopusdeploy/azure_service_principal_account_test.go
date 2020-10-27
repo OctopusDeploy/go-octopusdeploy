@@ -57,7 +57,7 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 				SubscriptionID:          tc.SubscriptionID,
 				TenantID:                tc.TenantID,
 			}
-			azureServicePrincipalAccount.accountType = AccountType("AzureServicePrincipal")
+			azureServicePrincipalAccount.AccountType = AccountType("AzureServicePrincipal")
 			azureServicePrincipalAccount.Name = tc.Name
 			azureServicePrincipalAccount.SpaceID = tc.SpaceID
 			azureServicePrincipalAccount.TenantedDeploymentMode = tc.TenantedDeploymentMode

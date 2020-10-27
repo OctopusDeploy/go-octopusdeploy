@@ -34,7 +34,7 @@ func NewTokenAccount(name string, token *SensitiveValue, options ...func(*TokenA
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.accountType = AccountType("Token")
+	account.AccountType = AccountType("Token")
 	account.ID = emptyString
 	account.ModifiedBy = emptyString
 	account.ModifiedOn = nil

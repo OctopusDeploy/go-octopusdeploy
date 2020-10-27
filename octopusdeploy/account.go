@@ -7,7 +7,7 @@ import (
 
 // account is the embedded struct used for all accounts.
 type account struct {
-	accountType            AccountType
+	AccountType            AccountType `validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount Token"`
 	Description            string
 	EnvironmentIDs         []string
 	Name                   string `validate:"required,notblank,notall"`
@@ -22,7 +22,7 @@ type account struct {
 // newAccount creates and initializes an account.
 func newAccount(name string, accountType AccountType) *account {
 	return &account{
-		accountType:            accountType,
+		AccountType:            accountType,
 		EnvironmentIDs:         []string{},
 		Name:                   name,
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
@@ -34,7 +34,7 @@ func newAccount(name string, accountType AccountType) *account {
 
 // GetAccountType returns the type of this account.
 func (a *account) GetAccountType() AccountType {
-	return a.accountType
+	return a.AccountType
 }
 
 // GetDescription returns the description of the account.
