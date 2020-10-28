@@ -2,7 +2,6 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 	"github.com/jinzhu/copier"
 )
 
@@ -124,12 +123,18 @@ func (s *accountService) Add(account IAccount) (IAccount, error) {
 // Get returns a collection of accounts based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s accountService) Get(accountsQuery AccountsQuery) (*Accounts, error) {
-	v, _ := query.Values(accountsQuery)
-	path := s.BasePath
-	encodedQueryString := v.Encode()
-	if len(encodedQueryString) > 0 {
-		path += "?" + encodedQueryString
+func (s accountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) {
+	values := make(map[string]interface{})
+	path, err := s.URITemplate.Expand(values)
+	if err != nil {
+		return &Accounts{}, err
+	}
+
+	if accountsQuery != nil {
+		path, err = s.URITemplate.Expand(accountsQuery[0])
+		if err != nil {
+			return &Accounts{}, err
+		}
 	}
 
 	response, err := apiGet(s.getClient(), new(AccountResources), path)
