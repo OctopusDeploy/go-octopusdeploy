@@ -8,8 +8,9 @@ var ValidProjectDefaultGuidedFailureModes = []string{
 }
 
 // ValidProjectConnectivityPolicySkipMachineBehaviors provides options for "Skip Deployment Targets" - https://octopus.com/docs/deployment-patterns/elastic-and-transient-environments/deploying-to-transient-targets
-var ValidProjectConnectivityPolicySkipMachineBehaviors = []string{
-	"SkipUnavailableMachines", "None",
+var ValidProjectConnectivityPolicySkipMachineBehaviors = []SkipMachineBehavior{
+	SkipMachineBehaviorNone,
+	SkipMachineBehaviorSkipUnavailableMachines,
 }
 
 // ValidMachineStatuses provides options for valid machine status

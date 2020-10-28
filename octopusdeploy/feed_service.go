@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 	"github.com/jinzhu/copier"
@@ -37,13 +38,13 @@ func toFeed(feedResource *FeedResource) (IFeed, error) {
 	case FeedTypeBuiltIn:
 		feed = NewBuiltInFeed(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeDocker:
-		feed = NewDockerContainerRegistry(feedResource.GetName(), feedResource.FeedURI)
+		feed = NewDockerContainerRegistry(feedResource.GetName())
 	case FeedTypeGitHub:
-		feed = NewGitHubRepositoryFeed(feedResource.GetName(), feedResource.FeedURI)
+		feed = NewGitHubRepositoryFeed(feedResource.GetName())
 	case FeedTypeHelm:
-		feed = NewHelmFeed(feedResource.GetName(), feedResource.FeedURI)
+		feed = NewHelmFeed(feedResource.GetName())
 	case FeedTypeMaven:
-		feed = NewMavenFeed(feedResource.GetName(), feedResource.FeedURI)
+		feed = NewMavenFeed(feedResource.GetName())
 	case FeedTypeNuGet:
 		feed = NewNuGetFeed(feedResource.GetName(), feedResource.FeedURI)
 	case FeedTypeOctopusProject:
@@ -154,6 +155,48 @@ func (s feedService) GetByID(id string) (IFeed, error) {
 	}
 
 	return resp.(IFeed), nil
+}
+
+// GetBuiltInFeedStatistics returns statistics for the built-in feeds.
+func (s feedService) GetBuiltInFeedStatistics() (*BuiltInFeedStatistics, error) {
+	path := s.builtInFeedStats
+	resp, err := apiGet(s.getClient(), new(BuiltInFeedStatistics), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*BuiltInFeedStatistics), nil
+}
+
+func (s feedService) SearchPackages(feed IFeed, searchPackagesQuery ...SearchPackagesQuery) (*PackageDescriptions, error) {
+	if feed == nil {
+		return nil, createInvalidParameterError(OperationSearchPackages, ParameterFeed)
+	}
+
+	uriTemplate, err := uritemplates.Parse(feed.GetLinks()[linkSearchPackagesTemplate])
+	if err != nil {
+		return &PackageDescriptions{}, err
+	}
+
+	values := make(map[string]interface{})
+	path, err := uriTemplate.Expand(values)
+	if err != nil {
+		return &PackageDescriptions{}, err
+	}
+
+	if searchPackagesQuery != nil {
+		path, err = uriTemplate.Expand(searchPackagesQuery[0])
+		if err != nil {
+			return &PackageDescriptions{}, err
+		}
+	}
+
+	resp, err := apiGet(s.getClient(), new(PackageDescriptions), path)
+	if err != nil {
+		return &PackageDescriptions{}, err
+	}
+
+	return resp.(*PackageDescriptions), nil
 }
 
 // Update modifies a feed based on the one provided as input.

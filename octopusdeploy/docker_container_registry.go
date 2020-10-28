@@ -7,19 +7,22 @@ import (
 
 // DockerContainerRegistry represents a Docker container registry.
 type DockerContainerRegistry struct {
-	APIVersion   string  `json:"ApiVersion,omitempty"`
-	FeedURI      *string `json:"FeedUri,omitempty"`
-	RegistryPath string  `json:"RegistryPath,omitempty"`
+	APIVersion   string `json:"ApiVersion,omitempty"`
+	FeedURI      string `json:"FeedUri,omitempty"`
+	RegistryPath string `json:"RegistryPath,omitempty"`
 
 	Feed
 }
 
 // NewDockerContainerRegistry creates and initializes a Docker container
 // registry.
-func NewDockerContainerRegistry(name string, feedURI string) *DockerContainerRegistry {
-	return &DockerContainerRegistry{
+func NewDockerContainerRegistry(name string) *DockerContainerRegistry {
+	dockerContainerRegistry := DockerContainerRegistry{
 		Feed: *newFeed(name, FeedTypeDocker),
 	}
+	dockerContainerRegistry.FeedURI = "https://index.docker.io"
+
+	return &dockerContainerRegistry
 }
 
 // Validate checks the state of this Docker container registry and returns an

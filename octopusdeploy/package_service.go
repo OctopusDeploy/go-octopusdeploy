@@ -1,6 +1,8 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/dghubble/sling"
+)
 
 type packageService struct {
 	bulkPath           string
@@ -41,23 +43,6 @@ func (s packageService) getPagedResponse(path string) ([]*Package, error) {
 	}
 
 	return resources, nil
-}
-
-// Add creates a new package.
-func (s packageService) Add(octopusPackage *Package) (*Package, error) {
-	path, err := getAddPath(s, octopusPackage)
-	if err != nil {
-		return nil, err
-	}
-
-	path += "/raw"
-
-	resp, err := apiAdd(s.getClient(), octopusPackage, new(Package), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*Package), nil
 }
 
 // GetAll returns all packages. If none can be found or an error occurs, it

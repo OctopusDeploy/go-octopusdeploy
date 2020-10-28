@@ -13,11 +13,13 @@ type HelmFeed struct {
 }
 
 // NewHelmFeed creates and initializes a Helm feed.
-func NewHelmFeed(name string, feedURI string) *HelmFeed {
-	return &HelmFeed{
-		FeedURI: feedURI,
-		Feed:    *newFeed(name, FeedTypeHelm),
+func NewHelmFeed(name string) *HelmFeed {
+	helmFeed := HelmFeed{
+		Feed: *newFeed(name, FeedTypeHelm),
 	}
+	helmFeed.FeedURI = "https://kubernetes-charts.storage.googleapis.com"
+
+	return &helmFeed
 }
 
 // Validate checks the state of this Helm feed and returns an error if invalid.

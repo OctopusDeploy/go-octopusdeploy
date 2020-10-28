@@ -15,13 +15,15 @@ type GitHubRepositoryFeed struct {
 }
 
 // NewGitHubRepositoryFeed creates and initializes a GitHub repository feed.
-func NewGitHubRepositoryFeed(name string, feedURI string) *GitHubRepositoryFeed {
-	return &GitHubRepositoryFeed{
+func NewGitHubRepositoryFeed(name string) *GitHubRepositoryFeed {
+	gitHubRepositoryFeed := GitHubRepositoryFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
-		FeedURI:                     feedURI,
 		Feed:                        *newFeed(name, FeedTypeGitHub),
 	}
+	gitHubRepositoryFeed.FeedURI = "https://api.github.com"
+
+	return &gitHubRepositoryFeed
 }
 
 // Validate checks the state of this GitHub repository feed and returns an

@@ -15,13 +15,15 @@ type MavenFeed struct {
 }
 
 // NewMavenFeed creates and initializes a Maven feed.
-func NewMavenFeed(name string, feedURI string) *MavenFeed {
-	return &MavenFeed{
+func NewMavenFeed(name string) *MavenFeed {
+	mavenFeed := MavenFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
-		FeedURI:                     feedURI,
 		Feed:                        *newFeed(name, FeedTypeMaven),
 	}
+	mavenFeed.FeedURI = "https://repo.maven.apache.org/maven2/"
+
+	return &mavenFeed
 }
 
 // Validate checks the state of this Maven feed and returns an error if invalid.
