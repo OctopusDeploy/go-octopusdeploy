@@ -367,7 +367,11 @@ func struct2map(v interface{}) (map[string]interface{}, bool) {
 			tag := value.Type().Field(i).Tag
 			var name string
 			if strings.Contains(string(tag), ":") {
-				name = tag.Get("uri")
+				uriName, opts := parseTag(tag.Get("uri"))
+				sv := value.Field(i)
+				if !opts.Contains("omitempty") || !isEmptyValue(sv) {
+					name = uriName
+				}
 			} else {
 				name = strings.TrimSpace(string(tag))
 			}
@@ -379,4 +383,49 @@ func struct2map(v interface{}) (map[string]interface{}, bool) {
 		return m, true
 	}
 	return nil, false
+}
+
+type tagOptions []string
+
+func parseTag(tag string) (string, tagOptions) {
+	s := strings.Split(tag, ",")
+	return s[0], s[1:]
+}
+
+func (o tagOptions) Contains(option string) bool {
+	for _, s := range o {
+		if s == option {
+			return true
+		}
+	}
+	return false
+}
+
+// isEmptyValue checks if a value should be considered empty for the purposes
+// of omitting fields with the "omitempty" option.
+func isEmptyValue(v reflect.Value) bool {
+	switch v.Kind() {
+	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
+		return v.Len() == 0
+	case reflect.Bool:
+		return !v.Bool()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return v.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return v.Float() == 0
+	case reflect.Interface, reflect.Ptr:
+		return v.IsNil()
+	}
+
+	type zeroable interface {
+		IsZero() bool
+	}
+
+	if z, ok := v.Interface().(zeroable); ok {
+		return z.IsZero()
+	}
+
+	return false
 }
