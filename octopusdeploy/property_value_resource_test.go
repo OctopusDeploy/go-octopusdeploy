@@ -50,7 +50,7 @@ func TestPropertyValueResource_MarshalJSON(t *testing.T) {
 			}
 
 			if !reflect.DeepEqual(got, tt.want) {
-				json, _ := PrettyJSON(got)
+				json := PrettyJSON(got)
 				t.Log(json)
 				t.Errorf("PropertyValueResource.MarshalJSON() = %v, want %v", got, tt.want)
 			}

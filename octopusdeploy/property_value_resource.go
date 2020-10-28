@@ -4,11 +4,6 @@ import (
 	"encoding/json"
 )
 
-type SensitiveValue struct {
-	HasValue bool    `json:"HasValue"`
-	NewValue *string `json:"NewValue"`
-}
-
 type PropertyValue string
 
 type PropertyValueResource struct {
@@ -28,6 +23,7 @@ func (d PropertyValueResource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(``)
 }
 
+// UnmarshalJSON sets this property value to its representation in JSON.
 func (d *PropertyValueResource) UnmarshalJSON(data []byte) error {
 	// try unmarshal into a sensitive property, if that fails, it's just a normal property
 	var spv SensitiveValue

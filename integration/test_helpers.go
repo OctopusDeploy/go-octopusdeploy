@@ -3,40 +3,50 @@ package integration
 import (
 	"fmt"
 	"log"
-	"net/http"
+	"net/url"
 	"os"
-	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	uuid "github.com/google/uuid"
 )
 
-var (
-	octopusURL    string
-	octopusAPIKey string
-	client        *octopusdeploy.Client
-)
+func getOctopusClient() *octopusdeploy.Client {
+	octopusURL := os.Getenv("OCTOPUS_URL")
+	apiKey := os.Getenv("OCTOPUS_APIKEY")
+	//apiKey := "API-6PSADIMEO7LP4YO9JSHJMMV44Y"
 
-func initTest() *octopusdeploy.Client {
-	octopusURL = os.Getenv("OCTOPUS_URL")
-	octopusAPIKey = os.Getenv("OCTOPUS_APIKEY")
-
-	if octopusURL == "" || octopusAPIKey == "" {
+	if isEmpty(octopusURL) || isEmpty(apiKey) {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
 	}
 
-	httpClient := http.Client{}
-	client := octopusdeploy.NewClient(&httpClient, octopusURL, octopusAPIKey)
+	apiURL, err := url.Parse(octopusURL)
+	if err != nil {
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return nil
+	}
 
-	return client
+	// NOTE: You can direct traffic through a proxy trace like Fiddler
+	// Everywhere by preconfiguring the client to route traffic through a
+	// proxy.
+
+	// proxyStr := "http://127.0.0.1:5555"
+	// proxyURL, err := url.Parse(proxyStr)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+
+	// tr := &http.Transport{
+	// 	Proxy: http.ProxyURL(proxyURL),
+	// }
+	// httpClient := http.Client{Transport: tr}
+
+	octopusClient, err := octopusdeploy.NewClient(nil, apiURL, apiKey, emptyString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return octopusClient
 }
 
-func getRandomName() string {
-	fullName := fmt.Sprintf("go-octopusdeploy %s", uuid.New())
-	fullName = fullName[0:49] //Some names in Octopus have a max limit of 50 characters (such as Environment Name)
-	return fullName
-}
-
-func getRandomVarName() string {
-	return fmt.Sprintf("go-octo-%v", time.Now().Unix())
+func generateSensitiveValue() *octopusdeploy.SensitiveValue {
+	return octopusdeploy.NewSensitiveValue(getRandomName())
 }

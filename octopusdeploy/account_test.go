@@ -2,86 +2,57 @@ package octopusdeploy
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-var accountName = "Account Name"
-var accountType = UsernamePassword
+func TestAccount(t *testing.T) {
+	a := &account{}
+	name := getRandomName()
 
-func TestEmptyAccount(t *testing.T) {
-	account := &Account{}
+	require.NotNil(t, a)
+	assert.Error(t, a.Validate())
 
-	if account.Name != "" {
-		t.Error("Name should be empty")
+	a = &account{
+		Name: name,
 	}
 
-	if account.AccountType != None {
-		t.Errorf("AccountType should be %s", None)
-	}
-}
+	require.NotNil(t, a)
+	assert.Error(t, a.Validate())
 
-func TestAccountWithName(t *testing.T) {
-	account := &Account{Name: accountName}
+	a = &account{AccountType: AccountTypeUsernamePassword}
 
-	if account.Name != accountName {
-		t.Errorf("Name should be %s", accountName)
-	}
+	require.NotNil(t, a)
+	assert.Error(t, a.Validate())
 
-	if account.AccountType != None {
-		t.Errorf("AccountType should be %s", None)
-	}
-}
-
-func TestAccountWithNameAndUsernamePasswordAccountType(t *testing.T) {
-	account := &Account{
-		AccountType: UsernamePassword,
-		Name:        accountName,
+	a = &account{
+		AccountType:            AccountTypeUsernamePassword,
+		Name:                   name,
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 	}
 
-	if account.Name != accountName {
-		t.Errorf("Name should be %s", accountName)
+	require.NotNil(t, a)
+	assert.NoError(t, a.Validate())
+
+	a = &account{
+		AccountType:            AccountTypeUsernamePassword,
+		Name:                   "All",
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 	}
 
-	if account.AccountType != UsernamePassword {
-		t.Errorf("AccountType should be %s", UsernamePassword)
-	}
-}
+	require.NotNil(t, a)
+	assert.Error(t, a.Validate())
 
-func TestNewAccountWithValidParameters(t *testing.T) {
-	account, err := NewAccount(accountName, accountType)
-
-	if err != nil {
-		t.Errorf("NewAccount() generated an unexpected error: %s", err)
+	a = &account{
+		AccountType:            AccountTypeUsernamePassword,
+		Name:                   "all",
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 	}
 
-	if account.Name != accountName {
-		t.Errorf("Name should be %s", accountName)
-	}
+	require.NotNil(t, a)
+	assert.Error(t, a.Validate())
 
-	if account.AccountType != accountType {
-		t.Errorf("AccountType should be %s", accountType)
-	}
-}
-
-func TestNewAccountWithEmptyName(t *testing.T) {
-	account, err := NewAccount(" ", accountType)
-
-	if account != nil {
-		t.Error("NewAccount() returned an account, which was unexpected")
-	}
-
-	if err == nil {
-		t.Error("NewAccount() was expected to generate an error")
-	}
-}
-
-func TestNewAccountWithLongEmptyName(t *testing.T) {
-	account, err := NewAccount("       ", accountType)
-
-	if account != nil {
-		t.Error("NewAccount() returned an account, which was unexpected")
-	}
-
-	if err == nil {
-		t.Error("NewAccount() was expected to generate an error")
-	}
+	a = newAccount(name, AccountTypeAzureServicePrincipal)
+	require.NoError(t, a.Validate())
 }

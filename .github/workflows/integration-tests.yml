@@ -1,0 +1,32 @@
+name: Run Integration Tests
+
+on: push
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    env:
+      GO111MODULE: on
+      OCTOPUS_VERSION: "2020.2.7"
+      OCTOPUS_URL: "http://localhost:8080"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build octopusdeploy module
+        run: go build -v ./octopusdeploy
+
+      - name: Start the Octopus container
+        run: cd ./tests && docker-compose up --detach
+
+      - name: Generate an API key
+        run: ./tests/Create-ApiKey.ps1
+        shell: pwsh
+
+      - name: Run tests
+        run: go test -v ./...

@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://octopus.com/2020/package-reference.json",
+    "title": "Package Reference",
+    "description": "Represents a package reference",
+    "type": "object",
+    "properties": {
+        "AcquisitionLocation": {
+            "type": "string"
+        },
+        "FeedID": {
+            "type": "string"
+        },
+        "ID": {
+            "type": "string",
+            "readOnly": true
+        },
+        "PackageID": {
+            "type": "string"
+        },
+        "Name": {
+            "type": "string"
+        },
+        "Properties": {
+            "type": "string"
+        }
+    }
+}

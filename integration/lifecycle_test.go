@@ -1,136 +1,134 @@
 package integration
 
 import (
+	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func init() {
-	client = initTest()
+func TestLifecycleGet(t *testing.T) {
+	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
+	assert.NotNil(t, client)
+	require.NoError(t, err)
+
+	lifecycle, err := client.Lifecycles.GetByID("Lifecycles-41")
+	assert.NotNil(t, lifecycle)
+	require.NoError(t, err)
+
+	assert.Equal(t, "Test", lifecycle.Name)
+	assert.Equal(t, 2, len(lifecycle.Phases))
+
+	phase0 := lifecycle.Phases[0]
+	assert.Equal(t, "A", phase0.Name)
+	assert.Equal(t, int32(1), phase0.MinimumEnvironmentsBeforePromotion)
+	assert.Equal(t, true, phase0.IsOptionalPhase)
+	assert.Equal(t, 1, len(phase0.AutomaticDeploymentTargets))
+	assert.Equal(t, "Environments-2", phase0.AutomaticDeploymentTargets[0])
+	assert.Equal(t, 1, len(phase0.OptionalDeploymentTargets))
+	assert.Equal(t, "Environments-1", phase0.OptionalDeploymentTargets[0])
+	assert.Equal(t, octopusdeploy.RetentionUnitDays, phase0.ReleaseRetentionPolicy.Unit)
+	assert.Equal(t, int32(1), phase0.ReleaseRetentionPolicy.QuantityToKeep)
+	assert.Equal(t, false, phase0.ReleaseRetentionPolicy.ShouldKeepForever)
+	assert.Equal(t, octopusdeploy.RetentionUnitItems, phase0.TentacleRetentionPolicy.Unit)
+	assert.Equal(t, int32(0), phase0.TentacleRetentionPolicy.QuantityToKeep)
+	assert.Equal(t, true, phase0.TentacleRetentionPolicy.ShouldKeepForever)
+
+	assert.Equal(t, (*octopusdeploy.RetentionPeriod)(nil), lifecycle.Phases[1].ReleaseRetentionPolicy)
+	assert.Equal(t, (*octopusdeploy.RetentionPeriod)(nil), lifecycle.Phases[1].TentacleRetentionPolicy)
+
+	assert.Equal(t, octopusdeploy.RetentionUnitDays, lifecycle.ReleaseRetentionPolicy.Unit)
+	assert.Equal(t, int32(3), lifecycle.ReleaseRetentionPolicy.QuantityToKeep)
+	assert.Equal(t, false, lifecycle.ReleaseRetentionPolicy.ShouldKeepForever)
+	assert.Equal(t, octopusdeploy.RetentionUnitItems, lifecycle.TentacleRetentionPolicy.Unit)
+	assert.Equal(t, int32(2), lifecycle.TentacleRetentionPolicy.QuantityToKeep)
+	assert.Equal(t, false, lifecycle.TentacleRetentionPolicy.ShouldKeepForever)
 }
 
-func TestLifecycleAddAndDelete(t *testing.T) {
-	lifecycleName := getRandomName()
-	expected := getTestLifecycle(lifecycleName)
-	actual := createTestLifecycle(t, lifecycleName)
+const getLifecycleResponseJSON = `
+{
+  "Id": "Lifecycles-41",
+  "Phases": [
+    {
+      "Id": "61e30a4b-3bdb-4eff-8995-805de61da9ff",
+      "Name": "A",
+      "AutomaticDeploymentTargets": [
+	    "Environments-2"
+      ],
+      "OptionalDeploymentTargets": [
+        "Environments-1"
+      ],
+      "MinimumEnvironmentsBeforePromotion": 1,
+      "IsOptionalPhase": true,
+      "ReleaseRetentionPolicy": {
+        "Unit": "Days",
+        "QuantityToKeep": 1,
+        "ShouldKeepForever": false
+      },
+      "TentacleRetentionPolicy": {
+        "Unit": "Items",
+        "QuantityToKeep": 0,
+        "ShouldKeepForever": true
+      }
+    },
+    {
+      "Id": "670920c6-1065-4207-8d15-2c5d7947e795",
+      "Name": "B",
+      "AutomaticDeploymentTargets": [],
+      "OptionalDeploymentTargets": [],
+      "MinimumEnvironmentsBeforePromotion": 0,
+      "IsOptionalPhase": false,
+      "ReleaseRetentionPolicy": null,
+      "TentacleRetentionPolicy": null
+    }
+  ],
+  "Name": "Test",
+  "ReleaseRetentionPolicy": {
+    "Unit": "Days",
+    "QuantityToKeep": 3,
+    "ShouldKeepForever": false
+  },
+  "TentacleRetentionPolicy": {
+    "Unit": "Items",
+    "QuantityToKeep": 2,
+    "ShouldKeepForever": false
+  },
+  "Description": "",
+  "Links": {
+    "Self": "/api/lifecycles/Lifecycles-41",
+    "Preview": "/api/lifecycles/Lifecycles-41/preview",
+    "Projects": "/api/lifecycles/Lifecycles-41/projects"
+  }
+}`
 
-	defer cleanLifecycle(t, actual.ID)
-
-	assert.Equal(t, expected.Name, actual.Name, "lifecycle name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "lifecycle doesn't contain an ID from the octopus server")
-}
-
-func TestLifecycleAddGetAndDelete(t *testing.T) {
-	lifecycle := createTestLifecycle(t, getRandomName())
-	defer cleanLifecycle(t, lifecycle.ID)
-
-	getLifecycle, err := client.Lifecycle.Get(lifecycle.ID)
-	assert.Nil(t, err, "there was an error raised getting lifecycle when there should not be")
-	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
-}
-
-func TestLifecycleGetThatDoesNotExist(t *testing.T) {
-	lifecycleID := "there-is-no-way-this-lifecycle-id-exists-i-hope"
-	expected := octopusdeploy.ErrItemNotFound
-	lifecycle, err := client.Lifecycle.Get(lifecycleID)
-
-	assert.Error(t, err, "there should have been an error raised as this lifecycle should not be found")
-	assert.Equal(t, expected, err, "a item not found error should have been raised")
-	assert.Nil(t, lifecycle, "no lifecycle should have been returned")
-}
-
-func TestLifecycleGetAll(t *testing.T) {
-	// create many lifecycles to test pagination
-	lifecyclesToCreate := 32
-	sum := 0
-	for i := 0; i < lifecyclesToCreate; i++ {
-		lifecycle := createTestLifecycle(t, getRandomName())
-		defer cleanLifecycle(t, lifecycle.ID)
-		sum += i
+func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
+	lifecycle := &octopusdeploy.Lifecycle{
+		Name: "My Lifecycle",
+		Phases: []octopusdeploy.Phase{
+			octopusdeploy.Phase{
+				Name: "My Phase",
+			},
+		},
 	}
 
-	allLifecycles, err := client.Lifecycle.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all lifecycles failed when it shouldn't: %s", err)
-	}
-
-	numberOfLifecycles := len(*allLifecycles)
-
-	// check there are greater than or equal to the amount of lifecycles requested to be created, otherwise pagination isn't working
-	if numberOfLifecycles < lifecyclesToCreate {
-		t.Fatalf("There should be at least %d lifecycles created but there was only %d. Pagination is likely not working.", lifecyclesToCreate, numberOfLifecycles)
-	}
-
-	additionalLifecycle := createTestLifecycle(t, getRandomName())
-	defer cleanLifecycle(t, additionalLifecycle.ID)
-
-	allLifecyclesAfterCreatingAdditional, err := client.Lifecycle.GetAll()
-	if err != nil {
-		t.Fatalf("Retrieving all lifecycles failed when it shouldn't: %s", err)
-	}
-
-	assert.Nil(t, err, "error when looking for lifecycle when not expected")
-	assert.Equal(t, len(*allLifecyclesAfterCreatingAdditional), numberOfLifecycles+1, "created an additional lifecycle and expected number of lifecycles to increase by 1")
+	assert.NoError(t, lifecycle.Validate())
 }
 
-func TestLifecycleUpdate(t *testing.T) {
-	lifecycle := createTestLifecycle(t, getRandomName())
-	defer cleanLifecycle(t, lifecycle.ID)
-
-	newLifecycleName := getRandomName()
-	const newDescription = "this should be updated"
-	// const newSkipMachineBehavior = "SkipUnavailableMachines"
-
-	lifecycle.Name = newLifecycleName
-	lifecycle.Description = newDescription
-
-	updatedLifecycle, err := client.Lifecycle.Update(&lifecycle)
-	assert.Nil(t, err, "error when updating lifecycle")
-	assert.Equal(t, newLifecycleName, updatedLifecycle.Name, "lifecycle name was not updated")
-	assert.Equal(t, newDescription, updatedLifecycle.Description, "lifecycle description was not updated")
+func TestValidateLifecycleValuesMissingNameFails(t *testing.T) {
+	lifecycle := &octopusdeploy.Lifecycle{}
+	assert.Error(t, lifecycle.Validate())
 }
 
-func TestLifecycleGetByName(t *testing.T) {
-	lifecycle := createTestLifecycle(t, getRandomName())
-	defer cleanLifecycle(t, lifecycle.ID)
+func TestValidateLifecycleValuesPhaseWithMissingNameFails(t *testing.T) {
 
-	foundLifecycle, err := client.Lifecycle.GetByName(lifecycle.Name)
-	assert.Nil(t, err, "error when looking for lifecycle when not expected")
-	assert.Equal(t, lifecycle.Name, foundLifecycle.Name, "lifecycle not found when searching by its name")
-}
-
-func createTestLifecycle(t *testing.T, lifecycleName string) octopusdeploy.Lifecycle {
-	p := getTestLifecycle(lifecycleName)
-	createdLifecycle, err := client.Lifecycle.Add(&p)
-
-	if err != nil {
-		t.Fatalf("creating lifecycle %s failed when it shouldn't: %s", lifecycleName, err)
+	lifecycle := &octopusdeploy.Lifecycle{
+		Name: "My Lifecycle",
+		Phases: []octopusdeploy.Phase{
+			octopusdeploy.Phase{},
+		},
 	}
 
-	return *createdLifecycle
-}
-
-func getTestLifecycle(lifecycleName string) octopusdeploy.Lifecycle {
-	p := octopusdeploy.NewLifecycle(lifecycleName)
-
-	return *p
-}
-
-func cleanLifecycle(t *testing.T, lifecycleID string) {
-	err := client.Lifecycle.Delete(lifecycleID)
-
-	if err == nil {
-		return
-	}
-
-	if err == octopusdeploy.ErrItemNotFound {
-		return
-	}
-
-	if err != nil {
-		t.Fatalf("deleting lifecycle failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	assert.Error(t, lifecycle.Validate())
 }

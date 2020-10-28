@@ -1,163 +1,44 @@
 package octopusdeploy
 
 import (
-	"fmt"
-	"net/url"
-
-	"gopkg.in/go-playground/validator.v9"
-
-	"github.com/dghubble/sling"
+	"github.com/go-playground/validator/v10"
 )
 
-type LibraryVariableSetService struct {
-	sling *sling.Sling
-}
-
-func NewLibraryVariableSetService(sling *sling.Sling) *LibraryVariableSetService {
-	return &LibraryVariableSetService{
-		sling: sling,
-	}
-}
-
 type LibraryVariableSets struct {
-	Items []LibraryVariableSet `json:"Items"`
+	Items []*LibraryVariableSet `json:"Items"`
 	PagedResults
 }
 
 type LibraryVariableSet struct {
-	ID            string                    `json:"Id,omitempty"`
-	Name          string                    `json:"Name" validate:"required"`
-	Description   string                    `json:"Description,omitempty"`
-	VariableSetID string                    `json:"VariableSetID,omitempty"`
-	ContentType   VariableSetContentType    `json:"ContentType" validate:"required"`
-	Templates     []ActionTemplateParameter `json:"Templates,omitempty"`
+	ContentType   string                     `json:"ContentType" validate:"required,oneof=ScriptModule Variables"`
+	Description   string                     `json:"Description,omitempty"`
+	Name          string                     `json:"Name" validate:"required"`
+	SpaceID       string                     `json:"SpaceId,omitempty"`
+	Templates     []*ActionTemplateParameter `json:"Templates,omitempty"`
+	VariableSetID string                     `json:"VariableSetId,omitempty"`
+
+	resource
 }
-
-type VariableSetContentType string
-
-const (
-	VariableSetContentTypeVariables    = VariableSetContentType("Variables")
-	VariableSetContentTypeScriptModule = VariableSetContentType("ScriptModule")
-)
 
 func NewLibraryVariableSet(name string) *LibraryVariableSet {
 	return &LibraryVariableSet{
+		ContentType: "Variables",
 		Name:        name,
-		ContentType: VariableSetContentTypeVariables,
+		resource:    *newResource(),
 	}
 }
 
-// ValidateLibraryVariableSetValues checks the values of a LibraryVariableSet object to see if they are suitable for
-// sending to Octopus Deploy. Used when adding or updating libraryVariableSets.
+// ValidateLibraryVariableSetValues checks the values of a library variable set
+// to see if they are suitable for sending to Octopus Deploy. Used when adding
+// or updating library variable sets.
 func ValidateLibraryVariableSetValues(LibraryVariableSet *LibraryVariableSet) error {
 	validate := validator.New()
 	err := validate.Struct(LibraryVariableSet)
 	return err
 }
 
-// Get returns a single LibraryVariableSet by its Id in Octopus Deploy
-func (s *LibraryVariableSetService) Get(libraryVariableSetID string) (*LibraryVariableSet, error) {
-	path := fmt.Sprintf("libraryVariableSets/%s", libraryVariableSetID)
-	resp, err := apiGet(s.sling, new(LibraryVariableSet), path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*LibraryVariableSet), nil
-}
-
-// GetAll returns all libraryVariableSets in Octopus Deploy
-func (s *LibraryVariableSetService) GetAll() (*[]LibraryVariableSet, error) {
-	return s.get("")
-}
-
-func (s *LibraryVariableSetService) get(query string) (*[]LibraryVariableSet, error) {
-	var p []LibraryVariableSet
-
-	path := "libraryvariablesets?take=2147483647"
-	if query != "" {
-		path = fmt.Sprintf("%s&%s", path, query)
-	}
-
-	loadNextPage := true
-
-	for loadNextPage { // Older Octopus Servers do not accept the take parameter, so the only choice is to page through them
-		resp, err := apiGet(s.sling, new(LibraryVariableSets), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*LibraryVariableSets)
-
-		p = append(p, r.Items...)
-
-		path, loadNextPage = LoadNextPage(r.PagedResults)
-	}
-
-	return &p, nil
-}
-
-// GetByName gets an existing Library Variable Set by its name in Octopus Deploy
-func (s *LibraryVariableSetService) GetByName(name string) (*LibraryVariableSet, error) {
-	var foundLibraryVariableSet LibraryVariableSet
-	libraryVariableSets, err := s.get(fmt.Sprintf("partialName=%s", url.PathEscape(name)))
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, libraryVariableSet := range *libraryVariableSets {
-		if libraryVariableSet.Name == name {
-			return &libraryVariableSet, nil
-		}
-	}
-
-	return &foundLibraryVariableSet, fmt.Errorf("no Library Variable Set found with name %s", name)
-}
-
-// Add adds an new libraryVariableSet in Octopus Deploy
-func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) (*LibraryVariableSet, error) {
-	err := ValidateLibraryVariableSetValues(libraryVariableSet)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiAdd(s.sling, libraryVariableSet, new(LibraryVariableSet), "libraryVariableSets")
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*LibraryVariableSet), nil
-}
-
-// Delete deletes an existing libraryVariableSet in Octopus Deploy
-func (s *LibraryVariableSetService) Delete(libraryVariableSetID string) error {
-	path := fmt.Sprintf("libraryVariableSets/%s", libraryVariableSetID)
-	err := apiDelete(s.sling, path)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Update updates an existing libraryVariableSet in Octopus Deploy
-func (s *LibraryVariableSetService) Update(libraryVariableSet *LibraryVariableSet) (*LibraryVariableSet, error) {
-	err := ValidateLibraryVariableSetValues(libraryVariableSet)
-	if err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf("libraryVariableSets/%s", libraryVariableSet.ID)
-	resp, err := apiUpdate(s.sling, libraryVariableSet, new(LibraryVariableSet), path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*LibraryVariableSet), nil
+// Validate checks the state of the library variable set and returns an error
+// if invalid.
+func (l LibraryVariableSet) Validate() error {
+	return validator.New().Struct(l)
 }

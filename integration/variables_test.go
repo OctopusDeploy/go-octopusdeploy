@@ -5,27 +5,40 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func init() {
-	client = initTest()
-}
-
 func TestVarAddAndDelete(t *testing.T) {
-	varProj := createVarTestProject(t, getRandomName())
-	defer cleanProject(t, varProj.ID)
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
 	varName := getRandomVarName()
 	expected := getTestVariable(varName)
-	actual := createTestVariable(t, varProj.ID, varName)
-	defer cleanVar(t, actual.ID, varProj.ID)
+	actual := createTestVariable(t, project.GetID(), varName)
+	defer cleanVar(t, client, actual.GetID(), project.GetID())
 
 	assert.Equal(t, expected.Name, actual.Name, "variable name doesn't match expected")
-	assert.NotEmpty(t, actual.ID, "variable doesn't contain an ID from the octopus server")
+	assert.NotEmpty(t, actual.GetID(), "variable doesn't contain an ID from the octopus server")
 }
 
 func createTestVariable(t *testing.T, projectID, variableName string) octopusdeploy.Variable {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
 	v := getTestVariable(variableName)
-	variableSet, err := client.Variable.AddSingle(projectID, &v)
+	variableSet, err := client.Variables.AddSingle(projectID, &v)
 	if err != nil {
 		t.Fatalf("creating variable %s failed when it shouldn't: %s", variableName, err)
 	}
@@ -46,25 +59,12 @@ func getTestVariable(variableName string) octopusdeploy.Variable {
 	return *v
 }
 
-func createVarTestProject(t *testing.T, projectName string) octopusdeploy.Project {
-	p := octopusdeploy.NewProject(projectName, "Lifecycles-1", "ProjectGroups-1")
-	createdProject, err := client.Project.Add(p)
+func cleanVar(t *testing.T, octopusClient *octopusdeploy.Client, varID string, projID string) {
+	if octopusClient == nil {
+		octopusClient = getOctopusClient()
+	}
+	require.NotNil(t, octopusClient)
 
-	if err != nil {
-		t.Fatalf("creating project %s failed when it shouldn't: %s", projectName, err)
-	}
-
-	return *createdProject
-}
-func cleanVar(t *testing.T, varID string, projID string) {
-	_, err := client.Variable.DeleteSingle(projID, varID)
-	if err == nil {
-		return
-	}
-	if err == octopusdeploy.ErrItemNotFound {
-		return
-	}
-	if err != nil {
-		t.Fatalf("deleting variable failed when it shouldn't. manual cleanup may be needed. (%s)", err.Error())
-	}
+	_, err := octopusClient.Variables.DeleteSingle(projID, varID)
+	assert.NoError(t, err)
 }

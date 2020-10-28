@@ -1,0 +1,65 @@
+{
+    "$id": "https://octopus.com/2020/action-template",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "title": "Action Template",
+    "description": "Represents an action template",
+    "type": "object",
+    "required": [ "id", "name" ],
+    "properties": {
+        "id": {
+            "description": "Unique identifier of the action template",
+            "type": "string"
+        },
+        "name": {
+            "description": "Name of the action template",
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "actionType": {
+            "type": "string"
+        },
+        "version": {
+            "minimum": 0,
+            "type": "integer"
+        },
+        "communityActionTemplateID": {
+            "type": ["string", "null"]
+        },
+        "packages": {
+            "type": "array",
+            "items": {
+                "$ref": "package_reference.json"
+            }
+        },
+        "properties": {
+            "type": "object",
+            "$ref": "property_value.json",
+            "readOnly": true
+        },
+        "parameters": {
+            "type": "array",
+            "items": {
+                "$ref": "action_template_parameter.json"
+            },
+            "readOnly": true
+        },
+        "spaceID": {
+            "type": "string"
+        },
+        "lastModifiedOn": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "lastModifiedBy": {
+            "type": "string"
+        },
+        "links": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        }
+    }
+}

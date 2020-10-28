@@ -1,139 +1,31 @@
 package octopusdeploy
 
-import (
-	"fmt"
-
-	"github.com/dghubble/sling"
-	"github.com/go-playground/validator"
-)
-
-type UserService struct {
-	sling *sling.Sling
-}
-
-func NewUserService(sling *sling.Sling) *UserService {
-	return &UserService{
-		sling: sling,
-	}
-}
-
+// Users defines a collection of users with built-in support for paged results.
 type Users struct {
-	Items []User `json:"Items"`
+	Items []*User `json:"Items"`
 	PagedResults
 }
 
+// User represents a user in Octopus.
 type User struct {
-	Username            string     `json:"Username,omitempty"`
-	DisplayName         string     `json:"DisplayName"`
-	IsActive            bool       `json:"IsActive"`
-	IsService           bool       `json:"IsService"`
+	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited,omitempty"`
+	DisplayName         string     `json:"DisplayName,omitempty"`
 	EmailAddress        string     `json:"EmailAddress,omitempty"`
-	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited"`
-	IsRequestor         bool       `json:"IsRequestor"`
-	Password            string     `json:"Password,omitempty"`
 	Identities          []Identity `json:"Identities,omitempty"`
-	Resource
+	IsActive            bool       `json:"IsActive,omitempty"`
+	IsRequestor         bool       `json:"IsRequestor,omitempty"`
+	IsService           bool       `json:"IsService,omitempty"`
+	Password            string     `json:"Password,omitempty" validate:"max=20"`
+	Username            string     `json:"Username,omitempty"`
+
+	resource
 }
 
-func (t *User) Validate() error {
-	validate := validator.New()
-
-	err := validate.Struct(t)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func NewUser(username, displayName string) *User {
+// NewUser initializes a user with an username and a display name.
+func NewUser(username string, displayName string) *User {
 	return &User{
-		Username:    username,
 		DisplayName: displayName,
+		Username:    username,
+		resource:    *newResource(),
 	}
-}
-
-func (s *UserService) Get(userid string) (*User, error) {
-	path := fmt.Sprintf("Users/%s", userid)
-	resp, err := apiGet(s.sling, new(User), path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*User), nil
-}
-
-func (s *UserService) GetAll() (*[]User, error) {
-	var p []User
-
-	path := "users"
-
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.sling, new(Users), path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		r := resp.(*Users)
-
-		p = append(p, r.Items...)
-
-		path, loadNextPage = LoadNextPage(r.PagedResults)
-	}
-
-	return &p, nil
-}
-
-func (s *UserService) GetByName(username string) (*User, error) {
-	var foundUser User
-	Users, err := s.GetAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, user := range *Users {
-		if user.Username == username {
-			return &user, nil
-		}
-	}
-
-	return &foundUser, fmt.Errorf("no User found with User name %s", username)
-}
-
-func (s *UserService) Add(user *User) (*User, error) {
-	resp, err := apiAdd(s.sling, user, new(User), "users")
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*User), nil
-}
-
-func (s *UserService) Delete(userid string) error {
-	path := fmt.Sprintf("Users/%s", userid)
-	err := apiDelete(s.sling, path)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *UserService) Update(user *User) (*User, error) {
-	path := fmt.Sprintf("Users/%s", user.ID)
-	resp, err := apiUpdate(s.sling, user, new(User), path)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*User), nil
 }
