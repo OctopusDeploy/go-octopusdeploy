@@ -12,7 +12,6 @@ import (
 func getOctopusClient() *octopusdeploy.Client {
 	octopusURL := os.Getenv("OCTOPUS_URL")
 	apiKey := os.Getenv("OCTOPUS_APIKEY")
-	//apiKey := "API-6PSADIMEO7LP4YO9JSHJMMV44Y"
 
 	if isEmpty(octopusURL) || isEmpty(apiKey) {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
