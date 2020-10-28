@@ -73,7 +73,7 @@ func DeleteTestChannel(t *testing.T, client *octopusdeploy.Client, channel *octo
 	require.NotNil(t, client)
 
 	err := client.Channels.DeleteByID(channel.GetID())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// verify the delete operation was successful
 	deletedChannel, err := client.Channels.GetByID(channel.GetID())
@@ -116,7 +116,9 @@ func TestChannelServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, channels)
 
 	for _, channel := range channels {
-		defer DeleteTestChannel(t, client, channel)
+		if !channel.IsDefault {
+			defer DeleteTestChannel(t, client, channel)
+		}
 	}
 }
 
@@ -206,6 +208,16 @@ func TestChannelServiceGetByID(t *testing.T) {
 	assert.NotNil(t, channels)
 
 	for _, channel := range channels {
+		name := channel.Name
+		query := octopusdeploy.ChannelsQuery{
+			PartialName: name,
+			Take:        1,
+		}
+		namedChannels, err := client.Channels.Get(query)
+		require.NoError(t, err)
+		require.NotNil(t, namedChannels)
+		AssertEqualChannels(t, channel, namedChannels.Items[0])
+
 		channelToCompare, err := client.Channels.GetByID(channel.GetID())
 		assert.NoError(t, err)
 		AssertEqualChannels(t, channel, channelToCompare)
