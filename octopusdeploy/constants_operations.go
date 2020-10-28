@@ -27,5 +27,6 @@ const (
 	OperationGetSummary              string = "GetSummary"
 	OperationInstall                 string = "Install"
 	OperationReplace                 string = "Replace"
+	OperationSearchPackages          string = "SearchPackages"
 	OperationUpdate                  string = "Update"
 )
