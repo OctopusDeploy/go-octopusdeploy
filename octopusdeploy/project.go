@@ -4,11 +4,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Projects struct {
-	Items []*Project `json:"Items"`
-	PagedResults
-}
-
 type Project struct {
 	AutoCreateRelease               bool                         `json:"AutoCreateRelease"`
 	AutoDeployReleaseOverrides      []*AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides,omitempty"`
@@ -38,6 +33,11 @@ type Project struct {
 	VersioningStrategy              VersioningStrategy           `json:"VersioningStrategy"`
 
 	resource
+}
+
+type Projects struct {
+	Items []*Project `json:"Items"`
+	PagedResults
 }
 
 func NewProject(name, lifeCycleID, projectGroupID string) *Project {
@@ -72,7 +72,6 @@ func (resource Project) Validate() error {
 	}
 
 	return ValidateMultipleProperties([]error{
-		ValidatePropertyValues("SkipMachineBehavior", resource.ProjectConnectivityPolicy.SkipMachineBehavior, ValidProjectConnectivityPolicySkipMachineBehaviors),
 		ValidatePropertyValues("DefaultGuidedFailureMode", resource.DefaultGuidedFailureMode, ValidProjectDefaultGuidedFailureModes),
 		ValidateRequiredPropertyValue("LifecycleID", resource.LifecycleID),
 		ValidateRequiredPropertyValue("Name", resource.Name),

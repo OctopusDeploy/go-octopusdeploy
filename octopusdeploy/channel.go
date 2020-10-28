@@ -7,13 +7,6 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// Channels defines a collection of channels with built-in support for paged
-// results.
-type Channels struct {
-	Items []*Channel `json:"Items"`
-	PagedResults
-}
-
 type Channel struct {
 	Description string        `json:"Description,omitempty"`
 	IsDefault   bool          `json:"IsDefault"`
@@ -24,6 +17,13 @@ type Channel struct {
 	TenantTags  []string      `json:"TenantTags,omitempty"`
 
 	resource
+}
+
+// Channels defines a collection of channels with built-in support for paged
+// results.
+type Channels struct {
+	Items []*Channel `json:"Items"`
+	PagedResults
 }
 
 func NewChannel(name string, description string, projectID string) *Channel {

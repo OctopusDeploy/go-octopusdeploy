@@ -2,11 +2,6 @@ package octopusdeploy
 
 import "time"
 
-type Packages struct {
-	Items []*Package `json:"Items"`
-	PagedResults
-}
-
 type Package struct {
 	Description      string            `json:"Description,omitempty"`
 	FeedID           string            `json:"FeedId,omitempty"`
@@ -21,6 +16,11 @@ type Package struct {
 	Version          string            `json:"Version,omitempty"`
 
 	resource
+}
+
+type Packages struct {
+	Items []*Package `json:"Items"`
+	PagedResults
 }
 
 func NewPackage() *Package {

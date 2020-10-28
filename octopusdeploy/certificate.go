@@ -4,11 +4,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type CertificateResources struct {
-	Items []*CertificateResource `json:"Items"`
-	PagedResults
-}
-
 type CertificateResource struct {
 	Archived                 string                 `json:"Archived,omitempty"`
 	CertificateData          *SensitiveValue        `json:"CertificateData,omitempty" validate:"required"`
@@ -39,6 +34,11 @@ type CertificateResource struct {
 	Version                  int                    `json:"Version,omitempty"`
 
 	resource
+}
+
+type CertificateResources struct {
+	Items []*CertificateResource `json:"Items"`
+	PagedResults
 }
 
 // NewCertificateResource initializes a certificate resource with a name and
