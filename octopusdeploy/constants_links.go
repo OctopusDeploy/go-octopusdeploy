@@ -96,6 +96,7 @@ const (
 	linkScheduledProjectTriggers          string = "ScheduledProjectTriggers"
 	linkScheduler                         string = "Scheduler"
 	linkScopedUserRoles                   string = "ScopedUserRoles"
+	linkSearchPackagesTemplate            string = "SearchPackagesTemplate"
 	linkSelf                              string = "Self"
 	linkServerConfiguration               string = "ServerConfiguration"
 	linkServerConfigurationSettings       string = "ServerConfigurationSettings"
