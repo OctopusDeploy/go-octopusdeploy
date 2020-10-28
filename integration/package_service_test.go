@@ -35,11 +35,11 @@ func CreateTestPackage(t *testing.T, client *octopusdeploy.Client) *octopusdeplo
 	require.NotNil(t, octopusPackage)
 	require.NoError(t, octopusPackage.Validate())
 
-	resource, err := client.Packages.Upload(packageBytes)
-	require.NoError(t, err)
-	require.NotNil(t, resource)
+	// resource, err := client.Packages.Upload(packageBytes)
+	// require.NoError(t, err)
+	// require.NotNil(t, resource)
 
-	return resource
+	return octopusPackage
 }
 
 func DeleteTestPackage(t *testing.T, client *octopusdeploy.Client, octopusPackage *octopusdeploy.Package) {
@@ -73,14 +73,6 @@ func UpdatePackage(t *testing.T, client *octopusdeploy.Client, octopusPackage *o
 func TestPackageServiceAdd(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
-
-	resource, err := client.Packages.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(octopusdeploy.OperationAdd, octopusdeploy.ParameterResource))
-	require.Nil(t, resource)
-
-	resource, err = client.Packages.Add(&octopusdeploy.Package{})
-	require.Error(t, err)
-	require.Nil(t, resource)
 
 	octopusPackage := CreateTestPackage(t, client)
 	defer DeleteTestPackage(t, client, octopusPackage)
