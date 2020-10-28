@@ -3,7 +3,6 @@ package octopusdeploy
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 )
 
 type channelService struct {
@@ -57,20 +56,26 @@ func (s channelService) Add(resource *Channel) (*Channel, error) {
 // Get returns a collection of channels based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s channelService) Get(channelsQuery ChannelsQuery) (*Channels, error) {
-	v, _ := query.Values(channelsQuery)
-	path := s.BasePath
-	encodedQueryString := v.Encode()
-	if len(encodedQueryString) > 0 {
-		path += "?" + encodedQueryString
-	}
-
-	resp, err := apiGet(s.getClient(), new(Channels), path)
+func (s channelService) Get(channelsQuery ...ChannelsQuery) (*Channels, error) {
+	values := make(map[string]interface{})
+	path, err := s.URITemplate.Expand(values)
 	if err != nil {
 		return &Channels{}, err
 	}
 
-	return resp.(*Channels), nil
+	if channelsQuery != nil {
+		path, err = s.URITemplate.Expand(channelsQuery[0])
+		if err != nil {
+			return &Channels{}, err
+		}
+	}
+
+	response, err := apiGet(s.getClient(), new(Channels), path)
+	if err != nil {
+		return &Channels{}, err
+	}
+
+	return response.(*Channels), nil
 }
 
 // GetAll returns all channels. If none can be found or an error occurs, it
