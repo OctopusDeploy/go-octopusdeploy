@@ -8,12 +8,12 @@ type Tenants struct {
 }
 
 type Tenant struct {
-	Name                string              `json:"Name" validate:"required"`
-	TenantTags          []string            `json:"TenantTags,omitempty"`
-	ProjectEnvironments map[string][]string `json:"ProjectEnvironments,omitempty"`
-	SpaceID             string              `json:"SpaceId"`
 	ClonedFromTenantID  string              `json:"ClonedFromTenantId"`
 	Description         string              `json:"Description"`
+	Name                string              `json:"Name" validate:"required"`
+	ProjectEnvironments map[string][]string `json:"ProjectEnvironments,omitempty"`
+	SpaceID             string              `json:"SpaceId"`
+	TenantTags          []string            `json:"TenantTags,omitempty"`
 
 	resource
 }
