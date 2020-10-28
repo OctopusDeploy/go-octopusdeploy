@@ -55,7 +55,7 @@ func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.Client) 
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewGitHubRepositoryFeed(getRandomName(), "http://example.com/")
+	feed := octopusdeploy.NewGitHubRepositoryFeed(getRandomName())
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -69,7 +69,7 @@ func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.Client) octopusdeplo
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewHelmFeed(getRandomName(), "http://example.com/")
+	feed := octopusdeploy.NewHelmFeed(getRandomName())
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -83,7 +83,7 @@ func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.Client) octopusdepl
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewMavenFeed(getRandomName(), "http://example.com/")
+	feed := octopusdeploy.NewMavenFeed(getRandomName())
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -97,7 +97,7 @@ func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.Client) octopusdepl
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewNuGetFeed(getRandomName(), "http://example.com/")
+	feed := octopusdeploy.NewNuGetFeed(getRandomName(), "https://api.nuget.org/v3/index.json")
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -150,15 +150,67 @@ func TestFeedServiceAdd(t *testing.T) {
 	defer DeleteTestFeed(t, client, feed)
 }
 
-func TestFeedServiceAddGetDelete(t *testing.T) {
+func TestFeedServiceCRUD(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	expected := CreateTestNuGetFeed(t, client)
+	expected := CreateTestGitHubRepositoryFeed(t, client)
 	require.NotNil(t, expected)
 	defer DeleteTestFeed(t, client, expected)
 
 	actual, err := client.Feeds.GetByID(expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name := getRandomName()
+	expected.SetName(name)
+
+	actual, err = client.Feeds.Update(expected)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	expected = CreateTestHelmFeed(t, client)
+	require.NotNil(t, expected)
+	defer DeleteTestFeed(t, client, expected)
+
+	actual, err = client.Feeds.GetByID(expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name = getRandomName()
+	expected.SetName(name)
+
+	actual, err = client.Feeds.Update(expected)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	expected = CreateTestMavenFeed(t, client)
+	require.NotNil(t, expected)
+	defer DeleteTestFeed(t, client, expected)
+
+	actual, err = client.Feeds.GetByID(expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name = getRandomName()
+	expected.SetName(name)
+
+	actual, err = client.Feeds.Update(expected)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	expected = CreateTestNuGetFeed(t, client)
+	require.NotNil(t, expected)
+	defer DeleteTestFeed(t, client, expected)
+
+	actual, err = client.Feeds.GetByID(expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name = getRandomName()
+	expected.SetName(name)
+
+	actual, err = client.Feeds.Update(expected)
 	require.NoError(t, err)
 	AssertEqualFeeds(t, expected, actual)
 }
@@ -182,26 +234,27 @@ func TestFeedServiceGetAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	const count int = 32
-	expected := map[string]octopusdeploy.IFeed{}
+	count := 10
+
 	for i := 0; i < count; i++ {
 		feed := CreateTestNuGetFeed(t, client)
 		require.NotNil(t, feed)
 		defer DeleteTestFeed(t, client, feed)
-		expected[feed.GetID()] = feed
 	}
 
 	feeds, err := client.Feeds.GetAll()
 	require.NotNil(t, feeds)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(feeds), count)
+}
 
-	for _, actual := range feeds {
-		_, ok := expected[actual.GetID()]
-		if ok {
-			AssertEqualFeeds(t, expected[actual.GetID()], actual)
-		}
-	}
+func TestFeedServiceGetBuiltInFeedStatistics(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	builtInFeedStatistics, err := client.Feeds.GetBuiltInFeedStatistics()
+	require.NotNil(t, builtInFeedStatistics)
+	require.NoError(t, err)
 }
 
 func TestFeedServiceGetByID(t *testing.T) {
@@ -212,4 +265,22 @@ func TestFeedServiceGetByID(t *testing.T) {
 	feed, err := client.Feeds.GetByID(id)
 	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceFeedService, "ID", id), err)
 	require.Nil(t, feed)
+}
+
+func TestFeedServiceSearchPackages(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	feed := CreateTestGitHubRepositoryFeed(t, client)
+	require.NotNil(t, feed)
+	defer DeleteTestFeed(t, client, feed)
+
+	searchPackagesQuery := octopusdeploy.SearchPackagesQuery{
+		Term: "ngnix",
+		Take: 10,
+	}
+
+	packageDescriptions, err := client.Feeds.SearchPackages(feed, searchPackagesQuery)
+	require.NotNil(t, packageDescriptions)
+	require.NoError(t, err)
 }

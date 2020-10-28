@@ -114,6 +114,19 @@ func TestProjectAddGetDelete(t *testing.T) {
 	defer DeleteTestProject(t, client, project)
 }
 
+func TestProjectServiceDeleteAll(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	projects, err := client.Projects.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, projects)
+
+	for _, project := range projects {
+		defer DeleteTestProject(t, client, project)
+	}
+}
+
 func TestProjectGetThatDoesNotExist(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
@@ -189,8 +202,8 @@ func TestProjectUpdate(t *testing.T) {
 	defer DeleteTestProject(t, client, project)
 
 	newProjectName := getRandomName()
-	const newDescription = "this should be updated"
-	const newSkipMachineBehavior = "SkipUnavailableMachines"
+	newDescription := getRandomName()
+	newSkipMachineBehavior := octopusdeploy.SkipMachineBehaviorNone
 
 	project.Name = newProjectName
 	project.Description = newDescription
