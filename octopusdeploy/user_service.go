@@ -270,13 +270,17 @@ func (s userService) GetTeams(user *User, userQuery ...UserQuery) (*[]ProjectedT
 }
 
 // Update modifies a user based on the one provided as input.
-func (s userService) Update(resource User) (*User, error) {
-	path, err := getUpdatePath(s, &resource)
+func (s userService) Update(user *User) (*User, error) {
+	if user == nil {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUser)
+	}
+
+	path, err := getUpdatePath(s, user)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(User), path)
+	resp, err := apiUpdate(s.getClient(), user, new(User), path)
 	if err != nil {
 		return nil, err
 	}
