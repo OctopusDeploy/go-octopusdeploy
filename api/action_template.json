@@ -14,18 +14,21 @@
             "description": "Name of the action template",
             "type": "string"
         },
-        "description": {
-            "type": "string"
-        },
         "actionType": {
             "type": "string"
         },
-        "version": {
-            "minimum": 0,
-            "type": "integer"
-        },
         "communityActionTemplateID": {
             "type": ["string", "null"]
+        },
+        "description": {
+            "type": "string"
+        },
+        "lastModifiedBy": {
+            "type": "string"
+        },
+        "lastModifiedOn": {
+            "format": "date-time",
+            "type": "string"
         },
         "packages": {
             "type": "array",
@@ -48,12 +51,9 @@
         "spaceID": {
             "type": "string"
         },
-        "lastModifiedOn": {
-            "format": "date-time",
-            "type": "string"
-        },
-        "lastModifiedBy": {
-            "type": "string"
+        "version": {
+            "minimum": 0,
+            "type": "integer"
         },
         "links": {
             "type": "object",
