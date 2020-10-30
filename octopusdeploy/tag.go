@@ -1,10 +1,10 @@
 package octopusdeploy
 
 type Tag struct {
-	ID               string `json:"Id"`
-	Name             string `json:"Name"`
-	Color            string `json:"Color"`
-	CanonicalTagName string `json:"CanonicalTagName"`
-	Description      string `json:"Description"`
+	ID               string `json:"Id,omitempty"`
+	Name             string `json:"Name,omitempty"`
+	Color            string `json:"Color,omitempty"`
+	CanonicalTagName string `json:"CanonicalTagName,omitempty"`
+	Description      string `json:"Description,omitempty"`
 	SortOrder        int    `json:"SortOrder"`
 }
