@@ -25,12 +25,12 @@ type AccountResource struct {
 	CertificateThumbprint   string                 `json:"CertificateThumbprint,omitempty"`
 	Description             string                 `json:"Description,omitempty"`
 	EnvironmentIDs          []string               `json:"EnvironmentIds,omitempty"`
+	ManagementEndpoint      string                 `json:"ServiceManagementEndpointBaseUri,omitempty"`
 	Name                    string                 `json:"Name" validate:"required,notall"`
 	PrivateKeyFile          *SensitiveValue        `json:"PrivateKeyFile,omitempty"`
 	PrivateKeyPassphrase    *SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
 	ResourceManagerEndpoint string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
 	SecretKey               *SensitiveValue        `json:"SecretKey,omitempty"`
-	ManagementEndpoint      string                 `json:"ServiceManagementEndpointBaseUri,omitempty"`
 	StorageEndpointSuffix   string                 `json:"ServiceManagementEndpointSuffix,omitempty"`
 	SpaceID                 string                 `json:"SpaceId,omitempty"`
 	SubscriptionID          *uuid.UUID             `json:"SubscriptionNumber,omitempty"`
