@@ -4,7 +4,7 @@ import "github.com/jinzhu/copier"
 
 func ToAccount(accountResource *AccountResource) (IAccount, error) {
 	if isNil(accountResource) {
-		return nil, createInvalidParameterError("toAccount", ParameterAccountResource)
+		return nil, createInvalidParameterError("ToAccount", ParameterAccountResource)
 	}
 
 	var account IAccount
