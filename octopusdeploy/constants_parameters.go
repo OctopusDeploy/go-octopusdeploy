@@ -33,6 +33,7 @@ const (
 	ParameterRunbook                string = "runbook"
 	ParameterSecretKey              string = "secretKey"
 	ParameterSling                  string = "sling"
+	ParameterTagSet                 string = "tagSet"
 	ParameterTeam                   string = "team"
 	ParameterToken                  string = "token"
 	ParameterUser                   string = "user"
