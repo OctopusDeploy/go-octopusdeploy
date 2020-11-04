@@ -2,7 +2,6 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
-	"github.com/jinzhu/copier"
 )
 
 // accountService handles communication with account-related methods of the
@@ -19,95 +18,13 @@ func newAccountService(sling *sling.Sling, uriTemplate string) *accountService {
 	return accountService
 }
 
-func toAccount(accountResource *AccountResource) (IAccount, error) {
-	if isNil(accountResource) {
-		return nil, createInvalidParameterError("toAccount", ParameterAccountResource)
-	}
-
-	var account IAccount
-	var err error
-	switch accountResource.GetAccountType() {
-	case AccountTypeAmazonWebServicesAccount:
-		account, err = NewAmazonWebServicesAccount(accountResource.GetName(), accountResource.AccessKey, accountResource.SecretKey)
-		if err != nil {
-			return nil, err
-		}
-	case AccountTypeAzureServicePrincipal:
-		account, err = NewAzureServicePrincipalAccount(accountResource.GetName(), *accountResource.SubscriptionID, *accountResource.TenantID, *accountResource.ApplicationID, accountResource.ApplicationPassword)
-		if err != nil {
-			return nil, err
-		}
-	case AccountTypeAzureSubscription:
-		account, err = NewAzureSubscriptionAccount(accountResource.GetName(), *accountResource.SubscriptionID)
-		if err != nil {
-			return nil, err
-		}
-	case AccountTypeSSHKeyPair:
-		account, err = NewSSHKeyAccount(accountResource.GetName(), accountResource.Username, accountResource.PrivateKeyFile)
-		if err != nil {
-			return nil, err
-		}
-	case AccountTypeToken:
-		account, err = NewTokenAccount(accountResource.GetName(), accountResource.Token)
-		if err != nil {
-			return nil, err
-		}
-	case AccountTypeUsernamePassword:
-		account, err = NewUsernamePasswordAccount(accountResource.GetName())
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	err = copier.Copy(account, accountResource)
-	if err != nil {
-		return nil, err
-	}
-
-	return account, nil
-}
-
-func toAccounts(accountResources *AccountResources) *Accounts {
-	return &Accounts{
-		Items:        toAccountArray(accountResources.Items),
-		PagedResults: accountResources.PagedResults,
-	}
-}
-
-func toAccountResource(account IAccount) (*AccountResource, error) {
-	if isNil(account) {
-		return nil, createInvalidParameterError("toAccountResource", ParameterAccount)
-	}
-
-	accountResource := NewAccountResource(account.GetName(), account.GetAccountType())
-
-	err := copier.Copy(&accountResource, account)
-	if err != nil {
-		return nil, err
-	}
-
-	return accountResource, nil
-}
-
-func toAccountArray(accountResources []*AccountResource) []IAccount {
-	items := []IAccount{}
-	for _, accountResource := range accountResources {
-		account, err := toAccount(accountResource)
-		if err != nil {
-			return nil
-		}
-		items = append(items, account)
-	}
-	return items
-}
-
 // Add creates a new account.
 func (s *accountService) Add(account IAccount) (IAccount, error) {
 	if account == nil {
 		return nil, createInvalidParameterError(OperationAdd, ParameterAccount)
 	}
 
-	accountResource, err := toAccountResource(account)
+	accountResource, err := ToAccountResource(account)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +34,7 @@ func (s *accountService) Add(account IAccount) (IAccount, error) {
 		return nil, err
 	}
 
-	return toAccount(response.(*AccountResource))
+	return ToAccount(response.(*AccountResource))
 }
 
 // Get returns a collection of accounts based on the criteria defined by its
@@ -142,7 +59,7 @@ func (s accountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) {
 		return &Accounts{}, err
 	}
 
-	return toAccounts(response.(*AccountResources)), nil
+	return ToAccounts(response.(*AccountResources)), nil
 }
 
 // GetAll returns all accounts. If none can be found or an error occurs, it
@@ -152,7 +69,7 @@ func (s *accountService) GetAll() ([]IAccount, error) {
 	path := s.BasePath + "/all"
 
 	_, err := apiGet(s.getClient(), &items, path)
-	return toAccountArray(items), err
+	return ToAccountArray(items), err
 }
 
 // GetByID returns the account that matches the input ID. If one cannot be
@@ -193,7 +110,7 @@ func (s *accountService) Update(account IAccount) (IAccount, error) {
 		return nil, err
 	}
 
-	accountResource, err := toAccountResource(account)
+	accountResource, err := ToAccountResource(account)
 	if err != nil {
 		return nil, err
 	}
