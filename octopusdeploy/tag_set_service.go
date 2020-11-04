@@ -90,13 +90,17 @@ func (s tagSetService) GetByName(name string) (*TagSet, error) {
 }
 
 // Update modifies a tag set based on the one provided as input.
-func (s tagSetService) Update(resource TagSet) (*TagSet, error) {
-	path, err := getUpdatePath(s, &resource)
+func (s tagSetService) Update(tagSet *TagSet) (*TagSet, error) {
+	if tagSet == nil {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterTagSet)
+	}
+
+	path, err := getUpdatePath(s, tagSet)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(TagSet), path)
+	resp, err := apiUpdate(s.getClient(), tagSet, new(TagSet), path)
 	if err != nil {
 		return nil, err
 	}
