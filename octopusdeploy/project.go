@@ -40,7 +40,7 @@ type Projects struct {
 	PagedResults
 }
 
-func NewProject(name, lifeCycleID, projectGroupID string) *Project {
+func NewProject(name string, lifeCycleID string, projectGroupID string) *Project {
 	return &Project{
 		DefaultGuidedFailureMode: "EnvironmentDefault",
 		LifecycleID:              lifeCycleID,
