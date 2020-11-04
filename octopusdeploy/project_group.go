@@ -7,7 +7,7 @@ type ProjectGroups struct {
 
 type ProjectGroup struct {
 	Description       string   `json:"Description,omitempty"`
-	EnvironmentIDs    []string `json:"EnvironmentIds"`
+	EnvironmentIDs    []string `json:"EnvironmentIds,omitempty"`
 	Name              string   `json:"Name,omitempty" validate:"required"`
 	RetentionPolicyID string   `json:"RetentionPolicyId,omitempty"`
 
