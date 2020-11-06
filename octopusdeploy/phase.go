@@ -1,12 +1,12 @@
 package octopusdeploy
 
 type Phase struct {
+	AutomaticDeploymentTargets         []string         `json:"AutomaticDeploymentTargets"`
 	ID                                 string           `json:"Id,omitempty"`
-	Name                               string           `json:"Name" validate:"required"`
-	MinimumEnvironmentsBeforePromotion int32            `json:"MinimumEnvironmentsBeforePromotion"`
 	IsOptionalPhase                    bool             `json:"IsOptionalPhase"`
+	MinimumEnvironmentsBeforePromotion int32            `json:"MinimumEnvironmentsBeforePromotion"`
+	Name                               string           `json:"Name" validate:"required"`
+	OptionalDeploymentTargets          []string         `json:"OptionalDeploymentTargets"`
 	ReleaseRetentionPolicy             *RetentionPeriod `json:"ReleaseRetentionPolicy"`
 	TentacleRetentionPolicy            *RetentionPeriod `json:"TentacleRetentionPolicy"`
-	AutomaticDeploymentTargets         []string         `json:"AutomaticDeploymentTargets"`
-	OptionalDeploymentTargets          []string         `json:"OptionalDeploymentTargets"`
 }
