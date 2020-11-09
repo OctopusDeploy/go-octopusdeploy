@@ -15,7 +15,7 @@ var testCert2Data = `MIIOSQIBAzCCDg8GCSqGSIb3DQEHAaCCDgAEgg38MIIN+DCCCK8GCSqGSIb
 const testCert2Thumbprint = `0454EAD1FC6F3F60F22AE82230165C14C4FD7FA7`
 const testCert2Password = `HCWVMo7u`
 
-var testCert1 = &octopusdeploy.SensitiveValue{NewValue: &testCert1Data}
+var testCert1 = &octopusdeploy.SensitiveValue{NewValue: testCert1Data}
 
 // var testCert2 = SensitiveValue{NewValue: &testCert2Data}
 
