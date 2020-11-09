@@ -38,13 +38,17 @@ func (s spaceService) getPagedResponse(path string) ([]*Space, error) {
 }
 
 // Add creates a new space.
-func (s spaceService) Add(resource *Space) (*Space, error) {
-	path, err := getAddPath(s, resource)
+func (s spaceService) Add(space *Space) (*Space, error) {
+	if space == nil {
+		return nil, createInvalidParameterError("Add", "space")
+	}
+
+	path, err := getAddPath(s, space)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(Space), path)
+	resp, err := apiAdd(s.getClient(), space, new(Space), path)
 	if err != nil {
 		return nil, err
 	}
@@ -118,13 +122,17 @@ func (s spaceService) GetByPartialName(name string) ([]*Space, error) {
 }
 
 // Update modifies a space based on the one provided as input.
-func (s spaceService) Update(resource *Space) (*Space, error) {
-	path, err := getUpdatePath(s, resource)
+func (s spaceService) Update(space *Space) (*Space, error) {
+	if space == nil {
+		return nil, createRequiredParameterIsEmptyOrNilError("space")
+	}
+
+	path, err := getUpdatePath(s, space)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(Space), path)
+	resp, err := apiUpdate(s.getClient(), space, new(Space), path)
 	if err != nil {
 		return nil, err
 	}
