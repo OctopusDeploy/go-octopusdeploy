@@ -42,6 +42,10 @@ func (a *account) GetDescription() string {
 	return a.Description
 }
 
+func (a *account) GetEnvironmentIDs() []string {
+	return a.EnvironmentIDs
+}
+
 // GetName returns the name of the account.
 func (a *account) GetName() string {
 	return a.Name
@@ -50,6 +54,18 @@ func (a *account) GetName() string {
 // GetSpaceID returns the space ID of this account.
 func (a *account) GetSpaceID() string {
 	return a.SpaceID
+}
+
+func (a *account) GetTenantedDeploymentMode() TenantedDeploymentMode {
+	return a.TenantedDeploymentMode
+}
+
+func (a *account) GetTenantIDs() []string {
+	return a.TenantIDs
+}
+
+func (a *account) GetTenantTags() []string {
+	return a.TenantTags
 }
 
 // SetDescription sets the description of the account.

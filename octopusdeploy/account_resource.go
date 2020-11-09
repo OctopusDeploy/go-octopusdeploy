@@ -64,6 +64,10 @@ func (a *AccountResource) GetDescription() string {
 	return a.Description
 }
 
+func (a *AccountResource) GetEnvironmentIDs() []string {
+	return a.EnvironmentIDs
+}
+
 // GetName returns the name of this account resource.
 func (a *AccountResource) GetName() string {
 	return a.Name
@@ -72,6 +76,18 @@ func (a *AccountResource) GetName() string {
 // GetSpaceID returns the space ID of this account resource.
 func (a *AccountResource) GetSpaceID() string {
 	return a.SpaceID
+}
+
+func (a *AccountResource) GetTenantedDeploymentMode() TenantedDeploymentMode {
+	return a.TenantedDeploymentMode
+}
+
+func (a *AccountResource) GetTenantIDs() []string {
+	return a.TenantIDs
+}
+
+func (a *AccountResource) GetTenantTags() []string {
+	return a.TenantTags
 }
 
 // SetDescription sets the description of the account resource.
