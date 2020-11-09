@@ -12,11 +12,11 @@ type Lifecycles struct {
 }
 
 type Lifecycle struct {
-	Name                    string          `json:"Name" validate:"required"`
 	Description             string          `json:"Description,omitempty"`
-	SpaceID                 string          `json:"SpaceId,omitempty"`
+	Name                    string          `json:"Name" validate:"required"`
 	Phases                  []Phase         `json:"Phases,omitempty"`
 	ReleaseRetentionPolicy  RetentionPeriod `json:"ReleaseRetentionPolicy,omitempty"`
+	SpaceID                 string          `json:"SpaceId,omitempty"`
 	TentacleRetentionPolicy RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
 
 	resource
