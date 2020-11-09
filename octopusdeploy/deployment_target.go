@@ -16,10 +16,10 @@ type DeploymentTargets struct {
 }
 
 type DeploymentTarget struct {
-	TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 	EnvironmentIDs         []string               `json:"EnvironmentIds"`
 	Roles                  []string               `json:"Roles"`
 	SpaceID                string                 `json:"SpaceId,omitempty"`
+	TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 	TenantIDs              []string               `json:"TenantIds"`
 	TenantTags             []string               `json:"TenantTags"`
 
@@ -28,33 +28,36 @@ type DeploymentTarget struct {
 
 func NewDeploymentTarget(name string, endpoint IEndpoint, environmentIDs []string, roles []string) *DeploymentTarget {
 	return &DeploymentTarget{
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 		EnvironmentIDs:         environmentIDs,
 		Roles:                  roles,
 		TenantIDs:              []string{},
 		TenantTags:             []string{},
-		machine:                *newMachine(name, endpoint),
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
+
+		machine: *newMachine(name, endpoint),
 	}
 }
 
 // MarshalJSON returns a deployment target as its JSON encoding.
 func (d *DeploymentTarget) MarshalJSON() ([]byte, error) {
 	deploymentTarget := struct {
-		TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 		EnvironmentIDs         []string               `json:"EnvironmentIds"`
 		Roles                  []string               `json:"Roles"`
 		SpaceID                string                 `json:"SpaceId,omitempty"`
+		TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 		TenantIDs              []string               `json:"TenantIds"`
 		TenantTags             []string               `json:"TenantTags"`
+
 		machine
 	}{
-		TenantedDeploymentMode: d.TenantedDeploymentMode,
 		EnvironmentIDs:         d.EnvironmentIDs,
 		Roles:                  d.Roles,
 		SpaceID:                d.SpaceID,
+		TenantedDeploymentMode: d.TenantedDeploymentMode,
 		TenantIDs:              d.TenantIDs,
 		TenantTags:             d.TenantTags,
-		machine:                d.machine,
+
+		machine: d.machine,
 	}
 
 	return json.Marshal(deploymentTarget)
