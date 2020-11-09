@@ -6,6 +6,10 @@ type IAccount interface {
 	GetAccountType() AccountType
 	GetDescription() string
 	SetDescription(string)
+	GetEnvironmentIDs() []string
+	GetTenantedDeploymentMode() TenantedDeploymentMode
+	GetTenantIDs() []string
+	GetTenantTags() []string
 
 	IHasName
 	IHasSpace
