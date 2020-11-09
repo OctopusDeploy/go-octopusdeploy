@@ -13,10 +13,10 @@ type Project struct {
 	DeploymentChangesTemplate       string                       `json:"DeploymentChangesTemplate,omitempty"`
 	DeploymentProcessID             string                       `json:"DeploymentProcessId,omitempty"`
 	Description                     string                       `json:"Description,omitempty"`
-	DiscreteChannelRelease          bool                         `json:"DiscreteChannelRelease"`
 	ExtensionSettings               []*ExtensionSettingsValues   `json:"ExtensionSettings,omitempty"`
-	IncludedLibraryVariableSetIDs   []string                     `json:"IncludedLibraryVariableSetIds,omitempty"`
+	IncludedLibraryVariableSets     []string                     `json:"IncludedLibraryVariableSetIds,omitempty"`
 	IsDisabled                      bool                         `json:"IsDisabled"`
+	IsDiscreteChannelRelease        bool                         `json:"DiscreteChannelRelease"`
 	IsVersionControlled             bool                         `json:"IsVersionControlled"`
 	LifecycleID                     string                       `json:"LifecycleId" validate:"required"`
 	Name                            string                       `json:"Name" validate:"required"`
