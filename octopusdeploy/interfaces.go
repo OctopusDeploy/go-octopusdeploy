@@ -5,11 +5,11 @@ import "time"
 type IAccount interface {
 	GetAccountType() AccountType
 	GetDescription() string
-	SetDescription(string)
 	GetEnvironmentIDs() []string
 	GetTenantedDeploymentMode() TenantedDeploymentMode
 	GetTenantIDs() []string
 	GetTenantTags() []string
+	SetDescription(string)
 
 	IHasName
 	IHasSpace
