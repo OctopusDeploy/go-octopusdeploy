@@ -5,26 +5,28 @@
     "description": "Represents a package reference",
     "type": "object",
     "properties": {
-        "ID": {
-            "type": "string"
-        },
-        "Name": {
-            "type": "string"
-        },
-        "Label": {
-            "type": "string"
-        },
-        "HelpText": {
-            "type": "string"
-        },
-        "DefaultValue": {
+        "default_value": {
             "$ref": "property_value.json"
         },
-        "DisplaySettings": {
+        "display_settings": {
             "type": "object",
             "additionalProperties": {
                 "type": "string"
             }
+        },
+        "help_text": {
+            "type": "string"
+        },
+        "id": {
+            "description": "unique identifier of a package reference",
+            "readOnly": true,
+            "type": "string"
+        },
+        "label": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
         }
     }
 }

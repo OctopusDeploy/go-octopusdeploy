@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://octopus.com/2020/user.json",
+    "title": "User",
+    "description": "Represents a user",
+    "type": "object",
+    "properties": {
+        "can_password_be_edited": {
+            "readOnly": true,
+            "type": "boolean"
+        },
+        "display_name": {
+            "description": "display name of a user",
+            "readOnly": true,
+            "type": "string"
+        },
+        "email_address": {
+            "description": "email address of a user",
+            "readOnly": true,
+            "type": "string"
+        },
+        "id": {
+            "description": "unique identifier of a user",
+            "readOnly": true,
+            "type": "string"
+        }
+    }
+}
