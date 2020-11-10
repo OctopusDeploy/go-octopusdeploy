@@ -4,7 +4,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
-	"github.com/jinzhu/copier"
 )
 
 // feedService handles communication with feed-related methods of the Octopus
@@ -25,81 +24,13 @@ func newFeedService(sling *sling.Sling, uriTemplate string, builtInFeedStats str
 	return feedService
 }
 
-func toFeed(feedResource *FeedResource) (IFeed, error) {
-	if isNil(feedResource) {
-		return nil, createInvalidParameterError("toFeed", "feedResource")
-	}
-
-	var feed IFeed
-	var err error
-	switch feedResource.GetFeedType() {
-	case FeedTypeAwsElasticContainerRegistry:
-		feed = NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region)
-	case FeedTypeBuiltIn:
-		feed = NewBuiltInFeed(feedResource.GetName(), feedResource.FeedURI)
-	case FeedTypeDocker:
-		feed = NewDockerContainerRegistry(feedResource.GetName())
-	case FeedTypeGitHub:
-		feed = NewGitHubRepositoryFeed(feedResource.GetName())
-	case FeedTypeHelm:
-		feed = NewHelmFeed(feedResource.GetName())
-	case FeedTypeMaven:
-		feed = NewMavenFeed(feedResource.GetName())
-	case FeedTypeNuGet:
-		feed = NewNuGetFeed(feedResource.GetName(), feedResource.FeedURI)
-	case FeedTypeOctopusProject:
-		feed = NewOctopusProjectFeed(feedResource.GetName(), feedResource.FeedURI)
-	}
-
-	err = copier.Copy(feed, feedResource)
-	if err != nil {
-		return nil, err
-	}
-
-	return feed, nil
-}
-
-func toFeeds(feedResources *FeedResources) *Feeds {
-	return &Feeds{
-		Items:        toFeedArray(feedResources.Items),
-		PagedResults: feedResources.PagedResults,
-	}
-}
-
-func toFeedResource(feed IFeed) (*FeedResource, error) {
-	if isNil(feed) {
-		return nil, createInvalidParameterError("toFeedResource", ParameterFeed)
-	}
-
-	feedResource := NewFeedResource(feed.GetName(), feed.GetFeedType())
-
-	err := copier.Copy(&feedResource, feed)
-	if err != nil {
-		return nil, err
-	}
-
-	return feedResource, nil
-}
-
-func toFeedArray(feedResources []*FeedResource) []IFeed {
-	items := []IFeed{}
-	for _, feedResource := range feedResources {
-		feed, err := toFeed(feedResource)
-		if err != nil {
-			return nil
-		}
-		items = append(items, feed)
-	}
-	return items
-}
-
 // Add creates a new feed.
 func (s feedService) Add(feed IFeed) (IFeed, error) {
 	if feed == nil {
 		return nil, createInvalidParameterError(OperationAdd, ParameterFeed)
 	}
 
-	feedResource, err := toFeedResource(feed)
+	feedResource, err := ToFeedResource(feed)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +40,7 @@ func (s feedService) Add(feed IFeed) (IFeed, error) {
 		return nil, err
 	}
 
-	return toFeed(response.(*FeedResource))
+	return ToFeed(response.(*FeedResource))
 }
 
 // Get returns a collection of feeds based on the criteria defined by its
@@ -128,7 +59,7 @@ func (s feedService) Get(feedsQuery FeedsQuery) (*Feeds, error) {
 		return &Feeds{}, err
 	}
 
-	return toFeeds(response.(*FeedResources)), nil
+	return ToFeeds(response.(*FeedResources)), nil
 }
 
 // GetAll returns all feeds. If none can be found or an error occurs, it
@@ -138,7 +69,7 @@ func (s feedService) GetAll() ([]IFeed, error) {
 	path := s.BasePath + "/all"
 
 	_, err := apiGet(s.getClient(), &items, path)
-	return toFeedArray(items), err
+	return ToFeedArray(items), err
 }
 
 // GetByID returns the feed that matches the input ID. If one cannot be found,
@@ -210,7 +141,7 @@ func (s feedService) Update(feed IFeed) (IFeed, error) {
 		return nil, err
 	}
 
-	feedResource, err := toFeedResource(feed)
+	feedResource, err := ToFeedResource(feed)
 	if err != nil {
 		return nil, err
 	}
