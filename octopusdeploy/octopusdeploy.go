@@ -683,6 +683,7 @@ type APIError struct {
 	HelpLink        string   `json:"HelpLink,omitempty"`
 	HelpText        string   `json:"HelpText,omitempty"`
 	ParsedHelpLinks []string `json:"ParsedHelpLinks,omitempty"`
+	StatusCode      int
 }
 
 // Error creates a predefined error for Octopus API responses.
@@ -703,7 +704,8 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusNotFound {
-		return ErrItemNotFound
+		octopusDeployError.StatusCode = resp.StatusCode
+		return octopusDeployError
 	}
 
 	if resp.StatusCode == http.StatusBadRequest {
@@ -902,13 +904,7 @@ func apiDelete(sling *sling.Sling, path string) error {
 	octopusDeployError := new(APIError)
 	resp, err := deleteClient.Receive(nil, &octopusDeployError)
 
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
-	if apiErrorCheck !=
-		nil {
-		return apiErrorCheck
-	}
-
-	return nil
+	return APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 }
 
 // ErrItemNotFound is an OctopusDeploy error returned an item cannot be found.
