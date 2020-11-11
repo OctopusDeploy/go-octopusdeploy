@@ -56,6 +56,23 @@ func (s spaceService) Add(space *Space) (*Space, error) {
 	return resp.(*Space), nil
 }
 
+// Get returns a collection of spaces based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s spaceService) Get(spacesQuery SpacesQuery) (*Spaces, error) {
+	path, err := s.getURITemplate().Expand(spacesQuery)
+	if err != nil {
+		return &Spaces{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(Spaces), path)
+	if err != nil {
+		return &Spaces{}, err
+	}
+
+	return response.(*Spaces), nil
+}
+
 // GetByID returns the space that matches the input ID. If one cannot be found,
 // it returns nil and an error.
 func (s spaceService) GetByID(id string) (*Space, error) {
