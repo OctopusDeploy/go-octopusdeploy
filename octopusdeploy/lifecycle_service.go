@@ -48,6 +48,23 @@ func (s lifecycleService) Add(resource *Lifecycle) (*Lifecycle, error) {
 	return resp.(*Lifecycle), nil
 }
 
+// Get returns a collection of lifecycles based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s lifecycleService) Get(lifecyclesQuery LifecyclesQuery) (*Lifecycles, error) {
+	path, err := s.getURITemplate().Expand(lifecyclesQuery)
+	if err != nil {
+		return &Lifecycles{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(Lifecycles), path)
+	if err != nil {
+		return &Lifecycles{}, err
+	}
+
+	return response.(*Lifecycles), nil
+}
+
 // GetAll returns all lifecycles. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s lifecycleService) GetAll() ([]*Lifecycle, error) {
