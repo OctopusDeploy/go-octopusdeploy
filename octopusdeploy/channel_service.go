@@ -56,18 +56,10 @@ func (s channelService) Add(resource *Channel) (*Channel, error) {
 // Get returns a collection of channels based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s channelService) Get(channelsQuery ...ChannelsQuery) (*Channels, error) {
-	values := make(map[string]interface{})
-	path, err := s.URITemplate.Expand(values)
+func (s channelService) Get(channelsQuery ChannelsQuery) (*Channels, error) {
+	path, err := s.getURITemplate().Expand(channelsQuery)
 	if err != nil {
 		return &Channels{}, err
-	}
-
-	if channelsQuery != nil {
-		path, err = s.URITemplate.Expand(channelsQuery[0])
-		if err != nil {
-			return &Channels{}, err
-		}
 	}
 
 	response, err := apiGet(s.getClient(), new(Channels), path)
