@@ -56,6 +56,23 @@ func (s machineService) Add(resource *DeploymentTarget) (*DeploymentTarget, erro
 	return resp.(*DeploymentTarget), nil
 }
 
+// Get returns a collection of machines based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s machineService) Get(machinesQuery MachinesQuery) (*DeploymentTargets, error) {
+	path, err := s.getURITemplate().Expand(machinesQuery)
+	if err != nil {
+		return &DeploymentTargets{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(DeploymentTargets), path)
+	if err != nil {
+		return &DeploymentTargets{}, err
+	}
+
+	return response.(*DeploymentTargets), nil
+}
+
 // GetByID returns the machine that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s machineService) GetByID(id string) (*DeploymentTarget, error) {
