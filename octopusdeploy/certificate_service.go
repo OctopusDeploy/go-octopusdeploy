@@ -52,6 +52,23 @@ func (s certificateService) Add(resource *CertificateResource) (*CertificateReso
 	return resp.(*CertificateResource), nil
 }
 
+// Get returns a collection of certificates based on the criteria defined by its input
+// query parameter. If an error occurs, an empty collection is returned along
+// with the associated error.
+func (s certificateService) Get(certificatesQuery CertificatesQuery) (*CertificateResources, error) {
+	path, err := s.getURITemplate().Expand(certificatesQuery)
+	if err != nil {
+		return &CertificateResources{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(CertificateResources), path)
+	if err != nil {
+		return &CertificateResources{}, err
+	}
+
+	return response.(*CertificateResources), nil
+}
+
 // GetAll returns all certificates. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s certificateService) GetAll() ([]*CertificateResource, error) {
