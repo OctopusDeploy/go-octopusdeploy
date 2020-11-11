@@ -50,6 +50,23 @@ func (s projectGroupService) Add(resource *ProjectGroup) (*ProjectGroup, error) 
 	return resp.(*ProjectGroup), nil
 }
 
+// Get returns a collection of project groups based on the criteria defined by
+// its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func (s projectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*ProjectGroups, error) {
+	path, err := s.getURITemplate().Expand(projectGroupsQuery)
+	if err != nil {
+		return &ProjectGroups{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(ProjectGroups), path)
+	if err != nil {
+		return &ProjectGroups{}, err
+	}
+
+	return response.(*ProjectGroups), nil
+}
+
 // GetAll returns all project groups. If none can be found or an error occurs,
 // it returns an empty collection.
 func (s projectGroupService) GetAll() ([]*ProjectGroup, error) {
