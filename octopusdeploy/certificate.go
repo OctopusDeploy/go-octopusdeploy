@@ -23,8 +23,8 @@ type CertificateResource struct {
 	SerialNumber             string                 `json:"SerialNumber,omitempty"`
 	SignatureAlgorithmName   string                 `json:"SignatureAlgorithmName,omitempty"`
 	SubjectAlternativeNames  []string               `json:"SubjectAlternativeNames,omitempty"`
-	SubjectDistinguishedName string                 `json:"SubjectDistinguishedName,omitempty"`
 	SubjectCommonName        string                 `json:"SubjectCommonName,omitempty"`
+	SubjectDistinguishedName string                 `json:"SubjectDistinguishedName,omitempty"`
 	SubjectOrganization      string                 `json:"SubjectOrganization,omitempty"`
 	SelfSigned               bool                   `json:"SelfSigned,omitempty"`
 	TenantedDeploymentMode   TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
