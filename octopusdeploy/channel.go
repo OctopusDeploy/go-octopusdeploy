@@ -14,6 +14,7 @@ type Channel struct {
 	Name        string        `json:"Name" validate:"required,notblank,notall"`
 	ProjectID   string        `json:"ProjectId" validate:"required,notblank"`
 	Rules       []ChannelRule `json:"Rules,omitempty"`
+	SpaceID     string        `json:"SpaceId,omitempty"`
 	TenantTags  []string      `json:"TenantTags,omitempty"`
 
 	resource
