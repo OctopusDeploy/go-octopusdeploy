@@ -34,6 +34,23 @@ func (s tagSetService) Add(resource *TagSet) (*TagSet, error) {
 	return resp.(*TagSet), nil
 }
 
+// Get returns a collection of tag sets based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s tagSetService) Get(tagSetsQuery TagSetsQuery) (*TagSets, error) {
+	path, err := s.getURITemplate().Expand(tagSetsQuery)
+	if err != nil {
+		return &TagSets{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(TagSets), path)
+	if err != nil {
+		return &TagSets{}, err
+	}
+
+	return response.(*TagSets), nil
+}
+
 // GetByID returns the tag set that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s tagSetService) GetByID(id string) (*TagSet, error) {
