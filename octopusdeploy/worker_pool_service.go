@@ -132,7 +132,7 @@ func (s workerPoolService) GetByID(id string) (IWorkerPool, error) {
 
 	resp, err := apiGet(s.getClient(), new(WorkerPoolResource), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(IWorkerPool), nil

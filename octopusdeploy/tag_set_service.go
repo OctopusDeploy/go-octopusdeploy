@@ -61,7 +61,7 @@ func (s tagSetService) GetByID(id string) (*TagSet, error) {
 
 	resp, err := apiGet(s.getClient(), new(TagSet), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*TagSet), nil

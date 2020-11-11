@@ -81,7 +81,7 @@ func (s environmentService) GetByID(id string) (*Environment, error) {
 
 	resp, err := apiGet(s.getClient(), new(Environment), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Environment), nil

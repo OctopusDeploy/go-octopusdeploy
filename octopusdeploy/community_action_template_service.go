@@ -95,7 +95,7 @@ func (s communityActionTemplateService) GetByID(id string) (*CommunityActionTemp
 
 	resp, err := apiGet(s.getClient(), new(CommunityActionTemplate), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*CommunityActionTemplate), nil

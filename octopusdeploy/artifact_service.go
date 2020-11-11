@@ -92,7 +92,7 @@ func (s artifactService) GetByID(id string) (*Artifact, error) {
 
 	resp, err := apiGet(s.getClient(), new(Artifact), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Artifact), nil

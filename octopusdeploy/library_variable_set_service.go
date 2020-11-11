@@ -71,7 +71,7 @@ func (s libraryVariableSetService) GetByID(id string) (*LibraryVariableSet, erro
 
 	resp, err := apiGet(s.getClient(), new(LibraryVariableSet), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*LibraryVariableSet), nil

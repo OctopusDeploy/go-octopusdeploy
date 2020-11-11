@@ -43,7 +43,7 @@ func (s projectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 
 	resp, err := apiGet(s.getClient(), new(ProjectTrigger), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*ProjectTrigger), nil

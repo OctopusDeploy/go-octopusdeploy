@@ -61,7 +61,7 @@ func (s releaseService) GetByID(id string) (*Release, error) {
 
 	resp, err := apiGet(s.getClient(), new(Release), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Release), nil

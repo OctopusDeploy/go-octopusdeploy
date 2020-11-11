@@ -90,7 +90,7 @@ func (s projectGroupService) GetByID(id string) (*ProjectGroup, error) {
 
 	resp, err := apiGet(s.getClient(), new(ProjectGroup), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*ProjectGroup), nil

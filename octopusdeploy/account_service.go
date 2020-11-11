@@ -82,7 +82,7 @@ func (s accountService) GetByID(id string) (IAccount, error) {
 	path := s.BasePath + "/" + id
 	resp, err := apiGet(s.getClient(), new(AccountResource), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(IAccount), nil

@@ -53,7 +53,7 @@ func (s runbookProcessService) GetByID(id string) (*RunbookProcess, error) {
 
 	resp, err := apiGet(s.getClient(), new(RunbookProcess), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*RunbookProcess), nil

@@ -90,7 +90,7 @@ func (s channelService) GetByID(id string) (*Channel, error) {
 	path := s.BasePath + "/" + id
 	resp, err := apiGet(s.getClient(), new(Channel), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Channel), nil

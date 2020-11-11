@@ -255,7 +255,7 @@ func validateInternalState(s IService) error {
 func (s *canDeleteService) DeleteByID(id string) error {
 	err := s.deleteByID(id)
 	if err == ErrItemNotFound {
-		return createResourceNotFoundError(s.getName(), "ID", id)
+		return err
 	}
 
 	return err

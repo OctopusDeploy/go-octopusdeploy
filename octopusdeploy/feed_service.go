@@ -82,7 +82,7 @@ func (s feedService) GetByID(id string) (IFeed, error) {
 	path := s.BasePath + "/" + id
 	resp, err := apiGet(s.getClient(), new(FeedResource), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(IFeed), nil

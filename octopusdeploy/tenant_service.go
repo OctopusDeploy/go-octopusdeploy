@@ -95,7 +95,7 @@ func (s tenantService) GetByID(id string) (*Tenant, error) {
 
 	resp, err := apiGet(s.getClient(), new(Tenant), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Tenant), nil

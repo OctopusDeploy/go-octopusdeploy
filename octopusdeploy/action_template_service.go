@@ -100,7 +100,7 @@ func (s actionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 
 	resp, err := apiGet(s.getClient(), new(ActionTemplate), path)
 	if err != nil {
-		return nil, createResourceNotFoundError(s.getName(), "ID", id)
+		return nil, err
 	}
 
 	return resp.(*ActionTemplate), nil
