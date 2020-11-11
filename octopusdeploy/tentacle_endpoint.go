@@ -4,8 +4,8 @@ import "github.com/go-playground/validator/v10"
 
 type tentacleEndpoint struct {
 	CertificateSignatureAlgorithm string                  `json:"CertificateSignatureAlgorithm,omitempty"`
-	Thumbprint                    string                  `json:"Thumbprint" validate:"required"`
 	TentacleVersionDetails        *TentacleVersionDetails `json:"TentacleVersionDetails,omitempty"`
+	Thumbprint                    string                  `json:"Thumbprint" validate:"required"`
 
 	endpoint
 }
