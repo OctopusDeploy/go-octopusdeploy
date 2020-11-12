@@ -156,21 +156,21 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 
 	switch communicationStyle {
 	case "AzureCloudService":
-		var ServiceFabricEndpoint ServiceFabricEndpoint
+		var ServiceFabricEndpoint *ServiceFabricEndpoint
 		err := json.Unmarshal(*endpoint, &ServiceFabricEndpoint)
 		if err != nil {
 			return err
 		}
 		m.Endpoint = ServiceFabricEndpoint
 	case "AzureServiceFabricCluster":
-		var ServiceFabricEndpoint ServiceFabricEndpoint
+		var ServiceFabricEndpoint *ServiceFabricEndpoint
 		err := json.Unmarshal(*endpoint, &ServiceFabricEndpoint)
 		if err != nil {
 			return err
 		}
 		m.Endpoint = ServiceFabricEndpoint
 	case "AzureWebApp":
-		var azureWebAppEndpoint AzureWebAppEndpoint
+		var azureWebAppEndpoint *AzureWebAppEndpoint
 		err := json.Unmarshal(*endpoint, &azureWebAppEndpoint)
 		if err != nil {
 			return err
@@ -184,14 +184,14 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 		}
 		m.Endpoint = kubernetesEndpoint
 	case "None":
-		var cloudRegionEndpoint CloudRegionEndpoint
+		var cloudRegionEndpoint *CloudRegionEndpoint
 		err := json.Unmarshal(*endpoint, &cloudRegionEndpoint)
 		if err != nil {
 			return err
 		}
 		m.Endpoint = cloudRegionEndpoint
 	case "OfflineDrop":
-		var offlineDropEndpoint OfflineDropEndpoint
+		var offlineDropEndpoint *OfflineDropEndpoint
 		err := json.Unmarshal(*endpoint, &offlineDropEndpoint)
 		if err != nil {
 			return err
@@ -205,14 +205,14 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 		}
 		m.Endpoint = sshEndpoint
 	case "TentacleActive":
-		var pollingTentacleEndpoint PollingTentacleEndpoint
+		var pollingTentacleEndpoint *PollingTentacleEndpoint
 		err := json.Unmarshal(*endpoint, &pollingTentacleEndpoint)
 		if err != nil {
 			return err
 		}
 		m.Endpoint = pollingTentacleEndpoint
 	case "TentaclePassive":
-		var listeningTentacleEndpoint ListeningTentacleEndpoint
+		var listeningTentacleEndpoint *ListeningTentacleEndpoint
 		err := json.Unmarshal(*endpoint, &listeningTentacleEndpoint)
 		if err != nil {
 			return err
