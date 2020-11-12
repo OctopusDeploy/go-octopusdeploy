@@ -20,7 +20,7 @@ type Project struct {
 	IsVersionControlled             bool                         `json:"IsVersionControlled"`
 	LifecycleID                     string                       `json:"LifecycleId" validate:"required"`
 	Name                            string                       `json:"Name" validate:"required"`
-	ProjectConnectivityPolicy       *ProjectConnectivityPolicy   `json:"ProjectConnectivityPolicy,omitempty"`
+	ConnectivityPolicy              *ConnectivityPolicy          `json:"ProjectConnectivityPolicy,omitempty"`
 	ProjectGroupID                  string                       `json:"ProjectGroupId" validate:"required"`
 	ReleaseCreationStrategy         *ReleaseCreationStrategy     `json:"ReleaseCreationStrategy,omitempty"`
 	ReleaseNotesTemplate            string                       `json:"ReleaseNotesTemplate,omitempty"`
@@ -45,7 +45,7 @@ func NewProject(name string, lifeCycleID string, projectGroupID string) *Project
 		DefaultGuidedFailureMode: "EnvironmentDefault",
 		LifecycleID:              lifeCycleID,
 		Name:                     name,
-		ProjectConnectivityPolicy: &ProjectConnectivityPolicy{
+		ConnectivityPolicy: &ConnectivityPolicy{
 			AllowDeploymentsToNoTargets: false,
 			SkipMachineBehavior:         "None",
 		},

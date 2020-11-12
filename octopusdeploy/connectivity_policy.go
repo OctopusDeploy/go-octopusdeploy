@@ -1,7 +1,8 @@
 package octopusdeploy
 
-type ProjectConnectivityPolicy struct {
+type ConnectivityPolicy struct {
 	AllowDeploymentsToNoTargets bool                `json:"AllowDeploymentsToNoTargets,omitempty"`
-	TargetRoles                 []string            `json:"TargetRoles,omitempty"`
+	ExcludeUnhealthyTargets     bool                `json:"ExcludeUnhealthyTargets,omitempty"`
 	SkipMachineBehavior         SkipMachineBehavior `json:"SkipMachineBehavior,omitempty"`
+	TargetRoles                 []string            `json:"TargetRoles,omitempty"`
 }

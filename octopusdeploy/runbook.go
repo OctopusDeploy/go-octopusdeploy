@@ -3,18 +3,18 @@ package octopusdeploy
 import "github.com/go-playground/validator/v10"
 
 type Runbook struct {
-	ConnectivityPolicy         *ProjectConnectivityPolicy `json:"ConnectivityPolicy,omitempty"`
-	DefaultGuidedFailureMode   string                     `json:"DefaultGuidedFailureMode" validate:"required,oneof=EnvironmentDefault Off On"`
-	Description                string                     `json:"Description,omitempty"`
-	EnvironmentScope           string                     `json:"EnvironmentScope" validate:"required,oneof=All FromProjectLifecycles Specified"`
-	Environments               []string                   `json:"Environments,omitempty"`
-	MultiTenancyMode           string                     `json:"MultiTenancyMode" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
-	Name                       string                     `json:"Name,omitempty"`
-	ProjectID                  string                     `json:"ProjectId,omitempty"`
-	PublishedRunbookSnapshotID string                     `json:"PublishedRunbookSnapshotId,omitempty"`
-	RunRetentionPolicy         *RunbookRetentionPeriod    `json:"RunRetentionPolicy,omitempty"`
-	RunbookProcessID           string                     `json:"RunbookProcessId,omitempty"`
-	SpaceID                    string                     `json:"SpaceId,omitempty"`
+	ConnectivityPolicy         *ConnectivityPolicy     `json:"ConnectivityPolicy,omitempty"`
+	DefaultGuidedFailureMode   string                  `json:"DefaultGuidedFailureMode" validate:"required,oneof=EnvironmentDefault Off On"`
+	Description                string                  `json:"Description,omitempty"`
+	EnvironmentScope           string                  `json:"EnvironmentScope" validate:"required,oneof=All FromProjectLifecycles Specified"`
+	Environments               []string                `json:"Environments,omitempty"`
+	MultiTenancyMode           string                  `json:"MultiTenancyMode" validate:"required,oneof=Untenanted TenantedOrUntenanted Tenanted"`
+	Name                       string                  `json:"Name,omitempty"`
+	ProjectID                  string                  `json:"ProjectId,omitempty"`
+	PublishedRunbookSnapshotID string                  `json:"PublishedRunbookSnapshotId,omitempty"`
+	RunRetentionPolicy         *RunbookRetentionPeriod `json:"RunRetentionPolicy,omitempty"`
+	RunbookProcessID           string                  `json:"RunbookProcessId,omitempty"`
+	SpaceID                    string                  `json:"SpaceId,omitempty"`
 
 	resource
 }
