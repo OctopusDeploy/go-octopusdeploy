@@ -17,8 +17,8 @@ type SSHEndpoint struct {
 	DotNetCorePlatform string
 	Fingerprint        string
 	Host               string
+	ProxyID            string `json:"ProxyId,omitempty"`
 	Port               int
-	ProxyID            string   `json:"ProxyId,omitempty"`
 	URI                *url.URL `json:"Uri"`
 
 	resource
