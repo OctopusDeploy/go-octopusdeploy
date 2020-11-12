@@ -26,6 +26,7 @@ func AssertEqualProjects(t *testing.T, expected *octopusdeploy.Project, actual *
 	assert.Equal(t, expected.AutoCreateRelease, actual.AutoCreateRelease)
 	assert.Equal(t, expected.AutoDeployReleaseOverrides, actual.AutoDeployReleaseOverrides)
 	assert.Equal(t, expected.ClonedFromProjectID, actual.ClonedFromProjectID)
+	assert.Equal(t, expected.ConnectivityPolicy, actual.ConnectivityPolicy)
 	assert.Equal(t, expected.DefaultGuidedFailureMode, actual.DefaultGuidedFailureMode)
 	assert.Equal(t, expected.DefaultToSkipIfAlreadyInstalled, actual.DefaultToSkipIfAlreadyInstalled)
 	assert.Equal(t, expected.DeploymentChangesTemplate, actual.DeploymentChangesTemplate)
@@ -38,7 +39,6 @@ func AssertEqualProjects(t *testing.T, expected *octopusdeploy.Project, actual *
 	assert.Equal(t, expected.IsVersionControlled, actual.IsVersionControlled)
 	assert.Equal(t, expected.LifecycleID, actual.LifecycleID)
 	assert.Equal(t, expected.Name, actual.Name)
-	assert.Equal(t, expected.ProjectConnectivityPolicy, actual.ProjectConnectivityPolicy)
 	assert.Equal(t, expected.ProjectGroupID, actual.ProjectGroupID)
 	assert.Equal(t, expected.ReleaseCreationStrategy, actual.ReleaseCreationStrategy)
 	assert.Equal(t, expected.ReleaseNotesTemplate, actual.ReleaseNotesTemplate)
@@ -206,14 +206,14 @@ func TestProjectUpdate(t *testing.T) {
 	newSkipMachineBehavior := octopusdeploy.SkipMachineBehaviorNone
 
 	project.Name = newProjectName
+	project.ConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 	project.Description = newDescription
-	project.ProjectConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
 
 	updatedProject, err := client.Projects.Update(project)
 	require.NoError(t, err)
 	require.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
 	require.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
-	require.Equal(t, newSkipMachineBehavior, project.ProjectConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name was not updated")
+	require.Equal(t, newSkipMachineBehavior, project.ConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name was not updated")
 }
 
 func TestProjectGetByName(t *testing.T) {
