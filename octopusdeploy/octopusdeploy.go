@@ -123,156 +123,15 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		return nil, err
 	}
 
-	rootPath := root.Links[linkSelf]
-	apiKeysPath := "/api/users"
-	dynamicExtensionsPath := "/api/dynamic-extensions"
-	jiraIntegrationPath := "/api/jiraintegration"
-	licensesPath := "/api/licenses"
-	migrationsPath := "/api/migrations"
-	reportingPath := "/api/reporting"
-
-	accountsPath := root.Links[linkAccounts]
-	actionTemplatesLogo := root.Links[linkActionTemplateLogo]
-	actionTemplatesPath := root.Links[linkActionTemplates]
-	actionTemplatesCategories := root.Links[linkActionTemplatesCategories]
-	actionTemplatesSearch := root.Links[linkActionTemplatesSearch]
-	actionTemplateVersionedLogo := root.Links[linkActionTemplateVersionedLogo]
-	artifactsPath := root.Links[linkArtifacts]
-	authenticateOctopusIDPath := root.Links[linkAuthenticateOctopusID]
-	authenticationPath := root.Links[linkAuthentication]
-	azureDevOpsConnectivityCheckPath := root.Links[linkAzureDevOpsConnectivityCheck]
-	azureEnvironmentsPath := root.Links[linkAzureEnvironments]
-	buildInformationPath := root.Links[linkBuildInformation]
-	buildInformationBulkPath := root.Links[linkBuildInformationBulk]
-	builtInFeedStatsPath := root.Links[linkBuiltInFeedStats]
-	certificateConfigurationPath := root.Links[linkCertificateConfiguration]
-	certificatesPath := root.Links[linkCertificates]
-	channelsPath := root.Links[linkChannels]
-	cloudTemplatePath := root.Links[linkCloudTemplate]
-	communityActionTemplatesPath := root.Links[linkCommunityActionTemplates]
-	configurationPath := root.Links[linkConfiguration]
-	currentLicensePath := root.Links[linkCurrentLicense]
-	currentLicenseStatusPath := root.Links[linkCurrentLicenseStatus]
-	currentUserPath := root.Links[linkCurrentUser]
-	dashboardPath := root.Links[linkDashboard]
-	dashboardConfigurationPath := root.Links[linkDashboardConfiguration]
-	dashboardDynamicPath := root.Links[linkDashboardDynamic]
-	deploymentProcessesPath := root.Links[linkDeploymentProcesses]
-	deploymentsPath := root.Links[linkDeployments]
-	discoverMachinePath := root.Links[linkDiscoverMachine]
-	discoverWorkerPath := root.Links[linkDiscoverWorker]
-	dynamicExtensionsFeaturesMetadataPath := root.Links[linkDynamicExtensionsFeaturesMetadata]
-	dynamicExtensionsFeaturesValuesPath := root.Links[linkDynamicExtensionsFeaturesValues]
-	dynamicExtensionsScriptsPath := root.Links[linkDynamicExtensionsScripts]
-	environmentsPath := root.Links[linkEnvironments]
-	environmentSortOrderPath := root.Links[linkEnvironmentSortOrder]
-	environmentsSummaryPath := root.Links[linkEnvironmentsSummary]
-	eventAgentsPath := root.Links[linkEventAgents]
-	eventCategoriesPath := root.Links[linkEventCategories]
-	eventDocumentTypesPath := root.Links[linkEventDocumentTypes]
-	eventGroupsPath := root.Links[linkEventGroups]
-	eventsPath := root.Links[linkEvents]
-	extensionStatsPath := root.Links[linkExtensionStats]
-	externalSecurityGroupProvidersPath := root.Links[linkExternalSecurityGroupProviders]
-	externalUserSearchPath := root.Links[linkExternalUserSearch]
-	featuresConfigurationPath := root.Links[linkFeaturesConfiguration]
-	feedsPath := root.Links[linkFeeds]
-	interruptionsPath := root.Links[linkInterruptions]
-	invitationsPath := root.Links[linkInvitations]
-	issueTrackersPath := root.Links[linkIssueTrackers]
-	jiraConnectAppCredentialsTestPath := root.Links[linkJiraConnectAppCredentialsTest]
-	jiraCredentialsTestPath := root.Links[linkJiraCredentialsTest]
-	letsEncryptConfigurationPath := root.Links[linkLetsEncryptConfiguration]
-	libraryVariablesPath := root.Links[linkLibraryVariables]
-	lifecyclesPath := root.Links[linkLifecycles]
-	loginInitiatedPath := root.Links[linkLoginInitiated]
-	machineOperatingSystemsPath := root.Links[linkMachineOperatingSystems]
-	machinePoliciesPath := root.Links[linkMachinePolicies]
-	machinePolicyTemplatePath := root.Links[linkMachinePolicyTemplate]
-	machineRolesPath := root.Links[linkMachineRoles]
-	machinesPath := root.Links[linkMachines]
-	machineShellsPath := root.Links[linkMachineShells]
-	maintenanceConfigurationPath := root.Links[linkMaintenanceConfiguration]
-	migrationsImportPath := root.Links[linkMigrationsImport]
-	migrationsPartialExportPath := root.Links[linkMigrationsPartialExport]
-	octopusServerClusterSummaryPath := root.Links[linkOctopusServerClusterSummary]
-	octopusServerNodesPath := root.Links[linkOctopusServerNodes]
-	packageDeltaSignaturePath := root.Links[linkPackageDeltaSignature]
-	packageDeltaUploadPath := root.Links[linkPackageDeltaUpload]
-	packageMetadataPath := root.Links[linkPackageMetadata]
-	packageNotesListPath := root.Links[linkPackageNotesList]
-	packagesPath := root.Links[linkPackages]
-	packagesBulkPath := root.Links[linkPackagesBulk]
-	packageUploadPath := root.Links[linkPackageUpload]
-	performanceConfigurationPath := root.Links[linkPerformanceConfiguration]
-	permissionsPath := root.Links[linkPermissions]
-	projectGroupsPath := root.Links[linkProjectGroups]
-	projectPulsePath := root.Links[linkProjectPulse]
-	projectsPath := root.Links[linkProjects]
-	projectsExperimentalSummariesPath := root.Links[linkProjectsExperimentalSummaries]
-	projectTriggersPath := root.Links[linkProjectTriggers]
-	proxiesPath := root.Links[linkProxies]
-	registerPath := root.Links[linkRegister]
-	releasesPath := root.Links[linkReleases]
-	reportingDeploymentsCountedByWeekPath := root.Links[linkReportingDeploymentsCountedByWeek]
-	runbookProcessesPath := root.Links[linkRunbookProcesses]
-	runbookRunsPath := root.Links[linkRunbookRuns]
-	runbooksPath := root.Links[linkRunbooks]
-	runbookSnapshotsPath := root.Links[linkRunbookSnapshots]
-	scheduledProjectTriggersPath := root.Links[linkScheduledProjectTriggers]
-	schedulerPath := root.Links[linkScheduler]
-	scopedUserRolesPath := root.Links[linkScopedUserRoles]
-	serverConfigurationPath := root.Links[linkServerConfiguration]
-	serverConfigurationSettingsPath := root.Links[linkServerConfigurationSettings]
-	serverHealthStatusPath := root.Links[linkServerHealthStatus]
-	serverStatusPath := root.Links[linkServerStatus]
-	signInPath := root.Links[linkSignIn]
-	signOutPath := root.Links[linkSignOut]
-	smtpConfigurationPath := root.Links[linkSMTPConfiguration]
-	smtpIsConfiguredPath := root.Links[linkSMTPIsConfigured]
-	spaceHomePath := root.Links[linkSpaceHome]
-	spacesPath := root.Links[linkSpaces]
-	subscriptionsPath := root.Links[linkSubscriptions]
-	tagSetsPath := root.Links[linkTagSets]
-	tagSetSortOrderPath := root.Links[linkTagSetSortOrder]
-	tasksPath := root.Links[linkTasks]
-	taskTypesPath := root.Links[linkTaskTypes]
-	teamMembershipPath := root.Links[linkTeamMembership]
-	teamMembershipPreviewTeamPath := root.Links[linkTeamMembershipPreviewTeam]
-	teamsPath := root.Links[linkTeams]
-	tenantsPath := root.Links[linkTenants]
-	tenantsMissingVariablesPath := root.Links[linkTenantsMissingVariables]
-	tenantsStatusPath := root.Links[linkTenantsStatus]
-	tenantTagTestPath := root.Links[linkTenantTagTest]
-	tenantVariablesPath := root.Links[linkTenantVariables]
-	timezonesPath := root.Links[linkTimezones]
-	upgradeConfigurationPath := root.Links[linkUpgradeConfiguration]
-	userAuthenticationPath := root.Links[linkUserAuthentication]
-	userIdentityMetadataPath := root.Links[linkUserIdentityMetadata]
-	userOnboardingPath := root.Links[linkUserOnboarding]
-	userRolesPath := root.Links[linkUserRoles]
-	usersPath := root.Links[linkUsers]
-	variableNamesPath := root.Links[linkVariableNames]
-	variablePreviewPath := root.Links[linkVariablePreview]
-	variablesPath := root.Links[linkVariables]
-	versionControlClearCachePath := root.Links[linkVersionControlClearCache]
-	versionRuleTestPath := root.Links[linkVersionRuleTest]
-	workerOperatingSystemsPath := root.Links[linkWorkerOperatingSystems]
-	workerPoolsPath := root.Links[linkWorkerPools]
-	workerPoolsDynamicWorkerTypesPath := root.Links[linkWorkerPoolsDynamicWorkerTypes]
-	workerPoolsSortOrderPath := root.Links[linkWorkerPoolsSortOrder]
-	workerPoolsSummaryPath := root.Links[linkWorkerPoolsSummary]
-	workerPoolsSupportedTypesPath := root.Links[linkWorkerPoolsSupportedTypes]
-	workersPath := root.Links[linkWorkers]
-	workerShellsPath := root.Links[linkWorkerShells]
-	workerToolsLatestImagesPath := root.Links[linkWorkerToolsLatestImages]
+	// Root with specified Space ID, if it's defined
+	sroot := NewRootResource()
 
 	if !isEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
 		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set(clientAPIKeyHTTPHeader, apiKey)
 		base.Set("User-Agent", "go-octopusdeploy")
 		rootService = newRootService(base, baseURLWithAPI)
-		root, err = rootService.Get()
+		sroot, err = rootService.Get()
 
 		if err != nil {
 			if err == ErrItemNotFound {
@@ -280,319 +139,151 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 			}
 			return nil, err
 		}
-
-		if !isEmpty(root.Links[linkAccounts]) {
-			accountsPath = root.Links[linkAccounts]
-		}
-
-		if !isEmpty(root.Links[linkActionTemplateLogo]) {
-			actionTemplatesLogo = root.Links[actionTemplatesLogo]
-		}
-
-		if !isEmpty(root.Links[linkActionTemplates]) {
-			actionTemplatesPath = root.Links[linkActionTemplates]
-		}
-
-		if !isEmpty(root.Links[linkActionTemplatesCategories]) {
-			actionTemplatesCategories = root.Links[linkActionTemplatesCategories]
-		}
-
-		if !isEmpty(root.Links[linkActionTemplatesSearch]) {
-			actionTemplatesSearch = root.Links[linkActionTemplatesSearch]
-		}
-
-		if !isEmpty(root.Links[linkActionTemplateVersionedLogo]) {
-			actionTemplateVersionedLogo = root.Links[linkActionTemplateVersionedLogo]
-		}
-
-		if !isEmpty(root.Links[linkArtifacts]) {
-			artifactsPath = root.Links[linkArtifacts]
-		}
-
-		if !isEmpty(root.Links[linkAuthenticateOctopusID]) {
-			authenticateOctopusIDPath = root.Links[linkAuthenticateOctopusID]
-		}
-
-		if !isEmpty(root.Links[linkAuthentication]) {
-			authenticationPath = root.Links[linkAuthentication]
-		}
-
-		if !isEmpty(root.Links[linkAzureDevOpsConnectivityCheck]) {
-			azureDevOpsConnectivityCheckPath = root.Links[linkAzureDevOpsConnectivityCheck]
-		}
-
-		if !isEmpty(root.Links[linkAzureEnvironments]) {
-			azureEnvironmentsPath = root.Links[linkAzureEnvironments]
-		}
-
-		if !isEmpty(root.Links[linkBuildInformation]) {
-			buildInformationPath = root.Links[linkBuildInformation]
-		}
-
-		if !isEmpty(root.Links[linkBuildInformationBulk]) {
-			buildInformationBulkPath = root.Links[linkBuildInformationBulk]
-		}
-
-		if !isEmpty(root.Links[linkBuiltInFeedStats]) {
-			builtInFeedStatsPath = root.Links[linkBuiltInFeedStats]
-		}
-
-		if !isEmpty(root.Links[linkCertificateConfiguration]) {
-			certificateConfigurationPath = root.Links[linkCertificateConfiguration]
-		}
-
-		if !isEmpty(root.Links[linkCertificates]) {
-			certificatesPath = root.Links[linkCertificates]
-		}
-
-		if !isEmpty(root.Links[linkChannels]) {
-			channelsPath = root.Links[linkChannels]
-		}
-
-		if !isEmpty(root.Links[linkCloudTemplate]) {
-			cloudTemplatePath = root.Links[linkCloudTemplate]
-		}
-
-		if !isEmpty(root.Links[linkCommunityActionTemplates]) {
-			communityActionTemplatesPath = root.Links[linkCommunityActionTemplates]
-		}
-
-		if !isEmpty(root.Links[linkConfiguration]) {
-			configurationPath = root.Links[linkConfiguration]
-		}
-
-		if !isEmpty(root.Links[linkCurrentLicense]) {
-			currentLicensePath = root.Links[linkCurrentLicense]
-		}
-
-		if !isEmpty(root.Links[linkCurrentLicenseStatus]) {
-			currentLicenseStatusPath = root.Links[linkCurrentLicenseStatus]
-		}
-
-		if !isEmpty(root.Links[linkCurrentUser]) {
-			currentUserPath = root.Links[linkCurrentUser]
-		}
-
-		if !isEmpty(root.Links[linkDashboard]) {
-			dashboardPath = root.Links[linkDashboard]
-		}
-
-		if !isEmpty(root.Links[linkDashboardConfiguration]) {
-			dashboardConfigurationPath = root.Links[linkDashboardConfiguration]
-		}
-
-		if !isEmpty(root.Links[linkDashboardDynamic]) {
-			dashboardDynamicPath = root.Links[linkDashboardDynamic]
-		}
-
-		if !isEmpty(root.Links[linkDeploymentProcesses]) {
-			deploymentProcessesPath = root.Links[linkDeploymentProcesses]
-		}
-
-		if !isEmpty(root.Links[linkDeployments]) {
-			deploymentsPath = root.Links[linkDeployments]
-		}
-
-		if !isEmpty(root.Links[linkDiscoverMachine]) {
-			discoverMachinePath = root.Links[linkDiscoverMachine]
-		}
-
-		if !isEmpty(root.Links[linkDiscoverWorker]) {
-			discoverWorkerPath = root.Links[linkDiscoverWorker]
-		}
-
-		if !isEmpty(root.Links[linkDynamicExtensionsFeaturesMetadata]) {
-			dynamicExtensionsFeaturesMetadataPath = root.Links[linkDynamicExtensionsFeaturesMetadata]
-		}
-
-		if !isEmpty(root.Links[linkDynamicExtensionsFeaturesValues]) {
-			dynamicExtensionsFeaturesValuesPath = root.Links[linkDynamicExtensionsFeaturesValues]
-		}
-
-		if !isEmpty(root.Links[linkDynamicExtensionsScripts]) {
-			dynamicExtensionsScriptsPath = root.Links[linkDynamicExtensionsScripts]
-		}
-
-		if !isEmpty(root.Links[linkEnvironments]) {
-			environmentsPath = root.Links[linkEnvironments]
-		}
-
-		if !isEmpty(root.Links[linkEnvironmentSortOrder]) {
-			environmentSortOrderPath = root.Links[linkEnvironmentSortOrder]
-		}
-
-		if !isEmpty(root.Links[linkEnvironmentsSummary]) {
-			environmentsSummaryPath = root.Links[linkEnvironmentsSummary]
-		}
-
-		if !isEmpty(root.Links[linkEventAgents]) {
-			eventAgentsPath = root.Links[linkEventAgents]
-		}
-
-		if !isEmpty(root.Links[linkEventCategories]) {
-			eventCategoriesPath = root.Links[linkEventCategories]
-		}
-
-		if !isEmpty(root.Links[linkEventDocumentTypes]) {
-			eventDocumentTypesPath = root.Links[linkEventDocumentTypes]
-		}
-
-		if !isEmpty(root.Links[linkEventGroups]) {
-			eventGroupsPath = root.Links[linkEventGroups]
-		}
-
-		if !isEmpty(root.Links[linkEvents]) {
-			eventsPath = root.Links[linkEvents]
-		}
-
-		if !isEmpty(root.Links[linkExtensionStats]) {
-			extensionStatsPath = root.Links[linkExtensionStats]
-		}
-
-		if !isEmpty(root.Links[linkExternalSecurityGroupProviders]) {
-			externalSecurityGroupProvidersPath = root.Links[linkExternalSecurityGroupProviders]
-		}
-
-		if !isEmpty(root.Links[linkExternalUserSearch]) {
-			externalUserSearchPath = root.Links[linkExternalUserSearch]
-		}
-
-		if !isEmpty(root.Links[linkFeaturesConfiguration]) {
-			featuresConfigurationPath = root.Links[linkFeaturesConfiguration]
-		}
-
-		if !isEmpty(root.Links[linkFeeds]) {
-			feedsPath = root.Links[linkFeeds]
-		}
-
-		if !isEmpty(root.Links[linkInterruptions]) {
-			interruptionsPath = root.Links[linkInterruptions]
-		}
-
-		if !isEmpty(root.Links[linkInvitations]) {
-			invitationsPath = root.Links[linkInvitations]
-		}
-
-		if !isEmpty(root.Links[linkIssueTrackers]) {
-			issueTrackersPath = root.Links[linkIssueTrackers]
-		}
-
-		if !isEmpty(root.Links[linkJiraConnectAppCredentialsTest]) {
-			jiraConnectAppCredentialsTestPath = root.Links[linkJiraConnectAppCredentialsTest]
-		}
-
-		if !isEmpty(root.Links[linkJiraCredentialsTest]) {
-			jiraCredentialsTestPath = root.Links[linkJiraCredentialsTest]
-		}
-
-		if !isEmpty(root.Links[linkLetsEncryptConfiguration]) {
-			letsEncryptConfigurationPath = root.Links[linkLetsEncryptConfiguration]
-		}
-
-		if !isEmpty(root.Links[linkLibraryVariables]) {
-			libraryVariablesPath = root.Links[linkLibraryVariables]
-		}
-
-		if !isEmpty(root.Links[linkLifecycles]) {
-			lifecyclesPath = root.Links[linkLifecycles]
-		}
-
-		if !isEmpty(root.Links[linkLoginInitiated]) {
-			loginInitiatedPath = root.Links[linkLoginInitiated]
-		}
-
-		if !isEmpty(root.Links[linkMachineOperatingSystems]) {
-			machineOperatingSystemsPath = root.Links[linkMachineOperatingSystems]
-		}
-
-		if !isEmpty(root.Links[linkMachinePolicies]) {
-			machinePoliciesPath = root.Links[linkMachinePolicies]
-		}
-
-		if !isEmpty(root.Links[linkMachinePolicyTemplate]) {
-			machinePolicyTemplatePath = root.Links[linkMachinePolicyTemplate]
-		}
-
-		if !isEmpty(root.Links[linkMachineRoles]) {
-			machineRolesPath = root.Links[linkMachineRoles]
-		}
-
-		if !isEmpty(root.Links[linkMachines]) {
-			machinesPath = root.Links[linkMachines]
-		}
-
-		if !isEmpty(root.Links[linkMachineShells]) {
-			machineShellsPath = root.Links[linkMachineShells]
-		}
-
-		if !isEmpty(root.Links[linkMaintenanceConfiguration]) {
-			maintenanceConfigurationPath = root.Links[linkMaintenanceConfiguration]
-		}
-
-		if !isEmpty(root.Links[linkMigrationsImport]) {
-			migrationsImportPath = root.Links[linkMigrationsImport]
-		}
-
-		if !isEmpty(root.Links[linkMigrationsPartialExport]) {
-			migrationsPartialExportPath = root.Links[linkMigrationsPartialExport]
-		}
-
-		if !isEmpty(root.Links[linkOctopusServerClusterSummary]) {
-			octopusServerClusterSummaryPath = root.Links[linkOctopusServerClusterSummary]
-		}
-
-		if !isEmpty(root.Links[linkOctopusServerNodes]) {
-			octopusServerNodesPath = root.Links[linkOctopusServerNodes]
-		}
-
-		if !isEmpty(root.Links[linkPackageDeltaSignature]) {
-			packageDeltaSignaturePath = root.Links[linkPackageDeltaSignature]
-		}
-
-		if !isEmpty(root.Links[linkProjects]) {
-			projectsPath = root.Links[linkProjects]
-		}
-
-		if !isEmpty(root.Links[linkProjectGroups]) {
-			projectGroupsPath = root.Links[linkProjectGroups]
-		}
-
-		if !isEmpty(root.Links[linkProjectTriggers]) {
-			projectTriggersPath = root.Links[linkProjectTriggers]
-		}
-
-		if !isEmpty(root.Links[linkSelf]) {
-			rootPath = root.Links[linkSelf]
-		}
-
-		if !isEmpty(root.Links[linkSpaces]) {
-			spacesPath = root.Links[linkSpaces]
-		}
-
-		if !isEmpty(root.Links[linkTagSets]) {
-			tagSetsPath = root.Links[linkTagSets]
-		}
-
-		if !isEmpty(root.Links[linkTenants]) {
-			tenantsPath = root.Links[linkTenants]
-		}
-
-		if !isEmpty(root.Links[linkUsers]) {
-			usersPath = root.Links[linkUsers]
-		}
-
-		if !isEmpty(root.Links[linkVariables]) {
-			variablesPath = root.Links[linkVariables]
-		}
-
-		if !isEmpty(root.Links[linkWorkerPools]) {
-			workerPoolsPath = root.Links[linkWorkerPools]
-		}
-
-		if !isEmpty(root.Links[linkWorkers]) {
-			workersPath = root.Links[linkWorkers]
-		}
 	}
+
+	rootPath := root.GetLinkPath(sroot, linkSelf)
+	apiKeysPath := "/api/users"
+	dynamicExtensionsPath := "/api/dynamic-extensions"
+	jiraIntegrationPath := "/api/jiraintegration"
+	licensesPath := "/api/licenses"
+	migrationsPath := "/api/migrations"
+	reportingPath := "/api/reporting"
+
+	accountsPath := root.GetLinkPath(sroot, linkAccounts)
+	actionTemplatesLogo := root.GetLinkPath(sroot, linkActionTemplateLogo)
+	actionTemplatesPath := root.GetLinkPath(sroot, linkActionTemplates)
+	actionTemplatesCategories := root.GetLinkPath(sroot, linkActionTemplatesCategories)
+	actionTemplatesSearch := root.GetLinkPath(sroot, linkActionTemplatesSearch)
+	actionTemplateVersionedLogo := root.GetLinkPath(sroot, linkActionTemplateVersionedLogo)
+	artifactsPath := root.GetLinkPath(sroot, linkArtifacts)
+	authenticateOctopusIDPath := root.GetLinkPath(sroot, linkAuthenticateOctopusID)
+	authenticationPath := root.GetLinkPath(sroot, linkAuthentication)
+	azureDevOpsConnectivityCheckPath := root.GetLinkPath(sroot, linkAzureDevOpsConnectivityCheck)
+	azureEnvironmentsPath := root.GetLinkPath(sroot, linkAzureEnvironments)
+	buildInformationPath := root.GetLinkPath(sroot, linkBuildInformation)
+	buildInformationBulkPath := root.GetLinkPath(sroot, linkBuildInformationBulk)
+	builtInFeedStatsPath := root.GetLinkPath(sroot, linkBuiltInFeedStats)
+	certificateConfigurationPath := root.GetLinkPath(sroot, linkCertificateConfiguration)
+	certificatesPath := root.GetLinkPath(sroot, linkCertificates)
+	channelsPath := root.GetLinkPath(sroot, linkChannels)
+	cloudTemplatePath := root.GetLinkPath(sroot, linkCloudTemplate)
+	communityActionTemplatesPath := root.GetLinkPath(sroot, linkCommunityActionTemplates)
+	configurationPath := root.GetLinkPath(sroot, linkConfiguration)
+	currentLicensePath := root.GetLinkPath(sroot, linkCurrentLicense)
+	currentLicenseStatusPath := root.GetLinkPath(sroot, linkCurrentLicenseStatus)
+	currentUserPath := root.GetLinkPath(sroot, linkCurrentUser)
+	dashboardPath := root.GetLinkPath(sroot, linkDashboard)
+	dashboardConfigurationPath := root.GetLinkPath(sroot, linkDashboardConfiguration)
+	dashboardDynamicPath := root.GetLinkPath(sroot, linkDashboardDynamic)
+	deploymentProcessesPath := root.GetLinkPath(sroot, linkDeploymentProcesses)
+	deploymentsPath := root.GetLinkPath(sroot, linkDeployments)
+	discoverMachinePath := root.GetLinkPath(sroot, linkDiscoverMachine)
+	discoverWorkerPath := root.GetLinkPath(sroot, linkDiscoverWorker)
+	dynamicExtensionsFeaturesMetadataPath := root.GetLinkPath(sroot, linkDynamicExtensionsFeaturesMetadata)
+	dynamicExtensionsFeaturesValuesPath := root.GetLinkPath(sroot, linkDynamicExtensionsFeaturesValues)
+	dynamicExtensionsScriptsPath := root.GetLinkPath(sroot, linkDynamicExtensionsScripts)
+	environmentsPath := root.GetLinkPath(sroot, linkEnvironments)
+	environmentSortOrderPath := root.GetLinkPath(sroot, linkEnvironmentSortOrder)
+	environmentsSummaryPath := root.GetLinkPath(sroot, linkEnvironmentsSummary)
+	eventAgentsPath := root.GetLinkPath(sroot, linkEventAgents)
+	eventCategoriesPath := root.GetLinkPath(sroot, linkEventCategories)
+	eventDocumentTypesPath := root.GetLinkPath(sroot, linkEventDocumentTypes)
+	eventGroupsPath := root.GetLinkPath(sroot, linkEventGroups)
+	eventsPath := root.GetLinkPath(sroot, linkEvents)
+	extensionStatsPath := root.GetLinkPath(sroot, linkExtensionStats)
+	externalSecurityGroupProvidersPath := root.GetLinkPath(sroot, linkExternalSecurityGroupProviders)
+	externalUserSearchPath := root.GetLinkPath(sroot, linkExternalUserSearch)
+	featuresConfigurationPath := root.GetLinkPath(sroot, linkFeaturesConfiguration)
+	feedsPath := root.GetLinkPath(sroot, linkFeeds)
+	interruptionsPath := root.GetLinkPath(sroot, linkInterruptions)
+	invitationsPath := root.GetLinkPath(sroot, linkInvitations)
+	issueTrackersPath := root.GetLinkPath(sroot, linkIssueTrackers)
+	jiraConnectAppCredentialsTestPath := root.GetLinkPath(sroot, linkJiraConnectAppCredentialsTest)
+	jiraCredentialsTestPath := root.GetLinkPath(sroot, linkJiraCredentialsTest)
+	letsEncryptConfigurationPath := root.GetLinkPath(sroot, linkLetsEncryptConfiguration)
+	libraryVariablesPath := root.GetLinkPath(sroot, linkLibraryVariables)
+	lifecyclesPath := root.GetLinkPath(sroot, linkLifecycles)
+	loginInitiatedPath := root.GetLinkPath(sroot, linkLoginInitiated)
+	machineOperatingSystemsPath := root.GetLinkPath(sroot, linkMachineOperatingSystems)
+	machinePoliciesPath := root.GetLinkPath(sroot, linkMachinePolicies)
+	machinePolicyTemplatePath := root.GetLinkPath(sroot, linkMachinePolicyTemplate)
+	machineRolesPath := root.GetLinkPath(sroot, linkMachineRoles)
+	machinesPath := root.GetLinkPath(sroot, linkMachines)
+	machineShellsPath := root.GetLinkPath(sroot, linkMachineShells)
+	maintenanceConfigurationPath := root.GetLinkPath(sroot, linkMaintenanceConfiguration)
+	migrationsImportPath := root.GetLinkPath(sroot, linkMigrationsImport)
+	migrationsPartialExportPath := root.GetLinkPath(sroot, linkMigrationsPartialExport)
+	octopusServerClusterSummaryPath := root.GetLinkPath(sroot, linkOctopusServerClusterSummary)
+	octopusServerNodesPath := root.GetLinkPath(sroot, linkOctopusServerNodes)
+	packageDeltaSignaturePath := root.GetLinkPath(sroot, linkPackageDeltaSignature)
+	packageDeltaUploadPath := root.GetLinkPath(sroot, linkPackageDeltaUpload)
+	packageMetadataPath := root.GetLinkPath(sroot, linkPackageMetadata)
+	packageNotesListPath := root.GetLinkPath(sroot, linkPackageNotesList)
+	packagesPath := root.GetLinkPath(sroot, linkPackages)
+	packagesBulkPath := root.GetLinkPath(sroot, linkPackagesBulk)
+	packageUploadPath := root.GetLinkPath(sroot, linkPackageUpload)
+	performanceConfigurationPath := root.GetLinkPath(sroot, linkPerformanceConfiguration)
+	permissionsPath := root.GetLinkPath(sroot, linkPermissions)
+	projectGroupsPath := root.GetLinkPath(sroot, linkProjectGroups)
+	projectPulsePath := root.GetLinkPath(sroot, linkProjectPulse)
+	projectsPath := root.GetLinkPath(sroot, linkProjects)
+	projectsExperimentalSummariesPath := root.GetLinkPath(sroot, linkProjectsExperimentalSummaries)
+	projectTriggersPath := root.GetLinkPath(sroot, linkProjectTriggers)
+	proxiesPath := root.GetLinkPath(sroot, linkProxies)
+	registerPath := root.GetLinkPath(sroot, linkRegister)
+	releasesPath := root.GetLinkPath(sroot, linkReleases)
+	reportingDeploymentsCountedByWeekPath := root.GetLinkPath(sroot, linkReportingDeploymentsCountedByWeek)
+	runbookProcessesPath := root.GetLinkPath(sroot, linkRunbookProcesses)
+	runbookRunsPath := root.GetLinkPath(sroot, linkRunbookRuns)
+	runbooksPath := root.GetLinkPath(sroot, linkRunbooks)
+	runbookSnapshotsPath := root.GetLinkPath(sroot, linkRunbookSnapshots)
+	scheduledProjectTriggersPath := root.GetLinkPath(sroot, linkScheduledProjectTriggers)
+	schedulerPath := root.GetLinkPath(sroot, linkScheduler)
+	scopedUserRolesPath := root.GetLinkPath(sroot, linkScopedUserRoles)
+	serverConfigurationPath := root.GetLinkPath(sroot, linkServerConfiguration)
+	serverConfigurationSettingsPath := root.GetLinkPath(sroot, linkServerConfigurationSettings)
+	serverHealthStatusPath := root.GetLinkPath(sroot, linkServerHealthStatus)
+	serverStatusPath := root.GetLinkPath(sroot, linkServerStatus)
+	signInPath := root.GetLinkPath(sroot, linkSignIn)
+	signOutPath := root.GetLinkPath(sroot, linkSignOut)
+	smtpConfigurationPath := root.GetLinkPath(sroot, linkSMTPConfiguration)
+	smtpIsConfiguredPath := root.GetLinkPath(sroot, linkSMTPIsConfigured)
+	spaceHomePath := root.GetLinkPath(sroot, linkSpaceHome)
+	spacesPath := root.GetLinkPath(sroot, linkSpaces)
+	subscriptionsPath := root.GetLinkPath(sroot, linkSubscriptions)
+	tagSetsPath := root.GetLinkPath(sroot, linkTagSets)
+	tagSetSortOrderPath := root.GetLinkPath(sroot, linkTagSetSortOrder)
+	tasksPath := root.GetLinkPath(sroot, linkTasks)
+	taskTypesPath := root.GetLinkPath(sroot, linkTaskTypes)
+	teamMembershipPath := root.GetLinkPath(sroot, linkTeamMembership)
+	teamMembershipPreviewTeamPath := root.GetLinkPath(sroot, linkTeamMembershipPreviewTeam)
+	teamsPath := root.GetLinkPath(sroot, linkTeams)
+	tenantsPath := root.GetLinkPath(sroot, linkTenants)
+	tenantsMissingVariablesPath := root.GetLinkPath(sroot, linkTenantsMissingVariables)
+	tenantsStatusPath := root.GetLinkPath(sroot, linkTenantsStatus)
+	tenantTagTestPath := root.GetLinkPath(sroot, linkTenantTagTest)
+	tenantVariablesPath := root.GetLinkPath(sroot, linkTenantVariables)
+	timezonesPath := root.GetLinkPath(sroot, linkTimezones)
+	upgradeConfigurationPath := root.GetLinkPath(sroot, linkUpgradeConfiguration)
+	userAuthenticationPath := root.GetLinkPath(sroot, linkUserAuthentication)
+	userIdentityMetadataPath := root.GetLinkPath(sroot, linkUserIdentityMetadata)
+	userOnboardingPath := root.GetLinkPath(sroot, linkUserOnboarding)
+	userRolesPath := root.GetLinkPath(sroot, linkUserRoles)
+	usersPath := root.GetLinkPath(sroot, linkUsers)
+	variableNamesPath := root.GetLinkPath(sroot, linkVariableNames)
+	variablePreviewPath := root.GetLinkPath(sroot, linkVariablePreview)
+	variablesPath := root.GetLinkPath(sroot, linkVariables)
+	versionControlClearCachePath := root.GetLinkPath(sroot, linkVersionControlClearCache)
+	versionRuleTestPath := root.GetLinkPath(sroot, linkVersionRuleTest)
+	workerOperatingSystemsPath := root.GetLinkPath(sroot, linkWorkerOperatingSystems)
+	workerPoolsPath := root.GetLinkPath(sroot, linkWorkerPools)
+	workerPoolsDynamicWorkerTypesPath := root.GetLinkPath(sroot, linkWorkerPoolsDynamicWorkerTypes)
+	workerPoolsSortOrderPath := root.GetLinkPath(sroot, linkWorkerPoolsSortOrder)
+	workerPoolsSummaryPath := root.GetLinkPath(sroot, linkWorkerPoolsSummary)
+	workerPoolsSupportedTypesPath := root.GetLinkPath(sroot, linkWorkerPoolsSupportedTypes)
+	workersPath := root.GetLinkPath(sroot, linkWorkers)
+	workerShellsPath := root.GetLinkPath(sroot, linkWorkerShells)
+	workerToolsLatestImagesPath := root.GetLinkPath(sroot, linkWorkerToolsLatestImages)
 
 	return &Client{
 		sling:                          base,
