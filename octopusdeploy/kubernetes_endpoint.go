@@ -25,9 +25,9 @@ type KubernetesEndpoint struct {
 }
 
 // NewKubernetesEndpoint creates and initializes a new Kubernetes endpoint.
-func NewKubernetesEndpoint(clusterURL url.URL) *KubernetesEndpoint {
+func NewKubernetesEndpoint(clusterURL *url.URL) *KubernetesEndpoint {
 	return &KubernetesEndpoint{
-		ClusterURL:         &clusterURL,
+		ClusterURL:         clusterURL,
 		CommunicationStyle: "Kubernetes",
 		resource:           *newResource(),
 	}

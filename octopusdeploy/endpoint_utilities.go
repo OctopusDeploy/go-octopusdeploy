@@ -16,7 +16,7 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	case "AzureWebApp":
 		endpoint = NewAzureWebAppEndpoint()
 	case "Kubernetes":
-		endpoint = NewKubernetesEndpoint(*endpointResource.ClusterURL)
+		endpoint = NewKubernetesEndpoint(endpointResource.ClusterURL)
 	case "None":
 		endpoint = NewCloudRegionEndpoint()
 	case "OfflineDrop":

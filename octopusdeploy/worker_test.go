@@ -15,7 +15,7 @@ func TestWorkersNew(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, url)
 
-	kubernetesEndpoint := NewKubernetesEndpoint(*url)
+	kubernetesEndpoint := NewKubernetesEndpoint(url)
 	require.NotNil(t, kubernetesEndpoint)
 
 	name := getRandomName()

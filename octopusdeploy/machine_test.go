@@ -20,7 +20,7 @@ func TestKubernetesEndpoint(t *testing.T) {
 	require.NotNil(t, url)
 
 	machine := &machine{
-		Endpoint: NewKubernetesEndpoint(*url),
+		Endpoint: NewKubernetesEndpoint(url),
 	}
 	assert.NotNil(t, machine)
 	assert.NoError(t, machine.Validate())

@@ -25,7 +25,7 @@ func CreateTestKubernetesEndpoint(t *testing.T) *KubernetesEndpoint {
 	proxyID := "proxy-id"
 	url, _ := url.Parse("https://example.com/")
 
-	kubernetesEndpoint := NewKubernetesEndpoint(*url)
+	kubernetesEndpoint := NewKubernetesEndpoint(url)
 	require.NoError(t, kubernetesEndpoint.Validate())
 
 	kubernetesEndpoint.DefaultWorkerPoolID = defaultWorkerPoolID
@@ -47,7 +47,7 @@ func TestKubernetesEndpointNew(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, url)
 
-	resource := NewKubernetesEndpoint(*url)
+	resource := NewKubernetesEndpoint(url)
 	assert.NoError(t, resource.Validate())
 }
 
@@ -61,7 +61,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	id := "endpoint-id"
 	url, _ := url.Parse("https://example.com/")
 
-	resource := NewKubernetesEndpoint(*url)
+	resource := NewKubernetesEndpoint(url)
 	resource.ClusterCertificate = "cluster-certificate"
 	resource.Container.FeedID = &feedID
 	resource.DefaultWorkerPoolID = "default-worker-pool-id"
