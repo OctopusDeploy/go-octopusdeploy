@@ -41,13 +41,14 @@ func (s deploymentProcessService) GetByID(id string) (*DeploymentProcess, error)
 	return resp.(*DeploymentProcess), nil
 }
 
-func (s deploymentProcessService) Update(resource DeploymentProcess) (*DeploymentProcess, error) {
-	path, err := getUpdatePath(s, &resource)
+// Update modifies a deployment process based on the one provided as input.
+func (s deploymentProcessService) Update(deploymentProcess *DeploymentProcess) (*DeploymentProcess, error) {
+	path, err := getUpdatePath(s, deploymentProcess)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(DeploymentProcess), path)
+	resp, err := apiUpdate(s.getClient(), deploymentProcess, new(DeploymentProcess), path)
 	if err != nil {
 		return nil, err
 	}
