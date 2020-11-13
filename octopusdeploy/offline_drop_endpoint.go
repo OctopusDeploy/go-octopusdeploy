@@ -3,8 +3,8 @@ package octopusdeploy
 type OfflineDropEndpoint struct {
 	ApplicationsDirectory                string                  `json:"ApplicationsDirectory,omitempty"`
 	Destination                          *OfflineDropDestination `json:"Destination"`
-	WorkingDirectory                     string                  `json:"OctopusWorkingDirectory,omitempty"`
 	SensitiveVariablesEncryptionPassword *SensitiveValue         `json:"SensitiveVariablesEncryptionPassword"`
+	WorkingDirectory                     string                  `json:"OctopusWorkingDirectory,omitempty"`
 
 	endpoint
 }
