@@ -135,6 +135,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	k.Authentication = fields.Authentication
 	k.ClusterCertificate = fields.ClusterCertificate
 	k.ClusterURL = u
+	k.CommunicationStyle = fields.CommunicationStyle
 	k.Container = fields.Container
 	k.DefaultWorkerPoolID = fields.DefaultWorkerPoolID
 	k.Namespace = fields.Namespace
