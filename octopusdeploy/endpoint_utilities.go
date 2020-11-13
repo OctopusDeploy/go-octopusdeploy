@@ -12,7 +12,7 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	switch endpointResource.CommunicationStyle {
 	case "AzureCloudService":
 	case "AzureServiceFabricCluster":
-		endpoint = NewServiceFabricEndpoint()
+		endpoint = NewAzureServiceFabricEndpoint()
 	case "AzureWebApp":
 		endpoint = NewAzureWebAppEndpoint()
 	case "Kubernetes":
