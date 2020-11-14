@@ -27,14 +27,13 @@ type Channels struct {
 	PagedResults
 }
 
-func NewChannel(name string, description string, projectID string) *Channel {
+func NewChannel(name string, projectID string) *Channel {
 	return &Channel{
-		Description: strings.TrimSpace(description),
-		Name:        strings.TrimSpace(name),
-		ProjectID:   projectID,
-		Rules:       []ChannelRule{},
-		TenantTags:  []string{},
-		resource:    *newResource(),
+		Name:       strings.TrimSpace(name),
+		ProjectID:  projectID,
+		Rules:      []ChannelRule{},
+		TenantTags: []string{},
+		resource:   *newResource(),
 	}
 }
 
