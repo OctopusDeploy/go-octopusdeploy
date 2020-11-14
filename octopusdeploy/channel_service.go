@@ -142,13 +142,13 @@ func (s channelService) GetReleases(channel *Channel, releaseQuery ...*ReleaseQu
 }
 
 // Update modifies an Channel based on the one provided as input.
-func (s channelService) Update(resource Channel) (*Channel, error) {
-	path, err := getUpdatePath(s, &resource)
+func (s channelService) Update(channel *Channel) (*Channel, error) {
+	path, err := getUpdatePath(s, channel)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(Channel), path)
+	resp, err := apiUpdate(s.getClient(), channel, new(Channel), path)
 	if err != nil {
 		return nil, err
 	}
