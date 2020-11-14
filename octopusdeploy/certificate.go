@@ -20,13 +20,13 @@ type CertificateResource struct {
 	Notes                    string                 `json:"Notes,omitempty"`
 	Password                 *SensitiveValue        `json:"Password,omitempty"`
 	ReplacedBy               string                 `json:"ReplacedBy,omitempty"`
+	SelfSigned               bool                   `json:"SelfSigned,omitempty"`
 	SerialNumber             string                 `json:"SerialNumber,omitempty"`
 	SignatureAlgorithmName   string                 `json:"SignatureAlgorithmName,omitempty"`
 	SubjectAlternativeNames  []string               `json:"SubjectAlternativeNames,omitempty"`
 	SubjectCommonName        string                 `json:"SubjectCommonName,omitempty"`
 	SubjectDistinguishedName string                 `json:"SubjectDistinguishedName,omitempty"`
 	SubjectOrganization      string                 `json:"SubjectOrganization,omitempty"`
-	SelfSigned               bool                   `json:"SelfSigned,omitempty"`
 	TenantedDeploymentMode   TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
 	TenantIDs                []string               `json:"TenantIds,omitempty"`
 	TenantTags               []string               `json:"TenantTags,omitempty"`
