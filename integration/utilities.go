@@ -10,37 +10,14 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-const (
-	emptyString      string = ""
-	whitespaceString string = " "
-)
+const emptyString string = ""
 
 func isEmpty(s string) bool {
 	return len(strings.TrimSpace(s)) == 0
 }
 
-func createInvalidParameterError(methodName string, ParameterName string) error {
-	return fmt.Errorf("%s: the input parameter (%s) is invalid", methodName, ParameterName)
-}
-
-func createInvalidClientStateError(ServiceName string) error {
-	return fmt.Errorf("%s: the state of the internal client is invalid", ServiceName)
-}
-
-func createInvalidPathError(ServiceName string) error {
-	return fmt.Errorf("%s: the internal path is not set", ServiceName)
-}
-
-func createItemNotFoundError(ServiceName string, methodName string, name string) error {
-	return fmt.Errorf("%s: the item (%s) via %s was not found", ServiceName, name, methodName)
-}
-
 func createRequiredParameterIsEmptyOrNilError(parameter string) error {
 	return fmt.Errorf("the required parameter, %s is nil or empty", parameter)
-}
-
-func createClientInitializationError(methodName string) error {
-	return fmt.Errorf("%s: unable to initialize internal client", methodName)
 }
 
 func createRandomBoolean() bool {
@@ -50,10 +27,6 @@ func createRandomBoolean() bool {
 
 func createResourceNotFoundError(name string, identifier string, value string) error {
 	return fmt.Errorf("the service, %s could not find the %s (%s)", name, identifier, value)
-}
-
-func createValidationFailureError(methodName string, err error) error {
-	return fmt.Errorf("validation failure in %s; %v", methodName, err)
 }
 
 func IsEqualLinks(linksA map[string]string, linksB map[string]string) bool {
@@ -132,11 +105,6 @@ func getShortRandomName() string {
 
 func getRandomVarName() string {
 	return fmt.Sprintf("go-octo-%v", time.Now().Unix())
-}
-
-func getRandomDuration() time.Duration {
-	duration, _ := time.ParseDuration(fmt.Sprintf("%ds", rand.Int63n(1000)))
-	return duration
 }
 
 func Bool(v bool) *bool       { return &v }
