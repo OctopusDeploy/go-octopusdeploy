@@ -39,7 +39,7 @@ func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.Client, envi
 	require.NotNil(t, endpoint)
 
 	endpoint.ApplicationsDirectory = "C:\\Applications"
-	endpoint.OctopusWorkingDirectory = "C:\\Octopus"
+	endpoint.WorkingDirectory = "C:\\Octopus"
 
 	deploymentTarget := octopusdeploy.NewDeploymentTarget(name, endpoint, environmentIDs, roles)
 	deploymentTarget.IsDisabled = true
@@ -224,7 +224,7 @@ func TestMachineServiceUpdate(t *testing.T) {
 	require.True(t, ok)
 
 	endpoint.ApplicationsDirectory = getRandomName()
-	endpoint.OctopusWorkingDirectory = getRandomName()
+	endpoint.WorkingDirectory = getRandomName()
 	deploymentTarget.Endpoint = endpoint
 
 	updatedDeploymentTarget, err := client.Machines.Update(deploymentTarget)
