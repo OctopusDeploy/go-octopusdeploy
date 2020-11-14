@@ -114,7 +114,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 
 	deploymentProcess.Steps = append(deploymentProcess.Steps, *step1)
 
-	updated, err := client.DeploymentProcesses.Update(*deploymentProcess)
+	updated, err := client.DeploymentProcesses.Update(deploymentProcess)
 
 	assert.NoError(t, err, "error when updating deployment process")
 	assert.Equal(t, updated.Steps[0].Properties, deploymentProcess.Steps[0].Properties)
