@@ -19,12 +19,11 @@ func TestChannelWithName(t *testing.T) {
 }
 
 func TestNewChannelWithEmptyName(t *testing.T) {
-	description := getRandomName()
 	projectID := getRandomName()
 
-	channel := NewChannel(emptyString, description, projectID)
+	channel := NewChannel(emptyString, projectID)
 	require.Error(t, channel.Validate())
 
-	channel = NewChannel(whitespaceString, description, projectID)
+	channel = NewChannel(whitespaceString, projectID)
 	require.Error(t, channel.Validate())
 }
