@@ -56,6 +56,23 @@ func (s machinePolicyService) Add(resource *MachinePolicy) (*MachinePolicy, erro
 	return resp.(*MachinePolicy), nil
 }
 
+// Get returns a collection of machine policies based on the criteria defined
+// by its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func (s machinePolicyService) Get(machinePoliciesQuery MachinePoliciesQuery) (*MachinePolicies, error) {
+	path, err := s.getURITemplate().Expand(machinePoliciesQuery)
+	if err != nil {
+		return &MachinePolicies{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(MachinePolicies), path)
+	if err != nil {
+		return &MachinePolicies{}, err
+	}
+
+	return response.(*MachinePolicies), nil
+}
+
 // GetAll returns all machine policies. If none can be found or an error
 // occurs, it returns an empty collection.
 func (s machinePolicyService) GetAll() ([]*MachinePolicy, error) {
