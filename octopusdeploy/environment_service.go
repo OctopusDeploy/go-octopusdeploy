@@ -58,6 +58,23 @@ func (s environmentService) Add(environment *Environment) (*Environment, error) 
 	return resp.(*Environment), nil
 }
 
+// Get returns a collection of environments based on the criteria defined by
+// its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func (s environmentService) Get(environmentsQuery EnvironmentsQuery) (*Environments, error) {
+	path, err := s.getURITemplate().Expand(environmentsQuery)
+	if err != nil {
+		return &Environments{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(Environments), path)
+	if err != nil {
+		return &Environments{}, err
+	}
+
+	return response.(*Environments), nil
+}
+
 // GetAll returns all environments. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s environmentService) GetAll() ([]*Environment, error) {
