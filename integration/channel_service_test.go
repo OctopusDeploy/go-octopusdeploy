@@ -40,9 +40,8 @@ func CreateTestChannel(t *testing.T, client *octopusdeploy.Client, project *octo
 	require.NotNil(t, client)
 
 	name := getRandomName()
-	description := "Description for " + name + " (OK to Delete)"
 
-	channel := octopusdeploy.NewChannel(name, description, project.GetID())
+	channel := octopusdeploy.NewChannel(name, project.GetID())
 	require.NotNil(t, channel)
 	require.NoError(t, channel.Validate())
 
