@@ -47,7 +47,7 @@ func TestWorkersUnmarshalJSON(t *testing.T) {
 	endpoint.ProxyID = "fake-proxy-id"
 	endpoint.TentacleVersionDetails = NewTentacleVersionDetails(&version, true, true, false)
 
-	listeningTentacleEndpoint := tentaclePassiveWorker.Endpoint.(ListeningTentacleEndpoint)
+	listeningTentacleEndpoint := tentaclePassiveWorker.Endpoint.(*ListeningTentacleEndpoint)
 
 	assert.Equal(t, endpoint.CertificateSignatureAlgorithm, listeningTentacleEndpoint.CertificateSignatureAlgorithm)
 	assert.Equal(t, endpoint.GetID(), listeningTentacleEndpoint.GetID())
