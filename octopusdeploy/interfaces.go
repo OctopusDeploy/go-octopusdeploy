@@ -62,6 +62,10 @@ type IHasSpace interface {
 	SetSpaceID(string)
 }
 
+type IKubernetesAuthentication interface {
+	GetAuthenticationType() string
+}
+
 // IResource defines the interface for all resources.
 type IResource interface {
 	GetID() string

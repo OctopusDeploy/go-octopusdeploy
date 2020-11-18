@@ -10,7 +10,7 @@ import (
 )
 
 type KubernetesEndpoint struct {
-	Authentication      EndpointAuthentication    `json:"Authentication,omitempty"`
+	Authentication      IKubernetesAuthentication `json:"Authentication,omitempty"`
 	ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
 	ClusterURL          *url.URL                  `json:"ClusterUrl" validate:"required,url"`
 	CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
@@ -63,7 +63,7 @@ func (k *KubernetesEndpoint) SetProxyID(proxyID string) {
 // MarshalJSON returns a Kubernetes endpoint as its JSON encoding.
 func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 	kubernetesEndpoint := struct {
-		Authentication      EndpointAuthentication    `json:"Authentication,omitempty"`
+		Authentication      IKubernetesAuthentication `json:"Authentication,omitempty"`
 		ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
 		ClusterURL          string                    `json:"ClusterUrl"`
 		CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
@@ -94,7 +94,6 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON sets this Kubernetes endpoint to its representation in JSON.
 func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		Authentication      EndpointAuthentication    `json:"Authentication,omitempty"`
 		ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
 		ClusterURL          string                    `json:"ClusterUrl" validate:"required,url"`
 		CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
@@ -106,6 +105,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		SkipTLSVerification string                    `json:"SkipTlsVerification"`
 		resource
 	}
+
 	err := json.Unmarshal(data, &fields)
 	if err != nil {
 		return err
@@ -132,7 +132,6 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		k.SkipTLSVerification = skipTLSVerification
 	}
 
-	k.Authentication = fields.Authentication
 	k.ClusterCertificate = fields.ClusterCertificate
 	k.ClusterURL = u
 	k.CommunicationStyle = fields.CommunicationStyle
@@ -142,6 +141,66 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	k.ProxyID = fields.ProxyID
 	k.RunningInContainer = fields.RunningInContainer
 	k.resource = fields.resource
+
+	var kubernetesEndpoint map[string]*json.RawMessage
+	err = json.Unmarshal(data, &kubernetesEndpoint)
+	if err != nil {
+		return err
+	}
+
+	var authentication *json.RawMessage
+	var authenticationProperties map[string]*json.RawMessage
+	var authenticationType string
+
+	if kubernetesEndpoint["Authentication"] != nil {
+		authenticationValue := kubernetesEndpoint["Authentication"]
+
+		err = json.Unmarshal(*authenticationValue, &authentication)
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(*authentication, &authenticationProperties)
+		if err != nil {
+			return err
+		}
+
+		if authenticationProperties["AuthenticationType"] != nil {
+			at := authenticationProperties["AuthenticationType"]
+			json.Unmarshal(*at, &authenticationType)
+		}
+	}
+
+	switch authenticationType {
+	case "KubernetesAws":
+		var kubernetesAwsAuthentication *KubernetesAwsAuthentication
+		err := json.Unmarshal(*authentication, &kubernetesAwsAuthentication)
+		if err != nil {
+			return err
+		}
+		k.Authentication = kubernetesAwsAuthentication
+	case "KubernetesAzure":
+		var kubernetesAzureAuthentication *KubernetesAzureAuthentication
+		err := json.Unmarshal(*authentication, &kubernetesAzureAuthentication)
+		if err != nil {
+			return err
+		}
+		k.Authentication = kubernetesAzureAuthentication
+	case "KubernetesCertificate":
+		var kubernetesCertificateAuthentication *KubernetesCertificateAuthentication
+		err := json.Unmarshal(*authentication, &kubernetesCertificateAuthentication)
+		if err != nil {
+			return err
+		}
+		k.Authentication = kubernetesCertificateAuthentication
+	case "KubernetesStandard":
+		var kubernetesStandardAuthentication *KubernetesStandardAuthentication
+		err := json.Unmarshal(*authentication, &kubernetesStandardAuthentication)
+		if err != nil {
+			return err
+		}
+		k.Authentication = kubernetesStandardAuthentication
+	}
 
 	return nil
 }
