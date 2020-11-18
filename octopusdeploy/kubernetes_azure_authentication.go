@@ -3,7 +3,6 @@ package octopusdeploy
 type KubernetesAzureAuthentication struct {
 	ClusterName          string `json:"ClusterName,omitempty"`
 	ClusterResourceGroup string `json:"ClusterResourceGroup,omitempty"`
-	AdminLogin           string `json:"AdminLogin,omitempty"`
 
 	KubernetesStandardAuthentication
 }
