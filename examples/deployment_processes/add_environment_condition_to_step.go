@@ -64,8 +64,7 @@ func AddEnvironmentConditionToStepExample() {
 		}
 	}
 
-	_, err = client.DeploymentProcesses.Update(*deploymentProcess)
-
+	_, err = client.DeploymentProcesses.Update(deploymentProcess)
 	if err != nil {
 		// TODO: handle error
 	}
