@@ -34,7 +34,6 @@ func AddEnvironmentConditionToStepExample() {
 
 	for _, environmentName := range environmentNames {
 		environments, err := client.Environments.GetByName(environmentName)
-
 		if err != nil {
 			// TODO: handle error
 		}
@@ -43,13 +42,11 @@ func AddEnvironmentConditionToStepExample() {
 	}
 
 	project, err := client.Projects.GetByName(projectName)
-
 	if err != nil {
 		// TODO: handle error
 	}
 
 	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
-
 	if err != nil {
 		// TODO: handle error
 	}

@@ -40,7 +40,6 @@ func CreateScriptStepExample() {
 
 	// Get the deployment process
 	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
-
 	if err != nil {
 		// TODO: handle error
 	}
