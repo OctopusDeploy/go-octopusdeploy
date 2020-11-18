@@ -65,8 +65,15 @@ func NewEndpointResource(communicationStyle string) *EndpointResource {
 	}
 }
 
-// Validate checks the state of the feed resource and returns an error if
-// invalid.
-func (f EndpointResource) Validate() error {
-	return validator.New().Struct(f)
+// GetCommunicationStyle returns the communication style of this endpoint.
+func (e *EndpointResource) GetCommunicationStyle() string {
+	return e.CommunicationStyle
 }
+
+// Validate checks the state of the endpoint resource and returns an error if
+// invalid.
+func (e EndpointResource) Validate() error {
+	return validator.New().Struct(e)
+}
+
+var _ IEndpoint = &EndpointResource{}
