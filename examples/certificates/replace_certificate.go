@@ -10,7 +10,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-// ReplaceCertificateExample shows how to replace an existing certificate using go-octopusdeploy.
+// ReplaceCertificateExample provides an example of how to replace an existing
+// certificate in Octopus Deploy through the Go API client.
 func ReplaceCertificateExample() {
 	var (
 		apiKey          string = "API-YOUR_API_KEY"

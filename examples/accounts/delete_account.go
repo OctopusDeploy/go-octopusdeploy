@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteAccountExample provides an example of how to delete an account from
+// Octopus Deploy through the Go API client.
 func DeleteAccountExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteOctopusServerNodeExample provides an example of how to delete an
+// Octopus server node from Octopus Deploy through the Go API client.
 func DeleteOctopusServerNodeExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

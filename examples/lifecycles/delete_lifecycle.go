@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteLifecycleExample provides an example of how to delete a lifecycle from
+// Octopus Deploy through the Go API client.
 func DeleteLifecycleExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

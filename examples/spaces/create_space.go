@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// CreateSpaceExample provides an example of how to create a space in Octopus
+// Deploy through the Go API client.
 func CreateSpaceExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// CreateRunbookExample provides an example of how to create a runbook in
+// Octopus Deploy through the Go API client.
 func CreateRunbookExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

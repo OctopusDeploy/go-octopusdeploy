@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteWorkerExample provides an example of how to delete a worker from
+// Octopus Deploy through the Go API client.
 func DeleteWorkerExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

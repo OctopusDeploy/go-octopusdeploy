@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteActionTemplateExample provides an example of how to delete an action
+// template from Octopus Deploy through the Go API client.
 func DeleteActionTemplateExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

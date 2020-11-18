@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// GetRunbookByIDExample provides an example of how to get a runbook from
+// Octopus Deploy by its ID through the Go API client.
 func GetRunbookByIDExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

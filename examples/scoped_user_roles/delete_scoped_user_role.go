@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteScopedUserRoleExample provides an example of how to delete a scoped
+// user role from Octopus Deploy through the Go API client.
 func DeleteScopedUserRoleExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

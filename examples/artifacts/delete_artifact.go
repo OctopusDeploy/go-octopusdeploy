@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteArtifactExample provides an example of how to delete an artifact from
+// Octopus Deploy through the Go API client.
 func DeleteArtifactExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

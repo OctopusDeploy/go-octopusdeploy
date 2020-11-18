@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteMachinePolicyExample provides an example of how to delete a machine
+// policy from Octopus Deploy through the Go API client.
 func DeleteMachinePolicyExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

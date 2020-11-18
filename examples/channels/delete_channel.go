@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteChannelExample provides an example of how to delete a channel from
+// Octopus Deploy through the Go API client.
 func DeleteChannelExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

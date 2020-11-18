@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteProjectGroupExample provides an example of how to delete a project
+// group from Octopus Deploy through the Go API client.
 func DeleteProjectGroupExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

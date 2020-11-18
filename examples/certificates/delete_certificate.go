@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteCertificateExample provides an example of how to delete a certificate
+// from Octopus Deploy through the Go API client.
 func DeleteCertificateExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

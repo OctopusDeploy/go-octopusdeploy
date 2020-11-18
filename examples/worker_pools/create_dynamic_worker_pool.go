@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// CreateDynamicWorkerPoolExample provides an example of how to create a
+// dynamic worker pool Octopus Deploy through the Go API client.
 func CreateDynamicWorkerPoolExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

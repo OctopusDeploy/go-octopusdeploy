@@ -6,7 +6,8 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
-
+// DeleteRunbookExample provides an example of how to delete a runbook from
+// Octopus Deploy through the Go API client.
 func DeleteRunbookExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

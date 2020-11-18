@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteTeamExample provides an example of how to delete a team from Octopus
+// Deploy through the Go API client.
 func DeleteTeamExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

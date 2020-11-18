@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteTenantExample provides an example of how to delete a tenant from
+// Octopus Deploy through the Go API client.
 func DeleteTenantExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"

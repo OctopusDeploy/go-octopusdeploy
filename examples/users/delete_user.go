@@ -7,6 +7,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
+// DeleteUserExample provides an example of how to delete a user from Octopus
+// Deploy through the Go API client.
 func DeleteUserExample() {
 	var (
 		apiKey     string = "API-YOUR_API_KEY"
