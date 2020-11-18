@@ -30,7 +30,7 @@ func CreateTestKubernetesAwsEndpoint(t *testing.T) *KubernetesEndpoint {
 
 	kubernetesEndpoint.DefaultWorkerPoolID = defaultWorkerPoolID
 	kubernetesEndpoint.ClusterCertificate = clusterCertificate
-	kubernetesEndpoint.Authentication = *authentication
+	kubernetesEndpoint.Authentication = authentication
 	kubernetesEndpoint.ID = id
 	kubernetesEndpoint.ModifiedBy = lastModifiedBy
 	kubernetesEndpoint.ModifiedOn = &lastModifiedOn

@@ -1,9 +1,8 @@
 package octopusdeploy
 
 type KubernetesStandardAuthentication struct {
-	AccountID string `json:"AccountId,omitempty"`
-
-	kubernetesAuthentication
+	AccountID          string `json:"AccountId,omitempty"`
+	AuthenticationType string `json:"AuthenticationType"`
 }
 
 // NewKubernetesStandardAuthentication creates and initializes a Kubernetes AWS
@@ -14,6 +13,14 @@ func NewKubernetesStandardAuthentication(authenticationType string) *KubernetesS
 	}
 
 	return &KubernetesStandardAuthentication{
-		kubernetesAuthentication: *newKubernetesAuthentication(authenticationType),
+		AuthenticationType: authenticationType,
 	}
 }
+
+// GetAuthenticationType returns the authentication type of this
+// Kubernetes-based authentication.
+func (k *KubernetesStandardAuthentication) GetAuthenticationType() string {
+	return k.AuthenticationType
+}
+
+var _ IKubernetesAuthentication = &KubernetesStandardAuthentication{}

@@ -1,24 +1,24 @@
 package octopusdeploy
 
-// kubernetesAuthentication is the base definition of Kubernetes-based
-// authentication.
-type kubernetesAuthentication struct {
-	AuthenticationType string `json:"AuthenticationType" validate:"required,oneof=KubernetesAws KubernetesAzure KubernetesCertificate KubernetesStandard None"`
-}
-
-// newKubernetesAuthentication creates and initializes a new Kubernetes-based
-// authentication.
-func newKubernetesAuthentication(authenticationType string) *kubernetesAuthentication {
-	kubernetesAuthentication := &kubernetesAuthentication{
-		AuthenticationType: authenticationType,
-	}
-	return kubernetesAuthentication
+type KubernetesAuthentication struct {
+	AccountID                 string `json:"AccountId,omitempty"`
+	AdminLogin                string `json:"AdminLogin,omitempty"`
+	AssumeRole                bool   `json:"AssumeRole,omitempty"`
+	AssumedRoleARN            string `json:"AssumedRoleArn,omitempty"`
+	AssumedRoleSession        string `json:"AssumedRoleSession,omitempty"`
+	AssumeRoleSessionDuration int    `json:"AssumeRoleSessionDurationSeconds,omitempty"`
+	AssumeRoleExternalID      string `json:"AssumeRoleExternalId,omitempty"`
+	AuthenticationType        string `json:"AuthenticationType,omitempty"`
+	ClientCertificate         string `json:"ClientCertificate,omitempty"`
+	ClusterName               string `json:"ClusterName,omitempty"`
+	ClusterResourceGroup      string `json:"ClusterResourceGroup,omitempty"`
+	UseInstanceRole           bool   `json:"UseInstanceRole,omitempty"`
 }
 
 // GetAuthenticationType returns the authentication type of this
-// Kubernetes-based authenication.
-func (e kubernetesAuthentication) GetAuthenticationType() string {
-	return e.AuthenticationType
+// Kubernetes-based authentication.
+func (k *KubernetesAuthentication) GetAuthenticationType() string {
+	return k.AuthenticationType
 }
 
-var _ IKubernetesAuthentication = &kubernetesAuthentication{}
+var _ IKubernetesAuthentication = &KubernetesAuthentication{}

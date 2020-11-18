@@ -13,7 +13,7 @@ type EndpointResource struct {
 	AadUserCredentialPassword            SensitiveValue            `json:"AadUserCredentialPassword,omitempty"`
 	AccountID                            string                    `json:"AccountId"`
 	ApplicationsDirectory                string                    `json:"ApplicationsDirectory,omitempty"`
-	Authentication                       EndpointAuthentication    `json:"Authentication,omitempty"`
+	Authentication                       IKubernetesAuthentication `json:"Authentication,omitempty"`
 	CertificateSignatureAlgorithm        string                    `json:"CertificateSignatureAlgorithm,omitempty"`
 	CertificateStoreLocation             string                    `json:"CertificateStoreLocation,omitempty"`
 	CertificateStoreName                 string                    `json:"CertificateStoreName,omitempty"`
