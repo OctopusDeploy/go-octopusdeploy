@@ -138,7 +138,7 @@ func TestTeamServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	team, err := client.Teams.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceTeamService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, team)
 
 	teams, err := client.Teams.GetAll()

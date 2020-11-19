@@ -60,15 +60,17 @@ func (s workerService) Add(worker *Worker) (*Worker, error) {
 	return resp.(*Worker), nil
 }
 
-func (s workerService) DiscoverWorker() ([]string, error) {
-	resp, err := apiGet(s.getClient(), new([]string), s.discoverWorkerPath)
-	if err != nil {
-		return nil, err
-	}
+// TODO: validation implementation
 
-	response := resp.(*[]string)
-	return *response, nil
-}
+// func (s workerService) DiscoverWorker() ([]string, error) {
+// 	resp, err := apiGet(s.getClient(), new([]string), s.discoverWorkerPath)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	response := resp.(*[]string)
+// 	return *response, nil
+// }
 
 // GetAll returns all workers. If none can be found or an error occurs, it
 // returns an empty collection.

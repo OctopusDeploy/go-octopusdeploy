@@ -168,7 +168,7 @@ func TestLibraryVariableSetServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := service.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 
 	resources, err := service.GetAll()

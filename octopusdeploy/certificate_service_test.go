@@ -85,7 +85,7 @@ func TestCertificateServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err = service.GetByID(id)
-	assert.Equal(t, createResourceNotFoundError(service.getName(), "ID", id), err)
+	require.Error(t, err)
 	assert.Nil(t, resource)
 
 	resources, err := service.GetAll()

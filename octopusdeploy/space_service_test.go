@@ -18,7 +18,7 @@ func TestSpaceSetAddGetDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, "space"))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&Space{})
@@ -31,7 +31,7 @@ func TestSpaceServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
+	require.Equal(t, err, createInvalidParameterError(OperationAdd, "space"))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&Space{})
