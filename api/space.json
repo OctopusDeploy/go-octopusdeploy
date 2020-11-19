@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://octopus.com/2020/space.json",
+    "title": "Space",
+    "description": "Represents a space",
+    "type": "object",
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "description": {
+            "description": "description for a space",
+            "type": "string"
+        },
+        "id": {
+            "description": "unique identifier of a space",
+            "readOnly": true,
+            "type": "string"
+        },
+        "is_default": {
+            "description": "indicates if this space is the default for the Octopus Deploy",
+            "type": "boolean"
+        },
+        "is_task_queue_stopped": {
+            "description": "indicates if the task queue for this space is stopped",
+            "type": "boolean"
+        },
+        "links": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "modified_by": {
+            "description": "the user that last modified this space",
+            "type": "string"
+        },
+        "modified_on": {
+            "description": "the timestamp when this space was last modified",
+            "type": "string",
+            "format": "date-time"
+        },
+        "name": {
+            "description": "the name of a space",
+            "type": "string"
+        },
+        "space_managers_team_members": {
+            "items": {
+                "type": "string",
+                "uniqueItems": true
+            },
+            "type": "array"
+        },
+        "space_managers_teams": {
+            "items": {
+                "type": "string",
+                "uniqueItems": true
+            },
+            "type": "array"
+        }
+    }
+}
