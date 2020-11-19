@@ -6,6 +6,7 @@
     "type": "object",
     "properties": {
         "can_password_be_edited": {
+            "description": "indicates whether or not the password for this user can be edited",
             "readOnly": true,
             "type": "boolean"
         },
@@ -23,6 +24,10 @@
             "description": "unique identifier of a user",
             "readOnly": true,
             "type": "string"
+        },
+        "is_active": {
+            "description": "indicates the active status of a user",
+            "type": "boolean"
         }
     }
 }
