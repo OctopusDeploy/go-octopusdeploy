@@ -57,7 +57,7 @@ func TestDeploymentProcessServiceParameters(t *testing.T) {
 				require.Nil(t, resource)
 			} else {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createResourceNotFoundError(ServiceDeploymentProcessesService, "ID", tc.parameter))
+				require.Error(t, err)
 				require.Nil(t, resource)
 			}
 		})

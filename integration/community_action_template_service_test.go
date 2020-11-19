@@ -38,12 +38,12 @@ func TestCommunityActionTemplateServiceGetBy(t *testing.T) {
 
 	invalidID := getRandomName()
 	communityActionTemplate, err := octopusClient.CommunityActionTemplates.GetByID(invalidID)
-	require.Equal(t, err, createResourceNotFoundError(octopusdeploy.ServiceCommunityActionTemplateService, "ID", invalidID))
+	require.Error(t, err)
 	require.Nil(t, communityActionTemplate)
 
 	invalidName := getRandomName()
 	communityActionTemplate, err = octopusClient.CommunityActionTemplates.GetByName(invalidName)
-	require.Equal(t, err, createResourceNotFoundError(octopusdeploy.ServiceCommunityActionTemplateService, "name", invalidName))
+	require.Error(t, err)
 	require.Nil(t, communityActionTemplate)
 
 	communityActionTemplates, err := octopusClient.CommunityActionTemplates.GetAll()

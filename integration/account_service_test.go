@@ -246,7 +246,7 @@ func TestAccountServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := client.Accounts.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceAccountService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 }
 

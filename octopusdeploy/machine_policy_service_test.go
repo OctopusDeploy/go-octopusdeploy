@@ -240,12 +240,11 @@ func TestMachinePolicyServiceParameters(t *testing.T) {
 				require.Equal(t, err, createInvalidParameterError(OperationDeleteByID, ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, createResourceNotFoundError(ServiceMachinePolicyService, "ID", tc.parameter))
+				require.Error(t, err)
 				require.Nil(t, resource)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, createResourceNotFoundError(ServiceMachinePolicyService, "ID", tc.parameter))
 			}
 		})
 	}
