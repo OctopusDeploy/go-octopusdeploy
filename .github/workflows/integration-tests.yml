@@ -28,5 +28,5 @@ jobs:
         run: ./tests/Create-ApiKey.ps1
         shell: pwsh
 
-      - name: Run tests
-        run: go test -v ./...
+      - name: Run integration tests
+        run: go test -v ./integration/...
