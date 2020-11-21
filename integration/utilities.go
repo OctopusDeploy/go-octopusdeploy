@@ -25,10 +25,6 @@ func createRandomBoolean() bool {
 	return rand.Float32() < 0.5
 }
 
-func createResourceNotFoundError(name string, identifier string, value string) error {
-	return fmt.Errorf("the service, %s could not find the %s (%s)", name, identifier, value)
-}
-
 func IsEqualLinks(linksA map[string]string, linksB map[string]string) bool {
 	return reflect.DeepEqual(linksA, linksB)
 }
