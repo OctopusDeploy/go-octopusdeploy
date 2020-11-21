@@ -107,6 +107,6 @@ func TestArtifactServiceGetByID(t *testing.T) {
 	if len(resources) > 0 {
 		resourceToCompare, err := client.Artifacts.GetByID(resources[0].GetID())
 		require.NoError(t, err)
-		assert.EqualValues(t, resources[0], resourceToCompare)
+		AssertEqualArtifacts(t, resources[0], resourceToCompare)
 	}
 }
