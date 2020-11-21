@@ -47,7 +47,7 @@ func TestProjectTriggerGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.ProjectTriggers.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceProjectTriggerService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 }
 

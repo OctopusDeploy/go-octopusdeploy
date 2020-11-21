@@ -111,7 +111,7 @@ func TestPackageServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := client.Packages.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServicePackageService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 
 	resources, err := client.Packages.GetAll()

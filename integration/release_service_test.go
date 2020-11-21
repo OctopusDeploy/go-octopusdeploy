@@ -134,7 +134,7 @@ func TestReleaseServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	release, err := client.Releases.GetByID(id)
-	assert.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceReleaseService, "ID", id), err)
+	require.Error(t, err)
 	assert.Nil(t, release)
 
 	query := octopusdeploy.ReleasesQuery{

@@ -120,7 +120,7 @@ func TestMachineServiceAddGetDelete(t *testing.T) {
 
 	id := getRandomName()
 	err := client.Machines.DeleteByID(id)
-	assert.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceMachineService, "ID", id), err)
+	require.Error(t, err)
 
 	environment := CreateTestEnvironment(t, client)
 	require.NotNil(t, environment)
@@ -184,7 +184,7 @@ func TestMachineServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	deploymentTarget, err := client.Machines.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceMachineService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, deploymentTarget)
 
 	environment := CreateTestEnvironment(t, client)

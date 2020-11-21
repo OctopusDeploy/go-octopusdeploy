@@ -107,7 +107,7 @@ func TestLifecycleGetThatDoesNotExist(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := octopusClient.Lifecycles.GetByID(id)
-	require.Equal(t, createResourceNotFoundError("LifecycleService", "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 }
 

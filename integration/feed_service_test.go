@@ -263,7 +263,7 @@ func TestFeedServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	feed, err := client.Feeds.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceFeedService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, feed)
 }
 

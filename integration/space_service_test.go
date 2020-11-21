@@ -147,7 +147,7 @@ func TestSpaceServiceGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := client.Spaces.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceSpaceService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 
 	resources, err := client.Spaces.GetAll()

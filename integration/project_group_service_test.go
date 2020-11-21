@@ -87,7 +87,7 @@ func TestProjectGroupGetByID(t *testing.T) {
 
 	id := getRandomName()
 	resource, err := client.ProjectGroups.GetByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceProjectGroupService, "ID", id), err)
+	require.Error(t, err)
 	require.Nil(t, resource)
 }
 

@@ -138,7 +138,7 @@ func TestWorkerServiceDelete(t *testing.T) {
 
 	id := getRandomName()
 	err := client.Workers.DeleteByID(id)
-	require.Equal(t, createResourceNotFoundError(octopusdeploy.ServiceWorkerService, "ID", id), err)
+	require.Error(t, err)
 }
 
 func TestWorkerServiceDeleteAll(t *testing.T) {
