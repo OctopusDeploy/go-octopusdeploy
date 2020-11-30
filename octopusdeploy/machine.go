@@ -191,12 +191,12 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 		}
 		m.Endpoint = cloudRegionEndpoint
 	case "OfflineDrop":
-		var offlineDropEndpoint *OfflineDropEndpoint
-		err := json.Unmarshal(*endpoint, &offlineDropEndpoint)
+		var offlinePackageDropEndpoint *OfflinePackageDropEndpoint
+		err := json.Unmarshal(*endpoint, &offlinePackageDropEndpoint)
 		if err != nil {
 			return err
 		}
-		m.Endpoint = offlineDropEndpoint
+		m.Endpoint = offlinePackageDropEndpoint
 	case "Ssh":
 		var sshEndpoint *SSHEndpoint
 		err := json.Unmarshal(*endpoint, &sshEndpoint)

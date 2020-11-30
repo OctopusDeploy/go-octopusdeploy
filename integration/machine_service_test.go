@@ -35,7 +35,7 @@ func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.Client, envi
 	environmentIDs := []string{environment.GetID()}
 	roles := []string{"Prod"}
 
-	endpoint := octopusdeploy.NewOfflineDropEndpoint()
+	endpoint := octopusdeploy.NewOfflinePackageDropEndpoint()
 	require.NotNil(t, endpoint)
 
 	endpoint.ApplicationsDirectory = "C:\\Applications"
@@ -220,7 +220,7 @@ func TestMachineServiceUpdate(t *testing.T) {
 
 	deploymentTarget.Name = getRandomName()
 
-	endpoint, ok := deploymentTarget.Endpoint.(octopusdeploy.OfflineDropEndpoint)
+	endpoint, ok := deploymentTarget.Endpoint.(octopusdeploy.OfflinePackageDropEndpoint)
 	require.True(t, ok)
 
 	endpoint.ApplicationsDirectory = getRandomName()

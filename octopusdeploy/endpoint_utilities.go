@@ -20,7 +20,7 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	case "None":
 		endpoint = NewCloudRegionEndpoint()
 	case "OfflineDrop":
-		endpoint = NewOfflineDropEndpoint()
+		endpoint = NewOfflinePackageDropEndpoint()
 	case "Ssh":
 		endpoint = NewSSHEndpoint(endpointResource.Host, endpointResource.Port, endpointResource.Fingerprint)
 	case "TentacleActive":
