@@ -107,9 +107,7 @@ func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
 	lifecycle := &octopusdeploy.Lifecycle{
 		Name: "My Lifecycle",
 		Phases: []octopusdeploy.Phase{
-			octopusdeploy.Phase{
-				Name: "My Phase",
-			},
+			{Name: "My Phase"},
 		},
 	}
 
@@ -122,11 +120,10 @@ func TestValidateLifecycleValuesMissingNameFails(t *testing.T) {
 }
 
 func TestValidateLifecycleValuesPhaseWithMissingNameFails(t *testing.T) {
-
 	lifecycle := &octopusdeploy.Lifecycle{
 		Name: "My Lifecycle",
 		Phases: []octopusdeploy.Phase{
-			octopusdeploy.Phase{},
+			{},
 		},
 	}
 
