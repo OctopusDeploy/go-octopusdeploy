@@ -43,7 +43,7 @@ type EndpointResource struct {
 	SwapIfPossible                       bool                           `json:"SwapIfPossible"`
 	TentacleVersionDetails               *TentacleVersionDetails        `json:"TentacleVersionDetails,omitempty"`
 	Thumbprint                           string                         `json:"Thumbprint" validate:"required"`
-	OctopusWorkingDirectory              string                         `json:"OctopusWorkingDirectory,omitempty"`
+	WorkingDirectory                     string                         `json:"OctopusWorkingDirectory,omitempty"`
 	UseCurrentInstanceCount              bool                           `json:"UseCurrentInstanceCount"`
 	URI                                  *url.URL                       `json:"Uri" validate:"required,uri"`
 	WebAppName                           string                         `json:"WebAppName,omitempty"`
