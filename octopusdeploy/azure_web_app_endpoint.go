@@ -5,7 +5,7 @@ type AzureWebAppEndpoint struct {
 	AccountID         string `json:"AccountId"`
 	ResourceGroupName string `json:"ResourceGroupName,omitempty"`
 	WebAppName        string `json:"WebAppName,omitempty"`
-	WebAppSlotName    int    `json:"WebAppSlotName"`
+	WebAppSlotName    string `json:"WebAppSlotName"`
 
 	endpoint
 }
