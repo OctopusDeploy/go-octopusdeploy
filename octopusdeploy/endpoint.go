@@ -5,7 +5,7 @@ import "github.com/go-playground/validator/v10"
 // endpoint is the base definition of an endpoint and describes its
 // communication style (SSH, Kubernetes, etc.)
 type endpoint struct {
-	CommunicationStyle string `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
+	CommunicationStyle string `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster AzureWebApp Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
 
 	resource
 }
