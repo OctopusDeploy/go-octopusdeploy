@@ -95,7 +95,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	var fields struct {
 		ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
-		ClusterURL          string                    `json:"ClusterUrl" validate:"required,url"`
+		ClusterURL          string                    `json:"ClusterUrl"`
 		CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
 		Container           DeploymentActionContainer `json:"Container,omitempty"`
 		DefaultWorkerPoolID string                    `json:"DefaultWorkerPoolId"`

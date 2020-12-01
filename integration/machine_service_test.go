@@ -178,6 +178,19 @@ func TestMachineServiceGetAll(t *testing.T) {
 	}
 }
 
+func TestMachineServiceGetQuery(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	query := octopusdeploy.MachinesQuery{
+		CommunicationStyles: []string{"Kubernetes"},
+	}
+
+	resources, err := client.Machines.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, resources)
+}
+
 func TestMachineServiceGetByID(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
