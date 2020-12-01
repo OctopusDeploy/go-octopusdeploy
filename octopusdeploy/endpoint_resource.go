@@ -47,7 +47,7 @@ type EndpointResource struct {
 	UseCurrentInstanceCount              bool                           `json:"UseCurrentInstanceCount"`
 	URI                                  *url.URL                       `json:"Uri" validate:"required,uri"`
 	WebAppName                           string                         `json:"WebAppName,omitempty"`
-	WebAppSlotName                       int                            `json:"WebAppSlotName"`
+	WebAppSlotName                       string                         `json:"WebAppSlotName"`
 
 	resource
 }
