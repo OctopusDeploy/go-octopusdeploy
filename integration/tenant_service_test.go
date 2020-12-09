@@ -35,9 +35,8 @@ func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.Client) *octopu
 	require.NotNil(t, octopusClient)
 
 	name := getRandomName()
-	lifecycleID := getRandomName()
 
-	tenant := octopusdeploy.NewTenant(name, lifecycleID)
+	tenant := octopusdeploy.NewTenant(name)
 
 	createdTenant, err := octopusClient.Tenants.Add(tenant)
 	require.NoError(t, err)
