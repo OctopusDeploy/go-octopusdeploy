@@ -28,7 +28,7 @@ func AssertEqualTenants(t *testing.T, expected *octopusdeploy.Tenant, actual *oc
 	assert.Equal(t, expected.TenantTags, actual.TenantTags)
 }
 
-func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.Client) *octopusdeploy.Tenant {
+func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.Client, project *octopusdeploy.Project, environment *octopusdeploy.Environment) *octopusdeploy.Tenant {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -37,6 +37,11 @@ func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.Client) *octopu
 	name := getRandomName()
 
 	tenant := octopusdeploy.NewTenant(name)
+	tenant.Description = getRandomName()
+
+	if project != nil {
+		tenant.ProjectEnvironments[project.ID] = []string{environment.ID}
+	}
 
 	createdTenant, err := octopusClient.Tenants.Add(tenant)
 	require.NoError(t, err)
@@ -67,7 +72,22 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	expected := CreateTestTenant(t, client)
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	environment := CreateTestEnvironment(t, client)
+	defer DeleteTestEnvironment(t, client, environment)
+
+	expected := CreateTestTenant(t, client, project, environment)
 	defer DeleteTestTenant(t, client, expected)
 
 	actual, err := client.Tenants.GetByID(expected.GetID())
@@ -81,7 +101,7 @@ func TestTenantServiceGetAll(t *testing.T) {
 
 	// create 10 test tenants (to be deleted)
 	for i := 0; i < 10; i++ {
-		tenant := CreateTestTenant(t, client)
+		tenant := CreateTestTenant(t, client, nil, nil)
 		require.NotNil(t, tenant)
 		defer DeleteTestTenant(t, client, tenant)
 	}
@@ -96,7 +116,7 @@ func TestTenantGetByPartialName(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	expected := CreateTestTenant(t, client)
+	expected := CreateTestTenant(t, client, nil, nil)
 	defer DeleteTestTenant(t, client, expected)
 
 	resources, err := client.Tenants.GetByPartialName(expected.Name)
@@ -112,7 +132,7 @@ func TestTenantUpdate(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	expected := CreateTestTenant(t, octopusClient)
+	expected := CreateTestTenant(t, octopusClient, nil, nil)
 	defer DeleteTestTenant(t, octopusClient, expected)
 
 	expected.Name = getRandomName()
