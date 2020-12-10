@@ -32,11 +32,11 @@ func NewLifecycle(name string) *Lifecycle {
 		Name:   strings.TrimSpace(name),
 		Phases: []Phase{},
 		ReleaseRetentionPolicy: RetentionPeriod{
-			Unit:           RetentionUnitDays,
+			Unit:           "Days",
 			QuantityToKeep: 30,
 		},
 		TentacleRetentionPolicy: RetentionPeriod{
-			Unit:           RetentionUnitDays,
+			Unit:           "Days",
 			QuantityToKeep: 30,
 		},
 		resource: *newResource(),
