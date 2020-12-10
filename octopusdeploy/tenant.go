@@ -21,8 +21,9 @@ type Tenant struct {
 // NewTenant initializes a Tenant with a name.
 func NewTenant(name string) *Tenant {
 	return &Tenant{
-		Name:     name,
-		resource: *newResource(),
+		Name:                name,
+		ProjectEnvironments: map[string][]string{},
+		resource:            *newResource(),
 	}
 }
 
