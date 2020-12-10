@@ -72,6 +72,23 @@ func (s tenantService) Add(resource *Tenant) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
+// Get returns a collection of tenants based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s tenantService) Get(tenantsQuery TenantsQuery) (*Tenants, error) {
+	path, err := s.getURITemplate().Expand(tenantsQuery)
+	if err != nil {
+		return &Tenants{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(Tenants), path)
+	if err != nil {
+		return &Tenants{}, err
+	}
+
+	return response.(*Tenants), nil
+}
+
 // GetAll returns all tenants. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s tenantService) GetAll() ([]*Tenant, error) {
