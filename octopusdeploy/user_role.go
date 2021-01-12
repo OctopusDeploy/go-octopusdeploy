@@ -20,3 +20,11 @@ type UserRole struct {
 
 	resource
 }
+
+// NewUserRole initializes a user role with a name.
+func NewUserRole(name string) *UserRole {
+	return &UserRole{
+		Name:     name,
+		resource: *newResource(),
+	}
+}
