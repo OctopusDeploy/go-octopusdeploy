@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://octopus.com/2020/tenant-resource.json",
+    "title": "Tenant Resource",
+    "description": "Represents a tenant resource",
+    "type": "object",
+    "properties": {
+        "clonedFromTenantID": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "description": "the ID of the tenant",
+            "type": "string"
+        },
+        "lastModifiedBy": {
+            "type": "string"
+        },
+        "lastModifiedOn": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "links": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "name": {
+            "type": "string",
+            "definition": "the name of the tenant"
+        },
+        "projectEnvironments": {
+            "type": "object",
+            "additionalProperties": {
+                "uniqueItems": true,
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "spaceID": {
+            "type": "string"
+        },
+        "tenantTags": {
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

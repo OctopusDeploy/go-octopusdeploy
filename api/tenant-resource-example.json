@@ -1,0 +1,9 @@
+{
+    "$schema": "./tenant-resource.json",
+    "id": "Tenants-1",
+    "name": "asd",
+    "links": {
+        "asd": "bar"
+    }
+}
+    
