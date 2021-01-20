@@ -54,8 +54,8 @@ func TestKubernetesEndpointNew(t *testing.T) {
 func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	feedID := "feed-id"
 
-	kubernetesCertificateAuthentication := NewKubernetesCertificateAuthentication()
-	kubernetesCertificateAuthentication.ClientCertificate = "client-certificate"
+	kubernetesCertificateAuthentication := NewKubernetesStandardAuthentication("")
+	kubernetesCertificateAuthentication.AccountID = "Accounts-392"
 
 	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
 	links := map[string]string{
@@ -68,7 +68,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	resource := NewKubernetesEndpoint(url)
 	resource.Authentication = kubernetesCertificateAuthentication
 	resource.ClusterCertificate = "cluster-certificate"
-	resource.Container.FeedID = &feedID
+	resource.Container.FeedID = feedID
 	resource.DefaultWorkerPoolID = "default-worker-pool-id"
 	resource.ID = id
 	resource.ModifiedBy = "john.smith@example.com"
@@ -89,8 +89,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	expected := `{
 		"Authentication": {
 			"AccountId": "Accounts-392",
-			"AuthenticationType": "KubernetesCertificate",
-			"ClientCertificate": "client-certificate"
+			"AuthenticationType": "KubernetesStandard"
 		},
 		"ClusterCertificate": "cluster-certificate",
 		"ClusterUrl": "https://example.com/",
@@ -138,8 +137,8 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 	assert.Equal(t, "client-certificate", kubernetesCertificateAuthentication.ClientCertificate)
 
 	// Container field
-	assert.Equal(t, "image", *resource.Container.Image)
-	assert.Equal(t, "feed-id", *resource.Container.FeedID)
+	assert.Equal(t, "image", resource.Container.Image)
+	assert.Equal(t, "feed-id", resource.Container.FeedID)
 
 	// basic fields
 	assert.Equal(t, "Certificates-22-r-BY2FT", resource.ClusterCertificate)
