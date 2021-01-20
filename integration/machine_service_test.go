@@ -233,7 +233,7 @@ func TestMachineServiceUpdate(t *testing.T) {
 
 	deploymentTarget.Name = getRandomName()
 
-	endpoint, ok := deploymentTarget.Endpoint.(octopusdeploy.OfflinePackageDropEndpoint)
+	endpoint, ok := deploymentTarget.Endpoint.(*octopusdeploy.OfflinePackageDropEndpoint)
 	require.True(t, ok)
 
 	endpoint.ApplicationsDirectory = getRandomName()
