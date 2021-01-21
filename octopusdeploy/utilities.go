@@ -27,11 +27,17 @@ func isNil(i interface{}) bool {
 	var ret bool
 
 	switch i.(type) {
+	case *AccountResource:
+		v := i.(*AccountResource)
+		ret = v == nil
 	case *ActionTemplate:
 		v := i.(*ActionTemplate)
 		ret = v == nil
 	case *ActionTemplateParameter:
 		v := i.(*ActionTemplateParameter)
+		ret = v == nil
+	case *AmazonWebServicesAccount:
+		v := i.(*AmazonWebServicesAccount)
 		ret = v == nil
 	case *APIKey:
 		v := i.(*APIKey)
@@ -41,6 +47,21 @@ func isNil(i interface{}) bool {
 		ret = v == nil
 	case *Authentication:
 		v := i.(*Authentication)
+		ret = v == nil
+	case *AzureCloudServiceEndpoint:
+		v := i.(*AzureCloudServiceEndpoint)
+		ret = v == nil
+	case *AzureServiceFabricEndpoint:
+		v := i.(*AzureServiceFabricEndpoint)
+		ret = v == nil
+	case *AzureServicePrincipalAccount:
+		v := i.(*AzureServicePrincipalAccount)
+		ret = v == nil
+	case *AzureSubscriptionAccount:
+		v := i.(*AzureSubscriptionAccount)
+		ret = v == nil
+	case *AzureWebAppEndpoint:
+		v := i.(*AzureWebAppEndpoint)
 		ret = v == nil
 	case *CertificateResource:
 		v := i.(*CertificateResource)
