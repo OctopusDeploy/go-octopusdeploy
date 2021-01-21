@@ -64,8 +64,7 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 
 	accountResource := NewAccountResource(account.GetName(), account.GetAccountType())
 
-	err := copier.Copy(&accountResource, account)
-	if err != nil {
+	if err := copier.Copy(&accountResource, account); err != nil {
 		return nil, err
 	}
 
