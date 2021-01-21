@@ -6,5 +6,7 @@ type OfflinePackageDropDestination struct {
 }
 
 func NewOfflinePackageDropDestination() *OfflinePackageDropDestination {
-	return &OfflinePackageDropDestination{}
+	return &OfflinePackageDropDestination{
+		DestinationType: "Artifact",
+	}
 }
