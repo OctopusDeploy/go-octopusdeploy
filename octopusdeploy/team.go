@@ -9,15 +9,15 @@ type Teams struct {
 }
 
 type Team struct {
-	CanBeDeleted           bool                  `json:"CanBeDeleted,omitempty"`
-	CanBeRenamed           bool                  `json:"CanBeRenamed,omitempty"`
-	CanChangeMembers       bool                  `json:"CanChangeMembers,omitempty"`
-	CanChangeRoles         bool                  `json:"CanChangeRoles,omitempty"`
-	Description            string                `json:"Description,omitempty"`
-	ExternalSecurityGroups []*NamedReferenceItem `json:"ExternalSecurityGroups"`
-	MemberUserIDs          []string              `json:"MemberUserIds"`
-	Name                   string                `json:"Name" validate:"required"`
-	SpaceID                string                `json:"SpaceId,omitempty"`
+	CanBeDeleted           bool                 `json:"CanBeDeleted,omitempty"`
+	CanBeRenamed           bool                 `json:"CanBeRenamed,omitempty"`
+	CanChangeMembers       bool                 `json:"CanChangeMembers,omitempty"`
+	CanChangeRoles         bool                 `json:"CanChangeRoles,omitempty"`
+	Description            string               `json:"Description,omitempty"`
+	ExternalSecurityGroups []NamedReferenceItem `json:"ExternalSecurityGroups"`
+	MemberUserIDs          []string             `json:"MemberUserIds"`
+	Name                   string               `json:"Name" validate:"required"`
+	SpaceID                string               `json:"SpaceId,omitempty"`
 
 	resource
 }
