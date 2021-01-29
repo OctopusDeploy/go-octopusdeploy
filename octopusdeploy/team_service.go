@@ -64,6 +64,23 @@ func (s teamService) Delete(team *Team) error {
 	return apiDelete(s.getClient(), path)
 }
 
+// Get returns a collection of teams based on the criteria defined by its input
+// query parameter. If an error occurs, an empty collection is returned along
+// with the associated error.
+func (s teamService) Get(teamsQuery TeamsQuery) (*Teams, error) {
+	path, err := s.getURITemplate().Expand(teamsQuery)
+	if err != nil {
+		return &Teams{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(Teams), path)
+	if err != nil {
+		return &Teams{}, err
+	}
+
+	return response.(*Teams), nil
+}
+
 // GetAll returns all teams. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s teamService) GetAll() ([]*Team, error) {
