@@ -8,6 +8,7 @@ type DeploymentProcesses struct {
 type DeploymentProcess struct {
 	LastSnapshotID string           `json:"LastSnapshotId,omitempty"`
 	ProjectID      string           `json:"ProjectId,omitempty"`
+	SpaceID        string           `json:"SpaceId,omitempty"`
 	Steps          []DeploymentStep `json:"Steps,omitempty"`
 	Version        int32            `json:"Version"`
 
