@@ -272,16 +272,16 @@ func (s variableService) MatchesScope(variableScope *VariableScope, definedScope
 	if len(definedScope.Private) > 0 {
 		return false, nil, fmt.Errorf("Private is not a supported scope for variable matching")
 	}
-	if len(definedScope.Project) > 0 {
+	if len(definedScope.Projects) > 0 {
 		return false, nil, fmt.Errorf("Project is not a supported scope for variable matching")
 	}
-	if len(definedScope.TargetRole) > 0 {
+	if len(definedScope.TargetRoles) > 0 {
 		return false, nil, fmt.Errorf("TargetRole is not a supported scope for variable matching")
 	}
-	if len(definedScope.Tenant) > 0 {
+	if len(definedScope.Tenants) > 0 {
 		return false, nil, fmt.Errorf("Tenant is not a supported scope for variable matching")
 	}
-	if len(definedScope.User) > 0 {
+	if len(definedScope.Users) > 0 {
 		return false, nil, fmt.Errorf("User is not a supported scope for variable matching")
 	}
 
@@ -289,60 +289,60 @@ func (s variableService) MatchesScope(variableScope *VariableScope, definedScope
 	var matched bool
 
 	//If there is no scope to filter on return all the results
-	if len(definedScope.Environment) > 0 && len(definedScope.Role) > 0 && len(definedScope.Machine) > 0 && len(definedScope.Action) > 0 && len(definedScope.Channel) > 0 && len(definedScope.TenantTag) > 0 {
+	if len(definedScope.Environments) > 0 && len(definedScope.Roles) > 0 && len(definedScope.Machines) > 0 && len(definedScope.Actions) > 0 && len(definedScope.Channels) > 0 && len(definedScope.TenantTags) > 0 {
 		return true, &VariableScope{}, nil
 	}
 
-	for _, e1 := range definedScope.Environment {
-		for _, e2 := range variableScope.Environment {
+	for _, e1 := range definedScope.Environments {
+		for _, e2 := range variableScope.Environments {
 			if e1 == e2 {
 				matched = true
-				matchedScopes.Environment = append(matchedScopes.Environment, e1)
+				matchedScopes.Environments = append(matchedScopes.Environments, e1)
 			}
 		}
 	}
 
-	for _, r1 := range definedScope.Role {
-		for _, r2 := range variableScope.Role {
+	for _, r1 := range definedScope.Roles {
+		for _, r2 := range variableScope.Roles {
 			if r1 == r2 {
 				matched = true
-				matchedScopes.Role = append(matchedScopes.Role, r1)
+				matchedScopes.Roles = append(matchedScopes.Roles, r1)
 			}
 		}
 	}
 
-	for _, m1 := range definedScope.Machine {
-		for _, m2 := range variableScope.Machine {
+	for _, m1 := range definedScope.Machines {
+		for _, m2 := range variableScope.Machines {
 			if m1 == m2 {
 				matched = true
-				matchedScopes.Machine = append(matchedScopes.Machine, m1)
+				matchedScopes.Machines = append(matchedScopes.Machines, m1)
 			}
 		}
 	}
 
-	for _, a1 := range definedScope.Action {
-		for _, a2 := range variableScope.Action {
+	for _, a1 := range definedScope.Actions {
+		for _, a2 := range variableScope.Actions {
 			if a1 == a2 {
 				matched = true
-				matchedScopes.Action = append(matchedScopes.Action, a1)
+				matchedScopes.Actions = append(matchedScopes.Actions, a1)
 			}
 		}
 	}
 
-	for _, c1 := range definedScope.Channel {
-		for _, c2 := range variableScope.Channel {
+	for _, c1 := range definedScope.Channels {
+		for _, c2 := range variableScope.Channels {
 			if c1 == c2 {
 				matched = true
-				matchedScopes.Channel = append(matchedScopes.Channel, c1)
+				matchedScopes.Channels = append(matchedScopes.Channels, c1)
 			}
 		}
 	}
 
-	for _, c1 := range definedScope.TenantTag {
-		for _, c2 := range variableScope.TenantTag {
+	for _, c1 := range definedScope.TenantTags {
+		for _, c2 := range variableScope.TenantTags {
 			if c1 == c2 {
 				matched = true
-				matchedScopes.TenantTag = append(matchedScopes.TenantTag, c1)
+				matchedScopes.TenantTags = append(matchedScopes.TenantTags, c1)
 			}
 		}
 	}
