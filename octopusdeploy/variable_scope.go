@@ -1,17 +1,20 @@
 package octopusdeploy
 
 type VariableScope struct {
-	Project     []string `json:"Project,omitempty"`
-	Environment []string `json:"Environment,omitempty"`
-	Machine     []string `json:"Machine,omitempty"`
-	Role        []string `json:"Role,omitempty"`
-	TargetRole  []string `json:"TargetRole,omitempty"`
-	Action      []string `json:"Action,omitempty"`
-	User        []string `json:"User,omitempty"`
-	Private     []string `json:"Private,omitempty"`
-	Channel     []string `json:"Channel,omitempty"`
-	TenantTag   []string `json:"TenantTag,omitempty"`
-	Tenant      []string `json:"Tenant,omitempty"`
+	Actions           []string `json:"Action,omitempty"`
+	Channels          []string `json:"Channel,omitempty"`
+	Environments      []string `json:"Environment,omitempty"`
+	Machines          []string `json:"Machine,omitempty"`
+	ParentDeployments []string `json:"ParentDeployment,omitempty"`
+	Private           []string `json:"Private,omitempty"`
+	ProcessOwners     []string `json:"ProcessOwner,omitempty"`
+	Projects          []string `json:"Project,omitempty"`
+	Roles             []string `json:"Role,omitempty"`
+	TargetRoles       []string `json:"TargetRole,omitempty"`
+	Tenants           []string `json:"Tenant,omitempty"`
+	TenantTags        []string `json:"TenantTag,omitempty"`
+	Triggers          []string `json:"Trigger,omitempty"`
+	Users             []string `json:"User,omitempty"`
 }
 
 // NewVariableScope initializes a variable scope.
