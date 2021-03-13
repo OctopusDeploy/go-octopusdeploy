@@ -13,7 +13,7 @@ type WorkerPoolResource struct {
 	SpaceID        string         `json:"SpaceId,omitempty" validate:"omitempty,notblank"`
 	SortOrder      int            `json:"SortOrder"`
 	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
-	WorkerType     WorkerType     `json:"WorkerType"`
+	WorkerType     WorkerType     `json:"WorkerType,omitempty"`
 
 	resource
 }
