@@ -71,7 +71,7 @@ type Client struct {
 	Scheduler                      *schedulerService
 	ScopedUserRoles                *scopedUserRoleService
 	ServerConfiguration            *serverConfigurationService
-	ServerStatus                   *serverStatuService
+	ServerStatus                   *serverStatusService
 	SMTPConfiguration              *smtpConfigurationService
 	Spaces                         *spaceService
 	Subscriptions                  *subscriptionService
@@ -344,7 +344,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		ScheduledProjectTriggers:       newScheduledProjectTriggerService(base, scheduledProjectTriggersPath),
 		ScopedUserRoles:                newScopedUserRoleService(base, scopedUserRolesPath),
 		ServerConfiguration:            newServerConfigurationService(base, serverConfigurationPath, serverConfigurationSettingsPath),
-		ServerStatus:                   newServerStatuService(base, serverStatusPath, extensionStatsPath, serverHealthStatusPath, timezonesPath),
+		ServerStatus:                   newServerStatusService(base, serverStatusPath, extensionStatsPath, serverHealthStatusPath, timezonesPath),
 		SMTPConfiguration:              newSMTPConfigurationService(base, smtpConfigurationPath, smtpIsConfiguredPath),
 		Spaces:                         newSpaceService(base, spacesPath, spaceHomePath),
 		Subscriptions:                  newSubscriptionService(base, subscriptionsPath),

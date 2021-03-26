@@ -2,7 +2,7 @@ package octopusdeploy
 
 import "github.com/dghubble/sling"
 
-type serverStatuService struct {
+type serverStatusService struct {
 	extensionStatsPath string
 	healthStatusPath   string
 	timezonesPath      string
@@ -10,8 +10,8 @@ type serverStatuService struct {
 	service
 }
 
-func newServerStatuService(sling *sling.Sling, uriTemplate string, extensionStatsPath string, healthStatusPath string, timezonesPath string) *serverStatuService {
-	return &serverStatuService{
+func newServerStatusService(sling *sling.Sling, uriTemplate string, extensionStatsPath string, healthStatusPath string, timezonesPath string) *serverStatusService {
+	return &serverStatusService{
 		extensionStatsPath: extensionStatsPath,
 		healthStatusPath:   healthStatusPath,
 		timezonesPath:      timezonesPath,
