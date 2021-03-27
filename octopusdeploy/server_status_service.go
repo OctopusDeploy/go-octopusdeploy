@@ -15,6 +15,23 @@ func newServerStatusService(sling *sling.Sling, uriTemplate string, extensionSta
 		extensionStatsPath: extensionStatsPath,
 		healthStatusPath:   healthStatusPath,
 		timezonesPath:      timezonesPath,
-		service:            newService(ServiceServerStatuService, sling, uriTemplate),
+		service:            newService(ServiceServerStatusService, sling, uriTemplate),
 	}
 }
+
+// Get returns the status of the server.
+func (s serverStatusService) Get() (*ServerStatus, error) {
+	path, err := getPath(s)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := apiGet(s.getClient(), new(ServerStatus), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.(*ServerStatus), nil
+}
+
+var _ IService = &serverStatusService{}
