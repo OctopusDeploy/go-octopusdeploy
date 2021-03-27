@@ -61,7 +61,7 @@ const (
 	ServiceSchedulerService                     string = "SchedulerService"
 	ServiceScopedUserRoleService                string = "ScopedUserRoleService"
 	ServiceServerConfigurationService           string = "ServerConfigurationService"
-	ServiceServerStatuService                   string = "ServerStatuService"
+	ServiceServerStatusService                  string = "ServerStatusService"
 	ServiceSpaceService                         string = "SpaceService"
 	ServiceSMTPConfigurationService             string = "SMTPConfigurationService"
 	ServiceSubscriptionService                  string = "SubscriptionService"
