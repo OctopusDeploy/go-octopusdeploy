@@ -99,13 +99,13 @@ func (s artifactService) GetByID(id string) (*Artifact, error) {
 }
 
 // Update modifies an Artifact based on the one provided as input.
-func (s artifactService) Update(resource Artifact) (*Artifact, error) {
-	path, err := getUpdatePath(s, &resource)
+func (s artifactService) Update(artifact Artifact) (*Artifact, error) {
+	path, err := getUpdatePath(s, &artifact)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(Artifact), path)
+	resp, err := apiUpdate(s.getClient(), artifact, new(Artifact), path)
 	if err != nil {
 		return nil, err
 	}
