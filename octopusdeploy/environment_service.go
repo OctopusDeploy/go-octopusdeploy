@@ -11,6 +11,8 @@ type environmentService struct {
 	canDeleteService
 }
 
+// newEnvironmentService returns an environmentService with a preconfigured
+// client.
 func newEnvironmentService(sling *sling.Sling, uriTemplate string, sortOrderPath string, summaryPath string) *environmentService {
 	environmentService := &environmentService{
 		sortOrderPath: sortOrderPath,
