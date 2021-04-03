@@ -19,7 +19,7 @@ func TestChannelServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
+	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterChannel))
 	assert.Nil(t, resource)
 
 	invalidResource := &Channel{}

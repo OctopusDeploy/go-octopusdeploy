@@ -39,18 +39,22 @@ func (s channelService) getPagedResponse(path string) ([]*Channel, error) {
 }
 
 // Add creates a new channel.
-func (s channelService) Add(resource *Channel) (*Channel, error) {
-	path, err := getAddPath(s, resource)
+func (s channelService) Add(channel *Channel) (*Channel, error) {
+	if channel == nil {
+		return nil, createInvalidParameterError(OperationAdd, ParameterChannel)
+	}
+
+	path, err := getAddPath(s, channel)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(Channel), path)
+	response, err := apiAdd(s.getClient(), channel, new(Channel), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*Channel), nil
+	return response.(*Channel), nil
 }
 
 // Get returns a collection of channels based on the criteria defined by its
