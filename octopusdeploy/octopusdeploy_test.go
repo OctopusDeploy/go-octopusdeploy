@@ -49,6 +49,7 @@ func TestNewClient(t *testing.T) {
 
 			assert.NoError(t, err)
 			assert.NotNil(t, client)
+			assert.NotNil(t, client.Accounts)
 		})
 	}
 }
