@@ -7,9 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDeploymentTargetMarshalJSON(t *testing.T) {
-}
-
 func TestDeploymentTargetUnmarshalJSON(t *testing.T) {
 	var azureCloudService DeploymentTarget
 	err := json.Unmarshal([]byte(azureCloudServiceAsJSON), &azureCloudService)
