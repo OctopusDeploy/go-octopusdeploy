@@ -31,18 +31,22 @@ func newActionTemplateService(sling *sling.Sling, uriTemplate string, categories
 }
 
 // Add creates a new action template.
-func (s actionTemplateService) Add(resource *ActionTemplate) (*ActionTemplate, error) {
-	path, err := getAddPath(s, resource)
+func (s actionTemplateService) Add(actionTemplate *ActionTemplate) (*ActionTemplate, error) {
+	if actionTemplate == nil {
+		return nil, createInvalidParameterError(OperationAdd, ParameterActionTemplate)
+	}
+
+	path, err := getAddPath(s, actionTemplate)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(ActionTemplate), path)
+	response, err := apiAdd(s.getClient(), actionTemplate, new(ActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*ActionTemplate), nil
+	return response.(*ActionTemplate), nil
 }
 
 // Get returns a collection of action templates based on the criteria defined
@@ -124,13 +128,17 @@ func (s actionTemplateService) Search() ([]ActionTemplateSearch, error) {
 }
 
 // Update modifies an ActionTemplate based on the one provided as input.
-func (s actionTemplateService) Update(resource ActionTemplate) (*ActionTemplate, error) {
-	path, err := getUpdatePath(s, &resource)
+func (s actionTemplateService) Update(actionTemplate *ActionTemplate) (*ActionTemplate, error) {
+	if actionTemplate == nil {
+		return nil, createInvalidParameterError(OperationUpdate, ParameterActionTemplate)
+	}
+
+	path, err := getUpdatePath(s, actionTemplate)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), resource, new(ActionTemplate), path)
+	resp, err := apiUpdate(s.getClient(), actionTemplate, new(ActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
