@@ -102,7 +102,9 @@ func TestUserRoleServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, userRoles)
 
 	for _, userRole := range userRoles {
-		defer DeleteTestUserRole(t, client, userRole)
+		if userRole.CanBeDeleted {
+			defer DeleteTestUserRole(t, client, userRole)
+		}
 	}
 }
 
