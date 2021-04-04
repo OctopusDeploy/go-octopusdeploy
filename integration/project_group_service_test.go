@@ -55,6 +55,19 @@ func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.Client) *octopus
 	return createdProjectGroup
 }
 
+func TestProjectGroupServiceDeleteAll(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	projectGroups, err := client.ProjectGroups.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, projectGroups)
+
+	for _, projectGroup := range projectGroups {
+		defer DeleteTestProjectGroup(t, client, projectGroup)
+	}
+}
+
 func DeleteTestProjectGroup(t *testing.T, client *octopusdeploy.Client, projectGroup *octopusdeploy.ProjectGroup) {
 	require.NotNil(t, projectGroup)
 
