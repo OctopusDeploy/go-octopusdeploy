@@ -118,6 +118,6 @@ func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, resource)
 
-	resource = octopusdeploy.NewCommunityActionTemplate(getRandomName())
+	resource = octopusdeploy.NewCommunityActionTemplate(getRandomName(), getRandomName())
 	require.NotNil(t, resource)
 }
