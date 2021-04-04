@@ -13,7 +13,7 @@ func createActionTemplate(t *testing.T) *octopusdeploy.ActionTemplate {
 	require.NotNil(t, resource)
 
 	resource.Properties = map[string]octopusdeploy.PropertyValue{}
-	resource.Properties[octopusdeploy.ActionTypeOctopusActionScriptBody] = octopusdeploy.PropertyValue(getRandomName())
+	resource.Properties[octopusdeploy.ActionTypeOctopusActionScriptBody] = octopusdeploy.NewPropertyValue(getRandomName(), false)
 
 	return resource
 }

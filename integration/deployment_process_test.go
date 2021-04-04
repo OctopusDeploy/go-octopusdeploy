@@ -81,27 +81,22 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, deploymentProcess)
 
-	deploymentActionWindowService := &octopusdeploy.DeploymentAction{
-		Name:       "Install Windows Service",
-		ActionType: "Octopus.WindowService",
-		Properties: map[string]string{
-			"Octopus.Action.WindowService.CreateOrUpdateService":                        "True",
-			"Octopus.Action.WindowService.ServiceAccount":                               "LocalSystem",
-			"Octopus.Action.WindowService.StartMode":                                    "auto",
-			"Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles":   "True",
-			"Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings": "True",
-			"Octopus.Action.EnabledFeatures":                                            "Octopus.Features.WindowService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles",
-			"Octopus.Action.Package.FeedId":                                             "feeds-nugetfeed",
-			"Octopus.Action.Package.DownloadOnTentacle":                                 "False",
-			"Octopus.Action.Package.PackageId":                                          "Newtonsoft.Json",
-			"Octopus.Action.WindowService.ServiceName":                                  "My service name",
-			"Octopus.Action.WindowService.DisplayName":                                  "my display name",
-			"Octopus.Action.WindowService.Description":                                  "my desc",
-			"Octopus.Action.WindowService.ExecutablePath":                               "bin\\Myservice.exe",
-			"Octopus.Action.SubstituteInFiles.Enabled":                                  "True",
-			"Octopus.Action.SubstituteInFiles.TargetFiles":                              "*.sh",
-		},
-	}
+	deploymentActionWindowService := octopusdeploy.NewDeploymentAction("Install Windows Service", "Octopus.WindowService")
+	deploymentActionWindowService.Properties["Octopus.Action.EnabledFeatures"] = octopusdeploy.NewPropertyValue("Octopus.Features.WindowService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.FeedId"] = octopusdeploy.NewPropertyValue("feeds-nugetfeed", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.DownloadOnTentacle"] = octopusdeploy.NewPropertyValue("False", false)
+	deploymentActionWindowService.Properties["Octopus.Action.Package.PackageId"] = octopusdeploy.NewPropertyValue("Newtonsoft.Json", false)
+	deploymentActionWindowService.Properties["Octopus.Action.SubstituteInFiles.Enabled"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.CreateOrUpdateService"] = octopusdeploy.NewPropertyValue("True", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.DisplayName"] = octopusdeploy.NewPropertyValue("my display name", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.Description"] = octopusdeploy.NewPropertyValue("my desc", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.ExecutablePath"] = octopusdeploy.NewPropertyValue("bin\\Myservice.exe", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.ServiceAccount"] = octopusdeploy.NewPropertyValue("LocalSystem", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.ServiceName"] = octopusdeploy.NewPropertyValue("My service name", false)
+	deploymentActionWindowService.Properties["Octopus.Action.WindowService.StartMode"] = octopusdeploy.NewPropertyValue("auto", false)
+	deploymentActionWindowService.Properties["Octopus.Action.SubstituteInFiles.TargetFiles"] = octopusdeploy.NewPropertyValue("*.sh", false)
 
 	step1 := &octopusdeploy.DeploymentStep{
 		Name: "My First Step",

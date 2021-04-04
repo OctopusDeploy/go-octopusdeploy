@@ -13,7 +13,7 @@ func createActionTemplate(t *testing.T) *ActionTemplate {
 	require.NotNil(t, resource)
 
 	resource.Properties = map[string]PropertyValue{}
-	resource.Properties[ActionTypeOctopusActionScriptBody] = PropertyValue(getRandomName())
+	resource.Properties[ActionTypeOctopusActionScriptBody] = NewPropertyValue(getRandomName(), false)
 
 	return resource
 }
@@ -60,7 +60,7 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
+	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterActionTemplate))
 	assert.Nil(t, resource)
 
 	invalidResource := &ActionTemplate{}

@@ -50,10 +50,8 @@ func CreateScriptStepExample() {
 	newStep.Properties["Octopus.Action.TargetRoles"] = roleName
 
 	// Create new script action
-	stepAction := octopusdeploy.NewDeploymentAction(stepName)
-
-	stepAction.ActionType = "Octopus.Script"
-	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = scriptBody
+	stepAction := octopusdeploy.NewDeploymentAction(stepName, "Octopus.Script")
+	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = octopusdeploy.NewPropertyValue(scriptBody, false)
 
 	// Add step action and step to process
 	newStep.Actions = append(newStep.Actions, *stepAction)
