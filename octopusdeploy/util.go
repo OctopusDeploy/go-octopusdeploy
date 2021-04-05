@@ -75,7 +75,7 @@ func ValidateRequiredSensitiveValue(propertyName string, sensitiveValue *Sensiti
 		return fmt.Errorf("%s is a required property; its underlying value is not set", propertyName)
 	}
 
-	if len(sensitiveValue.NewValue) == 0 {
+	if len(*sensitiveValue.NewValue) == 0 {
 		return fmt.Errorf("%s is a required property; its underlying value is not set", propertyName)
 	}
 
