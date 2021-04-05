@@ -75,6 +75,7 @@ func TestPackageServiceAdd(t *testing.T) {
 	require.NotNil(t, client)
 
 	octopusPackage := CreateTestPackage(t, client)
+	require.NotNil(t, octopusPackage)
 	defer DeleteTestPackage(t, client, octopusPackage)
 }
 
