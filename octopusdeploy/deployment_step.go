@@ -7,7 +7,7 @@ type DeploymentStep struct {
 	Condition          DeploymentStepConditionType      `json:"Condition,omitempty"` // variable option adds a Property "Octopus.Action.ConditionVariableExpression"
 	Name               string                           `json:"Name"`
 	PackageRequirement DeploymentStepPackageRequirement `json:"PackageRequirement,omitempty"`
-	Properties         map[string]string                `json:"Properties"` // TODO: refactor to use the PropertyValueResource for handling sensitive values - https://blog.gopheracademy.com/advent-2016/advanced-encoding-decoding/
+	Properties         map[string]PropertyValue         `json:"Properties,omitempty"`
 	StartTrigger       DeploymentStepStartTrigger       `json:"StartTrigger,omitempty" validate:"required,oneof=StartAfterPrevious StartWithPrevious"`
 
 	resource
@@ -18,7 +18,7 @@ func NewDeploymentStep(name string) *DeploymentStep {
 	return &DeploymentStep{
 		Actions:    []DeploymentAction{},
 		Name:       name,
-		Properties: map[string]string{},
+		Properties: map[string]PropertyValue{},
 		resource:   *newResource(),
 	}
 }

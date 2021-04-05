@@ -47,7 +47,7 @@ func CreateScriptStepExample() {
 	// Create new step object
 	newStep := octopusdeploy.NewDeploymentStep(stepName)
 	newStep.Condition = "Success"
-	newStep.Properties["Octopus.Action.TargetRoles"] = roleName
+	newStep.Properties["Octopus.Action.TargetRoles"] = octopusdeploy.NewPropertyValue(roleName, false)
 
 	// Create new script action
 	stepAction := octopusdeploy.NewDeploymentAction(stepName, "Octopus.Script")

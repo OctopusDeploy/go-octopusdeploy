@@ -46,8 +46,8 @@ func GetStepsUsingRoleExample() {
 
 		for _, step := range deploymentProcess.Steps {
 			propertyValue := step.Properties["Octopus.Action.TargetRoles"]
-			if len(propertyValue) > 0 {
-				for _, role := range strings.Split(propertyValue, ",") {
+			if len(propertyValue.Value) > 0 {
+				for _, role := range strings.Split(propertyValue.Value, ",") {
 					if strings.ToLower(role) == strings.ToLower(roleName) {
 						fmt.Printf("Step [%s] from project [%s] is using the role [%s]\n", step.Name, project.Name, roleName)
 					}
