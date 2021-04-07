@@ -16,3 +16,10 @@ type ScopedUserRoles struct {
 	Items []*ScopedUserRole `json:"Items"`
 	PagedResults
 }
+
+func NewScopedUserRole(userRoleId string) *ScopedUserRole {
+	return &ScopedUserRole{
+		UserRoleID: userRoleId,
+		resource:   *newResource(),
+	}
+}
