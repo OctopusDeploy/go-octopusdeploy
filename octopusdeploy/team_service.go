@@ -122,16 +122,30 @@ func (s teamService) GetByPartialName(name string) ([]*Team, error) {
 }
 
 // Update modifies a team based on the one provided as input.
-func (s teamService) Update(machinePolicy *Team) (*Team, error) {
-	path, err := getUpdatePath(s, machinePolicy)
+func (s teamService) Update(team *Team) (*Team, error) {
+	path, err := getUpdatePath(s, team)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), machinePolicy, new(Team), path)
+	resp, err := apiUpdate(s.getClient(), team, new(Team), path)
 	if err != nil {
 		return nil, err
 	}
 
 	return resp.(*Team), nil
+}
+
+func (s teamService) GetScopedUserRolesByID(id string) (*ScopedUserRoles, error) {
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
+	}
+	path += "/scopeduserroles"
+
+	resp, err := apiGet(s.getClient(), new(ScopedUserRoles), path)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*ScopedUserRoles), nil
 }
