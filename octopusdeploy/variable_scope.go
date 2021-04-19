@@ -17,7 +17,19 @@ type VariableScope struct {
 	Users             []string `json:"User,omitempty"`
 }
 
-// NewVariableScope initializes a variable scope.
-func NewVariableScope() *VariableScope {
-	return &VariableScope{}
+func (scope VariableScope) IsEmpty() bool {
+	return len(scope.Actions) == 0 &&
+		len(scope.Channels) == 0 &&
+		len(scope.Environments) == 0 &&
+		len(scope.Machines) == 0 &&
+		len(scope.ParentDeployments) == 0 &&
+		len(scope.Private) == 0 &&
+		len(scope.ProcessOwners) == 0 &&
+		len(scope.Projects) == 0 &&
+		len(scope.Roles) == 0 &&
+		len(scope.TargetRoles) == 0 &&
+		len(scope.Tenants) == 0 &&
+		len(scope.TenantTags) == 0 &&
+		len(scope.Triggers) == 0 &&
+		len(scope.Users) == 0
 }
