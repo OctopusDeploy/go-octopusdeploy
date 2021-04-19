@@ -38,7 +38,7 @@ func createTestVariable(t *testing.T, projectID, variableName string) octopusdep
 	require.NotNil(t, client)
 
 	v := getTestVariable(variableName)
-	variableSet, err := client.Variables.AddSingle(projectID, &v)
+	variableSet, err := client.Variables.AddSingle(projectID, v)
 	if err != nil {
 		t.Fatalf("creating variable %s failed when it shouldn't: %s", variableName, err)
 	}
@@ -54,7 +54,9 @@ func createTestVariable(t *testing.T, projectID, variableName string) octopusdep
 }
 
 func getTestVariable(variableName string) octopusdeploy.Variable {
-	v := octopusdeploy.NewVariable(variableName, "string", "octo-test value", "octo-test description", nil, false)
+	v := octopusdeploy.NewVariable(variableName)
+	v.Description = "octo-test description"
+	v.Value = "octo-test value"
 
 	return *v
 }
