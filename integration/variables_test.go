@@ -33,7 +33,7 @@ func TestVarAddAndDelete(t *testing.T) {
 	assert.NotEmpty(t, actual.GetID(), "variable doesn't contain an ID from the octopus server")
 }
 
-func createTestVariable(t *testing.T, projectID, variableName string) octopusdeploy.Variable {
+func createTestVariable(t *testing.T, projectID, variableName string) *octopusdeploy.Variable {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
@@ -49,16 +49,16 @@ func createTestVariable(t *testing.T, projectID, variableName string) octopusdep
 		}
 	}
 
-	t.Fatalf("Unable to locate variable named %s after creationg", variableName)
-	return octopusdeploy.Variable{} //Blank variable to return
+	t.Fatalf("Unable to locate variable, %s after creation", variableName)
+	return nil //Blank variable to return
 }
 
-func getTestVariable(variableName string) octopusdeploy.Variable {
+func getTestVariable(variableName string) *octopusdeploy.Variable {
 	v := octopusdeploy.NewVariable(variableName)
 	v.Description = "octo-test description"
 	v.Value = "octo-test value"
 
-	return *v
+	return v
 }
 
 func cleanVar(t *testing.T, octopusClient *octopusdeploy.Client, varID string, projID string) {

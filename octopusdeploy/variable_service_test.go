@@ -38,11 +38,11 @@ func TestNewVariableService(t *testing.T) {
 func TestVariableServiceGetAllWithEmptyID(t *testing.T) {
 	service := newVariableService(nil, TestURIVariables, TestURIVariableNames, TestURIVariablePreview)
 
-	resource, err := service.GetAll(emptyString)
+	variableSet, err := service.GetAll(emptyString)
 	require.Error(t, err)
-	require.Nil(t, resource)
+	require.Len(t, variableSet.Variables, 0)
 
-	resource, err = service.GetAll(whitespaceString)
+	variableSet, err = service.GetAll(whitespaceString)
 	require.Error(t, err)
-	require.Nil(t, resource)
+	require.Len(t, variableSet.Variables, 0)
 }

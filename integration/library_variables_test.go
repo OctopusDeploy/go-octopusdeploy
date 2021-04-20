@@ -9,6 +9,91 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.LibraryVariableSet {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := "Name " + getShortRandomName()
+	libraryVariableSet := octopusdeploy.NewLibraryVariableSet(name)
+	libraryVariableSet.Description = "Description " + getShortRandomName()
+
+	actionTemplateParameter := octopusdeploy.NewActionTemplateParameter()
+	propertyValue := octopusdeploy.NewPropertyValue(getShortRandomName(), false)
+	actionTemplateParameter.DefaultValue = &propertyValue
+	actionTemplateParameter.DisplaySettings = map[string]string{
+		"Octopus.ControlType": "SingleLineText",
+	}
+	actionTemplateParameter.HelpText = "Help Text " + getShortRandomName()
+	actionTemplateParameter.Label = "Label " + getShortRandomName()
+	actionTemplateParameter.Name = "Name " + getShortRandomName()
+	libraryVariableSet.Templates = append(libraryVariableSet.Templates, *actionTemplateParameter)
+
+	actionTemplateParameter = octopusdeploy.NewActionTemplateParameter()
+	propertyValue = octopusdeploy.NewPropertyValue(getShortRandomName(), false)
+	actionTemplateParameter.DefaultValue = &propertyValue
+	actionTemplateParameter.DisplaySettings = map[string]string{
+		"Octopus.ControlType": "SingleLineText",
+	}
+	actionTemplateParameter.HelpText = "Help Text " + getShortRandomName()
+	actionTemplateParameter.Label = "Label " + getShortRandomName()
+	actionTemplateParameter.Name = "Name " + getShortRandomName()
+	libraryVariableSet.Templates = append(libraryVariableSet.Templates, *actionTemplateParameter)
+
+	createdLibraryVariableSet, err := client.LibraryVariableSets.Add(libraryVariableSet)
+	require.NoError(t, err)
+	require.NotNil(t, createdLibraryVariableSet)
+
+	name = "Name " + getShortRandomName()
+	variable := octopusdeploy.NewVariable(name)
+	variable.Description = "Description " + getShortRandomName()
+	variable.IsEditable = false
+	variable.IsSensitive = true
+	variable.Value = "Value " + getShortRandomName()
+
+	variableSet, err := client.Variables.AddSingle(createdLibraryVariableSet.GetID(), variable)
+	require.NoError(t, err)
+	require.NotNil(t, variableSet)
+
+	name = "Name " + getShortRandomName()
+	variable = octopusdeploy.NewVariable(name)
+	variable.Description = "Description " + getShortRandomName()
+	variable.Value = "Value " + getShortRandomName()
+
+	variableSet, err = client.Variables.AddSingle(createdLibraryVariableSet.GetID(), variable)
+	require.NoError(t, err)
+	require.NotNil(t, variableSet)
+
+	return createdLibraryVariableSet
+}
+
+func DeleteLibraryVariableSet(t *testing.T, client *octopusdeploy.Client, libraryVariableSet *octopusdeploy.LibraryVariableSet) {
+	require.NotNil(t, libraryVariableSet)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := client.LibraryVariableSets.DeleteByID(libraryVariableSet.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedLibraryVariableSet, err := client.LibraryVariableSets.GetByID(libraryVariableSet.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedLibraryVariableSet)
+}
+
+func TestLibraryVariableSetServiceAddDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	libraryVariableSet := CreateLibraryVariableSet(t, client)
+	require.NotNil(t, libraryVariableSet)
+	defer DeleteLibraryVariableSet(t, client, libraryVariableSet)
+}
+
 func TestLibraryVariablesGet(t *testing.T) {
 	octopusClient, err := octopusdeploy.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariables-41", http.StatusOK, getLibraryVariablesResponseJSON)
 	require.NoError(t, err)

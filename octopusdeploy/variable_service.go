@@ -29,77 +29,80 @@ func newVariableService(sling *sling.Sling, uriTemplate string, namesPath string
 	}
 }
 
-// GetAll fetches a collection of variables for a project ID.
-func (s variableService) GetAll(projectID string) (Variables, error) {
+// GetAll fetches a collection of variables for a owner ID.
+func (s variableService) GetAll(ownerID string) (VariableSet, error) {
 	if err := validateInternalState(s); err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
-	if isEmpty(projectID) {
-		return Variables{}, errInvalidvariableServiceParameter{ParameterName: "projectID"}
+	if isEmpty(ownerID) {
+		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
 	path := trimTemplate(s.getPath())
-	path = fmt.Sprintf(path+"/variableset-%s", projectID)
+	path = fmt.Sprintf(path+"/variableset-%s", ownerID)
 
-	resp, err := apiGet(s.getClient(), new(Variables), path)
+	resp, err := apiGet(s.getClient(), new(VariableSet), path)
 	if err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
-	return *resp.(*Variables), nil
+	return *resp.(*VariableSet), nil
 }
 
-// GetByID fetches a single variable, located by its ID, from Octopus Deploy for a given Project ID.
-func (s variableService) GetByID(projectID string, variableID string) (*Variable, error) {
+// GetByID fetches a single variable, located by its ID, from Octopus Deploy for a given owner ID.
+func (s variableService) GetByID(ownerID string, variableID string) (*Variable, error) {
 	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
-	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
+	if isEmpty(ownerID) {
+		return nil, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
 	if isEmpty(variableID) {
 		return nil, errInvalidvariableServiceParameter{ParameterName: "variableID"}
 	}
 
-	variables, err := s.GetAll(projectID)
+	variables, err := s.GetAll(ownerID)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, variable := range variables.Variables {
 		if variable.GetID() == variableID {
-			return &variable, nil
+			return variable, nil
 		}
 	}
 
-	return nil, nil
+	return nil, APIError{
+		StatusCode:   404,
+		ErrorMessage: fmt.Sprintf("Variable ID, %s could not be found with owner ID, %s.", variableID, ownerID),
+	}
 }
 
-// GetByName fetches variables, located by their name, from Octopus Deploy for a given Project ID. As variable
+// GetByName fetches variables, located by their name, from Octopus Deploy for a given owner ID. As variable
 // names can appear more than once under different scopes, a VariableScope must also be provided, which will
 // be used to locate the appropriate variables.
-func (s variableService) GetByName(projectID string, name string, scope VariableScope) ([]Variable, error) {
+func (s variableService) GetByName(ownerID string, name string, scope *VariableScope) ([]*Variable, error) {
 	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
-	if isEmpty(projectID) {
-		return nil, errInvalidvariableServiceParameter{ParameterName: "projectID"}
+	if isEmpty(ownerID) {
+		return nil, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
 	if isEmpty(name) {
 		return nil, errInvalidvariableServiceParameter{ParameterName: "name"}
 	}
 
-	variables, err := s.GetAll(projectID)
+	variables, err := s.GetAll(ownerID)
 	if err != nil {
 		return nil, err
 	}
 
-	var matchedVariables []Variable
+	var matchedVariables []*Variable
 
 	for _, variable := range variables.Variables {
 		if variable.Name == name {
@@ -116,70 +119,70 @@ func (s variableService) GetByName(projectID string, name string, scope Variable
 	return matchedVariables, nil
 }
 
-// AddSingle adds a single variable to a project ID. This automates the act of fetching
+// AddSingle adds a single variable to a owner ID. This automates the act of fetching
 // the variable set, adding a new item to it, and posting back to Octopus
-func (s variableService) AddSingle(projectID string, variable Variable) (Variables, error) {
+func (s variableService) AddSingle(ownerID string, variable *Variable) (VariableSet, error) {
 	if err := validateInternalState(s); err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
-	if isEmpty(projectID) {
-		return Variables{}, errInvalidvariableServiceParameter{ParameterName: "projectID"}
+	if isEmpty(ownerID) {
+		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
-	variables, err := s.GetAll(projectID)
+	variables, err := s.GetAll(ownerID)
 	if err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
 	variables.Variables = append(variables.Variables, variable)
-	return s.Update(projectID, variables)
+	return s.Update(ownerID, variables)
 }
 
-// UpdateSingle adds a single variable to a project ID. This automates the act of fetching
+// UpdateSingle adds a single variable to a owner ID. This automates the act of fetching
 // the variable set, updating the existing item, and posting back to Octopus
-func (s variableService) UpdateSingle(projectID string, variable Variable) (Variables, error) {
+func (s variableService) UpdateSingle(ownerID string, variable *Variable) (VariableSet, error) {
 	if err := validateInternalState(s); err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
-	if isEmpty(projectID) {
-		return Variables{}, errInvalidvariableServiceParameter{ParameterName: "projectID"}
+	if isEmpty(ownerID) {
+		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
-	variables, err := s.GetAll(projectID)
+	variables, err := s.GetAll(ownerID)
 	if err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
 	for k, v := range variables.Variables {
 		if v.GetID() == variable.ID {
 			variables.Variables[k] = variable
-			return s.Update(projectID, variables)
+			return s.Update(ownerID, variables)
 		}
 	}
 
-	return Variables{}, ErrItemNotFound
+	return VariableSet{}, ErrItemNotFound
 }
 
-// DeleteSingle removes a single variable from a project ID. This automates the act of fetching
+// DeleteSingle removes a single variable from a owner ID. This automates the act of fetching
 // the variable set, removing the existing item, and posting back to Octopus
-func (s variableService) DeleteSingle(projectID string, variableID string) (Variables, error) {
+func (s variableService) DeleteSingle(ownerID string, variableID string) (VariableSet, error) {
 	if err := validateInternalState(s); err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
-	if isEmpty(projectID) {
-		return Variables{}, errInvalidvariableServiceParameter{ParameterName: "projectID"}
+	if isEmpty(ownerID) {
+		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
 	if isEmpty(variableID) {
-		return Variables{}, errInvalidvariableServiceParameter{ParameterName: "variableID"}
+		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "variableID"}
 	}
 
-	variables, err := s.GetAll(projectID)
+	variables, err := s.GetAll(ownerID)
 	if err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
 	var found bool
@@ -191,60 +194,47 @@ func (s variableService) DeleteSingle(projectID string, variableID string) (Vari
 	}
 
 	if !found {
-		return Variables{}, ErrItemNotFound
+		return VariableSet{}, ErrItemNotFound
 	}
 
-	return s.Update(projectID, variables)
+	return s.Update(ownerID, variables)
 }
 
 // Update takes an entire variable set and posts the entire set back to Octopus Deploy. There are individual
 // functions like AddSingle and UpdateSingle that can make this process more of a "typical" CRUD Octopus command.
-func (s variableService) Update(projectID string, variableSet Variables) (Variables, error) {
+func (s variableService) Update(ownerID string, variableSet VariableSet) (VariableSet, error) {
 	err := validateInternalState(s)
 	if err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
-	if isEmpty(projectID) {
-		return Variables{}, errInvalidvariableServiceParameter{ParameterName: "projectID"}
+	if isEmpty(ownerID) {
+		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
 	path := trimTemplate(s.getPath())
-	path = fmt.Sprintf(path+"/variableset-%s", projectID)
+	path = fmt.Sprintf(path+"/variableset-%s", ownerID)
 
-	resp, err := apiUpdate(s.getClient(), variableSet, new(Variables), path)
+	resp, err := apiUpdate(s.getClient(), variableSet, new(VariableSet), path)
 	if err != nil {
-		return Variables{}, err
+		return VariableSet{}, err
 	}
 
-	return *resp.(*Variables), nil
+	return *resp.(*VariableSet), nil
 }
 
 // MatchesScope compares two different scopes to see if they match. Generally used for comparing the scope of
 // an existing variable against a desired state. Only supports Environment, Role, Machine, Action and Channel
 // for scope options. Returns true if definedScope is nil or all elements are empty. Also returns a VariableScope
 // of all the scopes that were matched
-func (s variableService) MatchesScope(variableScope VariableScope, definedScope VariableScope) (bool, *VariableScope, error) {
+func (s variableService) MatchesScope(variableScope VariableScope, definedScope *VariableScope) (bool, *VariableScope, error) {
 	err := validateInternalState(s)
 	if err != nil {
 		return false, nil, err
 	}
 
-	//Unsupported scopes
-	if len(definedScope.Private) > 0 {
-		return false, nil, fmt.Errorf("Private is not a supported scope for variable matching")
-	}
-	if len(definedScope.Projects) > 0 {
-		return false, nil, fmt.Errorf("Project is not a supported scope for variable matching")
-	}
-	if len(definedScope.TargetRoles) > 0 {
-		return false, nil, fmt.Errorf("TargetRole is not a supported scope for variable matching")
-	}
-	if len(definedScope.Tenants) > 0 {
-		return false, nil, fmt.Errorf("Tenant is not a supported scope for variable matching")
-	}
-	if len(definedScope.Users) > 0 {
-		return false, nil, fmt.Errorf("User is not a supported scope for variable matching")
+	if definedScope == nil {
+		return true, &VariableScope{}, nil
 	}
 
 	if definedScope.IsEmpty() {
