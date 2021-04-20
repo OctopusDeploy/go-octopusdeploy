@@ -1,12 +1,12 @@
 package octopusdeploy
 
 type VariableScope struct {
-	Environments []string `json:"Environments,omitempty"`
-	Machines     []string `json:"Machines,omitempty"`
-	Actions      []string `json:"Actions,omitempty"`
-	Roles        []string `json:"Roles,omitempty"`
-	Channels     []string `json:"Channels,omitempty"`
-	TenantTags   []string `json:"TenantTags,omitempty"`
+	Environments []string `json:"Environment,omitempty"`
+	Machines     []string `json:"Machine,omitempty"`
+	Actions      []string `json:"Action,omitempty"`
+	Roles        []string `json:"Role,omitempty"`
+	Channels     []string `json:"Channel,omitempty"`
+	TenantTags   []string `json:"TenantTag,omitempty"`
 }
 
 func (scope VariableScope) IsEmpty() bool {
