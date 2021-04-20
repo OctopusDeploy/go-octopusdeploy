@@ -75,7 +75,7 @@ func (s variableService) GetByID(ownerID string, variableID string) (*Variable, 
 		}
 	}
 
-	return nil, APIError{
+	return nil, &APIError{
 		StatusCode:   404,
 		ErrorMessage: fmt.Sprintf("Variable ID, %s could not be found with owner ID, %s.", variableID, ownerID),
 	}
