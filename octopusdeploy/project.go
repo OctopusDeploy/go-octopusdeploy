@@ -5,32 +5,32 @@ import (
 )
 
 type Project struct {
-	AutoCreateRelease               bool                         `json:"AutoCreateRelease"`
-	AutoDeployReleaseOverrides      []*AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides,omitempty"`
-	ClonedFromProjectID             string                       `json:"ClonedFromProjectId,omitempty"`
-	DefaultGuidedFailureMode        string                       `json:"DefaultGuidedFailureMode,omitempty"`
-	DefaultToSkipIfAlreadyInstalled bool                         `json:"DefaultToSkipIfAlreadyInstalled"`
-	DeploymentChangesTemplate       string                       `json:"DeploymentChangesTemplate,omitempty"`
-	DeploymentProcessID             string                       `json:"DeploymentProcessId,omitempty"`
-	Description                     string                       `json:"Description,omitempty"`
-	ExtensionSettings               []*ExtensionSettingsValues   `json:"ExtensionSettings,omitempty"`
-	IncludedLibraryVariableSets     []string                     `json:"IncludedLibraryVariableSetIds,omitempty"`
-	IsDisabled                      bool                         `json:"IsDisabled"`
-	IsDiscreteChannelRelease        bool                         `json:"DiscreteChannelRelease"`
-	IsVersionControlled             bool                         `json:"IsVersionControlled"`
-	LifecycleID                     string                       `json:"LifecycleId" validate:"required"`
-	Name                            string                       `json:"Name" validate:"required"`
-	ConnectivityPolicy              *ConnectivityPolicy          `json:"ProjectConnectivityPolicy,omitempty"`
-	ProjectGroupID                  string                       `json:"ProjectGroupId" validate:"required"`
-	ReleaseCreationStrategy         *ReleaseCreationStrategy     `json:"ReleaseCreationStrategy,omitempty"`
-	ReleaseNotesTemplate            string                       `json:"ReleaseNotesTemplate,omitempty"`
-	Slug                            string                       `json:"Slug,omitempty"`
-	SpaceID                         string                       `json:"SpaceId,omitempty"`
-	Templates                       []*ActionTemplateParameter   `json:"Templates,omitempty"`
-	TenantedDeploymentMode          TenantedDeploymentMode       `json:"TenantedDeploymentMode"`
-	VariableSetID                   string                       `json:"VariableSetId,omitempty"`
-	VersionControlSettings          *VersionControlSettings      `json:"VersionControlSettings,omitempty"`
-	VersioningStrategy              VersioningStrategy           `json:"VersioningStrategy"`
+	AutoCreateRelease               bool                        `json:"AutoCreateRelease"`
+	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides,omitempty"`
+	ClonedFromProjectID             string                      `json:"ClonedFromProjectId,omitempty"`
+	DefaultGuidedFailureMode        string                      `json:"DefaultGuidedFailureMode,omitempty"`
+	DefaultToSkipIfAlreadyInstalled bool                        `json:"DefaultToSkipIfAlreadyInstalled"`
+	DeploymentChangesTemplate       string                      `json:"DeploymentChangesTemplate,omitempty"`
+	DeploymentProcessID             string                      `json:"DeploymentProcessId,omitempty"`
+	Description                     string                      `json:"Description,omitempty"`
+	ExtensionSettings               []ExtensionSettingsValues   `json:"ExtensionSettings,omitempty"`
+	IncludedLibraryVariableSets     []string                    `json:"IncludedLibraryVariableSetIds,omitempty"`
+	IsDisabled                      bool                        `json:"IsDisabled"`
+	IsDiscreteChannelRelease        bool                        `json:"DiscreteChannelRelease"`
+	IsVersionControlled             bool                        `json:"IsVersionControlled"`
+	LifecycleID                     string                      `json:"LifecycleId" validate:"required"`
+	Name                            string                      `json:"Name" validate:"required"`
+	ConnectivityPolicy              *ConnectivityPolicy         `json:"ProjectConnectivityPolicy,omitempty"`
+	ProjectGroupID                  string                      `json:"ProjectGroupId" validate:"required"`
+	ReleaseCreationStrategy         *ReleaseCreationStrategy    `json:"ReleaseCreationStrategy,omitempty"`
+	ReleaseNotesTemplate            string                      `json:"ReleaseNotesTemplate,omitempty"`
+	Slug                            string                      `json:"Slug,omitempty"`
+	SpaceID                         string                      `json:"SpaceId,omitempty"`
+	Templates                       []ActionTemplateParameter   `json:"Templates,omitempty"`
+	TenantedDeploymentMode          TenantedDeploymentMode      `json:"TenantedDeploymentMode"`
+	VariableSetID                   string                      `json:"VariableSetId,omitempty"`
+	VersionControlSettings          *VersionControlSettings     `json:"VersionControlSettings,omitempty"`
+	VersioningStrategy              VersioningStrategy          `json:"VersioningStrategy"`
 
 	resource
 }
@@ -42,14 +42,17 @@ type Projects struct {
 
 func NewProject(name string, lifeCycleID string, projectGroupID string) *Project {
 	return &Project{
-		DefaultGuidedFailureMode: "EnvironmentDefault",
-		LifecycleID:              lifeCycleID,
-		Name:                     name,
+		AutoDeployReleaseOverrides: []AutoDeployReleaseOverride{},
+		DefaultGuidedFailureMode:   "EnvironmentDefault",
+		ExtensionSettings:          []ExtensionSettingsValues{},
+		LifecycleID:                lifeCycleID,
+		Name:                       name,
 		ConnectivityPolicy: &ConnectivityPolicy{
 			AllowDeploymentsToNoTargets: false,
 			SkipMachineBehavior:         "None",
 		},
 		ProjectGroupID:         projectGroupID,
+		Templates:              []ActionTemplateParameter{},
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 		VersioningStrategy: VersioningStrategy{
 			Template: "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
