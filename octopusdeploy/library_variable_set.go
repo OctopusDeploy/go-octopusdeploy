@@ -10,12 +10,12 @@ type LibraryVariableSets struct {
 }
 
 type LibraryVariableSet struct {
-	ContentType   string                     `json:"ContentType" validate:"required,oneof=ScriptModule Variables"`
-	Description   string                     `json:"Description,omitempty"`
-	Name          string                     `json:"Name" validate:"required"`
-	SpaceID       string                     `json:"SpaceId,omitempty"`
-	Templates     []*ActionTemplateParameter `json:"Templates,omitempty"`
-	VariableSetID string                     `json:"VariableSetId,omitempty"`
+	ContentType   string                    `json:"ContentType" validate:"required,oneof=ScriptModule Variables"`
+	Description   string                    `json:"Description,omitempty"`
+	Name          string                    `json:"Name" validate:"required"`
+	SpaceID       string                    `json:"SpaceId,omitempty"`
+	Templates     []ActionTemplateParameter `json:"Templates,omitempty"`
+	VariableSetID string                    `json:"VariableSetId,omitempty"`
 
 	resource
 }
@@ -24,6 +24,7 @@ func NewLibraryVariableSet(name string) *LibraryVariableSet {
 	return &LibraryVariableSet{
 		ContentType: "Variables",
 		Name:        name,
+		Templates:   []ActionTemplateParameter{},
 		resource:    *newResource(),
 	}
 }

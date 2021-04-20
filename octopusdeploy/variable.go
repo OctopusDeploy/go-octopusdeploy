@@ -5,7 +5,7 @@ type Variable struct {
 	IsEditable  bool                   `json:"IsEditable"`
 	IsSensitive bool                   `json:"IsSensitive"`
 	Name        string                 `json:"Name"`
-	Prompt      *VariablePromptOptions `json:"Prompt"`
+	Prompt      *VariablePromptOptions `json:"Prompt,omitempty"`
 	Scope       VariableScope          `json:"Scope"`
 	Type        string                 `json:"Type"`
 	Value       string                 `json:"Value"`
