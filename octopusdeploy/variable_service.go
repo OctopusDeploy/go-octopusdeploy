@@ -180,24 +180,27 @@ func (s variableService) DeleteSingle(ownerID string, variableID string) (Variab
 		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "variableID"}
 	}
 
-	variables, err := s.GetAll(ownerID)
+	variableSet, err := s.GetAll(ownerID)
 	if err != nil {
 		return VariableSet{}, err
 	}
 
 	var found bool
-	for i, existingVar := range variables.Variables {
-		if existingVar.GetID() == variableID {
-			variables.Variables = append(variables.Variables[:i], variables.Variables[i+1:]...)
+	for k, v := range variableSet.Variables {
+		if v.GetID() == variableID {
+			variableSet.Variables = append(variableSet.Variables[:k], variableSet.Variables[k+1:]...)
 			found = true
 		}
 	}
 
 	if !found {
-		return VariableSet{}, ErrItemNotFound
+		return VariableSet{}, &APIError{
+			StatusCode:   404,
+			ErrorMessage: fmt.Sprintf("Variable ID, %s could not be found with owner ID, %s.", variableID, ownerID),
+		}
 	}
 
-	return s.Update(ownerID, variables)
+	return s.Update(ownerID, variableSet)
 }
 
 // Update takes an entire variable set and posts the entire set back to Octopus Deploy. There are individual
@@ -215,12 +218,15 @@ func (s variableService) Update(ownerID string, variableSet VariableSet) (Variab
 	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/variableset-%s", ownerID)
 
-	resp, err := apiUpdate(s.getClient(), variableSet, new(VariableSet), path)
-	if err != nil {
+	if _, err := apiUpdate(s.getClient(), variableSet, new(VariableSet), path); err != nil {
 		return VariableSet{}, err
 	}
 
-	return *resp.(*VariableSet), nil
+	// 2021-04-22 (John Bristowe): we need to retrieve the variable set (again)
+	// via HTTP GET (below) due to a bug for HTTP POST and HTTP PUT which will
+	// provide a null scope value set in their responses
+
+	return s.GetAll(ownerID)
 }
 
 // MatchesScope compares two different scopes to see if they match. Generally used for comparing the scope of
