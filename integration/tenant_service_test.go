@@ -84,11 +84,36 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
+	libraryVariableSet := CreateLibraryVariableSet(t, client)
+	require.NotNil(t, libraryVariableSet)
+	defer DeleteLibraryVariableSet(t, client, libraryVariableSet)
+
 	environment := CreateTestEnvironment(t, client)
 	defer DeleteTestEnvironment(t, client, environment)
 
 	expected := CreateTestTenant(t, client, project, environment)
 	defer DeleteTestTenant(t, client, expected)
+
+	missingVariablesQuery := octopusdeploy.MissingVariablesQuery{}
+
+	tenantMissingVariables, err := client.Tenants.GetMissingVariables(missingVariablesQuery)
+	require.NoError(t, err)
+	require.NotNil(t, tenantMissingVariables)
+
+	tenantVariables := octopusdeploy.NewTenantVariable(expected.GetID())
+	require.NotNil(t, tenantVariables)
+
+	tenantVariables, err = client.Tenants.UpdateVariables(expected, tenantVariables)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	tenantVariables, err = client.Tenants.GetVariables(expected)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	tenantVariables, err = client.Tenants.UpdateVariables(expected, tenantVariables)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
 
 	actual, err := client.Tenants.GetByID(expected.GetID())
 	assert.NoError(t, err)

@@ -558,6 +558,13 @@ type VariablePreviewQuery struct {
 	Tenant      string `uri:"tenant,omitempty" url:"tenant,omitempty"`
 }
 
+type MissingVariablesQuery struct {
+	EnvironmentID  string `uri:"environmentId,omitempty" url:"environmentId,omitempty"`
+	IncludeDetails bool   `uri:"includeDetails,omitempty" url:"includeDetails,omitempty"`
+	ProjectID      string `uri:"projectId,omitempty" url:"projectId,omitempty"`
+	TenantID       string `uri:"tenantId,omitempty" url:"tenantId,omitempty"`
+}
+
 type VariablesQuery struct {
 	IDs []string `uri:"ids,omitempty" url:"ids,omitempty"`
 }
