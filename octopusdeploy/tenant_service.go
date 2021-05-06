@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -72,6 +73,15 @@ func (s tenantService) Add(resource *Tenant) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
+func (s tenantService) CreateVariables(tenant *Tenant, tenantVariable *TenantVariable) (*TenantVariable, error) {
+	resp, err := apiAdd(s.getClient(), tenantVariable, new(TenantVariable), tenant.Links["Variables"])
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*TenantVariable), nil
+}
+
 // Get returns a collection of tenants based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
@@ -132,6 +142,25 @@ func (s tenantService) GetByIDs(ids []string) ([]*Tenant, error) {
 	return s.getPagedResponse(path)
 }
 
+func (s tenantService) GetMissingVariables(missibleVariablesQuery MissingVariablesQuery) (*[]TenantsMissingVariables, error) {
+	template, err := uritemplates.Parse(s.missingVariablesPath)
+	if err != nil {
+		return &[]TenantsMissingVariables{}, err
+	}
+
+	path, err := template.Expand(missibleVariablesQuery)
+	if err != nil {
+		return &[]TenantsMissingVariables{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new([]TenantsMissingVariables), path)
+	if err != nil {
+		return &[]TenantsMissingVariables{}, err
+	}
+
+	return response.(*[]TenantsMissingVariables), nil
+}
+
 // GetByProjectID performs a lookup and returns all tenants with a matching
 // project ID.
 func (s tenantService) GetByProjectID(id string) ([]*Tenant, error) {
@@ -154,6 +183,15 @@ func (s tenantService) GetByPartialName(name string) ([]*Tenant, error) {
 	return s.getPagedResponse(path)
 }
 
+func (s tenantService) GetVariables(tenant *Tenant) (*TenantVariable, error) {
+	resp, err := apiGet(s.getClient(), new(TenantVariable), tenant.Links["Variables"])
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*TenantVariable), nil
+}
+
 // Update modifies a tenant based on the one provided as input.
 func (s tenantService) Update(resource *Tenant) (*Tenant, error) {
 	path, err := getUpdatePath(s, resource)
@@ -167,4 +205,13 @@ func (s tenantService) Update(resource *Tenant) (*Tenant, error) {
 	}
 
 	return resp.(*Tenant), nil
+}
+
+func (s tenantService) UpdateVariables(tenant *Tenant, tenantVariable *TenantVariable) (*TenantVariable, error) {
+	resp, err := apiUpdate(s.getClient(), tenantVariable, new(TenantVariable), tenant.Links["Variables"])
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*TenantVariable), nil
 }
