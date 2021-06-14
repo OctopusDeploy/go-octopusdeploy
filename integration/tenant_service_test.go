@@ -84,6 +84,16 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
+	variable := CreateTestVariable(t, project.GetID(), getRandomName())
+	require.NotNil(t, variable)
+
+	actionTemplateParameter := CreateActionTemplateParameter()
+	require.NotNil(t, actionTemplateParameter)
+	project.Templates = append(project.Templates, actionTemplateParameter)
+	project, err := client.Projects.Update(project)
+	require.NotNil(t, project)
+	require.NoError(t, err)
+
 	libraryVariableSet := CreateLibraryVariableSet(t, client)
 	require.NotNil(t, libraryVariableSet)
 	defer DeleteLibraryVariableSet(t, client, libraryVariableSet)
@@ -91,33 +101,34 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	environment := CreateTestEnvironment(t, client)
 	defer DeleteTestEnvironment(t, client, environment)
 
-	expected := CreateTestTenant(t, client, project, environment)
-	defer DeleteTestTenant(t, client, expected)
+	tenant := CreateTestTenant(t, client, project, environment)
+	defer DeleteTestTenant(t, client, tenant)
 
 	missingVariablesQuery := octopusdeploy.MissingVariablesQuery{}
 
-	tenantMissingVariables, err := client.Tenants.GetMissingVariables(missingVariablesQuery)
+	missingVariables, err := client.Tenants.GetMissingVariables(missingVariablesQuery)
 	require.NoError(t, err)
-	require.NotNil(t, tenantMissingVariables)
+	require.NotNil(t, missingVariables)
 
-	tenantVariables := octopusdeploy.NewTenantVariable(expected.GetID())
+	tenantVariables := octopusdeploy.NewTenantVariables(tenant.GetID())
 	require.NotNil(t, tenantVariables)
 
-	tenantVariables, err = client.Tenants.UpdateVariables(expected, tenantVariables)
-	require.NoError(t, err)
-	require.NotNil(t, tenantVariables)
-
-	tenantVariables, err = client.Tenants.GetVariables(expected)
+	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	tenantVariables, err = client.Tenants.UpdateVariables(expected, tenantVariables)
+	tenantVariables, err = client.Tenants.GetVariables(tenant)
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	actual, err := client.Tenants.GetByID(expected.GetID())
+	tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()] = octopusdeploy.NewPropertyValue(getRandomName(), false)
+	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	actual, err := client.Tenants.GetByID(tenant.GetID())
 	assert.NoError(t, err)
-	AssertEqualTenants(t, expected, actual)
+	AssertEqualTenants(t, tenant, actual)
 }
 
 func TestTenantServiceGetAll(t *testing.T) {

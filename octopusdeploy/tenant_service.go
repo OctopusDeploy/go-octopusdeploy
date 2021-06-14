@@ -73,13 +73,13 @@ func (s tenantService) Add(resource *Tenant) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
-func (s tenantService) CreateVariables(tenant *Tenant, tenantVariable *TenantVariable) (*TenantVariable, error) {
-	resp, err := apiAdd(s.getClient(), tenantVariable, new(TenantVariable), tenant.Links["Variables"])
+func (s tenantService) CreateVariables(tenant *Tenant, tenantVariable *TenantVariables) (*TenantVariables, error) {
+	resp, err := apiAdd(s.getClient(), tenantVariable, new(TenantVariables), tenant.Links["Variables"])
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*TenantVariable), nil
+	return resp.(*TenantVariables), nil
 }
 
 // Get returns a collection of tenants based on the criteria defined by its
@@ -183,13 +183,13 @@ func (s tenantService) GetByPartialName(name string) ([]*Tenant, error) {
 	return s.getPagedResponse(path)
 }
 
-func (s tenantService) GetVariables(tenant *Tenant) (*TenantVariable, error) {
-	resp, err := apiGet(s.getClient(), new(TenantVariable), tenant.Links["Variables"])
+func (s tenantService) GetVariables(tenant *Tenant) (*TenantVariables, error) {
+	resp, err := apiGet(s.getClient(), new(TenantVariables), tenant.Links["Variables"])
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*TenantVariable), nil
+	return resp.(*TenantVariables), nil
 }
 
 // Update modifies a tenant based on the one provided as input.
@@ -207,11 +207,11 @@ func (s tenantService) Update(resource *Tenant) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
-func (s tenantService) UpdateVariables(tenant *Tenant, tenantVariable *TenantVariable) (*TenantVariable, error) {
-	resp, err := apiUpdate(s.getClient(), tenantVariable, new(TenantVariable), tenant.Links["Variables"])
+func (s tenantService) UpdateVariables(tenant *Tenant, tenantVariables *TenantVariables) (*TenantVariables, error) {
+	resp, err := apiUpdate(s.getClient(), tenantVariables, new(TenantVariables), tenant.Links["Variables"])
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*TenantVariable), nil
+	return resp.(*TenantVariables), nil
 }

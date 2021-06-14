@@ -1,6 +1,6 @@
 package octopusdeploy
 
-type TenantVariable struct {
+type TenantVariables struct {
 	LibraryVariables map[string]LibraryVariable `json:"LibraryVariables,omitempty"`
 	ProjectVariables map[string]ProjectVariable `json:"ProjectVariables,omitempty"`
 	SpaceID          string                     `json:"SpaceId,omitempty"`
@@ -10,8 +10,8 @@ type TenantVariable struct {
 	resource
 }
 
-func NewTenantVariable(tenantID string) *TenantVariable {
-	return &TenantVariable{
+func NewTenantVariables(tenantID string) *TenantVariables {
+	return &TenantVariables{
 		TenantID: tenantID,
 		resource: *newResource(),
 	}
