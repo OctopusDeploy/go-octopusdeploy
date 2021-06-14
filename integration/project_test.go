@@ -9,6 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func CreateActionTemplateParameter() octopusdeploy.ActionTemplateParameter {
+	actionTemplateParameter := octopusdeploy.NewActionTemplateParameter()
+	return *actionTemplateParameter
+}
+
 func TestAddNilProject(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
