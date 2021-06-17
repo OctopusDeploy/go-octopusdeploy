@@ -14,7 +14,7 @@ type Team struct {
 	CanChangeMembers       bool                 `json:"CanChangeMembers,omitempty"`
 	CanChangeRoles         bool                 `json:"CanChangeRoles,omitempty"`
 	Description            string               `json:"Description,omitempty"`
-	ExternalSecurityGroups []NamedReferenceItem `json:"ExternalSecurityGroups"`
+	ExternalSecurityGroups []NamedReferenceItem `json:"ExternalSecurityGroups,omitempty"`
 	MemberUserIDs          []string             `json:"MemberUserIds"`
 	Name                   string               `json:"Name" validate:"required"`
 	SpaceID                string               `json:"SpaceId,omitempty"`
