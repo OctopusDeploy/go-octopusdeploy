@@ -48,6 +48,23 @@ func (s libraryVariableSetService) Add(resource *LibraryVariableSet) (*LibraryVa
 	return resp.(*LibraryVariableSet), nil
 }
 
+// Get returns a collection of library variable sets based on the criteria
+// defined by its input query parameter. If an error occurs, an empty
+// collection is returned along with the associated error.
+func (s libraryVariableSetService) Get(libraryVariablesQuery LibraryVariablesQuery) (*LibraryVariableSets, error) {
+	path, err := s.getURITemplate().Expand(libraryVariablesQuery)
+	if err != nil {
+		return &LibraryVariableSets{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(LibraryVariableSets), path)
+	if err != nil {
+		return &LibraryVariableSets{}, err
+	}
+
+	return response.(*LibraryVariableSets), nil
+}
+
 // GetAll returns all library variable sets. If none can be found or an error
 // occurs, it returns an empty collection.
 func (s libraryVariableSetService) GetAll() ([]*LibraryVariableSet, error) {

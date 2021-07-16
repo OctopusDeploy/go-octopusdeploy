@@ -92,6 +92,23 @@ func TestLibraryVariableSetServiceAddDelete(t *testing.T) {
 	libraryVariableSet := CreateLibraryVariableSet(t, client)
 	require.NotNil(t, libraryVariableSet)
 	defer DeleteLibraryVariableSet(t, client, libraryVariableSet)
+
+	name := libraryVariableSet.Name
+	query := octopusdeploy.LibraryVariablesQuery{
+		PartialName: name,
+		Take:        1,
+	}
+	namedLibraryVariableSets, err := client.LibraryVariableSets.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, namedLibraryVariableSets)
+
+	query = octopusdeploy.LibraryVariablesQuery{
+		IDs:  []string{libraryVariableSet.GetID()},
+		Take: 1,
+	}
+	namedLibraryVariableSets, err = client.LibraryVariableSets.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, namedLibraryVariableSets)
 }
 
 func TestLibraryVariablesGet(t *testing.T) {
