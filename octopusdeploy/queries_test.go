@@ -34,7 +34,10 @@ func TestFormatter(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, rawURI)
 
-	test := TestQuery{
+	test := TestQuery{}
+	require.NotNil(t, test)
+
+	test = TestQuery{
 		AccountType: "UsernamePassword",
 		ID:          "foo",
 		IDs:         []string{"Foo", "Bar"},
