@@ -19,24 +19,6 @@ func newCertificateService(sling *sling.Sling, uriTemplate string) *certificateS
 	return certificateService
 }
 
-func (s certificateService) getPagedResponse(path string) ([]*CertificateResource, error) {
-	resources := []*CertificateResource{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(CertificateResources), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*CertificateResources)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // Add creates a new certificate.
 func (s certificateService) Add(resource *CertificateResource) (*CertificateResource, error) {
 	path, err := getAddPath(s, resource)
@@ -69,7 +51,7 @@ func (s certificateService) Get(certificatesQuery CertificatesQuery) (*Certifica
 	return response.(*CertificateResources), nil
 }
 
-// GetAll returns all certificates. If none can be found or an error occurs, it
+// GetAll returns all certificates. If none are found or an error occurs, it
 // returns an empty collection.
 func (s certificateService) GetAll() ([]*CertificateResource, error) {
 	items := []*CertificateResource{}
@@ -98,16 +80,6 @@ func (s certificateService) GetByID(id string) (*CertificateResource, error) {
 	return resp.(*CertificateResource), nil
 }
 
-// GetByPartialName performs a lookup and returns instances of a Certificate with a matching partial name.
-func (s certificateService) GetByPartialName(name string) ([]*CertificateResource, error) {
-	path, err := getByPartialNamePath(s, name)
-	if err != nil {
-		return []*CertificateResource{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
 // Update modifies a Certificate based on the one provided as input.
 func (s certificateService) Update(resource CertificateResource) (*CertificateResource, error) {
 	path, err := getUpdatePath(s, &resource)
@@ -132,19 +104,18 @@ func (s certificateService) Replace(certificateID string, replacementCertificate
 		return nil, createInvalidParameterError(OperationReplace, ParameterReplacementCertificate)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
 	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"/%s/replace", certificateID)
 
-	_, err = apiPost(s.getClient(), replacementCertificate, new(CertificateResource), path)
-	if err != nil {
+	if _, err := apiPost(s.getClient(), replacementCertificate, new(CertificateResource), path); err != nil {
 		return nil, err
 	}
 
-	//The API endpoint /certificates/id/replace returns the old cert, we need to re-query to get the updated one.
+	// The API endpoint /certificates/id/replace returns the old cert, we need
+	// to re-query to get the updated one
 	return s.GetByID(certificateID)
 }
