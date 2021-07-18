@@ -34,15 +34,20 @@ func ReplaceCertificateExample() {
 		return
 	}
 
-	// get certificates
-	certificateList, err := client.Certificates.GetByPartialName(certificateName)
-	if err != nil {
-		_ = fmt.Errorf("error getting certificate: %v", err)
-		return
+	// construct query
+	query := octopusdeploy.CertificatesQuery{
+		PartialName: certificateName,
 	}
 
 	// find the certificate with a specific name
-	certificate := certificateList[0]
+	certificates, err := client.Certificates.Get(query)
+	if err != nil {
+		_ = fmt.Errorf("error matching certificate(s): %v", err)
+		return
+	}
+
+	// NOTE: this is lazy and should be replaced by something more robust
+	certificate := certificates.Items[0]
 
 	file, err := os.Open(pfxFilePath)
 	if err != nil {
@@ -56,14 +61,12 @@ func ReplaceCertificateExample() {
 		return
 	}
 
-	// Convert file to base64
+	// encode to Base64
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
 
-	// Replace certificate
+	// replace certificate
 	replacementCertificate := octopusdeploy.NewReplacementCertificate(base64Certificate, pfxFilePassword)
-	_, err = client.Certificates.Replace(certificate.GetID(), replacementCertificate)
-	if err != nil {
+	if _, err = client.Certificates.Replace(certificate.GetID(), replacementCertificate); err != nil {
 		_ = fmt.Errorf("error replacing certificate: %v", err)
-		return
 	}
 }
