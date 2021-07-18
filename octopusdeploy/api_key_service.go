@@ -24,8 +24,7 @@ func (s apiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
 		return nil, createInvalidParameterError(OperationGetByUserID, ParameterUserID)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
@@ -60,8 +59,7 @@ func (s apiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error) 
 		return nil, createInvalidParameterError(OperationGetByID, ParameterAPIKeyID)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
@@ -80,14 +78,11 @@ func (s apiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error) 
 // returned in the result must be saved by the caller, as it cannot be
 // retrieved subsequently from the Octopus server.
 func (s apiKeyService) Create(apiKey *APIKey) (*APIKey, error) {
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
-	err = apiKey.Validate()
-
-	if err != nil {
+	if err := apiKey.Validate(); err != nil {
 		return nil, err
 	}
 

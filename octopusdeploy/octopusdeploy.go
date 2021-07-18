@@ -444,9 +444,9 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 
 	octopusDeployError := new(APIError)
 	resp, err := getClient.Receive(inputStruct, &octopusDeployError)
-	if err != nil {
-		return nil, err
-	}
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	apiErrorCheck := APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 	if apiErrorCheck != nil {

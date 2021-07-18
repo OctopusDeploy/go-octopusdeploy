@@ -79,8 +79,7 @@ func (s projectService) GetByName(name string) (*Project, error) {
 		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
@@ -141,8 +140,7 @@ func (s projectService) GetSummary(project *Project) (*ProjectSummary, error) {
 		return nil, createInvalidParameterError(OperationGetSummary, ParameterProject)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
@@ -160,8 +158,7 @@ func (s projectService) GetReleases(project *Project) ([]*Release, error) {
 		return nil, createInvalidParameterError(OperationGetReleases, ParameterProject)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 

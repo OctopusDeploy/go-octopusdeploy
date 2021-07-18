@@ -86,8 +86,7 @@ func (s tagSetService) GetByName(name string) (*TagSet, error) {
 		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 

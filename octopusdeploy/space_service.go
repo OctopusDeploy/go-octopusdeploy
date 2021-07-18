@@ -108,8 +108,7 @@ func (s spaceService) GetByName(name string) (*Space, error) {
 		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 

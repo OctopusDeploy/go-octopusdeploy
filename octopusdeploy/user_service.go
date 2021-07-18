@@ -188,8 +188,7 @@ func (s userService) GetByID(id string) (*User, error) {
 
 // GetMe returns the user associated with the key used to invoke this API.
 func (s userService) GetMe() (*User, error) {
-	err := validateInternalState(s)
-	if err != nil {
+	if err := validateInternalState(s); err != nil {
 		return nil, err
 	}
 
