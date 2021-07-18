@@ -62,30 +62,33 @@ func (s accountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) {
 	return ToAccounts(response.(*AccountResources)), nil
 }
 
-// GetAll returns all accounts. If none can be found or an error occurs, it
+// GetAll returns all accounts. If none are found or an error occurs, it
 // returns an empty collection.
 func (s *accountService) GetAll() ([]IAccount, error) {
 	items := []*AccountResource{}
-	path := s.BasePath + "/all"
+	path, err := getAllPath(s)
+	if err != nil {
+		return ToAccountArray(items), err
+	}
 
-	_, err := apiGet(s.getClient(), &items, path)
+	_, err = apiGet(s.getClient(), &items, path)
 	return ToAccountArray(items), err
 }
 
-// GetByID returns the account that matches the input ID. If one cannot be
-// found, it returns nil and an error.
+// GetByID returns the account that matches the input ID. If one is not found,
+// it returns nil and an error.
 func (s accountService) GetByID(id string) (IAccount, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError(OperationGetByID, ParameterID)
+	path, err := getByIDPath(s, id)
+	if err != nil {
+		return nil, err
 	}
 
-	path := s.BasePath + "/" + id
 	resp, err := apiGet(s.getClient(), new(AccountResource), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(IAccount), nil
+	return ToAccount(resp.(*AccountResource))
 }
 
 // GetUsages lists the projects and deployments which are using an account.
@@ -120,5 +123,5 @@ func (s *accountService) Update(account IAccount) (IAccount, error) {
 		return nil, err
 	}
 
-	return resp.(IAccount), nil
+	return ToAccount(resp.(*AccountResource))
 }
