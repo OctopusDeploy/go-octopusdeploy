@@ -194,6 +194,9 @@ func IsEqualAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octop
 	// this statement (above) is expected to succeed, but it fails due to these
 	// missing fields
 
+	// type check
+	assert.IsType(t, expected, actual)
+
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
 	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
@@ -238,16 +241,6 @@ func TestAccountServiceDeleteAll(t *testing.T) {
 	for _, account := range accounts {
 		defer DeleteTestAccount(t, client, account)
 	}
-}
-
-func TestAccountServiceGetByID(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
-
-	id := getRandomName()
-	resource, err := client.Accounts.GetByID(id)
-	require.Error(t, err)
-	require.Nil(t, resource)
 }
 
 func TestAccountServiceAddGetDelete(t *testing.T) {
@@ -335,6 +328,29 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 	}
 }
 
+func TestAccountServiceGetByID(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	id := getRandomName()
+	resource, err := client.Accounts.GetByID(id)
+	require.Error(t, err)
+	require.Nil(t, resource)
+
+	apiError := err.(*octopusdeploy.APIError)
+	assert.Equal(t, 404, apiError.StatusCode)
+
+	accounts, err := client.Accounts.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, accounts)
+
+	for _, account := range accounts {
+		accountToCompare, err := client.Accounts.GetByID(account.GetID())
+		require.NoError(t, err)
+		IsEqualAccounts(t, account, accountToCompare)
+	}
+}
+
 func TestAccountServiceGetByIDs(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
@@ -353,6 +369,27 @@ func TestAccountServiceGetByIDs(t *testing.T) {
 	accountsByIDs, err := client.Accounts.Get(query)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(accounts), len(accountsByIDs.Items))
+}
+
+func TestAccountServiceTokenAccounts(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	for i := 0; i < 10; i++ {
+		tokenAccount := CreateTestTokenAccount(t, client)
+		ValidateAccount(t, tokenAccount)
+		defer DeleteTestAccount(t, client, tokenAccount)
+	}
+
+	accounts, err := client.Accounts.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, accounts)
+
+	for _, account := range accounts {
+		accountToCompare, err := client.Accounts.GetByID(account.GetID())
+		require.NoError(t, err)
+		IsEqualAccounts(t, account, accountToCompare)
+	}
 }
 
 func TestAccountServiceUpdate(t *testing.T) {
