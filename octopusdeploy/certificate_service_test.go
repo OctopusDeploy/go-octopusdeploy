@@ -99,38 +99,6 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	}
 }
 
-func TestCertificateServiceGetByPartialName(t *testing.T) {
-	service := createCertificateService(t)
-	require.NotNil(t, service)
-
-	resources, err := service.GetByPartialName(emptyString)
-	assert.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-
-	resources, err = service.GetByPartialName(whitespaceString)
-	assert.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-
-	name := getRandomName()
-	resources, err = service.GetByPartialName(name)
-	assert.NoError(t, err)
-	assert.NotNil(t, resources)
-	assert.Len(t, resources, 0)
-
-	certificates, err := service.GetAll()
-	assert.NoError(t, err)
-	assert.NotNil(t, certificates)
-
-	for _, certificate := range certificates {
-		certificateToCompare, err := service.GetByPartialName(certificate.Name)
-		require.NoError(t, err)
-		require.NotEmpty(t, certificateToCompare)
-		assert.Equal(t, certificate.GetID(), certificateToCompare[0].GetID())
-	}
-}
-
 func TestCertificateServiceNew(t *testing.T) {
 	ServiceFunction := newCertificateService
 	client := &sling.Sling{}
