@@ -24,12 +24,15 @@ func NewListeningTentacleEndpoint(uri *url.URL, thumbprint string) *ListeningTen
 func (l ListeningTentacleEndpoint) MarshalJSON() ([]byte, error) {
 	listeningTentacleEndpoint := struct {
 		ProxyID string `json:"ProxyId,omitempty"`
-		URI     string `json:"Uri" validate:"required,uri"`
+		URI     string `json:"Uri,omitempty"`
 		tentacleEndpoint
 	}{
 		ProxyID:          l.ProxyID,
-		URI:              l.URI.String(),
 		tentacleEndpoint: l.tentacleEndpoint,
+	}
+
+	if l.URI != nil {
+		listeningTentacleEndpoint.URI = l.URI.String()
 	}
 
 	return json.Marshal(listeningTentacleEndpoint)
