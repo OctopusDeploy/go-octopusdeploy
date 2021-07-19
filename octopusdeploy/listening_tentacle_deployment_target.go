@@ -2,23 +2,23 @@ package octopusdeploy
 
 type ListeningTentacleDeploymentTarget struct {
 	Endpoint               *ListeningTentacleEndpoint `json:"Endpoint" validate:"required"`
-	EnvironmentIDs         []string                   `json:"EnvironmentIds"`
-	HasLatestCalamari      bool                       `json:"HasLatestCalamari"`
+	EnvironmentIDs         []string                   `json:"EnvironmentIds,omitempty"`
+	HasLatestCalamari      bool                       `json:"HasLatestCalamari,omitempty"`
 	HealthStatus           string                     `json:"HealthStatus,omitempty" validate:"omitempty,oneof=HasWarnings Healthy Unavailable Unhealthy Unknown"`
-	IsDisabled             bool                       `json:"IsDisabled"`
-	IsInProcess            bool                       `json:"IsInProcess"`
+	IsDisabled             bool                       `json:"IsDisabled,omitempty"`
+	IsInProcess            bool                       `json:"IsInProcess,omitempty"`
 	MachinePolicyID        string                     `json:"MachinePolicyId,omitempty"`
-	Name                   string                     `json:"Name"`
+	Name                   string                     `json:"Name,omitempty"`
 	OperatingSystem        string                     `json:"OperatingSystem,omitempty"`
-	Roles                  []string                   `json:"Roles"`
+	Roles                  []string                   `json:"Roles,omitempty"`
 	ShellName              string                     `json:"ShellName,omitempty"`
 	ShellVersion           string                     `json:"ShellVersion,omitempty"`
 	SpaceID                string                     `json:"SpaceId,omitempty"`
 	Status                 string                     `json:"Status,omitempty" validate:"omitempty,oneof=CalamariNeedsUpgrade Disabled NeedsUpgrade Offline Online Unknown"`
 	StatusSummary          string                     `json:"StatusSummary,omitempty"`
 	TenantedDeploymentMode TenantedDeploymentMode     `json:"TenantedDeploymentParticipation,omitempty"`
-	TenantIDs              []string                   `json:"TenantIds"`
-	TenantTags             []string                   `json:"TenantTags"`
+	TenantIDs              []string                   `json:"TenantIds,omitempty"`
+	TenantTags             []string                   `json:"TenantTags,omitempty"`
 	Thumbprint             string                     `json:"Thumbprint,omitempty"`
 	URI                    string                     `json:"Uri,omitempty" validate:"omitempty,uri"`
 
