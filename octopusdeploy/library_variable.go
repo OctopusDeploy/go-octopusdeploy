@@ -7,3 +7,10 @@ type LibraryVariable struct {
 	Templates              []*ActionTemplateParameter `json:"Templates"`
 	Variables              map[string]PropertyValue   `json:"Variables,omitempty"`
 }
+
+func NewLibraryVariable() *LibraryVariable {
+	return &LibraryVariable{
+		Links:     map[string]string{},
+		Variables: map[string]PropertyValue{},
+	}
+}
