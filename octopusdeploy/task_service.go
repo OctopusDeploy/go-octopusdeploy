@@ -14,3 +14,20 @@ func newTaskService(sling *sling.Sling, uriTemplate string, taskTypesPath string
 		service:       newService(ServiceTaskService, sling, uriTemplate),
 	}
 }
+
+// Get returns a collection of tasks based on the criteria defined by its input
+// query parameter. If an error occurs, an empty collection is returned along
+// with the associated error.
+func (s taskService) Get(tasksQuery TasksQuery) (*Tasks, error) {
+	path, err := s.getURITemplate().Expand(tasksQuery)
+	if err != nil {
+		return &Tasks{}, err
+	}
+
+	response, err := apiGet(s.getClient(), new(Tasks), path)
+	if err != nil {
+		return &Tasks{}, err
+	}
+
+	return response.(*Tasks), nil
+}
