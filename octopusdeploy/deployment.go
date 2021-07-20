@@ -16,7 +16,7 @@ type Deployment struct {
 	DeployedByID             string            `json:"DeployedById,omitempty"`
 	DeployedToMachineIDs     []string          `json:"DeployedToMachineIds"`
 	DeploymentProcessID      string            `json:"DeploymentProcessId,omitempty"`
-	EnvironmentID            *string           `json:"EnvironmentId" validate:"required"`
+	EnvironmentID            string            `json:"EnvironmentId" validate:"required"`
 	ExcludedMachineIDs       []string          `json:"ExcludedMachineIds"`
 	FailureEncountered       bool              `json:"FailureEncountered,omitempty"`
 	ForcePackageDownload     bool              `json:"ForcePackageDownload,omitempty"`
@@ -27,7 +27,7 @@ type Deployment struct {
 	ProjectID                string            `json:"ProjectId,omitempty"`
 	QueueTime                *time.Time        `json:"QueueTime,omitempty"`
 	QueueTimeExpiry          *time.Time        `json:"QueueTimeExpiry,omitempty"`
-	ReleaseID                *string           `json:"ReleaseId" validate:"required"`
+	ReleaseID                string            `json:"ReleaseId" validate:"required"`
 	SkipActions              []string          `json:"SkipActions"`
 	SpaceID                  string            `json:"SpaceId,omitempty"`
 	SpecificMachineIDs       []string          `json:"SpecificMachineIds"`
@@ -48,11 +48,10 @@ type Deployments struct {
 
 // NewDeployment initializes a deployment with a name, environment ID, and
 // release ID.
-func NewDeployment(name string, environmentID string, releaseID string) *Deployment {
+func NewDeployment(environmentID string, releaseID string) *Deployment {
 	return &Deployment{
-		EnvironmentID: &environmentID,
-		Name:          name,
-		ReleaseID:     &releaseID,
+		EnvironmentID: environmentID,
+		ReleaseID:     releaseID,
 		resource:      *newResource(),
 	}
 }
