@@ -7,7 +7,7 @@ import (
 
 // account is the embedded struct used for all accounts.
 type account struct {
-	AccountType            AccountType `validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount Token"`
+	AccountType            AccountType `validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
 	Description            string
 	EnvironmentIDs         []string
 	Name                   string `validate:"required,notblank,notall"`
