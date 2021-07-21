@@ -91,6 +91,13 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 					return err
 				}
 				a.Items = append(a.Items, azureSubscriptionAccount)
+			case AccountTypeGoogleCloudAccount:
+				var googleCloudAccount *GoogleCloudAccount
+				err := json.Unmarshal(*account, &googleCloudAccount)
+				if err != nil {
+					return err
+				}
+				a.Items = append(a.Items, googleCloudAccount)
 			case AccountTypeSSHKeyPair:
 				var sshKeyAccount *SSHKeyAccount
 				err := json.Unmarshal(*account, &sshKeyAccount)

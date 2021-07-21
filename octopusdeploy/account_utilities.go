@@ -25,6 +25,11 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		if err != nil {
 			return nil, err
 		}
+	case AccountTypeGoogleCloudAccount:
+		account, err = NewGoogleCloudAccount(accountResource.GetName(), accountResource.JsonKey)
+		if err != nil {
+			return nil, err
+		}
 	case AccountTypeSSHKeyPair:
 		account, err = NewSSHKeyAccount(accountResource.GetName(), accountResource.Username, accountResource.PrivateKeyFile)
 		if err != nil {
@@ -42,8 +47,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		}
 	}
 
-	err = copier.Copy(account, accountResource)
-	if err != nil {
+	if err := copier.Copy(account, accountResource); err != nil {
 		return nil, err
 	}
 
