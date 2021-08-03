@@ -16,12 +16,12 @@ type DeploymentTargets struct {
 }
 
 type DeploymentTarget struct {
-	EnvironmentIDs         []string               `json:"EnvironmentIds"`
-	Roles                  []string               `json:"Roles"`
+	EnvironmentIDs         []string               `json:"EnvironmentIds,omitempty"`
+	Roles                  []string               `json:"Roles,omitempty"`
 	SpaceID                string                 `json:"SpaceId,omitempty"`
 	TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
-	TenantIDs              []string               `json:"TenantIds"`
-	TenantTags             []string               `json:"TenantTags"`
+	TenantIDs              []string               `json:"TenantIds,omitempty"`
+	TenantTags             []string               `json:"TenantTags,omitempty"`
 
 	machine
 }
@@ -41,12 +41,12 @@ func NewDeploymentTarget(name string, endpoint IEndpoint, environmentIDs []strin
 // MarshalJSON returns a deployment target as its JSON encoding.
 func (d *DeploymentTarget) MarshalJSON() ([]byte, error) {
 	deploymentTarget := struct {
-		EnvironmentIDs         []string               `json:"EnvironmentIds"`
-		Roles                  []string               `json:"Roles"`
+		EnvironmentIDs         []string               `json:"EnvironmentIds,omitempty"`
+		Roles                  []string               `json:"Roles,omitempty"`
 		SpaceID                string                 `json:"SpaceId,omitempty"`
 		TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
-		TenantIDs              []string               `json:"TenantIds"`
-		TenantTags             []string               `json:"TenantTags"`
+		TenantIDs              []string               `json:"TenantIds,omitempty"`
+		TenantTags             []string               `json:"TenantTags,omitempty"`
 
 		machine
 	}{
