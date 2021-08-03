@@ -2,10 +2,31 @@ package octopusdeploy
 
 import (
 	"encoding/json"
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+func TestDeploymentTargetMarshalJSON(t *testing.T) {
+	resource := &ListeningTentacleDeploymentTarget{
+		Endpoint:               &ListeningTentacleEndpoint{},
+		EnvironmentIDs:         []string{"Environments-10973"},
+		Roles:                  []string{"Prod"},
+		SpaceID:                "",
+		TenantedDeploymentMode: "",
+		TenantIDs:              []string(nil),
+		TenantTags:             []string(nil),
+	}
+
+	jsonEncoding, err := json.Marshal(resource)
+	require.NoError(t, err)
+	require.NotNil(t, jsonEncoding)
+
+	actual := string(jsonEncoding)
+
+	log.Println(actual)
+}
 
 func TestDeploymentTargetUnmarshalJSON(t *testing.T) {
 	var azureCloudService DeploymentTarget
