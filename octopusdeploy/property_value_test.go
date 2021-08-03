@@ -5,22 +5,19 @@ import (
 	"testing"
 
 	"github.com/kinbiko/jsonassert"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPropertyValueBehaviour(t *testing.T) {
 	pv := SensitiveValue{}
-
 	require.NotNil(t, pv)
 	require.False(t, pv.HasValue)
-	require.Len(t, pv.NewValue, 0)
+	require.Nil(t, pv.NewValue)
 
 	pvp := &SensitiveValue{}
-
 	require.NotNil(t, pvp)
 	require.False(t, pvp.HasValue)
-	require.Len(t, pvp.NewValue, 0)
+	require.Nil(t, pvp.NewValue)
 }
 
 func TestNewPropertyValueBehaviour(t *testing.T) {
@@ -34,8 +31,8 @@ func TestNewPropertyValueBehaviour(t *testing.T) {
 	require.NotNil(t, pvp)
 	require.True(t, pvp.IsSensitive)
 	require.NotNil(t, pvp.SensitiveValue)
-	require.True(t, pvp.SensitiveValue.HasValue)
-	require.Len(t, pvp.SensitiveValue.NewValue, 0)
+	require.False(t, pvp.SensitiveValue.HasValue)
+	require.Nil(t, pvp.SensitiveValue.NewValue)
 	require.Len(t, pvp.Value, 0)
 
 	pvp = NewPropertyValue("test", false)
@@ -49,7 +46,7 @@ func TestNewPropertyValueBehaviour(t *testing.T) {
 	require.True(t, pvp.IsSensitive)
 	require.NotNil(t, pvp.SensitiveValue)
 	require.True(t, pvp.SensitiveValue.HasValue)
-	require.Equal(t, "sensitive value", pvp.SensitiveValue.NewValue)
+	require.Equal(t, "sensitive value", *pvp.SensitiveValue.NewValue)
 	require.Len(t, pvp.Value, 0)
 }
 
@@ -72,49 +69,44 @@ func TestNewPropertyValueMarshalJSON(t *testing.T) {
 }
 
 func TestNewPropertyValueUnmarshalJSON(t *testing.T) {
-	var emptyPropertyValue SensitiveValue
-	err := json.Unmarshal([]byte(emptySensitiveValueAsJSON), &emptyPropertyValue)
+	var propertyValue PropertyValue
+	err := json.Unmarshal([]byte(testNonSensitivePropertyValueAsJSON), &propertyValue)
 	require.NoError(t, err)
-	require.NotNil(t, emptyPropertyValue)
+	require.NotNil(t, propertyValue)
+	require.Equal(t, "non-sensitive value", propertyValue.Value)
+	require.False(t, propertyValue.IsSensitive)
+	require.Nil(t, propertyValue.SensitiveValue)
 
-	assert.False(t, emptyPropertyValue.HasValue)
-	assert.Len(t, emptyPropertyValue.NewValue, 0)
+	var emptySensitiveValue PropertyValue
+	err = json.Unmarshal([]byte(emptySensitiveValueAsJSON), &emptySensitiveValue)
+	require.NoError(t, err)
+	require.NotNil(t, emptySensitiveValue)
+	require.False(t, emptySensitiveValue.SensitiveValue.HasValue)
+	require.Nil(t, emptySensitiveValue.SensitiveValue.NewValue)
+	require.Empty(t, emptySensitiveValue.Value)
 
-	var testPropertyValue SensitiveValue
+	var testPropertyValue PropertyValue
 	err = json.Unmarshal([]byte(testSensitivePropertyValueAsJSON), &testPropertyValue)
 	require.NoError(t, err)
 	require.NotNil(t, testPropertyValue)
-
-	assert.True(t, testPropertyValue.HasValue)
-	assert.Equal(t, "test", testPropertyValue.NewValue)
+	require.NotNil(t, testPropertyValue.SensitiveValue.NewValue)
+	require.True(t, testPropertyValue.SensitiveValue.HasValue)
+	require.Equal(t, "test", *testPropertyValue.SensitiveValue.NewValue)
+	require.Empty(t, testPropertyValue.Value)
 }
 
-const emptyPropertyValueAsJSON string = `{
-	"IsSensitive": false
-	"SensitiveValue": null,
-	"Value": ""
-  }`
+const emptyPropertyValueAsJSON string = `{}`
 
 const emptySensitivePropertyValueAsJSON string = `{
-	"IsSensitive": true
-	"SensitiveValue": {
-		"HasValue": false,
-		"NewValue": null
-	},
-	"Value": ""
-  }`
+	"HasValue": false,
+	"NewValue": null,
+	"Hint": null
+}`
 
 const testSensitivePropertyValueAsJSON string = `{
-	"IsSensitive": true
-	"SensitiveValue": {
-		"HasValue": true,
-		"NewValue": "test"
-	},
-	"Value": ""
-  }`
+	"HasValue": true,
+	"NewValue": "test",
+	"Hint": null
+}`
 
-const testNonSensitivePropertyValueAsJSON string = `{
-	"IsSensitive": false
-	"SensitiveValue": null,
-	"Value": "non-sensitive value"
-  }`
+const testNonSensitivePropertyValueAsJSON string = `"non-sensitive value"`

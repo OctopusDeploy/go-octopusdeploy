@@ -35,23 +35,19 @@ func (p PropertyValue) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON sets this property value to its representation in JSON.
 func (d *PropertyValue) UnmarshalJSON(data []byte) error {
 	// try unmarshal into a sensitive property, if that fails, it's just a normal property
-	var spv SensitiveValue
-	errUnmarshalSensitivePropertyValue := json.Unmarshal(data, &spv)
-
-	if errUnmarshalSensitivePropertyValue != nil {
-		var p string
-		errUnmarshalString := json.Unmarshal(data, &p)
-
-		if errUnmarshalString != nil {
-			return errUnmarshalString
-		}
-
-		d.Value = p
-		d.SensitiveValue = nil
+	var sensitiveValue SensitiveValue
+	if err := json.Unmarshal(data, &sensitiveValue); err == nil {
+		d.IsSensitive = true
+		d.SensitiveValue = &sensitiveValue
 		return nil
 	}
 
-	d.IsSensitive = true
-	d.SensitiveValue = &spv
+	var value string
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+
+	d.Value = value
+	d.SensitiveValue = nil
 	return nil
 }
