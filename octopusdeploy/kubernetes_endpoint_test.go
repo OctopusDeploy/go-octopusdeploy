@@ -95,7 +95,6 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 		"ClusterUrl": "https://example.com/",
 		"CommunicationStyle": "Kubernetes",
 		"Container": {
-			"Image": null,
 			"FeedId": "feed-id"
 		},
 		"DefaultWorkerPoolId": "default-worker-pool-id",
