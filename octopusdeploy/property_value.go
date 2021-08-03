@@ -51,6 +51,7 @@ func (d *PropertyValue) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
+	d.IsSensitive = true
 	d.SensitiveValue = &spv
 	return nil
 }
