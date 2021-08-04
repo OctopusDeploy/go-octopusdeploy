@@ -149,6 +149,10 @@ func TestTeamServiceGetByID(t *testing.T) {
 		teamToCompare, err := client.Teams.GetByID(team.GetID())
 		require.NoError(t, err)
 		IsEqualTeams(t, team, teamToCompare)
+
+		scopedUserRoles, err := client.Teams.GetScopedUserRoles(*team, octopusdeploy.SkipTakeQuery{Take: 1})
+		require.NoError(t, err)
+		require.NotNil(t, scopedUserRoles)
 	}
 }
 
