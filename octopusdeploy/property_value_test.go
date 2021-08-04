@@ -52,19 +52,21 @@ func TestNewPropertyValueBehaviour(t *testing.T) {
 
 func TestNewPropertyValueMarshalJSON(t *testing.T) {
 	propertyValue := NewPropertyValue("", true)
-
 	propertyValueAsJSON, err := json.Marshal(propertyValue)
 	require.NoError(t, err)
 	require.NotNil(t, propertyValueAsJSON)
+	jsonassert.New(t).Assertf(string(propertyValueAsJSON), emptySensitivePropertyValueAsJSON)
 
-	jsonassert.New(t).Assertf(string(propertyValueAsJSON), emptySensitiveValueAsJSON)
-
-	propertyValue = NewPropertyValue("test", true)
-
+	propertyValue = NewPropertyValue("non-sensitive value", false)
 	propertyValueAsJSON, err = json.Marshal(propertyValue)
 	require.NoError(t, err)
 	require.NotNil(t, propertyValueAsJSON)
+	jsonassert.New(t).Assertf(string(propertyValueAsJSON), testNonSensitivePropertyValueAsJSON)
 
+	propertyValue = NewPropertyValue("test", true)
+	propertyValueAsJSON, err = json.Marshal(propertyValue)
+	require.NoError(t, err)
+	require.NotNil(t, propertyValueAsJSON)
 	jsonassert.New(t).Assertf(string(propertyValueAsJSON), testSensitivePropertyValueAsJSON)
 }
 
@@ -78,7 +80,7 @@ func TestNewPropertyValueUnmarshalJSON(t *testing.T) {
 	require.Nil(t, propertyValue.SensitiveValue)
 
 	var emptySensitiveValue PropertyValue
-	err = json.Unmarshal([]byte(emptySensitiveValueAsJSON), &emptySensitiveValue)
+	err = json.Unmarshal([]byte(emptySensitivePropertyValueAsJSON), &emptySensitiveValue)
 	require.NoError(t, err)
 	require.NotNil(t, emptySensitiveValue)
 	require.False(t, emptySensitiveValue.SensitiveValue.HasValue)
@@ -94,8 +96,6 @@ func TestNewPropertyValueUnmarshalJSON(t *testing.T) {
 	require.Equal(t, "test", *testPropertyValue.SensitiveValue.NewValue)
 	require.Empty(t, testPropertyValue.Value)
 }
-
-const emptyPropertyValueAsJSON string = `{}`
 
 const emptySensitivePropertyValueAsJSON string = `{
 	"HasValue": false,
