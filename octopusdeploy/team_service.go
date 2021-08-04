@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -136,16 +137,14 @@ func (s teamService) Update(team *Team) (*Team, error) {
 	return resp.(*Team), nil
 }
 
-func (s teamService) GetScopedUserRolesByID(id string) (*ScopedUserRoles, error) {
-	path, err := getByIDPath(s, id)
-	if err != nil {
-		return nil, err
-	}
-	path += "/scopeduserroles"
+func (s teamService) GetScopedUserRoles(team Team, query SkipTakeQuery) (*ScopedUserRoles, error) {
+	template, _ := uritemplates.Parse(team.Links["ScopedUserRoles"])
+	path, _ := template.Expand(query)
 
 	resp, err := apiGet(s.getClient(), new(ScopedUserRoles), path)
 	if err != nil {
 		return nil, err
 	}
+
 	return resp.(*ScopedUserRoles), nil
 }
