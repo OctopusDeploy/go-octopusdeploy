@@ -208,7 +208,7 @@ func (s tenantService) Update(resource *Tenant) (*Tenant, error) {
 }
 
 func (s tenantService) UpdateVariables(tenant *Tenant, tenantVariables *TenantVariables) (*TenantVariables, error) {
-	resp, err := apiUpdate(s.getClient(), tenantVariables, new(TenantVariables), tenant.Links["Variables"])
+	resp, err := apiPost(s.getClient(), tenantVariables, new(TenantVariables), tenant.Links["Variables"])
 	if err != nil {
 		return nil, err
 	}
