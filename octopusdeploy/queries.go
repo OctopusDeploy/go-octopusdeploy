@@ -442,6 +442,11 @@ type SignInQuery struct {
 	ReturnURL string `uri:"returnUrl,omitempty" url:"returnUrl,omitempty"`
 }
 
+type SkipTakeQuery struct {
+	Skip int `uri:"skip,omitempty" url:"skip,omitempty"`
+	Take int `uri:"take,omitempty" url:"take,omitempty"`
+}
+
 type SpaceHomeQuery struct {
 	SpaceID string `uri:"spaceId,omitempty" url:"spaceId,omitempty"`
 }
