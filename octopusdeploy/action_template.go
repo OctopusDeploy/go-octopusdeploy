@@ -43,9 +43,9 @@ func NewActionTemplate(name string, actionType string) *ActionTemplate {
 // invalid.
 func (a *ActionTemplate) Validate() error {
 	v := validator.New()
-	err := v.RegisterValidation("notblank", validators.NotBlank)
-	if err != nil {
+	if err := v.RegisterValidation("notblank", validators.NotBlank); err != nil {
 		return err
 	}
+
 	return v.Struct(a)
 }
