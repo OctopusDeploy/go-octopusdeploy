@@ -112,11 +112,9 @@ func updateProject(client *octopusdeploy.Client, project *octopusdeploy.Project)
 
 func deleteProject(client *octopusdeploy.Client, project *octopusdeploy.Project) {
 	fmt.Println("Deleting a project...")
-	err := client.Projects.DeleteByID(project.GetID())
-	if err != nil {
+	if err := client.Projects.DeleteByID(project.GetID()); err != nil {
 		fmt.Println(err.Error())
 	}
-
 }
 
 func main() {
