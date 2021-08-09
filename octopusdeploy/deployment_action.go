@@ -6,22 +6,22 @@ import (
 )
 
 type DeploymentAction struct {
-	ActionType                    string                    `json:"ActionType" validate:"required,notblank"`
-	CanBeUsedForProjectVersioning bool                      `json:"CanBeUsedForProjectVersioning"`
-	Channels                      []string                  `json:"Channels,omitempty"`
-	Condition                     string                    `json:"Condition,omitempty"`
-	Container                     DeploymentActionContainer `json:"Container"`
-	Environments                  []string                  `json:"Environments,omitempty"`
-	ExcludedEnvironments          []string                  `json:"ExcludedEnvironments,omitempty"`
-	IsDisabled                    bool                      `json:"IsDisabled"`
-	IsRequired                    bool                      `json:"IsRequired"`
-	Name                          string                    `json:"Name" validate:"required,notblank"`
-	Notes                         string                    `json:"Notes,omitempty"`
-	Packages                      []PackageReference        `json:"Packages,omitempty"`
-	Properties                    map[string]PropertyValue  `json:"Properties,omitempty"`
-	TenantTags                    []string                  `json:"TenantTags,omitempty"`
-	WorkerPoolID                  string                    `json:"WorkerPoolId,omitempty"`
-	WorkerPoolVariable            string                    `json:"WorkerPoolVariable,omitempty"`
+	ActionType                    string                     `json:"ActionType" validate:"required,notblank"`
+	CanBeUsedForProjectVersioning bool                       `json:"CanBeUsedForProjectVersioning,omitempty"`
+	Channels                      []string                   `json:"Channels,omitempty"`
+	Condition                     string                     `json:"Condition,omitempty"`
+	Container                     *DeploymentActionContainer `json:"Container,omitempty"`
+	Environments                  []string                   `json:"Environments,omitempty"`
+	ExcludedEnvironments          []string                   `json:"ExcludedEnvironments,omitempty"`
+	IsDisabled                    bool                       `json:"IsDisabled,omitempty"`
+	IsRequired                    bool                       `json:"IsRequired,omitempty"`
+	Name                          string                     `json:"Name" validate:"required,notblank"`
+	Notes                         string                     `json:"Notes,omitempty"`
+	Packages                      []PackageReference         `json:"Packages,omitempty"`
+	Properties                    map[string]PropertyValue   `json:"Properties,omitempty"`
+	TenantTags                    []string                   `json:"TenantTags,omitempty"`
+	WorkerPoolID                  string                     `json:"WorkerPoolId,omitempty"`
+	WorkerPoolVariable            string                     `json:"WorkerPoolVariable,omitempty"`
 
 	resource
 }
@@ -31,6 +31,7 @@ func NewDeploymentAction(name string, actionType string) *DeploymentAction {
 	return &DeploymentAction{
 		ActionType: actionType,
 		Name:       name,
+		Packages:   []PackageReference{},
 		Properties: map[string]PropertyValue{},
 		resource:   *newResource(),
 	}
