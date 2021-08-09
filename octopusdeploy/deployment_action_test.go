@@ -30,5 +30,5 @@ func TestDeploymentActionProperties(t *testing.T) {
 	require.NotNil(t, sensitiveProperty.SensitiveValue)
 	require.True(t, sensitiveProperty.SensitiveValue.HasValue)
 	require.NotNil(t, sensitiveProperty.SensitiveValue.NewValue)
-	require.Equal(t, "isSensitive", sensitiveProperty.SensitiveValue.NewValue)
+	require.Equal(t, "isSensitive", *sensitiveProperty.SensitiveValue.NewValue)
 }
