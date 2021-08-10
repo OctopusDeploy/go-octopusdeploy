@@ -121,8 +121,14 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()] = octopusdeploy.NewPropertyValue(getRandomName(), false)
+	propertyValue := octopusdeploy.NewPropertyValue(getRandomName(), true)
+
+	tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()] = propertyValue
 	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	tenantVariables, err = client.Tenants.GetVariables(tenant)
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
