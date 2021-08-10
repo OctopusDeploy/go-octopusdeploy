@@ -68,7 +68,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	resource := NewKubernetesEndpoint(url)
 	resource.Authentication = kubernetesCertificateAuthentication
 	resource.ClusterCertificate = "cluster-certificate"
-	resource.Container.FeedID = feedID
+	resource.Container = NewDeploymentActionContainer(&feedID, nil)
 	resource.DefaultWorkerPoolID = "default-worker-pool-id"
 	resource.ID = id
 	resource.ModifiedBy = "john.smith@example.com"

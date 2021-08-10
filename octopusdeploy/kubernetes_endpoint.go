@@ -10,17 +10,17 @@ import (
 )
 
 type KubernetesEndpoint struct {
-	Authentication         IKubernetesAuthentication `json:"Authentication,omitempty"`
-	ClusterCertificate     string                    `json:"ClusterCertificate,omitempty"`
-	ClusterCertificatePath string                    `json:"ClusterCertificatePath,omitempty"`
-	ClusterURL             *url.URL                  `json:"ClusterUrl" validate:"required,url"`
-	CommunicationStyle     string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
-	Container              DeploymentActionContainer `json:"Container,omitempty"`
-	DefaultWorkerPoolID    string                    `json:"DefaultWorkerPoolId,omitempty"`
-	Namespace              string                    `json:"Namespace,omitempty"`
-	ProxyID                string                    `json:"ProxyId,omitempty"`
-	RunningInContainer     bool                      `json:"RunningInContainer"`
-	SkipTLSVerification    bool                      `json:"SkipTlsVerification"`
+	Authentication         IKubernetesAuthentication  `json:"Authentication,omitempty"`
+	ClusterCertificate     string                     `json:"ClusterCertificate,omitempty"`
+	ClusterCertificatePath string                     `json:"ClusterCertificatePath,omitempty"`
+	ClusterURL             *url.URL                   `json:"ClusterUrl" validate:"required,url"`
+	CommunicationStyle     string                     `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
+	Container              *DeploymentActionContainer `json:"Container,omitempty"`
+	DefaultWorkerPoolID    string                     `json:"DefaultWorkerPoolId,omitempty"`
+	Namespace              string                     `json:"Namespace,omitempty"`
+	ProxyID                string                     `json:"ProxyId,omitempty"`
+	RunningInContainer     bool                       `json:"RunningInContainer"`
+	SkipTLSVerification    bool                       `json:"SkipTlsVerification"`
 
 	resource
 }
@@ -64,16 +64,16 @@ func (k *KubernetesEndpoint) SetProxyID(proxyID string) {
 // MarshalJSON returns a Kubernetes endpoint as its JSON encoding.
 func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 	kubernetesEndpoint := struct {
-		Authentication      IKubernetesAuthentication `json:"Authentication,omitempty"`
-		ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
-		ClusterURL          string                    `json:"ClusterUrl"`
-		CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
-		Container           DeploymentActionContainer `json:"Container,omitempty"`
-		DefaultWorkerPoolID string                    `json:"DefaultWorkerPoolId"`
-		Namespace           string                    `json:"Namespace,omitempty"`
-		ProxyID             string                    `json:"ProxyId,omitempty"`
-		RunningInContainer  bool                      `json:"RunningInContainer"`
-		SkipTLSVerification string                    `json:"SkipTlsVerification"`
+		Authentication      IKubernetesAuthentication  `json:"Authentication,omitempty"`
+		ClusterCertificate  string                     `json:"ClusterCertificate,omitempty"`
+		ClusterURL          string                     `json:"ClusterUrl"`
+		CommunicationStyle  string                     `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
+		Container           *DeploymentActionContainer `json:"Container,omitempty"`
+		DefaultWorkerPoolID string                     `json:"DefaultWorkerPoolId"`
+		Namespace           string                     `json:"Namespace,omitempty"`
+		ProxyID             string                     `json:"ProxyId,omitempty"`
+		RunningInContainer  bool                       `json:"RunningInContainer"`
+		SkipTLSVerification string                     `json:"SkipTlsVerification"`
 		resource
 	}{
 		Authentication:      k.Authentication,
@@ -95,15 +95,15 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON sets this Kubernetes endpoint to its representation in JSON.
 func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		ClusterCertificate  string                    `json:"ClusterCertificate,omitempty"`
-		ClusterURL          string                    `json:"ClusterUrl"`
-		CommunicationStyle  string                    `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
-		Container           DeploymentActionContainer `json:"Container,omitempty"`
-		DefaultWorkerPoolID string                    `json:"DefaultWorkerPoolId"`
-		Namespace           string                    `json:"Namespace,omitempty"`
-		ProxyID             string                    `json:"ProxyId,omitempty"`
-		RunningInContainer  bool                      `json:"RunningInContainer"`
-		SkipTLSVerification string                    `json:"SkipTlsVerification"`
+		ClusterCertificate  string                     `json:"ClusterCertificate,omitempty"`
+		ClusterURL          string                     `json:"ClusterUrl"`
+		CommunicationStyle  string                     `json:"CommunicationStyle" validate:"required,eq=Kubernetes"`
+		Container           *DeploymentActionContainer `json:"Container,omitempty"`
+		DefaultWorkerPoolID string                     `json:"DefaultWorkerPoolId"`
+		Namespace           string                     `json:"Namespace,omitempty"`
+		ProxyID             string                     `json:"ProxyId,omitempty"`
+		RunningInContainer  bool                       `json:"RunningInContainer"`
+		SkipTLSVerification string                     `json:"SkipTlsVerification"`
 		resource
 	}
 
