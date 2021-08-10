@@ -17,7 +17,7 @@ type DeploymentAction struct {
 	IsRequired                    bool                       `json:"IsRequired,omitempty"`
 	Name                          string                     `json:"Name" validate:"required,notblank"`
 	Notes                         string                     `json:"Notes,omitempty"`
-	Packages                      []PackageReference         `json:"Packages,omitempty"`
+	Packages                      []*PackageReference        `json:"Packages,omitempty"`
 	Properties                    map[string]PropertyValue   `json:"Properties,omitempty"`
 	TenantTags                    []string                   `json:"TenantTags,omitempty"`
 	WorkerPoolID                  string                     `json:"WorkerPoolId,omitempty"`
@@ -31,7 +31,6 @@ func NewDeploymentAction(name string, actionType string) *DeploymentAction {
 	return &DeploymentAction{
 		ActionType: actionType,
 		Name:       name,
-		Packages:   []PackageReference{},
 		Properties: map[string]PropertyValue{},
 		resource:   *newResource(),
 	}
