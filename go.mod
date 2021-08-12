@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/dghubble/sling v1.3.0
 	github.com/go-playground/validator/v10 v10.9.0
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/jinzhu/copier v0.3.2
