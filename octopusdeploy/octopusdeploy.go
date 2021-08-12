@@ -226,8 +226,10 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 	permissionsPath := root.GetLinkPath(sroot, linkPermissions)
 	projectGroupsPath := root.GetLinkPath(sroot, linkProjectGroups)
 	projectPulsePath := root.GetLinkPath(sroot, linkProjectPulse)
-	projectsPath := root.GetLinkPath(sroot, linkProjects)
 	projectsExperimentalSummariesPath := root.GetLinkPath(sroot, linkProjectsExperimentalSummaries)
+	projectsExportProjectsPath := root.GetLinkPath(sroot, linkExportProjects)
+	projectsImportProjectsPath := root.GetLinkPath(sroot, linkImportProjects)
+	projectsPath := root.GetLinkPath(sroot, linkProjects)
 	projectTriggersPath := root.GetLinkPath(sroot, linkProjectTriggers)
 	proxiesPath := root.GetLinkPath(sroot, linkProxies)
 	registerPath := root.GetLinkPath(sroot, linkRegister)
@@ -330,7 +332,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		PerformanceConfiguration:       newPerformanceConfigurationService(base, performanceConfigurationPath),
 		Permissions:                    newPermissionService(base, permissionsPath),
 		ProjectGroups:                  newProjectGroupService(base, projectGroupsPath),
-		Projects:                       newProjectService(base, projectsPath, projectPulsePath, projectsExperimentalSummariesPath),
+		Projects:                       newProjectService(base, projectsPath, projectPulsePath, projectsExperimentalSummariesPath, projectsImportProjectsPath, projectsExportProjectsPath),
 		ProjectTriggers:                newProjectTriggerService(base, projectTriggersPath),
 		Proxies:                        newProxyService(base, proxiesPath),
 		Releases:                       newReleaseService(base, releasesPath),

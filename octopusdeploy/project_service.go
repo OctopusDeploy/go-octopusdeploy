@@ -10,14 +10,18 @@ import (
 
 type projectService struct {
 	experimentalSummariesPath string
+	exportProjectsPath        string
+	importProjectsPath        string
 	pulsePath                 string
 
 	canDeleteService
 }
 
-func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string, experimentalSummariesPath string) *projectService {
+func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string, experimentalSummariesPath string, importProjectsPath string, exportProjectsPath string) *projectService {
 	projectService := &projectService{
 		experimentalSummariesPath: experimentalSummariesPath,
+		exportProjectsPath:        exportProjectsPath,
+		importProjectsPath:        importProjectsPath,
 		pulsePath:                 pulsePath,
 	}
 	projectService.service = newService(ServiceProjectService, sling, uriTemplate)
