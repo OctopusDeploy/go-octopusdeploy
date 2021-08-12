@@ -8,7 +8,7 @@ import (
 )
 
 func createProjectService(t *testing.T) *projectService {
-	service := newProjectService(nil, TestURIProjects, TestURIProjectPulse, TestURIProjectsExperimentalSummaries)
+	service := newProjectService(nil, TestURIProjects, TestURIProjectPulse, TestURIProjectsExperimentalSummaries, TestURIProjectsImportProjects, TestURIProjectsExportProjects)
 	testNewService(t, service, TestURIProjects, ServiceProjectService)
 	return service
 }
@@ -18,24 +18,28 @@ func TestNewProjectService(t *testing.T) {
 	client := &sling.Sling{}
 	experimentalSummariesPath := emptyString
 	pulsePath := emptyString
+	importProjectsPath := emptyString
+	exportProjectsPath := emptyString
 	ServiceName := ServiceProjectService
 	uriTemplate := emptyString
 
 	testCases := []struct {
 		name                      string
-		f                         func(*sling.Sling, string, string, string) *projectService
+		f                         func(*sling.Sling, string, string, string, string, string) *projectService
 		client                    *sling.Sling
 		uriTemplate               string
 		experimentalSummariesPath string
 		pulsePath                 string
+		importProjectsPath        string
+		exportProjectsPath        string
 	}{
-		{"NilClient", ServiceFunction, nil, uriTemplate, pulsePath, experimentalSummariesPath},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, pulsePath, experimentalSummariesPath},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, pulsePath, experimentalSummariesPath},
+		{"NilClient", ServiceFunction, nil, uriTemplate, pulsePath, experimentalSummariesPath, importProjectsPath, exportProjectsPath},
+		{"EmptyURITemplate", ServiceFunction, client, emptyString, pulsePath, experimentalSummariesPath, importProjectsPath, exportProjectsPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, pulsePath, experimentalSummariesPath, importProjectsPath, exportProjectsPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			service := tc.f(tc.client, tc.uriTemplate, tc.pulsePath, tc.experimentalSummariesPath)
+			service := tc.f(tc.client, tc.uriTemplate, tc.pulsePath, tc.experimentalSummariesPath, tc.importProjectsPath, tc.exportProjectsPath)
 			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
