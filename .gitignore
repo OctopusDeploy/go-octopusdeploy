@@ -12,8 +12,9 @@
 *.out
 
 # Golang Debug
-integration/OFF/
 debug
+integration/OFF/
+vendor
 
 # Editors
 .atom/
