@@ -15,6 +15,21 @@ func newTaskService(sling *sling.Sling, uriTemplate string, taskTypesPath string
 	}
 }
 
+// Add creates a new task.
+func (s taskService) Add(task *Task) (*Task, error) {
+	path, err := getAddPath(s, task)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := apiAdd(s.getClient(), task, new(Task), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*Task), nil
+}
+
 // Get returns a collection of tasks based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
