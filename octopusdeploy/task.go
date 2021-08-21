@@ -35,7 +35,7 @@ type Tasks struct {
 // NewTask creates and initializes a task.
 func NewTask() *Task {
 	return &Task{
-		resource:  *newResource(),
 		Arguments: map[string]interface{}{},
+		resource:  *newResource(),
 	}
 }
