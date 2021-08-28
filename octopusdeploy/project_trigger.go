@@ -6,13 +6,13 @@ type ProjectTriggers struct {
 }
 
 type ProjectTrigger struct {
-	Action      ProjectTriggerAction `json:"Action"`
-	Description string               `json:"Description,omitempty"`
-	Filter      ProjectTriggerFilter `json:"Filter"`
-	IsDisabled  bool                 `json:"IsDisabled,omitempty"`
-	Name        string               `json:"Name"`
-	ProjectID   string               `json:"ProjectId,omitempty"`
-	SpaceID     string               `json:"SpaceId,omitempty"`
+	Action      *TriggerAction `json:"Action" validate:"required"`
+	Description string         `json:"Description,omitempty"`
+	Filter      *TriggerFilter `json:"Filter" validate:"required"`
+	IsDisabled  bool           `json:"IsDisabled,omitempty"`
+	Name        string         `json:"Name" validate:"required"`
+	ProjectID   string         `json:"ProjectId" validate:"required"`
+	SpaceID     string         `json:"SpaceId,omitempty"`
 
 	resource
 }
@@ -26,19 +26,24 @@ func (t *ProjectTrigger) AddEventCategories(eventCategories []string) {
 }
 
 func NewProjectDeploymentTargetTrigger(name, projectID string, shouldRedeploy bool, roles, eventGroups, eventCategories []string) *ProjectTrigger {
+	projectTrigger := NewProjectTrigger()
+	projectTrigger.Name = name
+	projectTrigger.ProjectID = projectID
+	projectTrigger.Action = &TriggerAction{
+		ActionType: "AutoDeploy",
+		ShouldRedeployWhenMachineHasBeenDeployedTo: shouldRedeploy,
+	}
+	projectTrigger.Filter = &TriggerFilter{
+		EventCategories: eventCategories,
+		EventGroups:     eventGroups,
+		FilterType:      "MachineFilter",
+		Roles:           roles,
+	}
+	return projectTrigger
+}
+
+func NewProjectTrigger() *ProjectTrigger {
 	return &ProjectTrigger{
-		Action: ProjectTriggerAction{
-			ActionType: "AutoDeploy",
-			ShouldRedeployWhenMachineHasBeenDeployedTo: shouldRedeploy,
-		},
-		Filter: ProjectTriggerFilter{
-			EventCategories: eventCategories,
-			EventGroups:     eventGroups,
-			FilterType:      "MachineFilter",
-			Roles:           roles,
-		},
-		Name:      name,
-		ProjectID: projectID,
-		resource:  *newResource(),
+		resource: *newResource(),
 	}
 }
