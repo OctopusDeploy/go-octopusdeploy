@@ -36,20 +36,24 @@ func CreateSpace(client *octopusdeploy.Client) (*octopusdeploy.Space, error) {
 		os.Exit(3)
 	}
 
-	space, err := client.Spaces.GetByName(testSpaceName)
+	spaces, err := client.Spaces.Get(octopusdeploy.SpacesQuery{
+		Name: testSpaceName,
+	})
 
 	if err == nil {
-		fmt.Println("Space already exists.")
-		return space, err
+		fmt.Println("Space(s) already exists.")
+		return spaces.Items[0], err
 	}
 
-	space = octopusdeploy.NewSpace(testSpaceName)
+	space := octopusdeploy.NewSpace(testSpaceName)
 	space.SpaceManagersTeams = append(space.SpaceManagersTeams, "teams-administrators")
 	space, err = client.Spaces.Add(space)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		space, err = client.Spaces.GetByName(space.Name)
+		spaces, err = client.Spaces.Get(octopusdeploy.SpacesQuery{
+			Name: space.Name,
+		})
 
 		if err != nil {
 			return nil, err
@@ -77,7 +81,9 @@ func createProject(client *octopusdeploy.Client) *octopusdeploy.Project {
 
 	if err != nil {
 		fmt.Println(err.Error())
-		project, err = client.Projects.GetByName(projectName)
+		_, err := client.Projects.Get(octopusdeploy.ProjectsQuery{
+			Name: projectName,
+		})
 
 		if err != nil {
 			fmt.Println(err.Error())

@@ -32,11 +32,16 @@ func CreateScriptStepExample() {
 	}
 
 	// Get project
-	project, err := client.Projects.GetByName(projectName)
+	projects, err := client.Projects.Get(octopusdeploy.ProjectsQuery{
+		Name: projectName,
+	})
 
 	if err != nil {
 		// TODO: handle error
 	}
+
+	// sub-optimal; iterate through collection
+	project := *projects.Items[0]
 
 	// Get the deployment process
 	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)

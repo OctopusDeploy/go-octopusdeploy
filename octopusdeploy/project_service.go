@@ -77,31 +77,6 @@ func (s projectService) GetByID(id string) (*Project, error) {
 	return resp.(*Project), nil
 }
 
-// GetByName performs a lookup and returns the Project with a matching name.
-func (s projectService) GetByName(name string) (*Project, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
-	}
-
-	if err := validateInternalState(s); err != nil {
-		return nil, err
-	}
-
-	collection, err := s.GetAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range collection {
-		if item.Name == name {
-			return item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.getName(), OperationGetByName, name)
-}
-
 func (s projectService) GetChannels(project *Project) ([]*Channel, error) {
 	if project == nil {
 		return nil, createInvalidParameterError(OperationGetChannels, ParameterProject)

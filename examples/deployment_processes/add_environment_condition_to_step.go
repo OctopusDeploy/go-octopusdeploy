@@ -41,10 +41,15 @@ func AddEnvironmentConditionToStepExample() {
 		environmentIDs = append(environmentIDs, environments[0].GetID())
 	}
 
-	project, err := client.Projects.GetByName(projectName)
+	projects, err := client.Projects.Get(octopusdeploy.ProjectsQuery{
+		Name: projectName,
+	})
 	if err != nil {
 		// TODO: handle error
 	}
+
+	// sub-optimal; iterate through collection
+	project := projects.Items[0]
 
 	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 	if err != nil {
