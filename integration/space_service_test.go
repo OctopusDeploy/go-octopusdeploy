@@ -170,7 +170,9 @@ func TestSpaceGetByPartialName(t *testing.T) {
 	require.NotNil(t, spaces)
 
 	for _, space := range spaces {
-		namedSpaces, err := client.Spaces.GetByPartialName(space.Name)
+		namedSpaces, err := client.Spaces.Get(octopusdeploy.SpacesQuery{
+			PartialName: space.Name,
+		})
 		require.NoError(t, err)
 		require.NotNil(t, namedSpaces)
 	}

@@ -102,41 +102,6 @@ func (s spaceService) GetAll() ([]*Space, error) {
 	return items, err
 }
 
-// GetByName performs a lookup and returns the Space with a matching name.
-func (s spaceService) GetByName(name string) (*Space, error) {
-	if isEmpty(name) {
-		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
-	}
-
-	if err := validateInternalState(s); err != nil {
-		return nil, err
-	}
-
-	collection, err := s.GetAll()
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range collection {
-		if item.Name == name {
-			return item, nil
-		}
-	}
-
-	return nil, createItemNotFoundError(s.getName(), OperationGetByName, name)
-}
-
-// GetByPartialName performs a lookup and returns spaces with a matching partial name.
-func (s spaceService) GetByPartialName(name string) ([]*Space, error) {
-	path, err := getByPartialNamePath(s, name)
-	if err != nil {
-		return []*Space{}, err
-	}
-
-	return s.getPagedResponse(path)
-}
-
 // Update modifies a space based on the one provided as input.
 func (s spaceService) Update(space *Space) (*Space, error) {
 	if space == nil {

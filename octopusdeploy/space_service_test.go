@@ -58,10 +58,6 @@ func TestSpaceServiceParameters(t *testing.T) {
 				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
 
-				resourceList, err := service.GetByPartialName(tc.parameter)
-				require.Equal(t, createInvalidParameterError(OperationGetByPartialName, ParameterName), err)
-				require.NotNil(t, resourceList)
-
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
 				require.Equal(t, err, createInvalidParameterError(OperationDeleteByID, ParameterID))
