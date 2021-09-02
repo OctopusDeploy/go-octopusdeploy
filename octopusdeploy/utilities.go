@@ -90,8 +90,8 @@ func isNil(i interface{}) bool {
 	case *Feed:
 		v := i.(*Feed)
 		ret = v == nil
-	case *GoogleCloudAccount:
-		v := i.(*GoogleCloudAccount)
+	case *GoogleCloudPlatformAccount:
+		v := i.(*GoogleCloudPlatformAccount)
 		ret = v == nil
 	case *Interruption:
 		v := i.(*Interruption)

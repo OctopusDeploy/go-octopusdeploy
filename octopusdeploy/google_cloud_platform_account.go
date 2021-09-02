@@ -5,15 +5,15 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// GoogleCloudAccount represents a Google cloud account.
-type GoogleCloudAccount struct {
+// GoogleCloudPlatformAccount represents a Google cloud account.
+type GoogleCloudPlatformAccount struct {
 	JsonKey *SensitiveValue `validate:"required"`
 
 	account
 }
 
-// NewGoogleCloudAccount initializes and returns a Google cloud account.
-func NewGoogleCloudAccount(name string, jsonKey *SensitiveValue, options ...func(*GoogleCloudAccount)) (*GoogleCloudAccount, error) {
+// NewGoogleCloudPlatformAccount initializes and returns a Google cloud account.
+func NewGoogleCloudPlatformAccount(name string, jsonKey *SensitiveValue, options ...func(*GoogleCloudPlatformAccount)) (*GoogleCloudPlatformAccount, error) {
 	if isEmpty(name) {
 		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
@@ -22,7 +22,7 @@ func NewGoogleCloudAccount(name string, jsonKey *SensitiveValue, options ...func
 		return nil, createRequiredParameterIsEmptyOrNilError("jsonKey")
 	}
 
-	account := GoogleCloudAccount{
+	account := GoogleCloudPlatformAccount{
 		account: *newAccount(name, AccountType("GoogleCloudAccount")),
 	}
 
@@ -49,7 +49,7 @@ func NewGoogleCloudAccount(name string, jsonKey *SensitiveValue, options ...func
 }
 
 // Validate checks the state of this account and returns an error if invalid.
-func (a *GoogleCloudAccount) Validate() error {
+func (a *GoogleCloudPlatformAccount) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {

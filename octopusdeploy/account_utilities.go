@@ -25,8 +25,8 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		if err != nil {
 			return nil, err
 		}
-	case AccountTypeGoogleCloudAccount:
-		account, err = NewGoogleCloudAccount(accountResource.GetName(), accountResource.JsonKey)
+	case AccountTypeGoogleCloudPlatformAccount:
+		account, err = NewGoogleCloudPlatformAccount(accountResource.GetName(), accountResource.JsonKey)
 		if err != nil {
 			return nil, err
 		}
