@@ -107,15 +107,13 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		resource
 	}
 
-	err := json.Unmarshal(data, &fields)
-	if err != nil {
+	if err := json.Unmarshal(data, &fields); err != nil {
 		return err
 	}
 
 	// validate JSON representation
 	validate := validator.New()
-	err = validate.Struct(fields)
-	if err != nil {
+	if err := validate.Struct(fields); err != nil {
 		return err
 	}
 
@@ -144,8 +142,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	k.resource = fields.resource
 
 	var kubernetesEndpoint map[string]*json.RawMessage
-	err = json.Unmarshal(data, &kubernetesEndpoint)
-	if err != nil {
+	if err := json.Unmarshal(data, &kubernetesEndpoint); err != nil {
 		return err
 	}
 
@@ -156,13 +153,11 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	if kubernetesEndpoint["Authentication"] != nil {
 		authenticationValue := kubernetesEndpoint["Authentication"]
 
-		err = json.Unmarshal(*authenticationValue, &authentication)
-		if err != nil {
+		if err = json.Unmarshal(*authenticationValue, &authentication); err != nil {
 			return err
 		}
 
-		err = json.Unmarshal(*authentication, &authenticationProperties)
-		if err != nil {
+		if err = json.Unmarshal(*authentication, &authenticationProperties); err != nil {
 			return err
 		}
 
@@ -175,29 +170,31 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	switch authenticationType {
 	case "KubernetesAws":
 		var kubernetesAwsAuthentication *KubernetesAwsAuthentication
-		err := json.Unmarshal(*authentication, &kubernetesAwsAuthentication)
-		if err != nil {
+		if err := json.Unmarshal(*authentication, &kubernetesAwsAuthentication); err != nil {
 			return err
 		}
 		k.Authentication = kubernetesAwsAuthentication
 	case "KubernetesAzure":
 		var kubernetesAzureAuthentication *KubernetesAzureAuthentication
-		err := json.Unmarshal(*authentication, &kubernetesAzureAuthentication)
-		if err != nil {
+		if err := json.Unmarshal(*authentication, &kubernetesAzureAuthentication); err != nil {
 			return err
 		}
 		k.Authentication = kubernetesAzureAuthentication
 	case "KubernetesCertificate":
 		var kubernetesCertificateAuthentication *KubernetesCertificateAuthentication
-		err := json.Unmarshal(*authentication, &kubernetesCertificateAuthentication)
-		if err != nil {
+		if err := json.Unmarshal(*authentication, &kubernetesCertificateAuthentication); err != nil {
 			return err
 		}
 		k.Authentication = kubernetesCertificateAuthentication
+	case "KubernetesGoogleCloud":
+		var kubernetesGcpAuthentication *KubernetesGcpAuthentication
+		if err := json.Unmarshal(*authentication, &kubernetesGcpAuthentication); err != nil {
+			return err
+		}
+		k.Authentication = kubernetesGcpAuthentication
 	case "KubernetesStandard":
 		var kubernetesStandardAuthentication *KubernetesStandardAuthentication
-		err := json.Unmarshal(*authentication, &kubernetesStandardAuthentication)
-		if err != nil {
+		if err := json.Unmarshal(*authentication, &kubernetesStandardAuthentication); err != nil {
 			return err
 		}
 		k.Authentication = kubernetesStandardAuthentication
