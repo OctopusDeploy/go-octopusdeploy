@@ -83,6 +83,8 @@ const (
 	TestURIProjectPulse                      string = "/api/Spaces-1/projects/pulse{?projectIds}"
 	TestURIProjects                          string = "/api/Spaces-1/projects{/id}{?name,skip,ids,clone,take,partialName,clonedFromProjectId}"
 	TestURIProjectsExperimentalSummaries     string = "/api/Spaces-1/projects/experimental/summaries{?ids}"
+	TestURIProjectsExportProjects            string = "/api/Spaces-1/projects/import-export/export"
+	TestURIProjectsImportProjects            string = "/api/Spaces-1/projects/import-export/import"
 	TestURIProjectTriggers                   string = "/api/Spaces-1/projecttriggers{/id}{?skip,take,ids,runbooks}"
 	TestURIProxies                           string = "/api/Spaces-1/proxies{/id}{?skip,take,ids,partialName}"
 	TestURIRegister                          string = "/api/users/register"
