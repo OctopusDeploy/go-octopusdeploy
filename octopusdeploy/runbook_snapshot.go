@@ -27,10 +27,11 @@ type RunbookSnapshot struct {
 }
 
 // NewRunbookSnapshot creates and initializes a runbook snapshot.
-func NewRunbookSnapshot(name string, projectID string) *RunbookSnapshot {
+func NewRunbookSnapshot(name string, projectID string, runbookID string) *RunbookSnapshot {
 	return &RunbookSnapshot{
 		Name:      name,
 		ProjectID: projectID,
+		RunbookID: runbookID,
 		resource:  *newResource(),
 	}
 }
