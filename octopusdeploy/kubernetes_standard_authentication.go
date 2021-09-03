@@ -5,7 +5,7 @@ type KubernetesStandardAuthentication struct {
 	AuthenticationType string `json:"AuthenticationType"`
 }
 
-// NewKubernetesStandardAuthentication creates and initializes a Kubernetes AWS
+// NewKubernetesStandardAuthentication creates and initializes a Kubernetes
 // authentication.
 func NewKubernetesStandardAuthentication(authenticationType string) *KubernetesStandardAuthentication {
 	if len(authenticationType) == 0 {
