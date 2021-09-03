@@ -9,8 +9,9 @@ require (
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.3.0
 	github.com/jinzhu/copier v0.3.2
-	github.com/kinbiko/jsonassert v1.0.1
+	github.com/kinbiko/jsonassert v1.0.2
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e // indirect
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	golang.org/x/sys v0.0.0-20210902050250-f475640dd07b // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
