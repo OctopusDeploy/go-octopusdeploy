@@ -12,7 +12,13 @@ type KubernetesAuthentication struct {
 	ClientCertificate         string `json:"ClientCertificate,omitempty"`
 	ClusterName               string `json:"ClusterName,omitempty"`
 	ClusterResourceGroup      string `json:"ClusterResourceGroup,omitempty"`
+	ImpersonateServiceAccount bool   `json:"ImpersonateServiceAccount,omitempty"`
+	Project                   string `json:"Project,omitempty"`
+	Region                    string `json:"Region,omitempty"`
+	ServiceAccountEmails      string `json:"ServiceAccountEmails,omitempty"`
 	UseInstanceRole           bool   `json:"UseInstanceRole,omitempty"`
+	UseVmServiceAccount       bool   `json:"UseVmServiceAccount,omitempty"`
+	Zone                      string `json:"Zone,omitempty"`
 }
 
 // GetAuthenticationType returns the authentication type of this
