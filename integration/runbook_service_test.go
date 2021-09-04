@@ -37,7 +37,7 @@ func AssertEqualRunbooks(t *testing.T, expected *octopusdeploy.Runbook, actual *
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func CreateTestRunbook(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup, project *octopusdeploy.Project) (*octopusdeploy.Runbook, error) {
+func CreateTestRunbook(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup, project *octopusdeploy.Project) *octopusdeploy.Runbook {
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
 	require.NotNil(t, project)
@@ -64,7 +64,7 @@ func CreateTestRunbook(t *testing.T, client *octopusdeploy.Client, lifecycle *oc
 	require.NotNil(t, runbookToCompare)
 	AssertEqualRunbooks(t, createdRunbook, runbookToCompare)
 
-	return createdRunbook, nil
+	return createdRunbook
 }
 
 func DeleteTestRunbook(t *testing.T, client *octopusdeploy.Client, runbook *octopusdeploy.Runbook) {
@@ -102,8 +102,7 @@ func TestRunbookServiceDeleteAll(t *testing.T) {
 
 	// create 30 test runbooks (to be deleted)
 	for i := 0; i < 30; i++ {
-		runbook, err := CreateTestRunbook(t, client, lifecycle, projectGroup, project)
-		require.NoError(t, err)
+		runbook := CreateTestRunbook(t, client, lifecycle, projectGroup, project)
 		require.NotNil(t, runbook)
 		defer DeleteTestRunbook(t, client, runbook)
 	}
@@ -130,8 +129,7 @@ func TestRunbookServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
-	runbook, err := CreateTestRunbook(t, client, lifecycle, projectGroup, project)
-	require.NoError(t, err)
+	runbook := CreateTestRunbook(t, client, lifecycle, projectGroup, project)
 	require.NotNil(t, runbook)
 	defer DeleteTestRunbook(t, client, runbook)
 }

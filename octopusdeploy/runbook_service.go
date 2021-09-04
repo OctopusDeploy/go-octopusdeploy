@@ -18,7 +18,7 @@ func newRunbookService(sling *sling.Sling, uriTemplate string) *runbookService {
 // Add returns the runbook that matches the input ID.
 func (s runbookService) Add(runbook *Runbook) (*Runbook, error) {
 	if runbook == nil {
-		return nil, createInvalidParameterError("Add", "runbook")
+		return nil, createInvalidParameterError(OperationAdd, "runbook")
 	}
 
 	path, err := getAddPath(s, runbook)
@@ -61,6 +61,15 @@ func (s runbookService) GetByID(id string) (*Runbook, error) {
 	}
 
 	return resp.(*Runbook), nil
+}
+
+func (s runbookService) GetRunbookSnapshotTemplate(runbook *Runbook) (*RunbookSnapshotTemplate, error) {
+	resp, err := apiGet(s.getClient(), new(RunbookSnapshotTemplate), runbook.Links["RunbookSnapshotTemplate"])
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*RunbookSnapshotTemplate), nil
 }
 
 // Update modifies a runbook based on the one provided as input.
