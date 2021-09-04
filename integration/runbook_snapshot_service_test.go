@@ -110,4 +110,8 @@ func TestRunbookSnapshotServiceAddGetDelete(t *testing.T) {
 	runbookSnapshot := CreateTestRunbookSnapshot(t, client, lifecycle, projectGroup, project, runbook)
 	require.NotNil(t, runbookSnapshot)
 	defer DeleteTestRunbookSnapshot(t, client, runbookSnapshot)
+
+	runbookSnapshotTemplate, err := client.Runbooks.GetRunbookSnapshotTemplate(runbook)
+	require.NoError(t, err)
+	require.NotNil(t, runbookSnapshotTemplate)
 }
