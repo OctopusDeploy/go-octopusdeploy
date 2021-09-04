@@ -27,10 +27,7 @@ type Runbooks struct {
 }
 
 // NewRunbook creates and initializes a runbook.
-func NewRunbook(
-	name string,
-	projectID string,
-) *Runbook {
+func NewRunbook(name string, projectID string) *Runbook {
 	return &Runbook{
 		DefaultGuidedFailureMode: "EnvironmentDefault",
 		EnvironmentScope:         "All",
