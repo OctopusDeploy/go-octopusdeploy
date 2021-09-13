@@ -6,3 +6,14 @@ type ProjectTriggerAction struct {
 	ShouldRedeployWhenMachineHasBeenDeployedTo bool   `json:"ShouldRedeployWhenMachineHasBeenDeployedTo"`
 	SourceEnvironmentID                        string `json:"SourceEnvironmentId"`
 }
+
+func (a *ProjectTriggerAction) GetActionType() ActionType {
+	actionType, _ := ActionTypeString(a.ActionType)
+	return actionType
+}
+
+func (a *ProjectTriggerAction) SetActionType(actionType ActionType) {
+	a.ActionType = actionType.String()
+}
+
+var _ ITriggerAction = &ProjectTriggerAction{}

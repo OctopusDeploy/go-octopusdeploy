@@ -1,13 +1,14 @@
 package octopusdeploy
 
-type TriggerAction struct {
-	ActionType string `json:"ActionType" validate:"required,oneof=AutoDeploy DeployLatestRelease DeployNewRelease RunRunbook"`
+type triggerAction struct {
+	Type ActionType `json:"ActionType"`
 
 	resource
 }
 
-func NewTriggerAction() *TriggerAction {
-	return &TriggerAction{
+func newTriggerAction(actionType ActionType) *triggerAction {
+	return &triggerAction{
+		Type:     actionType,
 		resource: *newResource(),
 	}
 }
