@@ -1,5 +1,7 @@
 package octopusdeploy
 
+import "github.com/go-playground/validator/v10"
+
 type ProjectTriggerFilter struct {
 	DateOfMonth         string   `json:"DateOfMonth"`
 	DayNumberOfMonth    string   `json:"DayNumberOfMonth"`
@@ -13,3 +15,18 @@ type ProjectTriggerFilter struct {
 	StartTime           string   `json:"StartTime"`
 	Timezone            string   `json:"Timezone"`
 }
+
+func (f *ProjectTriggerFilter) GetFilterType() FilterType {
+	filterType, _ := FilterTypeString(f.FilterType)
+	return filterType
+}
+
+func (f *ProjectTriggerFilter) SetFilterType(filterType FilterType) {
+	f.FilterType = filterType.String()
+}
+
+func (f *ProjectTriggerFilter) Validate() error {
+	return validator.New().Struct(f)
+}
+
+var _ ITriggerFilter = &ProjectTriggerFilter{}
