@@ -90,6 +90,16 @@ type IRunsOnAWorker interface {
 	SetDefaultWorkerPoolID(string)
 }
 
+type ITriggerAction interface {
+	GetActionType() ActionType
+	SetActionType(actionType ActionType)
+}
+
+type ITriggerFilter interface {
+	GetFilterType() FilterType
+	SetFilterType(filterType FilterType)
+}
+
 type IWorkerPool interface {
 	GetWorkerPoolType() WorkerPoolType
 	GetIsDefault() bool
