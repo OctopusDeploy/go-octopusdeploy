@@ -1,5 +1,7 @@
 # go-octopusdeploy
 
+![IMG_OctoGo Chracter_2021](https://user-images.githubusercontent.com/71493/133961475-fd4d769f-dc32-4723-a9bd-5529c5b12faf.png)
+
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/OctopusDeploy/go-octopusdeploy)](https://pkg.go.dev/github.com/OctopusDeploy/go-octopusdeploy) ![Run Integration Tests](https://github.com/OctopusDeploy/go-octopusdeploy/workflows/Run%20Integration%20Tests/badge.svg?branch=beta-candidate-01) [![Go Report](https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy)](https://goreportcard.com/report/github.com/OctopusDeploy/go-octopusdeploy)
 
 A Go client for the [Octopus Deploy](https://octopus.com/) API. This client is used by the [Octopus Deploy Terraform Provider](https://github.com/OctopusDeploy/terraform-provider-octopusdeploy).
