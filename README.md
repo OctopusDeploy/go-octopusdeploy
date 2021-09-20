@@ -1,7 +1,7 @@
 <p align="center">
   <img alt="go-octopusdeploy Logo" src="https://user-images.githubusercontent.com/71493/133961475-fd4d769f-dc32-4723-a9bd-5529c5b12faf.png" height="140" />
   <h3 align="center">go-octopusdeploy</h3>
-  <p align="center">Go API Client for Octopus Deploy 🐙</p>
+  <p align="center">Go API Client for <a href="https://octopus.com/">Octopus Deploy</a> 🐙</p>
   <p align="center">
     <a href="https://github.com/OctopusDeploy/go-octopusdeploy/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/v/release/OctopusDeploy/go-octopusdeploy.svg?logo=github&style=flat-square"></a>
     <a href="https://pkg.go.dev/github.com/OctopusDeploy/go-octopusdeploy"><img alt="PkgGoDev" src="https://pkg.go.dev/badge/github.com/OctopusDeploy/go-octopusdeploy"></a>
