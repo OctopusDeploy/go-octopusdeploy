@@ -13,7 +13,7 @@
 
 ## Install
 
-```
+```bash
 go get "github.com/OctopusDeploy/go-octopusdeploy"
 ```
 
