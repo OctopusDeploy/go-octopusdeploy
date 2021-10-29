@@ -321,11 +321,6 @@ type PackageUploadQuery struct {
 	OverwriteMode string `uri:"overwriteMode,omitempty" url:"overwriteMode,omitempty"`
 }
 
-type UserQuery struct {
-	IncludeSystem bool     `uri:"includeSystem,omitempty" url:"includeSystem,omitempty"`
-	Spaces        []string `uri:"spaces,omitempty" url:"spaces,omitempty"`
-}
-
 type ProjectGroupsQuery struct {
 	IDs         []string `uri:"ids,omitempty" url:"ids,omitempty"`
 	PartialName string   `uri:"partialName,omitempty" url:"partialName,omitempty"`
@@ -530,6 +525,11 @@ type TenantsMissingVariablesQuery struct {
 
 type TenantVariablesQuery struct {
 	ProjectID string `uri:"projectId,omitempty" url:"projectId,omitempty"`
+}
+
+type UserQuery struct {
+	IncludeSystem bool     `uri:"includeSystem,omitempty" url:"includeSystem,omitempty"`
+	Spaces        []string `uri:"spaces,omitempty" url:"spaces,omitempty"`
 }
 
 type UserRolesQuery struct {
