@@ -34,8 +34,6 @@ signs:
     args:
       [
         '--batch',
-        '-u',
-        '{{ .Env.GPG_FINGERPRINT }}',
         '--output',
         '${signature}',
         '--detach-sign',
