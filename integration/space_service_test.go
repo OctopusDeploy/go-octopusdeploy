@@ -79,9 +79,13 @@ func IsEqualSpaces(t *testing.T, expected *octopusdeploy.Space, actual *octopusd
 	assert.Equal(t, expected.GetID(), actual.GetID())
 	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
 
-	// TODO: complete space comparison
+	// space
 	assert.Equal(t, expected.Description, actual.Description)
 	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.IsDefault, actual.IsDefault)
+	assert.Equal(t, expected.SpaceManagersTeamMembers, actual.SpaceManagersTeamMembers)
+	assert.Equal(t, expected.SpaceManagersTeams, actual.SpaceManagersTeams)
+	assert.Equal(t, expected.TaskQueueStopped, actual.TaskQueueStopped)
 }
 
 func UpdateTestSpace(t *testing.T, client *octopusdeploy.Client, space *octopusdeploy.Space) *octopusdeploy.Space {
@@ -109,19 +113,6 @@ func TestSpaceSetAddGetDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, spaceToCompare)
 	IsEqualSpaces(t, space, spaceToCompare)
-}
-
-func TestSpaceServiceDeleteAll(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
-
-	spaces, err := client.Spaces.GetAll()
-	require.NoError(t, err)
-	require.NotNil(t, spaces)
-
-	for _, space := range spaces {
-		defer DeleteTestSpace(t, client, space)
-	}
 }
 
 func TestSpaceServiceGetAll(t *testing.T) {
@@ -161,18 +152,41 @@ func TestSpaceServiceGetByID(t *testing.T) {
 	}
 }
 
-func TestSpaceGetByPartialName(t *testing.T) {
+func TestSpaceServiceGetByIDOrName(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
+
+	idOrName := getRandomName()
+	resource, err := client.Spaces.GetByIDOrName(idOrName)
+	require.Error(t, err)
+	require.Nil(t, resource)
+
+	resources, err := client.Spaces.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, resources)
+
+	for _, resource := range resources {
+		resourceToCompare, err := client.Spaces.GetByIDOrName(resource.GetID())
+		require.NoError(t, err)
+		IsEqualSpaces(t, resource, resourceToCompare)
+	}
+}
+
+func TestSpaceGetByName(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	name := getRandomName()
+	resource, err := client.Spaces.GetByName(name)
+	require.Error(t, err)
+	require.Nil(t, resource)
 
 	spaces, err := client.Spaces.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, spaces)
 
 	for _, space := range spaces {
-		namedSpaces, err := client.Spaces.Get(octopusdeploy.SpacesQuery{
-			PartialName: space.Name,
-		})
+		namedSpaces, err := client.Spaces.GetByName(space.Name)
 		require.NoError(t, err)
 		require.NotNil(t, namedSpaces)
 	}

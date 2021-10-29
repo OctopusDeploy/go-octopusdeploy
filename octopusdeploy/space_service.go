@@ -89,6 +89,43 @@ func (s spaceService) GetByID(id string) (*Space, error) {
 	return resp.(*Space), nil
 }
 
+// GetByName returns the space that matches the input ID or name. If one
+// cannot be found, it returns nil and an error.
+func (s spaceService) GetByName(name string) (*Space, error) {
+	spaces, err := s.Get(SpacesQuery{
+		PartialName: name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, space := range spaces.Items {
+		if space.Name == name {
+			return space, nil
+		}
+	}
+
+	return nil, ErrItemNotFound
+}
+
+// GetByIDOrName returns the space that matches the input ID or name. If one
+// cannot be found, it returns nil and an error.
+func (s spaceService) GetByIDOrName(idOrName string) (*Space, error) {
+	space, err := s.GetByID(idOrName)
+	if err != nil {
+		apiError, ok := err.(*APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if space != nil {
+			return space, nil
+		}
+	}
+
+	return s.GetByName(idOrName)
+}
+
 // GetAll returns all spaces. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s spaceService) GetAll() ([]*Space, error) {
