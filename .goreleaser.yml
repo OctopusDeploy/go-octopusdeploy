@@ -31,14 +31,6 @@ checksum:
   algorithm: sha256
 signs:
   - artifacts: checksum
-    args:
-      [
-        '--batch',
-        '--output',
-        '${signature}',
-        '--detach-sign',
-        '${artifact}',
-      ]
 changelog:
   sort: asc
   filters:
