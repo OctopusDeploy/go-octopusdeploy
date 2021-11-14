@@ -1,6 +1,11 @@
 name: Run Integration Tests
 
-on: push
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - octopusdeploy/**
 
 defaults:
   run:
