@@ -33,12 +33,7 @@ func CreateDynamicWorkerPoolExample() {
 	}
 
 	// create dynamic worker pool
-	dynamicWorkerPool, err := octopusdeploy.NewDynamicWorkerPool(name, workerType)
-	if err != nil {
-		_ = fmt.Errorf("error creating dynamic worker pool: %v", err)
-		return
-	}
-
+	dynamicWorkerPool := octopusdeploy.NewDynamicWorkerPool(name, workerType)
 	createdDynamicWorkerPool, err := client.WorkerPools.Add(dynamicWorkerPool)
 	if err != nil {
 		_ = fmt.Errorf("error creating dynamic worker pool: %v", err)

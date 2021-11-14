@@ -18,16 +18,12 @@ type DynamicWorkerPools struct {
 }
 
 // NewDynamicWorkerPool creates and initializes a dynamic worker pool.
-func NewDynamicWorkerPool(name string, workerType WorkerType) (*DynamicWorkerPool, error) {
-	if isEmpty(name) {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
-	}
-
+func NewDynamicWorkerPool(name string, workerType WorkerType) *DynamicWorkerPool {
 	return &DynamicWorkerPool{
 		WorkerPoolType: WorkerPoolTypeDynamic,
 		WorkerType:     workerType,
 		WorkerPool:     *newWorkerPool(name),
-	}, nil
+	}
 }
 
 func (d *DynamicWorkerPool) GetIsDefault() bool {

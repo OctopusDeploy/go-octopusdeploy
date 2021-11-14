@@ -34,9 +34,8 @@ func CreateTestDynamicWorkerPool(t *testing.T, client *octopusdeploy.Client) oct
 	name := getRandomName()
 	workerType := octopusdeploy.WorkerTypeUbuntu1804
 
-	dynamicWorkerPool, err := octopusdeploy.NewDynamicWorkerPool(name, workerType)
+	dynamicWorkerPool := octopusdeploy.NewDynamicWorkerPool(name, workerType)
 	require.NotNil(t, dynamicWorkerPool)
-	require.NoError(t, err)
 	require.NoError(t, dynamicWorkerPool.Validate())
 
 	createdDynamicWorkerPool, err := client.WorkerPools.Add(dynamicWorkerPool)
@@ -61,9 +60,8 @@ func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.Client) octo
 
 	name := getRandomName()
 
-	staticWorkerPool, err := octopusdeploy.NewStaticWorkerPool(name)
+	staticWorkerPool := octopusdeploy.NewStaticWorkerPool(name)
 	require.NotNil(t, staticWorkerPool)
-	require.NoError(t, err)
 	require.NoError(t, staticWorkerPool.Validate())
 
 	createdStaticWorkerPool, err := client.WorkerPools.Add(staticWorkerPool)

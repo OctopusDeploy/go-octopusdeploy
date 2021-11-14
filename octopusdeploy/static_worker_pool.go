@@ -17,15 +17,11 @@ type StaticWorkerPools struct {
 }
 
 // NewStaticWorkerPool creates and initializes a static worker pool.
-func NewStaticWorkerPool(name string) (*StaticWorkerPool, error) {
-	if isEmpty(name) {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
-	}
-
+func NewStaticWorkerPool(name string) *StaticWorkerPool {
 	return &StaticWorkerPool{
 		WorkerPoolType: WorkerPoolTypeStatic,
 		WorkerPool:     *newWorkerPool(name),
-	}, nil
+	}
 }
 
 func (s *StaticWorkerPool) GetIsDefault() bool {
