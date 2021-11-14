@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 	"github.com/jinzhu/copier"
 )
 
@@ -106,6 +107,25 @@ func (s workerPoolService) Add(workerPool IWorkerPool) (IWorkerPool, error) {
 	}
 
 	return toWorkerPool(response.(*WorkerPoolResource))
+}
+
+// Get returns a collection of worker pools based on the criteria defined by
+// its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func (s workerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools, error) {
+	v, _ := query.Values(workerPoolsQuery)
+	path := s.BasePath
+	encodedQueryString := v.Encode()
+	if len(encodedQueryString) > 0 {
+		path += "?" + encodedQueryString
+	}
+
+	response, err := apiGet(s.getClient(), new(WorkerPoolResources), path)
+	if err != nil {
+		return &WorkerPools{}, err
+	}
+
+	return toWorkerPools(response.(*WorkerPoolResources)), nil
 }
 
 // GetAll returns all worker pools. If none can be found or an error occurs, it
