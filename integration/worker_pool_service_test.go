@@ -129,6 +129,36 @@ func TestWorkerPoolServiceAdd(t *testing.T) {
 	defer DeleteTestWorkerPool(t, client, staticWorkerPool)
 }
 
+func TestWorkerPoolServiceGet(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	workerPools, err := client.WorkerPools.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, workerPools)
+
+	for _, workerPool := range workerPools {
+		name := workerPool.GetName()
+		query := octopusdeploy.WorkerPoolsQuery{
+			PartialName: name,
+			Take:        1,
+		}
+		namedWorkerPools, err := client.WorkerPools.Get(query)
+		require.NoError(t, err)
+		require.NotNil(t, namedWorkerPools)
+		AssertEqualWorkerPools(t, workerPool, namedWorkerPools.Items[0])
+
+		query = octopusdeploy.WorkerPoolsQuery{
+			IDs:  []string{workerPool.GetID()},
+			Take: 1,
+		}
+		namedWorkerPools, err = client.WorkerPools.Get(query)
+		require.NoError(t, err)
+		require.NotNil(t, namedWorkerPools)
+		AssertEqualWorkerPools(t, workerPool, namedWorkerPools.Items[0])
+	}
+}
+
 func TestWorkerPoolServiceCRUD(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
