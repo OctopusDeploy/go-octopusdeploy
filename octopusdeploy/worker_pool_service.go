@@ -33,21 +33,14 @@ func toWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 	}
 
 	var workerPool IWorkerPool
-	var err error
 	switch workerPoolResource.GetWorkerPoolType() {
 	case WorkerPoolTypeDynamic:
-		workerPool, err = NewDynamicWorkerPool(workerPoolResource.GetName(), workerPoolResource.WorkerType)
-		if err != nil {
-			return nil, err
-		}
+		workerPool = NewDynamicWorkerPool(workerPoolResource.GetName(), workerPoolResource.WorkerType)
 	case WorkerPoolTypeStatic:
-		workerPool, err = NewStaticWorkerPool(workerPoolResource.GetName())
-		if err != nil {
-			return nil, err
-		}
+		workerPool = NewStaticWorkerPool(workerPoolResource.GetName())
 	}
 
-	err = copier.Copy(workerPool, workerPoolResource)
+	err := copier.Copy(workerPool, workerPoolResource)
 	if err != nil {
 		return nil, err
 	}
