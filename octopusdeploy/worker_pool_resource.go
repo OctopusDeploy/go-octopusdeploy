@@ -24,10 +24,11 @@ type WorkerPoolResources struct {
 }
 
 // newWorkerPoolResource creates and initializes a worker pool resource.
-func newWorkerPoolResource(name string) *WorkerPoolResource {
+func newWorkerPoolResource(name string, workerPoolType WorkerPoolType) *WorkerPoolResource {
 	return &WorkerPoolResource{
-		Name:     name,
-		resource: *newResource(),
+		Name:           name,
+		WorkerPoolType: workerPoolType,
+		resource:       *newResource(),
 	}
 }
 
