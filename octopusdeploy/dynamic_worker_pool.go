@@ -6,8 +6,7 @@ import (
 )
 
 type DynamicWorkerPool struct {
-	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
-	WorkerType     WorkerType     `json:"WorkerType"`
+	WorkerType WorkerType `json:"WorkerType"`
 
 	WorkerPool
 }
@@ -20,19 +19,9 @@ type DynamicWorkerPools struct {
 // NewDynamicWorkerPool creates and initializes a dynamic worker pool.
 func NewDynamicWorkerPool(name string, workerType WorkerType) *DynamicWorkerPool {
 	return &DynamicWorkerPool{
-		WorkerPoolType: WorkerPoolTypeDynamic,
-		WorkerType:     workerType,
-		WorkerPool:     *newWorkerPool(name),
+		WorkerType: workerType,
+		WorkerPool: *newWorkerPool(name, WorkerPoolTypeDynamic),
 	}
-}
-
-func (d *DynamicWorkerPool) GetIsDefault() bool {
-	return d.IsDefault
-}
-
-// GetWorkerPoolType returns the worker pool type for this worker pool.
-func (d *DynamicWorkerPool) GetWorkerPoolType() WorkerPoolType {
-	return d.WorkerPoolType
 }
 
 // GetWorkerType returns the worker type for this worker pool.

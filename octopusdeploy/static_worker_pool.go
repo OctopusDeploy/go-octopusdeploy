@@ -6,8 +6,6 @@ import (
 )
 
 type StaticWorkerPool struct {
-	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
-
 	WorkerPool
 }
 
@@ -19,18 +17,12 @@ type StaticWorkerPools struct {
 // NewStaticWorkerPool creates and initializes a static worker pool.
 func NewStaticWorkerPool(name string) *StaticWorkerPool {
 	return &StaticWorkerPool{
-		WorkerPoolType: WorkerPoolTypeStatic,
-		WorkerPool:     *newWorkerPool(name),
+		WorkerPool: *newWorkerPool(name, WorkerPoolTypeStatic),
 	}
 }
 
 func (s *StaticWorkerPool) GetIsDefault() bool {
 	return s.IsDefault
-}
-
-// GetWorkerPoolType returns the worker type for this worker pool.
-func (s *StaticWorkerPool) GetWorkerPoolType() WorkerPoolType {
-	return s.WorkerPoolType
 }
 
 // Validate checks the state of the static worker pool and returns an error if
@@ -43,5 +35,3 @@ func (s *StaticWorkerPool) Validate() error {
 	}
 	return v.Struct(s)
 }
-
-var _ IWorkerPool = &StaticWorkerPool{}

@@ -72,7 +72,7 @@ func toWorkerPoolResource(workerPool IWorkerPool) (*WorkerPoolResource, error) {
 		return nil, createInvalidParameterError("toWorkerPoolResource", ParameterWorkerPool)
 	}
 
-	workerPoolResource := newWorkerPoolResource(workerPool.GetName(), workerPool.GetWorkerPoolType())
+	workerPoolResource := NewWorkerPoolResource(workerPool.GetName(), workerPool.GetWorkerPoolType())
 
 	err := copier.Copy(&workerPoolResource, workerPool)
 	if err != nil {
