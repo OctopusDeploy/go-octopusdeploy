@@ -3,7 +3,6 @@ package octopusdeploy
 import (
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
-	"github.com/jinzhu/copier"
 )
 
 type workerPoolService struct {
@@ -27,68 +26,13 @@ func newWorkerPoolService(sling *sling.Sling, uriTemplate string, dynamicWorkerT
 	return workerPoolService
 }
 
-func toWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
-	if isNil(workerPoolResource) {
-		return nil, createInvalidParameterError("toWorkerPool", ParameterWorkerPoolResource)
-	}
-
-	var workerPool IWorkerPool
-	switch workerPoolResource.GetWorkerPoolType() {
-	case WorkerPoolTypeDynamic:
-		workerPool = NewDynamicWorkerPool(workerPoolResource.GetName(), workerPoolResource.WorkerType)
-	case WorkerPoolTypeStatic:
-		workerPool = NewStaticWorkerPool(workerPoolResource.GetName())
-	}
-
-	err := copier.Copy(workerPool, workerPoolResource)
-	if err != nil {
-		return nil, err
-	}
-
-	return workerPool, nil
-}
-
-func toWorkerPools(workerPoolResources *WorkerPoolResources) *WorkerPools {
-	return &WorkerPools{
-		Items:        toWorkerPoolArray(workerPoolResources.Items),
-		PagedResults: workerPoolResources.PagedResults,
-	}
-}
-
-func toWorkerPoolArray(workerPoolResources []*WorkerPoolResource) []IWorkerPool {
-	items := []IWorkerPool{}
-	for _, workerPoolResource := range workerPoolResources {
-		workerPool, err := toWorkerPool(workerPoolResource)
-		if err != nil {
-			return nil
-		}
-		items = append(items, workerPool)
-	}
-	return items
-}
-
-func toWorkerPoolResource(workerPool IWorkerPool) (*WorkerPoolResource, error) {
-	if isNil(workerPool) {
-		return nil, createInvalidParameterError("toWorkerPoolResource", ParameterWorkerPool)
-	}
-
-	workerPoolResource := NewWorkerPoolResource(workerPool.GetName(), workerPool.GetWorkerPoolType())
-
-	err := copier.Copy(&workerPoolResource, workerPool)
-	if err != nil {
-		return nil, err
-	}
-
-	return workerPoolResource, nil
-}
-
 // Add creates a new worker pool.
 func (s workerPoolService) Add(workerPool IWorkerPool) (IWorkerPool, error) {
 	if workerPool == nil {
 		return nil, createInvalidParameterError(OperationAdd, ParameterWorkerPool)
 	}
 
-	workerPoolResource, err := toWorkerPoolResource(workerPool)
+	workerPoolResource, err := ToWorkerPoolResource(workerPool)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +42,7 @@ func (s workerPoolService) Add(workerPool IWorkerPool) (IWorkerPool, error) {
 		return nil, err
 	}
 
-	return toWorkerPool(response.(*WorkerPoolResource))
+	return ToWorkerPool(response.(*WorkerPoolResource))
 }
 
 // Get returns a collection of worker pools based on the criteria defined by
@@ -117,7 +61,7 @@ func (s workerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools,
 		return &WorkerPools{}, err
 	}
 
-	return toWorkerPools(response.(*WorkerPoolResources)), nil
+	return ToWorkerPools(response.(*WorkerPoolResources)), nil
 }
 
 // GetAll returns all worker pools. If none can be found or an error occurs, it
@@ -127,16 +71,12 @@ func (s *workerPoolService) GetAll() ([]IWorkerPool, error) {
 	path := s.BasePath + "/all"
 
 	_, err := apiGet(s.getClient(), &items, path)
-	return toWorkerPoolArray(items), err
+	return ToWorkerPoolArray(items), err
 }
 
 // GetByID returns the worker pool that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s workerPoolService) GetByID(id string) (IWorkerPool, error) {
-	if isEmpty(id) {
-		return nil, createInvalidParameterError(OperationGetByID, ParameterID)
-	}
-
 	path, err := getByIDPath(s, id)
 	if err != nil {
 		return nil, err
@@ -147,7 +87,7 @@ func (s workerPoolService) GetByID(id string) (IWorkerPool, error) {
 		return nil, err
 	}
 
-	return resp.(IWorkerPool), nil
+	return ToWorkerPool(resp.(*WorkerPoolResource))
 }
 
 // Update modifies a worker pool based on the one provided as input.
@@ -161,18 +101,15 @@ func (s workerPoolService) Update(workerPool IWorkerPool) (IWorkerPool, error) {
 		return nil, err
 	}
 
-	var workerPoolResource interface{}
-	switch workerPool.GetWorkerPoolType() {
-	case "DynamicWorkerPool":
-		workerPoolResource = new(DynamicWorkerPool)
-	case "StaticWorkerPool":
-		workerPoolResource = new(StaticWorkerPool)
-	}
-
-	resp, err := apiUpdate(s.getClient(), workerPool, workerPoolResource, path)
+	workerPoolResource, err := ToWorkerPoolResource(workerPool)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(IWorkerPool), nil
+	resp, err := apiUpdate(s.getClient(), workerPoolResource, new(WorkerPoolResource), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToWorkerPool(resp.(*WorkerPoolResource))
 }
