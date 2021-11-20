@@ -138,6 +138,9 @@ func isNil(i interface{}) bool {
 	case *Runbook:
 		v := i.(*Runbook)
 		ret = v == nil
+	case *ScriptModule:
+		v := i.(*ScriptModule)
+		ret = v == nil
 	case *Space:
 		v := i.(*Space)
 		ret = v == nil
