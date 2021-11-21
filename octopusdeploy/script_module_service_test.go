@@ -22,17 +22,23 @@ func CreateTestScriptModule(t *testing.T, service *scriptModuleService) *ScriptM
 
 	name := getRandomName()
 	description := getRandomName()
+	scriptBody := "function Say-Hello()\r\n{\r\n    Write-Output \"Hello, Octopus!\"\r\n}\r\n"
+	syntax := "PowerShell"
 
 	scriptModule := NewScriptModule(name)
 	scriptModule.Description = description
+	scriptModule.ScriptBody = scriptBody
+	scriptModule.Syntax = syntax
 	require.NoError(t, scriptModule.Validate())
 
 	createdScriptModule, err := service.Add(scriptModule)
 	require.NoError(t, err)
 	require.NotNil(t, createdScriptModule)
 	require.NotEmpty(t, createdScriptModule.GetID())
-	require.Equal(t, name, createdScriptModule.Name)
 	require.Equal(t, description, createdScriptModule.Description)
+	require.Equal(t, name, createdScriptModule.Name)
+	require.Equal(t, scriptBody, createdScriptModule.ScriptBody)
+	require.Equal(t, syntax, createdScriptModule.Syntax)
 
 	return createdScriptModule
 }
@@ -65,7 +71,9 @@ func IsEqualScriptModules(t *testing.T, expected *ScriptModule, actual *ScriptMo
 	// script module
 	assert.Equal(t, expected.Description, actual.Description)
 	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.ScriptBody, actual.ScriptBody)
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
+	assert.Equal(t, expected.Syntax, actual.Syntax)
 	assert.Equal(t, expected.VariableSetID, actual.VariableSetID)
 }
 
@@ -131,7 +139,7 @@ func TestScriptModuleServiceDeleteAll(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resources)
 
-	for _, resource := range resources {
+	for _, resource := range resources.Items {
 		err = DeleteTestScriptModule(t, service, resource)
 		assert.NoError(t, err)
 	}
@@ -153,7 +161,7 @@ func TestScriptModuleServiceGetAll(t *testing.T) {
 	allScriptModules, err := service.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, allScriptModules)
-	require.True(t, len(allScriptModules) >= 30)
+	require.True(t, len(allScriptModules.Items) >= 30)
 
 	for _, libraryVariableSet := range libraryVariableSets {
 		require.NotNil(t, libraryVariableSet)
@@ -176,7 +184,7 @@ func TestScriptModuleServiceGetByID(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resources)
 
-	for _, resource := range resources {
+	for _, resource := range resources.Items {
 		resourceToCompare, err := service.GetByID(resource.GetID())
 		require.NoError(t, err)
 		IsEqualScriptModules(t, resource, resourceToCompare)
@@ -259,11 +267,11 @@ func TestScriptModuleGetByPartialName(t *testing.T) {
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 
-	resources, err = service.GetAll()
+	allScriptModules, err := service.GetAll()
 	require.NoError(t, err)
-	require.NotNil(t, resources)
+	require.NotNil(t, allScriptModules)
 
-	for _, resource := range resources {
+	for _, resource := range allScriptModules.Items {
 		namedResources, err := service.GetByPartialName(resource.Name)
 		require.NoError(t, err)
 		require.NotNil(t, namedResources)
@@ -283,7 +291,13 @@ func TestScriptModuleServiceUpdate(t *testing.T) {
 	require.Nil(t, resource)
 
 	expected := CreateTestScriptModule(t, service)
+	defer DeleteTestScriptModule(t, service, expected)
+
+	expected.ScriptBody = "function Say-Hello()\r\n{\r\n    Write-Output \"Hello, World!\"\r\n}\r\n"
 	actual := UpdateScriptModule(t, service, expected)
 	IsEqualScriptModules(t, expected, actual)
-	defer DeleteTestScriptModule(t, service, expected)
+
+	expected.Syntax = "Bash"
+	actual = UpdateScriptModule(t, service, expected)
+	IsEqualScriptModules(t, expected, actual)
 }
