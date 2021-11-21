@@ -70,6 +70,7 @@ type Client struct {
 	ScheduledProjectTriggers       *scheduledProjectTriggerService
 	Scheduler                      *schedulerService
 	ScopedUserRoles                *scopedUserRoleService
+	ScriptModules                  *scriptModuleService
 	ServerConfiguration            *serverConfigurationService
 	ServerStatus                   *serverStatusService
 	SMTPConfiguration              *smtpConfigurationService
@@ -345,6 +346,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		Scheduler:                      newSchedulerService(base, schedulerPath),
 		ScheduledProjectTriggers:       newScheduledProjectTriggerService(base, scheduledProjectTriggersPath),
 		ScopedUserRoles:                newScopedUserRoleService(base, scopedUserRolesPath),
+		ScriptModules:                  newScriptModuleService(base, libraryVariablesPath),
 		ServerConfiguration:            newServerConfigurationService(base, serverConfigurationPath, serverConfigurationSettingsPath),
 		ServerStatus:                   newServerStatusService(base, serverStatusPath, extensionStatsPath, serverHealthStatusPath, timezonesPath),
 		SMTPConfiguration:              newSMTPConfigurationService(base, smtpConfigurationPath, smtpIsConfiguredPath),

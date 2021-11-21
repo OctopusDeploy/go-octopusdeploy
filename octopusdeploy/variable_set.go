@@ -5,7 +5,7 @@ type VariableSet struct {
 	ScopeValues *VariableScopeValues `json:"ScopeValues,omitempty"`
 	SpaceID     string               `json:"SpaceId,omitempty"`
 	Variables   []*Variable          `json:"Variables"`
-	Version     int32                `json:"Version,omitempty"`
+	Version     int32                `json:"Version"`
 
 	resource
 }

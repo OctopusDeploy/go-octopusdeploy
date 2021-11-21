@@ -9,7 +9,9 @@ import (
 type ScriptModule struct {
 	Description   string `json:"Description,omitempty"`
 	Name          string `json:"Name" validate:"required"`
+	ScriptBody    string `json:"scriptBody" validate:"required"`
 	SpaceID       string `json:"SpaceId,omitempty"`
+	Syntax        string `json:"syntax" validate:"required"`
 	VariableSetID string `json:"VariableSetId,omitempty"`
 
 	resource
@@ -30,10 +32,12 @@ func NewScriptModule(name string) *ScriptModule {
 // MarshalJSON returns a script module as its JSON encoding.
 func (s *ScriptModule) MarshalJSON() ([]byte, error) {
 	scriptModule := struct {
-		ContentType   string `json:"ContentType" validate:"required"`
+		ContentType   string
 		Description   string `json:"Description,omitempty"`
 		Name          string `json:"Name" validate:"required"`
+		ScriptBody    string `json:"scriptBody" validate:"required"`
 		SpaceID       string `json:"SpaceId,omitempty"`
+		Syntax        string `json:"syntax" validate:"required"`
 		VariableSetID string `json:"VariableSetId,omitempty"`
 
 		resource
@@ -41,7 +45,9 @@ func (s *ScriptModule) MarshalJSON() ([]byte, error) {
 		ContentType:   "ScriptModule",
 		Description:   s.Description,
 		Name:          s.Name,
+		ScriptBody:    s.ScriptBody,
 		SpaceID:       s.SpaceID,
+		Syntax:        s.Syntax,
 		VariableSetID: s.VariableSetID,
 
 		resource: s.resource,
