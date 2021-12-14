@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"runtime"
 	"strings"
 
 	"github.com/dghubble/sling"
 )
+
+var version = "development"
+var userAgentString = getUserAgentString()
 
 // Client is an OctopusDeploy for making Octopus API requests.
 type Client struct {
@@ -116,7 +120,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 	// fetch root resource and process paths
 	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set(clientAPIKeyHTTPHeader, apiKey)
-	base.Set("User-Agent", "go-octopusdeploy")
+	base.Set("User-Agent", userAgentString)
 	rootService := newRootService(base, baseURLWithAPI)
 
 	root, err := rootService.Get()
@@ -130,7 +134,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 	if !isEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
 		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set(clientAPIKeyHTTPHeader, apiKey)
-		base.Set("User-Agent", "go-octopusdeploy")
+		base.Set("User-Agent", userAgentString)
 		rootService = newRootService(base, baseURLWithAPI)
 		sroot, err = rootService.Get()
 
@@ -444,7 +448,7 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 		return nil, createClientInitializationError(OperationAPIGet)
 	}
 
-	getClient.Set("User-Agent", "go-octopusdeploy")
+	getClient.Set("User-Agent", userAgentString)
 
 	octopusDeployError := new(APIError)
 	resp, err := getClient.Receive(inputStruct, &octopusDeployError)
@@ -458,6 +462,11 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 	}
 
 	return inputStruct, nil
+}
+
+// Returns the User-Agent String "go-octopusdeploy/version (os; arch) go/version"
+func getUserAgentString() string {
+	return fmt.Sprintf("%s/%s (%s; %s) go/%s", "go-octopusdeploy", version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
@@ -480,7 +489,7 @@ func apiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 		return nil, createClientInitializationError(OperationAPIAdd)
 	}
 
-	postClient.Set("User-Agent", "go-octopusdeploy")
+	postClient.Set("User-Agent", userAgentString)
 
 	request := postClient.BodyJSON(inputStruct)
 	if request == nil {
@@ -518,7 +527,7 @@ func apiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, 
 		return nil, createClientInitializationError(OperationAPIPost)
 	}
 
-	postClient.Set("User-Agent", "go-octopusdeploy")
+	postClient.Set("User-Agent", userAgentString)
 
 	request := postClient.BodyJSON(inputStruct)
 	if request == nil {
@@ -556,7 +565,7 @@ func apiUpdate(sling *sling.Sling, inputStruct interface{}, resource interface{}
 		return nil, createClientInitializationError(OperationAPIUpdate)
 	}
 
-	putClient.Set("User-Agent", "go-octopusdeploy")
+	putClient.Set("User-Agent", userAgentString)
 
 	request := putClient.BodyJSON(inputStruct)
 	if request == nil {
@@ -594,7 +603,7 @@ func apiDelete(sling *sling.Sling, path string) error {
 		return createClientInitializationError(OperationAPIDelete)
 	}
 
-	deleteClient.Set("User-Agent", "go-octopusdeploy")
+	deleteClient.Set("User-Agent", userAgentString)
 
 	octopusDeployError := new(APIError)
 	resp, err := deleteClient.Receive(nil, &octopusDeployError)

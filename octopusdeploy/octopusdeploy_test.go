@@ -54,6 +54,11 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
+func TestGetUserAgentString(t *testing.T) {
+	userAgentString := getUserAgentString()
+	assert.NotNil(t, userAgentString)
+}
+
 func TestGetWithEmptyParameters(t *testing.T) {
 	resource, err := apiGet(nil, nil, emptyString)
 
