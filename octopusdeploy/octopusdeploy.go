@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/dghubble/sling"
@@ -466,6 +467,15 @@ func apiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 
 // Returns the User-Agent String "go-octopusdeploy/version (os; arch) go/version"
 func getUserAgentString() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, dep := range info.Deps {
+			if dep.Path == "github.com/OctopusDeploy/go-octopusdeploy" {
+				if dep.Version != "" {
+					version = dep.Version
+				}
+			}
+		}
+	}
 	return fmt.Sprintf("%s/%s (%s; %s) go/%s", "go-octopusdeploy", version, runtime.GOOS, runtime.GOARCH, runtime.Version())
 }
 
