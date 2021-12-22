@@ -61,6 +61,11 @@ type IFeed interface {
 	IResource
 }
 
+// IGitCredential defines the interface for all Git-associated credentials.
+type IGitCredential interface {
+	GetType() GitCredentialType
+}
+
 type IHasName interface {
 	GetName() string
 	SetName(string)
@@ -73,6 +78,11 @@ type IHasSpace interface {
 
 type IKubernetesAuthentication interface {
 	GetAuthenticationType() string
+}
+
+// IPersistenceSettings defines the interface for all persistence settings.
+type IPersistenceSettings interface {
+	GetType() string
 }
 
 // IResource defines the interface for all resources.
