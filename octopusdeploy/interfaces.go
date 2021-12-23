@@ -2,6 +2,7 @@ package octopusdeploy
 
 import "time"
 
+// IEndpoint defines the interface for accounts.
 type IAccount interface {
 	GetAccountType() AccountType
 	GetDescription() string
@@ -33,7 +34,7 @@ type IDynamicWorkerPool interface {
 	IWorkerPool
 }
 
-// IEndpoint defines the interface for all endpoints.
+// IEndpoint defines the interface for endpoints.
 type IEndpoint interface {
 	GetCommunicationStyle() string
 
@@ -65,7 +66,7 @@ type IFeed interface {
 	IResource
 }
 
-// IGitCredential defines the interface for all Git-associated credentials.
+// IGitCredential defines the interface for Git-associated credentials.
 type IGitCredential interface {
 	GetType() GitCredentialType
 }
@@ -84,12 +85,12 @@ type IKubernetesAuthentication interface {
 	GetAuthenticationType() string
 }
 
-// IPersistenceSettings defines the interface for all persistence settings.
+// IPersistenceSettings defines the interface for persistence settings.
 type IPersistenceSettings interface {
 	GetType() string
 }
 
-// IResource defines the interface for all resources.
+// IResource defines the interface for resources.
 type IResource interface {
 	GetID() string
 	GetModifiedBy() string
@@ -102,22 +103,41 @@ type IResource interface {
 	Validate() error
 }
 
-// IRunsOnAWorker defines the interface for all workers.
+// IRunsOnAWorker defines the interface for workers.
 type IRunsOnAWorker interface {
 	GetDefaultWorkerPoolID() string
 	SetDefaultWorkerPoolID(string)
 }
 
+// ISSHKeyAccount defines the interface for SSH key accounts.
+type ISSHKeyAccount interface {
+	SetPrivateKeyPassphrase(*SensitiveValue)
+
+	IAccount
+}
+
+// ITriggerAction defines the interface for trigger actions.
 type ITriggerAction interface {
 	GetActionType() ActionType
 	SetActionType(actionType ActionType)
 }
 
+// ITriggerFilter defines the interface for trigger filters.
 type ITriggerFilter interface {
 	GetFilterType() FilterType
 	SetFilterType(filterType FilterType)
 }
 
+// IUsernamePasswordAccount defines the interface for username-password accounts.
+type IUsernamePasswordAccount interface {
+	GetUsername() string
+	SetPassword(*SensitiveValue)
+	SetUsername(string)
+
+	IAccount
+}
+
+// IWorkerPool defines the interface for worker pools.
 type IWorkerPool interface {
 	GetWorkerPoolType() WorkerPoolType
 	GetIsDefault() bool
