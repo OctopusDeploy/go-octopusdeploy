@@ -517,6 +517,44 @@ func apiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 	return resource, nil
 }
 
+// apiAddWithResponseStatus function with defined response.
+func apiAddWithResponseStatus(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string, httpStatus int) (interface{}, error) {
+	if sling == nil {
+		return nil, createInvalidParameterError(OperationAPIAdd, ParameterSling)
+	}
+
+	if isEmpty(path) {
+		return nil, createInvalidParameterError(OperationAPIAdd, ParameterPath)
+	}
+
+	postClient := sling.New()
+	if postClient == nil {
+		return nil, createClientInitializationError(OperationAPIAdd)
+	}
+
+	postClient = postClient.Post(path)
+	if postClient == nil {
+		return nil, createClientInitializationError(OperationAPIAdd)
+	}
+
+	postClient.Set("User-Agent", userAgentString)
+
+	request := postClient.BodyJSON(inputStruct)
+	if request == nil {
+		return nil, createClientInitializationError(OperationAPIAdd)
+	}
+
+	octopusDeployError := new(APIError)
+	resp, err := request.Receive(resource, &octopusDeployError)
+
+	apiErrorCheck := APIErrorChecker(path, resp, httpStatus, err, octopusDeployError)
+	if apiErrorCheck != nil {
+		return nil, apiErrorCheck
+	}
+
+	return resource, nil
+}
+
 // apiPost post to octopus and expect a 200 response code.
 func apiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
