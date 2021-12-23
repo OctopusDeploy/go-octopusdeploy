@@ -101,6 +101,19 @@ func TestLifecycleAddGetAndDelete(t *testing.T) {
 	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
 }
 
+func TestLifecycleServiceDeleteAll(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	lifecycles, err := client.Lifecycles.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, lifecycles)
+
+	for _, lifecycle := range lifecycles {
+		defer DeleteTestLifecycle(t, client, lifecycle)
+	}
+}
+
 func TestLifecycleGetThatDoesNotExist(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
