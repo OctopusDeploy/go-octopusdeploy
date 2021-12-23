@@ -10,6 +10,10 @@ type IAccount interface {
 	GetTenantIDs() []string
 	GetTenantTags() []string
 	SetDescription(string)
+	SetEnvironmentIDs([]string)
+	SetTenantedDeploymentMode(TenantedDeploymentMode)
+	SetTenantIDs([]string)
+	SetTenantTags([]string)
 
 	IHasName
 	IHasSpace
@@ -91,6 +95,10 @@ type IResource interface {
 	GetModifiedBy() string
 	GetModifiedOn() *time.Time
 	GetLinks() map[string]string
+	SetID(string)
+	SetLinks(map[string]string)
+	SetModifiedBy(string)
+	SetModifiedOn(*time.Time)
 	Validate() error
 }
 
