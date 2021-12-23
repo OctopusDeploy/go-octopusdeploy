@@ -24,9 +24,9 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch)
 	require.Equal(t, url, gitPersistenceSettings.URL)
 
-	basePath = ".octopus"
+	basePath = getRandomName()
 	credentials = NewAnonymousGitCredential()
-	defaultBranch = "main"
+	defaultBranch = getRandomName()
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -41,9 +41,9 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	password := NewSensitiveValue(getRandomName())
 	username := getRandomName()
 
-	basePath = ".octopus"
+	basePath = getRandomName()
 	credentials = NewUsernamePasswordGitCredential(username, password)
-	defaultBranch = "main"
+	defaultBranch = getRandomName()
 	url, err = url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -60,9 +60,9 @@ func TestGitPersistenceSettingsMarshalJSON(t *testing.T) {
 	password := NewSensitiveValue(getRandomName())
 	username := getRandomName()
 
-	basePath := ".octopus"
+	basePath := getRandomName()
 	credentials := NewUsernamePasswordGitCredential(username, password)
-	defaultBranch := "main"
+	defaultBranch := getRandomName()
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -132,9 +132,9 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch)
 	require.Equal(t, url, gitPersistenceSettings.URL)
 
-	basePath = ".octopus"
+	basePath = getRandomName()
 	anonymousGitCredential = NewAnonymousGitCredential()
-	defaultBranch = "main"
+	defaultBranch = getRandomName()
 	url, err = url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -162,8 +162,8 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 	password := NewSensitiveValue(getRandomName())
 	username := getRandomName()
 
-	basePath = ".octopus"
-	defaultBranch = "main"
+	basePath = getRandomName()
+	defaultBranch = getRandomName()
 	url, err = url.Parse("https://example.com/")
 	usernamePasswordGitCredential := NewUsernamePasswordGitCredential(username, password)
 	require.NoError(t, err)
