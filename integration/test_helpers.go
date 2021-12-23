@@ -45,7 +45,3 @@ func getOctopusClient() *octopusdeploy.Client {
 
 	return octopusClient
 }
-
-func generateSensitiveValue() *octopusdeploy.SensitiveValue {
-	return octopusdeploy.NewSensitiveValue(getRandomName())
-}
