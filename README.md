@@ -1,4 +1,4 @@
-<p align="center">
+<div align="center">
   <img alt="go-octopusdeploy Logo" src="https://user-images.githubusercontent.com/71493/133961475-fd4d769f-dc32-4723-a9bd-5529c5b12faf.png" height="140" />
   <h3 align="center">go-octopusdeploy</h3>
   <p align="center">Go API Client for <a href="https://octopus.com/">Octopus Deploy</a> 🐙</p>
@@ -7,7 +7,7 @@
     <a href="https://pkg.go.dev/github.com/OctopusDeploy/go-octopusdeploy"><img alt="PkgGoDev" src="https://pkg.go.dev/badge/github.com/OctopusDeploy/go-octopusdeploy"></a>
     <a href="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy"><img src="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy" alt="Go Report"></a>
   </p>
-</p>
+</div>
 
 ---
 
