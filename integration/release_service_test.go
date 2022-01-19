@@ -85,6 +85,9 @@ func TestReleaseServiceAddGetDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -93,7 +96,7 @@ func TestReleaseServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 

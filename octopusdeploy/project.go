@@ -1,36 +1,38 @@
 package octopusdeploy
 
 import (
+	"encoding/json"
+
 	"github.com/go-playground/validator/v10"
 )
 
 type Project struct {
-	AutoCreateRelease               bool                        `json:"AutoCreateRelease"`
+	AutoCreateRelease               bool                        `json:"AutoCreateRelease,omitempty"`
 	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides,omitempty"`
 	ClonedFromProjectID             string                      `json:"ClonedFromProjectId,omitempty"`
+	ConnectivityPolicy              *ConnectivityPolicy         `json:"ProjectConnectivityPolicy,omitempty"`
 	DefaultGuidedFailureMode        string                      `json:"DefaultGuidedFailureMode,omitempty"`
-	DefaultToSkipIfAlreadyInstalled bool                        `json:"DefaultToSkipIfAlreadyInstalled"`
+	DefaultToSkipIfAlreadyInstalled bool                        `json:"DefaultToSkipIfAlreadyInstalled,omitempty"`
 	DeploymentChangesTemplate       string                      `json:"DeploymentChangesTemplate,omitempty"`
 	DeploymentProcessID             string                      `json:"DeploymentProcessId,omitempty"`
 	Description                     string                      `json:"Description,omitempty"`
 	ExtensionSettings               []ExtensionSettingsValues   `json:"ExtensionSettings,omitempty"`
 	IncludedLibraryVariableSets     []string                    `json:"IncludedLibraryVariableSetIds,omitempty"`
-	IsDisabled                      bool                        `json:"IsDisabled"`
-	IsDiscreteChannelRelease        bool                        `json:"DiscreteChannelRelease"`
-	IsVersionControlled             bool                        `json:"IsVersionControlled"`
+	IsDisabled                      bool                        `json:"IsDisabled,omitempty"`
+	IsDiscreteChannelRelease        bool                        `json:"DiscreteChannelRelease,omitempty"`
+	IsVersionControlled             bool                        `json:"IsVersionControlled,omitempty"`
 	LifecycleID                     string                      `json:"LifecycleId" validate:"required"`
 	Name                            string                      `json:"Name" validate:"required"`
-	ConnectivityPolicy              *ConnectivityPolicy         `json:"ProjectConnectivityPolicy,omitempty"`
+	PersistenceSettings             IPersistenceSettings        `json:"PersistenceSettings,omitempty"`
 	ProjectGroupID                  string                      `json:"ProjectGroupId" validate:"required"`
 	ReleaseCreationStrategy         *ReleaseCreationStrategy    `json:"ReleaseCreationStrategy,omitempty"`
 	ReleaseNotesTemplate            string                      `json:"ReleaseNotesTemplate,omitempty"`
 	Slug                            string                      `json:"Slug,omitempty"`
-	SpaceID                         string                      `json:"SpaceId,omitempty"`
+	SpaceID                         string                      `json:"SpaceId" validate:"required"`
 	Templates                       []ActionTemplateParameter   `json:"Templates,omitempty"`
-	TenantedDeploymentMode          TenantedDeploymentMode      `json:"TenantedDeploymentMode"`
+	TenantedDeploymentMode          TenantedDeploymentMode      `json:"TenantedDeploymentMode,omitempty"`
 	VariableSetID                   string                      `json:"VariableSetId,omitempty"`
-	VersionControlSettings          *VersionControlSettings     `json:"VersionControlSettings,omitempty"`
-	VersioningStrategy              VersioningStrategy          `json:"VersioningStrategy"`
+	VersioningStrategy              *VersioningStrategy         `json:"VersioningStrategy,omitempty"`
 
 	resource
 }
@@ -40,25 +42,126 @@ type Projects struct {
 	PagedResults
 }
 
-func NewProject(name string, lifeCycleID string, projectGroupID string) *Project {
+func NewProject(spaceID string, name string, lifecycleID string, projectGroupID string) *Project {
 	return &Project{
-		AutoDeployReleaseOverrides: []AutoDeployReleaseOverride{},
-		DefaultGuidedFailureMode:   "EnvironmentDefault",
-		ExtensionSettings:          []ExtensionSettingsValues{},
-		LifecycleID:                lifeCycleID,
-		Name:                       name,
-		ConnectivityPolicy: &ConnectivityPolicy{
-			AllowDeploymentsToNoTargets: false,
-			SkipMachineBehavior:         "None",
-		},
-		ProjectGroupID:         projectGroupID,
-		Templates:              []ActionTemplateParameter{},
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
-		VersioningStrategy: VersioningStrategy{
-			Template: "#{Octopus.Version.LastMajor}.#{Octopus.Version.LastMinor}.#{Octopus.Version.NextPatch}",
-		},
-		resource: *newResource(),
+		LifecycleID:    lifecycleID,
+		Name:           name,
+		ProjectGroupID: projectGroupID,
+		SpaceID:        spaceID,
+		resource:       *newResource(),
 	}
+}
+
+// UnmarshalJSON sets this project to its representation in JSON.
+func (p *Project) UnmarshalJSON(data []byte) error {
+	var fields struct {
+		AutoCreateRelease               bool                        `json:"AutoCreateRelease,omitempty"`
+		AutoDeployReleaseOverrides      []AutoDeployReleaseOverride `json:"AutoDeployReleaseOverrides,omitempty"`
+		ClonedFromProjectID             string                      `json:"ClonedFromProjectId,omitempty"`
+		ConnectivityPolicy              *ConnectivityPolicy         `json:"ProjectConnectivityPolicy,omitempty"`
+		DefaultGuidedFailureMode        string                      `json:"DefaultGuidedFailureMode,omitempty"`
+		DefaultToSkipIfAlreadyInstalled bool                        `json:"DefaultToSkipIfAlreadyInstalled,omitempty"`
+		DeploymentChangesTemplate       string                      `json:"DeploymentChangesTemplate,omitempty"`
+		DeploymentProcessID             string                      `json:"DeploymentProcessId,omitempty"`
+		Description                     string                      `json:"Description,omitempty"`
+		ExtensionSettings               []ExtensionSettingsValues   `json:"ExtensionSettings,omitempty"`
+		IncludedLibraryVariableSets     []string                    `json:"IncludedLibraryVariableSetIds,omitempty"`
+		IsDisabled                      bool                        `json:"IsDisabled,omitempty"`
+		IsDiscreteChannelRelease        bool                        `json:"DiscreteChannelRelease,omitempty"`
+		IsVersionControlled             bool                        `json:"IsVersionControlled,omitempty"`
+		LifecycleID                     string                      `json:"LifecycleId" validate:"required"`
+		Name                            string                      `json:"Name" validate:"required"`
+		ProjectGroupID                  string                      `json:"ProjectGroupId" validate:"required"`
+		ReleaseCreationStrategy         *ReleaseCreationStrategy    `json:"ReleaseCreationStrategy,omitempty"`
+		ReleaseNotesTemplate            string                      `json:"ReleaseNotesTemplate,omitempty"`
+		Slug                            string                      `json:"Slug,omitempty"`
+		SpaceID                         string                      `json:"SpaceId" validate:"required"`
+		Templates                       []ActionTemplateParameter   `json:"Templates,omitempty"`
+		TenantedDeploymentMode          TenantedDeploymentMode      `json:"TenantedDeploymentMode,omitempty"`
+		VariableSetID                   string                      `json:"VariableSetId,omitempty"`
+		VersioningStrategy              *VersioningStrategy         `json:"VersioningStrategy,omitempty"`
+		resource
+	}
+
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return err
+	}
+
+	// validate JSON representation
+	validate := validator.New()
+	if err := validate.Struct(fields); err != nil {
+		return err
+	}
+
+	p.AutoCreateRelease = fields.AutoCreateRelease
+	p.AutoDeployReleaseOverrides = fields.AutoDeployReleaseOverrides
+	p.ClonedFromProjectID = fields.ClonedFromProjectID
+	p.ConnectivityPolicy = fields.ConnectivityPolicy
+	p.DefaultGuidedFailureMode = fields.DefaultGuidedFailureMode
+	p.DefaultToSkipIfAlreadyInstalled = fields.DefaultToSkipIfAlreadyInstalled
+	p.DeploymentChangesTemplate = fields.DeploymentChangesTemplate
+	p.DeploymentProcessID = fields.DeploymentProcessID
+	p.Description = fields.Description
+	p.ExtensionSettings = fields.ExtensionSettings
+	p.IncludedLibraryVariableSets = fields.IncludedLibraryVariableSets
+	p.IsDisabled = fields.IsDisabled
+	p.IsDiscreteChannelRelease = fields.IsDiscreteChannelRelease
+	p.IsVersionControlled = fields.IsVersionControlled
+	p.LifecycleID = fields.LifecycleID
+	p.Name = fields.Name
+	p.ProjectGroupID = fields.ProjectGroupID
+	p.ReleaseCreationStrategy = fields.ReleaseCreationStrategy
+	p.ReleaseNotesTemplate = fields.ReleaseNotesTemplate
+	p.Slug = fields.Slug
+	p.SpaceID = fields.SpaceID
+	p.Templates = fields.Templates
+	p.TenantedDeploymentMode = fields.TenantedDeploymentMode
+	p.VariableSetID = fields.VariableSetID
+	p.VersioningStrategy = fields.VersioningStrategy
+	p.resource = fields.resource
+
+	var project map[string]*json.RawMessage
+	if err := json.Unmarshal(data, &project); err != nil {
+		return err
+	}
+
+	var persistenceSettings *json.RawMessage
+	var persistenceSettingsProperties map[string]*json.RawMessage
+	var persistenceSettingsType string
+
+	if project["PersistenceSettings"] != nil {
+		persistenceSettingsValue := project["PersistenceSettings"]
+
+		if err := json.Unmarshal(*persistenceSettingsValue, &persistenceSettings); err != nil {
+			return err
+		}
+
+		if err := json.Unmarshal(*persistenceSettings, &persistenceSettingsProperties); err != nil {
+			return err
+		}
+
+		if persistenceSettingsProperties["Type"] != nil {
+			pst := persistenceSettingsProperties["Type"]
+			json.Unmarshal(*pst, &persistenceSettingsType)
+		}
+	}
+
+	switch persistenceSettingsType {
+	case "Database":
+		var databasePersistenceSettings *DatabasePersistenceSettings
+		if err := json.Unmarshal(*persistenceSettings, &databasePersistenceSettings); err != nil {
+			return err
+		}
+		p.PersistenceSettings = databasePersistenceSettings
+	case "VersionControlled":
+		var gitPersistenceSettings *GitPersistenceSettings
+		if err := json.Unmarshal(*persistenceSettings, &gitPersistenceSettings); err != nil {
+			return err
+		}
+		p.PersistenceSettings = gitPersistenceSettings
+	}
+
+	return nil
 }
 
 // Validate checks the state of the project and returns an error if invalid.
@@ -75,9 +178,9 @@ func (resource Project) Validate() error {
 	}
 
 	return ValidateMultipleProperties([]error{
-		ValidatePropertyValues("DefaultGuidedFailureMode", resource.DefaultGuidedFailureMode, ValidProjectDefaultGuidedFailureModes),
 		ValidateRequiredPropertyValue("LifecycleID", resource.LifecycleID),
 		ValidateRequiredPropertyValue("Name", resource.Name),
 		ValidateRequiredPropertyValue("ProjectGroupID", resource.ProjectGroupID),
+		ValidateRequiredPropertyValue("SpaceID", resource.SpaceID),
 	})
 }
