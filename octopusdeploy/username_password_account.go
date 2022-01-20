@@ -13,6 +13,21 @@ type UsernamePasswordAccount struct {
 	account
 }
 
+// GetUsername returns the username of this username/password account.
+func (u *UsernamePasswordAccount) GetUsername() string {
+	return u.Username
+}
+
+// SetPassword sets the password of this username/password account.
+func (u *UsernamePasswordAccount) SetPassword(password *SensitiveValue) {
+	u.Password = password
+}
+
+// SetUsername sets the username of this username/password account.
+func (u *UsernamePasswordAccount) SetUsername(username string) {
+	u.Username = username
+}
+
 // NewUsernamePasswordAccount creates and initializes a username/password account with a name.
 func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAccount)) (*UsernamePasswordAccount, error) {
 	if isEmpty(name) {
@@ -57,3 +72,5 @@ func (u *UsernamePasswordAccount) Validate() error {
 	}
 	return v.Struct(u)
 }
+
+var _ IUsernamePasswordAccount = &UsernamePasswordAccount{}

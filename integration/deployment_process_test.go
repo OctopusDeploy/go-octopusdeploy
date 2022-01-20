@@ -26,6 +26,8 @@ func TestDeploymentProcessGet(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
+	space := GetDefaultSpace(t, client)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -34,7 +36,7 @@ func TestDeploymentProcessGet(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -51,6 +53,8 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 
 	numberOfDeploymentProcesses := len(deploymentProcesses)
 
+	space := GetDefaultSpace(t, client)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -59,7 +63,7 @@ func TestDeploymentProcessGetAll(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -73,6 +77,9 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -81,7 +88,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 

@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -47,11 +48,10 @@ func AssertEqualProjects(t *testing.T, expected *octopusdeploy.Project, actual *
 	assert.Equal(t, expected.Templates, actual.Templates)
 	assert.Equal(t, expected.TenantedDeploymentMode, actual.TenantedDeploymentMode)
 	assert.Equal(t, expected.VariableSetID, actual.VariableSetID)
-	assert.Equal(t, expected.VersionControlSettings, actual.VersionControlSettings)
-	assert.Equal(t, expected.VersioningStrategy, actual.VersioningStrategy)
 }
 
-func CreateTestProject(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup) *octopusdeploy.Project {
+func CreateTestProject(t *testing.T, client *octopusdeploy.Client, space *octopusdeploy.Space, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup) *octopusdeploy.Project {
+	require.NotNil(t, space)
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
 
@@ -62,9 +62,8 @@ func CreateTestProject(t *testing.T, client *octopusdeploy.Client, lifecycle *oc
 
 	name := getRandomName()
 
-	project := octopusdeploy.NewProject(name, lifecycle.GetID(), projectGroup.GetID())
+	project := octopusdeploy.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
 	require.NotNil(t, project)
-	require.NoError(t, project.Validate())
 
 	createdProject, err := client.Projects.Add(project)
 	require.NoError(t, err)
@@ -97,9 +96,12 @@ func DeleteTestProject(t *testing.T, client *octopusdeploy.Client, project *octo
 	assert.Nil(t, deletedProject)
 }
 
-func TestProjectAddGetDelete(t *testing.T) {
+func TestProjectAddWithPersistenceSettings(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
 
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
@@ -109,7 +111,49 @@ func TestProjectAddGetDelete(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	name := getRandomName()
+
+	project := octopusdeploy.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
+	require.NotNil(t, project)
+
+	basePath := getRandomName()
+	credentials := octopusdeploy.NewAnonymousGitCredential()
+	defaultBranch := "main"
+	url, err := url.Parse("https://example.com/")
+	require.NoError(t, err)
+
+	project.PersistenceSettings = octopusdeploy.NewGitPersistenceSettings(basePath, credentials, defaultBranch, url)
+
+	createdProject, err := client.Projects.Add(project)
+	require.NoError(t, err)
+	require.NotNil(t, createdProject)
+	require.NotEmpty(t, createdProject.GetID())
+
+	defer DeleteTestProject(t, client, createdProject)
+
+	// verify the add operation was successful
+	projectToCompare, err := client.Projects.GetByID(createdProject.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, projectToCompare)
+	AssertEqualProjects(t, createdProject, projectToCompare)
+}
+
+func TestProjectAddGetDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 }
@@ -141,6 +185,9 @@ func TestProjectGetAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -153,7 +200,7 @@ func TestProjectGetAll(t *testing.T) {
 	projectsToCreate := 32
 	sum := 0
 	for i := 0; i < projectsToCreate; i++ {
-		project := CreateTestProject(t, client, lifecycle, projectGroup)
+		project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 		require.NotNil(t, project)
 		defer DeleteTestProject(t, client, project)
 
@@ -172,7 +219,7 @@ func TestProjectGetAll(t *testing.T) {
 		t.Fatalf("There should be at least %d projects created but there was only %d. Pagination is likely not working.", projectsToCreate, numberOfProjects)
 	}
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -189,6 +236,9 @@ func TestProjectUpdate(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -197,7 +247,7 @@ func TestProjectUpdate(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -220,6 +270,9 @@ func TestProjectGetByName(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -228,7 +281,7 @@ func TestProjectGetByName(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 

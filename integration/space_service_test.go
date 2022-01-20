@@ -88,6 +88,26 @@ func IsEqualSpaces(t *testing.T, expected *octopusdeploy.Space, actual *octopusd
 	assert.Equal(t, expected.TaskQueueStopped, actual.TaskQueueStopped)
 }
 
+func GetDefaultSpace(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Space {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	spaces, err := client.Spaces.GetAll()
+	require.NotNil(t, spaces)
+	require.NotEmpty(t, spaces)
+	require.NoError(t, err)
+
+	for _, space := range spaces {
+		if space.IsDefault {
+			return space
+		}
+	}
+
+	return nil
+}
+
 func UpdateTestSpace(t *testing.T, client *octopusdeploy.Client, space *octopusdeploy.Space) *octopusdeploy.Space {
 	if client == nil {
 		client = getOctopusClient()

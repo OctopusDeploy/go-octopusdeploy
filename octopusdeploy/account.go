@@ -42,6 +42,7 @@ func (a *account) GetDescription() string {
 	return a.Description
 }
 
+// GetEnvironmentIDs returns the environment IDs associated with this account.
 func (a *account) GetEnvironmentIDs() []string {
 	return a.EnvironmentIDs
 }
@@ -56,14 +57,17 @@ func (a *account) GetSpaceID() string {
 	return a.SpaceID
 }
 
+// GetTenantedDeploymentMode returns the tenanted deployment mode of this account.
 func (a *account) GetTenantedDeploymentMode() TenantedDeploymentMode {
 	return a.TenantedDeploymentMode
 }
 
+// GetTenantIDs returns the tenant IDs associated with this account.
 func (a *account) GetTenantIDs() []string {
 	return a.TenantIDs
 }
 
+// GetTenantTags returns the tenant tags assigned to this account.
 func (a *account) GetTenantTags() []string {
 	return a.TenantTags
 }
@@ -71,6 +75,11 @@ func (a *account) GetTenantTags() []string {
 // SetDescription sets the description of the account.
 func (a *account) SetDescription(description string) {
 	a.Description = description
+}
+
+// SetEnvironmentIDs sets the associated environment IDs of the account.
+func (a *account) SetEnvironmentIDs(environmentIds []string) {
+	a.EnvironmentIDs = environmentIds
 }
 
 // SetName sets the name of the account.
@@ -81,6 +90,21 @@ func (a *account) SetName(name string) {
 // SetSpaceID sets the space ID of this account.
 func (a *account) SetSpaceID(spaceID string) {
 	a.SpaceID = spaceID
+}
+
+// SetTenantedDeploymentMode sets the tenanted deployment mode of this account.
+func (a *account) SetTenantedDeploymentMode(mode TenantedDeploymentMode) {
+	a.TenantedDeploymentMode = mode
+}
+
+// SetTenantIDs sets the tenant IDs associated with this account.
+func (a *account) SetTenantIDs(tenantIds []string) {
+	a.TenantIDs = tenantIds
+}
+
+// SetTenantTags sets the tenant tags associated with this account.
+func (a *account) SetTenantTags(tenantTags []string) {
+	a.TenantTags = tenantTags
 }
 
 // Validate checks the state of the account and returns an error if

@@ -6,3 +6,12 @@ type ConnectivityPolicy struct {
 	SkipMachineBehavior         SkipMachineBehavior `json:"SkipMachineBehavior,omitempty"`
 	TargetRoles                 []string            `json:"TargetRoles,omitempty"`
 }
+
+func NewConnectivityPolicy() *ConnectivityPolicy {
+	return &ConnectivityPolicy{
+		AllowDeploymentsToNoTargets: false,
+		ExcludeUnhealthyTargets:     false,
+		SkipMachineBehavior:         "None",
+		TargetRoles:                 []string{},
+	}
+}

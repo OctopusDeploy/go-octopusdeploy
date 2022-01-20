@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -12,6 +13,37 @@ func newDeploymentProcessService(sling *sling.Sling, uriTemplate string) *deploy
 	return &deploymentProcessService{
 		service: newService(ServiceDeploymentProcessesService, sling, uriTemplate),
 	}
+}
+
+// Get returns the deployment process that matches the input project and
+// a git reference. If one cannot be found, it returns nil and an error.
+func (s deploymentProcessService) Get(project *Project, gitRef string) (*DeploymentProcess, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(OperationGet, ParameterProject)
+	}
+
+	if project.PersistenceSettings == nil || project.PersistenceSettings.GetType() != "VersionControlled" {
+		return s.GetByID(project.DeploymentProcessID)
+	}
+
+	gitPersistenceSettings := project.PersistenceSettings.(*GitPersistenceSettings)
+
+	if len(gitRef) <= 0 {
+		gitRef = gitPersistenceSettings.DefaultBranch
+	}
+
+	template, _ := uritemplates.Parse(project.Links["DeploymentProcess"])
+	path, _ := template.Expand(map[string]interface{}{"gitRef": gitRef})
+
+	resp, err := apiGet(s.getClient(), new(DeploymentProcess), path)
+	if err != nil {
+		return nil, err
+	}
+
+	deploymentProcess := resp.(*DeploymentProcess)
+	deploymentProcess.Branch = gitRef
+
+	return deploymentProcess, err
 }
 
 // GetAll returns all deployment processes. If none can be found or an error
@@ -43,12 +75,11 @@ func (s deploymentProcessService) GetByID(id string) (*DeploymentProcess, error)
 
 // Update modifies a deployment process based on the one provided as input.
 func (s deploymentProcessService) Update(deploymentProcess *DeploymentProcess) (*DeploymentProcess, error) {
-	path, err := getUpdatePath(s, deploymentProcess)
-	if err != nil {
-		return nil, err
+	if deploymentProcess == nil {
+		return nil, createInvalidParameterError(OperationUpdate, "deploymentProcess")
 	}
 
-	resp, err := apiUpdate(s.getClient(), deploymentProcess, new(DeploymentProcess), path)
+	resp, err := apiUpdate(s.getClient(), deploymentProcess, new(DeploymentProcess), deploymentProcess.Links["Self"])
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,7 @@ type DeploymentProcesses struct {
 }
 
 type DeploymentProcess struct {
+	Branch         string           `json:"-"`
 	LastSnapshotID string           `json:"LastSnapshotId,omitempty"`
 	ProjectID      string           `json:"ProjectId,omitempty"`
 	SpaceID        string           `json:"SpaceId,omitempty"`

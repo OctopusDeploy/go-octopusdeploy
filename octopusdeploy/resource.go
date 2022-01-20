@@ -45,6 +45,27 @@ func (r *resource) GetLinks() map[string]string {
 	return r.Links
 }
 
+// SetID sets the ID value of the resource.
+func (r *resource) SetID(id string) {
+	r.ID = id
+}
+
+// SetLinks sets the associated links with the value of this resource.
+func (r *resource) SetLinks(links map[string]string) {
+	r.Links = links
+}
+
+// SetModifiedBy set the name of the account that modified the value of
+// this resource.
+func (r *resource) SetModifiedBy(modifiedBy string) {
+	r.ModifiedBy = modifiedBy
+}
+
+// SetModifiedOn set the time when the value of this resource was changed.
+func (r *resource) SetModifiedOn(modifiedOn *time.Time) {
+	r.ModifiedOn = modifiedOn
+}
+
 // Validate checks the state of the resource and returns an error if invalid.
 func (r *resource) Validate() error {
 	return validator.New().Struct(r)

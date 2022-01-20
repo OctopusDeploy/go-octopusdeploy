@@ -216,7 +216,7 @@ func UpdateAccount(t *testing.T, client *octopusdeploy.Client, account octopusde
 	require.NoError(t, err)
 	require.NotNil(t, updatedAccount)
 
-	return updatedAccount.(octopusdeploy.IAccount)
+	return updatedAccount
 }
 
 func ValidateAccount(t *testing.T, account octopusdeploy.IAccount) {

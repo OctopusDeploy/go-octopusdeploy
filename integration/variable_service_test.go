@@ -53,6 +53,9 @@ func TestVariableService(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -61,7 +64,7 @@ func TestVariableService(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -93,6 +96,9 @@ func TestVariableServiceGetByID(t *testing.T) {
 	apiError := err.(*octopusdeploy.APIError)
 	require.Equal(t, apiError.StatusCode, 404)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -101,7 +107,7 @@ func TestVariableServiceGetByID(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
@@ -127,6 +133,9 @@ func TestVariableServiceDeleteSingle(t *testing.T) {
 	apiError := err.(*octopusdeploy.APIError)
 	require.Equal(t, apiError.StatusCode, 404)
 
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
 	lifecycle := CreateTestLifecycle(t, client)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
@@ -135,7 +144,7 @@ func TestVariableServiceDeleteSingle(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
 
-	project := CreateTestProject(t, client, lifecycle, projectGroup)
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 

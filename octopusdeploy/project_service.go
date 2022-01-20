@@ -1,9 +1,12 @@
 package octopusdeploy
 
 import (
+	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -27,6 +30,57 @@ func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string,
 	projectService.service = newService(ServiceProjectService, sling, uriTemplate)
 
 	return projectService
+}
+
+// Add creates a new project.
+func (s projectService) Add(project *Project) (*Project, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(OperationUpdate, ParameterProject)
+	}
+
+	path, err := getAddPath(s, project)
+	if err != nil {
+		return nil, err
+	}
+
+	// Remove persistence settings if specified; this will generate an error from
+	// the endpoint if specified. Persistence settings are available AFTER the project
+	// has been created or converted.
+	project.PersistenceSettings = nil
+
+	resp, err := apiAdd(s.getClient(), project, new(Project), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*Project), nil
+}
+
+// ConvertToVcs converts an input project to use a version-control system (VCS) for its persistence.
+func (s projectService) ConvertToVcs(project *Project, versionControlSettings *VersionControlSettings) (*Project, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(OperationUpdate, ParameterProject)
+	}
+
+	if versionControlSettings == nil {
+		return nil, fmt.Errorf("input parameter (versionControlSettings) is nil")
+	}
+
+	if project.Links == nil {
+		return nil, fmt.Errorf("the state of the input project is not valid; links collection is empty")
+	}
+
+	if len(project.Links["ConvertToVcs"]) == 0 {
+		return nil, fmt.Errorf("the state of the input project is not valid; cannot resolve ConvertToVcs link")
+	}
+
+	convertToVcs := NewConvertToVcs(project.Name, versionControlSettings)
+	_, err := apiAddWithResponseStatus(s.getClient(), convertToVcs, new(ConvertToVcsResponse), project.Links["ConvertToVcs"], http.StatusOK)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.GetByID(project.GetID())
 }
 
 // Get returns a collection of projects based on the criteria defined by its
@@ -166,14 +220,24 @@ func (s projectService) GetReleases(project *Project) ([]*Release, error) {
 	return p, nil
 }
 
-// Add creates a new project.
-func (s projectService) Add(resource *Project) (*Project, error) {
-	path, err := getAddPath(s, resource)
+// Update modifies a project based on the one provided as input.
+func (s projectService) Update(project *Project) (*Project, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(OperationUpdate, ParameterProject)
+	}
+
+	if project.PersistenceSettings != nil && project.PersistenceSettings.GetType() == "VersionControlled" {
+		defaultBranch := project.PersistenceSettings.(*GitPersistenceSettings).DefaultBranch
+		return s.UpdateWithGitRef(project, defaultBranch)
+	}
+
+	path, err := getUpdatePath(s, project)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(Project), path)
+	project.Links = nil
+	resp, err := apiUpdate(s.getClient(), project, new(Project), path)
 	if err != nil {
 		return nil, err
 	}
@@ -181,13 +245,28 @@ func (s projectService) Add(resource *Project) (*Project, error) {
 	return resp.(*Project), nil
 }
 
-// Update modifies a project based on the one provided as input.
-func (s projectService) Update(project *Project) (*Project, error) {
-	path, err := getUpdatePath(s, project)
-	if err != nil {
-		return nil, err
+// Update modifies a Git-based project based on the one provided as input.
+func (s projectService) UpdateWithGitRef(project *Project, gitRef string) (*Project, error) {
+	if project == nil {
+		return nil, createInvalidParameterError(OperationGet, ParameterProject)
 	}
 
+	if project.PersistenceSettings == nil || project.PersistenceSettings.GetType() != "VersionControlled" {
+		return s.Update(project)
+	}
+
+	if len(gitRef) == 0 {
+		gitRef = project.PersistenceSettings.(*GitPersistenceSettings).DefaultBranch
+	}
+
+	if len(gitRef) == 0 {
+		return nil, fmt.Errorf("the gitRef is empty")
+	}
+
+	template, _ := uritemplates.Parse(project.Links["Self"])
+	path, _ := template.Expand(map[string]interface{}{"gitRef": gitRef})
+
+	project.Links = nil
 	resp, err := apiUpdate(s.getClient(), project, new(Project), path)
 	if err != nil {
 		return nil, err

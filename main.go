@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
 	"os"
 
@@ -12,10 +11,10 @@ import (
 var octopusURL = os.Getenv("OCTOPUS_URL")
 var apiKey = os.Getenv("OCTOPUS_APIKEY")
 var testSpaceName = "Test Space"
+var spaceID = "Spaces-1"
 var projectName = "Test Project"
 var lifecycleID = "Lifecycles-1"
 var projectGroupID = "ProjectGroups-1"
-var httpClient http.Client
 
 // OutputAsJSON outputs a resource to the console as JSON.
 func OutputAsJSON(resource interface{}, err error) {
@@ -57,8 +56,9 @@ func CreateSpace(client *octopusdeploy.Client) (*octopusdeploy.Space, error) {
 
 		if err != nil {
 			return nil, err
-
 		}
+
+		fmt.Printf("%v spaces found.", len(spaces.Items))
 	}
 
 	jsonData := octopusdeploy.PrettyJSON(space)
@@ -76,7 +76,7 @@ func createProject(client *octopusdeploy.Client) *octopusdeploy.Project {
 		os.Exit(3)
 	}
 
-	project := octopusdeploy.NewProject(projectName, lifecycleID, projectGroupID)
+	project := octopusdeploy.NewProject(spaceID, projectName, lifecycleID, projectGroupID)
 	project, err := client.Projects.Add(project)
 
 	if err != nil {
@@ -211,7 +211,7 @@ func main() {
 
 	fmt.Println("Space deleted.")
 
-	p := octopusdeploy.NewProject("Test Project GoLang2", "Lifecycles-1", "ProjectGroups-1")
+	p := octopusdeploy.NewProject("Spaces-1", "Test Project GoLang2", "Lifecycles-1", "ProjectGroups-1")
 
 	if client.Projects == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client.Projects (nil)"))
