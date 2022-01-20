@@ -286,15 +286,6 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 		require.NotNil(t, namedAccounts)
 		IsEqualAccounts(t, account, namedAccounts.Items[0])
 
-		query = octopusdeploy.AccountsQuery{
-			IDs:  []string{account.GetID()},
-			Take: 1,
-		}
-		namedAccounts, err = client.Accounts.Get(query)
-		require.NoError(t, err)
-		require.NotNil(t, namedAccounts)
-		IsEqualAccounts(t, account, namedAccounts.Items[0])
-
 		accountToCompare, err := client.Accounts.GetByID(account.GetID())
 		require.NoError(t, err)
 		require.NotNil(t, accountToCompare)
