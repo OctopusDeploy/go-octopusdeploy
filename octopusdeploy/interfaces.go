@@ -2,7 +2,7 @@ package octopusdeploy
 
 import "time"
 
-// IEndpoint defines the interface for accounts.
+// IAccount defines the interface for accounts.
 type IAccount interface {
 	GetAccountType() AccountType
 	GetDescription() string
