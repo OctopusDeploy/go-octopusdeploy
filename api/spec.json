@@ -1592,7 +1592,8 @@
         "Ftp",
         "AzureCloudService",
         "AzureServiceFabricCluster",
-        "Kubernetes"
+        "Kubernetes",
+        "StepPackages"
       ],
       "type": "string"
     },

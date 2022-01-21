@@ -218,6 +218,13 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		m.Endpoint = listeningTentacleEndpoint
+	case "StepPackage":
+		var awsecsEndpoint *AmazonECSEndpoint
+		err := json.Unmarshal(*endpoint, &awsecsEndpoint)
+		if err != nil {
+			return err
+		}
+		m.Endpoint = awsecsEndpoint
 	}
 
 	return nil

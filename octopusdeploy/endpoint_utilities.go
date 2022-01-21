@@ -1,6 +1,10 @@
 package octopusdeploy
 
-import "github.com/jinzhu/copier"
+import (
+	"fmt"
+
+	"github.com/jinzhu/copier"
+)
 
 func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	if isNil(endpointResource) {
@@ -11,6 +15,7 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	var err error
 	switch endpointResource.CommunicationStyle {
 	case "AzureCloudService":
+		endpoint = NewAzureCloudServiceEndpoint()
 	case "AzureServiceFabricCluster":
 		endpoint = NewAzureServiceFabricEndpoint()
 	case "AzureWebApp":
@@ -23,6 +28,13 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 		endpoint = NewOfflinePackageDropEndpoint()
 	case "Ssh":
 		endpoint = NewSSHEndpoint(endpointResource.Host, endpointResource.Port, endpointResource.Fingerprint)
+	case "StepPackage":
+		switch endpointResource.DeploymentTargetTypeId {
+		case "aws-ecs-target":
+			endpoint = NewAmazonECSEndpoint()
+		default:
+			return nil, fmt.Errorf("StepPackage deployment target with target type id '%s' is not supported", endpointResource.DeploymentTargetTypeId)
+		}
 	case "TentacleActive":
 		endpoint = NewPollingTentacleEndpoint(endpointResource.URI, endpointResource.Thumbprint)
 	case "TentaclePassive":
@@ -53,7 +65,7 @@ func ToEndpointResource(endpoint IEndpoint) (*EndpointResource, error) {
 }
 
 func ToEndpointArray(endpointResources []*EndpointResource) []IEndpoint {
-	items := []IEndpoint{}
+	var items []IEndpoint
 	for _, endpointResource := range endpointResources {
 		endpoint, err := ToEndpoint(endpointResource)
 		if err != nil {

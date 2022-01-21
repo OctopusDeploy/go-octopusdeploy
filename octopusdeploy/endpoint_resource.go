@@ -21,9 +21,10 @@ type EndpointResource struct {
 	CloudServiceName                     string                         `json:"CloudServiceName"`
 	ClusterCertificate                   string                         `json:"ClusterCertificate,omitempty"`
 	ClusterURL                           *url.URL                       `json:"ClusterUrl" validate:"required,url"`
-	CommunicationStyle                   string                         `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
+	CommunicationStyle                   string                         `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive StepPackage"`
 	ConnectionEndpoint                   string                         `json:"ConnectionEndpoint,omitempty"`
 	Container                            *DeploymentActionContainer     `json:"Container,omitempty"`
+	Inputs                               *StepPackageInputs             `json:"Inputs,omitempty"`
 	DefaultWorkerPoolID                  string                         `json:"DefaultWorkerPoolId"`
 	Destination                          *OfflinePackageDropDestination `json:"Destination"`
 	DotNetCorePlatform                   string                         `json:"DotNetCorePlatform,omitempty"`
@@ -48,6 +49,10 @@ type EndpointResource struct {
 	URI                                  *url.URL                       `json:"Uri" validate:"required,uri"`
 	WebAppName                           string                         `json:"WebAppName,omitempty"`
 	WebAppSlotName                       string                         `json:"WebAppSlotName"`
+	ClusterName                          string                         `json:"clusterName,omitempty"`
+	Region                               string                         `json:"region,omitempty"`
+	AwsAccountID                         string                         `json:"awsAccount,omitempty"`
+	DeploymentTargetTypeId               string                         `json:"DeploymentTargetTypeId,omitempty"`
 
 	resource
 }
