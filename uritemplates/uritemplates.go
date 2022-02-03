@@ -54,25 +54,35 @@ func escape(s string, allowReserved bool) (escaped string) {
 	return escaped
 }
 
+type UriTemplate interface {
+	Expand(value interface{}) (string, error)
+	String() string
+}
+
 // A UriTemplate is a parsed representation of a URI template.
-type UriTemplate struct {
+type uriTemplate struct {
 	raw   string
 	parts []templatePart
+	UriTemplate
+}
+
+func Parse(rawtemplate string) (template UriTemplate, err error) {
+	return parse(rawtemplate)
 }
 
 // Parse parses a URI template string into a UriTemplate object.
-func Parse(rawtemplate string) (template *UriTemplate, err error) {
-	template = new(UriTemplate)
-	template.raw = rawtemplate
+func parse(rawtemplate string) (template *uriTemplate, err error) {
+	t := uriTemplate{}
+	t.raw = rawtemplate
 	split := strings.Split(rawtemplate, "{")
-	template.parts = make([]templatePart, len(split)*2-1)
+	t.parts = make([]templatePart, len(split)*2-1)
 	for i, s := range split {
 		if i == 0 {
 			if strings.Contains(s, "}") {
 				err = errors.New("unexpected }")
 				break
 			}
-			template.parts[i].raw = s
+			t.parts[i].raw = s
 		} else {
 			subsplit := strings.Split(s, "}")
 			if len(subsplit) != 2 {
@@ -80,20 +90,20 @@ func Parse(rawtemplate string) (template *UriTemplate, err error) {
 				break
 			}
 			expression := subsplit[0]
-			template.parts[i*2-1], err = parseExpression(expression)
+			t.parts[i*2-1], err = parseExpression(expression)
 			if err != nil {
 				break
 			}
-			template.parts[i*2].raw = subsplit[1]
+			t.parts[i*2].raw = subsplit[1]
 		}
 	}
 	if err != nil {
-		template = nil
+		return nil, err
 	}
-	return template, err
+	return &t, nil
 }
 
-func (t UriTemplate) String() string {
+func (t uriTemplate) String() string {
 	return t.raw
 }
 
@@ -189,7 +199,7 @@ func parseTerm(term string) (result templateTerm, err error) {
 }
 
 // Names returns the names of all variables within the template.
-func (self *UriTemplate) Names() []string {
+func (self uriTemplate) Names() []string {
 	names := make([]string, 0, len(self.parts))
 
 	for _, p := range self.parts {
@@ -206,7 +216,7 @@ func (self *UriTemplate) Names() []string {
 }
 
 // Expand expands a URI template with a set of values to produce a string.
-func (self *UriTemplate) Expand(value interface{}) (string, error) {
+func (self uriTemplate) Expand(value interface{}) (string, error) {
 	values, ismap := value.(map[string]interface{})
 	if !ismap {
 		if m, ismap := struct2map(value); !ismap {

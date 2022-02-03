@@ -29,7 +29,7 @@ func TestIsAPIKey(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			testResult := isAPIKey(tc.test)
-			assert.Equal(t, testResult, tc.isValid)
+			assert.Equal(t, tc.isValid, testResult)
 		})
 	}
 }

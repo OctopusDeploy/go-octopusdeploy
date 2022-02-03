@@ -49,7 +49,24 @@ func TestNewClient(t *testing.T) {
 
 			assert.NoError(t, err)
 			assert.NotNil(t, client)
-			assert.NotNil(t, client.Accounts)
+		})
+	}
+}
+
+func TestPluralize(t *testing.T) {
+	testCases := []struct {
+		name           string
+		test           interface{}
+		expectedResult string
+	}{
+		{"WithResourceSuffix", Space{}, "spaces"},
+		{"WithoutResourceSuffix", AccountResource{}, "accounts"},
+		{"PagedResults", Teams{}, "teams"},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			testResult := pluralize(tc.test)
+			assert.Equal(t, tc.expectedResult, testResult)
 		})
 	}
 }

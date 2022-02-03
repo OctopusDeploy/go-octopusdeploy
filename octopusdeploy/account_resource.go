@@ -33,7 +33,7 @@ type AccountResource struct {
 	ResourceManagerEndpoint string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
 	SecretKey               *SensitiveValue        `json:"SecretKey,omitempty"`
 	StorageEndpointSuffix   string                 `json:"ServiceManagementEndpointSuffix,omitempty"`
-	SpaceID                 string                 `json:"SpaceId,omitempty"`
+	SpaceID                 string                 `json:"SpaceId"`
 	SubscriptionID          *uuid.UUID             `json:"SubscriptionNumber,omitempty"`
 	TenantedDeploymentMode  TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
 	TenantID                *uuid.UUID             `json:"TenantId,omitempty"`
@@ -46,8 +46,9 @@ type AccountResource struct {
 }
 
 // NewAccount creates and initializes an account resource with a name and type.
-func NewAccountResource(name string, accountType AccountType) *AccountResource {
+func NewAccountResource(spaceID string, name string, accountType AccountType) *AccountResource {
 	return &AccountResource{
+		SpaceID:                spaceID,
 		AccountType:            accountType,
 		Name:                   name,
 		TenantedDeploymentMode: "Untenanted",

@@ -1,19 +1,24 @@
 package octopusdeploy
 
 import (
-	"github.com/dghubble/sling"
+	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 )
+
+const accountsV1BasePath = "accounts"
 
 // accountService handles communication with account-related methods of the
 // Octopus API.
 type accountService struct {
+	spaceScopedService
 	canDeleteService
 }
 
-// newAccountService returns an account service with a preconfigured client.
-func newAccountService(sling *sling.Sling, uriTemplate string) *accountService {
-	accountService := &accountService{}
-	accountService.service = newService(ServiceAccountService, sling, uriTemplate)
+// NewAccountService returns an account service with a preconfigured client.
+func NewAccountService(client SpaceScopedClient) *accountService {
+	accountService := &accountService{
+		spaceScopedService: newSpaceScopedService(ServiceAccountService, client),
+	}
 
 	return accountService
 }
@@ -24,12 +29,12 @@ func (s *accountService) Add(account IAccount) (IAccount, error) {
 		return nil, createInvalidParameterError(OperationAdd, ParameterAccount)
 	}
 
-	accountResource, err := ToAccountResource(account)
+	accountResource, err := ToAccountResource(s.getClient(), account)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := apiAdd(s.getClient(), accountResource, new(AccountResource), s.BasePath)
+	response, err := s.client.apiAdd(accountResource, new(AccountResource))
 	if err != nil {
 		return nil, err
 	}
@@ -37,24 +42,26 @@ func (s *accountService) Add(account IAccount) (IAccount, error) {
 	return ToAccount(response.(*AccountResource))
 }
 
-// Get returns a collection of accounts based on the criteria defined by its
+// Query returns a collection of accounts based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s accountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) {
+func (s accountService) Query(accountsQuery ...AccountsQuery) (*Accounts, error) {
+	template := uritemplates.Parse(fmt.Sprintf("%s{/id}{?skip,take,ids,partialName,accountType}", s.BasePath))
+
 	values := make(map[string]interface{})
-	path, err := s.URITemplate.Expand(values)
+	path, err := s.uriTemplate.Expand(values)
 	if err != nil {
 		return &Accounts{}, err
 	}
 
 	if accountsQuery != nil {
-		path, err = s.URITemplate.Expand(accountsQuery[0])
+		path, err = s.uriTemplate.Expand(accountsQuery[0])
 		if err != nil {
 			return &Accounts{}, err
 		}
 	}
 
-	response, err := apiGet(s.getClient(), new(AccountResources), path)
+	response, err := s.client.apiQuery(new(AccountResources), path)
 	if err != nil {
 		return &Accounts{}, err
 	}
@@ -62,28 +69,10 @@ func (s accountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) {
 	return ToAccounts(response.(*AccountResources)), nil
 }
 
-// GetAll returns all accounts. If none are found or an error occurs, it
-// returns an empty collection.
-func (s *accountService) GetAll() ([]IAccount, error) {
-	items := []*AccountResource{}
-	path, err := getAllPath(s)
-	if err != nil {
-		return ToAccountArray(items), err
-	}
-
-	_, err = apiGet(s.getClient(), &items, path)
-	return ToAccountArray(items), err
-}
-
 // GetByID returns the account that matches the input ID. If one is not found,
 // it returns nil and an error.
 func (s accountService) GetByID(id string) (IAccount, error) {
-	path, err := getByIDPath(s, id)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.getClient(), new(AccountResource), path)
+	resp, err := s.client.apiGetByID(new(AccountResource), id)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +83,7 @@ func (s accountService) GetByID(id string) (IAccount, error) {
 // GetUsages lists the projects and deployments which are using an account.
 func (s *accountService) GetUsages(account IAccount) (*AccountUsage, error) {
 	path := account.GetLinks()[linkUsages]
-	resp, err := apiGet(s.getClient(), new(AccountUsage), path)
+	resp, err := s.client.apiGet(new(AccountUsage), path)
 	if err != nil {
 		return nil, err
 	}
@@ -108,17 +97,12 @@ func (s *accountService) Update(account IAccount) (IAccount, error) {
 		return nil, createInvalidParameterError(OperationUpdate, ParameterAccount)
 	}
 
-	path, err := getUpdatePath(s, account)
+	accountResource, err := ToAccountResource(s.client, account)
 	if err != nil {
 		return nil, err
 	}
 
-	accountResource, err := ToAccountResource(account)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiUpdate(s.getClient(), accountResource, new(AccountResource), path)
+	resp, err := s.client.apiUpdate(accountResource, new(AccountResource))
 	if err != nil {
 		return nil, err
 	}

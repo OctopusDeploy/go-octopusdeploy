@@ -95,9 +95,7 @@ type IResource interface {
 	GetID() string
 	GetModifiedBy() string
 	GetModifiedOn() *time.Time
-	GetLinks() map[string]string
 	SetID(string)
-	SetLinks(map[string]string)
 	SetModifiedBy(string)
 	SetModifiedOn(*time.Time)
 	Validate() error

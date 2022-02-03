@@ -1,14 +1,10 @@
 package octopusdeploy
 
-import (
-	"github.com/dghubble/sling"
-)
-
 type rootService struct {
 	service
 }
 
-func newRootService(sling *sling.Sling, uriTemplate string) *rootService {
+func newRootService(client AdminClient) *rootService {
 	return &rootService{
 		service: newService(ServiceRootService, sling, uriTemplate),
 	}

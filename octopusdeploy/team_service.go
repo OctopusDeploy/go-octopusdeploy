@@ -1,17 +1,21 @@
 package octopusdeploy
 
 import (
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
-	"github.com/dghubble/sling"
 )
 
+const teamsV1BasePath = "teams"
+
 type teamService struct {
+	adminService
 	canDeleteService
 }
 
-func newTeamService(sling *sling.Sling, uriTemplate string) *teamService {
-	teamService := &teamService{}
-	teamService.service = newService(ServiceTeamService, sling, uriTemplate)
+func NewTeamService(client AdminClient) *teamService {
+	teamService := &teamService{
+		adminService: newAdminService(ServiceTeamService, client),
+	}
 
 	return teamService
 }
@@ -21,7 +25,7 @@ func (s teamService) getPagedResponse(path string) ([]*Team, error) {
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(Teams), path)
+		resp, err := s.client.apiGetPaged(new(Teams))
 		if err != nil {
 			return resources, err
 		}
@@ -36,12 +40,8 @@ func (s teamService) getPagedResponse(path string) ([]*Team, error) {
 
 // Add creates a new team.
 func (s teamService) Add(resource *Team) (*Team, error) {
-	path, err := getAddPath(s, resource)
-	if err != nil {
-		return nil, err
-	}
 
-	resp, err := apiAdd(s.getClient(), resource, new(Team), path)
+	resp, err := s.client.apiAdd(resource, new(Team))
 	if err != nil {
 		return nil, err
 	}
@@ -61,20 +61,20 @@ func (s teamService) Delete(team *Team) error {
 		return createBuiltInTeamsCannotDeleteError()
 	}
 
-	path := s.getBasePath() + "/" + team.GetID()
-	return apiDelete(s.getClient(), path)
+	return s.client.apiDelete(team.GetID())
 }
 
-// Get returns a collection of teams based on the criteria defined by its input
+// Query returns a collection of teams based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
-func (s teamService) Get(teamsQuery TeamsQuery) (*Teams, error) {
+func (s teamService) Query(teamsQuery TeamsQuery) (*Teams, error) {
+	template, err := uritemplates.Parse(fmt.Sprintf("%s{?skip,take,ids,partialName,spaces,includeSystem}", s.BasePath))
 	path, err := s.getURITemplate().Expand(teamsQuery)
 	if err != nil {
 		return &Teams{}, err
 	}
 
-	response, err := apiGet(s.getClient(), new(Teams), path)
+	response, err := s.client.apiQuery(new(Teams), template)
 	if err != nil {
 		return &Teams{}, err
 	}
@@ -86,24 +86,19 @@ func (s teamService) Get(teamsQuery TeamsQuery) (*Teams, error) {
 // returns an empty collection.
 func (s teamService) GetAll() ([]*Team, error) {
 	items := []*Team{}
-	path, err := getAllPath(s)
+	path, err := s.getAllPath()
 	if err != nil {
 		return items, err
 	}
 
-	_, err = apiGet(s.getClient(), &items, path)
+	_, err = s.client.apiGet(&items, path)
 	return items, err
 }
 
 // GetByID returns the team that matches the input ID. If one cannot be found,
 // it returns nil and an error.
 func (s teamService) GetByID(id string) (*Team, error) {
-	path, err := getByIDPath(s, id)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := apiGet(s.getClient(), new(Team), path)
+	resp, err := s.client.apiGetByID(new(Team), id)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +109,7 @@ func (s teamService) GetByID(id string) (*Team, error) {
 // GetByPartialName performs a lookup and returns teams with a matching partial
 // name.
 func (s teamService) GetByPartialName(name string) ([]*Team, error) {
-	path, err := getByPartialNamePath(s, name)
+	path, err := s.getByPartialNamePath(name)
 	if err != nil {
 		return []*Team{}, err
 	}
@@ -124,12 +119,12 @@ func (s teamService) GetByPartialName(name string) ([]*Team, error) {
 
 // Update modifies a team based on the one provided as input.
 func (s teamService) Update(team *Team) (*Team, error) {
-	path, err := getUpdatePath(s, team)
+	path, err := s.getUpdatePath(team)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := apiUpdate(s.getClient(), team, new(Team), path)
+	resp, err := s.client.apiUpdate(team, new(Team), path)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +136,7 @@ func (s teamService) GetScopedUserRoles(team Team, query SkipTakeQuery) (*Scoped
 	template, _ := uritemplates.Parse(team.Links["ScopedUserRoles"])
 	path, _ := template.Expand(query)
 
-	resp, err := apiGet(s.getClient(), new(ScopedUserRoles), path)
+	resp, err := s.client.apiGet(new(ScopedUserRoles), path)
 	if err != nil {
 		return nil, err
 	}

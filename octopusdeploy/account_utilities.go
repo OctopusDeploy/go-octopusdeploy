@@ -61,12 +61,16 @@ func ToAccounts(accountResources *AccountResources) *Accounts {
 	}
 }
 
-func ToAccountResource(account IAccount) (*AccountResource, error) {
+func ToAccountResource(client SpaceScopedClient, account IAccount) (*AccountResource, error) {
 	if isNil(account) {
 		return nil, createInvalidParameterError("ToAccountResource", ParameterAccount)
 	}
 
-	accountResource := NewAccountResource(account.GetName(), account.GetAccountType())
+	spaceID, err := getSpaceIDForResource(account, client)
+	if err != nil {
+		return nil, err
+	}
+	accountResource := NewAccountResource(spaceID, account.GetName(), account.GetAccountType())
 
 	if err := copier.Copy(&accountResource, account); err != nil {
 		return nil, err

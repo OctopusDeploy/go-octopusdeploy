@@ -3,22 +3,21 @@ package octopusdeploy
 import (
 	"testing"
 
-	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/require"
 )
 
-func createRootService(t *testing.T) *rootService {
-	service := newRootService(nil, TestURIRoot)
+func createGlobalRootService(t *testing.T) *globalRootService {
+	service := newGlobalRootService(nil, TestURIRoot)
 	testNewService(t, service, TestURIRoot, ServiceRootService)
 	return service
 }
 
 func BenchmarkRootServiceGet(b *testing.B) {
-	newRootService(nil, TestURIRoot).Get()
+	newGlobalRootService(nil, TestURIRoot).Get()
 }
 
 func TestRootServiceGet(t *testing.T) {
-	service := createRootService(t)
+	service := createGlobalRootService(t)
 	require.NotNil(t, service)
 
 	resource, err := service.Get()
@@ -27,15 +26,15 @@ func TestRootServiceGet(t *testing.T) {
 }
 
 func TestRootServiceNew(t *testing.T) {
-	ServiceFunction := newRootService
-	client := &sling.Sling{}
+	ServiceFunction := newGlobalRootService
+	client := &Client{}
 	uriTemplate := emptyString
 	ServiceName := ServiceRootService
 
 	testCases := []struct {
 		name        string
-		f           func(*sling.Sling, string) *rootService
-		client      *sling.Sling
+		f           func(*Client, string) *globalRootService
+		client      *Client
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},

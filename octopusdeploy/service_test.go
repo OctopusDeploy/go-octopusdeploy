@@ -48,7 +48,7 @@ func getClient() *Client {
 	return octopusClient
 }
 
-func testNewService(t *testing.T, service IService, uriTemplate string, ServiceName string) {
+func testNewService(t *testing.T, service Service, uriTemplate string, ServiceName string) {
 	require.NotNil(t, service)
 	require.NotNil(t, service.getClient())
 

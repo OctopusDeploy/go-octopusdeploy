@@ -4,12 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
 	"reflect"
 	"regexp"
 	"strings"
-
-	"github.com/dghubble/sling"
 )
 
 func isNilFixed(i interface{}) bool {
@@ -165,6 +162,20 @@ func isEmpty(s string) bool {
 	return len(strings.TrimSpace(s)) == 0
 }
 
+func getSpaceIDForResource(resource IHasSpace, client SpaceScopedClient) (string, error) {
+	if resource == nil {
+		return emptyString, fmt.Errorf("the resource should never be nil")
+	}
+
+	resourceSpaceID := resource.GetSpaceID()
+
+	if !isEmpty(resourceSpaceID) {
+		return resourceSpaceID, nil
+	}
+
+	return client.GetSpaceID(), nil
+}
+
 func isAPIKey(apiKey string) bool {
 	if len(apiKey) < 5 {
 		return false
@@ -181,25 +192,6 @@ func PrettyJSON(data interface{}) string {
 
 	encoder.Encode(data)
 	return buffer.String()
-}
-
-func getDefaultClient() *sling.Sling {
-	octopusURL := os.Getenv(clientURLEnvironmentVariable)
-	octopusAPIKey := os.Getenv(clientAPIKeyEnvironmentVariable)
-
-	// NOTE: You can direct traffic through a proxy trace like Fiddler
-	// Everywhere by preconfiguring the client to route traffic through a
-	// proxy.
-
-	// proxyStr := "http://127.0.0.1:5555"
-	// proxyURL, _ := url.Parse(proxyStr)
-
-	// tr := &http.Transport{
-	// 	Proxy: http.ProxyURL(proxyURL),
-	// }
-	// httpClient := http.Client{Transport: tr}
-
-	return sling.New().Client(nil).Base(octopusURL).Set(clientAPIKeyHTTPHeader, octopusAPIKey)
 }
 
 func trimTemplate(uri string) string {

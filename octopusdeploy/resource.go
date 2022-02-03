@@ -15,12 +15,10 @@ type resource struct {
 	ID         string            `json:"Id,omitempty"`
 	ModifiedBy string            `json:"LastModifiedBy,omitempty"`
 	ModifiedOn *time.Time        `json:"LastModifiedOn,omitempty"`
-	Links      map[string]string `json:"Links,omitempty"`
 }
 
 func newResource() *resource {
 	return &resource{
-		Links: map[string]string{},
 	}
 }
 
@@ -40,19 +38,9 @@ func (r *resource) GetModifiedOn() *time.Time {
 	return r.ModifiedOn
 }
 
-// GetLinks returns the associated links with the value of this resource.
-func (r *resource) GetLinks() map[string]string {
-	return r.Links
-}
-
 // SetID sets the ID value of the resource.
 func (r *resource) SetID(id string) {
 	r.ID = id
-}
-
-// SetLinks sets the associated links with the value of this resource.
-func (r *resource) SetLinks(links map[string]string) {
-	r.Links = links
 }
 
 // SetModifiedBy set the name of the account that modified the value of

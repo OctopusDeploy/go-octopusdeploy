@@ -138,4 +138,4 @@ func (s machineService) Update(resource *DeploymentTarget) (*DeploymentTarget, e
 	return resp.(*DeploymentTarget), nil
 }
 
-var _ IService = &machineService{}
+var _ Service = &machineService{}
