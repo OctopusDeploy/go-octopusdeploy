@@ -7,12 +7,12 @@ type TenantVariables struct {
 	TenantID         string                     `json:"TenantId,omitempty"`
 	TenantName       string                     `json:"TenantName,omitempty"`
 
-	resource
+	Resource
 }
 
 func NewTenantVariables(tenantID string) *TenantVariables {
 	return &TenantVariables{
 		TenantID: tenantID,
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

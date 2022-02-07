@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -9,7 +10,7 @@ import (
 
 func createSpaceService(t *testing.T) *spaceService {
 	service := newSpaceService(nil, TestURISpaces, TestURISpaceHome)
-	testNewService(t, service, TestURISpaces, ServiceSpaceService)
+	services.testNewService(t, service, TestURISpaces, ServiceSpaceService)
 	return service
 }
 
@@ -44,8 +45,8 @@ func TestSpaceServiceParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", services.emptyString},
+		{"Whitespace", services.whitespaceString},
 		{"InvalidID", getRandomName()},
 	}
 	for _, tc := range testCases {
@@ -53,7 +54,7 @@ func TestSpaceServiceParameters(t *testing.T) {
 			service := createSpaceService(t)
 			require.NotNil(t, service)
 
-			if isEmpty(tc.parameter) {
+			if IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
 				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
@@ -76,8 +77,8 @@ func TestSpaceServiceParameters(t *testing.T) {
 func TestSpaceServiceNew(t *testing.T) {
 	ServiceFunction := newSpaceService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	homePath := emptyString
+	uriTemplate := services.emptyString
+	homePath := services.emptyString
 	ServiceName := ServiceSpaceService
 
 	testCases := []struct {
@@ -88,13 +89,13 @@ func TestSpaceServiceNew(t *testing.T) {
 		homePath    string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, homePath},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, homePath},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, homePath},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, homePath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, homePath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.homePath)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

@@ -1,14 +1,17 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type subscriptionService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newSubscriptionService(sling *sling.Sling, uriTemplate string) *subscriptionService {
 	subscriptionService := &subscriptionService{}
-	subscriptionService.service = newService(ServiceSubscriptionService, sling, uriTemplate)
+	subscriptionService.service = services.newService(ServiceSubscriptionService, sling, uriTemplate)
 
 	return subscriptionService
 }

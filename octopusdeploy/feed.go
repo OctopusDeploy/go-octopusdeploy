@@ -14,7 +14,7 @@ type Feed struct {
 	Password                          *SensitiveValue `json:"Password,omitempty"`
 	Username                          string          `json:"Username,omitempty"`
 
-	resource
+	Resource
 }
 
 type Feeds struct {
@@ -22,13 +22,13 @@ type Feeds struct {
 	PagedResults
 }
 
-// newFeed creates and initializes a feed resource.
+// newFeed creates and initializes a feed Resource.
 func newFeed(name string, feedType FeedType) *Feed {
 	return &Feed{
 		FeedType:                          feedType,
 		Name:                              name,
 		PackageAcquisitionLocationOptions: []string{},
-		resource:                          *newResource(),
+		Resource:                          *newResource(),
 	}
 }
 

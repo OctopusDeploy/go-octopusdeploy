@@ -26,7 +26,7 @@ func ValidateStringInSlice(str string, list []string) bool {
 
 // ValidatePropertyValues returns an error if the given string is not in a slice of strings
 func ValidatePropertyValues(propertyName string, propertyValue string, validValues []string) error {
-	if isEmpty(propertyName) {
+	if IsEmpty(propertyName) {
 		return createInvalidParameterError("ValidatePropertyValues", "propertyName")
 	}
 
@@ -39,7 +39,7 @@ func ValidatePropertyValues(propertyName string, propertyValue string, validValu
 
 // ValidateRequiredPropertyValue returns an error if the property value is empty
 func ValidateRequiredPropertyValue(propertyName string, propertyValue string) error {
-	if isEmpty(propertyName) {
+	if IsEmpty(propertyName) {
 		return createInvalidParameterError("ValidateRequiredPropertyValue", "propertyName")
 	}
 
@@ -51,7 +51,7 @@ func ValidateRequiredPropertyValue(propertyName string, propertyValue string) er
 }
 
 func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
-	if isEmpty(propertyName) {
+	if IsEmpty(propertyName) {
 		return createInvalidParameterError("ValidateRequiredUUID", "propertyName")
 	}
 
@@ -67,7 +67,7 @@ func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
 }
 
 func ValidateRequiredSensitiveValue(propertyName string, sensitiveValue *SensitiveValue) error {
-	if isEmpty(propertyName) {
+	if IsEmpty(propertyName) {
 		return createInvalidParameterError("ValidateRequiredSensitiveValue", "propertyName")
 	}
 
@@ -103,7 +103,7 @@ func ValidatePropertiesMatch(firstProperty, firstPropertyName, secondProperty, s
 }
 
 func ValidateSemanticVersion(propertyName string, version string) error {
-	if isEmpty(propertyName) {
+	if IsEmpty(propertyName) {
 		return createInvalidParameterError("ValidateSemanticVersion", "propertyName")
 	}
 

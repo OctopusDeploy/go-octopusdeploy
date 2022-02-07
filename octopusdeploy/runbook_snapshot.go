@@ -28,7 +28,7 @@ type RunbookSnapshot struct {
 	SelectedPackages              []*SelectedPackage `json:"SelectedPackages"`
 	SpaceID                       string             `json:"SpaceId,omitempty"`
 
-	resource
+	Resource
 }
 
 // NewRunbookSnapshot creates and initializes a runbook snapshot.
@@ -39,7 +39,7 @@ func NewRunbookSnapshot(name string, projectID string, runbookID string) *Runboo
 		ProjectID:                     projectID,
 		RunbookID:                     runbookID,
 		SelectedPackages:              []*SelectedPackage{},
-		resource:                      *newResource(),
+		Resource:                      *newResource(),
 	}
 }
 

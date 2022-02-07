@@ -1,6 +1,8 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 	uuid "github.com/google/uuid"
@@ -16,22 +18,22 @@ type AzureServicePrincipalAccount struct {
 	SubscriptionID          *uuid.UUID      `validate:"required"`
 	TenantID                *uuid.UUID      `validate:"required"`
 
-	account
+	accounts.account
 }
 
 // NewAzureServicePrincipalAccount creates and initializes an Azure service
 // principal account.
 func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UUID, applicationID uuid.UUID, applicationPassword *SensitiveValue, options ...func(*AzureServicePrincipalAccount)) (*AzureServicePrincipalAccount, error) {
-	if isEmpty(name) {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
+	if IsEmpty(name) {
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
 
 	if applicationPassword == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterApplicationPassword)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterApplicationPassword)
 	}
 
 	account := AzureServicePrincipalAccount{
-		account: *newAccount(name, AccountType("AzureServicePrincipal")),
+		account: *accounts.newAccount(name, accounts.AccountType("AzureServicePrincipal")),
 	}
 
 	// iterate through configuration options and set fields (without checks)
@@ -40,11 +42,11 @@ func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tena
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.AccountType = AccountType("AzureServicePrincipal")
+	account.AccountType = accounts.AccountType("AzureServicePrincipal")
 	account.ApplicationID = &applicationID
 	account.ApplicationPassword = applicationPassword
-	account.ID = emptyString
-	account.ModifiedBy = emptyString
+	account.ID = services.emptyString
+	account.ModifiedBy = services.emptyString
 	account.ModifiedOn = nil
 	account.Name = name
 	account.SubscriptionID = &subscriptionID

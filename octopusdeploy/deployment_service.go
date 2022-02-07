@@ -1,20 +1,21 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 // deploymentService handles communication for any operations in the Octopus
 // API that pertain to deployments.
 type deploymentService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 // newDeploymentService returns a deploymentService with a preconfigured
-// client.
+// Client.
 func newDeploymentService(sling *sling.Sling, uriTemplate string) *deploymentService {
 	deploymentService := &deploymentService{}
-	deploymentService.service = newService(ServiceDeploymentService, sling, uriTemplate)
+	deploymentService.service = services.newService(ServiceDeploymentService, sling, uriTemplate)
 
 	return deploymentService
 }

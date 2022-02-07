@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestUserRole(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.UserRole {
+func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *octopusdeploy.UserRole {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -32,7 +32,7 @@ func CreateTestUserRole(t *testing.T, client *octopusdeploy.Client) *octopusdepl
 	return createdUserRole
 }
 
-func DeleteTestUserRole(t *testing.T, client *octopusdeploy.Client, userRole *octopusdeploy.UserRole) {
+func DeleteTestUserRole(t *testing.T, client *octopusdeploy.client, userRole *octopusdeploy.UserRole) {
 	require.NotNil(t, userRole)
 
 	if client == nil {

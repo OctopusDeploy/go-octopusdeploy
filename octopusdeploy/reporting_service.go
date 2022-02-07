@@ -1,17 +1,20 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type reportingService struct {
 	deploymentsCountedByWeekPath string
 
-	service
+	services.service
 }
 
 func newReportingService(sling *sling.Sling, uriTemplate string, deploymentsCountedByWeekPath string) *reportingService {
 	return &reportingService{
 		deploymentsCountedByWeekPath: deploymentsCountedByWeekPath,
 
-		service: newService(ServiceReportingService, sling, uriTemplate),
+		service: services.newService(ServiceReportingService, sling, uriTemplate),
 	}
 }

@@ -33,7 +33,7 @@ func AssertEqualProjectTriggers(t *testing.T, expected *octopusdeploy.ProjectTri
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project, environment *octopusdeploy.Environment) *octopusdeploy.ProjectTrigger {
+func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.client, project *octopusdeploy.Project, environment *octopusdeploy.Environment) *octopusdeploy.ProjectTrigger {
 	require.NotNil(t, project)
 
 	if client == nil {
@@ -73,7 +73,7 @@ func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.Client, projec
 	return createdProjectTrigger
 }
 
-func DeleteTestProjectTrigger(t *testing.T, client *octopusdeploy.Client, projectTrigger *octopusdeploy.ProjectTrigger) {
+func DeleteTestProjectTrigger(t *testing.T, client *octopusdeploy.client, projectTrigger *octopusdeploy.ProjectTrigger) {
 	require.NotNil(t, projectTrigger)
 
 	if client == nil {

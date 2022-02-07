@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -9,7 +10,7 @@ import (
 
 func createPackageService(t *testing.T) *packageService {
 	service := newPackageService(nil, TestURIPackages, TestURIPackageDeltaSignature, TestURIPackageDeltaUpload, TestURIPackageNotesList, TestURIPackagesBulk, TestURIPackageUpload)
-	testNewService(t, service, TestURIPackages, ServicePackageService)
+	services.testNewService(t, service, TestURIPackages, ServicePackageService)
 	return service
 }
 
@@ -17,11 +18,11 @@ func TestPackageServiceGetByID(t *testing.T) {
 	service := createPackageService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 }
@@ -29,7 +30,7 @@ func TestPackageServiceGetByID(t *testing.T) {
 func TestPackageServiceNew(t *testing.T) {
 	ServiceFunction := newPackageService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServicePackageService
 
 	testCases := []struct {
@@ -39,13 +40,13 @@ func TestPackageServiceNew(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, TestURIPackageDeltaSignature, TestURIPackageDeltaUpload, TestURIPackageNotesList, TestURIPackagesBulk, TestURIPackageUpload)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -55,8 +56,8 @@ func TestPackageServiceParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", services.emptyString},
+		{"Whitespace", services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

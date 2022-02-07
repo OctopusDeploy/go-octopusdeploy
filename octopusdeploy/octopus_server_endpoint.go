@@ -15,7 +15,7 @@ type octopusServerEndpoint struct {
 func NewOctopusServerEndpoint(apiURL *url.URL, apiKey string) (*octopusServerEndpoint, error) {
 	octopusApiURLFromEnvVar := os.Getenv(clientURLEnvironmentVariable)
 	var urlError error
-	if apiURL == nil && !isEmpty(octopusApiURLFromEnvVar) {
+	if apiURL == nil && !IsEmpty(octopusApiURLFromEnvVar) {
 		apiURL, urlError = url.Parse(octopusApiURLFromEnvVar)
 		if urlError != nil {
 			return nil, urlError
@@ -23,7 +23,7 @@ func NewOctopusServerEndpoint(apiURL *url.URL, apiKey string) (*octopusServerEnd
 	}
 
 	octopusAPIKeyFromEnvVar := os.Getenv(clientAPIKeyEnvironmentVariable)
-	if isEmpty(apiKey) && !isEmpty(octopusAPIKeyFromEnvVar) {
+	if IsEmpty(apiKey) && !IsEmpty(octopusAPIKeyFromEnvVar) {
 		apiKey = octopusAPIKeyFromEnvVar
 	}
 
@@ -31,7 +31,7 @@ func NewOctopusServerEndpoint(apiURL *url.URL, apiKey string) (*octopusServerEnd
 		return nil, createInvalidParameterError(clientNewOctopusServerEndpoint, ParameterOctopusURL)
 	}
 
-	if isEmpty(apiKey) {
+	if IsEmpty(apiKey) {
 		return nil, createInvalidParameterError(clientNewOctopusServerEndpoint, ParameterAPIKey)
 	}
 

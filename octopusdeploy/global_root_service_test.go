@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -8,7 +9,7 @@ import (
 
 func createGlobalRootService(t *testing.T) *globalRootService {
 	service := newGlobalRootService(nil, TestURIRoot)
-	testNewService(t, service, TestURIRoot, ServiceRootService)
+	services.testNewService(t, service, TestURIRoot, ServiceRootService)
 	return service
 }
 
@@ -28,23 +29,23 @@ func TestRootServiceGet(t *testing.T) {
 func TestRootServiceNew(t *testing.T) {
 	ServiceFunction := newGlobalRootService
 	client := &Client{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceRootService
 
 	testCases := []struct {
 		name        string
-		f           func(*Client, string) *globalRootService
-		client      *Client
+		f           func(*client, string) *globalRootService
+		client      *client
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

@@ -5,11 +5,11 @@ type OctopusServerNodeResource struct {
 	MaxConcurrentTasks  int32  `json:"MaxConcurrentTasks,omitempty"`
 	Name                string `json:"Name,omitempty"`
 
-	resource
+	Resource
 }
 
 func NewOctopusServerNodeResource() *OctopusServerNodeResource {
 	return &OctopusServerNodeResource{
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

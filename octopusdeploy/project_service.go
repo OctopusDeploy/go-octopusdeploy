@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/http"
 	"net/url"
 	"strings"
@@ -17,7 +18,7 @@ type projectService struct {
 	importProjectsPath        string
 	pulsePath                 string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string, experimentalSummariesPath string, importProjectsPath string, exportProjectsPath string) *projectService {
@@ -27,7 +28,7 @@ func newProjectService(sling *sling.Sling, uriTemplate string, pulsePath string,
 		importProjectsPath:        importProjectsPath,
 		pulsePath:                 pulsePath,
 	}
-	projectService.service = newService(ServiceProjectService, sling, uriTemplate)
+	projectService.service = services.newService(ServiceProjectService, sling, uriTemplate)
 
 	return projectService
 }

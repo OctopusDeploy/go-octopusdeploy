@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type certificateConfigurationService struct {
-	service
+	services.service
 }
 
 func newCertificateConfigurationService(sling *sling.Sling, uriTemplate string) *certificateConfigurationService {
 	return &certificateConfigurationService{
-		service: newService(ServiceCertificateConfigurationService, sling, uriTemplate),
+		service: services.newService(ServiceCertificateConfigurationService, sling, uriTemplate),
 	}
 }

@@ -1,6 +1,7 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,7 +10,7 @@ import (
 
 func TestAccount(t *testing.T) {
 	a := &account{}
-	name := getRandomName()
+	name := octopusdeploy.getRandomName()
 
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
@@ -29,7 +30,7 @@ func TestAccount(t *testing.T) {
 	a = &account{
 		AccountType:            AccountTypeUsernamePassword,
 		Name:                   name,
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
+		TenantedDeploymentMode: octopusdeploy.TenantedDeploymentMode("Untenanted"),
 	}
 
 	require.NotNil(t, a)
@@ -38,7 +39,7 @@ func TestAccount(t *testing.T) {
 	a = &account{
 		AccountType:            AccountTypeUsernamePassword,
 		Name:                   "All",
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
+		TenantedDeploymentMode: octopusdeploy.TenantedDeploymentMode("Untenanted"),
 	}
 
 	require.NotNil(t, a)
@@ -47,7 +48,7 @@ func TestAccount(t *testing.T) {
 	a = &account{
 		AccountType:            AccountTypeUsernamePassword,
 		Name:                   "all",
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
+		TenantedDeploymentMode: octopusdeploy.TenantedDeploymentMode("Untenanted"),
 	}
 
 	require.NotNil(t, a)

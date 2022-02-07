@@ -22,7 +22,7 @@ type OfflinePackageDropDeploymentTarget struct {
 	Thumbprint             string                     `json:"Thumbprint,omitempty"`
 	URI                    string                     `json:"Uri,omitempty" validate:"omitempty,uri"`
 
-	resource
+	Resource
 }
 
 func NewOfflinePackageDropDeploymentTarget(name string, endpoint OfflinePackageDropEndpoint, environmentIDs []string, roles []string) *OfflinePackageDropDeploymentTarget {
@@ -38,6 +38,6 @@ func NewOfflinePackageDropDeploymentTarget(name string, endpoint OfflinePackageD
 		TenantTags:             []string{},
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

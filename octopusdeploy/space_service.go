@@ -1,20 +1,21 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type spaceService struct {
 	homePath string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newSpaceService(sling *sling.Sling, uriTemplate string, homePath string) *spaceService {
 	spaceService := &spaceService{
 		homePath: homePath,
 	}
-	spaceService.service = newService(ServiceSpaceService, sling, uriTemplate)
+	spaceService.service = services.newService(ServiceSpaceService, sling, uriTemplate)
 
 	return spaceService
 }
@@ -142,7 +143,7 @@ func (s spaceService) GetAll() ([]*Space, error) {
 // Update modifies a space based on the one provided as input.
 func (s spaceService) Update(space *Space) (*Space, error) {
 	if space == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError("space")
+		return nil, CreateRequiredParameterIsEmptyOrNilError("space")
 	}
 
 	path, err := getUpdatePath(s, space)

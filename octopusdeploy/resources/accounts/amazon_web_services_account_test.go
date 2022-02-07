@@ -1,6 +1,8 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 	"time"
 
@@ -8,14 +10,14 @@ import (
 )
 
 func TestAmazonWebServicesAccountNew(t *testing.T) {
-	accessKey := getRandomName()
+	accessKey := octopusdeploy.getRandomName()
 	accountType := AccountTypeAmazonWebServicesAccount
-	description := emptyString
+	description := services.emptyString
 	environmentIDs := []string{}
-	name := getRandomName()
-	secretKey := NewSensitiveValue(getRandomName())
-	spaceID := emptyString
-	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
+	name := octopusdeploy.getRandomName()
+	secretKey := octopusdeploy.NewSensitiveValue(octopusdeploy.getRandomName())
+	spaceID := services.emptyString
+	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Untenanted")
 
 	account, err := NewAmazonWebServicesAccount(name, accessKey, secretKey)
 
@@ -23,15 +25,15 @@ func TestAmazonWebServicesAccountNew(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
-	// resource
-	require.Equal(t, emptyString, account.ID)
-	require.Equal(t, emptyString, account.ModifiedBy)
+	// Resource
+	require.Equal(t, services.emptyString, account.ID)
+	require.Equal(t, services.emptyString, account.ModifiedBy)
 	require.Nil(t, account.ModifiedOn)
 	require.NotNil(t, account.Links)
 
 	// IResource
-	require.Equal(t, emptyString, account.GetID())
-	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Equal(t, services.emptyString, account.GetID())
+	require.Equal(t, services.emptyString, account.GetModifiedBy())
 	require.Nil(t, account.GetModifiedOn())
 	require.NotNil(t, account.GetLinks())
 
@@ -53,18 +55,18 @@ func TestAmazonWebServicesAccountNew(t *testing.T) {
 }
 
 func TestAmazonWebServicesAccountNewWithConfigs(t *testing.T) {
-	accessKey := getRandomName()
+	accessKey := octopusdeploy.getRandomName()
 	accountType := AccountTypeAmazonWebServicesAccount
 	environmentIDs := []string{"environment-id-1", "environment-id-2"}
-	invalidID := getRandomName()
-	invalidModifiedBy := getRandomName()
+	invalidID := octopusdeploy.getRandomName()
+	invalidModifiedBy := octopusdeploy.getRandomName()
 	invalidModifiedOn := time.Now()
-	invalidName := getRandomName()
-	name := getRandomName()
+	invalidName := octopusdeploy.getRandomName()
+	name := octopusdeploy.getRandomName()
 	description := "Description for " + name + " (OK to Delete)"
-	secretKey := NewSensitiveValue(getRandomName())
-	spaceID := getRandomName()
-	tenantedDeploymentMode := TenantedDeploymentMode("Tenanted")
+	secretKey := octopusdeploy.NewSensitiveValue(octopusdeploy.getRandomName())
+	spaceID := octopusdeploy.getRandomName()
+	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Tenanted")
 
 	options := func(a *AmazonWebServicesAccount) {
 		a.Description = description
@@ -83,15 +85,15 @@ func TestAmazonWebServicesAccountNewWithConfigs(t *testing.T) {
 	require.NotNil(t, account)
 	require.NoError(t, account.Validate())
 
-	// resource
-	require.Equal(t, emptyString, account.ID)
-	require.Equal(t, emptyString, account.ModifiedBy)
+	// Resource
+	require.Equal(t, services.emptyString, account.ID)
+	require.Equal(t, services.emptyString, account.ModifiedBy)
 	require.Nil(t, account.ModifiedOn)
 	require.NotNil(t, account.Links)
 
 	// IResource
-	require.Equal(t, emptyString, account.GetID())
-	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Equal(t, services.emptyString, account.GetID())
+	require.Equal(t, services.emptyString, account.GetModifiedBy())
 	require.Nil(t, account.GetModifiedOn())
 	require.NotNil(t, account.GetLinks())
 

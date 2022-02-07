@@ -28,7 +28,7 @@ func AssertEqualTenants(t *testing.T, expected *octopusdeploy.Tenant, actual *oc
 	assert.Equal(t, expected.TenantTags, actual.TenantTags)
 }
 
-func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.Client, project *octopusdeploy.Project, environment *octopusdeploy.Environment) *octopusdeploy.Tenant {
+func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project *octopusdeploy.Project, environment *octopusdeploy.Environment) *octopusdeploy.Tenant {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -51,7 +51,7 @@ func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.Client, project
 	return createdTenant
 }
 
-func DeleteTestTenant(t *testing.T, client *octopusdeploy.Client, tenant *octopusdeploy.Tenant) {
+func DeleteTestTenant(t *testing.T, client *octopusdeploy.client, tenant *octopusdeploy.Tenant) {
 	require.NotNil(t, tenant)
 
 	if client == nil {

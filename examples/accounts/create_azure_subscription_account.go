@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -35,7 +36,7 @@ func CreateAzureSubscriptionAccountExample() {
 		return
 	}
 
-	azureAccount, err := octopusdeploy.NewAzureSubscriptionAccount(name, subscriptionID)
+	azureAccount, err := accounts.NewAzureSubscriptionAccount(name, subscriptionID)
 	if err != nil {
 		_ = fmt.Errorf("error creating Azure subscription account: %v", err)
 		return
@@ -54,7 +55,7 @@ func CreateAzureSubscriptionAccountExample() {
 	}
 
 	// type conversion required to access Azure-specific fields
-	azureAccount = createdAccount.(*octopusdeploy.AzureSubscriptionAccount)
+	azureAccount = createdAccount.(*accounts.AzureSubscriptionAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", azureAccount.GetID())

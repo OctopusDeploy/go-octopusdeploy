@@ -25,7 +25,7 @@ func AssertEqualWorkerPools(t *testing.T, expected octopusdeploy.IWorkerPool, ac
 	// TODO: add more validation
 }
 
-func CreateTestDynamicWorkerPool(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IWorkerPool {
+func CreateTestDynamicWorkerPool(t *testing.T, client *octopusdeploy.client) octopusdeploy.IWorkerPool {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -52,7 +52,7 @@ func CreateTestDynamicWorkerPool(t *testing.T, client *octopusdeploy.Client) oct
 	return createdDynamicWorkerPool
 }
 
-func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IWorkerPool {
+func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.client) octopusdeploy.IWorkerPool {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -78,7 +78,7 @@ func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.Client) octo
 	return createdStaticWorkerPool
 }
 
-func DeleteTestWorkerPool(t *testing.T, client *octopusdeploy.Client, workerPool octopusdeploy.IWorkerPool) {
+func DeleteTestWorkerPool(t *testing.T, client *octopusdeploy.client, workerPool octopusdeploy.IWorkerPool) {
 	require.NotNil(t, workerPool)
 
 	if client == nil {
@@ -95,7 +95,7 @@ func DeleteTestWorkerPool(t *testing.T, client *octopusdeploy.Client, workerPool
 	require.Nil(t, deletedWorkerPool)
 }
 
-func UpdateWorkerPool(t *testing.T, client *octopusdeploy.Client, workerPool octopusdeploy.IWorkerPool) octopusdeploy.IWorkerPool {
+func UpdateWorkerPool(t *testing.T, client *octopusdeploy.client, workerPool octopusdeploy.IWorkerPool) octopusdeploy.IWorkerPool {
 	if client == nil {
 		client = getOctopusClient()
 	}

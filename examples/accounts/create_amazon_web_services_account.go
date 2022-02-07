@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -34,7 +35,7 @@ func CreateAmazonWebServicesAccountExample() {
 		return
 	}
 
-	awsAccount, err := octopusdeploy.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)
+	awsAccount, err := accounts.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)
 	if err != nil {
 		_ = fmt.Errorf("error creating AWS account: %v", err)
 		return
@@ -50,7 +51,7 @@ func CreateAmazonWebServicesAccountExample() {
 	}
 
 	// type conversion required to access AWS-specific fields
-	awsAccount = createdAccount.(*octopusdeploy.AmazonWebServicesAccount)
+	awsAccount = createdAccount.(*accounts.AmazonWebServicesAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", awsAccount.GetID())

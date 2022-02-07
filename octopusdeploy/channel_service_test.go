@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createChannelService(t *testing.T) *channelService {
 	service := newChannelService(nil, TestURIChannels, TestURIVersionRuleTest)
-	testNewService(t, service, TestURIChannels, ServiceChannelService)
+	services.testNewService(t, service, TestURIChannels, ServiceChannelService)
 	return service
 }
 
@@ -32,11 +33,11 @@ func TestChannelServiceGetByID(t *testing.T) {
 	service := createChannelService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	assert.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	assert.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	assert.Nil(t, resource)
 }
@@ -44,8 +45,8 @@ func TestChannelServiceGetByID(t *testing.T) {
 func TestChannelServiceNew(t *testing.T) {
 	ServiceFunction := newChannelService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	versionRuleTestPath := emptyString
+	uriTemplate := services.emptyString
+	versionRuleTestPath := services.emptyString
 	ServiceName := ServiceChannelService
 
 	testCases := []struct {
@@ -56,13 +57,13 @@ func TestChannelServiceNew(t *testing.T) {
 		versionRuleTestPath string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, versionRuleTestPath},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, versionRuleTestPath},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, versionRuleTestPath},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, versionRuleTestPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, versionRuleTestPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.versionRuleTestPath)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

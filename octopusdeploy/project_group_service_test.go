@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createProjectGroupService(t *testing.T) *projectGroupService {
 	service := newProjectGroupService(nil, TestURIProjectGroups)
-	testNewService(t, service, TestURIProjectGroups, ServiceProjectGroupService)
+	services.testNewService(t, service, TestURIProjectGroups, ServiceProjectGroupService)
 	return service
 }
 
@@ -48,7 +49,7 @@ func DeleteTestProjectGroup(t *testing.T, service *projectGroupService, projectG
 func TestNewProjectGroupService(t *testing.T) {
 	ServiceFunction := newProjectGroupService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceProjectGroupService
 
 	testCases := []struct {
@@ -58,26 +59,26 @@ func TestNewProjectGroupService(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
 
 func TestProjectGroupServiceGetWithEmptyID(t *testing.T) {
-	service := newProjectGroupService(&sling.Sling{}, emptyString)
+	service := newProjectGroupService(&sling.Sling{}, services.emptyString)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)

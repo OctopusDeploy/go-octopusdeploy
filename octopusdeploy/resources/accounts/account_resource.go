@@ -1,6 +1,7 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/go-playground/validator/v10"
 	uuid "github.com/google/uuid"
 )
@@ -9,40 +10,40 @@ import (
 // support for paged results.
 type AccountResources struct {
 	Items []*AccountResource `json:"Items"`
-	PagedResults
+	octopusdeploy.PagedResults
 }
 
 // AccountResource represents account details used for deployments, including
 // username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type AccountResource struct {
-	AccessKey               string                 `json:"AccessKey,omitempty"`
-	AccountType             AccountType            `json:"AccountType"`
-	ApplicationID           *uuid.UUID             `json:"ClientId,omitempty"`
-	ApplicationPassword     *SensitiveValue        `json:"Password,omitempty"`
-	AuthenticationEndpoint  string                 `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
-	AzureEnvironment        string                 `json:"AzureEnvironment,omitempty"`
-	CertificateBytes        *SensitiveValue        `json:"CertificateBytes,omitempty"`
-	CertificateThumbprint   string                 `json:"CertificateThumbprint,omitempty"`
-	Description             string                 `json:"Description,omitempty"`
-	EnvironmentIDs          []string               `json:"EnvironmentIds,omitempty"`
-	JsonKey                 *SensitiveValue        `json:"JsonKey,omitempty"`
-	ManagementEndpoint      string                 `json:"ServiceManagementEndpointBaseUri,omitempty"`
-	Name                    string                 `json:"Name" validate:"required,notall"`
-	PrivateKeyFile          *SensitiveValue        `json:"PrivateKeyFile,omitempty"`
-	PrivateKeyPassphrase    *SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
-	ResourceManagerEndpoint string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
-	SecretKey               *SensitiveValue        `json:"SecretKey,omitempty"`
-	StorageEndpointSuffix   string                 `json:"ServiceManagementEndpointSuffix,omitempty"`
-	SpaceID                 string                 `json:"SpaceId"`
-	SubscriptionID          *uuid.UUID             `json:"SubscriptionNumber,omitempty"`
-	TenantedDeploymentMode  TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
-	TenantID                *uuid.UUID             `json:"TenantId,omitempty"`
-	TenantIDs               []string               `json:"TenantIds,omitempty"`
-	TenantTags              []string               `json:"TenantTags,omitempty"`
-	Token                   *SensitiveValue        `json:"Token,omitempty"`
-	Username                string                 `json:"Username,omitempty"`
+	AccessKey               string                               `json:"AccessKey,omitempty"`
+	AccountType             AccountType                          `json:"AccountType"`
+	ApplicationID           *uuid.UUID                           `json:"ClientId,omitempty"`
+	ApplicationPassword     *octopusdeploy.SensitiveValue        `json:"Password,omitempty"`
+	AuthenticationEndpoint  string                               `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
+	AzureEnvironment        string                               `json:"AzureEnvironment,omitempty"`
+	CertificateBytes        *octopusdeploy.SensitiveValue        `json:"CertificateBytes,omitempty"`
+	CertificateThumbprint   string                               `json:"CertificateThumbprint,omitempty"`
+	Description             string                               `json:"Description,omitempty"`
+	EnvironmentIDs          []string                             `json:"EnvironmentIds,omitempty"`
+	JsonKey                 *octopusdeploy.SensitiveValue        `json:"JsonKey,omitempty"`
+	ManagementEndpoint      string                               `json:"ServiceManagementEndpointBaseUri,omitempty"`
+	Name                    string                               `json:"Name" validate:"required,notall"`
+	PrivateKeyFile          *octopusdeploy.SensitiveValue        `json:"PrivateKeyFile,omitempty"`
+	PrivateKeyPassphrase    *octopusdeploy.SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
+	ResourceManagerEndpoint string                               `json:"ResourceManagementEndpointBaseUri,omitempty"`
+	SecretKey               *octopusdeploy.SensitiveValue        `json:"SecretKey,omitempty"`
+	StorageEndpointSuffix   string                               `json:"ServiceManagementEndpointSuffix,omitempty"`
+	SpaceID                 string                               `json:"SpaceId"`
+	SubscriptionID          *uuid.UUID                           `json:"SubscriptionNumber,omitempty"`
+	TenantedDeploymentMode  octopusdeploy.TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
+	TenantID                *uuid.UUID                           `json:"TenantId,omitempty"`
+	TenantIDs               []string                             `json:"TenantIds,omitempty"`
+	TenantTags              []string                             `json:"TenantTags,omitempty"`
+	Token                   *octopusdeploy.SensitiveValue        `json:"Token,omitempty"`
+	Username                string                               `json:"Username,omitempty"`
 
-	resource
+	octopusdeploy.Resource
 }
 
 // NewAccount creates and initializes an account resource with a name and type.
@@ -52,7 +53,7 @@ func NewAccountResource(spaceID string, name string, accountType AccountType) *A
 		AccountType:            accountType,
 		Name:                   name,
 		TenantedDeploymentMode: "Untenanted",
-		resource:               *newResource(),
+		resource:               *octopusdeploy.newResource(),
 	}
 }
 
@@ -81,7 +82,7 @@ func (a *AccountResource) GetSpaceID() string {
 }
 
 // GetTenantedDeploymentMode returns the tenanted deployment mode of this account resource.
-func (a *AccountResource) GetTenantedDeploymentMode() TenantedDeploymentMode {
+func (a *AccountResource) GetTenantedDeploymentMode() octopusdeploy.TenantedDeploymentMode {
 	return a.TenantedDeploymentMode
 }
 
@@ -116,7 +117,7 @@ func (a *AccountResource) SetSpaceID(spaceID string) {
 }
 
 // SetTenantedDeploymentMode sets the tenanted deployment mode of this account resource.
-func (a *AccountResource) SetTenantedDeploymentMode(mode TenantedDeploymentMode) {
+func (a *AccountResource) SetTenantedDeploymentMode(mode octopusdeploy.TenantedDeploymentMode) {
 	a.TenantedDeploymentMode = mode
 }
 
@@ -134,11 +135,11 @@ func (a *AccountResource) SetTenantTags(tenantTags []string) {
 // invalid.
 func (a *AccountResource) Validate() error {
 	v := validator.New()
-	err := v.RegisterValidation("notall", NotAll)
+	err := v.RegisterValidation("notall", octopusdeploy.NotAll)
 	if err != nil {
 		return err
 	}
 	return v.Struct(a)
 }
 
-var _ IAccount = &AccountResource{}
+var _ octopusdeploy.IAccount = &AccountResource{}

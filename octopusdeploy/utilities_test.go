@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -17,8 +18,8 @@ func TestIsAPIKey(t *testing.T) {
 		test    string
 		isValid bool
 	}{
-		{"Empty", emptyString, false},
-		{"EmptySpace", whitespaceString, false},
+		{"Empty", services.emptyString, false},
+		{"EmptySpace", services.whitespaceString, false},
 		{"StartWithAPI", "API-", false},
 		{"Invalid", "API-?OBYCAMCZ7WWBKSTMXT66FCUDPS", false},
 		{"Invalid", "API-OBYC👍AMCZ7WWBKSTMXT66FCUDPS", false},

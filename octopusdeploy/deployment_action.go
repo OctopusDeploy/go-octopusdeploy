@@ -23,7 +23,7 @@ type DeploymentAction struct {
 	WorkerPoolID                  string                     `json:"WorkerPoolId,omitempty"`
 	WorkerPoolVariable            string                     `json:"WorkerPoolVariable,omitempty"`
 
-	resource
+	Resource
 }
 
 // NewDeploymentAction initializes a DeploymentAction with a name.
@@ -32,7 +32,7 @@ func NewDeploymentAction(name string, actionType string) *DeploymentAction {
 		ActionType: actionType,
 		Name:       name,
 		Properties: map[string]PropertyValue{},
-		resource:   *newResource(),
+		Resource:   *newResource(),
 	}
 }
 

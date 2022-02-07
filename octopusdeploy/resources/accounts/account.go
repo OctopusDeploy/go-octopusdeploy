@@ -1,6 +1,7 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -12,11 +13,11 @@ type account struct {
 	EnvironmentIDs         []string
 	Name                   string `validate:"required,notblank,notall"`
 	SpaceID                string `validate:"omitempty,notblank"`
-	TenantedDeploymentMode TenantedDeploymentMode
+	TenantedDeploymentMode octopusdeploy.TenantedDeploymentMode
 	TenantIDs              []string
 	TenantTags             []string
 
-	resource
+	octopusdeploy.Resource
 }
 
 // newAccount creates and initializes an account.
@@ -25,10 +26,10 @@ func newAccount(name string, accountType AccountType) *account {
 		AccountType:            accountType,
 		EnvironmentIDs:         []string{},
 		Name:                   name,
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
+		TenantedDeploymentMode: octopusdeploy.TenantedDeploymentMode("Untenanted"),
 		TenantIDs:              []string{},
 		TenantTags:             []string{},
-		resource:               *newResource(),
+		Resource:               *octopusdeploy.NewResource(),
 	}
 }
 
@@ -58,7 +59,7 @@ func (a *account) GetSpaceID() string {
 }
 
 // GetTenantedDeploymentMode returns the tenanted deployment mode of this account.
-func (a *account) GetTenantedDeploymentMode() TenantedDeploymentMode {
+func (a *account) GetTenantedDeploymentMode() octopusdeploy.TenantedDeploymentMode {
 	return a.TenantedDeploymentMode
 }
 
@@ -93,7 +94,7 @@ func (a *account) SetSpaceID(spaceID string) {
 }
 
 // SetTenantedDeploymentMode sets the tenanted deployment mode of this account.
-func (a *account) SetTenantedDeploymentMode(mode TenantedDeploymentMode) {
+func (a *account) SetTenantedDeploymentMode(mode octopusdeploy.TenantedDeploymentMode) {
 	a.TenantedDeploymentMode = mode
 }
 
@@ -115,11 +116,11 @@ func (a *account) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", NotAll)
+	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
 	if err != nil {
 		return err
 	}
 	return v.Struct(a)
 }
 
-var _ IAccount = &account{}
+var _ octopusdeploy.IAccount = &account{}

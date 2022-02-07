@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type dashboardConfigurationService struct {
-	service
+	services.service
 }
 
 func newDashboardConfigurationService(sling *sling.Sling, uriTemplate string) *dashboardConfigurationService {
 	return &dashboardConfigurationService{
-		service: newService(ServiceDashboardConfigurationService, sling, uriTemplate),
+		service: services.newService(ServiceDashboardConfigurationService, sling, uriTemplate),
 	}
 }

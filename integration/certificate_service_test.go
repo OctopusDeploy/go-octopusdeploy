@@ -59,7 +59,7 @@ func AssertEqualCertificateResources(t *testing.T, expected *octopusdeploy.Certi
 	assert.Equal(t, expected.Version, actual.Version)
 }
 
-func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.CertificateResource {
+func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.client) *octopusdeploy.CertificateResource {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -91,7 +91,7 @@ func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.Client) *
 	return createdCertificate
 }
 
-func DeleteTestCertificateResource(t *testing.T, client *octopusdeploy.Client, certificate *octopusdeploy.CertificateResource) {
+func DeleteTestCertificateResource(t *testing.T, client *octopusdeploy.client, certificate *octopusdeploy.CertificateResource) {
 	require.NotNil(t, certificate)
 
 	if client == nil {

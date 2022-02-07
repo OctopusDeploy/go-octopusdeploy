@@ -1,4 +1,4 @@
-package octopusdeploy
+package accounts
 
 type AccountType string
 

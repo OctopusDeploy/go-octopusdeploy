@@ -15,7 +15,7 @@ type Tenant struct {
 	SpaceID             string              `json:"SpaceId"`
 	TenantTags          []string            `json:"TenantTags,omitempty"`
 
-	resource
+	Resource
 }
 
 // NewTenant initializes a Tenant with a name.
@@ -23,7 +23,7 @@ func NewTenant(name string) *Tenant {
 	return &Tenant{
 		Name:                name,
 		ProjectEnvironments: map[string][]string{},
-		resource:            *newResource(),
+		Resource:            *newResource(),
 	}
 }
 

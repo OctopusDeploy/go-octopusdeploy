@@ -6,5 +6,5 @@ type RunbookSnapshotTemplate struct {
 	RunbookID         string                    `json:"RunbookId,omitempty"`
 	RunbookProcessID  string                    `json:"RunbookProcessId,omitempty"`
 
-	resource
+	Resource
 }

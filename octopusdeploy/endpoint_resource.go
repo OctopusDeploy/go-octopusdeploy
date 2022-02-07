@@ -49,7 +49,7 @@ type EndpointResource struct {
 	WebAppName                           string                         `json:"WebAppName,omitempty"`
 	WebAppSlotName                       string                         `json:"WebAppSlotName"`
 
-	resource
+	Resource
 }
 
 type EndpointResources struct {
@@ -57,11 +57,11 @@ type EndpointResources struct {
 	PagedResults
 }
 
-// NewEndpoint creates and initializes an account resource with a name and type.
+// NewEndpoint creates and initializes an account Resource with a name and type.
 func NewEndpointResource(communicationStyle string) *EndpointResource {
 	return &EndpointResource{
 		CommunicationStyle: communicationStyle,
-		resource:           *newResource(),
+		Resource:           *newResource(),
 	}
 }
 
@@ -70,7 +70,7 @@ func (e *EndpointResource) GetCommunicationStyle() string {
 	return e.CommunicationStyle
 }
 
-// Validate checks the state of the endpoint resource and returns an error if
+// Validate checks the state of the endpoint Resource and returns an error if
 // invalid.
 func (e EndpointResource) Validate() error {
 	return validator.New().Struct(e)

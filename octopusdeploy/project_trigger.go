@@ -20,7 +20,7 @@ type ProjectTrigger struct {
 	ProjectID   string         `json:"ProjectId,omitempty"`
 	SpaceID     string         `json:"SpaceId,omitempty"`
 
-	resource
+	Resource
 }
 
 func NewProjectTrigger(name string, description string, isDisabled bool, projectID string, action ITriggerAction, filter ITriggerFilter) *ProjectTrigger {
@@ -30,7 +30,7 @@ func NewProjectTrigger(name string, description string, isDisabled bool, project
 		IsDisabled: isDisabled,
 		Name:       name,
 		ProjectID:  projectID,
-		resource:   *newResource(),
+		Resource:   *newResource(),
 	}
 }
 
@@ -41,11 +41,11 @@ func (projectTrigger *ProjectTrigger) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	var r resource
+	var r Resource
 	if err := json.Unmarshal(b, &r); err != nil {
 		return err
 	}
-	projectTrigger.resource = r
+	projectTrigger.Resource = r
 
 	for k, v := range rawMessage {
 		switch k {

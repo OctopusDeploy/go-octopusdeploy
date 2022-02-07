@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 func TestNewInterruptionService(t *testing.T) {
 	ServiceFunction := newInterruptionService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceInterruptionService
 
 	testCases := []struct {
@@ -20,26 +21,26 @@ func TestNewInterruptionService(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
 
 func TestInterruptionServiceGetWithEmptyID(t *testing.T) {
-	service := newInterruptionService(&sling.Sling{}, emptyString)
+	service := newInterruptionService(&sling.Sling{}, services.emptyString)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)

@@ -29,7 +29,7 @@ type MachinePolicy struct {
 	PollingRequestQueueTimeout                    time.Duration              `json:"PollingRequestQueueTimeout" validate:"required"`
 	SpaceID                                       string                     `json:"SpaceId,omitempty"`
 
-	resource
+	Resource
 }
 
 func NewMachinePolicy(name string) *MachinePolicy {
@@ -45,7 +45,7 @@ func NewMachinePolicy(name string) *MachinePolicy {
 		Name:                                          name,
 		PollingRequestMaximumMessageProcessingTimeout: 10 * time.Minute,
 		PollingRequestQueueTimeout:                    2 * time.Minute,
-		resource:                                      *newResource(),
+		Resource:                                      *newResource(),
 	}
 }
 
@@ -66,7 +66,7 @@ func (m *MachinePolicy) MarshalJSON() ([]byte, error) {
 		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
 		PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout" validate:"required"`
 		SpaceID                                       string                     `json:"SpaceId,omitempty"`
-		resource
+		Resource
 	}{
 		ConnectionConnectTimeout:     ToTimeSpan(m.ConnectionConnectTimeout),
 		ConnectionRetryCountLimit:    m.ConnectionRetryCountLimit,
@@ -82,7 +82,7 @@ func (m *MachinePolicy) MarshalJSON() ([]byte, error) {
 		PollingRequestMaximumMessageProcessingTimeout: ToTimeSpan(m.PollingRequestMaximumMessageProcessingTimeout),
 		PollingRequestQueueTimeout:                    ToTimeSpan(m.PollingRequestQueueTimeout),
 		SpaceID:                                       m.SpaceID,
-		resource:                                      m.resource,
+		Resource:                                      m.Resource,
 	}
 
 	return json.Marshal(machinePolicy)
@@ -105,7 +105,7 @@ func (m *MachinePolicy) UnmarshalJSON(data []byte) error {
 		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
 		PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout" validate:"required"`
 		SpaceID                                       string                     `json:"SpaceId,omitempty"`
-		resource
+		Resource
 	}
 	err := json.Unmarshal(data, &fields)
 	if err != nil {
@@ -152,7 +152,7 @@ func (m *MachinePolicy) UnmarshalJSON(data []byte) error {
 	m.MachineUpdatePolicy = fields.MachineUpdatePolicy
 	m.Name = fields.Name
 	m.SpaceID = fields.SpaceID
-	m.resource = fields.resource
+	m.Resource = fields.Resource
 
 	return nil
 }

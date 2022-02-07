@@ -13,11 +13,11 @@ type RunbookProcess struct {
 	Steps          []*DeploymentStep `json:"Steps"`
 	Version        *int32            `json:"Version"`
 
-	resource
+	Resource
 }
 
 func NewRunbookProcess() *RunbookProcess {
 	return &RunbookProcess{
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

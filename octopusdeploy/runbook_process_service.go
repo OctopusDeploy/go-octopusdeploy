@@ -1,16 +1,17 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type runbookProcessService struct {
-	service
+	services.service
 }
 
 func newRunbookProcessService(sling *sling.Sling, uriTemplate string) *runbookProcessService {
 	return &runbookProcessService{
-		service: newService(ServiceRunbookProcessService, sling, uriTemplate),
+		service: services.newService(ServiceRunbookProcessService, sling, uriTemplate),
 	}
 }
 

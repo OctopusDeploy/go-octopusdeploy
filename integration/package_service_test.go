@@ -25,7 +25,7 @@ func AssertEqualPackages(t *testing.T, expected *octopusdeploy.Package, actual *
 	// TODO: add package comparisons
 }
 
-func CreateTestPackage(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Package {
+func CreateTestPackage(t *testing.T, client *octopusdeploy.client) *octopusdeploy.Package {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -42,7 +42,7 @@ func CreateTestPackage(t *testing.T, client *octopusdeploy.Client) *octopusdeplo
 	return octopusPackage
 }
 
-func DeleteTestPackage(t *testing.T, client *octopusdeploy.Client, octopusPackage *octopusdeploy.Package) {
+func DeleteTestPackage(t *testing.T, client *octopusdeploy.client, octopusPackage *octopusdeploy.Package) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -57,7 +57,7 @@ func DeleteTestPackage(t *testing.T, client *octopusdeploy.Client, octopusPackag
 	assert.Nil(t, deletedPackage)
 }
 
-func UpdatePackage(t *testing.T, client *octopusdeploy.Client, octopusPackage *octopusdeploy.Package) *octopusdeploy.Package {
+func UpdatePackage(t *testing.T, client *octopusdeploy.client, octopusPackage *octopusdeploy.Package) *octopusdeploy.Package {
 	if client == nil {
 		client = getOctopusClient()
 	}

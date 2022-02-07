@@ -2,25 +2,26 @@ package octopusdeploy
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 
 	"github.com/dghubble/sling"
 )
 
 // apiKeyService handles communication with API key-related methods of the Octopus API.
 type apiKeyService struct {
-	service
+	services.service
 }
 
-// newAPIKeyService returns an apiKeyService with a preconfigured client.
+// newAPIKeyService returns an apiKeyService with a preconfigured Client.
 func newAPIKeyService(sling *sling.Sling, uriTemplate string) *apiKeyService {
 	return &apiKeyService{
-		service: newService(ServiceAPIKeyService, sling, uriTemplate),
+		service: services.newService(ServiceAPIKeyService, sling, uriTemplate),
 	}
 }
 
 // GetByUserID lists all API keys for a user, returning the most recent results first.
 func (s apiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
-	if isEmpty(userID) {
+	if IsEmpty(userID) {
 		return nil, createInvalidParameterError(OperationGetByUserID, ParameterUserID)
 	}
 
@@ -51,12 +52,12 @@ func (s apiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
 
 // GetByID the API key that belongs to the user by its ID.
 func (s apiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error) {
-	if isEmpty(userID) {
-		return nil, createInvalidParameterError(OperationGetByID, ParameterUserID)
+	if IsEmpty(userID) {
+		return nil, CreateInvalidParameterError(OperationGetByID, ParameterUserID)
 	}
 
-	if isEmpty(apiKeyID) {
-		return nil, createInvalidParameterError(OperationGetByID, ParameterAPIKeyID)
+	if IsEmpty(apiKeyID) {
+		return nil, CreateInvalidParameterError(OperationGetByID, ParameterAPIKeyID)
 	}
 
 	if err := validateInternalState(s); err != nil {
@@ -66,7 +67,7 @@ func (s apiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error) 
 	path := trimTemplate(s.getPath())
 	path = fmt.Sprintf(path+"%s/apikeys/%s", userID, apiKeyID)
 
-	resp, err := apiGet(s.getClient(), new(APIKey), path)
+	resp, err := ApiGet(s.GetClient(), new(APIKey), path)
 	if err != nil {
 		return nil, err
 	}

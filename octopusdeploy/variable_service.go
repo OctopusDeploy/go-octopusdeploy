@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 
 	"github.com/dghubble/sling"
 )
@@ -18,14 +19,14 @@ type variableService struct {
 	namesPath   string
 	previewPath string
 
-	service
+	services.service
 }
 
 func newVariableService(sling *sling.Sling, uriTemplate string, namesPath string, previewPath string) *variableService {
 	return &variableService{
 		namesPath:   namesPath,
 		previewPath: previewPath,
-		service:     newService(ServiceVariableService, sling, uriTemplate),
+		service:     services.newService(ServiceVariableService, sling, uriTemplate),
 	}
 }
 
@@ -35,7 +36,7 @@ func (s variableService) GetAll(ownerID string) (VariableSet, error) {
 		return VariableSet{}, err
 	}
 
-	if isEmpty(ownerID) {
+	if IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
@@ -56,11 +57,11 @@ func (s variableService) GetByID(ownerID string, variableID string) (*Variable, 
 		return nil, err
 	}
 
-	if isEmpty(ownerID) {
+	if IsEmpty(ownerID) {
 		return nil, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
-	if isEmpty(variableID) {
+	if IsEmpty(variableID) {
 		return nil, errInvalidvariableServiceParameter{ParameterName: "variableID"}
 	}
 
@@ -89,11 +90,11 @@ func (s variableService) GetByName(ownerID string, name string, scope *VariableS
 		return nil, err
 	}
 
-	if isEmpty(ownerID) {
+	if IsEmpty(ownerID) {
 		return nil, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
-	if isEmpty(name) {
+	if IsEmpty(name) {
 		return nil, errInvalidvariableServiceParameter{ParameterName: "name"}
 	}
 
@@ -126,7 +127,7 @@ func (s variableService) AddSingle(ownerID string, variable *Variable) (Variable
 		return VariableSet{}, err
 	}
 
-	if isEmpty(ownerID) {
+	if IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
@@ -146,7 +147,7 @@ func (s variableService) UpdateSingle(ownerID string, variable *Variable) (Varia
 		return VariableSet{}, err
 	}
 
-	if isEmpty(ownerID) {
+	if IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
@@ -172,11 +173,11 @@ func (s variableService) DeleteSingle(ownerID string, variableID string) (Variab
 		return VariableSet{}, err
 	}
 
-	if isEmpty(ownerID) {
+	if IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
-	if isEmpty(variableID) {
+	if IsEmpty(variableID) {
 		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "variableID"}
 	}
 
@@ -211,7 +212,7 @@ func (s variableService) Update(ownerID string, variableSet VariableSet) (Variab
 		return VariableSet{}, err
 	}
 
-	if isEmpty(ownerID) {
+	if IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidvariableServiceParameter{ParameterName: "ownerID"}
 	}
 
@@ -307,4 +308,4 @@ func (s variableService) MatchesScope(variableScope VariableScope, definedScope 
 	return matched, &matchedScopes, nil
 }
 
-var _ Service = &variableService{}
+var _ services.Service = &variableService{}

@@ -1,16 +1,17 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type lifecycleService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newLifecycleService(sling *sling.Sling, uriTemplate string) *lifecycleService {
 	lifecycleService := &lifecycleService{}
-	lifecycleService.service = newService(ServiceLifecycleService, sling, uriTemplate)
+	lifecycleService.service = services.newService(ServiceLifecycleService, sling, uriTemplate)
 
 	return lifecycleService
 }
@@ -120,4 +121,4 @@ func (s lifecycleService) Update(lifecycle *Lifecycle) (*Lifecycle, error) {
 	return resp.(*Lifecycle), nil
 }
 
-var _ Service = &lifecycleService{}
+var _ services.Service = &lifecycleService{}

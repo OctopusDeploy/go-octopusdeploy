@@ -7,7 +7,7 @@ import (
 )
 
 type testExampleWithResource struct {
-	resource
+	Resource
 }
 
 func TestResourceEmbedding(t *testing.T) {

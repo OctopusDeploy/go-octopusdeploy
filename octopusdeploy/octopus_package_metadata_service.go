@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type octopusPackageMetadataService struct {
-	service
+	services.service
 }
 
 func newOctopusPackageMetadataService(sling *sling.Sling, uriTemplate string) *octopusPackageMetadataService {
 	return &octopusPackageMetadataService{
-		service: newService(ServiceOctopusPackageMetadataService, sling, uriTemplate),
+		service: services.newService(ServiceOctopusPackageMetadataService, sling, uriTemplate),
 	}
 }

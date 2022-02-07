@@ -1,18 +1,19 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
 
 type releaseService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newReleaseService(sling *sling.Sling, uriTemplate string) *releaseService {
 	releaseService := &releaseService{}
-	releaseService.service = newService(ServiceReleaseService, sling, uriTemplate)
+	releaseService.service = services.newService(ServiceReleaseService, sling, uriTemplate)
 
 	return releaseService
 }

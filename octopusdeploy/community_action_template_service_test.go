@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,14 +11,14 @@ import (
 
 func createCommunityActionTemplateService(t *testing.T) *communityActionTemplateService {
 	service := newCommunityActionTemplateService(nil, TestURICommunityActionTemplates)
-	testNewService(t, service, TestURICommunityActionTemplates, ServiceCommunityActionTemplateService)
+	services.testNewService(t, service, TestURICommunityActionTemplates, ServiceCommunityActionTemplateService)
 	return service
 }
 
 func TestCommunityActionTemplateServiceNew(t *testing.T) {
 	ServiceFunction := newCommunityActionTemplateService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceCommunityActionTemplateService
 
 	testCases := []struct {
@@ -27,13 +28,13 @@ func TestCommunityActionTemplateServiceNew(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -43,8 +44,8 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", services.emptyString},
+		{"Whitespace", services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

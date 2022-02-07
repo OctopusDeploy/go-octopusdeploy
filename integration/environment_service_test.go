@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestEnvironment(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Environment {
+func CreateTestEnvironment(t *testing.T, client *octopusdeploy.client) *octopusdeploy.Environment {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -34,7 +34,7 @@ func CreateTestEnvironment(t *testing.T, client *octopusdeploy.Client) *octopusd
 	return createdEnvironment
 }
 
-func DeleteTestEnvironment(t *testing.T, client *octopusdeploy.Client, environment *octopusdeploy.Environment) {
+func DeleteTestEnvironment(t *testing.T, client *octopusdeploy.client, environment *octopusdeploy.Environment) {
 	require.NotNil(t, environment)
 
 	if client == nil {
@@ -73,7 +73,7 @@ func IsEqualEnvironments(t *testing.T, expected *octopusdeploy.Environment, actu
 	assert.Equal(t, expected.UseGuidedFailure, actual.UseGuidedFailure)
 }
 
-func UpdateEnvironment(t *testing.T, client *octopusdeploy.Client, environment *octopusdeploy.Environment) *octopusdeploy.Environment {
+func UpdateEnvironment(t *testing.T, client *octopusdeploy.client, environment *octopusdeploy.Environment) *octopusdeploy.Environment {
 	require.NotNil(t, environment)
 
 	if client == nil {

@@ -9,7 +9,7 @@ type ScopedUserRole struct {
 	SpaceID         string   `json:"SpaceId"`
 	UserRoleID      string   `json:"UserRoleId"`
 
-	resource
+	Resource
 }
 
 type ScopedUserRoles struct {
@@ -20,6 +20,6 @@ type ScopedUserRoles struct {
 func NewScopedUserRole(userRoleId string) *ScopedUserRole {
 	return &ScopedUserRole{
 		UserRoleID: userRoleId,
-		resource:   *newResource(),
+		Resource:   *newResource(),
 	}
 }

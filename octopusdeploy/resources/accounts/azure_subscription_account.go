@@ -1,6 +1,8 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 	uuid "github.com/google/uuid"
@@ -9,7 +11,7 @@ import (
 // AzureSubscriptionAccount represents an Azure subscription account.
 type AzureSubscriptionAccount struct {
 	AzureEnvironment      string `validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
-	CertificateBytes      *SensitiveValue
+	CertificateBytes      *octopusdeploy.SensitiveValue
 	CertificateThumbprint string
 	ManagementEndpoint    string     `validate:"omitempty,uri"`
 	StorageEndpointSuffix string     `validate:"omitempty,hostname"`
@@ -21,8 +23,8 @@ type AzureSubscriptionAccount struct {
 // NewAzureSubscriptionAccount creates and initializes an Azure subscription
 // account with a name.
 func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID, options ...func(*AzureSubscriptionAccount)) (*AzureSubscriptionAccount, error) {
-	if isEmpty(name) {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
+	if octopusdeploy.isEmpty(name) {
+		return nil, octopusdeploy.createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
 	account := AzureSubscriptionAccount{
@@ -36,9 +38,7 @@ func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID, options 
 
 	// assign pre-determined values to "mandatory" fields
 	account.AccountType = AccountType("AzureSubscription")
-	account.ID = emptyString
-	account.ModifiedBy = emptyString
-	account.ModifiedOn = nil
+	account.ID = services.emptyString
 	account.Name = name
 	account.SubscriptionID = &subscriptionID
 
@@ -58,7 +58,7 @@ func (a *AzureSubscriptionAccount) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", NotAll)
+	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
 	if err != nil {
 		return err
 	}

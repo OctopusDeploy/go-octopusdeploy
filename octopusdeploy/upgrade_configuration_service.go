@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type upgradeConfigurationService struct {
-	service
+	services.service
 }
 
 func newUpgradeConfigurationService(sling *sling.Sling, uriTemplate string) *upgradeConfigurationService {
 	return &upgradeConfigurationService{
-		service: newService(ServiceUpgradeConfigurationService, sling, uriTemplate),
+		service: services.newService(ServiceUpgradeConfigurationService, sling, uriTemplate),
 	}
 }

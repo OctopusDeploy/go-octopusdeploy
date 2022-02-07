@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func GetTestDeploymentProcess(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) *octopusdeploy.DeploymentProcess {
+func GetTestDeploymentProcess(t *testing.T, client *octopusdeploy.client, project *octopusdeploy.Project) *octopusdeploy.DeploymentProcess {
 	if client == nil {
 		client = getOctopusClient()
 	}

@@ -10,7 +10,7 @@ type DeploymentStep struct {
 	Properties         map[string]PropertyValue         `json:"Properties,omitempty"`
 	StartTrigger       DeploymentStepStartTrigger       `json:"StartTrigger,omitempty" validate:"required,oneof=StartAfterPrevious StartWithPrevious"`
 
-	resource
+	Resource
 }
 
 // NewDeploymentStep initializes a DeploymentStep with a name.
@@ -19,7 +19,7 @@ func NewDeploymentStep(name string) *DeploymentStep {
 		Actions:    []DeploymentAction{},
 		Name:       name,
 		Properties: map[string]PropertyValue{},
-		resource:   *newResource(),
+		Resource:   *newResource(),
 	}
 }
 

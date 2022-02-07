@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createLibraryVariableSetService(t *testing.T) *libraryVariableSetService {
 	service := newLibraryVariableSetService(nil, TestURILibraryVariables)
-	testNewService(t, service, TestURILibraryVariables, ServiceLibraryVariableSetService)
+	services.testNewService(t, service, TestURILibraryVariables, ServiceLibraryVariableSetService)
 	return service
 }
 
@@ -187,8 +188,8 @@ func TestLibraryVariableSetServiceParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", services.emptyString},
+		{"Whitespace", services.whitespaceString},
 		{"InvalidID", getRandomName()},
 	}
 	for _, tc := range testCases {
@@ -196,7 +197,7 @@ func TestLibraryVariableSetServiceParameters(t *testing.T) {
 			service := createLibraryVariableSetService(t)
 			require.NotNil(t, service)
 
-			if isEmpty(tc.parameter) {
+			if IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
 				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
@@ -223,7 +224,7 @@ func TestLibraryVariableSetServiceParameters(t *testing.T) {
 func TestLibraryVariableSetServiceNew(t *testing.T) {
 	ServiceFunction := newLibraryVariableSetService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceLibraryVariableSetService
 
 	testCases := []struct {
@@ -233,13 +234,13 @@ func TestLibraryVariableSetServiceNew(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -248,12 +249,12 @@ func TestLibraryVariableSetGetByPartialName(t *testing.T) {
 	service := createLibraryVariableSetService(t)
 	require.NotNil(t, service)
 
-	resources, err := service.GetByPartialName(emptyString)
+	resources, err := service.GetByPartialName(services.emptyString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 
-	resources, err = service.GetByPartialName(whitespaceString)
+	resources, err = service.GetByPartialName(services.whitespaceString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)

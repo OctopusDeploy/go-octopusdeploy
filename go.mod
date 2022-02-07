@@ -1,6 +1,6 @@
 module github.com/OctopusDeploy/go-octopusdeploy
 
-go 1.16
+go 1.18
 
 require (
 	github.com/dghubble/sling v1.4.0

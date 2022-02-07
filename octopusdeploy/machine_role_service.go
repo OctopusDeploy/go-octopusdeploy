@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type machineRoleService struct {
-	service
+	services.service
 }
 
 func newMachineRoleService(sling *sling.Sling, uriTemplate string) *machineRoleService {
 	return &machineRoleService{
-		service: newService(ServiceMachineRoleService, sling, uriTemplate),
+		service: services.newService(ServiceMachineRoleService, sling, uriTemplate),
 	}
 }

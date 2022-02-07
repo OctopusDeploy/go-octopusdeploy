@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -18,20 +19,20 @@ func TestLifecycleNew(t *testing.T) {
 	require.NoError(t, lifecycle.Validate())
 
 	lifecycle = Lifecycle{
-		resource: resource{},
+		Resource: Resource{},
 	}
 	require.Error(t, lifecycle.Validate())
 
 	lifecycle = Lifecycle{
 		Name:     name,
-		resource: resource{},
+		Resource: Resource{},
 	}
 	require.NoError(t, lifecycle.Validate())
 
-	lifecycleWithNew := NewLifecycle(emptyString)
+	lifecycleWithNew := NewLifecycle(services.emptyString)
 	require.Error(t, lifecycleWithNew.Validate())
 
-	lifecycleWithNew = NewLifecycle(whitespaceString)
+	lifecycleWithNew = NewLifecycle(services.whitespaceString)
 	require.Error(t, lifecycleWithNew.Validate())
 
 	lifecycleWithNew = NewLifecycle(name)

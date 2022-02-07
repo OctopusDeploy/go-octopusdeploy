@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -11,7 +12,7 @@ type workerPoolService struct {
 	summaryPath            string
 	supportedTypesPath     string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newWorkerPoolService(sling *sling.Sling, uriTemplate string, dynamicWorkerTypesPath string, sortOrderPath string, summaryPath string, supportedTypesPath string) *workerPoolService {
@@ -21,7 +22,7 @@ func newWorkerPoolService(sling *sling.Sling, uriTemplate string, dynamicWorkerT
 		summaryPath:            summaryPath,
 		supportedTypesPath:     supportedTypesPath,
 	}
-	workerPoolService.service = newService(ServiceWorkerPoolService, sling, uriTemplate)
+	workerPoolService.service = services.newService(ServiceWorkerPoolService, sling, uriTemplate)
 
 	return workerPoolService
 }

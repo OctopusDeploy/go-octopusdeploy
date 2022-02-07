@@ -9,11 +9,11 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-func getOctopusClient() *octopusdeploy.Client {
+func getOctopusClient() *octopusdeploy.client {
 	octopusURL := os.Getenv("OCTOPUS_URL")
 	apiKey := os.Getenv("OCTOPUS_APIKEY")
 
-	if isEmpty(octopusURL) || isEmpty(apiKey) {
+	if IsEmpty(octopusURL) || IsEmpty(apiKey) {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
 	}
 
@@ -36,7 +36,7 @@ func getOctopusClient() *octopusdeploy.Client {
 	// tr := &http.Transport{
 	// 	Proxy: http.ProxyURL(proxyURL),
 	// }
-	// httpClient := http.Client{Transport: tr}
+	// httpClient := http.client{Transport: tr}
 
 	octopusClient, err := octopusdeploy.NewClient(nil, apiURL, apiKey, emptyString)
 	if err != nil {

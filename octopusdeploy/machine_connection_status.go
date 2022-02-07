@@ -11,11 +11,11 @@ type MachineConnectionStatus struct {
 	MachineID              string                `json:"MachineId,omitempty"`
 	Status                 string                `json:"Status,omitempty"`
 
-	resource
+	Resource
 }
 
 func NewMachineConnectionStatus() *MachineConnectionStatus {
 	return &MachineConnectionStatus{
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

@@ -1,6 +1,8 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 	"time"
 
@@ -9,13 +11,13 @@ import (
 
 func TestUsernamePasswordAccountNew(t *testing.T) {
 	accountType := AccountTypeUsernamePassword
-	description := emptyString
+	description := services.emptyString
 	environmentIDs := []string{}
-	name := getRandomName()
-	var password *SensitiveValue
-	spaceID := emptyString
-	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
-	username := emptyString
+	name := octopusdeploy.getRandomName()
+	var password *octopusdeploy.SensitiveValue
+	spaceID := services.emptyString
+	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Untenanted")
+	username := services.emptyString
 
 	account, err := NewUsernamePasswordAccount(name)
 
@@ -23,15 +25,15 @@ func TestUsernamePasswordAccountNew(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
-	// resource
-	require.Equal(t, emptyString, account.ID)
-	require.Equal(t, emptyString, account.ModifiedBy)
+	// Resource
+	require.Equal(t, services.emptyString, account.ID)
+	require.Equal(t, services.emptyString, account.ModifiedBy)
 	require.Nil(t, account.ModifiedOn)
 	require.NotNil(t, account.Links)
 
 	// IResource
-	require.Equal(t, emptyString, account.GetID())
-	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Equal(t, services.emptyString, account.GetID())
+	require.Equal(t, services.emptyString, account.GetModifiedBy())
 	require.Nil(t, account.GetModifiedOn())
 	require.NotNil(t, account.GetLinks())
 
@@ -54,16 +56,16 @@ func TestUsernamePasswordAccountNew(t *testing.T) {
 
 func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
 	environmentIDs := []string{"environment-id-1", "environment-id-2"}
-	invalidID := getRandomName()
-	invalidModifiedBy := getRandomName()
+	invalidID := octopusdeploy.getRandomName()
+	invalidModifiedBy := octopusdeploy.getRandomName()
 	invalidModifiedOn := time.Now()
-	invalidName := getRandomName()
-	name := getRandomName()
+	invalidName := octopusdeploy.getRandomName()
+	name := octopusdeploy.getRandomName()
 	description := "Description for " + name + " (OK to Delete)"
-	password := NewSensitiveValue("password")
-	spaceID := getRandomName()
-	tenantedDeploymentMode := TenantedDeploymentMode("Tenanted")
-	username := getRandomName()
+	password := octopusdeploy.NewSensitiveValue("password")
+	spaceID := octopusdeploy.getRandomName()
+	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Tenanted")
+	username := octopusdeploy.getRandomName()
 
 	options := func(a *UsernamePasswordAccount) {
 		a.Description = description
@@ -72,7 +74,7 @@ func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
 		a.ModifiedBy = invalidModifiedBy
 		a.ModifiedOn = &invalidModifiedOn
 		a.Name = invalidName
-		a.Password = NewSensitiveValue("password")
+		a.Password = octopusdeploy.NewSensitiveValue("password")
 		a.SpaceID = spaceID
 		a.TenantedDeploymentMode = tenantedDeploymentMode
 		a.Username = username
@@ -84,15 +86,15 @@ func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
-	// resource
-	require.Equal(t, emptyString, account.ID)
-	require.Equal(t, emptyString, account.ModifiedBy)
+	// Resource
+	require.Equal(t, services.emptyString, account.ID)
+	require.Equal(t, services.emptyString, account.ModifiedBy)
 	require.Nil(t, account.ModifiedOn)
 	require.NotNil(t, account.Links)
 
 	// IResource
-	require.Equal(t, emptyString, account.GetID())
-	require.Equal(t, emptyString, account.GetModifiedBy())
+	require.Equal(t, services.emptyString, account.GetID())
+	require.Equal(t, services.emptyString, account.GetModifiedBy())
 	require.Nil(t, account.GetModifiedOn())
 	require.NotNil(t, account.GetLinks())
 
@@ -114,7 +116,7 @@ func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
 }
 
 func TestUsernamePasswordAccountSetName(t *testing.T) {
-	name := getRandomName()
+	name := octopusdeploy.getRandomName()
 
 	account, err := NewUsernamePasswordAccount(name)
 

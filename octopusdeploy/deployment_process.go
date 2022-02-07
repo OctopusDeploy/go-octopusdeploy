@@ -13,14 +13,14 @@ type DeploymentProcess struct {
 	Steps          []DeploymentStep `json:"Steps,omitempty"`
 	Version        int32            `json:"Version"`
 
-	resource
+	Resource
 }
 
 // NewDeploymentProcess initializes a deployment process.
 func NewDeploymentProcess(projectID string) *DeploymentProcess {
 	return &DeploymentProcess{
 		ProjectID: projectID,
-		resource:  *newResource(),
+		Resource:  *newResource(),
 	}
 }
 

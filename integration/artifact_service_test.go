@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestArtifact(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Artifact {
+func CreateTestArtifact(t *testing.T, client *octopusdeploy.client) *octopusdeploy.Artifact {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -27,7 +27,7 @@ func CreateTestArtifact(t *testing.T, client *octopusdeploy.Client) *octopusdepl
 	return createdArtifact
 }
 
-func DeleteTestArtifact(t *testing.T, client *octopusdeploy.Client, artifact *octopusdeploy.Artifact) {
+func DeleteTestArtifact(t *testing.T, client *octopusdeploy.client, artifact *octopusdeploy.Artifact) {
 	if client == nil {
 		client = getOctopusClient()
 	}

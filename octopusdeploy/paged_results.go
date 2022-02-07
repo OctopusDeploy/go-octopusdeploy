@@ -1,11 +1,10 @@
 package octopusdeploy
 
-type PagedResults struct {
-	IsStale        bool   `json:"IsStale"`
-	ItemsPerPage   int    `json:"ItemsPerPage"`
+type PagedResults[T IResource] struct {
 	ItemType       string `json:"ItemType"`
-	LastPageNumber int    `json:"LastPageNumber"`
-	Links          Links  `json:"Links"`
-	NumberOfPages  int    `json:"NumberOfPages"`
 	TotalResults   int    `json:"TotalResults"`
+	ItemsPerPage   int    `json:"ItemsPerPage"`
+	NumberOfPages  int    `json:"NumberOfPages"`
+	LastPageNumber int    `json:"LastPageNumber"`
+	Items          T[]    `json:"Items"`
 }

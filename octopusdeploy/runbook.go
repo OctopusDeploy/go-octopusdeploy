@@ -16,7 +16,7 @@ type Runbook struct {
 	RunbookProcessID           string                  `json:"RunbookProcessId,omitempty"`
 	SpaceID                    string                  `json:"SpaceId,omitempty"`
 
-	resource
+	Resource
 }
 
 // Runbooks defines a collection of runbooks with built-in support for paged
@@ -35,7 +35,7 @@ func NewRunbook(name string, projectID string) *Runbook {
 		Name:                     name,
 		ProjectID:                projectID,
 		RunRetentionPolicy:       NewRunbookRetentionPeriod(),
-		resource:                 *newResource(),
+		Resource:                 *newResource(),
 	}
 }
 

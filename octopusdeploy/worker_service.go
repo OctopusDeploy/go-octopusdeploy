@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
@@ -9,7 +10,7 @@ type workerService struct {
 	operatingSystemsPath string
 	shellsPath           string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newWorkerService(sling *sling.Sling, uriTemplate string, discoverWorkerPath string, operatingSystemsPath string, shellsPath string) *workerService {
@@ -18,7 +19,7 @@ func newWorkerService(sling *sling.Sling, uriTemplate string, discoverWorkerPath
 		operatingSystemsPath: operatingSystemsPath,
 		shellsPath:           shellsPath,
 	}
-	workerService.service = newService(ServiceWorkerService, sling, uriTemplate)
+	workerService.service = services.newService(ServiceWorkerService, sling, uriTemplate)
 
 	return workerService
 }

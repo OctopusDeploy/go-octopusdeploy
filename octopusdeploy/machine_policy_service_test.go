@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createMachinePolicyService(t *testing.T) *machinePolicyService {
 	service := newMachinePolicyService(nil, TestURIMachinePolicies, TestURIMachinePolicyTemplate)
-	testNewService(t, service, TestURIMachinePolicies, ServiceMachinePolicyService)
+	services.testNewService(t, service, TestURIMachinePolicies, ServiceMachinePolicyService)
 	return service
 }
 
@@ -217,8 +218,8 @@ func TestMachinePolicyServiceParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", services.emptyString},
+		{"Whitespace", services.whitespaceString},
 		{"InvalidID", getRandomName()},
 	}
 	for _, tc := range testCases {
@@ -226,7 +227,7 @@ func TestMachinePolicyServiceParameters(t *testing.T) {
 			service := createMachinePolicyService(t)
 			require.NotNil(t, service)
 
-			if isEmpty(tc.parameter) {
+			if IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
 				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
@@ -253,7 +254,7 @@ func TestMachinePolicyServiceParameters(t *testing.T) {
 func TestMachinePolicyServiceNew(t *testing.T) {
 	ServiceFunction := newMachinePolicyService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceMachinePolicyService
 
 	testCases := []struct {
@@ -264,13 +265,13 @@ func TestMachinePolicyServiceNew(t *testing.T) {
 		templatePath string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, TestURIMachinePolicyTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, TestURIMachinePolicyTemplate},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, TestURIMachinePolicyTemplate},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, TestURIMachinePolicyTemplate},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, TestURIMachinePolicyTemplate},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.templatePath)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -279,12 +280,12 @@ func TestMachinePolicyGetByPartialName(t *testing.T) {
 	service := createMachinePolicyService(t)
 	require.NotNil(t, service)
 
-	resources, err := service.GetByPartialName(emptyString)
+	resources, err := service.GetByPartialName(services.emptyString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 
-	resources, err = service.GetByPartialName(whitespaceString)
+	resources, err = service.GetByPartialName(services.whitespaceString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)

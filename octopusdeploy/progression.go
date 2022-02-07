@@ -5,5 +5,5 @@ type Progression struct {
 	Environments        []*ReferenceDataItem           `json:"Environments"`
 	Releases            []*ReleaseProgression          `json:"Releases"`
 
-	resource
+	Resource
 }

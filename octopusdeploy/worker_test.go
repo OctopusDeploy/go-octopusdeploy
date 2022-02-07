@@ -55,7 +55,7 @@ func TestWorkersUnmarshalJSON(t *testing.T) {
 	assert.Equal(t, endpoint.GetModifiedOn(), listeningTentacleEndpoint.GetModifiedOn())
 	assert.Equal(t, endpoint.Links, listeningTentacleEndpoint.Links)
 	assert.Equal(t, endpoint.ProxyID, listeningTentacleEndpoint.ProxyID)
-	assert.Equal(t, endpoint.resource, listeningTentacleEndpoint.resource)
+	assert.Equal(t, endpoint.Resource, listeningTentacleEndpoint.Resource)
 	assert.Equal(t, endpoint.TentacleVersionDetails, listeningTentacleEndpoint.TentacleVersionDetails)
 	assert.Equal(t, endpoint.Thumbprint, listeningTentacleEndpoint.Thumbprint)
 	assert.Equal(t, endpoint.URI, listeningTentacleEndpoint.URI)

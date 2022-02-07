@@ -9,11 +9,11 @@ type ConfigurationSection struct {
 	Description string `json:"Description,omitempty"`
 	Name        string `json:"Name,omitempty"`
 
-	resource
+	Resource
 }
 
 func NewConfigurationSection() *ConfigurationSection {
 	return &ConfigurationSection{
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

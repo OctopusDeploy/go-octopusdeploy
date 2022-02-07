@@ -30,7 +30,7 @@ func AssertEqualLifecycles(t *testing.T, expected *octopusdeploy.Lifecycle, actu
 	assert.Equal(t, expected.Phases, actual.Phases)
 }
 
-func CreateTestLifecycle(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Lifecycle {
+func CreateTestLifecycle(t *testing.T, client *octopusdeploy.client) *octopusdeploy.Lifecycle {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -55,7 +55,7 @@ func CreateTestLifecycle(t *testing.T, client *octopusdeploy.Client) *octopusdep
 	return createdLifecycle
 }
 
-func DeleteTestLifecycle(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle) {
+func DeleteTestLifecycle(t *testing.T, client *octopusdeploy.client, lifecycle *octopusdeploy.Lifecycle) {
 	require.NotNil(t, lifecycle)
 
 	if client == nil {
@@ -200,7 +200,7 @@ func TestLifecycleGetByPartialName(t *testing.T) {
 	t.Errorf("lifecycle not found when searching by its name (%s)", createdLifecycle.Name)
 }
 
-func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.Client, lifecycleName string) *octopusdeploy.Lifecycle {
+func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.client, lifecycleName string) *octopusdeploy.Lifecycle {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -219,7 +219,7 @@ func getTestLifecycle(name string) *octopusdeploy.Lifecycle {
 	return octopusdeploy.NewLifecycle(name)
 }
 
-func cleanLifecycle(t *testing.T, octopusClient *octopusdeploy.Client, lifecycleID string) {
+func cleanLifecycle(t *testing.T, octopusClient *octopusdeploy.client, lifecycleID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}

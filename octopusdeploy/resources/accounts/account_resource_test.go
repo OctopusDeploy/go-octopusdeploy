@@ -1,7 +1,8 @@
-package octopusdeploy
+package accounts
 
 import (
 	"encoding/json"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"testing"
 	"time"
 
@@ -11,30 +12,30 @@ import (
 )
 
 func TestAccountResource(t *testing.T) {
-	name := getRandomName()
-	spaceID := getRandomName()
-	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
+	name := octopusdeploy.getRandomName()
+	spaceID := octopusdeploy.getRandomName()
+	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Untenanted")
 
 	testCases := []struct {
 		TestName               string
 		IsError                bool
 		Name                   string
 		SpaceID                string
-		TenantedDeploymentMode TenantedDeploymentMode
+		TenantedDeploymentMode octopusdeploy.TenantedDeploymentMode
 	}{
 		{"Valid", false, name, spaceID, tenantedDeploymentMode},
-		{"EmptyName", true, emptyString, spaceID, tenantedDeploymentMode},
-		{"WhitespaceName", true, whitespaceString, spaceID, tenantedDeploymentMode},
-		{"EmptySpaceID", false, name, emptyString, tenantedDeploymentMode},
-		{"WhitespaceSpaceID", true, name, whitespaceString, tenantedDeploymentMode},
+		{"EmptyName", true, octopusdeploy.emptyString, spaceID, tenantedDeploymentMode},
+		{"WhitespaceName", true, octopusdeploy.whitespaceString, spaceID, tenantedDeploymentMode},
+		{"EmptySpaceID", false, name, octopusdeploy.emptyString, tenantedDeploymentMode},
+		{"WhitespaceSpaceID", true, name, octopusdeploy.whitespaceString, tenantedDeploymentMode},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
-			accountInline := &account{
+			accountInline := &octopusdeploy.account{
 				AccountType: AccountType("None"),
 				Name:        tc.Name,
 			}
-			accountWithNew := newAccount(tc.Name, AccountType("None"))
+			accountWithNew := octopusdeploy.newAccount(tc.Name, AccountType("None"))
 			accountInline.SpaceID = tc.SpaceID
 			accountWithNew.SpaceID = tc.SpaceID
 			accountInline.TenantedDeploymentMode = tc.TenantedDeploymentMode
@@ -61,7 +62,7 @@ func TestAccountResourceAsJSON(t *testing.T) {
 		"Foo":  "/test-2",
 	}
 	spaceID := "space-id"
-	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
+	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Untenanted")
 	tenantIDs := []string{
 		"tenant-id-1",
 		"tenant-id-2",

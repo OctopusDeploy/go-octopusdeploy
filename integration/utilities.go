@@ -12,8 +12,8 @@ import (
 
 const emptyString string = ""
 
-func isEmpty(s string) bool {
-	return len(strings.TrimSpace(s)) == 0
+func IsEmpty(s string) bool {
+	return strings.TrimSpace(s) == emptyString
 }
 
 func createRequiredParameterIsEmptyOrNilError(parameter string) error {

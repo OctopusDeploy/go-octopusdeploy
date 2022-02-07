@@ -1,16 +1,17 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type interruptionService struct {
-	service
+	services.service
 }
 
 func newInterruptionService(sling *sling.Sling, uriTemplate string) *interruptionService {
 	return &interruptionService{
-		service: newService(ServiceInterruptionService, sling, uriTemplate),
+		service: services.newService(ServiceInterruptionService, sling, uriTemplate),
 	}
 }
 

@@ -22,7 +22,7 @@ type ListeningTentacleDeploymentTarget struct {
 	Thumbprint             string                     `json:"Thumbprint,omitempty"`
 	URI                    string                     `json:"Uri,omitempty" validate:"omitempty,uri"`
 
-	resource
+	Resource
 }
 
 func NewListeningTentacleDeploymentTarget(name string, endpoint *ListeningTentacleEndpoint, environmentIDs []string, roles []string) *ListeningTentacleDeploymentTarget {
@@ -38,7 +38,7 @@ func NewListeningTentacleDeploymentTarget(name string, endpoint *ListeningTentac
 		TenantTags:             []string{},
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }
 

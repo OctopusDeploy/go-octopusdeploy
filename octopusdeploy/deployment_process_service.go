@@ -1,17 +1,18 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
 
 type deploymentProcessService struct {
-	service
+	services.service
 }
 
 func newDeploymentProcessService(sling *sling.Sling, uriTemplate string) *deploymentProcessService {
 	return &deploymentProcessService{
-		service: newService(ServiceDeploymentProcessesService, sling, uriTemplate),
+		service: services.newService(ServiceDeploymentProcessesService, sling, uriTemplate),
 	}
 }
 

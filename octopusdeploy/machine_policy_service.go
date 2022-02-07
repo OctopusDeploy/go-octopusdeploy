@@ -1,20 +1,21 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type machinePolicyService struct {
 	templatePath string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newMachinePolicyService(sling *sling.Sling, uriTemplate string, templatePath string) *machinePolicyService {
 	machinePolicyService := &machinePolicyService{
 		templatePath: templatePath,
 	}
-	machinePolicyService.service = newService(ServiceMachinePolicyService, sling, uriTemplate)
+	machinePolicyService.service = services.newService(ServiceMachinePolicyService, sling, uriTemplate)
 
 	return machinePolicyService
 }

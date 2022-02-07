@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -13,11 +14,11 @@ type actionTemplateService struct {
 	searchPath        string
 	versionedLogoPath string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 // newActionTemplateService returns an actionTemplateService with a
-// preconfigured client.
+// preconfigured Client.
 func newActionTemplateService(sling *sling.Sling, uriTemplate string, categoriesPath string, logoPath string, searchPath string, versionedLogoPath string) *actionTemplateService {
 	actionTemplateService := &actionTemplateService{
 		categoriesPath:    categoriesPath,
@@ -25,7 +26,7 @@ func newActionTemplateService(sling *sling.Sling, uriTemplate string, categories
 		searchPath:        searchPath,
 		versionedLogoPath: versionedLogoPath,
 	}
-	actionTemplateService.service = newService(ServiceActionTemplateService, sling, uriTemplate)
+	actionTemplateService.service = services.newService(ServiceActionTemplateService, sling, uriTemplate)
 
 	return actionTemplateService
 }

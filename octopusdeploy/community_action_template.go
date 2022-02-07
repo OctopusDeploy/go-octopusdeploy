@@ -30,7 +30,7 @@ type CommunityActionTemplate struct {
 	Version     int32                     `json:"Version,omitempty"`
 	Website     string                    `json:"Website,omitempty"`
 
-	resource
+	Resource
 }
 
 // NewCommunityActionTemplate initializes a community action template.
@@ -41,7 +41,7 @@ func NewCommunityActionTemplate(name string, actionType string) *CommunityAction
 		Packages:   []PackageReference{},
 		Parameters: []ActionTemplateParameter{},
 		Properties: map[string]PropertyValue{},
-		resource:   *newResource(),
+		Resource:   *newResource(),
 	}
 }
 

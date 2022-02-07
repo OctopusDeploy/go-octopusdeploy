@@ -133,7 +133,7 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 	// Authentication field
 	kubernetesCertificateAuthentication := resource.Authentication.(*KubernetesCertificateAuthentication)
 	assert.Equal(t, "KubernetesCertificate", kubernetesCertificateAuthentication.GetAuthenticationType())
-	assert.Equal(t, "client-certificate", kubernetesCertificateAuthentication.ClientCertificate)
+	assert.Equal(t, "Client-certificate", kubernetesCertificateAuthentication.ClientCertificate)
 
 	// Container field
 	assert.Equal(t, "image", resource.Container.Image)
@@ -148,7 +148,7 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 	assert.True(t, resource.RunningInContainer)
 	assert.False(t, resource.SkipTLSVerification)
 
-	// resource
+	// Resource
 	assert.Equal(t, "endpoint-1", resource.GetID())
 	assert.Equal(t, "john.smith@example.com", resource.GetModifiedBy())
 	assert.Equal(t, &lastModifiedOn, resource.GetModifiedOn())
@@ -158,7 +158,7 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 const kubernetesEndpointAsJSON string = `{
 	"Authentication": {
 		"AuthenticationType": "KubernetesCertificate",
-		"ClientCertificate": "client-certificate"
+		"ClientCertificate": "Client-certificate"
 	},
 	"ClusterCertificate": "Certificates-22-r-BY2FT",
 	"ClusterUrl": "https://kubernetes.example.com",

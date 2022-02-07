@@ -30,7 +30,7 @@ const (
 	ParameterProject                string = "project"
 	ParameterRelease                string = "release"
 	ParameterReplacementCertificate string = "replacementCertificate"
-	ParameterResource               string = "resource"
+	ParameterResource               string = "Resource"
 	ParameterRunbook                string = "runbook"
 	ParameterRunbookSnapshot        string = "runbookSnapshot"
 	ParameterScopedUserRole         string = "scopedUserRole"

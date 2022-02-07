@@ -1,21 +1,22 @@
-package octopusdeploy
+package accounts
 
 import (
 	"encoding/json"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 // Accounts defines a collection of accounts with built-in support for paged
 // results.
 type Accounts struct {
-	Items []IAccount `json:"Items"`
-	PagedResults
+	Items []octopusdeploy.IAccount `json:"Items"`
+	octopusdeploy.PagedResults
 }
 
 // MarshalJSON returns an Accounts struct as its JSON encoding.
 func (a *Accounts) MarshalJSON() ([]byte, error) {
 	accounts := struct {
-		Items []IAccount `json:"Items"`
-		PagedResults
+		Items []octopusdeploy.IAccount `json:"Items"`
+		octopusdeploy.PagedResults
 	}{
 		Items:        a.Items,
 		PagedResults: a.PagedResults,
@@ -32,7 +33,7 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	var pagedResults PagedResults
+	var pagedResults octopusdeploy.PagedResults
 	err = json.Unmarshal(b, &pagedResults)
 	if err != nil {
 		return err
@@ -78,7 +79,7 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 				}
 				a.Items = append(a.Items, amazonWebServicesAccount)
 			case AccountTypeAzureServicePrincipal:
-				var azureServicePrincipalAccount *AzureServicePrincipalAccount
+				var azureServicePrincipalAccount *octopusdeploy.AzureServicePrincipalAccount
 				err := json.Unmarshal(*account, &azureServicePrincipalAccount)
 				if err != nil {
 					return err
@@ -92,7 +93,7 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 				}
 				a.Items = append(a.Items, azureSubscriptionAccount)
 			case AccountTypeGoogleCloudPlatformAccount:
-				var googleCloudAccount *GoogleCloudPlatformAccount
+				var googleCloudAccount *octopusdeploy.GoogleCloudPlatformAccount
 				err := json.Unmarshal(*account, &googleCloudAccount)
 				if err != nil {
 					return err

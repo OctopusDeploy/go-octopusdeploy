@@ -2,6 +2,7 @@ package octopusdeploy
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"math"
 	"strings"
 
@@ -9,12 +10,12 @@ import (
 )
 
 type scriptModuleService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newScriptModuleService(sling *sling.Sling, uriTemplate string) *scriptModuleService {
 	scriptModuleService := &scriptModuleService{}
-	scriptModuleService.service = newService(ServiceLibraryVariableSetService, sling, uriTemplate)
+	scriptModuleService.service = services.newService(ServiceLibraryVariableSetService, sling, uriTemplate)
 
 	return scriptModuleService
 }

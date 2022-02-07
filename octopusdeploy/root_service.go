@@ -1,12 +1,14 @@
 package octopusdeploy
 
+import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+
 type rootService struct {
-	service
+	services.service
 }
 
 func newRootService(client AdminClient) *rootService {
 	return &rootService{
-		service: newService(ServiceRootService, sling, uriTemplate),
+		service: services.newService(ServiceRootService, sling, uriTemplate),
 	}
 }
 

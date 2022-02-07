@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type userOnboardingService struct {
-	service
+	services.service
 }
 
 func newUserOnboardingService(sling *sling.Sling, uriTemplate string) *userOnboardingService {
 	return &userOnboardingService{
-		service: newService(ServiceUserOnboardingService, sling, uriTemplate),
+		service: services.newService(ServiceUserOnboardingService, sling, uriTemplate),
 	}
 }

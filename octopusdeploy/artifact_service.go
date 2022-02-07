@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -8,13 +9,13 @@ import (
 // actionTemplateService handles communication for any operations in the
 // Octopus API that pertain to artifacts.
 type artifactService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
-// newArtifactService returns an artifactService with a preconfigured client.
+// newArtifactService returns an artifactService with a preconfigured Client.
 func newArtifactService(sling *sling.Sling, uriTemplate string) *artifactService {
 	artifactService := &artifactService{}
-	artifactService.service = newService(ServiceArtifactService, sling, uriTemplate)
+	artifactService.service = services.newService(ServiceArtifactService, sling, uriTemplate)
 
 	return artifactService
 }

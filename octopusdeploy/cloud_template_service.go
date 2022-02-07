@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type cloudTemplateService struct {
-	service
+	services.service
 }
 
 func newCloudTemplateService(sling *sling.Sling, uriTemplate string) *cloudTemplateService {
 	return &cloudTemplateService{
-		service: newService(ServiceCloudTemplateService, sling, uriTemplate),
+		service: services.newService(ServiceCloudTemplateService, sling, uriTemplate),
 	}
 }

@@ -1,20 +1,21 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type tagSetService struct {
 	sortOrderPath string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newTagSetService(sling *sling.Sling, uriTemplate string, sortOrderPath string) *tagSetService {
 	tagSetService := &tagSetService{
 		sortOrderPath: sortOrderPath,
 	}
-	tagSetService.service = newService(ServiceTagSetService, sling, uriTemplate)
+	tagSetService.service = services.newService(ServiceTagSetService, sling, uriTemplate)
 
 	return tagSetService
 }
@@ -82,7 +83,7 @@ func (s tagSetService) GetAll() ([]*TagSet, error) {
 
 // GetByName performs a lookup and returns the TagSet with a matching name.
 func (s tagSetService) GetByName(name string) (*TagSet, error) {
-	if isEmpty(name) {
+	if IsEmpty(name) {
 		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 
@@ -108,7 +109,7 @@ func (s tagSetService) GetByName(name string) (*TagSet, error) {
 // Update modifies a tag set based on the one provided as input.
 func (s tagSetService) Update(tagSet *TagSet) (*TagSet, error) {
 	if tagSet == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterTagSet)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterTagSet)
 	}
 
 	path, err := getUpdatePath(s, tagSet)

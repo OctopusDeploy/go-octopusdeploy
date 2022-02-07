@@ -19,7 +19,7 @@ type Lifecycle struct {
 	SpaceID                 string          `json:"SpaceId,omitempty"`
 	TentacleRetentionPolicy RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
 
-	resource
+	Resource
 }
 
 const (
@@ -39,7 +39,7 @@ func NewLifecycle(name string) *Lifecycle {
 			Unit:           "Days",
 			QuantityToKeep: 30,
 		},
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }
 

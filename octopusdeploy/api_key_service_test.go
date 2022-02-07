@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 func TestNewAPIKeyService(t *testing.T) {
 	ServiceFunction := newAPIKeyService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceAPIKeyService
 
 	testCases := []struct {
@@ -20,25 +21,25 @@ func TestNewAPIKeyService(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
 
 func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 	service := createAPIKeyService(t)
-	resource, err := service.GetByUserID(emptyString)
+	resource, err := service.GetByUserID(services.emptyString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByUserID, ParameterUserID))
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByUserID(whitespaceString)
+	resource, err = service.GetByUserID(services.whitespaceString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByUserID, ParameterUserID))
 	assert.Nil(t, resource)
@@ -68,7 +69,7 @@ func createServiceAccountUser(t *testing.T) *User {
 		TestURIUserAuthentication,
 		TestURIUserIdentityMetadata,
 	)
-	testNewService(t, service, TestURIUsers, ServiceUserService)
+	services.testNewService(t, service, TestURIUsers, ServiceUserService)
 
 	user := NewUser(getRandomName(), getRandomName())
 	user.IsService = true
@@ -83,6 +84,6 @@ func createServiceAccountUser(t *testing.T) *User {
 
 func createAPIKeyService(t *testing.T) *apiKeyService {
 	service := newAPIKeyService(nil, TestURIAPIKeys)
-	testNewService(t, service, TestURIAPIKeys, ServiceAPIKeyService)
+	services.testNewService(t, service, TestURIAPIKeys, ServiceAPIKeyService)
 	return service
 }

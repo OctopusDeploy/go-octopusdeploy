@@ -1,19 +1,20 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type configurationService struct {
 	versionControlClearCachePath string
 
-	service
+	services.service
 }
 
 func newConfigurationService(sling *sling.Sling, uriTemplate string, versionControlClearCachePath string) *configurationService {
 	return &configurationService{
 		versionControlClearCachePath: versionControlClearCachePath,
-		service:                      newService(ServiceConfigurationService, sling, uriTemplate),
+		service:                      services.newService(ServiceConfigurationService, sling, uriTemplate),
 	}
 }
 

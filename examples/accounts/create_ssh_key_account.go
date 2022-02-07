@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -31,7 +32,7 @@ func CreateSSHKeyAccountExample() {
 		return
 	}
 
-	sshKeyAccount, err := octopusdeploy.NewSSHKeyAccount(name, username, privateKeyFile)
+	sshKeyAccount, err := accounts.NewSSHKeyAccount(name, username, privateKeyFile)
 	if err != nil {
 		_ = fmt.Errorf("error creating SSH key account: %v", err)
 		return
@@ -44,7 +45,7 @@ func CreateSSHKeyAccountExample() {
 	}
 
 	// type conversion required to access SSH key-specific fields
-	sshKeyAccount = createdAccount.(*octopusdeploy.SSHKeyAccount)
+	sshKeyAccount = createdAccount.(*accounts.SSHKeyAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", sshKeyAccount.GetID())

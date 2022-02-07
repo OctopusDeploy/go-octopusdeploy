@@ -21,7 +21,7 @@ type FeedResource struct {
 	SpaceID                           string          `json:"SpaceId,omitempty"`
 	Username                          string          `json:"Username,omitempty"`
 
-	resource
+	Resource
 }
 
 type FeedResources struct {
@@ -33,7 +33,7 @@ func NewFeedResource(name string, feedType FeedType) *FeedResource {
 	return &FeedResource{
 		FeedType: feedType,
 		Name:     name,
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }
 
@@ -49,7 +49,7 @@ func (f *FeedResource) SetName(name string) {
 	f.Name = name
 }
 
-// Validate checks the state of the feed resource and returns an error if
+// Validate checks the state of the feed Resource and returns an error if
 // invalid.
 func (f FeedResource) Validate() error {
 	return validator.New().Struct(f)

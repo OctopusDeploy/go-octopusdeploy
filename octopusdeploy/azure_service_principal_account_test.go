@@ -1,6 +1,8 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	uuid "github.com/google/uuid"
@@ -35,10 +37,10 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 		TenantID                *uuid.UUID
 	}{
 		{"Valid", false, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"EmptyName", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, emptyString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"WhitespaceName", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, whitespaceString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"EmptySpaceID", false, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, emptyString, &subscriptionID, tenantedDeploymentMode, &tenantID},
-		{"WhitespaceSpaceID", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, whitespaceString, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"EmptyName", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, services.emptyString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"WhitespaceName", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, services.whitespaceString, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"EmptySpaceID", false, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, services.emptyString, &subscriptionID, tenantedDeploymentMode, &tenantID},
+		{"WhitespaceSpaceID", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, services.whitespaceString, &subscriptionID, tenantedDeploymentMode, &tenantID},
 		{"NilApplicationPassword", true, &applicationID, nil, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
 		{"NilApplicationID", true, nil, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID},
 		{"NilSubscriptionID", true, &applicationID, applicationPassword, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, nil, tenantedDeploymentMode, &tenantID},
@@ -57,7 +59,7 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 				SubscriptionID:          tc.SubscriptionID,
 				TenantID:                tc.TenantID,
 			}
-			azureServicePrincipalAccount.AccountType = AccountType("AzureServicePrincipal")
+			azureServicePrincipalAccount.AccountType = accounts.AccountType("AzureServicePrincipal")
 			azureServicePrincipalAccount.Name = tc.Name
 			azureServicePrincipalAccount.SpaceID = tc.SpaceID
 			azureServicePrincipalAccount.TenantedDeploymentMode = tc.TenantedDeploymentMode
@@ -66,7 +68,7 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 			} else {
 				require.NoError(t, azureServicePrincipalAccount.Validate())
 
-				require.Equal(t, AccountType("AzureServicePrincipal"), azureServicePrincipalAccount.GetAccountType())
+				require.Equal(t, accounts.AccountType("AzureServicePrincipal"), azureServicePrincipalAccount.GetAccountType())
 				require.Equal(t, tc.Name, azureServicePrincipalAccount.GetName())
 			}
 			azureServicePrincipalAccount.SetName(tc.Name)

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"reflect"
 	"regexp"
 	"strings"
@@ -24,8 +26,8 @@ func isNil(i interface{}) bool {
 	var ret bool
 
 	switch i.(type) {
-	case *AccountResource:
-		v := i.(*AccountResource)
+	case *accounts.AccountResource:
+		v := i.(*accounts.AccountResource)
 		ret = v == nil
 	case *ActionTemplate:
 		v := i.(*ActionTemplate)
@@ -33,8 +35,8 @@ func isNil(i interface{}) bool {
 	case *ActionTemplateParameter:
 		v := i.(*ActionTemplateParameter)
 		ret = v == nil
-	case *AmazonWebServicesAccount:
-		v := i.(*AmazonWebServicesAccount)
+	case *accounts.AmazonWebServicesAccount:
+		v := i.(*accounts.AmazonWebServicesAccount)
 		ret = v == nil
 	case *APIKey:
 		v := i.(*APIKey)
@@ -54,8 +56,8 @@ func isNil(i interface{}) bool {
 	case *AzureServicePrincipalAccount:
 		v := i.(*AzureServicePrincipalAccount)
 		ret = v == nil
-	case *AzureSubscriptionAccount:
-		v := i.(*AzureSubscriptionAccount)
+	case *accounts.AzureSubscriptionAccount:
+		v := i.(*accounts.AzureSubscriptionAccount)
 		ret = v == nil
 	case *AzureWebAppEndpoint:
 		v := i.(*AzureWebAppEndpoint)
@@ -144,8 +146,8 @@ func isNil(i interface{}) bool {
 	case *TagSet:
 		v := i.(*TagSet)
 		ret = v == nil
-	case *Team:
-		v := i.(*Team)
+	case *access_management.Team:
+		v := i.(*access_management.Team)
 		ret = v == nil
 	case *Tenant:
 		v := i.(*Tenant)
@@ -158,22 +160,22 @@ func isNil(i interface{}) bool {
 	return ret
 }
 
-func isEmpty(s string) bool {
-	return len(strings.TrimSpace(s)) == 0
+func IsEmpty(s string) bool {
+	return strings.TrimSpace(s) == empty
 }
 
-func getSpaceIDForResource(resource IHasSpace, client SpaceScopedClient) (string, error) {
+func GetSpaceIDForResource(resource IHasSpace, client SpaceScopedClient) (string, error) {
 	if resource == nil {
-		return emptyString, fmt.Errorf("the resource should never be nil")
+		return empty, fmt.Errorf("the Resource should never be nil")
 	}
 
 	resourceSpaceID := resource.GetSpaceID()
 
-	if !isEmpty(resourceSpaceID) {
+	if !IsEmpty(resourceSpaceID) {
 		return resourceSpaceID, nil
 	}
 
-	return client.GetSpaceID(), nil
+	return client.spaceID, nil
 }
 
 func isAPIKey(apiKey string) bool {
@@ -202,12 +204,12 @@ func createBuiltInTeamsCannotDeleteError() error {
 	return fmt.Errorf("The built-in teams cannot be deleted.")
 }
 
-func createInvalidParameterError(methodName string, ParameterName string) error {
+func CreateInvalidParameterError(methodName string, ParameterName string) error {
 	return fmt.Errorf("%s: the input parameter (%s) is invalid", methodName, ParameterName)
 }
 
 func createInvalidClientStateError(ServiceName string) error {
-	return fmt.Errorf("%s: the state of the internal client is invalid", ServiceName)
+	return fmt.Errorf("%s: the state of the internal Client is invalid", ServiceName)
 }
 
 func createInvalidPathError(ServiceName string) error {
@@ -219,10 +221,10 @@ func createItemNotFoundError(ServiceName string, methodName string, name string)
 }
 
 func createClientInitializationError(methodName string) error {
-	return fmt.Errorf("%s: unable to initialize internal client", methodName)
+	return fmt.Errorf("%s: unable to initialize internal Client", methodName)
 }
 
-func createRequiredParameterIsEmptyOrNilError(parameter string) error {
+func CreateRequiredParameterIsEmptyOrNilError(parameter string) error {
 	return fmt.Errorf("the required parameter, %s is nil or empty", parameter)
 }
 

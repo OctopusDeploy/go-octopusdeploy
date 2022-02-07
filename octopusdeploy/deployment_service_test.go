@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,6 +21,6 @@ func TestDeploymentServiceGetByIDs(t *testing.T) {
 
 func createDeploymentService(t *testing.T) *deploymentService {
 	service := newDeploymentService(nil, TestURIDeployments)
-	testNewService(t, service, TestURIDeployments, ServiceDeploymentService)
+	services.testNewService(t, service, TestURIDeployments, ServiceDeploymentService)
 	return service
 }

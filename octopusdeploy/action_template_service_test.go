@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -25,7 +26,7 @@ func createActionTemplateService(t *testing.T) *actionTemplateService {
 	versionedLogoPath := TestURIActionTemplateVersionedLogo
 
 	service := newActionTemplateService(nil, TestURIActionTemplates, categoriesPath, logoPath, searchPath, versionedLogoPath)
-	testNewService(t, service, TestURIActionTemplates, ServiceActionTemplateService)
+	services.testNewService(t, service, TestURIActionTemplates, ServiceActionTemplateService)
 	return service
 }
 
@@ -92,11 +93,11 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	service := createActionTemplateService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
@@ -119,12 +120,12 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 func TestActionTemplateServiceNew(t *testing.T) {
 	ServiceFunction := newActionTemplateService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceActionTemplateService
-	categoriesPath := emptyString
-	logoPath := emptyString
-	searchPath := emptyString
-	versionedLogoPath := emptyString
+	categoriesPath := services.emptyString
+	logoPath := services.emptyString
+	searchPath := services.emptyString
+	versionedLogoPath := services.emptyString
 
 	testCases := []struct {
 		name              string
@@ -137,13 +138,13 @@ func TestActionTemplateServiceNew(t *testing.T) {
 		versionedLogoPath string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, categoriesPath, logoPath, searchPath, versionedLogoPath},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, categoriesPath, logoPath, searchPath, versionedLogoPath},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, categoriesPath, logoPath, searchPath, versionedLogoPath},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, categoriesPath, logoPath, searchPath, versionedLogoPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, categoriesPath, logoPath, searchPath, versionedLogoPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.categoriesPath, tc.logoPath, tc.searchPath, tc.versionedLogoPath)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

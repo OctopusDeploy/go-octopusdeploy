@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestSpace(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Space {
+func CreateTestSpace(t *testing.T, client *octopusdeploy.client) *octopusdeploy.Space {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -32,7 +32,7 @@ func CreateTestSpace(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.
 	return createdSpace
 }
 
-func DeleteTestSpace(t *testing.T, client *octopusdeploy.Client, space *octopusdeploy.Space) {
+func DeleteTestSpace(t *testing.T, client *octopusdeploy.client, space *octopusdeploy.Space) {
 	require.NotNil(t, space)
 
 	// if space.IsDefault {
@@ -88,7 +88,7 @@ func IsEqualSpaces(t *testing.T, expected *octopusdeploy.Space, actual *octopusd
 	assert.Equal(t, expected.TaskQueueStopped, actual.TaskQueueStopped)
 }
 
-func GetDefaultSpace(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.Space {
+func GetDefaultSpace(t *testing.T, client *octopusdeploy.client) *octopusdeploy.Space {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -108,7 +108,7 @@ func GetDefaultSpace(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.
 	return nil
 }
 
-func UpdateTestSpace(t *testing.T, client *octopusdeploy.Client, space *octopusdeploy.Space) *octopusdeploy.Space {
+func UpdateTestSpace(t *testing.T, client *octopusdeploy.client, space *octopusdeploy.Space) *octopusdeploy.Space {
 	if client == nil {
 		client = getOctopusClient()
 	}

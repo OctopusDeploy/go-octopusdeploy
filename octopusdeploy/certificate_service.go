@@ -2,19 +2,20 @@ package octopusdeploy
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 
 	"github.com/dghubble/sling"
 )
 
 // certificateService handles communication with Certificate-related methods of the Octopus API.
 type certificateService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
-// newCertificateService returns an certificateService with a preconfigured client.
+// newCertificateService returns an certificateService with a preconfigured Client.
 func newCertificateService(sling *sling.Sling, uriTemplate string) *certificateService {
 	certificateService := &certificateService{}
-	certificateService.service = newService(ServiceCertificateService, sling, uriTemplate)
+	certificateService.service = services.newService(ServiceCertificateService, sling, uriTemplate)
 
 	return certificateService
 }
@@ -96,7 +97,7 @@ func (s certificateService) Update(resource CertificateResource) (*CertificateRe
 }
 
 func (s certificateService) Replace(certificateID string, replacementCertificate *ReplacementCertificate) (*CertificateResource, error) {
-	if isEmpty(certificateID) {
+	if IsEmpty(certificateID) {
 		return nil, createInvalidParameterError(OperationReplace, ParameterCertificateID)
 	}
 

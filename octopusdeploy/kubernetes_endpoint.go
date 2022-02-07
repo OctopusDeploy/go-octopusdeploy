@@ -22,7 +22,7 @@ type KubernetesEndpoint struct {
 	RunningInContainer     bool                       `json:"RunningInContainer"`
 	SkipTLSVerification    bool                       `json:"SkipTlsVerification"`
 
-	resource
+	Resource
 }
 
 // NewKubernetesEndpoint creates and initializes a new Kubernetes endpoint.
@@ -30,7 +30,7 @@ func NewKubernetesEndpoint(clusterURL *url.URL) *KubernetesEndpoint {
 	return &KubernetesEndpoint{
 		ClusterURL:         clusterURL,
 		CommunicationStyle: "Kubernetes",
-		resource:           *newResource(),
+		Resource:           *newResource(),
 	}
 }
 
@@ -74,7 +74,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 		ProxyID             string                     `json:"ProxyId,omitempty"`
 		RunningInContainer  bool                       `json:"RunningInContainer"`
 		SkipTLSVerification string                     `json:"SkipTlsVerification"`
-		resource
+		Resource
 	}{
 		Authentication:      k.Authentication,
 		ClusterCertificate:  k.ClusterCertificate,
@@ -86,7 +86,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 		ProxyID:             k.ProxyID,
 		RunningInContainer:  k.RunningInContainer,
 		SkipTLSVerification: strings.Title(strconv.FormatBool(k.SkipTLSVerification)),
-		resource:            k.resource,
+		Resource:            k.Resource,
 	}
 
 	return json.Marshal(kubernetesEndpoint)
@@ -104,7 +104,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		ProxyID             string                     `json:"ProxyId,omitempty"`
 		RunningInContainer  bool                       `json:"RunningInContainer"`
 		SkipTLSVerification string                     `json:"SkipTlsVerification"`
-		resource
+		Resource
 	}
 
 	if err := json.Unmarshal(data, &fields); err != nil {
@@ -123,7 +123,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if !isEmpty(fields.SkipTLSVerification) {
+	if !IsEmpty(fields.SkipTLSVerification) {
 		skipTLSVerification, err := strconv.ParseBool(fields.SkipTLSVerification)
 		if err != nil {
 			return err
@@ -139,7 +139,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	k.Namespace = fields.Namespace
 	k.ProxyID = fields.ProxyID
 	k.RunningInContainer = fields.RunningInContainer
-	k.resource = fields.resource
+	k.Resource = fields.Resource
 
 	var kubernetesEndpoint map[string]*json.RawMessage
 	if err := json.Unmarshal(data, &kubernetesEndpoint); err != nil {

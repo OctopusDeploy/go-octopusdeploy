@@ -30,7 +30,7 @@ func AssertEqualProjectGroups(t *testing.T, expected *octopusdeploy.ProjectGroup
 	assert.Equal(t, expected.RetentionPolicyID, actual.RetentionPolicyID)
 }
 
-func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.ProjectGroup {
+func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.client) *octopusdeploy.ProjectGroup {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -68,7 +68,7 @@ func TestProjectGroupServiceDeleteAll(t *testing.T) {
 	}
 }
 
-func DeleteTestProjectGroup(t *testing.T, client *octopusdeploy.Client, projectGroup *octopusdeploy.ProjectGroup) {
+func DeleteTestProjectGroup(t *testing.T, client *octopusdeploy.client, projectGroup *octopusdeploy.ProjectGroup) {
 	require.NotNil(t, projectGroup)
 
 	if client == nil {

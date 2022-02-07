@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
@@ -11,15 +12,15 @@ import (
 type feedService struct {
 	builtInFeedStats string
 
-	canDeleteService
+	services.canDeleteService
 }
 
-// newFeedService returns an feed service with a preconfigured client.
+// newFeedService returns an feed service with a preconfigured Client.
 func newFeedService(sling *sling.Sling, uriTemplate string, builtInFeedStats string) *feedService {
 	feedService := &feedService{
 		builtInFeedStats: builtInFeedStats,
 	}
-	feedService.service = newService(ServiceFeedService, sling, uriTemplate)
+	feedService.service = services.newService(ServiceFeedService, sling, uriTemplate)
 
 	return feedService
 }
@@ -75,7 +76,7 @@ func (s feedService) GetAll() ([]IFeed, error) {
 // GetByID returns the feed that matches the input ID. If one cannot be found,
 // it returns nil and an error.
 func (s feedService) GetByID(id string) (IFeed, error) {
-	if isEmpty(id) {
+	if IsEmpty(id) {
 		return nil, createInvalidParameterError(OperationGetByID, ParameterID)
 	}
 

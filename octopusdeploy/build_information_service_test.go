@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -9,8 +10,8 @@ import (
 func TestNewBuildInformationService(t *testing.T) {
 	ServiceFunction := newBuildInformationService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	bulkPath := emptyString
+	uriTemplate := services.emptyString
+	bulkPath := services.emptyString
 	ServiceName := ServiceBuildInformationService
 
 	testCases := []struct {
@@ -21,19 +22,19 @@ func TestNewBuildInformationService(t *testing.T) {
 		bulkPath    string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, bulkPath},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, bulkPath},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, bulkPath},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, bulkPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, bulkPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.bulkPath)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
 
 func createBuildInformationService(t *testing.T) *buildInformationService {
 	service := newBuildInformationService(nil, TestURIBuildInformation, TestURIBuildInformationBulk)
-	testNewService(t, service, TestURIBuildInformation, ServiceBuildInformationService)
+	services.testNewService(t, service, TestURIBuildInformation, ServiceBuildInformationService)
 	return service
 }

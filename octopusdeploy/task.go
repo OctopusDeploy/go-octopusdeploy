@@ -24,7 +24,7 @@ type Task struct {
 	StartTime                  *time.Time             `json:"StartTime,omitempty"`
 	State                      string                 `json:"State,omitempty"`
 
-	resource
+	Resource
 }
 
 type Tasks struct {
@@ -36,6 +36,6 @@ type Tasks struct {
 func NewTask() *Task {
 	return &Task{
 		Arguments: map[string]interface{}{},
-		resource:  *newResource(),
+		Resource:  *newResource(),
 	}
 }

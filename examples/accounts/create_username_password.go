@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -32,7 +33,7 @@ func CreateUsernamePasswordExample() {
 	}
 
 	// option 1: create a username/password account and assign values to fields
-	usernamePasswordAccount, err := octopusdeploy.NewUsernamePasswordAccount(name)
+	usernamePasswordAccount, err := accounts.NewUsernamePasswordAccount(name)
 	if err != nil {
 		_ = fmt.Errorf("error creating username/password account: %v", err)
 	}
@@ -41,12 +42,12 @@ func CreateUsernamePasswordExample() {
 
 	// option 2: create a username/password account and assign values to fields
 	// using the variadic configuration option
-	options := func(u *octopusdeploy.UsernamePasswordAccount) {
+	options := func(u *accounts.UsernamePasswordAccount) {
 		u.Password = octopusdeploy.NewSensitiveValue(password)
 		u.Username = username
 	}
 
-	usernamePasswordAccount, err = octopusdeploy.NewUsernamePasswordAccount(name, options)
+	usernamePasswordAccount, err = accounts.NewUsernamePasswordAccount(name, options)
 	if err != nil {
 		_ = fmt.Errorf("error creating username/password account: %v", err)
 	}
@@ -58,7 +59,7 @@ func CreateUsernamePasswordExample() {
 	}
 
 	// type conversion required to access Username/Password-specific fields
-	usernamePasswordAccount = createdAccount.(*octopusdeploy.UsernamePasswordAccount)
+	usernamePasswordAccount = createdAccount.(*accounts.UsernamePasswordAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", usernamePasswordAccount.GetID())

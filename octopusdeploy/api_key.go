@@ -18,7 +18,7 @@ type APIKey struct {
 	Purpose string     `json:"Purpose,omitempty"`
 	UserID  string     `json:"UserId,omitempty"`
 
-	resource
+	Resource
 }
 
 // NewAPIKey initializes an API key with a purpose.
@@ -26,7 +26,7 @@ func NewAPIKey(purpose string, userID string) *APIKey {
 	return &APIKey{
 		Purpose:  purpose,
 		UserID:   userID,
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }
 

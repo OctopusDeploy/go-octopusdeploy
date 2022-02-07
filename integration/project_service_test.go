@@ -50,7 +50,7 @@ func AssertEqualProjects(t *testing.T, expected *octopusdeploy.Project, actual *
 	assert.Equal(t, expected.VariableSetID, actual.VariableSetID)
 }
 
-func CreateTestProject(t *testing.T, client *octopusdeploy.Client, space *octopusdeploy.Space, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup) *octopusdeploy.Project {
+func CreateTestProject(t *testing.T, client *octopusdeploy.client, space *octopusdeploy.Space, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup) *octopusdeploy.Project {
 	require.NotNil(t, space)
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
@@ -79,7 +79,7 @@ func CreateTestProject(t *testing.T, client *octopusdeploy.Client, space *octopu
 	return createdProject
 }
 
-func DeleteTestProject(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) {
+func DeleteTestProject(t *testing.T, client *octopusdeploy.client, project *octopusdeploy.Project) {
 	require.NotNil(t, project)
 
 	if client == nil {

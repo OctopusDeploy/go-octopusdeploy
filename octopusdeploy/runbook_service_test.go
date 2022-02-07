@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createRunbookService(t *testing.T) *runbookService {
 	service := newRunbookService(nil, TestURIRunbooks)
-	testNewService(t, service, TestURIRunbooks, ServiceRunbookService)
+	services.testNewService(t, service, TestURIRunbooks, ServiceRunbookService)
 	return service
 }
 
@@ -31,7 +32,7 @@ func TestRunbookServiceAddGetDelete(t *testing.T) {
 func TestRunbookServiceNew(t *testing.T) {
 	ServiceFunction := newRunbookService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceRunbookService
 
 	testCases := []struct {
@@ -41,13 +42,13 @@ func TestRunbookServiceNew(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

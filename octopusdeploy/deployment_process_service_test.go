@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -9,14 +10,14 @@ import (
 
 func createDeploymentProcessService(t *testing.T) *deploymentProcessService {
 	service := newDeploymentProcessService(nil, TestURIDeploymentProcesses)
-	testNewService(t, service, TestURIDeploymentProcesses, ServiceDeploymentProcessesService)
+	services.testNewService(t, service, TestURIDeploymentProcesses, ServiceDeploymentProcessesService)
 	return service
 }
 
 func TestNewDeploymentProcessService(t *testing.T) {
 	ServiceFunction := newDeploymentProcessService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceDeploymentProcessesService
 
 	testCases := []struct {
@@ -26,13 +27,13 @@ func TestNewDeploymentProcessService(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -42,8 +43,8 @@ func TestDeploymentProcessServiceParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", services.emptyString},
+		{"Whitespace", services.whitespaceString},
 		{"InvalidID", getRandomName()},
 	}
 	for _, tc := range testCases {
@@ -51,7 +52,7 @@ func TestDeploymentProcessServiceParameters(t *testing.T) {
 			service := createDeploymentProcessService(t)
 			require.NotNil(t, service)
 
-			if isEmpty(tc.parameter) {
+			if IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
 				require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 				require.Nil(t, resource)
@@ -65,13 +66,13 @@ func TestDeploymentProcessServiceParameters(t *testing.T) {
 }
 
 func TestDeploymentProcessServiceGetWithEmptyID(t *testing.T) {
-	service := newDeploymentProcessService(&sling.Sling{}, emptyString)
+	service := newDeploymentProcessService(&sling.Sling{}, services.emptyString)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	require.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	require.Nil(t, resource)
 }

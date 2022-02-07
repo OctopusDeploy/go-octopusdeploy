@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -28,7 +29,7 @@ func createCertificate(t *testing.T) (*CertificateResource, error) {
 
 func createCertificateService(t *testing.T) *certificateService {
 	service := newCertificateService(nil, TestURICertificates)
-	testNewService(t, service, TestURICertificates, ServiceCertificateService)
+	services.testNewService(t, service, TestURICertificates, ServiceCertificateService)
 	return service
 }
 
@@ -75,11 +76,11 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	service := createCertificateService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
@@ -102,7 +103,7 @@ func TestCertificateServiceGetByID(t *testing.T) {
 func TestCertificateServiceNew(t *testing.T) {
 	ServiceFunction := newCertificateService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceCertificateService
 
 	testCases := []struct {
@@ -112,13 +113,13 @@ func TestCertificateServiceNew(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -127,11 +128,11 @@ func TestCertificateServiceReplace(t *testing.T) {
 	service := createCertificateService(t)
 	require.NotNil(t, service)
 
-	certificate, err := service.Replace(emptyString, nil)
+	certificate, err := service.Replace(services.emptyString, nil)
 	assert.Equal(t, err, createInvalidParameterError(OperationReplace, ParameterCertificateID))
 	assert.Nil(t, certificate)
 
-	certificate, err = service.Replace(whitespaceString, nil)
+	certificate, err = service.Replace(services.whitespaceString, nil)
 	assert.Equal(t, err, createInvalidParameterError(OperationReplace, ParameterCertificateID))
 	assert.Nil(t, certificate)
 
@@ -142,7 +143,7 @@ func TestCertificateServiceReplace(t *testing.T) {
 	replacementCertificate := NewReplacementCertificate("fake-name-string", "fake-password-string")
 	assert.NotNil(t, replacementCertificate)
 
-	certificate, err = service.Replace(whitespaceString, replacementCertificate)
+	certificate, err = service.Replace(services.whitespaceString, replacementCertificate)
 	assert.Error(t, err)
 	assert.Nil(t, certificate)
 }

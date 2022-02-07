@@ -33,7 +33,7 @@ func AssertEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *
 	assert.True(t, reflect.DeepEqual(expected.TenantTags, actual.TenantTags))
 }
 
-func CreateTestChannel(t *testing.T, client *octopusdeploy.Client, project *octopusdeploy.Project) *octopusdeploy.Channel {
+func CreateTestChannel(t *testing.T, client *octopusdeploy.client, project *octopusdeploy.Project) *octopusdeploy.Channel {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -59,7 +59,7 @@ func CreateTestChannel(t *testing.T, client *octopusdeploy.Client, project *octo
 	return createdChannel
 }
 
-func DeleteTestChannel(t *testing.T, client *octopusdeploy.Client, channel *octopusdeploy.Channel) {
+func DeleteTestChannel(t *testing.T, client *octopusdeploy.client, channel *octopusdeploy.Channel) {
 	require.NotNil(t, channel)
 
 	if channel.IsDefault {

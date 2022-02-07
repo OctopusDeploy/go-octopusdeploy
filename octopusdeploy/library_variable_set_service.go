@@ -1,16 +1,17 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type libraryVariableSetService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *libraryVariableSetService {
 	libraryVariableSetService := &libraryVariableSetService{}
-	libraryVariableSetService.service = newService(ServiceLibraryVariableSetService, sling, uriTemplate)
+	libraryVariableSetService.service = services.newService(ServiceLibraryVariableSetService, sling, uriTemplate)
 
 	return libraryVariableSetService
 }

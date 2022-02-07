@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,9 +22,9 @@ func TestChannelWithName(t *testing.T) {
 func TestNewChannelWithEmptyName(t *testing.T) {
 	projectID := getRandomName()
 
-	channel := NewChannel(emptyString, projectID)
+	channel := NewChannel(services.emptyString, projectID)
 	require.Error(t, channel.Validate())
 
-	channel = NewChannel(whitespaceString, projectID)
+	channel = NewChannel(services.whitespaceString, projectID)
 	require.Error(t, channel.Validate())
 }

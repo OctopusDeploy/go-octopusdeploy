@@ -1,16 +1,17 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type runbookService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newRunbookService(sling *sling.Sling, uriTemplate string) *runbookService {
 	runbookService := &runbookService{}
-	runbookService.service = newService(ServiceRunbookService, sling, uriTemplate)
+	runbookService.service = services.newService(ServiceRunbookService, sling, uriTemplate)
 
 	return runbookService
 }

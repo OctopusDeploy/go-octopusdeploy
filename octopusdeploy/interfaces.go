@@ -1,10 +1,13 @@
 package octopusdeploy
 
-import "time"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"time"
+)
 
 // IAccount defines the interface for accounts.
 type IAccount interface {
-	GetAccountType() AccountType
+	GetAccountType() accounts.AccountType
 	GetDescription() string
 	GetEnvironmentIDs() []string
 	GetTenantedDeploymentMode() TenantedDeploymentMode
@@ -93,12 +96,13 @@ type IPersistenceSettings interface {
 // IResource defines the interface for resources.
 type IResource interface {
 	GetID() string
+	SetID(string)
+	Validate() error
+}
+
+type IAuditedResource interface {
 	GetModifiedBy() string
 	GetModifiedOn() *time.Time
-	SetID(string)
-	SetModifiedBy(string)
-	SetModifiedOn(*time.Time)
-	Validate() error
 }
 
 // IRunsOnAWorker defines the interface for workers.

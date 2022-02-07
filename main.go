@@ -28,7 +28,7 @@ func OutputAsJSON(resource interface{}, err error) {
 }
 
 // CreateSpace creates a test space and outputs the results to the console.
-func CreateSpace(client *octopusdeploy.Client) (*octopusdeploy.Space, error) {
+func CreateSpace(client *octopusdeploy.client) (*octopusdeploy.Space, error) {
 	fmt.Println("Creating a new space...")
 	if client.Spaces == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client.Spaces (nil)"))
@@ -68,7 +68,7 @@ func CreateSpace(client *octopusdeploy.Client) (*octopusdeploy.Space, error) {
 	return space, err
 }
 
-func createProject(client *octopusdeploy.Client) *octopusdeploy.Project {
+func createProject(client *octopusdeploy.client) *octopusdeploy.Project {
 	fmt.Println("Creating a new project...")
 
 	if client.Projects == nil {
@@ -96,7 +96,7 @@ func createProject(client *octopusdeploy.Client) *octopusdeploy.Project {
 	return project
 }
 
-func updateProject(client *octopusdeploy.Client, project *octopusdeploy.Project) *octopusdeploy.Project {
+func updateProject(client *octopusdeploy.client, project *octopusdeploy.Project) *octopusdeploy.Project {
 	fmt.Println("Updating a project...")
 	if client == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client (nil)"))
@@ -116,7 +116,7 @@ func updateProject(client *octopusdeploy.Client, project *octopusdeploy.Project)
 	return project
 }
 
-func deleteProject(client *octopusdeploy.Client, project *octopusdeploy.Project) {
+func deleteProject(client *octopusdeploy.client, project *octopusdeploy.Project) {
 	fmt.Println("Deleting a project...")
 	if err := client.Projects.DeleteByID(project.GetID()); err != nil {
 		fmt.Println(err.Error())

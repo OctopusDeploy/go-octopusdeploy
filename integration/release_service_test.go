@@ -37,7 +37,7 @@ func AssertEqualReleases(t *testing.T, expected *octopusdeploy.Release, actual *
 	assert.Equal(t, expected.Version, actual.Version)
 }
 
-func CreateTestRelease(t *testing.T, client *octopusdeploy.Client, channel *octopusdeploy.Channel, project *octopusdeploy.Project) *octopusdeploy.Release {
+func CreateTestRelease(t *testing.T, client *octopusdeploy.client, channel *octopusdeploy.Channel, project *octopusdeploy.Project) *octopusdeploy.Release {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -64,7 +64,7 @@ func CreateTestRelease(t *testing.T, client *octopusdeploy.Client, channel *octo
 	return createdRelease
 }
 
-func DeleteTestRelease(t *testing.T, client *octopusdeploy.Client, release *octopusdeploy.Release) {
+func DeleteTestRelease(t *testing.T, client *octopusdeploy.client, release *octopusdeploy.Release) {
 	require.NotNil(t, release)
 
 	if client == nil {

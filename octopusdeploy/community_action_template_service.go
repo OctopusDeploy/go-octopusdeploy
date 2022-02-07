@@ -1,31 +1,32 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
 
 // communityActionTemplateService handles communication with Account-related methods of the Octopus API.
 type communityActionTemplateService struct {
-	service
+	services.service
 }
 
-// newCommunityActionTemplateService returns an communityActionTemplateService with a preconfigured client.
+// newCommunityActionTemplateService returns an communityActionTemplateService with a preconfigured Client.
 func newCommunityActionTemplateService(sling *sling.Sling, uriTemplate string) *communityActionTemplateService {
 	return &communityActionTemplateService{
-		service: newService(ServiceCommunityActionTemplateService, sling, uriTemplate),
+		service: services.newService(ServiceCommunityActionTemplateService, sling, uriTemplate),
 	}
 }
 
 func (s communityActionTemplateService) getInstallationPath(resource CommunityActionTemplate) (string, error) {
 	err := resource.Validate()
 	if err != nil {
-		return emptyString, createValidationFailureError(OperationInstall, err)
+		return services.emptyString, createValidationFailureError(OperationInstall, err)
 	}
 
 	err = validateInternalState(s)
 	if err != nil {
-		return emptyString, err
+		return services.emptyString, err
 	}
 
 	values := make(map[string]interface{})
@@ -118,7 +119,7 @@ func (s communityActionTemplateService) GetByIDs(ids []string) ([]*CommunityActi
 // GetByName performs a lookup and returns the community action template with a
 // matching name.
 func (s communityActionTemplateService) GetByName(name string) (*CommunityActionTemplate, error) {
-	if isEmpty(name) {
+	if IsEmpty(name) {
 		return nil, createInvalidParameterError(OperationGetByName, ParameterName)
 	}
 

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestWorker(t *testing.T, client *octopusdeploy.Client, workerPool octopusdeploy.IWorkerPool) (*octopusdeploy.Worker, error) {
+func CreateTestWorker(t *testing.T, client *octopusdeploy.client, workerPool octopusdeploy.IWorkerPool) (*octopusdeploy.Worker, error) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -44,7 +44,7 @@ func CreateTestWorker(t *testing.T, client *octopusdeploy.Client, workerPool oct
 	return createdWorker, nil
 }
 
-func DeleteTestWorker(t *testing.T, client *octopusdeploy.Client, worker *octopusdeploy.Worker) {
+func DeleteTestWorker(t *testing.T, client *octopusdeploy.client, worker *octopusdeploy.Worker) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -77,7 +77,7 @@ func IsEqualWorkers(t *testing.T, expected *octopusdeploy.Worker, actual *octopu
 	assert.Equal(t, expected.Name, actual.Name)
 }
 
-func UpdateWorker(t *testing.T, client *octopusdeploy.Client, worker *octopusdeploy.Worker) *octopusdeploy.Worker {
+func UpdateWorker(t *testing.T, client *octopusdeploy.client, worker *octopusdeploy.Worker) *octopusdeploy.Worker {
 	require.NotNil(t, worker)
 
 	if client == nil {

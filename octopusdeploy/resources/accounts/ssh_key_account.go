@@ -1,14 +1,15 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // SSHKeyAccount represents a SSH key pair account.
 type SSHKeyAccount struct {
-	PrivateKeyFile       *SensitiveValue `validate:"required"`
-	PrivateKeyPassphrase *SensitiveValue
+	PrivateKeyFile       *octopusdeploy.SensitiveValue `validate:"required"`
+	PrivateKeyPassphrase *octopusdeploy.SensitiveValue
 	Username             string `validate:"required"`
 
 	account
@@ -16,17 +17,17 @@ type SSHKeyAccount struct {
 
 // NewSSHKeyAccount initializes and returns a SSH key pair account with a name,
 // username, and private key file.
-func NewSSHKeyAccount(name string, username string, privateKeyFile *SensitiveValue, options ...func(*SSHKeyAccount)) (*SSHKeyAccount, error) {
-	if isEmpty(name) {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
+func NewSSHKeyAccount(name string, username string, privateKeyFile *octopusdeploy.SensitiveValue, options ...func(*SSHKeyAccount)) (*SSHKeyAccount, error) {
+	if octopusdeploy.IsEmpty(name) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
-	if isEmpty(username) {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUsername)
+	if octopusdeploy.IsEmpty(username) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterUsername)
 	}
 
 	if privateKeyFile == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterPrivateKeyFile)
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterPrivateKeyFile)
 	}
 
 	account := SSHKeyAccount{
@@ -40,9 +41,6 @@ func NewSSHKeyAccount(name string, username string, privateKeyFile *SensitiveVal
 
 	// assign pre-determined values to "mandatory" fields
 	account.AccountType = AccountType("SshKeyPair")
-	account.ID = emptyString
-	account.ModifiedBy = emptyString
-	account.ModifiedOn = nil
 	account.PrivateKeyFile = privateKeyFile
 	account.Name = name
 	account.Username = username
@@ -63,7 +61,7 @@ func (s *SSHKeyAccount) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", NotAll)
+	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
 	if err != nil {
 		return err
 	}

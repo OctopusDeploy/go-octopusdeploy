@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -16,7 +17,7 @@ type userService struct {
 	userAuthenticationPath    string
 	userIdentityMetadataPath  string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newUserService(
@@ -42,7 +43,7 @@ func newUserService(
 		userAuthenticationPath:    userAuthenticationPath,
 		userIdentityMetadataPath:  userIdentityMetadataPath,
 	}
-	userService.service = newService(ServiceUserService, sling, uriTemplate)
+	userService.service = services.newService(ServiceUserService, sling, uriTemplate)
 
 	return userService
 }
@@ -205,7 +206,7 @@ func (s userService) GetMe() (*User, error) {
 
 func (s userService) GetPermissions(user *User, userQuery ...UserQuery) (*UserPermissionSet, error) {
 	if user == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUser)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterUser)
 	}
 
 	v, _ := query.Values(userQuery)
@@ -221,7 +222,7 @@ func (s userService) GetPermissions(user *User, userQuery ...UserQuery) (*UserPe
 
 func (s userService) GetPermissionsConfiguration(user *User, userQuery ...UserQuery) (*UserPermissionSet, error) {
 	if user == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUser)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterUser)
 	}
 
 	v, _ := query.Values(userQuery)
@@ -237,7 +238,7 @@ func (s userService) GetPermissionsConfiguration(user *User, userQuery ...UserQu
 
 func (s userService) GetSpaces(user *User) ([]*Space, error) {
 	if user == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUser)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterUser)
 	}
 
 	// TODO: check permissions
@@ -250,7 +251,7 @@ func (s userService) GetSpaces(user *User) ([]*Space, error) {
 
 func (s userService) GetTeams(user *User, userQuery ...UserQuery) (*[]ProjectedTeamReferenceDataItem, error) {
 	if user == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUser)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterUser)
 	}
 
 	v, _ := query.Values(userQuery)
@@ -271,7 +272,7 @@ func (s userService) GetTeams(user *User, userQuery ...UserQuery) (*[]ProjectedT
 // Update modifies a user based on the one provided as input.
 func (s userService) Update(user *User) (*User, error) {
 	if user == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUser)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterUser)
 	}
 
 	path, err := getUpdatePath(s, user)

@@ -15,7 +15,7 @@ type Package struct {
 	Title            string            `json:"Title,omitempty"`
 	Version          string            `json:"Version,omitempty"`
 
-	resource
+	Resource
 }
 
 type Packages struct {
@@ -25,6 +25,6 @@ type Packages struct {
 
 func NewPackage() *Package {
 	return &Package{
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

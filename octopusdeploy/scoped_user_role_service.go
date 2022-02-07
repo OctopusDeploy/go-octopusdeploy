@@ -1,14 +1,17 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type scopedUserRoleService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newScopedUserRoleService(sling *sling.Sling, uriTemplate string) *scopedUserRoleService {
 	scopedUserRoleService := &scopedUserRoleService{}
-	scopedUserRoleService.service = newService(ServiceScopedUserRoleService, sling, uriTemplate)
+	scopedUserRoleService.service = services.newService(ServiceScopedUserRoleService, sling, uriTemplate)
 
 	return scopedUserRoleService
 }

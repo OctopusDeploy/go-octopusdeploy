@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
@@ -8,17 +9,17 @@ type environmentService struct {
 	sortOrderPath string
 	summaryPath   string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 // newEnvironmentService returns an environmentService with a preconfigured
-// client.
+// Client.
 func newEnvironmentService(sling *sling.Sling, uriTemplate string, sortOrderPath string, summaryPath string) *environmentService {
 	environmentService := &environmentService{
 		sortOrderPath: sortOrderPath,
 		summaryPath:   summaryPath,
 	}
-	environmentService.service = newService(ServiceEnvironmentService, sling, uriTemplate)
+	environmentService.service = services.newService(ServiceEnvironmentService, sling, uriTemplate)
 
 	return environmentService
 }

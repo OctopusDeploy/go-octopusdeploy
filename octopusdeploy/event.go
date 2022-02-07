@@ -19,7 +19,7 @@ type Event struct {
 	UserID                  string            `json:"UserId,omitempty"`
 	Username                string            `json:"Username,omitempty"`
 
-	resource
+	Resource
 }
 
 type Events struct {

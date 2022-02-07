@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -31,7 +32,7 @@ func CreateTokenExample() {
 	}
 
 	// option 1: create a token account and assign values to fields
-	account, err := octopusdeploy.NewTokenAccount(name, token)
+	account, err := accounts.NewTokenAccount(name, token)
 	if err != nil {
 		_ = fmt.Errorf("error creating token account: %v", err)
 	}
@@ -39,11 +40,11 @@ func CreateTokenExample() {
 
 	// option 2: create a token account and assign values to fields using the
 	// variadic configuration option
-	options := func(t *octopusdeploy.TokenAccount) {
+	options := func(t *accounts.TokenAccount) {
 		t.Description = "This is the description."
 	}
 
-	account, err = octopusdeploy.NewTokenAccount(name, token, options)
+	account, err = accounts.NewTokenAccount(name, token, options)
 	if err != nil {
 		_ = fmt.Errorf("error creating token account: %v", err)
 	}
@@ -55,7 +56,7 @@ func CreateTokenExample() {
 	}
 
 	// type conversion required to access token-specific fields
-	account = createdAccount.(*octopusdeploy.TokenAccount)
+	account = createdAccount.(*accounts.TokenAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", account.GetID())

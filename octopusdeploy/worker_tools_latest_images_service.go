@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type workerToolsLatestImageService struct {
-	service
+	services.service
 }
 
 func newWorkerToolsLatestImageService(sling *sling.Sling, uriTemplate string) *workerToolsLatestImageService {
 	return &workerToolsLatestImageService{
-		service: newService(ServiceWorkerToolsLatestImageService, sling, uriTemplate),
+		service: services.newService(ServiceWorkerToolsLatestImageService, sling, uriTemplate),
 	}
 }

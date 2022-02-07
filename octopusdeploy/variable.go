@@ -10,7 +10,7 @@ type Variable struct {
 	Type        string                 `json:"Type"`
 	Value       string                 `json:"Value"`
 
-	resource
+	Resource
 }
 
 func NewVariable(name string) *Variable {
@@ -20,6 +20,6 @@ func NewVariable(name string) *Variable {
 		Name:        name,
 		Type:        "String",
 
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

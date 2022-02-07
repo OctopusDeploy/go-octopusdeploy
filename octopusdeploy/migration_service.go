@@ -1,18 +1,21 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type migrationService struct {
 	migrationsImportPath        string
 	migrationsPartialExportPath string
 
-	service
+	services.service
 }
 
 func newMigrationService(sling *sling.Sling, uriTemplate string, migrationsImportPath string, migrationsPartialExportPath string) *migrationService {
 	return &migrationService{
 		migrationsImportPath:        migrationsImportPath,
 		migrationsPartialExportPath: migrationsPartialExportPath,
-		service:                     newService(ServiceMigrationService, sling, uriTemplate),
+		service:                     services.newService(ServiceMigrationService, sling, uriTemplate),
 	}
 }

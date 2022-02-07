@@ -37,7 +37,7 @@ func AssertEqualRunbooks(t *testing.T, expected *octopusdeploy.Runbook, actual *
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func CreateTestRunbook(t *testing.T, client *octopusdeploy.Client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup, project *octopusdeploy.Project) *octopusdeploy.Runbook {
+func CreateTestRunbook(t *testing.T, client *octopusdeploy.client, lifecycle *octopusdeploy.Lifecycle, projectGroup *octopusdeploy.ProjectGroup, project *octopusdeploy.Project) *octopusdeploy.Runbook {
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
 	require.NotNil(t, project)
@@ -67,7 +67,7 @@ func CreateTestRunbook(t *testing.T, client *octopusdeploy.Client, lifecycle *oc
 	return createdRunbook
 }
 
-func DeleteTestRunbook(t *testing.T, client *octopusdeploy.Client, runbook *octopusdeploy.Runbook) {
+func DeleteTestRunbook(t *testing.T, client *octopusdeploy.client, runbook *octopusdeploy.Runbook) {
 	require.NotNil(t, runbook)
 
 	if client == nil {

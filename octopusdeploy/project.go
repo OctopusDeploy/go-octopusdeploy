@@ -34,7 +34,7 @@ type Project struct {
 	VariableSetID                   string                      `json:"VariableSetId,omitempty"`
 	VersioningStrategy              *VersioningStrategy         `json:"VersioningStrategy,omitempty"`
 
-	resource
+	Resource
 }
 
 type Projects struct {
@@ -48,7 +48,7 @@ func NewProject(spaceID string, name string, lifecycleID string, projectGroupID 
 		Name:           name,
 		ProjectGroupID: projectGroupID,
 		SpaceID:        spaceID,
-		resource:       *newResource(),
+		Resource:       *newResource(),
 	}
 }
 
@@ -80,7 +80,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 		TenantedDeploymentMode          TenantedDeploymentMode      `json:"TenantedDeploymentMode,omitempty"`
 		VariableSetID                   string                      `json:"VariableSetId,omitempty"`
 		VersioningStrategy              *VersioningStrategy         `json:"VersioningStrategy,omitempty"`
-		resource
+		Resource
 	}
 
 	if err := json.Unmarshal(data, &fields); err != nil {
@@ -118,7 +118,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	p.TenantedDeploymentMode = fields.TenantedDeploymentMode
 	p.VariableSetID = fields.VariableSetID
 	p.VersioningStrategy = fields.VersioningStrategy
-	p.resource = fields.resource
+	p.Resource = fields.Resource
 
 	var project map[string]*json.RawMessage
 	if err := json.Unmarshal(data, &project); err != nil {

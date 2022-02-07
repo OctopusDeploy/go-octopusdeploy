@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createWorkerService(t *testing.T) *workerService {
 	service := newWorkerService(nil, TestURIWorkers, TestURIDiscoverWorker, TestURIWorkerOperatingSystems, TestURIWorkerShells)
-	testNewService(t, service, TestURIWorkers, ServiceWorkerService)
+	services.testNewService(t, service, TestURIWorkers, ServiceWorkerService)
 	return service
 }
 
@@ -44,10 +45,10 @@ func TestWorkerServiceDelete(t *testing.T) {
 	service := createWorkerService(t)
 	require.NotNil(t, service)
 
-	err := service.DeleteByID(emptyString)
+	err := service.DeleteByID(services.emptyString)
 	require.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
 
-	err = service.DeleteByID(whitespaceString)
+	err = service.DeleteByID(services.whitespaceString)
 	require.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
 }
 
@@ -55,11 +56,11 @@ func TestWorkerServiceGetByID(t *testing.T) {
 	service := createWorkerService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 }
@@ -68,11 +69,11 @@ func TestWorkerServiceGetByName(t *testing.T) {
 	service := createWorkerService(t)
 	require.NotNil(t, service)
 
-	workers, err := service.GetByName(emptyString)
+	workers, err := service.GetByName(services.emptyString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByName, ParameterName))
 	assert.NotNil(t, workers)
 
-	workers, err = service.GetByName(whitespaceString)
+	workers, err = service.GetByName(services.whitespaceString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByName, ParameterName))
 	assert.NotNil(t, workers)
 }
@@ -81,12 +82,12 @@ func TestWorkerServiceGetByPartialName(t *testing.T) {
 	service := createWorkerService(t)
 	require.NotNil(t, service)
 
-	workers, err := service.GetByPartialName(emptyString)
+	workers, err := service.GetByPartialName(services.emptyString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, workers)
 	require.Len(t, workers, 0)
 
-	workers, err = service.GetByPartialName(whitespaceString)
+	workers, err = service.GetByPartialName(services.whitespaceString)
 	require.Equal(t, err, createInvalidParameterError(OperationGetByPartialName, ParameterName))
 	require.NotNil(t, workers)
 	require.Len(t, workers, 0)
@@ -95,10 +96,10 @@ func TestWorkerServiceGetByPartialName(t *testing.T) {
 func TestWorkerServiceNew(t *testing.T) {
 	ServiceFunction := newWorkerService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	discoverWorkerPath := emptyString
-	operatingSystemsPath := emptyString
-	shellsPath := emptyString
+	uriTemplate := services.emptyString
+	discoverWorkerPath := services.emptyString
+	operatingSystemsPath := services.emptyString
+	shellsPath := services.emptyString
 	ServiceName := ServiceWorkerService
 
 	testCases := []struct {
@@ -111,13 +112,13 @@ func TestWorkerServiceNew(t *testing.T) {
 		shellsPath           string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, discoverWorkerPath, operatingSystemsPath, shellsPath},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, discoverWorkerPath, operatingSystemsPath, shellsPath},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, discoverWorkerPath, operatingSystemsPath, shellsPath},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, discoverWorkerPath, operatingSystemsPath, shellsPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, discoverWorkerPath, operatingSystemsPath, shellsPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.discoverWorkerPath, tc.operatingSystemsPath, tc.shellsPath)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

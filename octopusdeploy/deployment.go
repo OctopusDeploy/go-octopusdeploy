@@ -36,7 +36,7 @@ type Deployment struct {
 	TentacleRetentionPeriod  *RetentionPeriod  `json:"TentacleRetentionPeriod,omitempty"`
 	UseGuidedFailure         bool              `json:"UseGuidedFailure,omitempty"`
 
-	resource
+	Resource
 }
 
 // Deployments defines a collection of deployment instances with built-in
@@ -52,7 +52,7 @@ func NewDeployment(environmentID string, releaseID string) *Deployment {
 	return &Deployment{
 		EnvironmentID: environmentID,
 		ReleaseID:     releaseID,
-		resource:      *newResource(),
+		Resource:      *newResource(),
 	}
 }
 

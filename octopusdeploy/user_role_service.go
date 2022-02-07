@@ -1,14 +1,17 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type userRoleService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newUserRoleService(sling *sling.Sling, uriTemplate string) *userRoleService {
 	userRoleService := &userRoleService{}
-	userRoleService.service = newService(ServiceUserRoleService, sling, uriTemplate)
+	userRoleService.service = services.newService(ServiceUserRoleService, sling, uriTemplate)
 
 	return userRoleService
 }
@@ -81,7 +84,7 @@ func (s userRoleService) GetByID(id string) (*UserRole, error) {
 // Update modifies a user role based on the one provided as input.
 func (s userRoleService) Update(userRole *UserRole) (*UserRole, error) {
 	if userRole == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterUserRole)
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterUserRole)
 	}
 
 	path, err := getUpdatePath(s, userRole)

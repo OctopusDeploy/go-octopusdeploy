@@ -1,18 +1,19 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 // projectGroupService handles communication with ProjectGroup-related methods of the Octopus API.
 type projectGroupService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
-// newProjectGroupService returns a projectGroupService with a preconfigured client.
+// newProjectGroupService returns a projectGroupService with a preconfigured Client.
 func newProjectGroupService(sling *sling.Sling, uriTemplate string) *projectGroupService {
 	projectGroupService := &projectGroupService{}
-	projectGroupService.service = newService(ServiceProjectGroupService, sling, uriTemplate)
+	projectGroupService.service = services.newService(ServiceProjectGroupService, sling, uriTemplate)
 
 	return projectGroupService
 }

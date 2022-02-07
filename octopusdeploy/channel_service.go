@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
@@ -8,14 +9,14 @@ import (
 type channelService struct {
 	versionRuleTestPath string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newChannelService(sling *sling.Sling, uriTemplate string, versionRuleTestPath string) *channelService {
 	channelService := &channelService{
 		versionRuleTestPath: versionRuleTestPath,
 	}
-	channelService.service = newService(ServiceChannelService, sling, uriTemplate)
+	channelService.service = services.newService(ServiceChannelService, sling, uriTemplate)
 
 	return channelService
 }
@@ -87,7 +88,7 @@ func (s channelService) GetAll() ([]*Channel, error) {
 // GetByID returns the channel that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s channelService) GetByID(id string) (*Channel, error) {
-	if isEmpty(id) {
+	if IsEmpty(id) {
 		return nil, createInvalidParameterError(OperationGetByID, ParameterID)
 	}
 

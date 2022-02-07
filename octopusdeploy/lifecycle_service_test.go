@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createLifecycleService(t *testing.T) *lifecycleService {
 	service := newLifecycleService(nil, TestURILifecycles)
-	testNewService(t, service, TestURILifecycles, ServiceLifecycleService)
+	services.testNewService(t, service, TestURILifecycles, ServiceLifecycleService)
 	return service
 }
 
@@ -47,7 +48,7 @@ func DeleteTestLifecycle(t *testing.T, service *lifecycleService, lifecycle *Lif
 func TestNewLifecycleService(t *testing.T) {
 	ServiceFunction := newLifecycleService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
+	uriTemplate := services.emptyString
 	ServiceName := ServiceLifecycleService
 
 	testCases := []struct {
@@ -57,13 +58,13 @@ func TestNewLifecycleService(t *testing.T) {
 		uriTemplate string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -97,8 +98,8 @@ func TestLifecycleServiceStringParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", services.emptyString},
+		{"Whitespace", services.whitespaceString},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -146,14 +147,14 @@ func TestLifecycleServiceAdd(t *testing.T) {
 }
 
 func TestLifecycleServiceGetWithEmptyID(t *testing.T) {
-	service := newLifecycleService(&sling.Sling{}, emptyString)
+	service := newLifecycleService(&sling.Sling{}, services.emptyString)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)

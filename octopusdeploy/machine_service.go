@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
@@ -9,7 +10,7 @@ type machineService struct {
 	operatingSystemsPath string
 	shellsPath           string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newMachineService(sling *sling.Sling, uriTemplate string, discoverMachinePath string, operatingSystemsPath string, shellsPath string) *machineService {
@@ -18,7 +19,7 @@ func newMachineService(sling *sling.Sling, uriTemplate string, discoverMachinePa
 		operatingSystemsPath: operatingSystemsPath,
 		shellsPath:           shellsPath,
 	}
-	machineService.service = newService(ServiceMachineService, sling, uriTemplate)
+	machineService.service = services.newService(ServiceMachineService, sling, uriTemplate)
 
 	return machineService
 }
@@ -138,4 +139,4 @@ func (s machineService) Update(resource *DeploymentTarget) (*DeploymentTarget, e
 	return resp.(*DeploymentTarget), nil
 }
 
-var _ Service = &machineService{}
+var _ services.Service = &machineService{}

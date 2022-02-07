@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type serverStatusService struct {
 	extensionStatsPath string
 	healthStatusPath   string
 	timezonesPath      string
 
-	service
+	services.service
 }
 
 func newServerStatusService(sling *sling.Sling, uriTemplate string, extensionStatsPath string, healthStatusPath string, timezonesPath string) *serverStatusService {
@@ -15,7 +18,7 @@ func newServerStatusService(sling *sling.Sling, uriTemplate string, extensionSta
 		extensionStatsPath: extensionStatsPath,
 		healthStatusPath:   healthStatusPath,
 		timezonesPath:      timezonesPath,
-		service:            newService(ServiceServerStatusService, sling, uriTemplate),
+		service:            services.newService(ServiceServerStatusService, sling, uriTemplate),
 	}
 }
 
@@ -34,4 +37,4 @@ func (s serverStatusService) Get() (*ServerStatus, error) {
 	return response.(*ServerStatus), nil
 }
 
-var _ Service = &serverStatusService{}
+var _ services.Service = &serverStatusService{}

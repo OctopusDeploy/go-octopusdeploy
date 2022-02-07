@@ -6,57 +6,62 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Resources struct {
-	Items []*resource `json:"Items"`
-	PagedResults
+type Resource struct {
+	ID string `json:"Id,omitempty"`
+
+	IResource
 }
 
-type resource struct {
-	ID         string            `json:"Id,omitempty"`
-	ModifiedBy string            `json:"LastModifiedBy,omitempty"`
-	ModifiedOn *time.Time        `json:"LastModifiedOn,omitempty"`
+type SpaceScopedResource struct {
+	SpaceID string `json:"SpaceId,omitempty"`
 }
 
-func newResource() *resource {
-	return &resource{
-	}
+type AuditedResource struct {
+	modifiedBy string     `json:"LastModifiedBy,omitempty"`
+	modifiedOn *time.Time `json:"LastModifiedOn,omitempty"`
+
+	IAuditedResource
 }
 
-// GetID returns the ID value of the resource.
-func (r *resource) GetID() string {
+func NewResource() *Resource {
+	return &Resource{}
+}
+
+// GetID returns the ID value of the Resource.
+func (r *Resource) GetID() string {
 	return r.ID
 }
 
 // GetModifiedBy returns the name of the account that modified the value of
-// this resource.
-func (r *resource) GetModifiedBy() string {
-	return r.ModifiedBy
+// this Resource.
+func (r *AuditedResource) GetModifiedBy() string {
+	return r.modifiedBy
 }
 
-// GetModifiedOn returns the time when the value of this resource was changed.
-func (r *resource) GetModifiedOn() *time.Time {
-	return r.ModifiedOn
+// GetModifiedOn returns the time when the value of this Resource was changed.
+func (r *AuditedResource) GetModifiedOn() *time.Time {
+	return r.modifiedOn
 }
 
-// SetID sets the ID value of the resource.
-func (r *resource) SetID(id string) {
+// SetID sets the ID value of the Resource.
+func (r *Resource) SetID(id string) {
 	r.ID = id
 }
 
 // SetModifiedBy set the name of the account that modified the value of
-// this resource.
-func (r *resource) SetModifiedBy(modifiedBy string) {
-	r.ModifiedBy = modifiedBy
+// this Resource.
+func (r *AuditedResource) SetModifiedBy(modifiedBy string) {
+	r.modifiedBy = modifiedBy
 }
 
-// SetModifiedOn set the time when the value of this resource was changed.
-func (r *resource) SetModifiedOn(modifiedOn *time.Time) {
-	r.ModifiedOn = modifiedOn
+// SetModifiedOn set the time when the value of this Resource was changed.
+func (r *AuditedResource) SetModifiedOn(modifiedOn *time.Time) {
+	r.modifiedOn = modifiedOn
 }
 
-// Validate checks the state of the resource and returns an error if invalid.
-func (r *resource) Validate() error {
+// Validate checks the state of the Resource and returns an error if invalid.
+func (r *Resource) Validate() error {
 	return validator.New().Struct(r)
 }
 
-var _ IResource = &resource{}
+var _ IResource = &Resource{}

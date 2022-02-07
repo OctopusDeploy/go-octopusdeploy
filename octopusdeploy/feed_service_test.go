@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -10,7 +11,7 @@ import (
 
 func createFeedService(t *testing.T) *feedService {
 	service := newFeedService(nil, TestURIFeeds, TestURIBuiltInFeedStats)
-	testNewService(t, service, TestURIFeeds, ServiceFeedService)
+	services.testNewService(t, service, TestURIFeeds, ServiceFeedService)
 	return service
 }
 
@@ -31,10 +32,10 @@ func TestFeedServiceDelete(t *testing.T) {
 	service := createFeedService(t)
 	require.NotNil(t, service)
 
-	err := service.DeleteByID(emptyString)
+	err := service.DeleteByID(services.emptyString)
 	assert.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
 
-	err = service.DeleteByID(whitespaceString)
+	err = service.DeleteByID(services.whitespaceString)
 	assert.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
 }
 
@@ -42,11 +43,11 @@ func TestFeedServiceGetByID(t *testing.T) {
 	service := createFeedService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
 	require.Nil(t, resource)
 }
@@ -54,8 +55,8 @@ func TestFeedServiceGetByID(t *testing.T) {
 func TestFeedServiceNew(t *testing.T) {
 	ServiceFunction := newFeedService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	builtInFeedStats := emptyString
+	uriTemplate := services.emptyString
+	builtInFeedStats := services.emptyString
 	ServiceName := ServiceFeedService
 
 	testCases := []struct {
@@ -66,13 +67,13 @@ func TestFeedServiceNew(t *testing.T) {
 		builtInFeedStats string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, builtInFeedStats},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, builtInFeedStats},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, builtInFeedStats},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, builtInFeedStats},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, builtInFeedStats},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.builtInFeedStats)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

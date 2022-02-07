@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 )
@@ -10,7 +11,7 @@ type tenantService struct {
 	statusPath           string
 	tagTestPath          string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newTenantService(sling *sling.Sling, uriTemplate string, missingVariablesPath string, statusPath string, tagTestPath string) *tenantService {
@@ -19,19 +20,19 @@ func newTenantService(sling *sling.Sling, uriTemplate string, missingVariablesPa
 		statusPath:           statusPath,
 		tagTestPath:          tagTestPath,
 	}
-	tenantService.service = newService(ServiceTenantService, sling, uriTemplate)
+	tenantService.service = services.newService(ServiceTenantService, sling, uriTemplate)
 
 	return tenantService
 }
 
 func (s tenantService) getByProjectIDPath(id string) (string, error) {
-	if isEmpty(id) {
-		return emptyString, createInvalidParameterError(OperationGetByProjectID, ParameterID)
+	if IsEmpty(id) {
+		return services.emptyString, createInvalidParameterError(OperationGetByProjectID, ParameterID)
 	}
 
 	err := validateInternalState(s)
 	if err != nil {
-		return emptyString, err
+		return services.emptyString, err
 	}
 
 	values := make(map[string]interface{})

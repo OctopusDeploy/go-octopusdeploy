@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type performanceConfigurationService struct {
-	service
+	services.service
 }
 
 func newPerformanceConfigurationService(sling *sling.Sling, uriTemplate string) *performanceConfigurationService {
 	return &performanceConfigurationService{
-		service: newService(ServicePerformanceConfigurationService, sling, uriTemplate),
+		service: services.newService(ServicePerformanceConfigurationService, sling, uriTemplate),
 	}
 }

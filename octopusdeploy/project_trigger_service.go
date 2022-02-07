@@ -1,16 +1,17 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
 type projectTriggerService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newProjectTriggerService(sling *sling.Sling, uriTemplate string) *projectTriggerService {
 	projectTriggerService := &projectTriggerService{}
-	projectTriggerService.service = newService(ServiceProjectTriggerService, sling, uriTemplate)
+	projectTriggerService.service = services.newService(ServiceProjectTriggerService, sling, uriTemplate)
 
 	return projectTriggerService
 }

@@ -26,7 +26,7 @@ func AssertEqualFeeds(t *testing.T, expected octopusdeploy.IFeed, actual octopus
 	// TODO: compare remaining values
 }
 
-func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IFeed {
+func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -49,7 +49,7 @@ func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.C
 	return resource
 }
 
-func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IFeed {
+func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -63,7 +63,7 @@ func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.Client) 
 	return resource
 }
 
-func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IFeed {
+func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -77,7 +77,7 @@ func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.Client) octopusdeplo
 	return resource
 }
 
-func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IFeed {
+func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -91,7 +91,7 @@ func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.Client) octopusdepl
 	return resource
 }
 
-func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.Client) octopusdeploy.IFeed {
+func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -105,7 +105,7 @@ func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.Client) octopusdepl
 	return resource
 }
 
-func DeleteTestFeed(t *testing.T, client *octopusdeploy.Client, feed octopusdeploy.IFeed) {
+func DeleteTestFeed(t *testing.T, client *octopusdeploy.client, feed octopusdeploy.IFeed) {
 	require.NotNil(t, feed)
 
 	if client == nil {

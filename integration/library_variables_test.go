@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.LibraryVariableSet {
+func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.client) *octopusdeploy.LibraryVariableSet {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -68,7 +68,7 @@ func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.Client) *octop
 	return createdLibraryVariableSet
 }
 
-func DeleteLibraryVariableSet(t *testing.T, client *octopusdeploy.Client, libraryVariableSet *octopusdeploy.LibraryVariableSet) {
+func DeleteLibraryVariableSet(t *testing.T, client *octopusdeploy.client, libraryVariableSet *octopusdeploy.LibraryVariableSet) {
 	require.NotNil(t, libraryVariableSet)
 
 	if client == nil {

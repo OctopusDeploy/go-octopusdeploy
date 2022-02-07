@@ -24,12 +24,12 @@ type Interruption struct {
 	TaskID                      string    `json:"TaskId,omitempty"`
 	Title                       string    `json:"Title,omitempty"`
 
-	resource
+	Resource
 }
 
 func NewInterruption() *Interruption {
 	return &Interruption{
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }
 

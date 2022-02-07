@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
@@ -15,7 +16,7 @@ type eventService struct {
 	documentTypesPath *uritemplates.UriTemplate
 	groupsPath        *uritemplates.UriTemplate
 
-	service
+	services.service
 }
 
 func newEventService(sling *sling.Sling, uriTemplate string, agentsPath string, categoriesPath string, documentTypesPath string, groupsPath string) *eventService {
@@ -29,7 +30,7 @@ func newEventService(sling *sling.Sling, uriTemplate string, agentsPath string, 
 		categoriesPath:    categories,
 		documentTypesPath: documentTypes,
 		groupsPath:        groups,
-		service:           newService(ServiceEventService, sling, uriTemplate),
+		service:           services.newService(ServiceEventService, sling, uriTemplate),
 	}
 }
 

@@ -18,13 +18,15 @@ type UserRole struct {
 	SupportedRestrictions        []string `json:"SupportedRestrictions"`
 	SystemPermissionDescriptions []string `json:"SystemPermissionDescriptions"`
 
-	resource
+	Resource
 }
+
+const ProjectViewPermission string = "ProjectView"
 
 // NewUserRole initializes a user role with a name.
 func NewUserRole(name string) *UserRole {
 	return &UserRole{
 		Name:     name,
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }

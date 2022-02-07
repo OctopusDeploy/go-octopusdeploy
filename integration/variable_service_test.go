@@ -38,7 +38,7 @@ func CreateTestVariable(t *testing.T, ownerID string, name string) *octopusdeplo
 	return nil
 }
 
-func DeleteTestVariable(t *testing.T, octopusClient *octopusdeploy.Client, variableID string, ownerID string) {
+func DeleteTestVariable(t *testing.T, octopusClient *octopusdeploy.client, variableID string, ownerID string) {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}

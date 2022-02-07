@@ -1,14 +1,17 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type runbookSnapshotService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newRunbookSnapshotService(sling *sling.Sling, uriTemplate string) *runbookSnapshotService {
 	runbookSnapshotService := &runbookSnapshotService{}
-	runbookSnapshotService.service = newService(ServiceRunbookSnapshotService, sling, uriTemplate)
+	runbookSnapshotService.service = services.newService(ServiceRunbookSnapshotService, sling, uriTemplate)
 
 	return runbookSnapshotService
 }

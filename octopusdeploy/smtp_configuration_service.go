@@ -1,16 +1,19 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type smtpConfigurationService struct {
 	isConfiguredPath string
 
-	service
+	services.service
 }
 
 func newSMTPConfigurationService(sling *sling.Sling, uriTemplate string, isConfiguredPath string) *smtpConfigurationService {
 	return &smtpConfigurationService{
 		isConfiguredPath: isConfiguredPath,
-		service:          newService(ServiceSMTPConfigurationService, sling, uriTemplate),
+		service:          services.newService(ServiceSMTPConfigurationService, sling, uriTemplate),
 	}
 }

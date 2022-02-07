@@ -18,7 +18,7 @@ type Release struct {
 	SpaceID                            string                                   `json:"SpaceId,omitempty"`
 	Version                            string                                   `json:"Version"`
 
-	resource
+	Resource
 }
 
 func NewRelease(channelID string, projectID string, version string) *Release {
@@ -26,6 +26,6 @@ func NewRelease(channelID string, projectID string, version string) *Release {
 		ChannelID: channelID,
 		ProjectID: projectID,
 		Version:   version,
-		resource:  *newResource(),
+		Resource:  *newResource(),
 	}
 }

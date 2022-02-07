@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -15,7 +16,7 @@ func createWorkerPoolService(t *testing.T) *workerPoolService {
 		TestURIWorkerPoolsSortOrder,
 		TestURIWorkerPoolsSummary,
 		TestURIWorkerPoolsSupportedTypes)
-	testNewService(t, service, TestURIWorkerPools, ServiceWorkerPoolService)
+	services.testNewService(t, service, TestURIWorkerPools, ServiceWorkerPoolService)
 	return service
 }
 
@@ -49,10 +50,10 @@ func TestWorkerPoolServiceDelete(t *testing.T) {
 	service := createWorkerPoolService(t)
 	require.NotNil(t, service)
 
-	err := service.DeleteByID(emptyString)
+	err := service.DeleteByID(services.emptyString)
 	require.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
 
-	err = service.DeleteByID(whitespaceString)
+	err = service.DeleteByID(services.whitespaceString)
 	require.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
 }
 
@@ -60,11 +61,11 @@ func TestWorkerPoolServiceGetByID(t *testing.T) {
 	service := createWorkerPoolService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
+	resource, err := service.GetByID(services.emptyString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
+	resource, err = service.GetByID(services.whitespaceString)
 	assert.Equal(t, err, createInvalidParameterError(OperationGetByID, ParameterID))
 	assert.Nil(t, resource)
 }
@@ -72,11 +73,11 @@ func TestWorkerPoolServiceGetByID(t *testing.T) {
 func TestWorkerPoolServiceNew(t *testing.T) {
 	ServiceFunction := newWorkerPoolService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	dynamicWorkerTypesPath := emptyString
-	sortOrderPath := emptyString
-	summaryPath := emptyString
-	supportedTypesPath := emptyString
+	uriTemplate := services.emptyString
+	dynamicWorkerTypesPath := services.emptyString
+	sortOrderPath := services.emptyString
+	summaryPath := services.emptyString
+	supportedTypesPath := services.emptyString
 	ServiceName := ServiceWorkerPoolService
 
 	testCases := []struct {
@@ -90,13 +91,13 @@ func TestWorkerPoolServiceNew(t *testing.T) {
 		supportedTypesPath     string
 	}{
 		{"NilClient", ServiceFunction, nil, uriTemplate, dynamicWorkerTypesPath, sortOrderPath, summaryPath, supportedTypesPath},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString, dynamicWorkerTypesPath, sortOrderPath, summaryPath, supportedTypesPath},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString, dynamicWorkerTypesPath, sortOrderPath, summaryPath, supportedTypesPath},
+		{"EmptyURITemplate", ServiceFunction, client, services.emptyString, dynamicWorkerTypesPath, sortOrderPath, summaryPath, supportedTypesPath},
+		{"URITemplateWithWhitespace", ServiceFunction, client, services.whitespaceString, dynamicWorkerTypesPath, sortOrderPath, summaryPath, supportedTypesPath},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate, tc.dynamicWorkerTypesPath, tc.sortOrderPath, tc.summaryPath, tc.supportedTypesPath)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }

@@ -1,14 +1,17 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type proxyService struct {
-	canDeleteService
+	services.canDeleteService
 }
 
 func newProxyService(sling *sling.Sling, uriTemplate string) *proxyService {
 	proxyService := &proxyService{}
-	proxyService.service = newService(ServiceProxyService, sling, uriTemplate)
+	proxyService.service = services.newService(ServiceProxyService, sling, uriTemplate)
 
 	return proxyService
 }

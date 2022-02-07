@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -39,7 +40,7 @@ func GetFakeOctopusClient(t *testing.T, apiPath string, statusCode int, response
 
 	apiKey := os.Getenv(clientAPIKeyEnvironmentVariable)
 
-	octopusClient, err := NewClient(&httpClient, url, apiKey, emptyString)
+	octopusClient, err := NewClient(&httpClient, url, apiKey, services.emptyString)
 	if err != nil {
 		return nil, err
 	}

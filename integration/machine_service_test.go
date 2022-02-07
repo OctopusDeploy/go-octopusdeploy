@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.Client, environment *octopusdeploy.Environment) *octopusdeploy.DeploymentTarget {
+func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, environment *octopusdeploy.Environment) *octopusdeploy.DeploymentTarget {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -58,7 +58,7 @@ func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.Client, envi
 	return createdDeploymentTarget
 }
 
-func DeleteTestDeploymentTarget(t *testing.T, client *octopusdeploy.Client, deploymentTarget *octopusdeploy.DeploymentTarget) {
+func DeleteTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, deploymentTarget *octopusdeploy.DeploymentTarget) {
 	require.NotNil(t, deploymentTarget)
 
 	if client == nil {

@@ -1,14 +1,17 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type tenantVariableService struct {
-	service
+	services.service
 }
 
 func newTenantVariableService(sling *sling.Sling, uriTemplate string) *tenantVariableService {
 	return &tenantVariableService{
-		service: newService(ServiceTenantVariableService, sling, uriTemplate),
+		service: services.newService(ServiceTenantVariableService, sling, uriTemplate),
 	}
 }
 

@@ -17,7 +17,7 @@ type Channel struct {
 	SpaceID     string        `json:"SpaceId,omitempty"`
 	TenantTags  []string      `json:"TenantTags,omitempty"`
 
-	resource
+	Resource
 }
 
 // Channels defines a collection of channels with built-in support for paged
@@ -33,7 +33,7 @@ func NewChannel(name string, projectID string) *Channel {
 		ProjectID:  projectID,
 		Rules:      []ChannelRule{},
 		TenantTags: []string{},
-		resource:   *newResource(),
+		Resource:   *newResource(),
 	}
 }
 

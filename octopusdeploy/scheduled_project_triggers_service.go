@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type scheduledProjectTriggerService struct {
-	service
+	services.service
 }
 
 func newScheduledProjectTriggerService(sling *sling.Sling, uriTemplate string) *scheduledProjectTriggerService {
 	return &scheduledProjectTriggerService{
-		service: newService(ServiceScheduledProjectTriggerService, sling, uriTemplate),
+		service: services.newService(ServiceScheduledProjectTriggerService, sling, uriTemplate),
 	}
 }

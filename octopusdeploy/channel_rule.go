@@ -9,5 +9,5 @@ type ChannelRule struct {
 	//to specify the range of versions to include
 	VersionRange string `json:"VersionRange,omitempty"`
 
-	resource
+	Resource
 }

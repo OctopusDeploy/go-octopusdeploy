@@ -34,7 +34,7 @@ func AssertEqualRunbookSnapshots(
 
 func CreateTestRunbookSnapshot(
 	t *testing.T,
-	client *octopusdeploy.Client,
+	client *octopusdeploy.client,
 	lifecycle *octopusdeploy.Lifecycle,
 	projectGroup *octopusdeploy.ProjectGroup,
 	project *octopusdeploy.Project,
@@ -70,7 +70,7 @@ func CreateTestRunbookSnapshot(
 	return createdRunbookSnapshot
 }
 
-func DeleteTestRunbookSnapshot(t *testing.T, client *octopusdeploy.Client, runbookSnapshot *octopusdeploy.RunbookSnapshot) {
+func DeleteTestRunbookSnapshot(t *testing.T, client *octopusdeploy.client, runbookSnapshot *octopusdeploy.RunbookSnapshot) {
 	require.NotNil(t, runbookSnapshot)
 
 	if client == nil {

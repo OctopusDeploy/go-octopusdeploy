@@ -13,16 +13,16 @@ type RootResource struct {
 	IsEarlyAccessProgram bool       `json:"IsEarlyAccessProgram"`
 	HasLongTermSupport   bool       `json:"HasLongTermSupport"`
 
-	resource
+	Resource
 }
 
 func NewRootResource() *RootResource {
 	return &RootResource{
-		resource: *newResource(),
+		Resource: *newResource(),
 	}
 }
 
-// Validate checks the state of the root resource and returns an error if
+// Validate checks the state of the root Resource and returns an error if
 // invalid.
 func (r *RootResource) Validate() error {
 	return validator.New().Struct(r)
@@ -43,7 +43,7 @@ func (r *RootResource) GetLinkPath(args ...interface{}) string {
 	}
 
 	path := r.Links[link]
-	if !isEmpty(rootResource.Links[link]) {
+	if !IsEmpty(rootResource.Links[link]) {
 		path = rootResource.Links[link]
 	}
 

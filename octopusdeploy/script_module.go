@@ -14,7 +14,7 @@ type ScriptModule struct {
 	Syntax        string `json:"syntax" validate:"required"`
 	VariableSetID string `json:"VariableSetId,omitempty"`
 
-	resource
+	Resource
 }
 
 type ScriptModules struct {
@@ -40,7 +40,7 @@ func (s *ScriptModule) MarshalJSON() ([]byte, error) {
 		Syntax        string `json:"syntax" validate:"required"`
 		VariableSetID string `json:"VariableSetId,omitempty"`
 
-		resource
+		Resource
 	}{
 		ContentType:   "ScriptModule",
 		Description:   s.Description,
@@ -50,7 +50,7 @@ func (s *ScriptModule) MarshalJSON() ([]byte, error) {
 		Syntax:        s.Syntax,
 		VariableSetID: s.VariableSetID,
 
-		resource: s.resource,
+		Resource: s.Resource,
 	}
 
 	return json.Marshal(scriptModule)

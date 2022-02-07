@@ -1,6 +1,8 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -9,21 +11,21 @@ import (
 type GoogleCloudPlatformAccount struct {
 	JsonKey *SensitiveValue `validate:"required"`
 
-	account
+	accounts.account
 }
 
 // NewGoogleCloudPlatformAccount initializes and returns a Google cloud account.
 func NewGoogleCloudPlatformAccount(name string, jsonKey *SensitiveValue, options ...func(*GoogleCloudPlatformAccount)) (*GoogleCloudPlatformAccount, error) {
-	if isEmpty(name) {
-		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
+	if IsEmpty(name) {
+		return nil, CreateRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
 
 	if jsonKey == nil {
-		return nil, createRequiredParameterIsEmptyOrNilError("jsonKey")
+		return nil, CreateRequiredParameterIsEmptyOrNilError("jsonKey")
 	}
 
 	account := GoogleCloudPlatformAccount{
-		account: *newAccount(name, AccountType("GoogleCloudAccount")),
+		account: *accounts.newAccount(name, accounts.AccountType("GoogleCloudAccount")),
 	}
 
 	// iterate through configuration options and set fields (without checks)
@@ -33,9 +35,9 @@ func NewGoogleCloudPlatformAccount(name string, jsonKey *SensitiveValue, options
 
 	// assign pre-determined values to "mandatory" fields
 	account.JsonKey = jsonKey
-	account.AccountType = AccountType("GoogleCloudAccount")
-	account.ID = emptyString
-	account.ModifiedBy = emptyString
+	account.AccountType = accounts.AccountType("GoogleCloudAccount")
+	account.ID = services.emptyString
+	account.ModifiedBy = services.emptyString
 	account.ModifiedOn = nil
 	account.Name = name
 

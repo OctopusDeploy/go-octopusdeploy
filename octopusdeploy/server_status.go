@@ -9,5 +9,5 @@ type ServerStatus struct {
 	MaximumAvailableVersion                 string `json:"MaximumAvailableVersion,omitempty"`
 	MaximumAvailableVersionCoveredByLicense string `json:"MaximumAvailableVersionCoveredByLicense,omitempty"`
 
-	resource
+	Resource
 }

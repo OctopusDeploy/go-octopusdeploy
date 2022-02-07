@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type permissionService struct {
-	service
+	services.service
 }
 
 func newPermissionService(sling *sling.Sling, uriTemplate string) *permissionService {
 	return &permissionService{
-		service: newService(ServicePermissionService, sling, uriTemplate),
+		service: services.newService(ServicePermissionService, sling, uriTemplate),
 	}
 }

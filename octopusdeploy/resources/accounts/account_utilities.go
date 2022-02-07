@@ -1,13 +1,16 @@
-package octopusdeploy
+package accounts
 
-import "github.com/jinzhu/copier"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/jinzhu/copier"
+)
 
-func ToAccount(accountResource *AccountResource) (IAccount, error) {
-	if isNil(accountResource) {
-		return nil, createInvalidParameterError("ToAccount", ParameterAccountResource)
+func ToAccount(accountResource *AccountResource) (octopusdeploy.IAccount, error) {
+	if octopusdeploy.isNil(accountResource) {
+		return nil, octopusdeploy.CreateInvalidParameterError("ToAccount", octopusdeploy.ParameterAccountResource)
 	}
 
-	var account IAccount
+	var account octopusdeploy.IAccount
 	var err error
 	switch accountResource.GetAccountType() {
 	case AccountTypeAmazonWebServicesAccount:
@@ -16,7 +19,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 			return nil, err
 		}
 	case AccountTypeAzureServicePrincipal:
-		account, err = NewAzureServicePrincipalAccount(accountResource.GetName(), *accountResource.SubscriptionID, *accountResource.TenantID, *accountResource.ApplicationID, accountResource.ApplicationPassword)
+		account, err = octopusdeploy.NewAzureServicePrincipalAccount(accountResource.GetName(), *accountResource.SubscriptionID, *accountResource.TenantID, *accountResource.ApplicationID, accountResource.ApplicationPassword)
 		if err != nil {
 			return nil, err
 		}
@@ -26,7 +29,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 			return nil, err
 		}
 	case AccountTypeGoogleCloudPlatformAccount:
-		account, err = NewGoogleCloudPlatformAccount(accountResource.GetName(), accountResource.JsonKey)
+		account, err = octopusdeploy.NewGoogleCloudPlatformAccount(accountResource.GetName(), accountResource.JsonKey)
 		if err != nil {
 			return nil, err
 		}
@@ -61,12 +64,12 @@ func ToAccounts(accountResources *AccountResources) *Accounts {
 	}
 }
 
-func ToAccountResource(client SpaceScopedClient, account IAccount) (*AccountResource, error) {
-	if isNil(account) {
-		return nil, createInvalidParameterError("ToAccountResource", ParameterAccount)
+func ToAccountResource(client octopusdeploy.SpaceScopedClient, account octopusdeploy.IAccount) (*AccountResource, error) {
+	if octopusdeploy.isNil(account) {
+		return nil, octopusdeploy.CreateInvalidParameterError("ToAccountResource", octopusdeploy.ParameterAccount)
 	}
 
-	spaceID, err := getSpaceIDForResource(account, client)
+	spaceID, err := octopusdeploy.GetSpaceIDForResource(account, client)
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +82,8 @@ func ToAccountResource(client SpaceScopedClient, account IAccount) (*AccountReso
 	return accountResource, nil
 }
 
-func ToAccountArray(accountResources []*AccountResource) []IAccount {
-	items := []IAccount{}
+func ToAccountArray(accountResources []*AccountResource) []octopusdeploy.IAccount {
+	items := []octopusdeploy.IAccount{}
 	for _, accountResource := range accountResources {
 		account, err := ToAccount(accountResource)
 		if err != nil {

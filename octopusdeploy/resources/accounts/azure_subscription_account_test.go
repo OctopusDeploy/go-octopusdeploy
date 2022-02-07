@@ -1,6 +1,8 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	uuid "github.com/google/uuid"
@@ -8,7 +10,7 @@ import (
 )
 
 func TestAzureSubscriptionAccountNew(t *testing.T) {
-	name := getRandomName()
+	name := octopusdeploy.getRandomName()
 	subscriptionID := uuid.New()
 
 	account, err := NewAzureSubscriptionAccount(name, subscriptionID)
@@ -17,9 +19,9 @@ func TestAzureSubscriptionAccountNew(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
-	require.Equal(t, emptyString, account.Description)
-	require.Equal(t, emptyString, account.GetDescription())
-	require.Equal(t, emptyString, account.GetID())
+	require.Equal(t, services.emptyString, account.Description)
+	require.Equal(t, services.emptyString, account.GetDescription())
+	require.Equal(t, services.emptyString, account.GetID())
 	require.Equal(t, name, account.Name)
 	require.Equal(t, name, account.GetName())
 	require.Equal(t, AccountTypeAzureSubscription, account.GetAccountType())
@@ -28,8 +30,8 @@ func TestAzureSubscriptionAccountNew(t *testing.T) {
 }
 
 func TestAzureSubscriptionAccountSetDescription(t *testing.T) {
-	description := getRandomName()
-	name := getRandomName()
+	description := octopusdeploy.getRandomName()
+	name := octopusdeploy.getRandomName()
 	subscriptionID := uuid.New()
 
 	account, err := NewAzureSubscriptionAccount(name, subscriptionID)
@@ -45,7 +47,7 @@ func TestAzureSubscriptionAccountSetDescription(t *testing.T) {
 }
 
 func TestAzureSubscriptionAccountSetName(t *testing.T) {
-	name := getRandomName()
+	name := octopusdeploy.getRandomName()
 	subscriptionID := uuid.New()
 
 	account, err := NewAzureSubscriptionAccount(name, subscriptionID)

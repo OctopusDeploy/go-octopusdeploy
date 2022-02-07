@@ -15,7 +15,7 @@ type WorkerPool struct {
 	SortOrder      int            `json:"SortOrder"`
 	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
 
-	resource
+	Resource
 }
 
 type WorkerPools struct {
@@ -23,14 +23,14 @@ type WorkerPools struct {
 	PagedResults
 }
 
-// newWorkerPool creates and initializes a worker pool resource.
+// newWorkerPool creates and initializes a worker pool Resource.
 func newWorkerPool(name string, workerPoolType WorkerPoolType) *WorkerPool {
 	return &WorkerPool{
 		CanAddWorkers:  false,
 		Name:           name,
 		SortOrder:      0,
 		WorkerPoolType: workerPoolType,
-		resource:       *newResource(),
+		Resource:       *newResource(),
 	}
 }
 

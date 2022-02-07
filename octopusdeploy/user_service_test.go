@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -19,23 +20,23 @@ func createUserService(t *testing.T) *userService {
 		TestURISignOut,
 		TestURIUserAuthentication,
 		TestURIUserIdentityMetadata)
-	testNewService(t, service, TestURIUsers, ServiceUserService)
+	services.testNewService(t, service, TestURIUsers, ServiceUserService)
 	return service
 }
 
 func TestUserService(t *testing.T) {
 	ServiceFunction := newUserService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	apiKeysPath := emptyString
-	authenticateOctopusIDPath := emptyString
-	currentUserPath := emptyString
-	externalUserSearchPath := emptyString
-	registerPath := emptyString
-	signInPath := emptyString
-	signOutPath := emptyString
-	userAuthenticationPath := emptyString
-	userIdentityMetadataPath := emptyString
+	uriTemplate := services.emptyString
+	apiKeysPath := services.emptyString
+	authenticateOctopusIDPath := services.emptyString
+	currentUserPath := services.emptyString
+	externalUserSearchPath := services.emptyString
+	registerPath := services.emptyString
+	signInPath := services.emptyString
+	signOutPath := services.emptyString
+	userAuthenticationPath := services.emptyString
+	userIdentityMetadataPath := services.emptyString
 	ServiceName := ServiceUserService
 
 	testCases := []struct {
@@ -69,7 +70,7 @@ func TestUserService(t *testing.T) {
 		{"EmptyURITemplate",
 			ServiceFunction,
 			client,
-			emptyString,
+			services.emptyString,
 			apiKeysPath,
 			authenticateOctopusIDPath,
 			currentUserPath,
@@ -82,7 +83,7 @@ func TestUserService(t *testing.T) {
 		{"URITemplateWithWhitespace",
 			ServiceFunction,
 			client,
-			whitespaceString,
+			services.whitespaceString,
 			apiKeysPath,
 			authenticateOctopusIDPath,
 			currentUserPath,
@@ -107,7 +108,7 @@ func TestUserService(t *testing.T) {
 				tc.userAuthenticationPath,
 				tc.userIdentityMetadataPath,
 			)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
 }
@@ -116,11 +117,11 @@ func TestUserServiceGetByID(t *testing.T) {
 	service := createUserService(t)
 	require.NotNil(t, service)
 
-	user, err := service.GetByID(emptyString)
+	user, err := service.GetByID(services.emptyString)
 	require.Error(t, err)
 	require.Nil(t, user)
 
-	user, err = service.GetByID(whitespaceString)
+	user, err = service.GetByID(services.whitespaceString)
 	require.Error(t, err)
 	require.Nil(t, user)
 }
@@ -133,7 +134,7 @@ func TestUserServiceNilInputs(t *testing.T) {
 	require.Nil(t, user)
 	require.Equal(t, createInvalidParameterError(OperationAdd, ParameterUser), err)
 
-	apiKey, err := service.GetAPIKeyByID(nil, emptyString)
+	apiKey, err := service.GetAPIKeyByID(nil, services.emptyString)
 	require.Nil(t, apiKey)
 	require.Equal(t, createInvalidParameterError(OperationGetAPIKeyByID, ParameterUser), err)
 

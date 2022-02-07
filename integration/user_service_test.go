@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestUser(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.User {
+func CreateTestUser(t *testing.T, client *octopusdeploy.client) *octopusdeploy.User {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -35,7 +35,7 @@ func CreateTestUser(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.U
 	return createdUser
 }
 
-func DeleteTestUser(t *testing.T, client *octopusdeploy.Client, user *octopusdeploy.User) {
+func DeleteTestUser(t *testing.T, client *octopusdeploy.client, user *octopusdeploy.User) {
 	require.NotNil(t, user)
 
 	// you cannot delete your own account

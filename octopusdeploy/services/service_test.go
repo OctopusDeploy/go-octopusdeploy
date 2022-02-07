@@ -1,7 +1,8 @@
-package octopusdeploy
+package services
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"log"
 	"net/url"
 	"os"
@@ -11,11 +12,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func getClient() *Client {
+func getClient() *octopusdeploy.client {
 	octopusURL := os.Getenv("OCTOPUS_URL")
 	octopusAPIKey := os.Getenv("OCTOPUS_APIKEY")
 
-	if isEmpty(octopusURL) || isEmpty(octopusAPIKey) {
+	if octopusdeploy.isEmpty(octopusURL) || octopusdeploy.isEmpty(octopusAPIKey) {
 		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
 	}
 
@@ -32,7 +33,7 @@ func getClient() *Client {
 	// tr := &http.Transport{
 	// 	Proxy: http.ProxyURL(proxyURL),
 	// }
-	// httpClient := http.Client{Transport: tr}
+	// httpClient := http.client{Transport: tr}
 
 	apiURL, err := url.Parse(octopusURL)
 	if err != nil {

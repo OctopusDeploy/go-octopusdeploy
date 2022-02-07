@@ -1,6 +1,7 @@
 package octopusdeploy
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/dghubble/sling"
 )
 
@@ -11,7 +12,7 @@ type packageService struct {
 	notesListPath      string
 	uploadPath         string
 
-	canDeleteService
+	services.canDeleteService
 }
 
 func newPackageService(sling *sling.Sling, uriTemplate string, deltaSignaturePath string, deltaUploadPath string, notesListPath string, bulkPath string, uploadPath string) *packageService {
@@ -22,7 +23,7 @@ func newPackageService(sling *sling.Sling, uriTemplate string, deltaSignaturePat
 		notesListPath:      notesListPath,
 		uploadPath:         uploadPath,
 	}
-	packageService.service = newService(ServicePackageService, sling, uriTemplate)
+	packageService.service = services.newService(ServicePackageService, sling, uriTemplate)
 
 	return packageService
 }

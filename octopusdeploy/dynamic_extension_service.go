@@ -1,13 +1,16 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type dynamicExtensionService struct {
 	featuresMetadataPath string
 	featuresValuesPath   string
 	scriptsPath          string
 
-	service
+	services.service
 }
 
 func newDynamicExtensionService(sling *sling.Sling, uriTemplate string, featuresMetadataPath string, featuresValuesPath string, scriptsPath string) *dynamicExtensionService {
@@ -15,6 +18,6 @@ func newDynamicExtensionService(sling *sling.Sling, uriTemplate string, features
 		featuresMetadataPath: featuresMetadataPath,
 		featuresValuesPath:   featuresValuesPath,
 		scriptsPath:          scriptsPath,
-		service:              newService(ServiceDynamicExtensionService, sling, uriTemplate),
+		service:              services.newService(ServiceDynamicExtensionService, sling, uriTemplate),
 	}
 }

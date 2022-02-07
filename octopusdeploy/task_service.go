@@ -1,17 +1,20 @@
 package octopusdeploy
 
-import "github.com/dghubble/sling"
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/dghubble/sling"
+)
 
 type taskService struct {
 	taskTypesPath string
 
-	service
+	services.service
 }
 
 func newTaskService(sling *sling.Sling, uriTemplate string, taskTypesPath string) *taskService {
 	return &taskService{
 		taskTypesPath: taskTypesPath,
-		service:       newService(ServiceTaskService, sling, uriTemplate),
+		service:       services.newService(ServiceTaskService, sling, uriTemplate),
 	}
 }
 

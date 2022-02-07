@@ -33,7 +33,7 @@ type CertificateResource struct {
 	Thumbprint               string                 `json:"Thumbprint,omitempty"`
 	Version                  int                    `json:"Version,omitempty"`
 
-	resource
+	Resource
 }
 
 type CertificateResources struct {
@@ -41,7 +41,7 @@ type CertificateResources struct {
 	PagedResults
 }
 
-// NewCertificateResource initializes a certificate resource with a name and
+// NewCertificateResource initializes a certificate Resource with a name and
 // credentials.
 func NewCertificateResource(name string, certificateData *SensitiveValue, password *SensitiveValue) *CertificateResource {
 	return &CertificateResource{
@@ -49,11 +49,11 @@ func NewCertificateResource(name string, certificateData *SensitiveValue, passwo
 		CertificateData:        certificateData,
 		Password:               password,
 		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
-		resource:               *newResource(),
+		Resource:               *newResource(),
 	}
 }
 
-// Validate checks the state of the certificate resource and returns an error
+// Validate checks the state of the certificate Resource and returns an error
 // if invalid.
 func (c CertificateResource) Validate() error {
 	return validator.New().Struct(c)
