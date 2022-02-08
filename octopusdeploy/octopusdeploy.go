@@ -140,13 +140,17 @@ func (c Client) getBaseUrlForResourceType(resource interface{}) string {
 }
 
 func ApiGetByID[T Resource](c Client, id string) (*T, error) {
+	path := fmt.Sprintf("%s/%s", c.getBaseUrlForResourceType(new(T)), id)
+	return ApiGet[T](c, path)
+}
+
+func ApiGet[T any](c Client, path string) (*T, error) {
 	getClient := c.sling.New()
 	if getClient == nil {
 		return nil, createClientInitializationError(OperationAPIGetByID)
 	}
 
 	resource := new(T)
-	path := fmt.Sprintf("%s/%s", c.getBaseUrlForResourceType(resource), id)
 	getClient = getClient.Get(path)
 	if getClient == nil {
 		return nil, createClientInitializationError(OperationAPIGetByID)
@@ -187,39 +191,12 @@ func getUserAgentString(requestingTool string) string {
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
 func ApiAdd[T Resource](c Client, inputStruct *T) (*T, error) {
-	postClient := c.sling.New()
-	if postClient == nil {
-		return nil, createClientInitializationError(OperationAPIAdd)
-	}
-
-	resource := new(T)
-	path := c.getBaseUrlForResourceType(resource)
-
-	postClient = postClient.Post(path)
-	if postClient == nil {
-		return nil, createClientInitializationError(OperationAPIAdd)
-	}
-
-	postClient.Set("User-Agent", getUserAgentString(c.requestingTool))
-
-	request := postClient.BodyJSON(inputStruct)
-	if request == nil {
-		return nil, createClientInitializationError(OperationAPIAdd)
-	}
-
-	octopusDeployError := new(APIError)
-	resp, err := request.Receive(resource, &octopusDeployError)
-
-	apiErrorCheck := APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError)
-	if apiErrorCheck != nil {
-		return nil, apiErrorCheck
-	}
-
-	return resource, nil
+	path := c.getBaseUrlForResourceType(new(T))
+	return apiAddWithResponseStatus[T](c, inputStruct, path, http.StatusCreated)
 }
 
 // apiAddWithResponseStatus function with defined response.
-func (c Client) apiAddWithResponseStatus(inputStruct interface{}, resource interface{}, path string, httpStatus int) (interface{}, error) {
+func apiAddWithResponseStatus[T any](c Client, inputStruct *T, path string, httpStatus int) (*T, error) {
 	if IsEmpty(path) {
 		return nil, CreateInvalidParameterError(OperationAPIAdd, ParameterPath)
 	}
@@ -242,6 +219,7 @@ func (c Client) apiAddWithResponseStatus(inputStruct interface{}, resource inter
 	}
 
 	octopusDeployError := new(APIError)
+	resource := new(T)
 	resp, err := request.Receive(resource, &octopusDeployError)
 
 	apiErrorCheck := APIErrorChecker(path, resp, httpStatus, err, octopusDeployError)
