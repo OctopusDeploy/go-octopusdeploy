@@ -37,4 +37,4 @@ func (s serverStatusService) Get() (*ServerStatus, error) {
 	return response.(*ServerStatus), nil
 }
 
-var _ services.Service = &serverStatusService{}
+var _ services.service = &serverStatusService{}

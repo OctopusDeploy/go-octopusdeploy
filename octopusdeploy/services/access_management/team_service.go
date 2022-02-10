@@ -64,25 +64,11 @@ func (s teamService) Query(teamsQuery octopusdeploy.TeamsQuery) (*access_managem
 	return response.(*access_management.Teams), nil
 }
 
-// GetByPartialName performs a lookup and returns teams with a matching partial
-// name.
-func (s teamService) GetByPartialName(name string) ([]*access_management.Team, error) {
-	path, err := s.getByPartialNamePath(name)
-	if err != nil {
-		return []*access_management.Team{}, err
-	}
+func (s teamService) GetScopedUserRoles(team access_management.Team) (octopusdeploy.IPagedResultsTracker[access_management.Team], error) {
+	//TODO: include skip/take params in the path
+	path := fmt.Sprintf("%s/teams/%s/scopeduserroles", teamsV1BasePath, team.GetID())
 
-	return s.getPagedResponse(path)
-}
+	pageTracker := octopusdeploy.NewPagedResultsTracker(s.GetClient(), 30, path)
 
-func (s teamService) GetScopedUserRoles(team access_management.Team, query octopusdeploy.SkipTakeQuery) (*octopusdeploy.ScopedUserRoles, error) {
-	template, _ := uritemplates.Parse(team.Links["ScopedUserRoles"])
-	path, _ := template.Expand(query)
-
-	resp, err := s.client.apiGet(new(octopusdeploy.ScopedUserRoles), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*octopusdeploy.ScopedUserRoles), nil
+	return pageTracker, nil
 }

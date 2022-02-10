@@ -49,7 +49,7 @@ func getClient() *octopusdeploy.client {
 	return octopusClient
 }
 
-func testNewService(t *testing.T, service Service, uriTemplate string, ServiceName string) {
+func testNewService(t *testing.T, service service, uriTemplate string, ServiceName string) {
 	require.NotNil(t, service)
 	require.NotNil(t, service.getClient())
 

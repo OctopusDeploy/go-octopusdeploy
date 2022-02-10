@@ -64,7 +64,7 @@ func ToAccounts(accountResources *AccountResources) *Accounts {
 	}
 }
 
-func ToAccountResource(client octopusdeploy.SpaceScopedClient, account octopusdeploy.IAccount) (*AccountResource, error) {
+func ToAccountResource(client octopusdeploy.spaceScopedClient, account octopusdeploy.IAccount) (*AccountResource, error) {
 	if octopusdeploy.isNil(account) {
 		return nil, octopusdeploy.CreateInvalidParameterError("ToAccountResource", octopusdeploy.ParameterAccount)
 	}

@@ -68,7 +68,7 @@ const azureCloudServiceAsJSON string = `{
 		"tenant-tag-2"
 	],
 	"SpaceId": "Spaces-1",
-	"Name": "Azure Cloud Service",
+	"Name": "Azure Cloud service",
 	"Thumbprint": "thumbprint",
 	"Uri": "http://www.example.com/",
 	"IsDisabled": false,
@@ -81,7 +81,7 @@ const azureCloudServiceAsJSON string = `{
 	"Endpoint": {
 	  "CommunicationStyle": "AzureCloudService",
 	  "AccountId": "Accounts-285",
-	  "CloudServiceName": "Azure Cloud Service Name",
+	  "CloudServiceName": "Azure Cloud service Name",
 	  "StorageAccountName": "Azure Storage Account Name",
 	  "Slot": "Staging",
 	  "SwapIfPossible": true,

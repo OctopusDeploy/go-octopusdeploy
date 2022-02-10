@@ -7,26 +7,26 @@ const (
 	whitespaceString string = " "
 )
 
-// Service defines the contract for all services that communicate with the
+// IService defines the contract for all services that communicate with the
 // Octopus API.
-type NamedServicer interface {
+type IService interface {
 	GetName() string
-	GetClient() octopusdeploy.Client
+	GetClient() *octopusdeploy.Client
 }
 
-type Service struct {
+type service struct {
 	name string
-	NamedServicer
+	IService
 }
 
-func NewService(name string) *Service {
-	return &Service{
+func NewService(name string) *service {
+	return &service{
 		name: name,
 	}
 }
 
-func (s *Service) GetName() string {
+func (s *service) GetName() string {
 	return s.name
 }
 
-var _ NamedServicer = &Service{}
+var _ IService = &service{}

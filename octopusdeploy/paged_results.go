@@ -6,5 +6,5 @@ type PagedResults[T IResource] struct {
 	ItemsPerPage   int    `json:"ItemsPerPage"`
 	NumberOfPages  int    `json:"NumberOfPages"`
 	LastPageNumber int    `json:"LastPageNumber"`
-	Items          T[]    `json:"Items"`
+	Items          []T    `json:"Items"`
 }

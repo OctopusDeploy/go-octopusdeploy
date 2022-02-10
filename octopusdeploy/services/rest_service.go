@@ -7,26 +7,26 @@ import (
 
 type GetsByIDer[T octopusdeploy.Resource] interface {
 	GetByID(id string) (*T, error)
-	NamedServicer
+	IService
 }
 
 type ResourceAdder[T octopusdeploy.Resource] interface {
 	Add(resource *T) (*T, error)
-	NamedServicer
+	IService
 }
 
 type ResourceUpdater[T octopusdeploy.Resource] interface {
 	Update(resource *T) (*T, error)
-	NamedServicer
+	IService
 }
 
 type ResourceQueryer[T octopusdeploy.Resource] interface {
 	Query(queryStruct interface{}, template *uritemplates.UriTemplate) (octopusdeploy.PagedResults[T], error)
-	NamedServicer
+	IService
 }
 
 //type RESTService[T octopusdeploy.Resource] struct {
-//	Service
+//	service
 //	GetsByIDer[T]
 //	ResourceQueryer[T]
 //	ResourceAdder[T]
@@ -35,7 +35,7 @@ type ResourceQueryer[T octopusdeploy.Resource] interface {
 
 type DeleteByIDer[T octopusdeploy.Resource] interface {
 	DeleteByID(id string) error
-	NamedServicer
+	IService
 }
 
 type CanAddService[T octopusdeploy.Resource] struct {
@@ -51,35 +51,35 @@ type CanDeleteService[T octopusdeploy.Resource] struct {
 }
 
 type Adminer interface {
-	NamedServicer
+	IService
 }
 
 type AdminService struct {
 	*octopusdeploy.AdminClient
-	Service
+	service
 	Adminer
 }
 
 type SpaceScoper interface {
-	NamedServicer
+	IService
 }
 
 type SpaceScopedService struct {
 	*octopusdeploy.SpaceScopedClient
-	Service
+	service
 	SpaceScoper
 }
 
 func NewAdminService(name string, client *octopusdeploy.AdminClient) AdminService {
 	return AdminService{
-		Service: *NewService(name),
+		service:     *NewService(name),
 		AdminClient: client,
 	}
 }
 
 func NewSpaceScopedService(name string, client *octopusdeploy.SpaceScopedClient) SpaceScopedService {
 	return SpaceScopedService{
-		Service: *NewService(name),
+		service:           *NewService(name),
 		SpaceScopedClient: client,
 	}
 }

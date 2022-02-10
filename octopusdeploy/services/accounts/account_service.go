@@ -14,7 +14,7 @@ const accountsV1BasePath = "accounts"
 // accountService handles communication with account-related methods of the
 // Octopus API.
 type accountService struct {
-	client *octopusdeploy.SpaceScopedClient
+	client *octopusdeploy.spaceScopedClient
 	services.SpaceScopedService
 	services.GetsByIDer[octopusdeploy.IAccount]
 	services.ResourceQueryer[accounts.Accounts]
@@ -24,7 +24,7 @@ type accountService struct {
 }
 
 // NewAccountService returns an account service with a preconfigured client.
-func NewAccountService(client *octopusdeploy.SpaceScopedClient) *accountService {
+func NewAccountService(client *octopusdeploy.spaceScopedClient) *accountService {
 	accountService := &accountService{
 		SpaceScopedService: services.NewSpaceScopedService(octopusdeploy.ServiceAccountService, client),
 	}

@@ -65,10 +65,6 @@ func NewSpaceScopedClient(octopusServerEndpoint *octopusServerEndpoint, spaceID 
 		return nil, CreateInvalidParameterError("NewSpaceScopedClient", ParameterOctopusServerEndpoint)
 	}
 
-	httpClient := &http.Client{}
-	base := sling.New().Client(httpClient).Base(octopusServerEndpoint.BaseURLWithAPI.String()).Set(clientAPIKeyHTTPHeader, octopusServerEndpoint.ApiKey)
-	base.Set("User-Agent", getUserAgentString(requestingTool))
-
 	client := &SpaceScopedClient{
 		Client:  *newClient(octopusServerEndpoint, requestingTool, spaceID),
 		spaceID: spaceID,
@@ -139,21 +135,27 @@ func (c Client) getBaseUrlForResourceType(resource interface{}) string {
 	return fmt.Sprintf("%s/%s", c.scopedBasePath, pluralize(resource))
 }
 
-func ApiGetByID[T Resource](c Client, id string) (*T, error) {
+func ApiGetByID[T Resource](c *Client, id string) (*T, error) {
 	path := fmt.Sprintf("%s/%s", c.getBaseUrlForResourceType(new(T)), id)
 	return ApiGet[T](c, path)
 }
 
-func ApiGet[T any](c Client, path string) (*T, error) {
+func ApiGetMany[T any](c *Client, pathRelativeToRoot string) (*PagedResults[T], error) {
+	resp, err := ApiGet[PagedResults[T]](c, pathRelativeToRoot)
+	return resp, err
+}
+
+func ApiGet[T any](c *Client, pathRelativeToRoot string) (*T, error) {
 	getClient := c.sling.New()
 	if getClient == nil {
-		return nil, createClientInitializationError(OperationAPIGetByID)
+		return nil, createClientInitializationError(OperationAPIGet)
 	}
 
 	resource := new(T)
+	path := fmt.Sprintf("%s/%s", c.scopedBasePath, pathRelativeToRoot)
 	getClient = getClient.Get(path)
 	if getClient == nil {
-		return nil, createClientInitializationError(OperationAPIGetByID)
+		return nil, createClientInitializationError(OperationAPIGet)
 	}
 
 	getClient.Set("User-Agent", getUserAgentString(c.requestingTool))
@@ -190,13 +192,13 @@ func getUserAgentString(requestingTool string) string {
 }
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
-func ApiAdd[T Resource](c Client, inputStruct *T) (*T, error) {
+func ApiAdd[T Resource](c *Client, inputStruct *T) (*T, error) {
 	path := c.getBaseUrlForResourceType(new(T))
 	return apiAddWithResponseStatus[T](c, inputStruct, path, http.StatusCreated)
 }
 
 // apiAddWithResponseStatus function with defined response.
-func apiAddWithResponseStatus[T any](c Client, inputStruct *T, path string, httpStatus int) (*T, error) {
+func apiAddWithResponseStatus[T any](c *Client, inputStruct *T, path string, httpStatus int) (*T, error) {
 	if IsEmpty(path) {
 		return nil, CreateInvalidParameterError(OperationAPIAdd, ParameterPath)
 	}
@@ -265,7 +267,7 @@ func (c Client) apiPost(inputStruct interface{}, resource interface{}, path stri
 }
 
 // Generic OctopusDeploy API Update Function.
-func ApiUpdate[T Resource](c Client, inputStruct *T) (*T, error) {
+func ApiUpdate[T Resource](c *Client, inputStruct *T) (*T, error) {
 	putClient := c.sling.New()
 	if putClient == nil {
 		return nil, createClientInitializationError(OperationAPIUpdate)
@@ -298,7 +300,7 @@ func ApiUpdate[T Resource](c Client, inputStruct *T) (*T, error) {
 }
 
 // Generic OctopusDeploy API Delete Function.
-func ApiDelete[T Resource](c Client, id string) error {
+func ApiDelete[T Resource](c *Client, id string) error {
 	if IsEmpty(id) {
 		return CreateInvalidParameterError(OperationAPIDelete, ParameterID)
 	}

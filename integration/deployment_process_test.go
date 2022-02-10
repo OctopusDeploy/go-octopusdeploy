@@ -95,7 +95,7 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	deploymentProcess := GetTestDeploymentProcess(t, client, project)
 	require.NotNil(t, deploymentProcess)
 
-	deploymentActionWindowsService := octopusdeploy.NewDeploymentAction("Install Windows Service", "Octopus.WindowsService")
+	deploymentActionWindowsService := octopusdeploy.NewDeploymentAction("Install Windows service", "Octopus.WindowsService")
 	deploymentActionWindowsService.Properties["Octopus.Action.EnabledFeatures"] = octopusdeploy.NewPropertyValue("Octopus.Features.WindowsService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles", false)
 	deploymentActionWindowsService.Properties["Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles"] = octopusdeploy.NewPropertyValue("True", false)
 	deploymentActionWindowsService.Properties["Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings"] = octopusdeploy.NewPropertyValue("True", false)

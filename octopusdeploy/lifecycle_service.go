@@ -121,4 +121,4 @@ func (s lifecycleService) Update(lifecycle *Lifecycle) (*Lifecycle, error) {
 	return resp.(*Lifecycle), nil
 }
 
-var _ services.Service = &lifecycleService{}
+var _ services.service = &lifecycleService{}

@@ -308,4 +308,4 @@ func (s variableService) MatchesScope(variableScope VariableScope, definedScope 
 	return matched, &matchedScopes, nil
 }
 
-var _ services.Service = &variableService{}
+var _ services.service = &variableService{}
