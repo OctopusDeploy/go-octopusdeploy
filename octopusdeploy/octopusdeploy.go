@@ -120,11 +120,6 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	return nil
 }
 
-func ApiGetByID[T Resource](c *Client, id string) (*T, error) {
-	path := fmt.Sprintf("%s/%s", c.getBaseUrlForResourceType(new(T)), id)
-	return ApiGet[T](c, path)
-}
-
 func ApiGetMany[T any](c *Client, pathRelativeToRoot string) (*PagedResults[T], error) {
 	resp, err := ApiGet[PagedResults[T]](c, pathRelativeToRoot)
 	return resp, err
@@ -177,8 +172,7 @@ func getUserAgentString(requestingTool string) string {
 }
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
-func ApiAdd[T Resource](c *Client, inputStruct *T) (*T, error) {
-	path := c.getBaseUrlForResourceType(new(T))
+func ApiAdd[T Resource](c *Client, inputStruct *T, path string) (*T, error) {
 	return apiAddWithResponseStatus[T](c, inputStruct, path, http.StatusCreated)
 }
 
@@ -252,15 +246,13 @@ func (c Client) apiPost(inputStruct interface{}, resource interface{}, path stri
 }
 
 // Generic OctopusDeploy API Update Function.
-func ApiUpdate[T Resource](c *Client, inputStruct *T) (*T, error) {
+func ApiUpdate[T Resource](c *Client, inputStruct *T, path string) (*T, error) {
 	putClient := c.sling.New()
 	if putClient == nil {
 		return nil, createClientInitializationError(OperationAPIUpdate)
 	}
 
 	resource := new(T)
-	path := fmt.Sprintf("%s/%s", c.scopedBasePath, pluralize(inputStruct))
-
 	putClient = putClient.Put(path)
 	if putClient == nil {
 		return nil, createClientInitializationError(OperationAPIUpdate)
@@ -285,13 +277,10 @@ func ApiUpdate[T Resource](c *Client, inputStruct *T) (*T, error) {
 }
 
 // Generic OctopusDeploy API Delete Function.
-func ApiDelete[T Resource](c *Client, id string) error {
+func ApiDelete[T Resource](c *Client, id string, path string) error {
 	if IsEmpty(id) {
 		return CreateInvalidParameterError(OperationAPIDelete, ParameterID)
 	}
-
-	resource := new(T)
-	path := fmt.Sprintf("%s/%s", c.getBaseUrlForResourceType(resource), id)
 
 	deleteClient := c.sling.New()
 	if deleteClient == nil {
@@ -302,8 +291,6 @@ func ApiDelete[T Resource](c *Client, id string) error {
 	if deleteClient == nil {
 		return createClientInitializationError(OperationAPIDelete)
 	}
-
-	deleteClient.Set("User-Agent", getUserAgentString(c.requestingTool))
 
 	octopusDeployError := new(APIError)
 	resp, err := deleteClient.Receive(nil, &octopusDeployError)

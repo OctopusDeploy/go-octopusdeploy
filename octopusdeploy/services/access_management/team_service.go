@@ -28,24 +28,6 @@ func NewTeamServiceV1(client *octopusdeploy.AdminClient) *teamServiceV1 {
 	return teamService
 }
 
-func (s teamServiceV1) getPagedResponse(path string) ([]*access_management.Team, error) {
-	resources := []*access_management.Team{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := octopusdeploy.ApiGetPaged(s.client, new(access_management.Teams))
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*access_management.Teams)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = octopusdeploy.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // Query returns a collection of teams based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 )
@@ -36,6 +37,10 @@ type ResourceQueryer[T octopusdeploy.Resource] interface {
 type DeleteByIDer[T octopusdeploy.Resource] interface {
 	DeleteByID(id string) error
 	IService
+}
+
+type CanGetByIDService[T octopusdeploy.Resource] struct {
+	GetsByIDer[T]
 }
 
 type CanAddService[T octopusdeploy.Resource] struct {
@@ -92,12 +97,17 @@ func (s SpaceScopedService) GetClient() *octopusdeploy.Client {
 	return &s.Client
 }
 
+func (s *CanGetByIDService[T]) ApiGetByID(id string) (*T, error) {
+	path := fmt.Sprintf("%s/%s", s.GetBasePathRelativeToRoot(), id)
+	return octopusdeploy.ApiGet[T](s.GetClient(), path)
+}
+
 func (s *CanAddService[T]) Add(resource *T) (*T, error) {
 	if resource == nil {
 		return nil, octopusdeploy.CreateInvalidParameterError(octopusdeploy.OperationAdd, octopusdeploy.ParameterResource)
 	}
 
-	response, err := octopusdeploy.ApiAdd[T](s.GetClient(), resource)
+	response, err := octopusdeploy.ApiAdd[T](s.GetClient(), resource, s.GetBasePathRelativeToRoot())
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +120,7 @@ func (s *CanUpdateService[T]) Update(resource *T) (*T, error) {
 		return nil, octopusdeploy.CreateInvalidParameterError(octopusdeploy.OperationUpdate, octopusdeploy.ParameterResource)
 	}
 
-	response, err := octopusdeploy.ApiUpdate[T](s.GetClient(), resource)
+	response, err := octopusdeploy.ApiUpdate[T](s.GetClient(), resource, s.GetBasePathRelativeToRoot())
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +130,7 @@ func (s *CanUpdateService[T]) Update(resource *T) (*T, error) {
 
 // DeleteByID deletes the Resource that matches the input ID.
 func (s *CanDeleteService[T]) DeleteByID(id string) error {
-	err := octopusdeploy.ApiDelete[T](s.GetClient(), id)
+	err := octopusdeploy.ApiDelete[T](s.GetClient(), id, s.GetBasePathRelativeToRoot())
 	if err == octopusdeploy.ErrItemNotFound {
 		return err
 	}
