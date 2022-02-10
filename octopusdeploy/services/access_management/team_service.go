@@ -64,11 +64,11 @@ func (s teamService) Query(teamsQuery octopusdeploy.TeamsQuery) (*access_managem
 	return response.(*access_management.Teams), nil
 }
 
-func (s teamService) GetScopedUserRoles(team access_management.Team) (octopusdeploy.IPagedResultsTracker[access_management.Team], error) {
+func (s teamService) GetScopedUserRoles(team access_management.Team) (services.IPagedResultsHandler[access_management.Team], error) {
 	//TODO: include skip/take params in the path
 	path := fmt.Sprintf("%s/teams/%s/scopeduserroles", teamsV1BasePath, team.GetID())
 
-	pageTracker := octopusdeploy.NewPagedResultsTracker(s.GetClient(), 30, path)
+	pageHandler := services.NewPagedResultsHandler(s.GetClient(), 30, path)
 
-	return pageTracker, nil
+	return pageHandler, nil
 }
