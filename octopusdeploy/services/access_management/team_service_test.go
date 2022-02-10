@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createTeamService(t *testing.T) *teamService {
+func createTeamService(t *testing.T) *teamServiceV1 {
 	service := newTeamService(nil, octopusdeploy.TestURITeams)
 	octopusdeploy.testNewService(t, service, octopusdeploy.TestURITeams, octopusdeploy.ServiceTeamService)
 	return service
@@ -87,7 +87,7 @@ func TestTeamServiceNew(t *testing.T) {
 
 	testCases := []struct {
 		name        string
-		f           func(*sling.Sling, string) *teamService
+		f           func(*sling.Sling, string) *teamServiceV1
 		client      *sling.Sling
 		uriTemplate string
 	}{

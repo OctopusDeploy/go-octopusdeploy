@@ -70,16 +70,16 @@ type SpaceScopedService struct {
 	SpaceScoper
 }
 
-func NewAdminService(name string, client *octopusdeploy.AdminClient) AdminService {
+func NewAdminService(name string, basePathRelativeToRoot string, client *octopusdeploy.AdminClient) AdminService {
 	return AdminService{
-		service:     *NewService(name),
+		service:     *NewService(name, basePathRelativeToRoot),
 		AdminClient: client,
 	}
 }
 
-func NewSpaceScopedService(name string, client *octopusdeploy.SpaceScopedClient) SpaceScopedService {
+func NewSpaceScopedService(name string, basePathRelativeToRoot string, client *octopusdeploy.SpaceScopedClient) SpaceScopedService {
 	return SpaceScopedService{
-		service:           *NewService(name),
+		service:           *NewService(name, basePathRelativeToRoot),
 		SpaceScopedClient: client,
 	}
 }

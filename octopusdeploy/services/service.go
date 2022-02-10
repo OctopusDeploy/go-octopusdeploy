@@ -10,18 +10,21 @@ const (
 // IService defines the contract for all services that communicate with the
 // Octopus API.
 type IService interface {
+	GetBasePathRelativeToRoot() string
 	GetName() string
 	GetClient() *octopusdeploy.Client
 }
 
 type service struct {
+	basePathRelativeToRoot string
 	name string
 	IService
 }
 
-func NewService(name string) *service {
+func NewService(name string, basePathRelativeToRoot string) *service {
 	return &service{
 		name: name,
+		basePathRelativeToRoot: basePathRelativeToRoot,
 	}
 }
 

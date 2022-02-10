@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"github.com/dghubble/sling"
 	"net/http"
-	"reflect"
 	"runtime"
 	"runtime/debug"
-	"strings"
 )
 
 var version = "development"
@@ -120,19 +118,6 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	}
 
 	return nil
-}
-
-func pluralize(resource interface{}) string {
-	paged := resource.(*PagedResults)
-	if paged != nil {
-		return strings.ToLower(reflect.TypeOf(resource).Name())
-	}
-	resourceName := strings.ToLower(strings.ReplaceAll(reflect.TypeOf(resource).Name(), "Resource", ""))
-	return fmt.Sprintf("%ss", resourceName)
-}
-
-func (c Client) getBaseUrlForResourceType(resource interface{}) string {
-	return fmt.Sprintf("%s/%s", c.scopedBasePath, pluralize(resource))
 }
 
 func ApiGetByID[T Resource](c *Client, id string) (*T, error) {
