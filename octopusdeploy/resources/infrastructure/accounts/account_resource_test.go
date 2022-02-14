@@ -31,11 +31,11 @@ func TestAccountResource(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
-			accountInline := &account{
+			accountInline := &Account{
 				AccountType: AccountType("None"),
 				Name:        tc.Name,
 			}
-			accountWithNew := newAccount(tc.Name, AccountType("None"))
+			accountWithNew := NewAccount(tc.Name, AccountType("None"))
 			accountInline.SpaceID = tc.SpaceID
 			accountWithNew.SpaceID = tc.SpaceID
 			accountInline.TenantedDeploymentMode = tc.TenantedDeploymentMode

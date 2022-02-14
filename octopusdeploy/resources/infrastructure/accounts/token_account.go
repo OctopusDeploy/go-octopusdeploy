@@ -7,11 +7,13 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+const TokenAccountType string = "Token"
+
 // TokenAccount represents a token account.
 type TokenAccount struct {
 	Token *resources.SensitiveValue `json:"Token,omitempty" validate:"required"`
 
-	account
+	Account
 }
 
 // NewTokenAccount creates and initializes a token account with a name and
@@ -27,7 +29,7 @@ func NewTokenAccount(name string, token *resources.SensitiveValue, options ...fu
 
 	account := TokenAccount{
 		Token:   token,
-		account: *newAccount(name, AccountType("Token")),
+		Account: *NewAccount(name, AccountType(TokenAccountType)),
 	}
 
 	// iterate through configuration options and set fields (without checks)
@@ -36,7 +38,7 @@ func NewTokenAccount(name string, token *resources.SensitiveValue, options ...fu
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.AccountType = AccountType("Token")
+	account.AccountType = AccountType(TokenAccountType)
 	account.Name = name
 	account.Token = token
 

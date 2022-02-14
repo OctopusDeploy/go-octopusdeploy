@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 )
 
@@ -16,11 +15,11 @@ type pagedResultsHandler[T resources.IResource] struct {
 	pageSize               int
 	basePathRelativeToRoot string
 	totalResults           *int
-	client                 octopusdeploy.IClient
+	client                 IClient
 	IPagedResultsHandler[T]
 }
 
-func NewPagedResultsHandler[T resources.IResource](client octopusdeploy.IClient, pageSize int, basePathRelativeToRoot string) IPagedResultsHandler[T] {
+func NewPagedResultsHandler[T resources.IResource](client IClient, pageSize int, basePathRelativeToRoot string) IPagedResultsHandler[T] {
 	t := &pagedResultsHandler[T]{
 		pageSize:               pageSize,
 		currentPage:            0,
@@ -49,7 +48,7 @@ func (t pagedResultsHandler[T]) NextPage() (items []T, e error) {
 	//}
 
 	//TODO: include skip/take params in the basePathRelativeToRoot
-	resp, err := octopusdeploy.ApiGetMany[T](t.client, t.basePathRelativeToRoot)
+	resp, err := ApiGetMany[T](t.client, t.basePathRelativeToRoot)
 	if err != nil {
 		return nil, err
 	}

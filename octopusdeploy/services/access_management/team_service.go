@@ -2,6 +2,7 @@ package access_management
 
 import (
 	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
@@ -10,10 +11,9 @@ import (
 const teamsV1BasePath = "teams"
 
 type teamServiceV1 struct {
-	client *services.AdminClient
 	services.AdminService
 	services.GetsByIDer[access_management.Team]
-	services.ResourceQueryer[access_management.Teams]
+	services.ResourceQueryer[access_management.Team]
 	services.CanAddService[access_management.Team]
 	services.CanUpdateService[access_management.Team]
 	services.CanDeleteService[access_management.Team]

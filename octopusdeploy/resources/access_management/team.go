@@ -14,7 +14,7 @@ type Team struct {
 	ExternalSecurityGroups []resources.NamedReferenceItem `json:"ExternalSecurityGroups,omitempty"`
 	MemberUserIDs          []string                       `json:"MemberUserIds"`
 	Name                   string                         `json:"Name" validate:"required"`
-	SpaceID                string                         `json:"SpaceId,omitempty"`
+	SpaceID                *string                        `json:"SpaceId,omitempty"`
 
 	resources.Resource
 }

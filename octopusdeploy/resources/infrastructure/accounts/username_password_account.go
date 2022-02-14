@@ -7,12 +7,14 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+const UsernamePasswordAccountType string = "UsernamePassword"
+
 // UsernamePasswordAccount represents a username/password account.
 type UsernamePasswordAccount struct {
 	Username string
 	Password *resources.SensitiveValue
 
-	account
+	Account
 }
 
 // IUsernamePasswordAccount defines the interface for username-password accounts.
@@ -46,7 +48,7 @@ func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAc
 	}
 
 	account := UsernamePasswordAccount{
-		account: *newAccount(name, AccountType("UsernamePassword")),
+		Account: *NewAccount(name, AccountType(UsernamePasswordAccountType)),
 	}
 
 	// iterate through configuration options and set fields (without checks)
@@ -55,7 +57,7 @@ func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAc
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.AccountType = AccountType("UsernamePassword")
+	account.AccountType = AccountType(UsernamePasswordAccountType)
 	account.Name = name
 
 	// validate to ensure that all expectations are met

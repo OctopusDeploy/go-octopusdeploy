@@ -13,7 +13,7 @@ type SSHKeyAccount struct {
 	PrivateKeyPassphrase *resources.SensitiveValue
 	Username             string `validate:"required"`
 
-	account
+	Account
 }
 
 // ISSHKeyAccount defines the interface for SSH key accounts.
@@ -39,7 +39,7 @@ func NewSSHKeyAccount(name string, username string, privateKeyFile *resources.Se
 	}
 
 	account := SSHKeyAccount{
-		account: *newAccount(name, AccountType("SshKeyPair")),
+		Account: *NewAccount(name, AccountType("SshKeyPair")),
 	}
 
 	// iterate through configuration options and set fields (without checks)

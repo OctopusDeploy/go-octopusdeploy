@@ -17,7 +17,7 @@ type AzureSubscriptionAccount struct {
 	StorageEndpointSuffix string     `validate:"omitempty,hostname"`
 	SubscriptionID        *uuid.UUID `validate:"required"`
 
-	account
+	Account
 }
 
 // NewAzureSubscriptionAccount creates and initializes an Azure subscription
@@ -28,7 +28,7 @@ func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID, options 
 	}
 
 	account := AzureSubscriptionAccount{
-		account: *newAccount(name, AccountType("AzureSubscription")),
+		Account: *NewAccount(name, AccountType("AzureSubscription")),
 	}
 
 	// iterate through configuration options and set fields (without checks)

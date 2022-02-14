@@ -18,7 +18,7 @@ type AzureServicePrincipalAccount struct {
 	SubscriptionID          *uuid.UUID                `validate:"required"`
 	TenantID                *uuid.UUID                `validate:"required"`
 
-	account
+	Account
 }
 
 // NewAzureServicePrincipalAccount creates and initializes an Azure service
@@ -33,7 +33,7 @@ func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tena
 	}
 
 	account := AzureServicePrincipalAccount{
-		account: *newAccount(name, AccountType("AzureServicePrincipal")),
+		Account: *NewAccount(name, AccountType("AzureServicePrincipal")),
 	}
 
 	// iterate through configuration options and set fields (without checks)

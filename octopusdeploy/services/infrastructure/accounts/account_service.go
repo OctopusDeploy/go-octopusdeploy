@@ -2,8 +2,9 @@ package accounts
 
 import (
 	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/infrastructure/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 )
@@ -15,11 +16,11 @@ const accountsV1BasePath = "accounts"
 type accountService struct {
 	client *services.SpaceScopedClient
 	services.SpaceScopedService
-	services.GetsByIDer[services.IAccount]
-	services.ResourceQueryer[accounts.Accounts]
-	services.CanAddService[services.IAccount]
-	services.CanUpdateService[services.IAccount]
-	services.CanDeleteService[services.IAccount]
+	services.GetsByIDer[accounts.IAccount]
+	services.ResourceQueryer[accounts.IAccount]
+	services.CanAddService[accounts.IAccount]
+	services.CanUpdateService[accounts.IAccount]
+	services.CanDeleteService[accounts.IAccount]
 }
 
 // NewAccountService returns an account service with a preconfigured client.
@@ -32,9 +33,9 @@ func NewAccountService(client *services.SpaceScopedClient) *accountService {
 }
 
 // Add creates a new account.
-func (s *accountService) Add(account services.IAccount) (services.IAccount, error) {
+func (s *accountService) Add(account accounts.IAccount) (accounts.IAccount, error) {
 	if account == nil {
-		return nil, services.CreateInvalidParameterError(services.OperationAdd, services.ParameterAccount)
+		return nil, octopusdeploy.CreateInvalidParameterError(services.OperationAdd, octopusdeploy.ParameterAccount)
 	}
 
 	accountResource, err := accounts.ToAccountResource(s.GetClient(), account)

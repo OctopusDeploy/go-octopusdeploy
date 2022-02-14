@@ -6,9 +6,9 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// account is the embedded struct used for all accounts.
-type account struct {
-	AccountType            AccountType `validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
+// Account is the embedded struct used for all accounts.
+type Account struct {
+	AccountType            AccountType `validate:"required"`
 	Description            string
 	EnvironmentIDs         []string
 	Name                   string `validate:"required,notblank,notall"`
@@ -39,9 +39,9 @@ type IAccount interface {
 	resources.IResource
 }
 
-// newAccount creates and initializes an account.
-func newAccount(name string, accountType AccountType) *account {
-	return &account{
+// NewAccount creates and initializes an account.
+func NewAccount(name string, accountType AccountType) *Account {
+	return &Account{
 		AccountType:            accountType,
 		EnvironmentIDs:         []string{},
 		Name:                   name,
@@ -53,83 +53,83 @@ func newAccount(name string, accountType AccountType) *account {
 }
 
 // GetAccountType returns the type of this account.
-func (a *account) GetAccountType() AccountType {
+func (a *Account) GetAccountType() AccountType {
 	return a.AccountType
 }
 
 // GetDescription returns the description of the account.
-func (a *account) GetDescription() string {
+func (a *Account) GetDescription() string {
 	return a.Description
 }
 
 // GetEnvironmentIDs returns the environment IDs associated with this account.
-func (a *account) GetEnvironmentIDs() []string {
+func (a *Account) GetEnvironmentIDs() []string {
 	return a.EnvironmentIDs
 }
 
 // GetName returns the name of the account.
-func (a *account) GetName() string {
+func (a *Account) GetName() string {
 	return a.Name
 }
 
 // GetSpaceID returns the space ID of this account.
-func (a *account) GetSpaceID() string {
+func (a *Account) GetSpaceID() string {
 	return a.SpaceID
 }
 
 // GetTenantedDeploymentMode returns the tenanted deployment mode of this account.
-func (a *account) GetTenantedDeploymentMode() resources.TenantedDeploymentMode {
+func (a *Account) GetTenantedDeploymentMode() resources.TenantedDeploymentMode {
 	return a.TenantedDeploymentMode
 }
 
 // GetTenantIDs returns the tenant IDs associated with this account.
-func (a *account) GetTenantIDs() []string {
+func (a *Account) GetTenantIDs() []string {
 	return a.TenantIDs
 }
 
 // GetTenantTags returns the tenant tags assigned to this account.
-func (a *account) GetTenantTags() []string {
+func (a *Account) GetTenantTags() []string {
 	return a.TenantTags
 }
 
 // SetDescription sets the description of the account.
-func (a *account) SetDescription(description string) {
+func (a *Account) SetDescription(description string) {
 	a.Description = description
 }
 
 // SetEnvironmentIDs sets the associated environment IDs of the account.
-func (a *account) SetEnvironmentIDs(environmentIds []string) {
+func (a *Account) SetEnvironmentIDs(environmentIds []string) {
 	a.EnvironmentIDs = environmentIds
 }
 
 // SetName sets the name of the account.
-func (a *account) SetName(name string) {
+func (a *Account) SetName(name string) {
 	a.Name = name
 }
 
 // SetSpaceID sets the space ID of this account.
-func (a *account) SetSpaceID(spaceID string) {
+func (a *Account) SetSpaceID(spaceID string) {
 	a.SpaceID = spaceID
 }
 
 // SetTenantedDeploymentMode sets the tenanted deployment mode of this account.
-func (a *account) SetTenantedDeploymentMode(mode resources.TenantedDeploymentMode) {
+func (a *Account) SetTenantedDeploymentMode(mode resources.TenantedDeploymentMode) {
 	a.TenantedDeploymentMode = mode
 }
 
 // SetTenantIDs sets the tenant IDs associated with this account.
-func (a *account) SetTenantIDs(tenantIds []string) {
+func (a *Account) SetTenantIDs(tenantIds []string) {
 	a.TenantIDs = tenantIds
 }
 
 // SetTenantTags sets the tenant tags associated with this account.
-func (a *account) SetTenantTags(tenantTags []string) {
+func (a *Account) SetTenantTags(tenantTags []string) {
 	a.TenantTags = tenantTags
 }
 
 // Validate checks the state of the account and returns an error if
 // invalid.
-func (a *account) Validate() error {
+func (a *Account) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
@@ -142,4 +142,4 @@ func (a *account) Validate() error {
 	return v.Struct(a)
 }
 
-var _ IAccount = &account{}
+var _ IAccount = &Account{}

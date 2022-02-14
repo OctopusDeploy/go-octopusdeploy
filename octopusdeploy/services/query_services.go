@@ -3,20 +3,21 @@ package services
 import (
 	"fmt"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 )
 
-type CanGetByIDService[T Resource] struct {
+type CanGetByIDService[T resources.IResource] struct {
 	GetsByIDer[T]
 }
 
-type GetsByIDer[T Resource] interface {
+type GetsByIDer[T resources.IResource] interface {
 	GetByID(id string) (*T, error)
 	IService
 }
 
-type ResourceQueryer[T Resource] interface {
-	Query(queryStruct interface{}, template *uritemplates.UriTemplate) (PagedResults[T], error)
+type ResourceQueryer[T resources.IResource] interface {
+	Query(queryStruct interface{}, template *uritemplates.UriTemplate) (IPagedResultsHandler[T], error)
 	IService
 }
 

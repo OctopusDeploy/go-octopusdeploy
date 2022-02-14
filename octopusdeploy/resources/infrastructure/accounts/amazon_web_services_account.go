@@ -12,7 +12,7 @@ type AmazonWebServicesAccount struct {
 	AccessKey string                    `validate:"required"`
 	SecretKey *resources.SensitiveValue `validate:"required"`
 
-	account
+	Account
 }
 
 // NewAmazonWebServicesAccount initializes and returns an AWS account with a name, access key, and secret key.
@@ -30,7 +30,7 @@ func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *resou
 	}
 
 	account := AmazonWebServicesAccount{
-		account: *newAccount(name, AccountType("AmazonWebServicesAccount")),
+		Account: *NewAccount(name, AccountType("AmazonWebServicesAccount")),
 	}
 
 	// iterate through configuration options and set fields (without checks)

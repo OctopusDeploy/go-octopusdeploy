@@ -1,16 +1,18 @@
 package services
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"testing"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createActionTemplate(t *testing.T) *ActionTemplate {
-	resource := NewActionTemplate(octopusdeploy.getRandomName(), ActionTypeOctopusScript)
+func createActionTemplate(t *testing.T) *resources.ActionTemplate {
+	resource := NewActionTemplate(getRandomName(), ActionTypeOctopusScript)
 	require.NotNil(t, resource)
 
 	resource.Properties = map[string]PropertyValue{}

@@ -11,7 +11,7 @@ import (
 type GoogleCloudPlatformAccount struct {
 	JsonKey *resources.SensitiveValue `validate:"required"`
 
-	account
+	Account
 }
 
 // NewGoogleCloudPlatformAccount initializes and returns a Google cloud account.
@@ -25,7 +25,7 @@ func NewGoogleCloudPlatformAccount(name string, jsonKey *resources.SensitiveValu
 	}
 
 	account := GoogleCloudPlatformAccount{
-		account: *newAccount(name, AccountType("GoogleCloudAccount")),
+		Account: *NewAccount(name, AccountType("GoogleCloudAccount")),
 	}
 
 	// iterate through configuration options and set fields (without checks)

@@ -1,20 +1,18 @@
 package access_management
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
-	"github.com/dghubble/sling"
 )
 
-type teamMembershipService struct {
-	previewTeamPath string
+const teamMembershipV1BasePath = "teammembership"
 
-	octopusdeploy.service
+type teamMembershipServiceV1 struct {
+	client *services.AdminClient
+	services.AdminService
 }
 
-func newTeamMembershipService(sling *sling.Sling, uriTemplate string, previewTeamPath string) *teamMembershipService {
-	return &teamMembershipService{
-		previewTeamPath: previewTeamPath,
-		service:         octopusdeploy.newService(services.ServiceTeamMembershipService, sling, uriTemplate),
+func NewTeamMembershipService(client *services.AdminClient, previewTeamPath string) *teamMembershipServiceV1 {
+	return &teamMembershipServiceV1{
+		AdminService: services.NewAdminService(services.ServiceTeamMembershipService, teamMembershipV1BasePath, client),
 	}
 }

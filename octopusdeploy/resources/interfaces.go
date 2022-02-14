@@ -73,13 +73,6 @@ type IPersistenceSettings interface {
 	GetType() string
 }
 
-// IResource defines the interface for resources.
-type IResource interface {
-	GetID() string
-	SetID(string)
-	Validate() error
-}
-
 type IAuditedResource interface {
 	GetModifiedBy() string
 	GetModifiedOn() *time.Time

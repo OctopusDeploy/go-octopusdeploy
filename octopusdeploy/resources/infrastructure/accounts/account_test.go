@@ -9,25 +9,25 @@ import (
 )
 
 func TestAccount(t *testing.T) {
-	a := &account{}
+	a := &Account{}
 	name := getRandomName()
 
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
 
-	a = &account{
+	a = &Account{
 		Name: name,
 	}
 
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
 
-	a = &account{AccountType: AccountTypeUsernamePassword}
+	a = &Account{AccountType: AccountTypeUsernamePassword}
 
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
 
-	a = &account{
+	a = &Account{
 		AccountType:            AccountTypeUsernamePassword,
 		Name:                   name,
 		TenantedDeploymentMode: resources.TenantedDeploymentMode("Untenanted"),
@@ -36,7 +36,7 @@ func TestAccount(t *testing.T) {
 	require.NotNil(t, a)
 	assert.NoError(t, a.Validate())
 
-	a = &account{
+	a = &Account{
 		AccountType:            AccountTypeUsernamePassword,
 		Name:                   "All",
 		TenantedDeploymentMode: resources.TenantedDeploymentMode("Untenanted"),
@@ -45,7 +45,7 @@ func TestAccount(t *testing.T) {
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
 
-	a = &account{
+	a = &Account{
 		AccountType:            AccountTypeUsernamePassword,
 		Name:                   "all",
 		TenantedDeploymentMode: resources.TenantedDeploymentMode("Untenanted"),
@@ -54,6 +54,6 @@ func TestAccount(t *testing.T) {
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())
 
-	a = newAccount(name, AccountTypeAzureServicePrincipal)
+	a = NewAccount(name, AccountTypeAzureServicePrincipal)
 	require.NoError(t, a.Validate())
 }
