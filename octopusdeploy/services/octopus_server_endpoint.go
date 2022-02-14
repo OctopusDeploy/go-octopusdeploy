@@ -1,10 +1,12 @@
-package octopusdeploy
+package services
 
 import (
 	"fmt"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 type octopusServerEndpoint struct {
@@ -13,9 +15,9 @@ type octopusServerEndpoint struct {
 }
 
 func NewOctopusServerEndpoint(apiURL *url.URL, apiKey string) (*octopusServerEndpoint, error) {
-	octopusApiURLFromEnvVar := os.Getenv(clientURLEnvironmentVariable)
+	octopusApiURLFromEnvVar := os.Getenv(octopusdeploy.clientURLEnvironmentVariable)
 	var urlError error
-	if apiURL == nil && !IsEmpty(octopusApiURLFromEnvVar) {
+	if apiURL == nil && !octopusdeploy.IsEmpty(octopusApiURLFromEnvVar) {
 		apiURL, urlError = url.Parse(octopusApiURLFromEnvVar)
 		if urlError != nil {
 			return nil, urlError
@@ -28,15 +30,15 @@ func NewOctopusServerEndpoint(apiURL *url.URL, apiKey string) (*octopusServerEnd
 	}
 
 	if apiURL == nil {
-		return nil, createInvalidParameterError(clientNewOctopusServerEndpoint, ParameterOctopusURL)
+		return nil, octopusdeploy.CreateInvalidParameterError(clientNewOctopusServerEndpoint, octopusdeploy.ParameterOctopusURL)
 	}
 
 	if IsEmpty(apiKey) {
-		return nil, createInvalidParameterError(clientNewOctopusServerEndpoint, ParameterAPIKey)
+		return nil, CreateInvalidParameterError(clientNewOctopusServerEndpoint, ParameterAPIKey)
 	}
 
-	if !octopusdeploy.isAPIKey(apiKey) {
-		return nil, createInvalidParameterError(clientNewOctopusServerEndpoint, ParameterAPIKey)
+	if !isAPIKey(apiKey) {
+		return nil, CreateInvalidParameterError(clientNewOctopusServerEndpoint, ParameterAPIKey)
 	}
 
 	baseURLWithAPIString := strings.TrimRight(apiURL.String(), "/")

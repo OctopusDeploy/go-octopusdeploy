@@ -91,13 +91,6 @@ type IRunsOnAWorker interface {
 	SetDefaultWorkerPoolID(string)
 }
 
-// ISSHKeyAccount defines the interface for SSH key accounts.
-type ISSHKeyAccount interface {
-	SetPrivateKeyPassphrase(*SensitiveValue)
-
-	IAccount
-}
-
 // ITriggerAction defines the interface for trigger actions.
 type ITriggerAction interface {
 	GetActionType() ActionType
@@ -108,15 +101,6 @@ type ITriggerAction interface {
 type ITriggerFilter interface {
 	GetFilterType() FilterType
 	SetFilterType(filterType FilterType)
-}
-
-// IUsernamePasswordAccount defines the interface for username-password accounts.
-type IUsernamePasswordAccount interface {
-	GetUsername() string
-	SetPassword(*SensitiveValue)
-	SetUsername(string)
-
-	IAccount
 }
 
 // IWorkerPool defines the interface for worker pools.

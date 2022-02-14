@@ -7,13 +7,6 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// RunbookSnapshots defines a collection of runbook snapshots with built-in
-// support for paged results from the API.
-type RunbookSnapshots struct {
-	Items []*RunbookSnapshot `json:"Items"`
-	PagedResults
-}
-
 // RunbookSnapshot represents a runbook snapshot.
 type RunbookSnapshot struct {
 	Assembled                     *time.Time         `json:"Assembled,omitempty"`

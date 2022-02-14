@@ -1,10 +1,5 @@
 package resources
 
-type RunbookProcesses struct {
-	Items []*RunbookProcess `json:"Items"`
-	PagedResults
-}
-
 type RunbookProcess struct {
 	LastSnapshotID string            `json:"LastSnapshotId,omitempty"`
 	ProjectID      string            `json:"ProjectId,omitempty"`

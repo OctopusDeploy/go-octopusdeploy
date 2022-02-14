@@ -1,14 +1,12 @@
 package resources
 
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-
 type DeployLatestReleaseAction struct {
 	DestinationEnvironment string   `json:"DestinationEnvironmentId"`
 	ShouldRedeploy         bool     `json:"ShouldRedeployWhenReleaseIsCurrent"`
 	SourceEnvironments     []string `json:"SourceEnvironmentIds"`
 	Variables              string   `json:"Variables"`
 
-	octopusdeploy.scopedDeploymentAction
+	scopedDeploymentAction
 }
 
 func NewDeployLatestReleaseAction(destinationEnvironment string, shouldRedeploy bool, sourceEnvironments []string, variables string) *DeployLatestReleaseAction {
@@ -17,7 +15,7 @@ func NewDeployLatestReleaseAction(destinationEnvironment string, shouldRedeploy 
 		ShouldRedeploy:         shouldRedeploy,
 		SourceEnvironments:     sourceEnvironments,
 		Variables:              variables,
-		scopedDeploymentAction: *octopusdeploy.newScopedDeploymentAction(DeployLatestRelease),
+		scopedDeploymentAction: *newScopedDeploymentAction(DeployLatestRelease),
 	}
 }
 

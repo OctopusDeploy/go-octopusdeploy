@@ -2,11 +2,6 @@ package resources
 
 import "github.com/go-playground/validator/v10"
 
-type Tenants struct {
-	Items []*Tenant `json:"Items"`
-	PagedResults
-}
-
 type Tenant struct {
 	ClonedFromTenantID  string              `json:"ClonedFromTenantId"`
 	Description         string              `json:"Description"`

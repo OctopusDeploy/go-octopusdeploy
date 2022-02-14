@@ -1,4 +1,4 @@
-package octopusdeploy
+package services
 
 import (
 	"fmt"

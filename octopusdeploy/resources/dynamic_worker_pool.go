@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -12,16 +11,11 @@ type DynamicWorkerPool struct {
 	WorkerPool
 }
 
-type DynamicWorkerPools struct {
-	Items []*DynamicWorkerPool `json:"Items"`
-	PagedResults
-}
-
 // NewDynamicWorkerPool creates and initializes a dynamic worker pool.
 func NewDynamicWorkerPool(name string, workerType WorkerType) *DynamicWorkerPool {
 	return &DynamicWorkerPool{
 		WorkerType: workerType,
-		WorkerPool: *octopusdeploy.newWorkerPool(name, WorkerPoolTypeDynamic),
+		WorkerPool: *newWorkerPool(name, WorkerPoolTypeDynamic),
 	}
 }
 

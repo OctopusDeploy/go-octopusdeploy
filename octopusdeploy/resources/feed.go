@@ -17,11 +17,6 @@ type Feed struct {
 	Resource
 }
 
-type Feeds struct {
-	Items []IFeed `json:"Items"`
-	PagedResults
-}
-
 // newFeed creates and initializes a feed Resource.
 func newFeed(name string, feedType FeedType) *Feed {
 	return &Feed{

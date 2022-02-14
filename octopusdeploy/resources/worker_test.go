@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -31,19 +30,11 @@ func TestWorkersUnmarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, tentaclePassiveWorker)
 
-	endpointLastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2019-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self":       "/api/Spaces-1/workers/Workers-1",
-		"Connection": "/api/Spaces-1/workers/Workers-1/connection",
-	}
 	url, _ := url.Parse("https://example.com")
 	version := "1.2.3"
 
 	endpoint := NewListeningTentacleEndpoint(url, "0E80575D3BD8D30854802A4F8340A2E23AE961FD")
 	endpoint.ID = "endpoint-123"
-	endpoint.ModifiedBy = "john.smith@example.com"
-	endpoint.ModifiedOn = &endpointLastModifiedOn
 	endpoint.ProxyID = "fake-proxy-id"
 	endpoint.TentacleVersionDetails = NewTentacleVersionDetails(&version, true, true, false)
 
@@ -51,17 +42,11 @@ func TestWorkersUnmarshalJSON(t *testing.T) {
 
 	assert.Equal(t, endpoint.CertificateSignatureAlgorithm, listeningTentacleEndpoint.CertificateSignatureAlgorithm)
 	assert.Equal(t, endpoint.GetID(), listeningTentacleEndpoint.GetID())
-	assert.Equal(t, endpoint.GetModifiedBy(), listeningTentacleEndpoint.GetModifiedBy())
-	assert.Equal(t, endpoint.GetModifiedOn(), listeningTentacleEndpoint.GetModifiedOn())
-	assert.Equal(t, endpoint.Links, listeningTentacleEndpoint.Links)
 	assert.Equal(t, endpoint.ProxyID, listeningTentacleEndpoint.ProxyID)
 	assert.Equal(t, endpoint.Resource, listeningTentacleEndpoint.Resource)
 	assert.Equal(t, endpoint.TentacleVersionDetails, listeningTentacleEndpoint.TentacleVersionDetails)
 	assert.Equal(t, endpoint.Thumbprint, listeningTentacleEndpoint.Thumbprint)
 	assert.Equal(t, endpoint.URI, listeningTentacleEndpoint.URI)
-	assert.Equal(t, "alice.smith@example.com", tentaclePassiveWorker.GetModifiedBy())
-	assert.Equal(t, &lastModifiedOn, tentaclePassiveWorker.GetModifiedOn())
-	assert.Equal(t, links, tentaclePassiveWorker.Links)
 	assert.False(t, tentaclePassiveWorker.HasLatestCalamari)
 	assert.Equal(t, "Unknown", tentaclePassiveWorker.HealthStatus)
 	assert.Equal(t, "Workers-1", tentaclePassiveWorker.GetID())

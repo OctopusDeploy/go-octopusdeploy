@@ -52,11 +52,6 @@ type EndpointResource struct {
 	Resource
 }
 
-type EndpointResources struct {
-	Items []*EndpointResource `json:"Items"`
-	PagedResults
-}
-
 // NewEndpoint creates and initializes an account Resource with a name and type.
 func NewEndpointResource(communicationStyle string) *EndpointResource {
 	return &EndpointResource{

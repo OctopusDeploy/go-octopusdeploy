@@ -9,11 +9,6 @@ type StaticWorkerPool struct {
 	WorkerPool
 }
 
-type StaticWorkerPools struct {
-	Items []*StaticWorkerPool `json:"Items"`
-	PagedResults
-}
-
 // NewStaticWorkerPool creates and initializes a static worker pool.
 func NewStaticWorkerPool(name string) *StaticWorkerPool {
 	return &StaticWorkerPool{

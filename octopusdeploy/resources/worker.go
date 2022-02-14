@@ -2,6 +2,7 @@ package resources
 
 import (
 	"encoding/json"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -10,13 +11,6 @@ type Worker struct {
 	WorkerPoolIDs []string `json:"WorkerPoolIds,omitempty"`
 
 	machine
-}
-
-// Workers defines a collection of workers with built-in support for paged
-// results.
-type Workers struct {
-	Items []*Worker `json:"Items"`
-	PagedResults
 }
 
 func NewWorker(name string, endpoint IEndpoint) *Worker {

@@ -36,11 +36,6 @@ type CertificateResource struct {
 	Resource
 }
 
-type CertificateResources struct {
-	Items []*CertificateResource `json:"Items"`
-	PagedResults
-}
-
 // NewCertificateResource initializes a certificate Resource with a name and
 // credentials.
 func NewCertificateResource(name string, certificateData *SensitiveValue, password *SensitiveValue) *CertificateResource {

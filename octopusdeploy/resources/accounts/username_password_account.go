@@ -15,6 +15,15 @@ type UsernamePasswordAccount struct {
 	account
 }
 
+// IUsernamePasswordAccount defines the interface for username-password accounts.
+type IUsernamePasswordAccount interface {
+	GetUsername() string
+	SetPassword(*resources.SensitiveValue)
+	SetUsername(string)
+
+	IAccount
+}
+
 // GetUsername returns the username of this username/password account.
 func (u *UsernamePasswordAccount) GetUsername() string {
 	return u.Username
@@ -72,4 +81,4 @@ func (u *UsernamePasswordAccount) Validate() error {
 	return v.Struct(u)
 }
 
-var _ resources.IUsernamePasswordAccount = &UsernamePasswordAccount{}
+var _ IUsernamePasswordAccount = &UsernamePasswordAccount{}

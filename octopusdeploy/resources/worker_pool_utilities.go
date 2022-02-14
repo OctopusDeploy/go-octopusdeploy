@@ -5,9 +5,9 @@ import (
 )
 
 func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
-	if isNil(workerPoolResource) {
-		return nil, createInvalidParameterError("ToWorkerPool", "workerPoolResource")
-	}
+	// if isNil(workerPoolResource) {
+	// 	return nil, createInvalidParameterError("ToWorkerPool", "workerPoolResource")
+	// }
 
 	var workerPool IWorkerPool
 	var err error
@@ -26,17 +26,10 @@ func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 	return workerPool, nil
 }
 
-func ToWorkerPools(workerPoolResources *WorkerPoolResources) *WorkerPools {
-	return &WorkerPools{
-		Items:        ToWorkerPoolArray(workerPoolResources.Items),
-		PagedResults: workerPoolResources.PagedResults,
-	}
-}
-
 func ToWorkerPoolResource(workerPool IWorkerPool) (*WorkerPoolResource, error) {
-	if isNil(workerPool) {
-		return nil, createInvalidParameterError("ToWorkerPoolResource", "workerPool")
-	}
+	// if isNil(workerPool) {
+	// 	return nil, createInvalidParameterError("ToWorkerPoolResource", "workerPool")
+	// }
 
 	workerPoolResource := NewWorkerPoolResource(workerPool.GetName(), workerPool.GetWorkerPoolType())
 

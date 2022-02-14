@@ -20,13 +20,6 @@ type Channel struct {
 	Resource
 }
 
-// Channels defines a collection of channels with built-in support for paged
-// results.
-type Channels struct {
-	Items []*Channel `json:"Items"`
-	PagedResults
-}
-
 func NewChannel(name string, projectID string) *Channel {
 	return &Channel{
 		Name:       strings.TrimSpace(name),

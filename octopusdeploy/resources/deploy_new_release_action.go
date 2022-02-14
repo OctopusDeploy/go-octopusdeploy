@@ -1,13 +1,11 @@
 package resources
 
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-
 type DeployNewReleaseAction struct {
-	Environment             string                                 `json:"EnvironmentId,omitempty"`
+	Environment             string                   `json:"EnvironmentId,omitempty"`
 	Variables               string                   `json:"Variable,omitempty"`
 	VersionControlReference *VersionControlReference `json:"VersionControlReference,omitempty"`
 
-	octopusdeploy.scopedDeploymentAction
+	scopedDeploymentAction
 }
 
 func NewDeployNewReleaseAction(environment string, variables string, versionControlReference *VersionControlReference) *DeployNewReleaseAction {
@@ -15,7 +13,7 @@ func NewDeployNewReleaseAction(environment string, variables string, versionCont
 		Environment:             environment,
 		Variables:               variables,
 		VersionControlReference: versionControlReference,
-		scopedDeploymentAction:  *octopusdeploy.newScopedDeploymentAction(DeployNewRelease),
+		scopedDeploymentAction:  *newScopedDeploymentAction(DeployNewRelease),
 	}
 }
 

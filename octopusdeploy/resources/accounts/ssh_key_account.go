@@ -16,6 +16,13 @@ type SSHKeyAccount struct {
 	account
 }
 
+// ISSHKeyAccount defines the interface for SSH key accounts.
+type ISSHKeyAccount interface {
+	SetPrivateKeyPassphrase(*resources.SensitiveValue)
+
+	IAccount
+}
+
 // NewSSHKeyAccount initializes and returns a SSH key pair account with a name,
 // username, and private key file.
 func NewSSHKeyAccount(name string, username string, privateKeyFile *resources.SensitiveValue, options ...func(*SSHKeyAccount)) (*SSHKeyAccount, error) {

@@ -1,10 +1,5 @@
 package resources
 
-type TagSets struct {
-	Items []*TagSet `json:"Items"`
-	PagedResults
-}
-
 type TagSet struct {
 	Description string `json:"Description,omitempty"`
 	Name        string `json:"Name"`

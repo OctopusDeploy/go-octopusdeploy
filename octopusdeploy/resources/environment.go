@@ -4,11 +4,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Environments struct {
-	Items []*Environment `json:"Items"`
-	PagedResults
-}
-
 type Environment struct {
 	AllowDynamicInfrastructure bool   `json:"AllowDynamicInfrastructure"`
 	Description                string `json:"Description,omitempty"`

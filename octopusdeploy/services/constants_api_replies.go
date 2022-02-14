@@ -1,4 +1,4 @@
-package resources
+package services
 
 const (
 	apiReplyRoot string = `{

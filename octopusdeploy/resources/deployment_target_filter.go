@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -11,7 +10,7 @@ type DeploymentTargetFilter struct {
 	EventGroups     []string `json:"EventGroups,omitempty"`
 	Roles           []string `json:"Roles,omitempty"`
 
-	octopusdeploy.triggerFilter
+	triggerFilter
 }
 
 func NewDeploymentTargetFilter(environments []string, eventCategories []string, eventGroups []string, roles []string) *DeploymentTargetFilter {
@@ -20,7 +19,7 @@ func NewDeploymentTargetFilter(environments []string, eventCategories []string, 
 		EventCategories: eventCategories,
 		EventGroups:     eventGroups,
 		Roles:           roles,
-		triggerFilter:   *octopusdeploy.newTriggerFilter(MachineFilter),
+		triggerFilter:   *newTriggerFilter(MachineFilter),
 	}
 
 	return deploymentTargetFilter

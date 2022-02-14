@@ -1,12 +1,5 @@
 package resources
 
-// UserRoles defines a collection of user roles with built-in support for paged
-// results.
-type UserRoles struct {
-	Items []*UserRole `json:"Items"`
-	PagedResults
-}
-
 // UserRole represents a user role in Octopus.
 type UserRole struct {
 	CanBeDeleted                 bool     `json:"CanBeDeleted,omitempty"`

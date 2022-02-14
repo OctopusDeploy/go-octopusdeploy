@@ -1,14 +1,13 @@
 package resources
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/jinzhu/copier"
 )
 
 func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
-	if octopusdeploy.isNil(endpointResource) {
-		return nil, createInvalidParameterError("ToEndpoint", "endpointResource")
-	}
+	// if octopusdeploy.isNil(endpointResource) {
+	// 	return nil, createInvalidParameterError("ToEndpoint", "endpointResource")
+	// }
 
 	var endpoint IEndpoint
 	var err error
@@ -41,9 +40,9 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 }
 
 func ToEndpointResource(endpoint IEndpoint) (*EndpointResource, error) {
-	if octopusdeploy.isNil(endpoint) {
-		return nil, createInvalidParameterError("ToEndpointResource", "endpoint")
-	}
+	// if octopusdeploy.isNil(endpoint) {
+	// 	return nil, createInvalidParameterError("ToEndpointResource", "endpoint")
+	// }
 
 	endpointResource := NewEndpointResource(endpoint.GetCommunicationStyle())
 

@@ -26,11 +26,6 @@ type FeedResource struct {
 	Resource
 }
 
-type FeedResources struct {
-	Items []*FeedResource `json:"Items"`
-	PagedResults
-}
-
 func NewFeedResource(name string, feedType FeedType) *FeedResource {
 	return &FeedResource{
 		FeedType: feedType,

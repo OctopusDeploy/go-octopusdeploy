@@ -4,11 +4,6 @@ import (
 	"time"
 )
 
-type Interruptions struct {
-	Items []*Interruption `json:"Items"`
-	PagedResults
-}
-
 type Interruption struct {
 	CanTakeResponsibility       bool      `json:"CanTakeResponsibility,omitempty"`
 	CorrelationID               string    `json:"CorrelationId,omitempty"`

@@ -4,11 +4,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type LibraryVariableSets struct {
-	Items []*LibraryVariableSet `json:"Items"`
-	PagedResults
-}
-
 type LibraryVariableSet struct {
 	ContentType   string                    `json:"ContentType" validate:"required,oneof=ScriptModule Variables"`
 	Description   string                    `json:"Description,omitempty"`

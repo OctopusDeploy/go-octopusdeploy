@@ -18,11 +18,6 @@ type WorkerPoolResource struct {
 	Resource
 }
 
-type WorkerPoolResources struct {
-	Items []*WorkerPoolResource `json:"Items"`
-	PagedResults
-}
-
 // NewWorkerPoolResource creates and initializes a worker pool Resource.
 func NewWorkerPoolResource(name string, workerPoolType WorkerPoolType) *WorkerPoolResource {
 	return &WorkerPoolResource{

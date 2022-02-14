@@ -1,4 +1,4 @@
-package octopusdeploy
+package resources
 
 import (
 	"fmt"
@@ -6,11 +6,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-)
-
-const (
-	empty = ""
-	tab   = "\t"
 )
 
 // ValidateStringInSlice checks if a string is in the given slice

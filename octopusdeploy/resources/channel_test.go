@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,13 +13,13 @@ func TestEmptyChannel(t *testing.T) {
 }
 
 func TestChannelWithName(t *testing.T) {
-	name := octopusdeploy.getRandomName()
+	name := getRandomName()
 	channel := &Channel{Name: name}
 	assert.Error(t, channel.Validate())
 }
 
 func TestNewChannelWithEmptyName(t *testing.T) {
-	projectID := octopusdeploy.getRandomName()
+	projectID := getRandomName()
 
 	channel := NewChannel(emptyString, projectID)
 	require.Error(t, channel.Validate())

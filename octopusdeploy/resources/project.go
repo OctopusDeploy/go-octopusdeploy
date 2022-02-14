@@ -3,6 +3,7 @@ package resources
 import (
 	"encoding/json"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -35,11 +36,6 @@ type Project struct {
 	VersioningStrategy              *VersioningStrategy         `json:"VersioningStrategy,omitempty"`
 
 	Resource
-}
-
-type Projects struct {
-	Items []*Project `json:"Items"`
-	PagedResults
 }
 
 func NewProject(spaceID string, name string, lifecycleID string, projectGroupID string) *Project {
@@ -177,10 +173,10 @@ func (resource Project) Validate() error {
 		return err
 	}
 
-	return ValidateMultipleProperties([]error{
-		ValidateRequiredPropertyValue("LifecycleID", resource.LifecycleID),
-		ValidateRequiredPropertyValue("Name", resource.Name),
-		ValidateRequiredPropertyValue("ProjectGroupID", resource.ProjectGroupID),
-		ValidateRequiredPropertyValue("SpaceID", resource.SpaceID),
+	return octopusdeploy.ValidateMultipleProperties([]error{
+		octopusdeploy.ValidateRequiredPropertyValue("LifecycleID", resource.LifecycleID),
+		octopusdeploy.ValidateRequiredPropertyValue("Name", resource.Name),
+		octopusdeploy.ValidateRequiredPropertyValue("ProjectGroupID", resource.ProjectGroupID),
+		octopusdeploy.ValidateRequiredPropertyValue("SpaceID", resource.SpaceID),
 	})
 }

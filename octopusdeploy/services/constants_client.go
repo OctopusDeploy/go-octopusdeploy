@@ -1,4 +1,4 @@
-package octopusdeploy
+package services
 
 const (
 	clientAPIKeyHTTPHeader          string = "X-Octopus-ApiKey"

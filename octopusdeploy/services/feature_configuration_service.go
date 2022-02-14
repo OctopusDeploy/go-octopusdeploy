@@ -1,4 +1,4 @@
-package resources
+package services
 
 import (
 	"github.com/dghubble/sling"

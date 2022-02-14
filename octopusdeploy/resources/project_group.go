@@ -1,10 +1,5 @@
 package resources
 
-type ProjectGroups struct {
-	Items []*ProjectGroup `json:"Items"`
-	PagedResults
-}
-
 type ProjectGroup struct {
 	Description       string   `json:"Description,omitempty"`
 	EnvironmentIDs    []string `json:"EnvironmentIds,omitempty"`

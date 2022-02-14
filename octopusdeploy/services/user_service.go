@@ -16,7 +16,7 @@ type userService struct {
 	userAuthenticationPath    string
 	userIdentityMetadataPath  string
 
-	canDeleteService
+	CanDeleteService
 }
 
 func newUserService(

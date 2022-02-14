@@ -17,11 +17,6 @@ type ScriptModule struct {
 	Resource
 }
 
-type ScriptModules struct {
-	Items []*ScriptModule `json:"Items"`
-	PagedResults
-}
-
 // NewScriptModule creates and initializes a script module.
 func NewScriptModule(name string) *ScriptModule {
 	return &ScriptModule{

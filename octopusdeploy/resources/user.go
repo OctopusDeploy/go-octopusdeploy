@@ -1,11 +1,5 @@
 package resources
 
-// Users defines a collection of users with built-in support for paged results.
-type Users struct {
-	Items []*User `json:"Items"`
-	PagedResults
-}
-
 // User represents a user in Octopus.
 type User struct {
 	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited,omitempty"`

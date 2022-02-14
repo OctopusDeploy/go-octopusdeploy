@@ -27,25 +27,3 @@ func NewRootResource() *RootResource {
 func (r *RootResource) Validate() error {
 	return validator.New().Struct(r)
 }
-
-// GetLinkPath returns correct Link Path
-func (r *RootResource) GetLinkPath(args ...interface{}) string {
-	link := ""
-	rootResource := NewRootResource()
-
-	for _, arg := range args {
-		switch t := arg.(type) {
-		case *RootResource:
-			rootResource = t
-		case string:
-			link = t
-		}
-	}
-
-	path := r.Links[link]
-	if !IsEmpty(rootResource.Links[link]) {
-		path = rootResource.Links[link]
-	}
-
-	return path
-}

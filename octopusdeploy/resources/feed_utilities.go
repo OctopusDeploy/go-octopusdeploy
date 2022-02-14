@@ -1,14 +1,13 @@
 package resources
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/jinzhu/copier"
 )
 
 func ToFeed(feedResource *FeedResource) (IFeed, error) {
-	if octopusdeploy.isNil(feedResource) {
-		return nil, createInvalidParameterError("ToFeed", "feedResource")
-	}
+	// if octopusdeploy.isNil(feedResource) {
+	// 	return nil, createInvalidParameterError("ToFeed", "feedResource")
+	// }
 
 	var feed IFeed
 	var err error
@@ -39,17 +38,10 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 	return feed, nil
 }
 
-func ToFeeds(feedResources *FeedResources) *Feeds {
-	return &Feeds{
-		Items:        ToFeedArray(feedResources.Items),
-		PagedResults: feedResources.PagedResults,
-	}
-}
-
 func ToFeedResource(feed IFeed) (*FeedResource, error) {
-	if octopusdeploy.isNil(feed) {
-		return nil, createInvalidParameterError("ToFeedResource", ParameterFeed)
-	}
+	// if octopusdeploy.isNil(feed) {
+	// 	return nil, createInvalidParameterError("ToFeedResource", ParameterFeed)
+	// }
 
 	feedResource := NewFeedResource(feed.GetName(), feed.GetFeedType())
 

@@ -1,4 +1,4 @@
-package octopusdeploy
+package resources
 
 import (
 	"fmt"
@@ -6,6 +6,11 @@ import (
 
 	uuid "github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+)
+
+const (
+	emptyString      string = ""
+	whitespaceString string = " "
 )
 
 var propertyName = "fake-property-name"

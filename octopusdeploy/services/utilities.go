@@ -1,11 +1,17 @@
-package octopusdeploy
+package services
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
+)
+
+const (
+	empty = ""
+	tab   = "\t"
 )
 
 func isNilFixed(i interface{}) bool {
@@ -159,6 +165,15 @@ func isNilFixed(i interface{}) bool {
 
 func IsEmpty(s string) bool {
 	return strings.TrimSpace(s) == ""
+}
+
+func isAPIKey(apiKey string) bool {
+	if len(apiKey) < 5 {
+		return false
+	}
+
+	var expression = regexp.MustCompile(`^(API-)([A-Z\d])+$`)
+	return expression.MatchString(apiKey)
 }
 
 func PrettyJSON(data interface{}) string {

@@ -3,10 +3,7 @@ package resources
 import (
 	"fmt"
 	"reflect"
-	"regexp"
 	"strings"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func isNilFixed(i interface{}) bool {
@@ -22,29 +19,6 @@ func isNilFixed(i interface{}) bool {
 
 func IsEmpty(s string) bool {
 	return strings.TrimSpace(s) == ""
-}
-
-func GetSpaceIDForResource(resource IHasSpace, client octopusdeploy.SpaceScopedClient) (string, error) {
-	if resource == nil {
-		return "", fmt.Errorf("the Resource should never be nil")
-	}
-
-	resourceSpaceID := resource.GetSpaceID()
-
-	if !IsEmpty(resourceSpaceID) {
-		return resourceSpaceID, nil
-	}
-
-	return client.spaceID, nil
-}
-
-func isAPIKey(apiKey string) bool {
-	if len(apiKey) < 5 {
-		return false
-	}
-
-	var expression = regexp.MustCompile(`^(API-)([A-Z\d])+$`)
-	return expression.MatchString(apiKey)
 }
 
 func trimTemplate(uri string) string {

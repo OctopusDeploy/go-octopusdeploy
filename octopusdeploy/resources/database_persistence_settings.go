@@ -1,16 +1,14 @@
 package resources
 
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-
 // DatabasePersistenceSettings represents database persistence settings associated with a project.
 type DatabasePersistenceSettings struct {
-	octopusdeploy.persistenceSettings
+	persistenceSettings
 }
 
 // NewDatabasePersistenceSettings creates an instance of database persistence settings.
 func NewDatabasePersistenceSettings() *DatabasePersistenceSettings {
 	return &DatabasePersistenceSettings{
-		persistenceSettings: octopusdeploy.persistenceSettings{Type: "Database"},
+		persistenceSettings: persistenceSettings{Type: "Database"},
 	}
 }
 

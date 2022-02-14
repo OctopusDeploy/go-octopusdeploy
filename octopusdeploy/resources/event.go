@@ -23,8 +23,3 @@ type Event struct {
 
 	Resource
 }
-
-type Events struct {
-	Items []*Event `json:"Items"`
-	PagedResults
-}

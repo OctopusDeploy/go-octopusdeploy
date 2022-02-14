@@ -2,25 +2,17 @@ package resources
 
 import (
 	"encoding/json"
+
 	"github.com/go-playground/validator/v10"
 )
 
-// TODO: research the JSON marshalling to include SpaceID
-
-// DeploymentTargets defines a collection of deployment targets with built-in
-// support for paged results from the API.
-type DeploymentTargets struct {
-	Items []*DeploymentTarget `json:"Items"`
-	PagedResults
-}
-
 type DeploymentTarget struct {
-	EnvironmentIDs         []string                             `json:"EnvironmentIds,omitempty"`
-	Roles                  []string                             `json:"Roles,omitempty"`
+	EnvironmentIDs         []string               `json:"EnvironmentIds,omitempty"`
+	Roles                  []string               `json:"Roles,omitempty"`
 	SpaceID                string                 `json:"SpaceId,omitempty"`
 	TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 	TenantIDs              []string               `json:"TenantIds,omitempty"`
-	TenantTags             []string                             `json:"TenantTags,omitempty"`
+	TenantTags             []string               `json:"TenantTags,omitempty"`
 
 	machine
 }
@@ -40,12 +32,12 @@ func NewDeploymentTarget(name string, endpoint IEndpoint, environmentIDs []strin
 // MarshalJSON returns a deployment target as its JSON encoding.
 func (d *DeploymentTarget) MarshalJSON() ([]byte, error) {
 	deploymentTarget := struct {
-		EnvironmentIDs         []string                             `json:"EnvironmentIds,omitempty"`
-		Roles                  []string                             `json:"Roles,omitempty"`
+		EnvironmentIDs         []string               `json:"EnvironmentIds,omitempty"`
+		Roles                  []string               `json:"Roles,omitempty"`
 		SpaceID                string                 `json:"SpaceId,omitempty"`
 		TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 		TenantIDs              []string               `json:"TenantIds,omitempty"`
-		TenantTags             []string                             `json:"TenantTags,omitempty"`
+		TenantTags             []string               `json:"TenantTags,omitempty"`
 
 		machine
 	}{

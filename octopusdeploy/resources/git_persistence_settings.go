@@ -2,7 +2,6 @@ package resources
 
 import (
 	"encoding/json"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"net/url"
 
 	"github.com/go-playground/validator/v10"
@@ -15,7 +14,7 @@ type GitPersistenceSettings struct {
 	DefaultBranch string
 	URL           *url.URL
 
-	octopusdeploy.persistenceSettings
+	persistenceSettings
 }
 
 // NewGitPersistenceSettings creates an instance of persistence settings.
@@ -29,7 +28,7 @@ func NewGitPersistenceSettings(
 		Credentials:         credentials,
 		DefaultBranch:       defaultBranch,
 		URL:                 url,
-		persistenceSettings: octopusdeploy.persistenceSettings{Type: "VersionControlled"},
+		persistenceSettings: persistenceSettings{Type: "VersionControlled"},
 	}
 }
 
@@ -45,7 +44,7 @@ func (p *GitPersistenceSettings) MarshalJSON() ([]byte, error) {
 		Credentials   IGitCredential `json:"Credentials,omitempty"`
 		DefaultBranch string         `json:"DefaultBranch,omitempty"`
 		URL           string         `json:"Url,omitempty"`
-		octopusdeploy.persistenceSettings
+		persistenceSettings
 	}{
 		BasePath:            p.BasePath,
 		Credentials:         p.Credentials,
@@ -63,7 +62,7 @@ func (p *GitPersistenceSettings) UnmarshalJSON(b []byte) error {
 		BasePath      string `json:"BasePath,omitempty"`
 		DefaultBranch string `json:"DefaultBranch,omitempty"`
 		URL           string `json:"Url,omitempty"`
-		octopusdeploy.persistenceSettings
+		persistenceSettings
 	}
 	err := json.Unmarshal(b, &fields)
 	if err != nil {

@@ -2,11 +2,6 @@ package resources
 
 import "github.com/go-playground/validator/v10"
 
-type Spaces struct {
-	Items []*Space `json:"Items"`
-	PagedResults
-}
-
 type Space struct {
 	Description              string   `json:"Description,omitempty"`
 	IsDefault                bool     `json:"IsDefault,omitempty"`

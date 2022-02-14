@@ -3,7 +3,6 @@ package resources
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"net/url"
 	"testing"
 
@@ -25,9 +24,9 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch)
 	require.Equal(t, url, gitPersistenceSettings.URL)
 
-	basePath = octopusdeploy.getRandomName()
+	basePath = getRandomName()
 	credentials = NewAnonymousGitCredential()
-	defaultBranch = octopusdeploy.getRandomName()
+	defaultBranch = getRandomName()
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -39,12 +38,12 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch)
 	require.Equal(t, url, gitPersistenceSettings.URL)
 
-	password := NewSensitiveValue(octopusdeploy.getRandomName())
-	username := octopusdeploy.getRandomName()
+	password := NewSensitiveValue(getRandomName())
+	username := getRandomName()
 
-	basePath = octopusdeploy.getRandomName()
+	basePath = getRandomName()
 	credentials = NewUsernamePasswordGitCredential(username, password)
-	defaultBranch = octopusdeploy.getRandomName()
+	defaultBranch = getRandomName()
 	url, err = url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -58,12 +57,12 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 }
 
 func TestGitPersistenceSettingsMarshalJSON(t *testing.T) {
-	password := NewSensitiveValue(octopusdeploy.getRandomName())
-	username := octopusdeploy.getRandomName()
+	password := NewSensitiveValue(getRandomName())
+	username := getRandomName()
 
-	basePath := octopusdeploy.getRandomName()
+	basePath := getRandomName()
 	credentials := NewUsernamePasswordGitCredential(username, password)
-	defaultBranch := octopusdeploy.getRandomName()
+	defaultBranch := getRandomName()
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -111,8 +110,8 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch)
 	require.Equal(t, url, gitPersistenceSettings.URL)
 
-	basePath = octopusdeploy.getRandomName()
-	defaultBranch = octopusdeploy.getRandomName()
+	basePath = getRandomName()
+	defaultBranch = getRandomName()
 
 	credentialsAsJSON, err = json.Marshal(anonymousGitCredential)
 	require.NoError(t, err)
@@ -133,9 +132,9 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch)
 	require.Equal(t, url, gitPersistenceSettings.URL)
 
-	basePath = octopusdeploy.getRandomName()
+	basePath = getRandomName()
 	anonymousGitCredential = NewAnonymousGitCredential()
-	defaultBranch = octopusdeploy.getRandomName()
+	defaultBranch = getRandomName()
 	url, err = url.Parse("https://example.com/")
 	require.NoError(t, err)
 
@@ -160,11 +159,11 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch)
 	require.Equal(t, url, gitPersistenceSettings.URL)
 
-	password := NewSensitiveValue(octopusdeploy.getRandomName())
-	username := octopusdeploy.getRandomName()
+	password := NewSensitiveValue(getRandomName())
+	username := getRandomName()
 
-	basePath = octopusdeploy.getRandomName()
-	defaultBranch = octopusdeploy.getRandomName()
+	basePath = getRandomName()
+	defaultBranch = getRandomName()
 	url, err = url.Parse("https://example.com/")
 	usernamePasswordGitCredential := NewUsernamePasswordGitCredential(username, password)
 	require.NoError(t, err)

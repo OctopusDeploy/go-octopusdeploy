@@ -1,10 +1,5 @@
 package resources
 
-type DeploymentProcesses struct {
-	Items []*DeploymentProcess `json:"Items"`
-	PagedResults
-}
-
 type DeploymentProcess struct {
 	Branch         string           `json:"-"`
 	LastSnapshotID string           `json:"LastSnapshotId,omitempty"`

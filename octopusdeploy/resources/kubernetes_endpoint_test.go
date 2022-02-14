@@ -15,12 +15,6 @@ func CreateTestKubernetesAwsEndpoint(t *testing.T) *KubernetesEndpoint {
 	authentication := NewKubernetesAwsAuthentication()
 	clusterCertificate := ""
 	defaultWorkerPoolID := "default-worker-pool-id"
-	lastModifiedBy := "john.smith@example.com"
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self": "/api/foo/bar/quux",
-		"test": "/api/xyzzy",
-	}
 	id := "endpoint-id"
 	proxyID := "proxy-id"
 	url, _ := url.Parse("https://example.com/")
@@ -32,9 +26,6 @@ func CreateTestKubernetesAwsEndpoint(t *testing.T) *KubernetesEndpoint {
 	kubernetesEndpoint.ClusterCertificate = clusterCertificate
 	kubernetesEndpoint.Authentication = authentication
 	kubernetesEndpoint.ID = id
-	kubernetesEndpoint.ModifiedBy = lastModifiedBy
-	kubernetesEndpoint.ModifiedOn = &lastModifiedOn
-	kubernetesEndpoint.Links = links
 	kubernetesEndpoint.ProxyID = proxyID
 
 	require.NoError(t, kubernetesEndpoint.Validate())
@@ -57,11 +48,6 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	kubernetesCertificateAuthentication := NewKubernetesStandardAuthentication("")
 	kubernetesCertificateAuthentication.AccountID = "Accounts-392"
 
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self": "/api/foo/bar/quux",
-		"test": "/api/xyzzy",
-	}
 	id := "endpoint-id"
 	url, _ := url.Parse("https://example.com/")
 
@@ -71,9 +57,6 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	resource.Container = NewDeploymentActionContainer(&feedID, nil)
 	resource.DefaultWorkerPoolID = "default-worker-pool-id"
 	resource.ID = id
-	resource.ModifiedBy = "john.smith@example.com"
-	resource.ModifiedOn = &lastModifiedOn
-	resource.Links = links
 	resource.Namespace = "namespace-test"
 	resource.SkipTLSVerification = true
 	resource.ProxyID = "proxy-id"
@@ -150,9 +133,6 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 
 	// Resource
 	assert.Equal(t, "endpoint-1", resource.GetID())
-	assert.Equal(t, "john.smith@example.com", resource.GetModifiedBy())
-	assert.Equal(t, &lastModifiedOn, resource.GetModifiedOn())
-	assert.Equal(t, links, resource.Links)
 }
 
 const kubernetesEndpointAsJSON string = `{

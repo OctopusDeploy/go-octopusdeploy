@@ -2,7 +2,6 @@ package resources
 
 import (
 	"encoding/json"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"net/url"
 
 	"github.com/go-playground/validator/v10"
@@ -12,13 +11,13 @@ type ListeningTentacleEndpoint struct {
 	ProxyID string   `json:"ProxyId,omitempty"`
 	URI     *url.URL `json:"Uri" validate:"required,uri"`
 
-	octopusdeploy.tentacleEndpoint
+	tentacleEndpoint
 }
 
 func NewListeningTentacleEndpoint(uri *url.URL, thumbprint string) *ListeningTentacleEndpoint {
 	return &ListeningTentacleEndpoint{
 		URI:              uri,
-		tentacleEndpoint: *octopusdeploy.newTentacleEndpoint("TentaclePassive", thumbprint),
+		tentacleEndpoint: *newTentacleEndpoint("TentaclePassive", thumbprint),
 	}
 }
 
@@ -26,7 +25,7 @@ func (l ListeningTentacleEndpoint) MarshalJSON() ([]byte, error) {
 	listeningTentacleEndpoint := struct {
 		ProxyID string `json:"ProxyId,omitempty"`
 		URI     string `json:"Uri,omitempty"`
-		octopusdeploy.tentacleEndpoint
+		tentacleEndpoint
 	}{
 		ProxyID:          l.ProxyID,
 		tentacleEndpoint: l.tentacleEndpoint,
@@ -45,7 +44,7 @@ func (l *ListeningTentacleEndpoint) UnmarshalJSON(b []byte) error {
 	var fields struct {
 		ProxyID string `json:"ProxyId,omitempty"`
 		URI     string `json:"Uri" validate:"required,uri"`
-		octopusdeploy.tentacleEndpoint
+		tentacleEndpoint
 	}
 	err := json.Unmarshal(b, &fields)
 	if err != nil {
