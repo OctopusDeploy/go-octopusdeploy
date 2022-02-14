@@ -1,6 +1,6 @@
 package octopusdeploy
 
-type PagedResults[T IResource] struct {
+type PagedResults[T Resource] struct {
 	ItemType       string `json:"ItemType"`
 	TotalResults   int    `json:"TotalResults"`
 	ItemsPerPage   int    `json:"ItemsPerPage"`

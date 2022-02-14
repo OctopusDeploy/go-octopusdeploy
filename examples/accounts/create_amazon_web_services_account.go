@@ -2,8 +2,9 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"net/url"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
@@ -29,7 +30,8 @@ func CreateAmazonWebServicesAccountExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	octoEndpoint, err := octopusdeploy.NewOctopusServerEndpoint(apiURL, apiKey)
+	client, err := octopusdeploy.NewSpaceScopedClient(octoEndpoint, spaceID, nil)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return

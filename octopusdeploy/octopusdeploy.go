@@ -3,19 +3,27 @@ package octopusdeploy
 import (
 	"errors"
 	"fmt"
-	"github.com/dghubble/sling"
 	"net/http"
 	"runtime"
 	"runtime/debug"
+
+	"github.com/dghubble/sling"
 )
 
 var version = "development"
+
+type IClient interface {
+	getSling() *sling.Sling
+	getScopedBasePath() string
+	getRequestingTool() *string
+}
 
 type Client struct {
 	sling                 *sling.Sling
 	octopusServerEndpoint *octopusServerEndpoint
 	scopedBasePath        string
-	requestingTool        string
+	requestingTool        *string
+	IClient
 }
 
 type AdminClient struct {
@@ -27,7 +35,7 @@ type SpaceScopedClient struct {
 	Client
 }
 
-func newClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool string, pathScope string) *Client {
+func newClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *string, pathScope string) *Client {
 	httpClient := &http.Client{}
 	scopedBasePath := octopusServerEndpoint.BaseURLWithAPI.String()
 	if !IsEmpty(pathScope) {
@@ -45,8 +53,20 @@ func newClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool stri
 	return c
 }
 
+func (c Client) getSling() *sling.Sling {
+	return c.sling
+}
+
+func (c Client) getScopedBasePath() string {
+	return c.scopedBasePath
+}
+
+func (c Client) getRequestingTool() *string {
+	return c.requestingTool
+}
+
 // NewAdminClient returns a new Octopus API Client.
-func NewAdminClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool string) (*AdminClient, error) {
+func NewAdminClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *string) (*AdminClient, error) {
 	if octopusServerEndpoint == nil {
 		return nil, CreateInvalidParameterError("NewAdminClient", ParameterOctopusServerEndpoint)
 	}
@@ -58,7 +78,7 @@ func NewAdminClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool
 	return &c, nil
 }
 
-func NewSpaceScopedClient(octopusServerEndpoint *octopusServerEndpoint, spaceID string, requestingTool string) (*SpaceScopedClient, error) {
+func NewSpaceScopedClient(octopusServerEndpoint *octopusServerEndpoint, spaceID string, requestingTool *string) (*SpaceScopedClient, error) {
 	if octopusServerEndpoint == nil {
 		return nil, CreateInvalidParameterError("NewSpaceScopedClient", ParameterOctopusServerEndpoint)
 	}
@@ -120,25 +140,25 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	return nil
 }
 
-func ApiGetMany[T any](c *Client, pathRelativeToRoot string) (*PagedResults[T], error) {
+func ApiGetMany[T Resource](c IClient, pathRelativeToRoot string) (*PagedResults[T], error) {
 	resp, err := ApiGet[PagedResults[T]](c, pathRelativeToRoot)
 	return resp, err
 }
 
-func ApiGet[T any](c *Client, pathRelativeToRoot string) (*T, error) {
-	getClient := c.sling.New()
+func ApiGet[T any](c IClient, pathRelativeToRoot string) (*T, error) {
+	getClient := c.getSling().New()
 	if getClient == nil {
 		return nil, createClientInitializationError(OperationAPIGet)
 	}
 
 	resource := new(T)
-	path := fmt.Sprintf("%s/%s", c.scopedBasePath, pathRelativeToRoot)
+	path := fmt.Sprintf("%s/%s", c.getScopedBasePath(), pathRelativeToRoot)
 	getClient = getClient.Get(path)
 	if getClient == nil {
 		return nil, createClientInitializationError(OperationAPIGet)
 	}
 
-	getClient.Set("User-Agent", getUserAgentString(c.requestingTool))
+	getClient.Set("User-Agent", getUserAgentString(c.getRequestingTool()))
 
 	octopusDeployError := new(APIError)
 	resp, err := getClient.Receive(resource, &octopusDeployError)
@@ -155,9 +175,10 @@ func ApiGet[T any](c *Client, pathRelativeToRoot string) (*T, error) {
 }
 
 // Returns the User-Agent String "go-octopusdeploy/version (os; arch) go/version"
-func getUserAgentString(requestingTool string) string {
+func getUserAgentString(requestingTool *string) string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, dep := range info.Deps {
+			// TODO: use go 1.18 dependency check
 			if dep.Path == "github.com/OctopusDeploy/go-octopusdeploy" {
 				if dep.Version != "" {
 					version = dep.Version
@@ -165,24 +186,26 @@ func getUserAgentString(requestingTool string) string {
 			}
 		}
 	}
-	if !IsEmpty(requestingTool) {
-		requestingTool = fmt.Sprintf(" %s", requestingTool)
+	requestingToolPart := ""
+	if requestingTool != nil {
+		// prepend a space to the requesting tool so the user agent parsing works correctly later
+		requestingToolPart = fmt.Sprintf(" %s", requestingTool)
 	}
-	return fmt.Sprintf("%s/%s (%s; %s) go/%s%s", "go-octopusdeploy", version, runtime.GOOS, runtime.GOARCH, runtime.Version(), requestingTool)
+	return fmt.Sprintf("%s/%s (%s; %s) go/%s%s", "go-octopusdeploy", version, runtime.GOOS, runtime.GOARCH, runtime.Version(), requestingToolPart)
 }
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
-func ApiAdd[T Resource](c *Client, inputStruct *T, path string) (*T, error) {
+func ApiAdd[T IResource](c IClient, inputStruct *T, path string) (*T, error) {
 	return apiAddWithResponseStatus[T](c, inputStruct, path, http.StatusCreated)
 }
 
 // apiAddWithResponseStatus function with defined response.
-func apiAddWithResponseStatus[T any](c *Client, inputStruct *T, path string, httpStatus int) (*T, error) {
+func apiAddWithResponseStatus[T any](c IClient, inputStruct *T, path string, httpStatus int) (*T, error) {
 	if IsEmpty(path) {
 		return nil, CreateInvalidParameterError(OperationAPIAdd, ParameterPath)
 	}
 
-	postClient := c.sling.New()
+	postClient := c.getSling().New()
 	if postClient == nil {
 		return nil, createClientInitializationError(OperationAPIAdd)
 	}
@@ -192,7 +215,7 @@ func apiAddWithResponseStatus[T any](c *Client, inputStruct *T, path string, htt
 		return nil, createClientInitializationError(OperationAPIAdd)
 	}
 
-	postClient.Set("User-Agent", getUserAgentString(c.requestingTool))
+	postClient.Set("User-Agent", getUserAgentString(c.getRequestingTool()))
 
 	request := postClient.BodyJSON(inputStruct)
 	if request == nil {
@@ -246,8 +269,8 @@ func (c Client) apiPost(inputStruct interface{}, resource interface{}, path stri
 }
 
 // Generic OctopusDeploy API Update Function.
-func ApiUpdate[T Resource](c *Client, inputStruct *T, path string) (*T, error) {
-	putClient := c.sling.New()
+func ApiUpdate[T IResource](c IClient, inputStruct *T, path string) (*T, error) {
+	putClient := c.getSling().New()
 	if putClient == nil {
 		return nil, createClientInitializationError(OperationAPIUpdate)
 	}
@@ -258,7 +281,7 @@ func ApiUpdate[T Resource](c *Client, inputStruct *T, path string) (*T, error) {
 		return nil, createClientInitializationError(OperationAPIUpdate)
 	}
 
-	putClient.Set("User-Agent", getUserAgentString(c.requestingTool))
+	putClient.Set("User-Agent", getUserAgentString(c.getRequestingTool()))
 
 	request := putClient.BodyJSON(inputStruct)
 	if request == nil {
@@ -277,12 +300,12 @@ func ApiUpdate[T Resource](c *Client, inputStruct *T, path string) (*T, error) {
 }
 
 // Generic OctopusDeploy API Delete Function.
-func ApiDelete[T Resource](c *Client, id string, path string) error {
+func ApiDelete[T IResource](c IClient, id string, path string) error {
 	if IsEmpty(id) {
 		return CreateInvalidParameterError(OperationAPIDelete, ParameterID)
 	}
 
-	deleteClient := c.sling.New()
+	deleteClient := c.getSling().New()
 	if deleteClient == nil {
 		return createClientInitializationError(OperationAPIDelete)
 	}

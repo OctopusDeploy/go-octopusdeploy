@@ -13,11 +13,11 @@ type pagedResultsHandler[T octopusdeploy.IResource] struct {
 	pageSize               int
 	basePathRelativeToRoot string
 	totalResults           *int
-	client       *octopusdeploy.Client
+	client                 *octopusdeploy.Client
 	IPagedResultsHandler[T]
 }
 
-func NewPagedResultsHandler[T octopusdeploy.IResource](client *octopusdeploy.Client, pageSize int, basePathRelativeToRoot string) *pagedResultsHandler[T] {
+func NewPagedResultsHandler[T octopusdeploy.IResource](client *octopusdeploy.Client, pageSize int, basePathRelativeToRoot string) IPagedResultsHandler[T] {
 	t := &pagedResultsHandler[T]{
 		pageSize:               pageSize,
 		currentPage:            0,
