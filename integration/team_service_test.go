@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/features/configuration/access_management/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *access_management.Team {
+func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *resources.Team {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -18,7 +18,7 @@ func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *access_manageme
 
 	name := getRandomName()
 
-	team := access_management.NewTeam(name)
+	team := resources.NewTeam(name)
 	require.NoError(t, team.Validate())
 
 	createdTeam, err := client.Teams.Add(team)
@@ -30,7 +30,7 @@ func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *access_manageme
 	return createdTeam
 }
 
-func DeleteTestTeam(t *testing.T, client *octopusdeploy.client, team *access_management.Team) {
+func DeleteTestTeam(t *testing.T, client *octopusdeploy.client, team *resources.Team) {
 	require.NotNil(t, team)
 
 	if client == nil {
@@ -47,7 +47,7 @@ func DeleteTestTeam(t *testing.T, client *octopusdeploy.client, team *access_man
 	assert.Nil(t, teams)
 }
 
-func IsEqualTeams(t *testing.T, expected *access_management.Team, actual *access_management.Team) {
+func IsEqualTeams(t *testing.T, expected *resources.Team, actual *resources.Team) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -73,7 +73,7 @@ func IsEqualTeams(t *testing.T, expected *access_management.Team, actual *access
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func UpdateTeam(t *testing.T, client *octopusdeploy.client, team *access_management.Team) *access_management.Team {
+func UpdateTeam(t *testing.T, client *octopusdeploy.client, team *resources.Team) *resources.Team {
 	require.NotNil(t, team)
 
 	if client == nil {
