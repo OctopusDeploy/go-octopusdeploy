@@ -16,12 +16,12 @@ type GoogleCloudPlatformAccount struct {
 
 // NewGoogleCloudPlatformAccount initializes and returns a Google cloud account.
 func NewGoogleCloudPlatformAccount(name string, jsonKey *resources.SensitiveValue, options ...func(*GoogleCloudPlatformAccount)) (*GoogleCloudPlatformAccount, error) {
-	if resources.IsEmpty(name) {
-		return nil, resources.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
+	if octopusdeploy.IsEmpty(name) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
 	if jsonKey == nil {
-		return nil, resources.CreateRequiredParameterIsEmptyOrNilError("jsonKey")
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError("jsonKey")
 	}
 
 	account := GoogleCloudPlatformAccount{

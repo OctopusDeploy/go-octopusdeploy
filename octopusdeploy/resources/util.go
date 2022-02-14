@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/google/uuid"
 )
 
@@ -21,8 +22,8 @@ func ValidateStringInSlice(str string, list []string) bool {
 
 // ValidatePropertyValues returns an error if the given string is not in a slice of strings
 func ValidatePropertyValues(propertyName string, propertyValue string, validValues []string) error {
-	if IsEmpty(propertyName) {
-		return createInvalidParameterError("ValidatePropertyValues", "propertyName")
+	if octopusdeploy.IsEmpty(propertyName) {
+		return octopusdeploy.CreateInvalidParameterError("ValidatePropertyValues", "propertyName")
 	}
 
 	if ValidateStringInSlice(propertyValue, validValues) {
@@ -34,8 +35,8 @@ func ValidatePropertyValues(propertyName string, propertyValue string, validValu
 
 // ValidateRequiredPropertyValue returns an error if the property value is empty
 func ValidateRequiredPropertyValue(propertyName string, propertyValue string) error {
-	if IsEmpty(propertyName) {
-		return createInvalidParameterError("ValidateRequiredPropertyValue", "propertyName")
+	if octopusdeploy.IsEmpty(propertyName) {
+		return octopusdeploy.CreateInvalidParameterError("ValidateRequiredPropertyValue", "propertyName")
 	}
 
 	if len(propertyValue) > 0 {
@@ -46,12 +47,12 @@ func ValidateRequiredPropertyValue(propertyName string, propertyValue string) er
 }
 
 func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
-	if IsEmpty(propertyName) {
-		return createInvalidParameterError("ValidateRequiredUUID", "propertyName")
+	if octopusdeploy.IsEmpty(propertyName) {
+		return octopusdeploy.CreateInvalidParameterError("ValidateRequiredUUID", "propertyName")
 	}
 
 	if id == nil {
-		return createInvalidParameterError("ValidateRequiredUUID", "id")
+		return octopusdeploy.CreateInvalidParameterError("ValidateRequiredUUID", "id")
 	}
 
 	if *id == uuid.Nil {
@@ -62,8 +63,8 @@ func ValidateRequiredUUID(propertyName string, id *uuid.UUID) error {
 }
 
 func ValidateRequiredSensitiveValue(propertyName string, sensitiveValue *SensitiveValue) error {
-	if IsEmpty(propertyName) {
-		return createInvalidParameterError("ValidateRequiredSensitiveValue", "propertyName")
+	if octopusdeploy.IsEmpty(propertyName) {
+		return octopusdeploy.CreateInvalidParameterError("ValidateRequiredSensitiveValue", "propertyName")
 	}
 
 	if !sensitiveValue.HasValue {
@@ -98,8 +99,8 @@ func ValidatePropertiesMatch(firstProperty, firstPropertyName, secondProperty, s
 }
 
 func ValidateSemanticVersion(propertyName string, version string) error {
-	if IsEmpty(propertyName) {
-		return createInvalidParameterError("ValidateSemanticVersion", "propertyName")
+	if octopusdeploy.IsEmpty(propertyName) {
+		return octopusdeploy.CreateInvalidParameterError("ValidateSemanticVersion", "propertyName")
 	}
 
 	re := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)

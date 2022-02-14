@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/assert"
@@ -98,11 +97,6 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 }
 
 func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self": "/api/foo/bar/quux",
-		"test": "/api/xyzzy",
-	}
 	url, _ := url.Parse("https://kubernetes.example.com")
 
 	var resource KubernetesEndpoint

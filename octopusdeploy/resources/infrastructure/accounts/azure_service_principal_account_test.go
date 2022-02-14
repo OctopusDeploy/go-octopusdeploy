@@ -83,8 +83,8 @@ func TestAzureServicePrincipalAccount(t *testing.T) {
 
 func TestAzureServicePrincipalAccountNew(t *testing.T) {
 	applicationID := uuid.New()
-	applicationPassword := resources.NewSensitiveValue(GetRandomName())
-	name := GetRandomName()
+	applicationPassword := resources.NewSensitiveValue(getRandomName())
+	name := getRandomName()
 	subscriptionID := uuid.New()
 	tenantID := uuid.New()
 

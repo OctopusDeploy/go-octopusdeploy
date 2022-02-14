@@ -26,16 +26,16 @@ type ISSHKeyAccount interface {
 // NewSSHKeyAccount initializes and returns a SSH key pair account with a name,
 // username, and private key file.
 func NewSSHKeyAccount(name string, username string, privateKeyFile *resources.SensitiveValue, options ...func(*SSHKeyAccount)) (*SSHKeyAccount, error) {
-	if resources.IsEmpty(name) {
-		return nil, resources.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
+	if octopusdeploy.IsEmpty(name) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
-	if resources.IsEmpty(username) {
-		return nil, resources.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterUsername)
+	if octopusdeploy.IsEmpty(username) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterUsername)
 	}
 
 	if privateKeyFile == nil {
-		return nil, resources.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterPrivateKeyFile)
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterPrivateKeyFile)
 	}
 
 	account := SSHKeyAccount{

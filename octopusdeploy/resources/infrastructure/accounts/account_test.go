@@ -10,7 +10,7 @@ import (
 
 func TestAccount(t *testing.T) {
 	a := &account{}
-	name := octopusdeploy.getRandomName()
+	name := getRandomName()
 
 	require.NotNil(t, a)
 	assert.Error(t, a.Validate())

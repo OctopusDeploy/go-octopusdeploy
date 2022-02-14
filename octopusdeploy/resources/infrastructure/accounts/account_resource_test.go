@@ -3,9 +3,7 @@ package accounts
 import (
 	"encoding/json"
 	"testing"
-	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
 	"github.com/kinbiko/jsonassert"
@@ -14,8 +12,8 @@ import (
 )
 
 func TestAccountResource(t *testing.T) {
-	name := octopusdeploy.GetRandomName()
-	spaceID := octopusdeploy.GetRandomName()
+	name := getRandomName()
+	spaceID := getRandomName()
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
 
 	testCases := []struct {
@@ -26,10 +24,10 @@ func TestAccountResource(t *testing.T) {
 		TenantedDeploymentMode resources.TenantedDeploymentMode
 	}{
 		{"Valid", false, name, spaceID, tenantedDeploymentMode},
-		{"EmptyName", true, octopusdeploy.emptyString, spaceID, tenantedDeploymentMode},
-		{"WhitespaceName", true, octopusdeploy.whitespaceString, spaceID, tenantedDeploymentMode},
-		{"EmptySpaceID", false, name, octopusdeploy.emptyString, tenantedDeploymentMode},
-		{"WhitespaceSpaceID", true, name, octopusdeploy.whitespaceString, tenantedDeploymentMode},
+		{"EmptyName", true, emptyString, spaceID, tenantedDeploymentMode},
+		{"WhitespaceName", true, whitespaceString, spaceID, tenantedDeploymentMode},
+		{"EmptySpaceID", false, name, emptyString, tenantedDeploymentMode},
+		{"WhitespaceSpaceID", true, name, whitespaceString, tenantedDeploymentMode},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
@@ -57,12 +55,6 @@ func TestAccountResourceAsJSON(t *testing.T) {
 	accountType := AccountType("None")
 	description := "description"
 	id := "id-value"
-	lastModifiedBy := "john.smith@example.com"
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self": "/test",
-		"Foo":  "/test-2",
-	}
 	spaceID := "space-id"
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
 	tenantIDs := []string{
@@ -84,9 +76,6 @@ func TestAccountResourceAsJSON(t *testing.T) {
 	assert.Equal(t, accountType, account.GetAccountType())
 	assert.Equal(t, description, account.Description)
 	assert.Equal(t, id, account.GetID())
-	assert.Equal(t, lastModifiedBy, account.GetModifiedBy())
-	assert.Equal(t, lastModifiedOn, *account.GetModifiedOn())
-	assert.Equal(t, links, account.Links)
 	assert.Equal(t, spaceID, account.SpaceID)
 	assert.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
 	assert.Equal(t, tenantIDs, account.TenantIDs)
@@ -107,12 +96,6 @@ const exampleAsJSON string = `{
 		"environment-id-2"
 	],
 	"Id": "id-value",
-	"LastModifiedOn": "2020-10-02T00:44:11.284Z",
-	"LastModifiedBy": "john.smith@example.com",
-	"Links": {
-	  "Self": "/test",
-	  "Foo": "/test-2"
-	},
 	"Name": "name",
 	"SpaceId": "space-id",
 	"TenantedDeploymentParticipation": "Untenanted",

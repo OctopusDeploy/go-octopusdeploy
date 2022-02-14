@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -123,7 +124,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if !IsEmpty(fields.SkipTLSVerification) {
+	if !octopusdeploy.IsEmpty(fields.SkipTLSVerification) {
 		skipTLSVerification, err := strconv.ParseBool(fields.SkipTLSVerification)
 		if err != nil {
 			return err

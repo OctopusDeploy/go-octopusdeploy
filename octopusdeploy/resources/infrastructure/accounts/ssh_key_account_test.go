@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"testing"
-	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
@@ -13,12 +12,12 @@ func TestSSHKeyAccountNew(t *testing.T) {
 	accountType := AccountTypeSSHKeyPair
 	description := ""
 	environmentIDs := []string{}
-	name := octopusdeploy.getRandomName()
-	privateKeyFile := resources.NewSensitiveValue(octopusdeploy.getRandomName())
+	name := getRandomName()
+	privateKeyFile := resources.NewSensitiveValue(getRandomName())
 	var privateKeyPassphrase *resources.SensitiveValue
 	spaceID := ""
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
-	username := octopusdeploy.getRandomName()
+	username := getRandomName()
 
 	account, err := NewSSHKeyAccount(name, username, privateKeyFile)
 
@@ -28,15 +27,9 @@ func TestSSHKeyAccountNew(t *testing.T) {
 
 	// Resource
 	require.Equal(t, "", account.ID)
-	require.Equal(t, "", account.ModifiedBy)
-	require.Nil(t, account.ModifiedOn)
-	require.NotNil(t, account.Links)
 
 	// IResource
 	require.Equal(t, "", account.GetID())
-	require.Equal(t, "", account.GetModifiedBy())
-	require.Nil(t, account.GetModifiedOn())
-	require.NotNil(t, account.GetLinks())
 
 	// account
 	require.Equal(t, description, account.Description)
@@ -57,25 +50,21 @@ func TestSSHKeyAccountNew(t *testing.T) {
 }
 
 func TestSSHKeyAccountNewWithConfigs(t *testing.T) {
-	environmentIDs := []string{octopusdeploy.getRandomName(), octopusdeploy.getRandomName()}
-	invalidID := octopusdeploy.getRandomName()
-	invalidModifiedBy := octopusdeploy.getRandomName()
-	invalidModifiedOn := time.Now()
-	invalidName := octopusdeploy.getRandomName()
-	name := octopusdeploy.getRandomName()
+	environmentIDs := []string{getRandomName(), getRandomName()}
+	invalidID := getRandomName()
+	invalidName := getRandomName()
+	name := getRandomName()
 	description := "Description for " + name + " (OK to Delete)"
-	privateKeyFile := resources.NewSensitiveValue(octopusdeploy.getRandomName())
-	privateKeyPassphrase := resources.NewSensitiveValue(octopusdeploy.getRandomName())
-	spaceID := octopusdeploy.getRandomName()
+	privateKeyFile := resources.NewSensitiveValue(getRandomName())
+	privateKeyPassphrase := resources.NewSensitiveValue(getRandomName())
+	spaceID := getRandomName()
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Tenanted")
-	username := octopusdeploy.getRandomName()
+	username := getRandomName()
 
 	options := func(a *SSHKeyAccount) {
 		a.Description = description
 		a.EnvironmentIDs = environmentIDs
 		a.ID = invalidID
-		a.ModifiedBy = invalidModifiedBy
-		a.ModifiedOn = &invalidModifiedOn
 		a.Name = invalidName
 		a.PrivateKeyFile = privateKeyFile
 		a.PrivateKeyPassphrase = privateKeyPassphrase
@@ -91,15 +80,9 @@ func TestSSHKeyAccountNewWithConfigs(t *testing.T) {
 
 	// Resource
 	require.Equal(t, "", account.ID)
-	require.Equal(t, "", account.ModifiedBy)
-	require.Nil(t, account.ModifiedOn)
-	require.NotNil(t, account.Links)
 
 	// IResource
 	require.Equal(t, "", account.GetID())
-	require.Equal(t, "", account.GetModifiedBy())
-	require.Nil(t, account.GetModifiedOn())
-	require.NotNil(t, account.GetLinks())
 
 	// account
 	require.Equal(t, description, account.Description)

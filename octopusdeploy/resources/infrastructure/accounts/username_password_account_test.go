@@ -2,23 +2,23 @@ package accounts
 
 import (
 	"testing"
-	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
 	"github.com/stretchr/testify/require"
 )
 
-func TestTokenAccountNew(t *testing.T) {
-	accountType := AccountTypeToken
+func TestUsernamePasswordAccountNew(t *testing.T) {
+	accountType := AccountTypeUsernamePassword
 	description := ""
 	environmentIDs := []string{}
-	name := octopusdeploy.getRandomName()
+	name := getRandomName()
+	var password *resources.SensitiveValue
 	spaceID := ""
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
-	token := resources.NewSensitiveValue(octopusdeploy.getRandomName())
+	username := ""
 
-	account, err := NewTokenAccount(name, token)
+	account, err := NewUsernamePasswordAccount(name)
 
 	require.NotNil(t, account)
 	require.NoError(t, err)
@@ -26,15 +26,9 @@ func TestTokenAccountNew(t *testing.T) {
 
 	// Resource
 	require.Equal(t, "", account.ID)
-	require.Equal(t, "", account.ModifiedBy)
-	require.Nil(t, account.ModifiedOn)
-	require.NotNil(t, account.Links)
 
 	// IResource
 	require.Equal(t, "", account.GetID())
-	require.Equal(t, "", account.GetModifiedBy())
-	require.Nil(t, account.GetModifiedOn())
-	require.NotNil(t, account.GetLinks())
 
 	// account
 	require.Equal(t, description, account.Description)
@@ -48,35 +42,34 @@ func TestTokenAccountNew(t *testing.T) {
 	require.Equal(t, description, account.GetDescription())
 	require.Equal(t, name, account.GetName())
 
-	// TokenAccount
-	require.Equal(t, token, account.Token)
+	// UsernamePasswordAccount
+	require.Equal(t, password, account.Password)
+	require.Equal(t, username, account.Username)
 }
 
-func TestTokenAccountNewWithConfigs(t *testing.T) {
-	environmentIDs := []string{octopusdeploy.getRandomName(), octopusdeploy.getRandomName()}
-	invalidID := octopusdeploy.getRandomName()
-	invalidModifiedBy := octopusdeploy.getRandomName()
-	invalidModifiedOn := time.Now()
-	invalidName := octopusdeploy.getRandomName()
-	name := octopusdeploy.getRandomName()
+func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
+	environmentIDs := []string{"environment-id-1", "environment-id-2"}
+	invalidID := getRandomName()
+	invalidName := getRandomName()
+	name := getRandomName()
 	description := "Description for " + name + " (OK to Delete)"
-	spaceID := octopusdeploy.getRandomName()
+	password := resources.NewSensitiveValue("password")
+	spaceID := getRandomName()
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Tenanted")
-	token := resources.NewSensitiveValue(octopusdeploy.getRandomName())
+	username := getRandomName()
 
-	options := func(a *TokenAccount) {
+	options := func(a *UsernamePasswordAccount) {
 		a.Description = description
 		a.EnvironmentIDs = environmentIDs
 		a.ID = invalidID
-		a.ModifiedBy = invalidModifiedBy
-		a.ModifiedOn = &invalidModifiedOn
 		a.Name = invalidName
+		a.Password = resources.NewSensitiveValue("password")
 		a.SpaceID = spaceID
 		a.TenantedDeploymentMode = tenantedDeploymentMode
-		a.Token = token
+		a.Username = username
 	}
 
-	account, err := NewTokenAccount(name, token, options)
+	account, err := NewUsernamePasswordAccount(name, options)
 
 	require.NotNil(t, account)
 	require.NoError(t, err)
@@ -84,15 +77,9 @@ func TestTokenAccountNewWithConfigs(t *testing.T) {
 
 	// Resource
 	require.Equal(t, "", account.ID)
-	require.Equal(t, "", account.ModifiedBy)
-	require.Nil(t, account.ModifiedOn)
-	require.NotNil(t, account.Links)
 
 	// IResource
 	require.Equal(t, "", account.GetID())
-	require.Equal(t, "", account.GetModifiedBy())
-	require.Nil(t, account.GetModifiedOn())
-	require.NotNil(t, account.GetLinks())
 
 	// account
 	require.Equal(t, description, account.Description)
@@ -102,19 +89,19 @@ func TestTokenAccountNewWithConfigs(t *testing.T) {
 	require.Equal(t, tenantedDeploymentMode, account.TenantedDeploymentMode)
 
 	// IAccount
-	require.Equal(t, AccountTypeToken, account.GetAccountType())
+	require.Equal(t, AccountTypeUsernamePassword, account.GetAccountType())
 	require.Equal(t, description, account.GetDescription())
 	require.Equal(t, name, account.GetName())
 
-	// TokenAccount
-	require.Equal(t, token, account.Token)
+	// UsernamePasswordAccount
+	require.Equal(t, password, account.Password)
+	require.Equal(t, username, account.Username)
 }
 
-func TestTokenAccountSetName(t *testing.T) {
-	name := octopusdeploy.getRandomName()
-	token := resources.NewSensitiveValue(octopusdeploy.getRandomName())
+func TestUsernamePasswordAccountSetName(t *testing.T) {
+	name := getRandomName()
 
-	account, err := NewTokenAccount(name, token)
+	account, err := NewUsernamePasswordAccount(name)
 
 	require.NotNil(t, account)
 	require.NoError(t, err)

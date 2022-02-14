@@ -2,7 +2,6 @@ package accounts
 
 import (
 	"testing"
-	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
@@ -10,13 +9,13 @@ import (
 )
 
 func TestAmazonWebServicesAccountNew(t *testing.T) {
-	accessKey := octopusdeploy.getRandomName()
+	accessKey := getRandomName()
 	accountType := AccountTypeAmazonWebServicesAccount
-	description := resources.emptyString
+	description := emptyString
 	environmentIDs := []string{}
-	name := octopusdeploy.getRandomName()
-	secretKey := resources.NewSensitiveValue(octopusdeploy.getRandomName())
-	spaceID := resources.emptyString
+	name := getRandomName()
+	secretKey := resources.NewSensitiveValue(getRandomName())
+	spaceID := emptyString
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
 
 	account, err := NewAmazonWebServicesAccount(name, accessKey, secretKey)
@@ -43,17 +42,15 @@ func TestAmazonWebServicesAccountNew(t *testing.T) {
 }
 
 func TestAmazonWebServicesAccountNewWithConfigs(t *testing.T) {
-	accessKey := octopusdeploy.getRandomName()
+	accessKey := getRandomName()
 	accountType := AccountTypeAmazonWebServicesAccount
 	environmentIDs := []string{"environment-id-1", "environment-id-2"}
-	invalidID := octopusdeploy.getRandomName()
-	invalidModifiedBy := octopusdeploy.getRandomName()
-	invalidModifiedOn := time.Now()
-	invalidName := octopusdeploy.getRandomName()
-	name := octopusdeploy.getRandomName()
+	invalidID := getRandomName()
+	invalidName := getRandomName()
+	name := getRandomName()
 	description := "Description for " + name + " (OK to Delete)"
-	secretKey := resources.NewSensitiveValue(octopusdeploy.getRandomName())
-	spaceID := octopusdeploy.getRandomName()
+	secretKey := resources.NewSensitiveValue(getRandomName())
+	spaceID := getRandomName()
 	tenantedDeploymentMode := resources.TenantedDeploymentMode("Tenanted")
 
 	options := func(a *AmazonWebServicesAccount) {

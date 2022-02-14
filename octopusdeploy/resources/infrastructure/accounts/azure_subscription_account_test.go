@@ -8,7 +8,7 @@ import (
 )
 
 func TestAzureSubscriptionAccountNew(t *testing.T) {
-	name := octopusdeploy.getRandomName()
+	name := getRandomName()
 	subscriptionID := uuid.New()
 
 	account, err := NewAzureSubscriptionAccount(name, subscriptionID)
@@ -26,8 +26,8 @@ func TestAzureSubscriptionAccountNew(t *testing.T) {
 }
 
 func TestAzureSubscriptionAccountSetDescription(t *testing.T) {
-	description := octopusdeploy.getRandomName()
-	name := octopusdeploy.getRandomName()
+	description := getRandomName()
+	name := getRandomName()
 	subscriptionID := uuid.New()
 
 	account, err := NewAzureSubscriptionAccount(name, subscriptionID)
@@ -43,7 +43,7 @@ func TestAzureSubscriptionAccountSetDescription(t *testing.T) {
 }
 
 func TestAzureSubscriptionAccountSetName(t *testing.T) {
-	name := octopusdeploy.getRandomName()
+	name := getRandomName()
 	subscriptionID := uuid.New()
 
 	account, err := NewAzureSubscriptionAccount(name, subscriptionID)

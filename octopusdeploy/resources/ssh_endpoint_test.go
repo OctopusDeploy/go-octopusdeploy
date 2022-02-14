@@ -3,7 +3,6 @@ package resources
 import (
 	"encoding/json"
 	"testing"
-	"time"
 
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/assert"
@@ -16,12 +15,6 @@ func CreateTestSSHEndpoint(t *testing.T) *SSHEndpoint {
 	fingerprint := "22:22:22:22:22:22:22:22:22:22:22:22:22:22:22"
 	host := "example.com"
 	id := "endpoint-id"
-	lastModifiedBy := "john.smith@example.com"
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self": "/api/foo/bar/quux",
-		"test": "/api/xyzzy",
-	}
 	proxyID := "proxy-id"
 	port := 22
 
@@ -31,9 +24,6 @@ func CreateTestSSHEndpoint(t *testing.T) *SSHEndpoint {
 	sshEndpoint.AccountID = accountID
 	sshEndpoint.DotNetCorePlatform = dotNetCorePlatform
 	sshEndpoint.ID = id
-	sshEndpoint.ModifiedBy = lastModifiedBy
-	sshEndpoint.ModifiedOn = &lastModifiedOn
-	sshEndpoint.Links = links
 	sshEndpoint.ProxyID = proxyID
 
 	require.NoError(t, sshEndpoint.Validate())

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/assert"
@@ -12,20 +11,12 @@ import (
 )
 
 func TestListeningTentacleEndpointMarshalJSON(t *testing.T) {
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self":   "/api/Spaces-1/fake/fake-1",
-		"Fake-2": "/api/Spaces-1/fake/fake-1/fake-2",
-	}
 	url, _ := url.Parse("https://example.com")
 	version := "1.2.3"
 
 	listeningTentacleEndpoint := NewListeningTentacleEndpoint(url, "thumbprint")
 	listeningTentacleEndpoint.CertificateSignatureAlgorithm = "fake-algorithm-1"
 	listeningTentacleEndpoint.ID = "endpoint-123"
-	listeningTentacleEndpoint.ModifiedBy = "john.smith@example.com"
-	listeningTentacleEndpoint.ModifiedOn = &lastModifiedOn
-	listeningTentacleEndpoint.Links = links
 	listeningTentacleEndpoint.ProxyID = "fake-proxy-id"
 	listeningTentacleEndpoint.TentacleVersionDetails = NewTentacleVersionDetails(&version, true, true, false)
 	listeningTentacleEndpoint.Thumbprint = "0E80576D3BD8D40854802A4F8340A2E23AE961FD"
@@ -46,12 +37,6 @@ func TestListeningTentacleEndpointUnmarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, listeningTentacleEndpoint)
 
-	lastModifiedOn, _ := time.Parse(time.RFC3339, "2020-10-02T00:44:11.284Z")
-	links := map[string]string{
-		"Self":   "/api/Spaces-1/fake/fake-1",
-		"Fake-2": "/api/Spaces-1/fake/fake-1/fake-2",
-	}
-
 	version := "1.2.3"
 	tentacleVersionDetails := NewTentacleVersionDetails(&version, true, true, false)
 
@@ -59,9 +44,6 @@ func TestListeningTentacleEndpointUnmarshalJSON(t *testing.T) {
 
 	assert.Equal(t, "fake-algorithm-1", listeningTentacleEndpoint.CertificateSignatureAlgorithm)
 	assert.Equal(t, "endpoint-123", listeningTentacleEndpoint.GetID())
-	assert.Equal(t, "john.smith@example.com", listeningTentacleEndpoint.GetModifiedBy())
-	assert.Equal(t, &lastModifiedOn, listeningTentacleEndpoint.GetModifiedOn())
-	assert.Equal(t, links, listeningTentacleEndpoint.Links)
 	assert.Equal(t, "fake-proxy-id", listeningTentacleEndpoint.ProxyID)
 	assert.Equal(t, tentacleVersionDetails, listeningTentacleEndpoint.TentacleVersionDetails)
 	assert.Equal(t, "0E80576D3BD8D40854802A4F8340A2E23AE961FD", listeningTentacleEndpoint.Thumbprint)
@@ -82,10 +64,4 @@ const listeningTentacleEndpointAsJSON string = `{
   },
   "CertificateSignatureAlgorithm": "fake-algorithm-1",
   "Id": "endpoint-123",
-  "LastModifiedOn": "2020-10-02T00:44:11.284Z",
-  "LastModifiedBy": "john.smith@example.com",
-  "Links": {
-    "Self": "/api/Spaces-1/fake/fake-1",
-    "Fake-2": "/api/Spaces-1/fake/fake-1/fake-2"
-  }
 }`
