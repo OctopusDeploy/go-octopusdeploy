@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -10,8 +11,8 @@ import (
 
 func AssertEqualRunbookSnapshots(
 	t *testing.T,
-	expected *octopusdeploy.RunbookSnapshot,
-	actual *octopusdeploy.RunbookSnapshot) {
+	expected *services.RunbookSnapshot,
+	actual *services.RunbookSnapshot) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -35,10 +36,10 @@ func AssertEqualRunbookSnapshots(
 func CreateTestRunbookSnapshot(
 	t *testing.T,
 	client *octopusdeploy.client,
-	lifecycle *octopusdeploy.Lifecycle,
-	projectGroup *octopusdeploy.ProjectGroup,
-	project *octopusdeploy.Project,
-	runbook *octopusdeploy.Runbook) *octopusdeploy.RunbookSnapshot {
+	lifecycle *services.Lifecycle,
+	projectGroup *services.ProjectGroup,
+	project *services.Project,
+	runbook *services.Runbook) *services.RunbookSnapshot {
 
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
@@ -52,7 +53,7 @@ func CreateTestRunbookSnapshot(
 
 	name := getRandomName()
 
-	runbookSnapshot := octopusdeploy.NewRunbookSnapshot(name, project.GetID(), runbook.GetID())
+	runbookSnapshot := services.NewRunbookSnapshot(name, project.GetID(), runbook.GetID())
 	require.NotNil(t, runbookSnapshot)
 	require.NoError(t, runbookSnapshot.Validate())
 
@@ -70,7 +71,7 @@ func CreateTestRunbookSnapshot(
 	return createdRunbookSnapshot
 }
 
-func DeleteTestRunbookSnapshot(t *testing.T, client *octopusdeploy.client, runbookSnapshot *octopusdeploy.RunbookSnapshot) {
+func DeleteTestRunbookSnapshot(t *testing.T, client *octopusdeploy.client, runbookSnapshot *services.RunbookSnapshot) {
 	require.NotNil(t, runbookSnapshot)
 
 	if client == nil {

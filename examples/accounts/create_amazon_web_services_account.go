@@ -2,11 +2,10 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
-
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
 func CreateAmazonWebServicesAccountExample() {
@@ -16,8 +15,8 @@ func CreateAmazonWebServicesAccountExample() {
 		spaceID    string = "space-id"
 
 		// AWS-specific values
-		accessKey string                        = "access-key"
-		secretKey *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("secret-key")
+		accessKey string                   = "access-key"
+		secretKey *services.SensitiveValue = services.NewSensitiveValue("secret-key")
 
 		// account values
 		accountName        string = "AWS Account"
@@ -30,8 +29,8 @@ func CreateAmazonWebServicesAccountExample() {
 		return
 	}
 
-	octoEndpoint, err := octopusdeploy.NewOctopusServerEndpoint(apiURL, apiKey)
-	client, err := octopusdeploy.NewSpaceScopedClient(octoEndpoint, spaceID, nil)
+	octoEndpoint, err := services.NewOctopusServerEndpoint(apiURL, apiKey)
+	client, err := services.NewSpaceScopedClient(octoEndpoint, spaceID, nil)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return

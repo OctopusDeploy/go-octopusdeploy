@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -28,7 +29,7 @@ func ChangeFeedExample() {
 		return
 	}
 
-	query := octopusdeploy.FeedsQuery{
+	query := services.FeedsQuery{
 		PartialName: feedName,
 	}
 

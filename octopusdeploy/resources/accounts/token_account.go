@@ -2,27 +2,27 @@ package accounts
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // TokenAccount represents a token account.
 type TokenAccount struct {
-	Token *octopusdeploy.SensitiveValue `json:"Token,omitempty" validate:"required"`
+	Token *resources.SensitiveValue `json:"Token,omitempty" validate:"required"`
 
 	account
 }
 
 // NewTokenAccount creates and initializes a token account with a name and
 // token.
-func NewTokenAccount(name string, token *octopusdeploy.SensitiveValue, options ...func(*TokenAccount)) (*TokenAccount, error) {
-	if octopusdeploy.isEmpty(name) {
-		return nil, octopusdeploy.createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
+func NewTokenAccount(name string, token *resources.SensitiveValue, options ...func(*TokenAccount)) (*TokenAccount, error) {
+	if octopusdeploy.IsEmpty(name) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
 	if token == nil {
-		return nil, octopusdeploy.createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterToken)
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterToken)
 	}
 
 	account := TokenAccount{
@@ -56,7 +56,7 @@ func (t *TokenAccount) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
+	err = v.RegisterValidation("notall", resources.NotAll)
 	if err != nil {
 		return err
 	}

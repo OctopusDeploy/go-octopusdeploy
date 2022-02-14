@@ -1,20 +1,18 @@
 package services
 
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-
 type AdminService struct {
-	adminClient *octopusdeploy.AdminClient
+	adminClient *AdminClient
 	service
 	Adminer
 }
 
-func NewAdminService(name string, basePathRelativeToRoot string, client *octopusdeploy.AdminClient) AdminService {
+func NewAdminService(name string, basePathRelativeToRoot string, client *AdminClient) AdminService {
 	return AdminService{
 		service:     *NewService(name, basePathRelativeToRoot),
 		adminClient: client,
 	}
 }
 
-func (s AdminService) GetClient() octopusdeploy.IClient {
+func (s AdminService) GetClient() IClient {
 	return s.adminClient
 }

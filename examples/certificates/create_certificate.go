@@ -3,6 +3,7 @@ package examples
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -47,11 +48,11 @@ func CreateCertificateExample() {
 
 	// certificate properties
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
-	certificateData := octopusdeploy.NewSensitiveValue(base64Certificate)
-	password := octopusdeploy.NewSensitiveValue(pfxFilePassword)
+	certificateData := services.NewSensitiveValue(base64Certificate)
+	password := services.NewSensitiveValue(pfxFilePassword)
 
 	// create certificate
-	certificate := octopusdeploy.NewCertificateResource(certificateName, certificateData, password)
+	certificate := services.NewCertificateResource(certificateName, certificateData, password)
 
 	// create certificate through Add(); returns error if fails
 	createdCertificate, err := client.Certificates.Add(certificate)

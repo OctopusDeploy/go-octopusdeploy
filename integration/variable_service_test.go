@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -8,15 +9,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func getTestVariable(name string) *octopusdeploy.Variable {
-	variable := octopusdeploy.NewVariable(name)
+func getTestVariable(name string) *services.Variable {
+	variable := services.NewVariable(name)
 	variable.Description = "octo-test description"
 	variable.Value = "octo-test value"
 
 	return variable
 }
 
-func CreateTestVariable(t *testing.T, ownerID string, name string) *octopusdeploy.Variable {
+func CreateTestVariable(t *testing.T, ownerID string, name string) *services.Variable {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
@@ -93,7 +94,7 @@ func TestVariableServiceGetByID(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, variable)
 
-	apiError := err.(*octopusdeploy.APIError)
+	apiError := err.(*services.APIError)
 	require.Equal(t, apiError.StatusCode, 404)
 
 	space := GetDefaultSpace(t, client)
@@ -115,7 +116,7 @@ func TestVariableServiceGetByID(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, variable)
 
-	apiError = err.(*octopusdeploy.APIError)
+	apiError = err.(*services.APIError)
 	require.Equal(t, apiError.StatusCode, 404)
 }
 
@@ -130,7 +131,7 @@ func TestVariableServiceDeleteSingle(t *testing.T) {
 	require.Error(t, err)
 	require.NotNil(t, variableSet)
 
-	apiError := err.(*octopusdeploy.APIError)
+	apiError := err.(*services.APIError)
 	require.Equal(t, apiError.StatusCode, 404)
 
 	space := GetDefaultSpace(t, client)
@@ -152,7 +153,7 @@ func TestVariableServiceDeleteSingle(t *testing.T) {
 	require.Error(t, err)
 	require.NotNil(t, variableSet)
 
-	apiError = err.(*octopusdeploy.APIError)
+	apiError = err.(*services.APIError)
 	require.Equal(t, apiError.StatusCode, 404)
 
 	expectedVariableSet, err := client.Variables.GetAll(project.GetID())

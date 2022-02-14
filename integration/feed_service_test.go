@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"strings"
 	"testing"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualFeeds(t *testing.T, expected octopusdeploy.IFeed, actual octopusdeploy.IFeed) {
+func AssertEqualFeeds(t *testing.T, expected services.IFeed, actual services.IFeed) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -26,7 +27,7 @@ func AssertEqualFeeds(t *testing.T, expected octopusdeploy.IFeed, actual octopus
 	// TODO: compare remaining values
 }
 
-func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
+func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.client) services.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -38,10 +39,10 @@ func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.c
 	// with a valid region (i.e. "ap-southeast-2")
 
 	accessKey := "access-key"
-	secretKey := octopusdeploy.NewSensitiveValue("secret-key")
+	secretKey := services.NewSensitiveValue("secret-key")
 	region := "ap-southeast-2"
 
-	feed := octopusdeploy.NewAwsElasticContainerRegistry(getRandomName(), accessKey, secretKey, region)
+	feed := services.NewAwsElasticContainerRegistry(getRandomName(), accessKey, secretKey, region)
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -49,13 +50,13 @@ func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.c
 	return resource
 }
 
-func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
+func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.client) services.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewGitHubRepositoryFeed(getRandomName())
+	feed := services.NewGitHubRepositoryFeed(getRandomName())
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -63,13 +64,13 @@ func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.client) 
 	return resource
 }
 
-func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
+func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.client) services.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewHelmFeed(getRandomName())
+	feed := services.NewHelmFeed(getRandomName())
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -77,13 +78,13 @@ func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.client) octopusdeplo
 	return resource
 }
 
-func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
+func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.client) services.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewMavenFeed(getRandomName())
+	feed := services.NewMavenFeed(getRandomName())
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -91,13 +92,13 @@ func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.client) octopusdepl
 	return resource
 }
 
-func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.client) octopusdeploy.IFeed {
+func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.client) services.IFeed {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewNuGetFeed(getRandomName(), "https://api.nuget.org/v3/index.json")
+	feed := services.NewNuGetFeed(getRandomName(), "https://api.nuget.org/v3/index.json")
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -105,7 +106,7 @@ func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.client) octopusdepl
 	return resource
 }
 
-func DeleteTestFeed(t *testing.T, client *octopusdeploy.client, feed octopusdeploy.IFeed) {
+func DeleteTestFeed(t *testing.T, client *octopusdeploy.client, feed services.IFeed) {
 	require.NotNil(t, feed)
 
 	if client == nil {
@@ -275,7 +276,7 @@ func TestFeedServiceSearchPackages(t *testing.T) {
 	require.NotNil(t, feed)
 	defer DeleteTestFeed(t, client, feed)
 
-	searchPackagesQuery := octopusdeploy.SearchPackagesQuery{
+	searchPackagesQuery := services.SearchPackagesQuery{
 		Term: "ngnix",
 		Take: 10,
 	}

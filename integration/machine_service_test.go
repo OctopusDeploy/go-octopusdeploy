@@ -3,6 +3,7 @@ package integration
 import (
 	"crypto/md5"
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"io"
 	"strings"
 	"testing"
@@ -12,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, environment *octopusdeploy.Environment) *octopusdeploy.DeploymentTarget {
+func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, environment *services.Environment) *services.DeploymentTarget {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -35,13 +36,13 @@ func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, envi
 	environmentIDs := []string{environment.GetID()}
 	roles := []string{"Prod"}
 
-	endpoint := octopusdeploy.NewOfflinePackageDropEndpoint()
+	endpoint := services.NewOfflinePackageDropEndpoint()
 	require.NotNil(t, endpoint)
 
 	endpoint.ApplicationsDirectory = "C:\\Applications"
 	endpoint.WorkingDirectory = "C:\\Octopus"
 
-	deploymentTarget := octopusdeploy.NewDeploymentTarget(name, endpoint, environmentIDs, roles)
+	deploymentTarget := services.NewDeploymentTarget(name, endpoint, environmentIDs, roles)
 	deploymentTarget.IsDisabled = true
 	deploymentTarget.MachinePolicyID = "MachinePolicies-1"
 	deploymentTarget.Status = "Disabled"
@@ -58,7 +59,7 @@ func CreateTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, envi
 	return createdDeploymentTarget
 }
 
-func DeleteTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, deploymentTarget *octopusdeploy.DeploymentTarget) {
+func DeleteTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, deploymentTarget *services.DeploymentTarget) {
 	require.NotNil(t, deploymentTarget)
 
 	if client == nil {
@@ -75,7 +76,7 @@ func DeleteTestDeploymentTarget(t *testing.T, client *octopusdeploy.client, depl
 	assert.Nil(t, deletedDeploymentTarget)
 }
 
-func IsEqualDeploymentTargets(t *testing.T, expected *octopusdeploy.DeploymentTarget, actual *octopusdeploy.DeploymentTarget) {
+func IsEqualDeploymentTargets(t *testing.T, expected *services.DeploymentTarget, actual *services.DeploymentTarget) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -158,7 +159,7 @@ func TestMachineServiceGetAll(t *testing.T) {
 	defer DeleteTestEnvironment(t, client, environment)
 
 	const count int = 32
-	expected := map[string]*octopusdeploy.DeploymentTarget{}
+	expected := map[string]*services.DeploymentTarget{}
 	for i := 0; i < count; i++ {
 		deploymentTarget := CreateTestDeploymentTarget(t, client, environment)
 		defer DeleteTestDeploymentTarget(t, client, deploymentTarget)
@@ -182,7 +183,7 @@ func TestMachineServiceGetQuery(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	query := octopusdeploy.MachinesQuery{
+	query := services.MachinesQuery{
 		CommunicationStyles: []string{"Kubernetes"},
 	}
 
@@ -233,7 +234,7 @@ func TestMachineServiceUpdate(t *testing.T) {
 
 	deploymentTarget.Name = getRandomName()
 
-	endpoint, ok := deploymentTarget.Endpoint.(*octopusdeploy.OfflinePackageDropEndpoint)
+	endpoint, ok := deploymentTarget.Endpoint.(*services.OfflinePackageDropEndpoint)
 	require.True(t, ok)
 
 	endpoint.ApplicationsDirectory = getRandomName()

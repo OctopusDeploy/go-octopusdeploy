@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -8,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualWorkerPools(t *testing.T, expected octopusdeploy.IWorkerPool, actual octopusdeploy.IWorkerPool) {
+func AssertEqualWorkerPools(t *testing.T, expected services.IWorkerPool, actual services.IWorkerPool) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -25,16 +26,16 @@ func AssertEqualWorkerPools(t *testing.T, expected octopusdeploy.IWorkerPool, ac
 	// TODO: add more validation
 }
 
-func CreateTestDynamicWorkerPool(t *testing.T, client *octopusdeploy.client) octopusdeploy.IWorkerPool {
+func CreateTestDynamicWorkerPool(t *testing.T, client *octopusdeploy.client) services.IWorkerPool {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
 	name := getRandomName()
-	workerType := octopusdeploy.WorkerTypeUbuntu1804
+	workerType := services.WorkerTypeUbuntu1804
 
-	dynamicWorkerPool := octopusdeploy.NewDynamicWorkerPool(name, workerType)
+	dynamicWorkerPool := services.NewDynamicWorkerPool(name, workerType)
 	require.NotNil(t, dynamicWorkerPool)
 	require.NoError(t, dynamicWorkerPool.Validate())
 
@@ -52,7 +53,7 @@ func CreateTestDynamicWorkerPool(t *testing.T, client *octopusdeploy.client) oct
 	return createdDynamicWorkerPool
 }
 
-func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.client) octopusdeploy.IWorkerPool {
+func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.client) services.IWorkerPool {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -60,7 +61,7 @@ func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.client) octo
 
 	name := getRandomName()
 
-	staticWorkerPool := octopusdeploy.NewStaticWorkerPool(name)
+	staticWorkerPool := services.NewStaticWorkerPool(name)
 	require.NotNil(t, staticWorkerPool)
 	require.NoError(t, staticWorkerPool.Validate())
 
@@ -78,7 +79,7 @@ func CreateTestStaticWorkerPool(t *testing.T, client *octopusdeploy.client) octo
 	return createdStaticWorkerPool
 }
 
-func DeleteTestWorkerPool(t *testing.T, client *octopusdeploy.client, workerPool octopusdeploy.IWorkerPool) {
+func DeleteTestWorkerPool(t *testing.T, client *octopusdeploy.client, workerPool services.IWorkerPool) {
 	require.NotNil(t, workerPool)
 
 	if client == nil {
@@ -95,7 +96,7 @@ func DeleteTestWorkerPool(t *testing.T, client *octopusdeploy.client, workerPool
 	require.Nil(t, deletedWorkerPool)
 }
 
-func UpdateWorkerPool(t *testing.T, client *octopusdeploy.client, workerPool octopusdeploy.IWorkerPool) octopusdeploy.IWorkerPool {
+func UpdateWorkerPool(t *testing.T, client *octopusdeploy.client, workerPool services.IWorkerPool) services.IWorkerPool {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -137,7 +138,7 @@ func TestWorkerPoolServiceGet(t *testing.T) {
 
 	for _, workerPool := range workerPools {
 		name := workerPool.GetName()
-		query := octopusdeploy.WorkerPoolsQuery{
+		query := services.WorkerPoolsQuery{
 			PartialName: name,
 			Take:        1,
 		}
@@ -146,7 +147,7 @@ func TestWorkerPoolServiceGet(t *testing.T) {
 		require.NotNil(t, namedWorkerPools)
 		AssertEqualWorkerPools(t, workerPool, namedWorkerPools.Items[0])
 
-		query = octopusdeploy.WorkerPoolsQuery{
+		query = services.WorkerPoolsQuery{
 			IDs:  []string{workerPool.GetID()},
 			Take: 1,
 		}

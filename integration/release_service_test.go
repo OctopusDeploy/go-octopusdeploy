@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -8,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualReleases(t *testing.T, expected *octopusdeploy.Release, actual *octopusdeploy.Release) {
+func AssertEqualReleases(t *testing.T, expected *services.Release, actual *services.Release) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -37,7 +38,7 @@ func AssertEqualReleases(t *testing.T, expected *octopusdeploy.Release, actual *
 	assert.Equal(t, expected.Version, actual.Version)
 }
 
-func CreateTestRelease(t *testing.T, client *octopusdeploy.client, channel *octopusdeploy.Channel, project *octopusdeploy.Project) *octopusdeploy.Release {
+func CreateTestRelease(t *testing.T, client *octopusdeploy.client, channel *services.Channel, project *services.Project) *services.Release {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -45,7 +46,7 @@ func CreateTestRelease(t *testing.T, client *octopusdeploy.client, channel *octo
 
 	version := "0.0.1"
 
-	release := octopusdeploy.NewRelease(channel.GetID(), project.GetID(), version)
+	release := services.NewRelease(channel.GetID(), project.GetID(), version)
 
 	require.NotNil(t, release)
 	require.NoError(t, release.Validate())
@@ -64,7 +65,7 @@ func CreateTestRelease(t *testing.T, client *octopusdeploy.client, channel *octo
 	return createdRelease
 }
 
-func DeleteTestRelease(t *testing.T, client *octopusdeploy.client, release *octopusdeploy.Release) {
+func DeleteTestRelease(t *testing.T, client *octopusdeploy.client, release *services.Release) {
 	require.NotNil(t, release)
 
 	if client == nil {
@@ -118,7 +119,7 @@ func TestReleaseServiceDeleteAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	query := octopusdeploy.ReleasesQuery{
+	query := services.ReleasesQuery{
 		Take: 50,
 	}
 
@@ -140,7 +141,7 @@ func TestReleaseServiceGetByID(t *testing.T) {
 	require.Error(t, err)
 	assert.Nil(t, release)
 
-	query := octopusdeploy.ReleasesQuery{
+	query := services.ReleasesQuery{
 		Take: 50,
 	}
 

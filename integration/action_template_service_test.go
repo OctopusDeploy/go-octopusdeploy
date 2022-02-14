@@ -1,24 +1,24 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createActionTemplate(t *testing.T) *octopusdeploy.ActionTemplate {
-	resource := octopusdeploy.NewActionTemplate(getRandomName(), octopusdeploy.ActionTypeOctopusScript)
+func createActionTemplate(t *testing.T) *services.ActionTemplate {
+	resource := services.NewActionTemplate(getRandomName(), services.ActionTypeOctopusScript)
 	require.NotNil(t, resource)
 
-	resource.Properties = map[string]octopusdeploy.PropertyValue{}
-	resource.Properties[octopusdeploy.ActionTypeOctopusActionScriptBody] = octopusdeploy.NewPropertyValue(getRandomName(), false)
+	resource.Properties = map[string]services.PropertyValue{}
+	resource.Properties[services.ActionTypeOctopusActionScriptBody] = services.NewPropertyValue(getRandomName(), false)
 
 	return resource
 }
 
-func IsEqualActionTemplates(t *testing.T, expected *octopusdeploy.ActionTemplate, actual *octopusdeploy.ActionTemplate) {
+func IsEqualActionTemplates(t *testing.T, expected *services.ActionTemplate, actual *services.ActionTemplate) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -48,7 +48,7 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	invalidResource := &octopusdeploy.ActionTemplate{}
+	invalidResource := &services.ActionTemplate{}
 	resource, err := client.ActionTemplates.Add(invalidResource)
 	assert.NotNil(t, err)
 	assert.Nil(t, resource)

@@ -3,7 +3,6 @@ package accounts
 import (
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
@@ -14,28 +13,28 @@ const accountsV1BasePath = "accounts"
 // accountService handles communication with account-related methods of the
 // Octopus API.
 type accountService struct {
-	client *octopusdeploy.SpaceScopedClient
+	client *services.SpaceScopedClient
 	services.SpaceScopedService
-	services.GetsByIDer[octopusdeploy.IAccount]
+	services.GetsByIDer[services.IAccount]
 	services.ResourceQueryer[accounts.Accounts]
-	services.CanAddService[octopusdeploy.IAccount]
-	services.CanUpdateService[octopusdeploy.IAccount]
-	services.CanDeleteService[octopusdeploy.IAccount]
+	services.CanAddService[services.IAccount]
+	services.CanUpdateService[services.IAccount]
+	services.CanDeleteService[services.IAccount]
 }
 
 // NewAccountService returns an account service with a preconfigured client.
-func NewAccountService(client *octopusdeploy.SpaceScopedClient) *accountService {
+func NewAccountService(client *services.SpaceScopedClient) *accountService {
 	accountService := &accountService{
-		SpaceScopedService: services.NewSpaceScopedService(octopusdeploy.ServiceAccountService, accountsV1BasePath, client),
+		SpaceScopedService: services.NewSpaceScopedService(services.ServiceAccountService, accountsV1BasePath, client),
 	}
 
 	return accountService
 }
 
 // Add creates a new account.
-func (s *accountService) Add(account octopusdeploy.IAccount) (octopusdeploy.IAccount, error) {
+func (s *accountService) Add(account services.IAccount) (services.IAccount, error) {
 	if account == nil {
-		return nil, octopusdeploy.CreateInvalidParameterError(octopusdeploy.OperationAdd, octopusdeploy.ParameterAccount)
+		return nil, services.CreateInvalidParameterError(services.OperationAdd, services.ParameterAccount)
 	}
 
 	accountResource, err := accounts.ToAccountResource(s.GetClient(), account)
@@ -43,7 +42,7 @@ func (s *accountService) Add(account octopusdeploy.IAccount) (octopusdeploy.IAcc
 		return nil, err
 	}
 
-	response, err := octopusdeploy.ApiAdd(s.GetClient(), accounts.AccountResource)(accountResource, new(accounts.AccountResource))
+	response, err := services.ApiAdd(s.GetClient(), accounts.AccountResource)(accountResource, new(accounts.AccountResource))
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +53,7 @@ func (s *accountService) Add(account octopusdeploy.IAccount) (octopusdeploy.IAcc
 // Query returns a collection of accounts based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s accountService) Query(accountsQuery ...octopusdeploy.AccountsQuery) (*accounts.Accounts, error) {
+func (s accountService) Query(accountsQuery ...services.AccountsQuery) (*accounts.Accounts, error) {
 	template := uritemplates.Parse(fmt.Sprintf("%s{/id}{?skip,take,ids,partialName,accountType}", s.BasePath))
 
 	values := make(map[string]interface{})
@@ -80,7 +79,7 @@ func (s accountService) Query(accountsQuery ...octopusdeploy.AccountsQuery) (*ac
 
 // GetByID returns the account that matches the input ID. If one is not found,
 // it returns nil and an error.
-func (s accountService) GetByID(id string) (octopusdeploy.IAccount, error) {
+func (s accountService) GetByID(id string) (services.IAccount, error) {
 	resp, err := s.client.apiGetByID(new(accounts.AccountResource), id)
 	if err != nil {
 		return nil, err
@@ -90,7 +89,7 @@ func (s accountService) GetByID(id string) (octopusdeploy.IAccount, error) {
 }
 
 // GetUsages lists the projects and deployments which are using an account.
-func (s *accountService) GetUsages(account octopusdeploy.IAccount) (*accounts.AccountUsage, error) {
+func (s *accountService) GetUsages(account services.IAccount) (*accounts.AccountUsage, error) {
 	path := account.GetLinks()[linkUsages]
 	resp, err := s.client.apiGet(new(accounts.AccountUsage), path)
 	if err != nil {
@@ -101,9 +100,9 @@ func (s *accountService) GetUsages(account octopusdeploy.IAccount) (*accounts.Ac
 }
 
 // Update modifies an account based on the one provided as input.
-func (s *accountService) Update(account octopusdeploy.IAccount) (octopusdeploy.IAccount, error) {
+func (s *accountService) Update(account services.IAccount) (services.IAccount, error) {
 	if account == nil {
-		return nil, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationUpdate, octopusdeploy.ParameterAccount)
+		return nil, octopusdeploy.createInvalidParameterError(services.OperationUpdate, services.ParameterAccount)
 	}
 
 	accountResource, err := accounts.ToAccountResource(s.client, account)

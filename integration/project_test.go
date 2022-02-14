@@ -1,16 +1,16 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/http"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func CreateActionTemplateParameter() octopusdeploy.ActionTemplateParameter {
-	actionTemplateParameter := octopusdeploy.NewActionTemplateParameter()
+func CreateActionTemplateParameter() services.ActionTemplateParameter {
+	actionTemplateParameter := services.NewActionTemplateParameter()
 	return *actionTemplateParameter
 }
 
@@ -71,7 +71,7 @@ func TestGetChannelsForProject(t *testing.T) {
 }
 
 func TestProjectGet(t *testing.T) {
-	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
+	client, err := services.GetFakeOctopusClient(t, "/api/projects/Projects-663", http.StatusOK, getProjectResponseJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 

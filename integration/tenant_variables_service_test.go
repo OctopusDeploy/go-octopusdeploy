@@ -1,9 +1,9 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/require"
 )
 
@@ -32,7 +32,7 @@ func TestTenantVariablesServiceGetAll(t *testing.T) {
 	tenant := CreateTestTenant(t, client, project, environment)
 	defer DeleteTestTenant(t, client, tenant)
 
-	tenantVariables := octopusdeploy.NewTenantVariables(tenant.GetID())
+	tenantVariables := services.NewTenantVariables(tenant.GetID())
 	require.NotNil(t, tenantVariables)
 
 	tenantVariables, err := client.Tenants.UpdateVariables(tenant, tenantVariables)

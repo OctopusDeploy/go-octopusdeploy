@@ -2,9 +2,11 @@ package accounts
 
 import (
 	"encoding/json"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"testing"
 	"time"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/assert"
@@ -12,16 +14,16 @@ import (
 )
 
 func TestAccountResource(t *testing.T) {
-	name := octopusdeploy.getRandomName()
-	spaceID := octopusdeploy.getRandomName()
-	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Untenanted")
+	name := octopusdeploy.GetRandomName()
+	spaceID := octopusdeploy.GetRandomName()
+	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
 
 	testCases := []struct {
 		TestName               string
 		IsError                bool
 		Name                   string
 		SpaceID                string
-		TenantedDeploymentMode octopusdeploy.TenantedDeploymentMode
+		TenantedDeploymentMode resources.TenantedDeploymentMode
 	}{
 		{"Valid", false, name, spaceID, tenantedDeploymentMode},
 		{"EmptyName", true, octopusdeploy.emptyString, spaceID, tenantedDeploymentMode},
@@ -31,11 +33,11 @@ func TestAccountResource(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
-			accountInline := &octopusdeploy.account{
+			accountInline := &account{
 				AccountType: AccountType("None"),
 				Name:        tc.Name,
 			}
-			accountWithNew := octopusdeploy.newAccount(tc.Name, AccountType("None"))
+			accountWithNew := newAccount(tc.Name, AccountType("None"))
 			accountInline.SpaceID = tc.SpaceID
 			accountWithNew.SpaceID = tc.SpaceID
 			accountInline.TenantedDeploymentMode = tc.TenantedDeploymentMode
@@ -62,7 +64,7 @@ func TestAccountResourceAsJSON(t *testing.T) {
 		"Foo":  "/test-2",
 	}
 	spaceID := "space-id"
-	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Untenanted")
+	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
 	tenantIDs := []string{
 		"tenant-id-1",
 		"tenant-id-2",

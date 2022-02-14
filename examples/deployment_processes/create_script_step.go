@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -32,7 +33,7 @@ func CreateScriptStepExample() {
 	}
 
 	// Get project
-	projects, err := client.Projects.Get(octopusdeploy.ProjectsQuery{
+	projects, err := client.Projects.Get(services.ProjectsQuery{
 		Name: projectName,
 	})
 
@@ -50,13 +51,13 @@ func CreateScriptStepExample() {
 	}
 
 	// Create new step object
-	newStep := octopusdeploy.NewDeploymentStep(stepName)
+	newStep := services.NewDeploymentStep(stepName)
 	newStep.Condition = "Success"
-	newStep.Properties["Octopus.Action.TargetRoles"] = octopusdeploy.NewPropertyValue(roleName, false)
+	newStep.Properties["Octopus.Action.TargetRoles"] = services.NewPropertyValue(roleName, false)
 
 	// Create new script action
-	stepAction := octopusdeploy.NewDeploymentAction(stepName, "Octopus.Script")
-	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = octopusdeploy.NewPropertyValue(scriptBody, false)
+	stepAction := services.NewDeploymentAction(stepName, "Octopus.Script")
+	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = services.NewPropertyValue(scriptBody, false)
 
 	// Add step action and step to process
 	newStep.Actions = append(newStep.Actions, *stepAction)

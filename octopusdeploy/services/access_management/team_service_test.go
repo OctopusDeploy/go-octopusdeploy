@@ -3,6 +3,7 @@ package access_management
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -11,7 +12,7 @@ import (
 
 func createTeamService(t *testing.T) *teamServiceV1 {
 	service := newTeamService(nil, octopusdeploy.TestURITeams)
-	octopusdeploy.testNewService(t, service, octopusdeploy.TestURITeams, octopusdeploy.ServiceTeamService)
+	octopusdeploy.testNewService(t, service, octopusdeploy.TestURITeams, services.ServiceTeamService)
 	return service
 }
 
@@ -20,7 +21,7 @@ func TestTeamSetAddGetDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationAdd, octopusdeploy.ParameterResource))
+	require.Equal(t, err, octopusdeploy.createInvalidParameterError(services.OperationAdd, services.ParameterResource))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&access_management.Team{})
@@ -33,7 +34,7 @@ func TestTeamServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationAdd, octopusdeploy.ParameterResource))
+	require.Equal(t, err, octopusdeploy.createInvalidParameterError(services.OperationAdd, services.ParameterResource))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&access_management.Team{})
@@ -57,16 +58,16 @@ func TestTeamServiceParameters(t *testing.T) {
 
 			if octopusdeploy.isEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationGetByID, octopusdeploy.ParameterID))
+				require.Equal(t, err, octopusdeploy.createInvalidParameterError(services.OperationGetByID, services.ParameterID))
 				require.Nil(t, resource)
 
 				resourceList, err := service.GetByPartialName(tc.parameter)
-				require.Equal(t, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationGetByPartialName, octopusdeploy.ParameterName), err)
+				require.Equal(t, octopusdeploy.createInvalidParameterError(services.OperationGetByPartialName, services.ParameterName), err)
 				require.NotNil(t, resourceList)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationDeleteByID, octopusdeploy.ParameterID))
+				require.Equal(t, err, octopusdeploy.createInvalidParameterError(services.OperationDeleteByID, services.ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
 				require.Error(t, err)
@@ -83,7 +84,7 @@ func TestTeamServiceNew(t *testing.T) {
 	ServiceFunction := newTeamService
 	client := &sling.Sling{}
 	uriTemplate := octopusdeploy.emptyString
-	ServiceName := octopusdeploy.ServiceTeamService
+	ServiceName := services.ServiceTeamService
 
 	testCases := []struct {
 		name        string

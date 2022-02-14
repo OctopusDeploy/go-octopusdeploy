@@ -1,8 +1,6 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	uuid "github.com/google/uuid"
@@ -19,14 +17,12 @@ func TestAzureSubscriptionAccountNew(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, account.Validate())
 
-	require.Equal(t, services.emptyString, account.Description)
-	require.Equal(t, services.emptyString, account.GetDescription())
-	require.Equal(t, services.emptyString, account.GetID())
+	require.Equal(t, "", account.Description)
+	require.Equal(t, "", account.GetDescription())
+	require.Equal(t, "", account.GetID())
 	require.Equal(t, name, account.Name)
 	require.Equal(t, name, account.GetName())
 	require.Equal(t, AccountTypeAzureSubscription, account.GetAccountType())
-	require.NotNil(t, account.Links)
-	require.NotNil(t, account.GetLinks())
 }
 
 func TestAzureSubscriptionAccountSetDescription(t *testing.T) {

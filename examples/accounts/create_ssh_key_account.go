@@ -3,6 +3,7 @@ package examples
 import (
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -15,9 +16,9 @@ func CreateSSHKeyAccountExample() {
 		spaceID    string = "space-id"
 
 		// account values
-		name           string                        = "SSH Key Account"
-		privateKeyFile *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("private-key")
-		username       string                        = "account-username"
+		name           string                   = "SSH Key Account"
+		privateKeyFile *services.SensitiveValue = services.NewSensitiveValue("private-key")
+		username       string                   = "account-username"
 	)
 
 	apiURL, err := url.Parse(octopusURL)

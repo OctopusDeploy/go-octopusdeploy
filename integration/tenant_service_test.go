@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -8,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualTenants(t *testing.T, expected *octopusdeploy.Tenant, actual *octopusdeploy.Tenant) {
+func AssertEqualTenants(t *testing.T, expected *services.Tenant, actual *services.Tenant) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -28,7 +29,7 @@ func AssertEqualTenants(t *testing.T, expected *octopusdeploy.Tenant, actual *oc
 	assert.Equal(t, expected.TenantTags, actual.TenantTags)
 }
 
-func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project *octopusdeploy.Project, environment *octopusdeploy.Environment) *octopusdeploy.Tenant {
+func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project *services.Project, environment *services.Environment) *services.Tenant {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -36,7 +37,7 @@ func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project
 
 	name := getRandomName()
 
-	tenant := octopusdeploy.NewTenant(name)
+	tenant := services.NewTenant(name)
 	tenant.Description = getRandomName()
 
 	if project != nil {
@@ -51,7 +52,7 @@ func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project
 	return createdTenant
 }
 
-func DeleteTestTenant(t *testing.T, client *octopusdeploy.client, tenant *octopusdeploy.Tenant) {
+func DeleteTestTenant(t *testing.T, client *octopusdeploy.client, tenant *services.Tenant) {
 	require.NotNil(t, tenant)
 
 	if client == nil {
@@ -107,13 +108,13 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	tenant := CreateTestTenant(t, client, project, environment)
 	defer DeleteTestTenant(t, client, tenant)
 
-	missingVariablesQuery := octopusdeploy.MissingVariablesQuery{}
+	missingVariablesQuery := services.MissingVariablesQuery{}
 
 	missingVariables, err := client.Tenants.GetMissingVariables(missingVariablesQuery)
 	require.NoError(t, err)
 	require.NotNil(t, missingVariables)
 
-	tenantVariables := octopusdeploy.NewTenantVariables(tenant.GetID())
+	tenantVariables := services.NewTenantVariables(tenant.GetID())
 	require.NotNil(t, tenantVariables)
 
 	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
@@ -124,7 +125,7 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	propertyValue := octopusdeploy.NewPropertyValue(getRandomName(), true)
+	propertyValue := services.NewPropertyValue(getRandomName(), true)
 
 	tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()] = propertyValue
 	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)

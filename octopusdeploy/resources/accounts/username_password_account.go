@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -10,7 +10,7 @@ import (
 // UsernamePasswordAccount represents a username/password account.
 type UsernamePasswordAccount struct {
 	Username string
-	Password *octopusdeploy.SensitiveValue
+	Password *resources.SensitiveValue
 
 	account
 }
@@ -21,7 +21,7 @@ func (u *UsernamePasswordAccount) GetUsername() string {
 }
 
 // SetPassword sets the password of this username/password account.
-func (u *UsernamePasswordAccount) SetPassword(password *octopusdeploy.SensitiveValue) {
+func (u *UsernamePasswordAccount) SetPassword(password *resources.SensitiveValue) {
 	u.Password = password
 }
 
@@ -32,8 +32,8 @@ func (u *UsernamePasswordAccount) SetUsername(username string) {
 
 // NewUsernamePasswordAccount creates and initializes a username/password account with a name.
 func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAccount)) (*UsernamePasswordAccount, error) {
-	if octopusdeploy.isEmpty(name) {
-		return nil, octopusdeploy.createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
+	if octopusdeploy.IsEmpty(name) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
 	account := UsernamePasswordAccount{
@@ -47,9 +47,6 @@ func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAc
 
 	// assign pre-determined values to "mandatory" fields
 	account.AccountType = AccountType("UsernamePassword")
-	account.ID = services.emptyString
-	account.ModifiedBy = services.emptyString
-	account.ModifiedOn = nil
 	account.Name = name
 
 	// validate to ensure that all expectations are met
@@ -68,11 +65,11 @@ func (u *UsernamePasswordAccount) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
+	err = v.RegisterValidation("notall", resources.NotAll)
 	if err != nil {
 		return err
 	}
 	return v.Struct(u)
 }
 
-var _ octopusdeploy.IUsernamePasswordAccount = &UsernamePasswordAccount{}
+var _ resources.IUsernamePasswordAccount = &UsernamePasswordAccount{}

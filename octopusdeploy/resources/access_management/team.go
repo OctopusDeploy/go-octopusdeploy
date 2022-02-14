@@ -1,34 +1,34 @@
 package access_management
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"github.com/go-playground/validator/v10"
 )
 
 // Teams defines a collection of teams with built-in support for paged results.
 type Teams struct {
 	Items []*Team `json:"Items"`
-	octopusdeploy.PagedResults
+	services.PagedResults
 }
 
 type Team struct {
-	CanBeDeleted           bool                               `json:"CanBeDeleted,omitempty"`
-	CanBeRenamed           bool                               `json:"CanBeRenamed,omitempty"`
-	CanChangeMembers       bool                               `json:"CanChangeMembers,omitempty"`
-	CanChangeRoles         bool                               `json:"CanChangeRoles,omitempty"`
-	Description            string                             `json:"Description,omitempty"`
-	ExternalSecurityGroups []octopusdeploy.NamedReferenceItem `json:"ExternalSecurityGroups,omitempty"`
-	MemberUserIDs          []string                           `json:"MemberUserIds"`
-	Name                   string                             `json:"Name" validate:"required"`
-	SpaceID                string                             `json:"SpaceId,omitempty"`
+	CanBeDeleted           bool                          `json:"CanBeDeleted,omitempty"`
+	CanBeRenamed           bool                          `json:"CanBeRenamed,omitempty"`
+	CanChangeMembers       bool                          `json:"CanChangeMembers,omitempty"`
+	CanChangeRoles         bool                          `json:"CanChangeRoles,omitempty"`
+	Description            string                        `json:"Description,omitempty"`
+	ExternalSecurityGroups []services.NamedReferenceItem `json:"ExternalSecurityGroups,omitempty"`
+	MemberUserIDs          []string                      `json:"MemberUserIds"`
+	Name                   string                        `json:"Name" validate:"required"`
+	SpaceID                string                        `json:"SpaceId,omitempty"`
 
-	octopusdeploy.Resource
+	services.Resource
 }
 
 func NewTeam(name string) *Team {
 	return &Team{
 		Name:     name,
-		resource: *octopusdeploy.NewResource(),
+		resource: *services.NewResource(),
 	}
 }
 

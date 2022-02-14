@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -32,7 +33,7 @@ func CreateSpaceExample() {
 	}
 
 	// create space
-	space := octopusdeploy.NewSpace(name)
+	space := services.NewSpace(name)
 	space.SpaceManagersTeamMembers = []string{userID}
 	createdSpace, err := client.Spaces.Add(space)
 	if err != nil {

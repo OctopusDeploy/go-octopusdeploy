@@ -1,7 +1,5 @@
 package services
 
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-
 const (
 	emptyString      string = ""
 	whitespaceString string = " "
@@ -18,7 +16,7 @@ type service struct {
 type IService interface {
 	GetBasePathRelativeToRoot() string
 	GetName() string
-	GetClient() octopusdeploy.IClient
+	GetClient() IClient
 }
 
 func NewService(name string, basePathRelativeToRoot string) *service {

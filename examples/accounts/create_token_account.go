@@ -3,6 +3,7 @@ package examples
 import (
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -15,8 +16,8 @@ func CreateTokenExample() {
 		spaceID    string = "space-id"
 
 		// account values
-		name  string                        = "Token Account"
-		token *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("password-value")
+		name  string                   = "Token Account"
+		token *services.SensitiveValue = services.NewSensitiveValue("password-value")
 	)
 
 	apiURL, err := url.Parse(octopusURL)

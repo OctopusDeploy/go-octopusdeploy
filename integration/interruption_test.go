@@ -3,10 +3,10 @@ package integration
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/http"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,7 +17,7 @@ const (
 )
 
 func TestInterruptionsGetAll(t *testing.T) {
-	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/interruptions", http.StatusOK, getInterruptionsResponseJSON)
+	client, err := services.GetFakeOctopusClient(t, "/api/interruptions", http.StatusOK, getInterruptionsResponseJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
@@ -35,7 +35,7 @@ func TestInterruptionsGetAll(t *testing.T) {
 
 func TestInterruptionsGet(t *testing.T) {
 	interruptionID := interruptionID
-	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID, http.StatusOK, interruptionJSON)
+	client, err := services.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID, http.StatusOK, interruptionJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
@@ -53,7 +53,7 @@ func TestInterruptionsGet(t *testing.T) {
 
 func TestInterruptionsTakeResponsibility(t *testing.T) {
 	interruptionID := interruptionID
-	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
+	client, err := services.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
@@ -71,7 +71,7 @@ func TestInterruptionsTakeResponsibility(t *testing.T) {
 
 func TestInterruptionsGetResponsibilities(t *testing.T) {
 	interruptionID := "Interruptions-1"
-	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
+	client, err := services.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/responsible", http.StatusOK, interruptionUserJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
@@ -90,7 +90,7 @@ func TestInterruptionsGetResponsibilities(t *testing.T) {
 
 func TestInterruptionsSubmit(t *testing.T) {
 	interruptionID := "Interruptions-1"
-	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/submit", http.StatusOK, interruptionSubmittedJSON)
+	client, err := services.GetFakeOctopusClient(t, "/api/interruptions/"+interruptionID+"/submit", http.StatusOK, interruptionSubmittedJSON)
 	require.NoError(t, err)
 	require.NotNil(t, client)
 
@@ -98,10 +98,10 @@ func TestInterruptionsSubmit(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, interruption)
 
-	submitRequest := octopusdeploy.InterruptionSubmitRequest{
+	submitRequest := services.InterruptionSubmitRequest{
 		Instructions: "Approve The Deployment",
 		Notes:        emptyString,
-		Result:       octopusdeploy.ManualInterverventionApprove,
+		Result:       services.ManualInterverventionApprove,
 	}
 
 	i, err := client.Interruptions.Submit(interruption, &submitRequest)
@@ -297,8 +297,8 @@ const interruptionSubmittedJSON = `
 	}
 	`
 
-func getInterruptonFromJSON(interruptionJSON string) (*octopusdeploy.Interruption, error) {
-	var interruption octopusdeploy.Interruption
+func getInterruptonFromJSON(interruptionJSON string) (*services.Interruption, error) {
+	var interruption services.Interruption
 	err := json.Unmarshal([]byte(interruptionJSON), &interruption)
 	return &interruption, err
 }

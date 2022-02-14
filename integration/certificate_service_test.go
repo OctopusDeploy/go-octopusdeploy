@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"reflect"
 	"testing"
 
@@ -15,7 +16,7 @@ var testCert2Data = `MIIOSQIBAzCCDg8GCSqGSIb3DQEHAaCCDgAEgg38MIIN+DCCCK8GCSqGSIb
 const testCert2Thumbprint = `0454EAD1FC6F3F60F22AE82230165C14C4FD7FA7`
 const testCert2Password = `HCWVMo7u`
 
-func AssertEqualCertificateResources(t *testing.T, expected *octopusdeploy.CertificateResource, actual *octopusdeploy.CertificateResource) {
+func AssertEqualCertificateResources(t *testing.T, expected *services.CertificateResource, actual *services.CertificateResource) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -59,7 +60,7 @@ func AssertEqualCertificateResources(t *testing.T, expected *octopusdeploy.Certi
 	assert.Equal(t, expected.Version, actual.Version)
 }
 
-func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.client) *octopusdeploy.CertificateResource {
+func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.client) *services.CertificateResource {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -67,13 +68,13 @@ func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.client) *
 
 	name := getRandomName()
 
-	certificateData := octopusdeploy.NewSensitiveValue(testCert2Data)
+	certificateData := services.NewSensitiveValue(testCert2Data)
 	require.NotNil(t, certificateData)
 
-	password := octopusdeploy.NewSensitiveValue(testCert2Password)
+	password := services.NewSensitiveValue(testCert2Password)
 	require.NotNil(t, password)
 
-	certificate := octopusdeploy.NewCertificateResource(name, certificateData, password)
+	certificate := services.NewCertificateResource(name, certificateData, password)
 	require.NotNil(t, certificate)
 	require.NoError(t, certificate.Validate())
 
@@ -91,7 +92,7 @@ func CreateTestCertificateResource(t *testing.T, client *octopusdeploy.client) *
 	return createdCertificate
 }
 
-func DeleteTestCertificateResource(t *testing.T, client *octopusdeploy.client, certificate *octopusdeploy.CertificateResource) {
+func DeleteTestCertificateResource(t *testing.T, client *octopusdeploy.client, certificate *services.CertificateResource) {
 	require.NotNil(t, certificate)
 
 	if client == nil {
@@ -130,7 +131,7 @@ func TestCertificateServiceAddReplaceDelete(t *testing.T) {
 	require.NotNil(t, certificate)
 	defer DeleteTestCertificateResource(t, client, certificate)
 
-	replacementCertificate := octopusdeploy.NewReplacementCertificate(testCert2Data, testCert2Password)
+	replacementCertificate := services.NewReplacementCertificate(testCert2Data, testCert2Password)
 	require.NotNil(t, replacementCertificate)
 
 	updatedCertificate, err := client.Certificates.Replace(certificate.GetID(), replacementCertificate)

@@ -2,31 +2,31 @@ package accounts
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // AmazonWebServicesAccount represents an Amazon Web Services (AWS) account.
 type AmazonWebServicesAccount struct {
-	AccessKey string                        `validate:"required"`
-	SecretKey *octopusdeploy.SensitiveValue `validate:"required"`
+	AccessKey string                    `validate:"required"`
+	SecretKey *resources.SensitiveValue `validate:"required"`
 
 	account
 }
 
 // NewAmazonWebServicesAccount initializes and returns an AWS account with a name, access key, and secret key.
-func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *octopusdeploy.SensitiveValue, options ...func(*AmazonWebServicesAccount)) (*AmazonWebServicesAccount, error) {
-	if octopusdeploy.isEmpty(name) {
-		return nil, octopusdeploy.createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
+func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *resources.SensitiveValue, options ...func(*AmazonWebServicesAccount)) (*AmazonWebServicesAccount, error) {
+	if octopusdeploy.IsEmpty(name) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
-	if octopusdeploy.isEmpty(accessKey) {
-		return nil, octopusdeploy.createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterAccessKey)
+	if octopusdeploy.IsEmpty(accessKey) {
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterAccessKey)
 	}
 
 	if secretKey == nil {
-		return nil, octopusdeploy.createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterSecretKey)
+		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterSecretKey)
 	}
 
 	account := AmazonWebServicesAccount{
@@ -41,7 +41,6 @@ func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *octop
 	// assign pre-determined values to "mandatory" fields
 	account.AccessKey = accessKey
 	account.AccountType = AccountType("AmazonWebServicesAccount")
-	account.ID = services.emptyString
 	account.Name = name
 	account.SecretKey = secretKey
 
@@ -61,7 +60,7 @@ func (a *AmazonWebServicesAccount) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
+	err = v.RegisterValidation("notall", resources.NotAll)
 	if err != nil {
 		return err
 	}

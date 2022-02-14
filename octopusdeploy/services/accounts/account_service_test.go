@@ -3,6 +3,7 @@ package accounts
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/dghubble/sling"
@@ -11,7 +12,7 @@ import (
 
 func createAccountService(t *testing.T) *accountService {
 	service := NewAccountService(nil, octopusdeploy.TestURIAccounts)
-	octopusdeploy.testNewService(t, service, octopusdeploy.TestURIAccounts, octopusdeploy.ServiceAccountService)
+	octopusdeploy.testNewService(t, service, octopusdeploy.TestURIAccounts, services.ServiceAccountService)
 	return service
 }
 
@@ -20,7 +21,7 @@ func TestAccountServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationAdd, octopusdeploy.ParameterAccount))
+	require.Equal(t, err, octopusdeploy.createInvalidParameterError(services.OperationAdd, services.ParameterAccount))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&accounts.AccountResource{})
@@ -33,11 +34,11 @@ func TestAccountServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID(octopusdeploy.emptyString)
-	require.Equal(t, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationGetByID, octopusdeploy.ParameterID), err)
+	require.Equal(t, octopusdeploy.createInvalidParameterError(services.OperationGetByID, services.ParameterID), err)
 	require.Nil(t, resource)
 
 	resource, err = service.GetByID(octopusdeploy.whitespaceString)
-	require.Equal(t, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationGetByID, octopusdeploy.ParameterID), err)
+	require.Equal(t, octopusdeploy.createInvalidParameterError(services.OperationGetByID, services.ParameterID), err)
 	require.Nil(t, resource)
 }
 
@@ -45,7 +46,7 @@ func TestAccountServiceNew(t *testing.T) {
 	ServiceFunction := newAccountService
 	client := &sling.Sling{}
 	uriTemplate := octopusdeploy.emptyString
-	ServiceName := octopusdeploy.ServiceAccountService
+	ServiceName := services.ServiceAccountService
 
 	testCases := []struct {
 		name        string
@@ -79,12 +80,12 @@ func TestAccountServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			require.Equal(t, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationGetByID, octopusdeploy.ParameterID), err)
+			require.Equal(t, octopusdeploy.createInvalidParameterError(services.OperationGetByID, services.ParameterID), err)
 			require.Nil(t, resource)
 
 			err = service.DeleteByID(tc.parameter)
 			require.Error(t, err)
-			require.Equal(t, octopusdeploy.createInvalidParameterError(octopusdeploy.OperationDeleteByID, octopusdeploy.ParameterID), err)
+			require.Equal(t, octopusdeploy.createInvalidParameterError(services.OperationDeleteByID, services.ParameterID), err)
 		})
 	}
 }
@@ -105,7 +106,7 @@ func TestAccountServiceUpdateWithEmptyAccount(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, account)
 
-	account, err = service.Update(&octopusdeploy.AzureServicePrincipalAccount{})
+	account, err = service.Update(&services.AzureServicePrincipalAccount{})
 	require.Error(t, err)
 	require.Nil(t, account)
 

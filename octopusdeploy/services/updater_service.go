@@ -1,22 +1,20 @@
 package services
 
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-
-type CanUpdateService[T octopusdeploy.Resource] struct {
+type CanUpdateService[T Resource] struct {
 	ResourceUpdater[T]
 }
 
-type ResourceUpdater[T octopusdeploy.Resource] interface {
+type ResourceUpdater[T Resource] interface {
 	Update(resource *T) (*T, error)
 	IService
 }
 
 func (s *CanUpdateService[T]) Update(resource *T) (*T, error) {
 	if resource == nil {
-		return nil, octopusdeploy.CreateInvalidParameterError(octopusdeploy.OperationUpdate, octopusdeploy.ParameterResource)
+		return nil, CreateInvalidParameterError(OperationUpdate, ParameterResource)
 	}
 
-	response, err := octopusdeploy.ApiUpdate[T](s.GetClient(), resource, s.GetBasePathRelativeToRoot())
+	response, err := ApiUpdate[T](s.GetClient(), resource, s.GetBasePathRelativeToRoot())
 	if err != nil {
 		return nil, err
 	}

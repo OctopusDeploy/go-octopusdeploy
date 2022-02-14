@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -15,9 +16,9 @@ func CreateAzureServicePrincipalExample() {
 		spaceID    string = "space-id"
 
 		// Azure-specific values
-		azureApplicationID  uuid.UUID                     = uuid.MustParse("client-UUID")
-		azureSecret         *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("azure-secret")
-		azureSubscriptionID uuid.UUID                     = uuid.MustParse("subscription-UUID")
+		azureApplicationID  uuid.UUID                = uuid.MustParse("client-UUID")
+		azureSecret         *services.SensitiveValue = services.NewSensitiveValue("azure-secret")
+		azureSubscriptionID uuid.UUID                = uuid.MustParse("subscription-UUID")
 		azureTenantID       uuid.UUID                     = uuid.MustParse("tenant-UUID")
 
 		// account values
@@ -40,7 +41,7 @@ func CreateAzureServicePrincipalExample() {
 		return
 	}
 
-	azureAccount, err := octopusdeploy.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
+	azureAccount, err := services.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
 	if err != nil {
 		_ = fmt.Errorf("error creating Azure service principal account: %v", err)
 		return
@@ -59,7 +60,7 @@ func CreateAzureServicePrincipalExample() {
 	}
 
 	// type conversion required to access Username/Password-specific fields
-	azureAccount = createdAccount.(*octopusdeploy.AzureServicePrincipalAccount)
+	azureAccount = createdAccount.(*services.AzureServicePrincipalAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", azureAccount.GetID())

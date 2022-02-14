@@ -1,23 +1,23 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 	"time"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestUsernamePasswordAccountNew(t *testing.T) {
 	accountType := AccountTypeUsernamePassword
-	description := services.emptyString
+	description := ""
 	environmentIDs := []string{}
 	name := octopusdeploy.getRandomName()
-	var password *octopusdeploy.SensitiveValue
-	spaceID := services.emptyString
-	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Untenanted")
-	username := services.emptyString
+	var password *resources.SensitiveValue
+	spaceID := ""
+	tenantedDeploymentMode := resources.TenantedDeploymentMode("Untenanted")
+	username := ""
 
 	account, err := NewUsernamePasswordAccount(name)
 
@@ -26,14 +26,14 @@ func TestUsernamePasswordAccountNew(t *testing.T) {
 	require.NoError(t, account.Validate())
 
 	// Resource
-	require.Equal(t, services.emptyString, account.ID)
-	require.Equal(t, services.emptyString, account.ModifiedBy)
+	require.Equal(t, "", account.ID)
+	require.Equal(t, "", account.ModifiedBy)
 	require.Nil(t, account.ModifiedOn)
 	require.NotNil(t, account.Links)
 
 	// IResource
-	require.Equal(t, services.emptyString, account.GetID())
-	require.Equal(t, services.emptyString, account.GetModifiedBy())
+	require.Equal(t, "", account.GetID())
+	require.Equal(t, "", account.GetModifiedBy())
 	require.Nil(t, account.GetModifiedOn())
 	require.NotNil(t, account.GetLinks())
 
@@ -62,9 +62,9 @@ func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
 	invalidName := octopusdeploy.getRandomName()
 	name := octopusdeploy.getRandomName()
 	description := "Description for " + name + " (OK to Delete)"
-	password := octopusdeploy.NewSensitiveValue("password")
+	password := resources.NewSensitiveValue("password")
 	spaceID := octopusdeploy.getRandomName()
-	tenantedDeploymentMode := octopusdeploy.TenantedDeploymentMode("Tenanted")
+	tenantedDeploymentMode := resources.TenantedDeploymentMode("Tenanted")
 	username := octopusdeploy.getRandomName()
 
 	options := func(a *UsernamePasswordAccount) {
@@ -74,7 +74,7 @@ func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
 		a.ModifiedBy = invalidModifiedBy
 		a.ModifiedOn = &invalidModifiedOn
 		a.Name = invalidName
-		a.Password = octopusdeploy.NewSensitiveValue("password")
+		a.Password = resources.NewSensitiveValue("password")
 		a.SpaceID = spaceID
 		a.TenantedDeploymentMode = tenantedDeploymentMode
 		a.Username = username
@@ -87,14 +87,14 @@ func TestUsernamePasswordAccountNewWithConfigs(t *testing.T) {
 	require.NoError(t, account.Validate())
 
 	// Resource
-	require.Equal(t, services.emptyString, account.ID)
-	require.Equal(t, services.emptyString, account.ModifiedBy)
+	require.Equal(t, "", account.ID)
+	require.Equal(t, "", account.ModifiedBy)
 	require.Nil(t, account.ModifiedOn)
 	require.NotNil(t, account.Links)
 
 	// IResource
-	require.Equal(t, services.emptyString, account.GetID())
-	require.Equal(t, services.emptyString, account.GetModifiedBy())
+	require.Equal(t, "", account.GetID())
+	require.Equal(t, "", account.GetModifiedBy())
 	require.Nil(t, account.GetModifiedOn())
 	require.NotNil(t, account.GetLinks())
 

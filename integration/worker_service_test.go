@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 	"testing"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestWorker(t *testing.T, client *octopusdeploy.client, workerPool octopusdeploy.IWorkerPool) (*octopusdeploy.Worker, error) {
+func CreateTestWorker(t *testing.T, client *octopusdeploy.client, workerPool services.IWorkerPool) (*services.Worker, error) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -22,10 +23,10 @@ func CreateTestWorker(t *testing.T, client *octopusdeploy.client, workerPool oct
 	require.NoError(t, err)
 	require.NotNil(t, url)
 
-	listeningTentacleEndpoint := octopusdeploy.NewListeningTentacleEndpoint(url, thumbprint)
+	listeningTentacleEndpoint := services.NewListeningTentacleEndpoint(url, thumbprint)
 	require.NotNil(t, listeningTentacleEndpoint)
 
-	worker := octopusdeploy.NewWorker(name, listeningTentacleEndpoint)
+	worker := services.NewWorker(name, listeningTentacleEndpoint)
 	worker.WorkerPoolIDs = append(worker.WorkerPoolIDs, workerPool.GetID())
 	require.NotNil(t, worker)
 	require.NoError(t, worker.Validate())
@@ -44,7 +45,7 @@ func CreateTestWorker(t *testing.T, client *octopusdeploy.client, workerPool oct
 	return createdWorker, nil
 }
 
-func DeleteTestWorker(t *testing.T, client *octopusdeploy.client, worker *octopusdeploy.Worker) {
+func DeleteTestWorker(t *testing.T, client *octopusdeploy.client, worker *services.Worker) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -59,7 +60,7 @@ func DeleteTestWorker(t *testing.T, client *octopusdeploy.client, worker *octopu
 	require.Nil(t, deletedWorker)
 }
 
-func IsEqualWorkers(t *testing.T, expected *octopusdeploy.Worker, actual *octopusdeploy.Worker) {
+func IsEqualWorkers(t *testing.T, expected *services.Worker, actual *services.Worker) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -77,7 +78,7 @@ func IsEqualWorkers(t *testing.T, expected *octopusdeploy.Worker, actual *octopu
 	assert.Equal(t, expected.Name, actual.Name)
 }
 
-func UpdateWorker(t *testing.T, client *octopusdeploy.client, worker *octopusdeploy.Worker) *octopusdeploy.Worker {
+func UpdateWorker(t *testing.T, client *octopusdeploy.client, worker *services.Worker) *services.Worker {
 	require.NotNil(t, worker)
 
 	if client == nil {
@@ -219,7 +220,7 @@ func TestWorkerServiceGetByIDs(t *testing.T) {
 	ids := []string{}
 	resource, err := client.Workers.GetByIDs(ids)
 	assert.NoError(t, err)
-	assert.Equal(t, []*octopusdeploy.Worker{}, resource)
+	assert.Equal(t, []*services.Worker{}, resource)
 }
 
 func TestWorkerServiceGetByName(t *testing.T) {

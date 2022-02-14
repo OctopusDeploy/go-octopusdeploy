@@ -35,7 +35,7 @@ func NewOctopusServerEndpoint(apiURL *url.URL, apiKey string) (*octopusServerEnd
 		return nil, createInvalidParameterError(clientNewOctopusServerEndpoint, ParameterAPIKey)
 	}
 
-	if !isAPIKey(apiKey) {
+	if !octopusdeploy.isAPIKey(apiKey) {
 		return nil, createInvalidParameterError(clientNewOctopusServerEndpoint, ParameterAPIKey)
 	}
 

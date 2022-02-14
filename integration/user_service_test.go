@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -8,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestUser(t *testing.T, client *octopusdeploy.client) *octopusdeploy.User {
+func CreateTestUser(t *testing.T, client *octopusdeploy.client) *services.User {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -18,7 +19,7 @@ func CreateTestUser(t *testing.T, client *octopusdeploy.client) *octopusdeploy.U
 	displayName := getRandomName()
 	password := getRandomName()
 
-	user := octopusdeploy.NewUser(username, displayName)
+	user := services.NewUser(username, displayName)
 	user.Password = password
 	require.NoError(t, user.Validate())
 
@@ -35,7 +36,7 @@ func CreateTestUser(t *testing.T, client *octopusdeploy.client) *octopusdeploy.U
 	return createdUser
 }
 
-func DeleteTestUser(t *testing.T, client *octopusdeploy.client, user *octopusdeploy.User) {
+func DeleteTestUser(t *testing.T, client *octopusdeploy.client, user *services.User) {
 	require.NotNil(t, user)
 
 	// you cannot delete your own account
@@ -57,7 +58,7 @@ func DeleteTestUser(t *testing.T, client *octopusdeploy.client, user *octopusdep
 	assert.Nil(t, deletedUser)
 }
 
-func AssertEqualUsers(t *testing.T, expected *octopusdeploy.User, actual *octopusdeploy.User) {
+func AssertEqualUsers(t *testing.T, expected *services.User, actual *services.User) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -93,7 +94,7 @@ func TestUserServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, users)
 
 	for _, user := range users {
-		query := octopusdeploy.UsersQuery{
+		query := services.UsersQuery{
 			IDs: []string{user.GetID()},
 		}
 		usersToCompare, err := client.Users.Get(query)
@@ -226,7 +227,7 @@ func TestUserServiceGetSpaces(t *testing.T) {
 
 	spaces, err := client.Users.GetSpaces(nil)
 	require.Nil(t, spaces)
-	require.Equal(t, createRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterUser), err)
+	require.Equal(t, createRequiredParameterIsEmptyOrNilError(services.ParameterUser), err)
 
 	spaces, err = client.Users.GetSpaces(user)
 	require.NotNil(t, spaces)

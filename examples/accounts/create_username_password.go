@@ -3,6 +3,7 @@ package examples
 import (
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -37,13 +38,13 @@ func CreateUsernamePasswordExample() {
 	if err != nil {
 		_ = fmt.Errorf("error creating username/password account: %v", err)
 	}
-	usernamePasswordAccount.Password = octopusdeploy.NewSensitiveValue(password)
+	usernamePasswordAccount.Password = services.NewSensitiveValue(password)
 	usernamePasswordAccount.Username = username
 
 	// option 2: create a username/password account and assign values to fields
 	// using the variadic configuration option
 	options := func(u *accounts.UsernamePasswordAccount) {
-		u.Password = octopusdeploy.NewSensitiveValue(password)
+		u.Password = services.NewSensitiveValue(password)
 		u.Username = username
 	}
 

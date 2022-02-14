@@ -4,10 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
 	"reflect"
-	"regexp"
 	"strings"
 )
 
@@ -22,169 +19,146 @@ func isNilFixed(i interface{}) bool {
 	return false
 }
 
-func isNil(i interface{}) bool {
-	var ret bool
+// func isNil(i interface{}) bool {
+// 	var ret bool
 
-	switch i.(type) {
-	case *accounts.AccountResource:
-		v := i.(*accounts.AccountResource)
-		ret = v == nil
-	case *ActionTemplate:
-		v := i.(*ActionTemplate)
-		ret = v == nil
-	case *ActionTemplateParameter:
-		v := i.(*ActionTemplateParameter)
-		ret = v == nil
-	case *accounts.AmazonWebServicesAccount:
-		v := i.(*accounts.AmazonWebServicesAccount)
-		ret = v == nil
-	case *APIKey:
-		v := i.(*APIKey)
-		ret = v == nil
-	case *Artifact:
-		v := i.(*Artifact)
-		ret = v == nil
-	case *Authentication:
-		v := i.(*Authentication)
-		ret = v == nil
-	case *AzureCloudServiceEndpoint:
-		v := i.(*AzureCloudServiceEndpoint)
-		ret = v == nil
-	case *AzureServiceFabricEndpoint:
-		v := i.(*AzureServiceFabricEndpoint)
-		ret = v == nil
-	case *AzureServicePrincipalAccount:
-		v := i.(*AzureServicePrincipalAccount)
-		ret = v == nil
-	case *accounts.AzureSubscriptionAccount:
-		v := i.(*accounts.AzureSubscriptionAccount)
-		ret = v == nil
-	case *AzureWebAppEndpoint:
-		v := i.(*AzureWebAppEndpoint)
-		ret = v == nil
-	case *CertificateResource:
-		v := i.(*CertificateResource)
-		ret = v == nil
-	case *Channel:
-		v := i.(*Channel)
-		ret = v == nil
-	case *CommunityActionTemplate:
-		v := i.(*CommunityActionTemplate)
-		ret = v == nil
-	case *ConfigurationSection:
-		v := i.(*ConfigurationSection)
-		ret = v == nil
-	case *DeploymentProcess:
-		v := i.(*DeploymentProcess)
-		ret = v == nil
-	case *DeploymentStep:
-		v := i.(*DeploymentStep)
-		ret = v == nil
-	case *DeploymentTarget:
-		v := i.(*DeploymentTarget)
-		ret = v == nil
-	case *Environment:
-		v := i.(*Environment)
-		ret = v == nil
-	case *Feed:
-		v := i.(*Feed)
-		ret = v == nil
-	case *GoogleCloudPlatformAccount:
-		v := i.(*GoogleCloudPlatformAccount)
-		ret = v == nil
-	case *Interruption:
-		v := i.(*Interruption)
-		ret = v == nil
-	case *KubernetesEndpoint:
-		v := i.(*KubernetesEndpoint)
-		ret = v == nil
-	case *LibraryVariableSetUsageEntry:
-		v := i.(*LibraryVariableSetUsageEntry)
-		ret = v == nil
-	case *LibraryVariableSet:
-		v := i.(*LibraryVariableSet)
-		ret = v == nil
-	case *Lifecycle:
-		v := i.(*Lifecycle)
-		ret = v == nil
-	case *MachineConnectionStatus:
-		v := i.(*MachineConnectionStatus)
-		ret = v == nil
-	case *MachinePolicy:
-		v := i.(*MachinePolicy)
-		ret = v == nil
-	case *Package:
-		v := i.(*Package)
-		ret = v == nil
-	case *ProjectGroup:
-		v := i.(*ProjectGroup)
-		ret = v == nil
-	case *ProjectTrigger:
-		v := i.(*ProjectTrigger)
-		ret = v == nil
-	case *Project:
-		v := i.(*Project)
-		ret = v == nil
-	case *Release:
-		v := i.(*Release)
-		ret = v == nil
-	case *ReleaseQuery:
-		v := i.(*ReleaseQuery)
-		ret = v == nil
-	case *RootResource:
-		v := i.(*RootResource)
-		ret = v == nil
-	case *Runbook:
-		v := i.(*Runbook)
-		ret = v == nil
-	case *ScriptModule:
-		v := i.(*ScriptModule)
-		ret = v == nil
-	case *Space:
-		v := i.(*Space)
-		ret = v == nil
-	case *TagSet:
-		v := i.(*TagSet)
-		ret = v == nil
-	case *access_management.Team:
-		v := i.(*access_management.Team)
-		ret = v == nil
-	case *Tenant:
-		v := i.(*Tenant)
-		ret = v == nil
-	case *User:
-		v := i.(*User)
-		ret = v == nil
-	}
+// 	switch i.(type) {
+// 	case *accounts.AccountResource:
+// 		v := i.(*accounts.AccountResource)
+// 		ret = v == nil
+// 	case *ActionTemplate:
+// 		v := i.(*ActionTemplate)
+// 		ret = v == nil
+// 	case *ActionTemplateParameter:
+// 		v := i.(*ActionTemplateParameter)
+// 		ret = v == nil
+// 	case *accounts.AmazonWebServicesAccount:
+// 		v := i.(*accounts.AmazonWebServicesAccount)
+// 		ret = v == nil
+// 	case *APIKey:
+// 		v := i.(*APIKey)
+// 		ret = v == nil
+// 	case *Artifact:
+// 		v := i.(*Artifact)
+// 		ret = v == nil
+// 	case *Authentication:
+// 		v := i.(*Authentication)
+// 		ret = v == nil
+// 	case *AzureCloudServiceEndpoint:
+// 		v := i.(*AzureCloudServiceEndpoint)
+// 		ret = v == nil
+// 	case *AzureServiceFabricEndpoint:
+// 		v := i.(*AzureServiceFabricEndpoint)
+// 		ret = v == nil
+// 	case *AzureServicePrincipalAccount:
+// 		v := i.(*AzureServicePrincipalAccount)
+// 		ret = v == nil
+// 	case *accounts.AzureSubscriptionAccount:
+// 		v := i.(*accounts.AzureSubscriptionAccount)
+// 		ret = v == nil
+// 	case *AzureWebAppEndpoint:
+// 		v := i.(*AzureWebAppEndpoint)
+// 		ret = v == nil
+// 	case *CertificateResource:
+// 		v := i.(*CertificateResource)
+// 		ret = v == nil
+// 	case *Channel:
+// 		v := i.(*Channel)
+// 		ret = v == nil
+// 	case *CommunityActionTemplate:
+// 		v := i.(*CommunityActionTemplate)
+// 		ret = v == nil
+// 	case *ConfigurationSection:
+// 		v := i.(*ConfigurationSection)
+// 		ret = v == nil
+// 	case *DeploymentProcess:
+// 		v := i.(*DeploymentProcess)
+// 		ret = v == nil
+// 	case *DeploymentStep:
+// 		v := i.(*DeploymentStep)
+// 		ret = v == nil
+// 	case *DeploymentTarget:
+// 		v := i.(*DeploymentTarget)
+// 		ret = v == nil
+// 	case *Environment:
+// 		v := i.(*Environment)
+// 		ret = v == nil
+// 	case *Feed:
+// 		v := i.(*Feed)
+// 		ret = v == nil
+// 	case *GoogleCloudPlatformAccount:
+// 		v := i.(*GoogleCloudPlatformAccount)
+// 		ret = v == nil
+// 	case *Interruption:
+// 		v := i.(*Interruption)
+// 		ret = v == nil
+// 	case *KubernetesEndpoint:
+// 		v := i.(*KubernetesEndpoint)
+// 		ret = v == nil
+// 	case *LibraryVariableSetUsageEntry:
+// 		v := i.(*LibraryVariableSetUsageEntry)
+// 		ret = v == nil
+// 	case *LibraryVariableSet:
+// 		v := i.(*LibraryVariableSet)
+// 		ret = v == nil
+// 	case *Lifecycle:
+// 		v := i.(*Lifecycle)
+// 		ret = v == nil
+// 	case *MachineConnectionStatus:
+// 		v := i.(*MachineConnectionStatus)
+// 		ret = v == nil
+// 	case *MachinePolicy:
+// 		v := i.(*MachinePolicy)
+// 		ret = v == nil
+// 	case *Package:
+// 		v := i.(*Package)
+// 		ret = v == nil
+// 	case *ProjectGroup:
+// 		v := i.(*ProjectGroup)
+// 		ret = v == nil
+// 	case *ProjectTrigger:
+// 		v := i.(*ProjectTrigger)
+// 		ret = v == nil
+// 	case *Project:
+// 		v := i.(*Project)
+// 		ret = v == nil
+// 	case *Release:
+// 		v := i.(*Release)
+// 		ret = v == nil
+// 	case *ReleaseQuery:
+// 		v := i.(*ReleaseQuery)
+// 		ret = v == nil
+// 	case *RootResource:
+// 		v := i.(*RootResource)
+// 		ret = v == nil
+// 	case *Runbook:
+// 		v := i.(*Runbook)
+// 		ret = v == nil
+// 	case *ScriptModule:
+// 		v := i.(*ScriptModule)
+// 		ret = v == nil
+// 	case *Space:
+// 		v := i.(*Space)
+// 		ret = v == nil
+// 	case *TagSet:
+// 		v := i.(*TagSet)
+// 		ret = v == nil
+// 	case *access_management.Team:
+// 		v := i.(*access_management.Team)
+// 		ret = v == nil
+// 	case *Tenant:
+// 		v := i.(*Tenant)
+// 		ret = v == nil
+// 	case *User:
+// 		v := i.(*User)
+// 		ret = v == nil
+// 	}
 
-	return ret
-}
+// 	return ret
+// }
 
 func IsEmpty(s string) bool {
-	return strings.TrimSpace(s) == empty
-}
-
-func GetSpaceIDForResource(resource IHasSpace, client SpaceScopedClient) (string, error) {
-	if resource == nil {
-		return empty, fmt.Errorf("the Resource should never be nil")
-	}
-
-	resourceSpaceID := resource.GetSpaceID()
-
-	if !IsEmpty(resourceSpaceID) {
-		return resourceSpaceID, nil
-	}
-
-	return client.spaceID, nil
-}
-
-func isAPIKey(apiKey string) bool {
-	if len(apiKey) < 5 {
-		return false
-	}
-
-	var expression = regexp.MustCompile(`^(API-)([A-Z\d])+$`)
-	return expression.MatchString(apiKey)
+	return strings.TrimSpace(s) == ""
 }
 
 func PrettyJSON(data interface{}) string {

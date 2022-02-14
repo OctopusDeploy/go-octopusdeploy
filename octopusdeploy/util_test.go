@@ -2,7 +2,6 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	uuid "github.com/google/uuid"
@@ -20,10 +19,10 @@ func getRandomName() string {
 func TestValidateRequiredUUID(t *testing.T) {
 	uuidToTest := uuid.Nil
 
-	err := ValidateRequiredUUID(services.emptyString, &uuidToTest)
+	err := ValidateRequiredUUID(emptyString, &uuidToTest)
 	assert.Error(t, err)
 
-	err = ValidateRequiredUUID(services.whitespaceString, &uuidToTest)
+	err = ValidateRequiredUUID(whitespaceString, &uuidToTest)
 	assert.Error(t, err)
 
 	err = ValidateRequiredUUID(propertyName, &uuidToTest)
@@ -36,12 +35,12 @@ func TestValidateRequiredUUID(t *testing.T) {
 }
 
 func TestValidateSemanticVersion(t *testing.T) {
-	semanticVersion := services.emptyString
+	semanticVersion := emptyString
 
-	err := ValidateSemanticVersion(services.emptyString, semanticVersion)
+	err := ValidateSemanticVersion(emptyString, semanticVersion)
 	assert.Error(t, err)
 
-	err = ValidateSemanticVersion(services.whitespaceString, semanticVersion)
+	err = ValidateSemanticVersion(whitespaceString, semanticVersion)
 	assert.Error(t, err)
 
 	err = ValidateSemanticVersion(propertyName, semanticVersion)
@@ -92,10 +91,10 @@ func TestValidateRequiredSensitiveValue(t *testing.T) {
 	newValue := getRandomName()
 	sensitiveValue := NewSensitiveValue(newValue)
 
-	err := ValidateRequiredSensitiveValue(services.emptyString, sensitiveValue)
+	err := ValidateRequiredSensitiveValue(emptyString, sensitiveValue)
 	assert.Error(t, err)
 
-	err = ValidateRequiredSensitiveValue(services.whitespaceString, sensitiveValue)
+	err = ValidateRequiredSensitiveValue(whitespaceString, sensitiveValue)
 	assert.Error(t, err)
 
 	err = ValidateRequiredSensitiveValue(propertyName, sensitiveValue)

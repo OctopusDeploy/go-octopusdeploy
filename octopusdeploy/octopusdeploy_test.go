@@ -2,9 +2,6 @@ package octopusdeploy
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/http"
 	"net/url"
 	"os"
@@ -35,8 +32,8 @@ func TestNewClient(t *testing.T) {
 		spaceID string
 	}{
 		{"NilURL", false, client, nil, apiKey, spaceID},
-		{"EmptyAPIKey", false, client, apiURL, services.emptyString, services.emptyString},
-		{"EmptyAPIKeyWithSpace", false, client, apiURL, services.whitespaceString, spaceID},
+		{"EmptyAPIKey", false, client, apiURL, emptyString, emptyString},
+		{"EmptyAPIKeyWithSpace", false, client, apiURL, whitespaceString, spaceID},
 		{"InvalidAPIKey", false, client, apiURL, "API-***************************", spaceID},
 		{"ValidAPIKey", true, client, apiURL, apiKey, spaceID},
 	}
@@ -56,31 +53,13 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
-func TestPluralize(t *testing.T) {
-	testCases := []struct {
-		name           string
-		test           interface{}
-		expectedResult string
-	}{
-		{"WithResourceSuffix", Space{}, "spaces"},
-		{"WithoutResourceSuffix", accounts.AccountResource{}, "accounts"},
-		{"PagedResults", access_management.Teams{}, "teams"},
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			testResult := pluralize(tc.test)
-			assert.Equal(t, tc.expectedResult, testResult)
-		})
-	}
-}
-
 func TestGetUserAgentString(t *testing.T) {
 	userAgentString := getUserAgentString()
 	assert.NotNil(t, userAgentString)
 }
 
 func TestGetWithEmptyParameters(t *testing.T) {
-	resource, err := apiGet(nil, nil, services.emptyString)
+	resource, err := apiGet(nil, nil, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -96,12 +75,12 @@ func TestGetWithEmptySling(t *testing.T) {
 
 func TestGetWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
-	resource, err := apiGet(sling.New(), input, services.emptyString)
+	resource, err := apiGet(sling.New(), input, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiGet(sling.New(), input, services.whitespaceString)
+	resource, err = apiGet(sling.New(), input, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -111,7 +90,7 @@ func TestAddWithEmptyParameters(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiAdd(nil, input, response, services.emptyString)
+	resource, err := apiAdd(nil, input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -131,12 +110,12 @@ func TestAddWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiAdd(sling.New(), input, response, services.emptyString)
+	resource, err := apiAdd(sling.New(), input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiAdd(sling.New(), input, response, services.whitespaceString)
+	resource, err = apiAdd(sling.New(), input, response, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -146,7 +125,7 @@ func TestPostWithEmptyParameters(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiPost(nil, input, response, services.emptyString)
+	resource, err := apiPost(nil, input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -166,12 +145,12 @@ func TestPostWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiPost(sling.New(), input, response, services.emptyString)
+	resource, err := apiPost(sling.New(), input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiPost(sling.New(), input, response, services.whitespaceString)
+	resource, err = apiPost(sling.New(), input, response, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -181,7 +160,7 @@ func TestUpdateWithEmptyParameters(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiUpdate(nil, input, response, services.emptyString)
+	resource, err := apiUpdate(nil, input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -201,19 +180,19 @@ func TestUpdateWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
 	response := &inputTestResponseStruct{test: "fake-value"}
 
-	resource, err := apiUpdate(sling.New(), input, response, services.emptyString)
+	resource, err := apiUpdate(sling.New(), input, response, emptyString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = apiUpdate(sling.New(), input, response, services.whitespaceString)
+	resource, err = apiUpdate(sling.New(), input, response, whitespaceString)
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 }
 
 func TestDeleteWithEmptyParameters(t *testing.T) {
-	err := apiDelete(nil, services.emptyString)
+	err := apiDelete(nil, emptyString)
 	assert.Error(t, err)
 }
 
@@ -223,10 +202,10 @@ func TestDeleteWithEmptySling(t *testing.T) {
 }
 
 func TestDeleteWithEmptyPath(t *testing.T) {
-	err := apiDelete(nil, services.emptyString)
+	err := apiDelete(nil, emptyString)
 	assert.Error(t, err)
 
-	err = apiDelete(nil, services.whitespaceString)
+	err = apiDelete(nil, whitespaceString)
 	assert.Error(t, err)
 }
 

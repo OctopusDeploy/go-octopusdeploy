@@ -2,6 +2,7 @@ package integration
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -10,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestAmazonWebServicesAccount(t *testing.T, client *octopusdeploy.client) octopusdeploy.IAccount {
+func CreateTestAmazonWebServicesAccount(t *testing.T, client *octopusdeploy.client) services.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -18,7 +19,7 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, client *octopusdeploy.clie
 
 	accessKey := getRandomName()
 	name := getRandomName()
-	secretKey := octopusdeploy.NewSensitiveValue(getRandomName())
+	secretKey := services.NewSensitiveValue(getRandomName())
 
 	account, err := accounts.NewAmazonWebServicesAccount(name, accessKey, secretKey)
 	require.NotNil(t, account)
@@ -35,20 +36,20 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, client *octopusdeploy.clie
 	return createdAccount
 }
 
-func CreateTestAzureServicePrincipalAccount(t *testing.T, client *octopusdeploy.client) octopusdeploy.IAccount {
+func CreateTestAzureServicePrincipalAccount(t *testing.T, client *octopusdeploy.client) services.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
 	applicationID := uuid.New()
-	applicationPassword := octopusdeploy.NewSensitiveValue(getRandomName())
+	applicationPassword := services.NewSensitiveValue(getRandomName())
 	azureEnvironment := getRandomAzureEnvironment()
 	name := getRandomName()
 	subscriptionID := uuid.New()
 	tenantID := uuid.New()
 
-	account, err := octopusdeploy.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
+	account, err := services.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
 
 	require.NotNil(t, account)
 	require.NoError(t, err)
@@ -73,7 +74,7 @@ func CreateTestAzureServicePrincipalAccount(t *testing.T, client *octopusdeploy.
 	return createdAccount
 }
 
-func CreateTestAzureSubscriptionAccount(t *testing.T, client *octopusdeploy.client) octopusdeploy.IAccount {
+func CreateTestAzureSubscriptionAccount(t *testing.T, client *octopusdeploy.client) services.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -105,7 +106,7 @@ func CreateTestAzureSubscriptionAccount(t *testing.T, client *octopusdeploy.clie
 	return resource
 }
 
-func CreateTestSSHKeyAccount(t *testing.T, client *octopusdeploy.client) octopusdeploy.IAccount {
+func CreateTestSSHKeyAccount(t *testing.T, client *octopusdeploy.client) services.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -113,7 +114,7 @@ func CreateTestSSHKeyAccount(t *testing.T, client *octopusdeploy.client) octopus
 
 	name := getRandomName()
 	username := getRandomName()
-	privateKeyFile := octopusdeploy.NewSensitiveValue(getRandomName())
+	privateKeyFile := services.NewSensitiveValue(getRandomName())
 
 	account, err := accounts.NewSSHKeyAccount(name, username, privateKeyFile)
 
@@ -128,14 +129,14 @@ func CreateTestSSHKeyAccount(t *testing.T, client *octopusdeploy.client) octopus
 	return resource
 }
 
-func CreateTestTokenAccount(t *testing.T, client *octopusdeploy.client) octopusdeploy.IAccount {
+func CreateTestTokenAccount(t *testing.T, client *octopusdeploy.client) services.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
 	name := getRandomName()
-	token := octopusdeploy.NewSensitiveValue(getRandomName())
+	token := services.NewSensitiveValue(getRandomName())
 
 	account, err := accounts.NewTokenAccount(name, token)
 
@@ -150,7 +151,7 @@ func CreateTestTokenAccount(t *testing.T, client *octopusdeploy.client) octopusd
 	return resource
 }
 
-func CreateTestUsernamePasswordAccount(t *testing.T, client *octopusdeploy.client) octopusdeploy.IAccount {
+func CreateTestUsernamePasswordAccount(t *testing.T, client *octopusdeploy.client) services.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -170,7 +171,7 @@ func CreateTestUsernamePasswordAccount(t *testing.T, client *octopusdeploy.clien
 	return resource
 }
 
-func DeleteTestAccount(t *testing.T, client *octopusdeploy.client, account octopusdeploy.IAccount) {
+func DeleteTestAccount(t *testing.T, client *octopusdeploy.client, account services.IAccount) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -185,7 +186,7 @@ func DeleteTestAccount(t *testing.T, client *octopusdeploy.client, account octop
 	assert.Nil(t, deletedAccount)
 }
 
-func IsEqualAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octopusdeploy.IAccount) {
+func IsEqualAccounts(t *testing.T, expected services.IAccount, actual services.IAccount) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -207,7 +208,7 @@ func IsEqualAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octop
 	assert.Equal(t, expected.GetName(), actual.GetName())
 }
 
-func UpdateAccount(t *testing.T, client *octopusdeploy.client, account octopusdeploy.IAccount) octopusdeploy.IAccount {
+func UpdateAccount(t *testing.T, client *octopusdeploy.client, account services.IAccount) services.IAccount {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -220,7 +221,7 @@ func UpdateAccount(t *testing.T, client *octopusdeploy.client, account octopusde
 	return updatedAccount
 }
 
-func ValidateAccount(t *testing.T, account octopusdeploy.IAccount) {
+func ValidateAccount(t *testing.T, account services.IAccount) {
 	require.NoError(t, account.Validate())
 	require.NotEmpty(t, account.GetLinks())
 	require.NotEmpty(t, account.GetID())
@@ -278,7 +279,7 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 
 	for _, account := range accounts {
 		name := account.GetName()
-		query := octopusdeploy.AccountsQuery{
+		query := services.AccountsQuery{
 			PartialName: name,
 			Take:        1,
 		}
@@ -308,7 +309,7 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 	}
 
 	for _, accountType := range accountTypes {
-		query := octopusdeploy.AccountsQuery{AccountType: accountType}
+		query := services.AccountsQuery{AccountType: accountType}
 		accounts, err := client.Accounts.Get(query)
 		require.NoError(t, err)
 
@@ -329,7 +330,7 @@ func TestAccountServiceGetByID(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, resource)
 
-	apiError := err.(*octopusdeploy.APIError)
+	apiError := err.(*services.APIError)
 	assert.Equal(t, 404, apiError.StatusCode)
 
 	accounts, err := client.Accounts.GetAll()
@@ -356,7 +357,7 @@ func TestAccountServiceGetByIDs(t *testing.T) {
 		ids = append(ids, account.GetID())
 	}
 
-	query := octopusdeploy.AccountsQuery{IDs: ids}
+	query := services.AccountsQuery{IDs: ids}
 
 	accountsByIDs, err := client.Accounts.Get(query)
 	require.NoError(t, err)

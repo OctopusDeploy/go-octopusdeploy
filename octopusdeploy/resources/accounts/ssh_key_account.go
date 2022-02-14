@@ -2,14 +2,15 @@ package accounts
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // SSHKeyAccount represents a SSH key pair account.
 type SSHKeyAccount struct {
-	PrivateKeyFile       *octopusdeploy.SensitiveValue `validate:"required"`
-	PrivateKeyPassphrase *octopusdeploy.SensitiveValue
+	PrivateKeyFile       *resources.SensitiveValue `validate:"required"`
+	PrivateKeyPassphrase *resources.SensitiveValue
 	Username             string `validate:"required"`
 
 	account
@@ -17,17 +18,17 @@ type SSHKeyAccount struct {
 
 // NewSSHKeyAccount initializes and returns a SSH key pair account with a name,
 // username, and private key file.
-func NewSSHKeyAccount(name string, username string, privateKeyFile *octopusdeploy.SensitiveValue, options ...func(*SSHKeyAccount)) (*SSHKeyAccount, error) {
-	if octopusdeploy.IsEmpty(name) {
-		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
+func NewSSHKeyAccount(name string, username string, privateKeyFile *resources.SensitiveValue, options ...func(*SSHKeyAccount)) (*SSHKeyAccount, error) {
+	if resources.IsEmpty(name) {
+		return nil, resources.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterName)
 	}
 
-	if octopusdeploy.IsEmpty(username) {
-		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterUsername)
+	if resources.IsEmpty(username) {
+		return nil, resources.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterUsername)
 	}
 
 	if privateKeyFile == nil {
-		return nil, octopusdeploy.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterPrivateKeyFile)
+		return nil, resources.CreateRequiredParameterIsEmptyOrNilError(octopusdeploy.ParameterPrivateKeyFile)
 	}
 
 	account := SSHKeyAccount{
@@ -61,7 +62,7 @@ func (s *SSHKeyAccount) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
+	err = v.RegisterValidation("notall", resources.NotAll)
 	if err != nil {
 		return err
 	}

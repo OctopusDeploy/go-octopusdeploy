@@ -1,7 +1,7 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -13,11 +13,30 @@ type account struct {
 	EnvironmentIDs         []string
 	Name                   string `validate:"required,notblank,notall"`
 	SpaceID                string `validate:"omitempty,notblank"`
-	TenantedDeploymentMode octopusdeploy.TenantedDeploymentMode
+	TenantedDeploymentMode resources.TenantedDeploymentMode
 	TenantIDs              []string
 	TenantTags             []string
 
-	octopusdeploy.Resource
+	resources.Resource
+}
+
+// IAccount defines the interface for accounts.
+type IAccount interface {
+	GetAccountType() AccountType
+	GetDescription() string
+	GetEnvironmentIDs() []string
+	GetTenantedDeploymentMode() resources.TenantedDeploymentMode
+	GetTenantIDs() []string
+	GetTenantTags() []string
+	SetDescription(string)
+	SetEnvironmentIDs([]string)
+	SetTenantedDeploymentMode(resources.TenantedDeploymentMode)
+	SetTenantIDs([]string)
+	SetTenantTags([]string)
+
+	resources.IHasName
+	resources.IHasSpace
+	resources.IResource
 }
 
 // newAccount creates and initializes an account.
@@ -26,10 +45,10 @@ func newAccount(name string, accountType AccountType) *account {
 		AccountType:            accountType,
 		EnvironmentIDs:         []string{},
 		Name:                   name,
-		TenantedDeploymentMode: octopusdeploy.TenantedDeploymentMode("Untenanted"),
+		TenantedDeploymentMode: resources.TenantedDeploymentMode("Untenanted"),
 		TenantIDs:              []string{},
 		TenantTags:             []string{},
-		Resource:               *octopusdeploy.NewResource(),
+		Resource:               *resources.NewResource(),
 	}
 }
 
@@ -59,7 +78,7 @@ func (a *account) GetSpaceID() string {
 }
 
 // GetTenantedDeploymentMode returns the tenanted deployment mode of this account.
-func (a *account) GetTenantedDeploymentMode() octopusdeploy.TenantedDeploymentMode {
+func (a *account) GetTenantedDeploymentMode() resources.TenantedDeploymentMode {
 	return a.TenantedDeploymentMode
 }
 
@@ -94,7 +113,7 @@ func (a *account) SetSpaceID(spaceID string) {
 }
 
 // SetTenantedDeploymentMode sets the tenanted deployment mode of this account.
-func (a *account) SetTenantedDeploymentMode(mode octopusdeploy.TenantedDeploymentMode) {
+func (a *account) SetTenantedDeploymentMode(mode resources.TenantedDeploymentMode) {
 	a.TenantedDeploymentMode = mode
 }
 
@@ -116,11 +135,11 @@ func (a *account) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", octopusdeploy.NotAll)
+	err = v.RegisterValidation("notall", resources.NotAll)
 	if err != nil {
 		return err
 	}
 	return v.Struct(a)
 }
 
-var _ octopusdeploy.IAccount = &account{}
+var _ IAccount = &account{}

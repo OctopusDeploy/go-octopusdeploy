@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -29,7 +30,7 @@ func CreateLifecycleExample() {
 	}
 
 	// create lifecycle
-	lifecycle := octopusdeploy.NewLifecycle(name)
+	lifecycle := services.NewLifecycle(name)
 
 	// update any additional lifecycle fields here...
 

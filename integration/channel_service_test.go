@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"reflect"
 	"testing"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *octopusdeploy.Channel) {
+func AssertEqualChannels(t *testing.T, expected *services.Channel, actual *services.Channel) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -33,7 +34,7 @@ func AssertEqualChannels(t *testing.T, expected *octopusdeploy.Channel, actual *
 	assert.True(t, reflect.DeepEqual(expected.TenantTags, actual.TenantTags))
 }
 
-func CreateTestChannel(t *testing.T, client *octopusdeploy.client, project *octopusdeploy.Project) *octopusdeploy.Channel {
+func CreateTestChannel(t *testing.T, client *octopusdeploy.client, project *services.Project) *services.Channel {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -41,7 +42,7 @@ func CreateTestChannel(t *testing.T, client *octopusdeploy.client, project *octo
 
 	name := getRandomName()
 
-	channel := octopusdeploy.NewChannel(name, project.GetID())
+	channel := services.NewChannel(name, project.GetID())
 	require.NotNil(t, channel)
 	require.NoError(t, channel.Validate())
 
@@ -59,7 +60,7 @@ func CreateTestChannel(t *testing.T, client *octopusdeploy.client, project *octo
 	return createdChannel
 }
 
-func DeleteTestChannel(t *testing.T, client *octopusdeploy.client, channel *octopusdeploy.Channel) {
+func DeleteTestChannel(t *testing.T, client *octopusdeploy.client, channel *services.Channel) {
 	require.NotNil(t, channel)
 
 	if channel.IsDefault {
@@ -177,7 +178,7 @@ func TestChannelServiceGetReleases(t *testing.T) {
 			AssertEqualReleases(t, release, releaseToCompare)
 		}
 
-		releaseQuery := &octopusdeploy.ReleaseQuery{
+		releaseQuery := &services.ReleaseQuery{
 			SearchByVersion: "0.0.1",
 			Skip:            1,
 			Take:            1,
@@ -205,7 +206,7 @@ func TestChannelServiceGetByID(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Nil(t, channel)
 
-	apiError := err.(*octopusdeploy.APIError)
+	apiError := err.(*services.APIError)
 	assert.Equal(t, 404, apiError.StatusCode)
 
 	channels, err := client.Channels.GetAll()
@@ -213,7 +214,7 @@ func TestChannelServiceGetByID(t *testing.T) {
 	assert.NotNil(t, channels)
 
 	for _, channel := range channels {
-		query := octopusdeploy.ChannelsQuery{
+		query := services.ChannelsQuery{
 			IDs:  []string{channel.GetID()},
 			Take: 1,
 		}
@@ -232,7 +233,7 @@ func TestChannelServiceGetByPartialName(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	query := octopusdeploy.ChannelsQuery{PartialName: getRandomName()}
+	query := services.ChannelsQuery{PartialName: getRandomName()}
 	channels, err := client.Channels.Get(query)
 	require.NoError(t, err)
 	require.NotNil(t, channels)
@@ -243,7 +244,7 @@ func TestChannelServiceGetByPartialName(t *testing.T) {
 	require.NotNil(t, allChannels)
 
 	for _, channel := range allChannels {
-		query := octopusdeploy.ChannelsQuery{PartialName: channel.Name}
+		query := services.ChannelsQuery{PartialName: channel.Name}
 		channelsToCompare, err := client.Channels.Get(query)
 		require.NoError(t, err)
 		require.NotNil(t, channelsToCompare)

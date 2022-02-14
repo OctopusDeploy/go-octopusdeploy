@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -8,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *octopusdeploy.UserRole {
+func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *services.UserRole {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -16,7 +17,7 @@ func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *octopusdepl
 
 	name := getRandomName()
 
-	userRole := octopusdeploy.NewUserRole(name)
+	userRole := services.NewUserRole(name)
 	require.NoError(t, userRole.Validate())
 
 	createdUserRole, err := client.UserRoles.Add(userRole)
@@ -32,7 +33,7 @@ func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *octopusdepl
 	return createdUserRole
 }
 
-func DeleteTestUserRole(t *testing.T, client *octopusdeploy.client, userRole *octopusdeploy.UserRole) {
+func DeleteTestUserRole(t *testing.T, client *octopusdeploy.client, userRole *services.UserRole) {
 	require.NotNil(t, userRole)
 
 	if client == nil {
@@ -49,7 +50,7 @@ func DeleteTestUserRole(t *testing.T, client *octopusdeploy.client, userRole *oc
 	assert.Nil(t, deletedUserRole)
 }
 
-func AssertEqualUserRoles(t *testing.T, expected *octopusdeploy.UserRole, actual *octopusdeploy.UserRole) {
+func AssertEqualUserRoles(t *testing.T, expected *services.UserRole, actual *services.UserRole) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -76,7 +77,7 @@ func TestUserRoleServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, userRoles)
 
 	for _, userRole := range userRoles {
-		query := octopusdeploy.UserRolesQuery{
+		query := services.UserRolesQuery{
 			IDs: []string{userRole.GetID()},
 		}
 		userRolesToCompare, err := client.UserRoles.Get(query)

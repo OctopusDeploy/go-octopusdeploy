@@ -2,6 +2,7 @@ package integration
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -151,7 +152,7 @@ func TestTeamServiceGetByID(t *testing.T) {
 		require.NoError(t, err)
 		IsEqualTeams(t, team, teamToCompare)
 
-		scopedUserRoles, err := client.Teams.GetScopedUserRoles(*team, octopusdeploy.SkipTakeQuery{Take: 1})
+		scopedUserRoles, err := client.Teams.GetScopedUserRoles(*team, services.SkipTakeQuery{Take: 1})
 		require.NoError(t, err)
 		require.NotNil(t, scopedUserRoles)
 	}
