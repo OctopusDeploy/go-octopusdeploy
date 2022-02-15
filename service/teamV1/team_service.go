@@ -26,8 +26,21 @@ type ITeamService interface {
 }
 
 func NewTeamService(client service.IAdminClient) ITeamService {
+	baseService := service.NewAdminService(service.ServiceTeamService, teamsBasePath, client)
 	teamService := &teamService{
-		IAdminService: service.NewAdminService(service.ServiceTeamService, teamsBasePath, client),
+		IAdminService: baseService,
+		CanGetByIDService: service.CanGetByIDService[Team]{
+			IService: baseService,
+		},
+		CanAddService: service.CanAddService[Team]{
+			IService: baseService,
+		},
+		CanUpdateService: service.CanUpdateService[Team]{
+			IService: baseService,
+		},
+		CanDeleteService: service.CanDeleteService[Team]{
+			IService: baseService,
+		},
 	}
 	return teamService
 }

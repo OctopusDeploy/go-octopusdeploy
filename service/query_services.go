@@ -8,24 +8,22 @@ import (
 )
 
 type CanGetByIDService[T resources.IResource] struct {
-	GetsByIDer[T]
+	IService
 }
 
 type GetsByIDer[T resources.IResource] interface {
 	GetByID(id string) (*T, error)
-	IService
 }
 
 type ResourceQueryer[T resources.IResource, Q any] interface {
 	Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error)
+}
+
+type CanQueryService[T resources.IResource, Q any] struct {
 	IService
 }
 
-type CanQuery[T resources.IResource, Q any] struct {
-	IService
-}
-
-func (s CanQuery[T, Q]) Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error) {
+func (s CanQueryService[T, Q]) Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error) {
 	sizeOfPage := 30
 	if pageSize != nil {
 		sizeOfPage = *pageSize

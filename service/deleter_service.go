@@ -1,14 +1,13 @@
 package service
 
-import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 
-type CanDeleteService[T resource.IResource] struct {
-	DeleteByIDer[T]
+type CanDeleteService[T resources.IResource] struct {
+	IService
 }
 
-type DeleteByIDer[T resource.IResource] interface {
+type DeleteByIDer[T resources.IResource] interface {
 	DeleteByID(id string) error
-	IService
 }
 
 // DeleteByID deletes the Resource that matches the input ID.

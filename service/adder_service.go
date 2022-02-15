@@ -5,12 +5,11 @@ import (
 )
 
 type CanAddService[T resources.IResource] struct {
-	ResourceAdder[T]
+	IService
 }
 
 type ResourceAdder[T resources.IResource] interface {
 	Add(resource T) (*T, error)
-	IService
 }
 
 func (s CanAddService[T]) Add(resource T) (*T, error) {

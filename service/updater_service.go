@@ -5,12 +5,11 @@ import (
 )
 
 type CanUpdateService[T resources.IResource] struct {
-	ResourceUpdater[T]
+	IService
 }
 
 type ResourceUpdater[T resources.IResource] interface {
 	Update(resource T) (*T, error)
-	IService
 }
 
 func (s CanUpdateService[T]) Update(resource T) (*T, error) {
