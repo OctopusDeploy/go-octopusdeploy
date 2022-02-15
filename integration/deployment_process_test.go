@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func GetTestDeploymentProcess(t *testing.T, client *octopusdeploy.client, project *services.Project) *services.DeploymentProcess {
+func GetTestDeploymentProcess(t *testing.T, client *octopusdeploy.client, project *service.Project) *service.DeploymentProcess {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -96,27 +96,27 @@ func TestDeploymentProcessUpdate(t *testing.T) {
 	deploymentProcess := GetTestDeploymentProcess(t, client, project)
 	require.NotNil(t, deploymentProcess)
 
-	deploymentActionWindowsService := services.NewDeploymentAction("Install Windows service", "Octopus.WindowsService")
-	deploymentActionWindowsService.Properties["Octopus.Action.EnabledFeatures"] = services.NewPropertyValue("Octopus.Features.WindowsService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles"] = services.NewPropertyValue("True", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings"] = services.NewPropertyValue("True", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.Package.FeedId"] = services.NewPropertyValue("feeds-nugetfeed", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.Package.DownloadOnTentacle"] = services.NewPropertyValue("False", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.Package.PackageId"] = services.NewPropertyValue("Newtonsoft.Json", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.SubstituteInFiles.Enabled"] = services.NewPropertyValue("True", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.CreateOrUpdateService"] = services.NewPropertyValue("True", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.DisplayName"] = services.NewPropertyValue("my display name", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.Description"] = services.NewPropertyValue("my desc", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.ExecutablePath"] = services.NewPropertyValue("bin\\Myservice.exe", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.ServiceAccount"] = services.NewPropertyValue("LocalSystem", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.ServiceName"] = services.NewPropertyValue("My service name", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.StartMode"] = services.NewPropertyValue("auto", false)
-	deploymentActionWindowsService.Properties["Octopus.Action.SubstituteInFiles.TargetFiles"] = services.NewPropertyValue("*.sh", false)
-	deploymentActionWindowsService.Properties["test"] = services.NewPropertyValue("foo", true)
+	deploymentActionWindowsService := service.NewDeploymentAction("Install Windows service", "Octopus.WindowsService")
+	deploymentActionWindowsService.Properties["Octopus.Action.EnabledFeatures"] = service.NewPropertyValue("Octopus.Features.WindowsService,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.Package.AutomaticallyRunConfigurationTransformationFiles"] = service.NewPropertyValue("True", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.Package.AutomaticallyUpdateAppSettingsAndConnectionStrings"] = service.NewPropertyValue("True", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.Package.FeedId"] = service.NewPropertyValue("feeds-nugetfeed", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.Package.DownloadOnTentacle"] = service.NewPropertyValue("False", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.Package.PackageId"] = service.NewPropertyValue("Newtonsoft.Json", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.SubstituteInFiles.Enabled"] = service.NewPropertyValue("True", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.CreateOrUpdateService"] = service.NewPropertyValue("True", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.DisplayName"] = service.NewPropertyValue("my display name", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.Description"] = service.NewPropertyValue("my desc", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.ExecutablePath"] = service.NewPropertyValue("bin\\Myservice.exe", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.ServiceAccount"] = service.NewPropertyValue("LocalSystem", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.ServiceName"] = service.NewPropertyValue("My service name", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.WindowsService.StartMode"] = service.NewPropertyValue("auto", false)
+	deploymentActionWindowsService.Properties["Octopus.Action.SubstituteInFiles.TargetFiles"] = service.NewPropertyValue("*.sh", false)
+	deploymentActionWindowsService.Properties["test"] = service.NewPropertyValue("foo", true)
 
-	deploymentStep := services.NewDeploymentStep(getRandomName())
+	deploymentStep := service.NewDeploymentStep(getRandomName())
 	deploymentStep.Actions = append(deploymentStep.Actions, *deploymentActionWindowsService)
-	deploymentStep.Properties["Octopus.Action.TargetRoles"] = services.NewPropertyValue("octopus-server", false)
+	deploymentStep.Properties["Octopus.Action.TargetRoles"] = service.NewPropertyValue("octopus-server", false)
 
 	deploymentProcess.Steps = append(deploymentProcess.Steps, *deploymentStep)
 

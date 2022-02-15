@@ -7,7 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-// DeleteAccountExample provides an example of how to delete an account from
+// DeleteAccountExample provides an example of how to delete an accountV1 from
 // Octopus Deploy through the Go API client.
 func DeleteAccountExample() {
 	var (
@@ -15,8 +15,8 @@ func DeleteAccountExample() {
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		// account values
-		accountID string = "account-id"
+		// accountV1 values
+		accountID string = "accountV1-id"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -31,12 +31,12 @@ func DeleteAccountExample() {
 		return
 	}
 
-	// delete the account
+	// delete the accountV1
 	err = client.Accounts.DeleteByID(accountID)
 	if err != nil {
-		_ = fmt.Errorf("error deleting account: %v", err)
+		_ = fmt.Errorf("error deleting accountV1: %v", err)
 		return
 	}
 
-	fmt.Printf("account deleted: (%s)\n", accountID)
+	fmt.Printf("accountV1 deleted: (%s)\n", accountID)
 }

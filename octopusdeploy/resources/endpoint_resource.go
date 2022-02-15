@@ -52,7 +52,7 @@ type EndpointResource struct {
 	Resource
 }
 
-// NewEndpoint creates and initializes an account Resource with a name and type.
+// NewEndpoint creates and initializes an accountV1 Resource with a name and type.
 func NewEndpointResource(communicationStyle string) *EndpointResource {
 	return &EndpointResource{
 		CommunicationStyle: communicationStyle,

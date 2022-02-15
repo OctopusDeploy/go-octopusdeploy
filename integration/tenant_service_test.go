@@ -1,7 +1,8 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualTenants(t *testing.T, expected *services.Tenant, actual *services.Tenant) {
+func AssertEqualTenants(t *testing.T, expected *service.Tenant, actual *service.Tenant) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -29,7 +30,7 @@ func AssertEqualTenants(t *testing.T, expected *services.Tenant, actual *service
 	assert.Equal(t, expected.TenantTags, actual.TenantTags)
 }
 
-func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project *services.Project, environment *services.Environment) *services.Tenant {
+func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project *service.Project, environment *service.Environment) *service.Tenant {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -37,7 +38,7 @@ func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project
 
 	name := getRandomName()
 
-	tenant := services.NewTenant(name)
+	tenant := service.NewTenant(name)
 	tenant.Description = getRandomName()
 
 	if project != nil {
@@ -52,7 +53,7 @@ func CreateTestTenant(t *testing.T, octopusClient *octopusdeploy.client, project
 	return createdTenant
 }
 
-func DeleteTestTenant(t *testing.T, client *octopusdeploy.client, tenant *services.Tenant) {
+func DeleteTestTenant(t *testing.T, client *octopusdeploy.client, tenant *service.Tenant) {
 	require.NotNil(t, tenant)
 
 	if client == nil {
@@ -108,13 +109,13 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	tenant := CreateTestTenant(t, client, project, environment)
 	defer DeleteTestTenant(t, client, tenant)
 
-	missingVariablesQuery := services.MissingVariablesQuery{}
+	missingVariablesQuery := service2.MissingVariablesQuery{}
 
 	missingVariables, err := client.Tenants.GetMissingVariables(missingVariablesQuery)
 	require.NoError(t, err)
 	require.NotNil(t, missingVariables)
 
-	tenantVariables := services.NewTenantVariables(tenant.GetID())
+	tenantVariables := service.NewTenantVariables(tenant.GetID())
 	require.NotNil(t, tenantVariables)
 
 	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
@@ -125,7 +126,7 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	propertyValue := services.NewPropertyValue(getRandomName(), true)
+	propertyValue := service.NewPropertyValue(getRandomName(), true)
 
 	tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()] = propertyValue
 	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)

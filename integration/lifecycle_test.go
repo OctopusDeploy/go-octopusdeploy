@@ -1,7 +1,8 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"net/http"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func TestLifecycleGet(t *testing.T) {
-	client, err := services.GetFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
+	client, err := service2.GetFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
 	assert.NotNil(t, client)
 	require.NoError(t, err)
 
@@ -29,20 +30,20 @@ func TestLifecycleGet(t *testing.T) {
 	assert.Equal(t, "Environments-2", phase0.AutomaticDeploymentTargets[0])
 	assert.Equal(t, 1, len(phase0.OptionalDeploymentTargets))
 	assert.Equal(t, "Environments-1", phase0.OptionalDeploymentTargets[0])
-	assert.Equal(t, services.RetentionUnitDays, phase0.ReleaseRetentionPolicy.Unit)
+	assert.Equal(t, service.RetentionUnitDays, phase0.ReleaseRetentionPolicy.Unit)
 	assert.Equal(t, int32(1), phase0.ReleaseRetentionPolicy.QuantityToKeep)
 	assert.Equal(t, false, phase0.ReleaseRetentionPolicy.ShouldKeepForever)
-	assert.Equal(t, services.RetentionUnitItems, phase0.TentacleRetentionPolicy.Unit)
+	assert.Equal(t, service.RetentionUnitItems, phase0.TentacleRetentionPolicy.Unit)
 	assert.Equal(t, int32(0), phase0.TentacleRetentionPolicy.QuantityToKeep)
 	assert.Equal(t, true, phase0.TentacleRetentionPolicy.ShouldKeepForever)
 
-	assert.Equal(t, (*services.RetentionPeriod)(nil), lifecycle.Phases[1].ReleaseRetentionPolicy)
-	assert.Equal(t, (*services.RetentionPeriod)(nil), lifecycle.Phases[1].TentacleRetentionPolicy)
+	assert.Equal(t, (*service.RetentionPeriod)(nil), lifecycle.Phases[1].ReleaseRetentionPolicy)
+	assert.Equal(t, (*service.RetentionPeriod)(nil), lifecycle.Phases[1].TentacleRetentionPolicy)
 
-	assert.Equal(t, services.RetentionUnitDays, lifecycle.ReleaseRetentionPolicy.Unit)
+	assert.Equal(t, service.RetentionUnitDays, lifecycle.ReleaseRetentionPolicy.Unit)
 	assert.Equal(t, int32(3), lifecycle.ReleaseRetentionPolicy.QuantityToKeep)
 	assert.Equal(t, false, lifecycle.ReleaseRetentionPolicy.ShouldKeepForever)
-	assert.Equal(t, services.RetentionUnitItems, lifecycle.TentacleRetentionPolicy.Unit)
+	assert.Equal(t, service.RetentionUnitItems, lifecycle.TentacleRetentionPolicy.Unit)
 	assert.Equal(t, int32(2), lifecycle.TentacleRetentionPolicy.QuantityToKeep)
 	assert.Equal(t, false, lifecycle.TentacleRetentionPolicy.ShouldKeepForever)
 }
@@ -104,9 +105,9 @@ const getLifecycleResponseJSON = `
 }`
 
 func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
-	lifecycle := &services.Lifecycle{
+	lifecycle := &service.Lifecycle{
 		Name: "My Lifecycle",
-		Phases: []services.Phase{
+		Phases: []service.Phase{
 			{Name: "My Phase"},
 		},
 	}
@@ -115,14 +116,14 @@ func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
 }
 
 func TestValidateLifecycleValuesMissingNameFails(t *testing.T) {
-	lifecycle := &services.Lifecycle{}
+	lifecycle := &service.Lifecycle{}
 	assert.Error(t, lifecycle.Validate())
 }
 
 func TestValidateLifecycleValuesPhaseWithMissingNameFails(t *testing.T) {
-	lifecycle := &services.Lifecycle{
+	lifecycle := &service.Lifecycle{
 		Name: "My Lifecycle",
-		Phases: []services.Phase{
+		Phases: []service.Phase{
 			{},
 		},
 	}

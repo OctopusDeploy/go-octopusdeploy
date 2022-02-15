@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestEnvironment(t *testing.T, client *octopusdeploy.client) *services.Environment {
+func CreateTestEnvironment(t *testing.T, client *octopusdeploy.client) *service.Environment {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -20,7 +20,7 @@ func CreateTestEnvironment(t *testing.T, client *octopusdeploy.client) *services
 	description := "Description for " + name + " (OK to Delete)"
 	useGuidedFailure := createRandomBoolean()
 
-	environment := services.NewEnvironment(name)
+	environment := service.NewEnvironment(name)
 	environment.AllowDynamicInfrastructure = allowDynamicInfrastructure
 	environment.Description = description
 	environment.UseGuidedFailure = useGuidedFailure
@@ -35,7 +35,7 @@ func CreateTestEnvironment(t *testing.T, client *octopusdeploy.client) *services
 	return createdEnvironment
 }
 
-func DeleteTestEnvironment(t *testing.T, client *octopusdeploy.client, environment *services.Environment) {
+func DeleteTestEnvironment(t *testing.T, client *octopusdeploy.client, environment *service.Environment) {
 	require.NotNil(t, environment)
 
 	if client == nil {
@@ -52,7 +52,7 @@ func DeleteTestEnvironment(t *testing.T, client *octopusdeploy.client, environme
 	assert.Nil(t, deletedEnvironment)
 }
 
-func IsEqualEnvironments(t *testing.T, expected *services.Environment, actual *services.Environment) {
+func IsEqualEnvironments(t *testing.T, expected *service.Environment, actual *service.Environment) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -74,7 +74,7 @@ func IsEqualEnvironments(t *testing.T, expected *services.Environment, actual *s
 	assert.Equal(t, expected.UseGuidedFailure, actual.UseGuidedFailure)
 }
 
-func UpdateEnvironment(t *testing.T, client *octopusdeploy.client, environment *services.Environment) *services.Environment {
+func UpdateEnvironment(t *testing.T, client *octopusdeploy.client, environment *service.Environment) *service.Environment {
 	require.NotNil(t, environment)
 
 	if client == nil {

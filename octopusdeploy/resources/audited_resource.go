@@ -9,13 +9,13 @@ type AuditedResource struct {
 	IAuditedResource
 }
 
-// GetModifiedBy returns the name of the account that modified the value of
+// GetModifiedBy returns the name of the accountV1 that modified the value of
 // this Resource.
 func (r *AuditedResource) GetModifiedBy() string {
 	return r.modifiedBy
 }
 
-// SetModifiedBy set the name of the account that modified the value of
+// SetModifiedBy set the name of the accountV1 that modified the value of
 // this Resource.
 func (r *AuditedResource) SetModifiedBy(modifiedBy string) {
 	r.modifiedBy = modifiedBy

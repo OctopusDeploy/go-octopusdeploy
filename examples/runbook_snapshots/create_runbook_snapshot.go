@@ -2,7 +2,7 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -41,7 +41,7 @@ func CreateRunbookExample() {
 	runbookID := "runbook-id"
 
 	// create runbook
-	runbookSnapshot := services.NewRunbookSnapshot(name, projectID, runbookID)
+	runbookSnapshot := service.NewRunbookSnapshot(name, projectID, runbookID)
 
 	// update any additional project fields here...
 

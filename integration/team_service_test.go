@@ -1,8 +1,8 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/access_management"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/service"
+	"github.com/OctopusDeploy/go-octopusdeploy/service/teamV1"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *access_management.Team {
+func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *teamV1.Team {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -18,7 +18,7 @@ func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *access_manageme
 
 	name := getRandomName()
 
-	team := access_management.NewTeam(name)
+	team := teamV1.NewTeamV1(name)
 	require.NoError(t, team.Validate())
 
 	createdTeam, err := client.Teams.Add(team)
@@ -30,7 +30,7 @@ func CreateTestTeam(t *testing.T, client *octopusdeploy.client) *access_manageme
 	return createdTeam
 }
 
-func DeleteTestTeam(t *testing.T, client *octopusdeploy.client, team *access_management.Team) {
+func DeleteTestTeam(t *testing.T, client *octopusdeploy.client, team *teamV1.Team) {
 	require.NotNil(t, team)
 
 	if client == nil {
@@ -47,7 +47,7 @@ func DeleteTestTeam(t *testing.T, client *octopusdeploy.client, team *access_man
 	assert.Nil(t, teams)
 }
 
-func IsEqualTeams(t *testing.T, expected *access_management.Team, actual *access_management.Team) {
+func IsEqualTeams(t *testing.T, expected *teamV1.Team, actual *teamV1.Team) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -61,7 +61,7 @@ func IsEqualTeams(t *testing.T, expected *access_management.Team, actual *access
 	assert.Equal(t, expected.GetID(), actual.GetID())
 	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
 
-	// team
+	// teamV1
 	assert.Equal(t, expected.CanBeDeleted, actual.CanBeDeleted)
 	assert.Equal(t, expected.CanBeRenamed, actual.CanBeRenamed)
 	assert.Equal(t, expected.CanChangeMembers, actual.CanChangeMembers)
@@ -73,7 +73,7 @@ func IsEqualTeams(t *testing.T, expected *access_management.Team, actual *access
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func UpdateTeam(t *testing.T, client *octopusdeploy.client, team *access_management.Team) *access_management.Team {
+func UpdateTeam(t *testing.T, client *octopusdeploy.client, team *teamV1.Team) *teamV1.Team {
 	require.NotNil(t, team)
 
 	if client == nil {
@@ -152,7 +152,7 @@ func TestTeamServiceGetByID(t *testing.T) {
 		require.NoError(t, err)
 		IsEqualTeams(t, team, teamToCompare)
 
-		scopedUserRoles, err := client.Teams.GetScopedUserRoles(*team, services.SkipTakeQuery{Take: 1})
+		scopedUserRoles, err := client.Teams.GetScopedUserRoles(*team, service.SkipTakeQuery{Take: 1})
 		require.NoError(t, err)
 		require.NotNil(t, scopedUserRoles)
 	}

@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestSpace(t *testing.T, client *octopusdeploy.client) *services.Space {
+func CreateTestSpace(t *testing.T, client *octopusdeploy.client) *service.Space {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -19,7 +19,7 @@ func CreateTestSpace(t *testing.T, client *octopusdeploy.client) *services.Space
 
 	name := getShortRandomName()
 
-	space := services.NewSpace(name)
+	space := service.NewSpace(name)
 	require.NoError(t, space.Validate())
 
 	space.SpaceManagersTeamMembers = []string{user.GetID()}
@@ -33,7 +33,7 @@ func CreateTestSpace(t *testing.T, client *octopusdeploy.client) *services.Space
 	return createdSpace
 }
 
-func DeleteTestSpace(t *testing.T, client *octopusdeploy.client, space *services.Space) {
+func DeleteTestSpace(t *testing.T, client *octopusdeploy.client, space *service.Space) {
 	require.NotNil(t, space)
 
 	// if space.IsDefault {
@@ -66,7 +66,7 @@ func DeleteTestSpace(t *testing.T, client *octopusdeploy.client, space *services
 	assert.Nil(t, deletedAccount)
 }
 
-func IsEqualSpaces(t *testing.T, expected *services.Space, actual *services.Space) {
+func IsEqualSpaces(t *testing.T, expected *service.Space, actual *service.Space) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -89,7 +89,7 @@ func IsEqualSpaces(t *testing.T, expected *services.Space, actual *services.Spac
 	assert.Equal(t, expected.TaskQueueStopped, actual.TaskQueueStopped)
 }
 
-func GetDefaultSpace(t *testing.T, client *octopusdeploy.client) *services.Space {
+func GetDefaultSpace(t *testing.T, client *octopusdeploy.client) *service.Space {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -109,7 +109,7 @@ func GetDefaultSpace(t *testing.T, client *octopusdeploy.client) *services.Space
 	return nil
 }
 
-func UpdateTestSpace(t *testing.T, client *octopusdeploy.client, space *services.Space) *services.Space {
+func UpdateTestSpace(t *testing.T, client *octopusdeploy.client, space *service.Space) *service.Space {
 	if client == nil {
 		client = getOctopusClient()
 	}

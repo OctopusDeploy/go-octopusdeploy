@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestArtifact(t *testing.T, client *octopusdeploy.client) *services.Artifact {
+func CreateTestArtifact(t *testing.T, client *octopusdeploy.client) *service.Artifact {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -17,7 +17,7 @@ func CreateTestArtifact(t *testing.T, client *octopusdeploy.client) *services.Ar
 
 	filename := "output.log"
 
-	artifact := services.NewArtifact(filename)
+	artifact := service.NewArtifact(filename)
 	require.NotNil(t, artifact)
 
 	createdArtifact, err := client.Artifacts.Add(artifact)
@@ -28,7 +28,7 @@ func CreateTestArtifact(t *testing.T, client *octopusdeploy.client) *services.Ar
 	return createdArtifact
 }
 
-func DeleteTestArtifact(t *testing.T, client *octopusdeploy.client, artifact *services.Artifact) {
+func DeleteTestArtifact(t *testing.T, client *octopusdeploy.client, artifact *service.Artifact) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -44,7 +44,7 @@ func DeleteTestArtifact(t *testing.T, client *octopusdeploy.client, artifact *se
 
 }
 
-func AssertEqualArtifacts(t *testing.T, expected *services.Artifact, actual *services.Artifact) {
+func AssertEqualArtifacts(t *testing.T, expected *service.Artifact, actual *service.Artifact) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn

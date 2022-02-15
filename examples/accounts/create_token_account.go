@@ -3,7 +3,7 @@ package examples
 import (
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -15,9 +15,9 @@ func CreateTokenExample() {
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		// account values
-		name  string                   = "Token Account"
-		token *services.SensitiveValue = services.NewSensitiveValue("password-value")
+		// accountV1 values
+		name  string                  = "Token Account"
+		token *service.SensitiveValue = service.NewSensitiveValue("password-value")
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -32,14 +32,14 @@ func CreateTokenExample() {
 		return
 	}
 
-	// option 1: create a token account and assign values to fields
+	// option 1: create a token accountV1 and assign values to fields
 	account, err := accounts.NewTokenAccount(name, token)
 	if err != nil {
-		_ = fmt.Errorf("error creating token account: %v", err)
+		_ = fmt.Errorf("error creating token accountV1: %v", err)
 	}
 	account.Description = "This is the description."
 
-	// option 2: create a token account and assign values to fields using the
+	// option 2: create a token accountV1 and assign values to fields using the
 	// variadic configuration option
 	options := func(t *accounts.TokenAccount) {
 		t.Description = "This is the description."
@@ -47,18 +47,18 @@ func CreateTokenExample() {
 
 	account, err = accounts.NewTokenAccount(name, token, options)
 	if err != nil {
-		_ = fmt.Errorf("error creating token account: %v", err)
+		_ = fmt.Errorf("error creating token accountV1: %v", err)
 	}
 
-	// create account
+	// create accountV1
 	createdAccount, err := client.Accounts.Add(account)
 	if err != nil {
-		_ = fmt.Errorf("error adding account: %v", err)
+		_ = fmt.Errorf("error adding accountV1: %v", err)
 	}
 
 	// type conversion required to access token-specific fields
 	account = createdAccount.(*accounts.TokenAccount)
 
-	// work with created account
-	fmt.Printf("account created: (%s)\n", account.GetID())
+	// work with created accountV1
+	fmt.Printf("accountV1 created: (%s)\n", account.GetID())
 }

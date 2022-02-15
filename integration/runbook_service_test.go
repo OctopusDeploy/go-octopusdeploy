@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualRunbooks(t *testing.T, expected *services.Runbook, actual *services.Runbook) {
+func AssertEqualRunbooks(t *testing.T, expected *service.Runbook, actual *service.Runbook) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -38,7 +38,7 @@ func AssertEqualRunbooks(t *testing.T, expected *services.Runbook, actual *servi
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func CreateTestRunbook(t *testing.T, client *octopusdeploy.client, lifecycle *services.Lifecycle, projectGroup *services.ProjectGroup, project *services.Project) *services.Runbook {
+func CreateTestRunbook(t *testing.T, client *octopusdeploy.client, lifecycle *service.Lifecycle, projectGroup *service.ProjectGroup, project *service.Project) *service.Runbook {
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
 	require.NotNil(t, project)
@@ -50,7 +50,7 @@ func CreateTestRunbook(t *testing.T, client *octopusdeploy.client, lifecycle *se
 
 	name := getRandomName()
 
-	runbook := services.NewRunbook(name, project.GetID())
+	runbook := service.NewRunbook(name, project.GetID())
 	require.NotNil(t, runbook)
 	require.NoError(t, runbook.Validate())
 
@@ -68,7 +68,7 @@ func CreateTestRunbook(t *testing.T, client *octopusdeploy.client, lifecycle *se
 	return createdRunbook
 }
 
-func DeleteTestRunbook(t *testing.T, client *octopusdeploy.client, runbook *services.Runbook) {
+func DeleteTestRunbook(t *testing.T, client *octopusdeploy.client, runbook *service.Runbook) {
 	require.NotNil(t, runbook)
 
 	if client == nil {

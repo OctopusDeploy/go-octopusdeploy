@@ -23,7 +23,7 @@ func NewAzureCloudServiceEndpoint() *AzureCloudServiceEndpoint {
 	return ServiceFabricEndpoint
 }
 
-// GetAccountID returns the account ID associated with this Azure cloud service
+// GetAccountID returns the accountV1 ID associated with this Azure cloud service
 // endpoint.
 func (a AzureCloudServiceEndpoint) GetAccountID() string {
 	return a.AccountID

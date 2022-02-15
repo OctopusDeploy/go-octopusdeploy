@@ -1,7 +1,8 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestUser(t *testing.T, client *octopusdeploy.client) *services.User {
+func CreateTestUser(t *testing.T, client *octopusdeploy.client) *service.User {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -19,7 +20,7 @@ func CreateTestUser(t *testing.T, client *octopusdeploy.client) *services.User {
 	displayName := getRandomName()
 	password := getRandomName()
 
-	user := services.NewUser(username, displayName)
+	user := service.NewUser(username, displayName)
 	user.Password = password
 	require.NoError(t, user.Validate())
 
@@ -36,10 +37,10 @@ func CreateTestUser(t *testing.T, client *octopusdeploy.client) *services.User {
 	return createdUser
 }
 
-func DeleteTestUser(t *testing.T, client *octopusdeploy.client, user *services.User) {
+func DeleteTestUser(t *testing.T, client *octopusdeploy.client, user *service.User) {
 	require.NotNil(t, user)
 
-	// you cannot delete your own account
+	// you cannot delete your own accountV1
 	if user.IsRequestor {
 		return
 	}
@@ -58,7 +59,7 @@ func DeleteTestUser(t *testing.T, client *octopusdeploy.client, user *services.U
 	assert.Nil(t, deletedUser)
 }
 
-func AssertEqualUsers(t *testing.T, expected *services.User, actual *services.User) {
+func AssertEqualUsers(t *testing.T, expected *service.User, actual *service.User) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -94,7 +95,7 @@ func TestUserServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, users)
 
 	for _, user := range users {
-		query := services.UsersQuery{
+		query := service2.UsersQuery{
 			IDs: []string{user.GetID()},
 		}
 		usersToCompare, err := client.Users.Get(query)
@@ -227,7 +228,7 @@ func TestUserServiceGetSpaces(t *testing.T) {
 
 	spaces, err := client.Users.GetSpaces(nil)
 	require.Nil(t, spaces)
-	require.Equal(t, createRequiredParameterIsEmptyOrNilError(services.ParameterUser), err)
+	require.Equal(t, createRequiredParameterIsEmptyOrNilError(service.ParameterUser), err)
 
 	spaces, err = client.Users.GetSpaces(user)
 	require.NotNil(t, spaces)

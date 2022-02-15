@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	// "fmt"
 	"testing"
 
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualProjectGroups(t *testing.T, expected *services.ProjectGroup, actual *services.ProjectGroup) {
+func AssertEqualProjectGroups(t *testing.T, expected *service.ProjectGroup, actual *service.ProjectGroup) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -31,7 +31,7 @@ func AssertEqualProjectGroups(t *testing.T, expected *services.ProjectGroup, act
 	assert.Equal(t, expected.RetentionPolicyID, actual.RetentionPolicyID)
 }
 
-func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.client) *services.ProjectGroup {
+func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.client) *service.ProjectGroup {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -39,7 +39,7 @@ func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.client) *service
 
 	name := getRandomName()
 
-	projectGroup := services.NewProjectGroup(name)
+	projectGroup := service.NewProjectGroup(name)
 	require.NotNil(t, projectGroup)
 
 	createdProjectGroup, err := client.ProjectGroups.Add(projectGroup)
@@ -69,7 +69,7 @@ func TestProjectGroupServiceDeleteAll(t *testing.T) {
 	}
 }
 
-func DeleteTestProjectGroup(t *testing.T, client *octopusdeploy.client, projectGroup *services.ProjectGroup) {
+func DeleteTestProjectGroup(t *testing.T, client *octopusdeploy.client, projectGroup *service.ProjectGroup) {
 	require.NotNil(t, projectGroup)
 
 	if client == nil {

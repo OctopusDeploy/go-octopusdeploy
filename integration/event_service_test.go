@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/service"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,7 +12,7 @@ func TestEventsService(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	query := services.EventsQuery{}
+	query := service.EventsQuery{}
 
 	events, err := client.Events.Get(query)
 	assert.NoError(t, err)
@@ -22,7 +22,7 @@ func TestEventsService(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, agents)
 
-	categories, err := client.Events.GetCategories(services.EventCategoriesQuery{})
+	categories, err := client.Events.GetCategories(service.EventCategoriesQuery{})
 	assert.NoError(t, err)
 	assert.NotNil(t, categories)
 
@@ -30,7 +30,7 @@ func TestEventsService(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, documentTypes)
 
-	groups, err := client.Events.GetGroups(services.EventGroupsQuery{})
+	groups, err := client.Events.GetGroups(service.EventGroupsQuery{})
 	assert.NoError(t, err)
 	assert.NotNil(t, groups)
 }

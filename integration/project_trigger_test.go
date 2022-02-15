@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 	"time"
 
@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualProjectTriggers(t *testing.T, expected *services.ProjectTrigger, actual *services.ProjectTrigger) {
+func AssertEqualProjectTriggers(t *testing.T, expected *service.ProjectTrigger, actual *service.ProjectTrigger) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -34,7 +34,7 @@ func AssertEqualProjectTriggers(t *testing.T, expected *services.ProjectTrigger,
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.client, project *services.Project, environment *services.Environment) *services.ProjectTrigger {
+func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.client, project *service.Project, environment *service.Environment) *service.ProjectTrigger {
 	require.NotNil(t, project)
 
 	if client == nil {
@@ -46,7 +46,7 @@ func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.client, projec
 	start := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
 	// days := []octopusdeploy.Weekday{octopusdeploy.Sunday, octopusdeploy.Monday}
 
-	action := services.NewAutoDeployAction(createRandomBoolean())
+	action := service.NewAutoDeployAction(createRandomBoolean())
 	// action := octopusdeploy.NewDeployLatestReleaseAction(getRandomName(), createRandomBoolean(), []string{getRandomName()}, "")
 	// action := octopusdeploy.NewDeployNewReleaseAction(environment.GetID(), "", nil)
 	// filter := octopusdeploy.NewDeploymentTargetFilter([]string{}, []string{}, []string{"MachineAvailableForDeployment"}, []string{})
@@ -54,9 +54,9 @@ func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.client, projec
 	// OnceDailyScheduledTriggerFilter
 	// filter := octopusdeploy.NewOnceDailyScheduledTriggerFilter(days, start)
 
-	filter := services.NewDayOfWeekScheduledTriggerFilter("1", services.Tuesday, start)
+	filter := service.NewDayOfWeekScheduledTriggerFilter("1", service.Tuesday, start)
 
-	projectTrigger := services.NewProjectTrigger(getRandomName(), getRandomName(), createRandomBoolean(), project.GetID(), action, filter)
+	projectTrigger := service.NewProjectTrigger(getRandomName(), getRandomName(), createRandomBoolean(), project.GetID(), action, filter)
 	require.NotNil(t, projectTrigger)
 	require.NoError(t, projectTrigger.Validate())
 
@@ -74,7 +74,7 @@ func CreateTestProjectTrigger(t *testing.T, client *octopusdeploy.client, projec
 	return createdProjectTrigger
 }
 
-func DeleteTestProjectTrigger(t *testing.T, client *octopusdeploy.client, projectTrigger *services.ProjectTrigger) {
+func DeleteTestProjectTrigger(t *testing.T, client *octopusdeploy.client, projectTrigger *service.ProjectTrigger) {
 	require.NotNil(t, projectTrigger)
 
 	if client == nil {

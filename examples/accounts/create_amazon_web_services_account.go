@@ -2,7 +2,8 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
@@ -15,10 +16,10 @@ func CreateAmazonWebServicesAccountExample() {
 		spaceID    string = "space-id"
 
 		// AWS-specific values
-		accessKey string                   = "access-key"
-		secretKey *services.SensitiveValue = services.NewSensitiveValue("secret-key")
+		accessKey string                  = "access-key"
+		secretKey *service.SensitiveValue = service.NewSensitiveValue("secret-key")
 
-		// account values
+		// accountV1 values
 		accountName        string = "AWS Account"
 		accountDescription string = "My AWS Account"
 	)
@@ -29,8 +30,8 @@ func CreateAmazonWebServicesAccountExample() {
 		return
 	}
 
-	octoEndpoint, err := services.NewOctopusServerEndpoint(apiURL, apiKey)
-	client, err := services.NewSpaceScopedClient(octoEndpoint, spaceID, nil)
+	octoEndpoint, err := service2.NewOctopusServerEndpoint(apiURL, apiKey)
+	client, err := service2.NewSpaceScopedClient(octoEndpoint, spaceID, nil)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
@@ -38,22 +39,22 @@ func CreateAmazonWebServicesAccountExample() {
 
 	awsAccount, err := accounts.NewAmazonWebServicesAccount(accountName, accessKey, secretKey)
 	if err != nil {
-		_ = fmt.Errorf("error creating AWS account: %v", err)
+		_ = fmt.Errorf("error creating AWS accountV1: %v", err)
 		return
 	}
 
-	// fill in account details
+	// fill in accountV1 details
 	awsAccount.Description = accountDescription
 
-	// create account
+	// create accountV1
 	createdAccount, err := client.Accounts.Add(awsAccount)
 	if err != nil {
-		_ = fmt.Errorf("error adding account: %v", err)
+		_ = fmt.Errorf("error adding accountV1: %v", err)
 	}
 
 	// type conversion required to access AWS-specific fields
 	awsAccount = createdAccount.(*accounts.AmazonWebServicesAccount)
 
-	// work with created account
-	fmt.Printf("account created: (%s)\n", awsAccount.GetID())
+	// work with created accountV1
+	fmt.Printf("accountV1 created: (%s)\n", awsAccount.GetID())
 }

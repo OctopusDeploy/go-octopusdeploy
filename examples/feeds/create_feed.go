@@ -2,7 +2,7 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -32,14 +32,14 @@ func CreateFeedExample() {
 		return
 	}
 
-	nuGetFeed := services.NewNuGetFeed(feedName, feedURI)
+	nuGetFeed := service.NewNuGetFeed(feedName, feedURI)
 	nuGetFeed.EnhancedMode = useExtendedAPI
 
 	if len(feedUsername) > 0 {
 		nuGetFeed.Username = feedUsername
 	}
 	if len(feedPassword) > 0 {
-		nuGetFeed.Password = services.NewSensitiveValue(feedPassword)
+		nuGetFeed.Password = service.NewSensitiveValue(feedPassword)
 	}
 
 	_, err = client.Feeds.Add(nuGetFeed)

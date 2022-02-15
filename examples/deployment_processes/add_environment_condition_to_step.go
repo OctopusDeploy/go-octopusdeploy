@@ -2,7 +2,7 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -42,7 +42,7 @@ func AddEnvironmentConditionToStepExample() {
 		environmentIDs = append(environmentIDs, environments[0].GetID())
 	}
 
-	projects, err := client.Projects.Get(services.ProjectsQuery{
+	projects, err := client.Projects.Get(service.ProjectsQuery{
 		Name: projectName,
 	})
 	if err != nil {

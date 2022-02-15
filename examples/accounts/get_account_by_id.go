@@ -13,8 +13,8 @@ func GetAccountByIDExample() {
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		// account values
-		accountID string = "account-id"
+		// accountV1 values
+		accountID string = "accountV1-id"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -29,12 +29,12 @@ func GetAccountByIDExample() {
 		return
 	}
 
-	// get account by its ID
+	// get accountV1 by its ID
 	account, err := client.Accounts.GetByID(accountID)
 	if err != nil {
-		_ = fmt.Errorf("error getting account: %v", err)
+		_ = fmt.Errorf("error getting accountV1: %v", err)
 		return
 	}
 
-	fmt.Printf("account: (%s)\n", account.GetID())
+	fmt.Printf("accountV1: (%s)\n", account.GetID())
 }

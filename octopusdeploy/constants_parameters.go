@@ -2,7 +2,7 @@ package octopusdeploy
 
 const (
 	ParameterAccessKey              string = "accessKey"
-	ParameterAccount                string = "account"
+	ParameterAccount                string = "accountV1"
 	ParameterAccountResource        string = "accountResource"
 	ParameterAccountType            string = "accountType"
 	ParameterActionTemplate         string = "actionTemplate"
@@ -37,7 +37,7 @@ const (
 	ParameterSecretKey              string = "secretKey"
 	ParameterSpaceId                string = "spaceID"
 	ParameterTagSet                 string = "tagSet"
-	ParameterTeam                   string = "team"
+	ParameterTeam                   string = "teamV1"
 	ParameterToken                  string = "token"
 	ParameterUser                   string = "user"
 	ParameterUserID                 string = "userID"

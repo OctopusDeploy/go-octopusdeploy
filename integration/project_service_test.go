@@ -1,7 +1,8 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"net/url"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualProjects(t *testing.T, expected *services.Project, actual *services.Project) {
+func AssertEqualProjects(t *testing.T, expected *service.Project, actual *service.Project) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -51,7 +52,7 @@ func AssertEqualProjects(t *testing.T, expected *services.Project, actual *servi
 	assert.Equal(t, expected.VariableSetID, actual.VariableSetID)
 }
 
-func CreateTestProject(t *testing.T, client *octopusdeploy.client, space *services.Space, lifecycle *services.Lifecycle, projectGroup *services.ProjectGroup) *services.Project {
+func CreateTestProject(t *testing.T, client *octopusdeploy.client, space *service.Space, lifecycle *service.Lifecycle, projectGroup *service.ProjectGroup) *service.Project {
 	require.NotNil(t, space)
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
@@ -63,7 +64,7 @@ func CreateTestProject(t *testing.T, client *octopusdeploy.client, space *servic
 
 	name := getRandomName()
 
-	project := services.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
+	project := service.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
 	require.NotNil(t, project)
 
 	createdProject, err := client.Projects.Add(project)
@@ -80,7 +81,7 @@ func CreateTestProject(t *testing.T, client *octopusdeploy.client, space *servic
 	return createdProject
 }
 
-func DeleteTestProject(t *testing.T, client *octopusdeploy.client, project *services.Project) {
+func DeleteTestProject(t *testing.T, client *octopusdeploy.client, project *service.Project) {
 	require.NotNil(t, project)
 
 	if client == nil {
@@ -114,16 +115,16 @@ func TestProjectAddWithPersistenceSettings(t *testing.T) {
 
 	name := getRandomName()
 
-	project := services.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
+	project := service.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
 	require.NotNil(t, project)
 
 	basePath := getRandomName()
-	credentials := services.NewAnonymousGitCredential()
+	credentials := service.NewAnonymousGitCredential()
 	defaultBranch := "main"
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	project.PersistenceSettings = services.NewGitPersistenceSettings(basePath, credentials, defaultBranch, url)
+	project.PersistenceSettings = service.NewGitPersistenceSettings(basePath, credentials, defaultBranch, url)
 
 	createdProject, err := client.Projects.Add(project)
 	require.NoError(t, err)
@@ -254,7 +255,7 @@ func TestProjectUpdate(t *testing.T) {
 
 	newProjectName := getRandomName()
 	newDescription := getRandomName()
-	newSkipMachineBehavior := services.SkipMachineBehaviorNone
+	newSkipMachineBehavior := service.SkipMachineBehaviorNone
 
 	project.Name = newProjectName
 	project.ConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
@@ -286,7 +287,7 @@ func TestProjectGetByName(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
-	query := services.ProjectsQuery{
+	query := service2.ProjectsQuery{
 		Name: project.Name,
 		Take: 1,
 	}

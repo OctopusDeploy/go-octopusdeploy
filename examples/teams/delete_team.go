@@ -7,7 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
 )
 
-// DeleteTeamExample provides an example of how to delete a team from Octopus
+// DeleteTeamExample provides an example of how to delete a teamV1 from Octopus
 // Deploy through the Go API client.
 func DeleteTeamExample() {
 	var (
@@ -15,8 +15,8 @@ func DeleteTeamExample() {
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		// team values
-		teamID string = "team-id"
+		// teamV1 values
+		teamID string = "teamV1-id"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -31,12 +31,12 @@ func DeleteTeamExample() {
 		return
 	}
 
-	// delete team
+	// delete teamV1
 	err = client.Teams.DeleteByID(teamID)
 	if err != nil {
-		_ = fmt.Errorf("error deleting team: %v", err)
+		_ = fmt.Errorf("error deleting teamV1: %v", err)
 		return
 	}
 
-	fmt.Printf("team deleted: (%s)\n", teamID)
+	fmt.Printf("teamV1 deleted: (%s)\n", teamID)
 }

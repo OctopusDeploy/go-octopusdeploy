@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualLifecycles(t *testing.T, expected *services.Lifecycle, actual *services.Lifecycle) {
+func AssertEqualLifecycles(t *testing.T, expected *service.Lifecycle, actual *service.Lifecycle) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -31,7 +31,7 @@ func AssertEqualLifecycles(t *testing.T, expected *services.Lifecycle, actual *s
 	assert.Equal(t, expected.Phases, actual.Phases)
 }
 
-func CreateTestLifecycle(t *testing.T, client *octopusdeploy.client) *services.Lifecycle {
+func CreateTestLifecycle(t *testing.T, client *octopusdeploy.client) *service.Lifecycle {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -39,7 +39,7 @@ func CreateTestLifecycle(t *testing.T, client *octopusdeploy.client) *services.L
 
 	name := getRandomName()
 
-	lifecycle := services.NewLifecycle(name)
+	lifecycle := service.NewLifecycle(name)
 	require.NotNil(t, lifecycle)
 
 	createdLifecycle, err := client.Lifecycles.Add(lifecycle)
@@ -56,7 +56,7 @@ func CreateTestLifecycle(t *testing.T, client *octopusdeploy.client) *services.L
 	return createdLifecycle
 }
 
-func DeleteTestLifecycle(t *testing.T, client *octopusdeploy.client, lifecycle *services.Lifecycle) {
+func DeleteTestLifecycle(t *testing.T, client *octopusdeploy.client, lifecycle *service.Lifecycle) {
 	require.NotNil(t, lifecycle)
 
 	if client == nil {
@@ -201,7 +201,7 @@ func TestLifecycleGetByPartialName(t *testing.T) {
 	t.Errorf("lifecycle not found when searching by its name (%s)", createdLifecycle.Name)
 }
 
-func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.client, lifecycleName string) *services.Lifecycle {
+func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.client, lifecycleName string) *service.Lifecycle {
 	if octopusClient == nil {
 		octopusClient = getOctopusClient()
 	}
@@ -216,8 +216,8 @@ func createTestLifecycle(t *testing.T, octopusClient *octopusdeploy.client, life
 	return createdLifecycle
 }
 
-func getTestLifecycle(name string) *services.Lifecycle {
-	return services.NewLifecycle(name)
+func getTestLifecycle(name string) *service.Lifecycle {
+	return service.NewLifecycle(name)
 }
 
 func cleanLifecycle(t *testing.T, octopusClient *octopusdeploy.client, lifecycleID string) {

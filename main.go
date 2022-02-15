@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"net/url"
 	"os"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 )
 
 var octopusURL = os.Getenv("OCTOPUS_URL")
@@ -23,20 +24,20 @@ func OutputAsJSON(resource interface{}, err error) {
 		fmt.Println(err.Error())
 	}
 
-	jsonData := services.PrettyJSON(resource)
+	jsonData := service2.PrettyJSON(resource)
 	fmt.Println(jsonData)
 	fmt.Println()
 }
 
 // CreateSpace creates a test space and outputs the results to the console.
-func CreateSpace(client *octopusdeploy.client) (*services.Space, error) {
+func CreateSpace(client *octopusdeploy.client) (*service.Space, error) {
 	fmt.Println("Creating a new space...")
 	if client.Spaces == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client.Spaces (nil)"))
 		os.Exit(3)
 	}
 
-	spaces, err := client.Spaces.Get(services.SpacesQuery{
+	spaces, err := client.Spaces.Get(service2.SpacesQuery{
 		Name: testSpaceName,
 	})
 
@@ -45,13 +46,13 @@ func CreateSpace(client *octopusdeploy.client) (*services.Space, error) {
 		return spaces.Items[0], err
 	}
 
-	space := services.NewSpace(testSpaceName)
+	space := service.NewSpace(testSpaceName)
 	space.SpaceManagersTeams = append(space.SpaceManagersTeams, "teams-administrators")
 	space, err = client.Spaces.Add(space)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		spaces, err = client.Spaces.Get(services.SpacesQuery{
+		spaces, err = client.Spaces.Get(service2.SpacesQuery{
 			Name: space.Name,
 		})
 
@@ -62,14 +63,14 @@ func CreateSpace(client *octopusdeploy.client) (*services.Space, error) {
 		fmt.Printf("%v spaces found.", len(spaces.Items))
 	}
 
-	jsonData := services.PrettyJSON(space)
+	jsonData := service2.PrettyJSON(space)
 	fmt.Println(jsonData)
 	fmt.Println()
 
 	return space, err
 }
 
-func createProject(client *octopusdeploy.client) *services.Project {
+func createProject(client *octopusdeploy.client) *service.Project {
 	fmt.Println("Creating a new project...")
 
 	if client.Projects == nil {
@@ -77,12 +78,12 @@ func createProject(client *octopusdeploy.client) *services.Project {
 		os.Exit(3)
 	}
 
-	project := services.NewProject(spaceID, projectName, lifecycleID, projectGroupID)
+	project := service.NewProject(spaceID, projectName, lifecycleID, projectGroupID)
 	project, err := client.Projects.Add(project)
 
 	if err != nil {
 		fmt.Println(err.Error())
-		_, err := client.Projects.Get(services.ProjectsQuery{
+		_, err := client.Projects.Get(service2.ProjectsQuery{
 			Name: projectName,
 		})
 
@@ -90,14 +91,14 @@ func createProject(client *octopusdeploy.client) *services.Project {
 			fmt.Println(err.Error())
 		}
 	} else {
-		jsonData := services.PrettyJSON(project)
+		jsonData := service2.PrettyJSON(project)
 		fmt.Println(jsonData)
 	}
 
 	return project
 }
 
-func updateProject(client *octopusdeploy.client, project *services.Project) *services.Project {
+func updateProject(client *octopusdeploy.client, project *service.Project) *service.Project {
 	fmt.Println("Updating a project...")
 	if client == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client (nil)"))
@@ -110,14 +111,14 @@ func updateProject(client *octopusdeploy.client, project *services.Project) *ser
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		jsonData := services.PrettyJSON(project)
+		jsonData := service2.PrettyJSON(project)
 		fmt.Println(jsonData)
 	}
 
 	return project
 }
 
-func deleteProject(client *octopusdeploy.client, project *services.Project) {
+func deleteProject(client *octopusdeploy.client, project *service.Project) {
 	fmt.Println("Deleting a project...")
 	if err := client.Projects.DeleteByID(project.GetID()); err != nil {
 		fmt.Println(err.Error())
@@ -140,7 +141,7 @@ func main() {
 	}
 	fmt.Println("API client created.")
 
-	user := services.NewUser("askdhj", "aklsjd")
+	user := service.NewUser("askdhj", "aklsjd")
 	user.Password = "asdaasdkhwjerlkqjh987123"
 
 	fmt.Println("Creating user...")
@@ -150,7 +151,7 @@ func main() {
 	}
 	fmt.Println("User created.")
 
-	jsonData := services.PrettyJSON(newUser)
+	jsonData := service2.PrettyJSON(newUser)
 	fmt.Println(jsonData)
 
 	authentication, err := client.Authentication.Get()
@@ -158,7 +159,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	jsonData = services.PrettyJSON(authentication)
+	jsonData = service2.PrettyJSON(authentication)
 	fmt.Println(jsonData)
 
 	project := createProject(client)
@@ -212,7 +213,7 @@ func main() {
 
 	fmt.Println("Space deleted.")
 
-	p := services.NewProject("Spaces-1", "Test Project GoLang2", "Lifecycles-1", "ProjectGroups-1")
+	p := service.NewProject("Spaces-1", "Test Project GoLang2", "Lifecycles-1", "ProjectGroups-1")
 
 	if client.Projects == nil {
 		fmt.Println(fmt.Errorf("unexpected state of client.Projects (nil)"))
@@ -234,7 +235,7 @@ func main() {
 		}
 	}
 
-	e := services.NewEnvironment("Test Environment (OK to Delete)")
+	e := service.NewEnvironment("Test Environment (OK to Delete)")
 	e.Description = "Test environment created by go-octopusdeploy"
 	e.UseGuidedFailure = false
 	err = e.Validate()

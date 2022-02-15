@@ -40,7 +40,7 @@ func NewSSHEndpoint(host string, port int, fingerprint string) *SSHEndpoint {
 	return sshEndpoint
 }
 
-// GetAccountID returns the account ID associated with this SSH endpoint.
+// GetAccountID returns the accountV1 ID associated with this SSH endpoint.
 func (s *SSHEndpoint) GetAccountID() string {
 	return s.AccountID
 }

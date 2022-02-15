@@ -1,14 +1,15 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualTasks(t *testing.T, expected *services.Task, actual services.Task) {
+func AssertEqualTasks(t *testing.T, expected *service.Task, actual service.Task) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -29,14 +30,14 @@ func TestTaskServiceGetQuery(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	query := services.TasksQuery{}
+	query := service2.TasksQuery{}
 
 	tasks, err := client.Tasks.Get(query)
 	require.NoError(t, err)
 	require.NotNil(t, tasks)
 
 	for _, task := range tasks.Items {
-		query = services.TasksQuery{
+		query = service2.TasksQuery{
 			IDs: []string{task.GetID()},
 		}
 

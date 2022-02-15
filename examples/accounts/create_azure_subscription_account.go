@@ -38,25 +38,25 @@ func CreateAzureSubscriptionAccountExample() {
 
 	azureAccount, err := accounts.NewAzureSubscriptionAccount(name, subscriptionID)
 	if err != nil {
-		_ = fmt.Errorf("error creating Azure subscription account: %v", err)
+		_ = fmt.Errorf("error creating Azure subscription accountV1: %v", err)
 		return
 	}
 
-	// fill in account details
+	// fill in accountV1 details
 	azureAccount.Description = accountDescription
 	azureAccount.AzureEnvironment = azureEnvironmentName
 	azureAccount.ManagementEndpoint = azureManagementEndpoint
 	azureAccount.StorageEndpointSuffix = azureStorageEndpointSuffix
 
-	// create account
+	// create accountV1
 	createdAccount, err := client.Accounts.Add(azureAccount)
 	if err != nil {
-		_ = fmt.Errorf("error adding account: %v", err)
+		_ = fmt.Errorf("error adding accountV1: %v", err)
 	}
 
 	// type conversion required to access Azure-specific fields
 	azureAccount = createdAccount.(*accounts.AzureSubscriptionAccount)
 
-	// work with created account
-	fmt.Printf("account created: (%s)\n", azureAccount.GetID())
+	// work with created accountV1
+	fmt.Printf("accountV1 created: (%s)\n", azureAccount.GetID())
 }

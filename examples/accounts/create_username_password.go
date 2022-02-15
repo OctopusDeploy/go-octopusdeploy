@@ -3,7 +3,7 @@ package examples
 import (
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources/accounts"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -15,10 +15,10 @@ func CreateUsernamePasswordExample() {
 		octopusURL string = "https://your_octopus_url"
 		spaceID    string = "space-id"
 
-		// account values
+		// accountV1 values
 		password string = "password-value"
 		name     string = "Username/Password Account"
-		username string = "account-username"
+		username string = "accountV1-username"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -33,35 +33,35 @@ func CreateUsernamePasswordExample() {
 		return
 	}
 
-	// option 1: create a username/password account and assign values to fields
+	// option 1: create a username/password accountV1 and assign values to fields
 	usernamePasswordAccount, err := accounts.NewUsernamePasswordAccount(name)
 	if err != nil {
-		_ = fmt.Errorf("error creating username/password account: %v", err)
+		_ = fmt.Errorf("error creating username/password accountV1: %v", err)
 	}
-	usernamePasswordAccount.Password = services.NewSensitiveValue(password)
+	usernamePasswordAccount.Password = service.NewSensitiveValue(password)
 	usernamePasswordAccount.Username = username
 
-	// option 2: create a username/password account and assign values to fields
+	// option 2: create a username/password accountV1 and assign values to fields
 	// using the variadic configuration option
 	options := func(u *accounts.UsernamePasswordAccount) {
-		u.Password = services.NewSensitiveValue(password)
+		u.Password = service.NewSensitiveValue(password)
 		u.Username = username
 	}
 
 	usernamePasswordAccount, err = accounts.NewUsernamePasswordAccount(name, options)
 	if err != nil {
-		_ = fmt.Errorf("error creating username/password account: %v", err)
+		_ = fmt.Errorf("error creating username/password accountV1: %v", err)
 	}
 
-	// create account
+	// create accountV1
 	createdAccount, err := client.Accounts.Add(usernamePasswordAccount)
 	if err != nil {
-		_ = fmt.Errorf("error adding account: %v", err)
+		_ = fmt.Errorf("error adding accountV1: %v", err)
 	}
 
 	// type conversion required to access Username/Password-specific fields
 	usernamePasswordAccount = createdAccount.(*accounts.UsernamePasswordAccount)
 
-	// work with created account
-	fmt.Printf("account created: (%s)\n", usernamePasswordAccount.GetID())
+	// work with created accountV1
+	fmt.Printf("accountV1 created: (%s)\n", usernamePasswordAccount.GetID())
 }

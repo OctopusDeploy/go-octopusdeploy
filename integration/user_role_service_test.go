@@ -1,7 +1,8 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *services.UserRole {
+func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *service.UserRole {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -17,7 +18,7 @@ func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *services.Us
 
 	name := getRandomName()
 
-	userRole := services.NewUserRole(name)
+	userRole := service.NewUserRole(name)
 	require.NoError(t, userRole.Validate())
 
 	createdUserRole, err := client.UserRoles.Add(userRole)
@@ -33,7 +34,7 @@ func CreateTestUserRole(t *testing.T, client *octopusdeploy.client) *services.Us
 	return createdUserRole
 }
 
-func DeleteTestUserRole(t *testing.T, client *octopusdeploy.client, userRole *services.UserRole) {
+func DeleteTestUserRole(t *testing.T, client *octopusdeploy.client, userRole *service.UserRole) {
 	require.NotNil(t, userRole)
 
 	if client == nil {
@@ -50,7 +51,7 @@ func DeleteTestUserRole(t *testing.T, client *octopusdeploy.client, userRole *se
 	assert.Nil(t, deletedUserRole)
 }
 
-func AssertEqualUserRoles(t *testing.T, expected *services.UserRole, actual *services.UserRole) {
+func AssertEqualUserRoles(t *testing.T, expected *service.UserRole, actual *service.UserRole) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -77,7 +78,7 @@ func TestUserRoleServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, userRoles)
 
 	for _, userRole := range userRoles {
-		query := services.UserRolesQuery{
+		query := service2.UserRolesQuery{
 			IDs: []string{userRole.GetID()},
 		}
 		userRolesToCompare, err := client.UserRoles.Get(query)

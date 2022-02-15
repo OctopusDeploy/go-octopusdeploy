@@ -1,7 +1,7 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualPackages(t *testing.T, expected *services.Package, actual *services.Package) {
+func AssertEqualPackages(t *testing.T, expected *service.Package, actual *service.Package) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -26,13 +26,13 @@ func AssertEqualPackages(t *testing.T, expected *services.Package, actual *servi
 	// TODO: add package comparisons
 }
 
-func CreateTestPackage(t *testing.T, client *octopusdeploy.client) *services.Package {
+func CreateTestPackage(t *testing.T, client *octopusdeploy.client) *service.Package {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	octopusPackage := services.NewPackage()
+	octopusPackage := service.NewPackage()
 	require.NotNil(t, octopusPackage)
 	require.NoError(t, octopusPackage.Validate())
 
@@ -43,7 +43,7 @@ func CreateTestPackage(t *testing.T, client *octopusdeploy.client) *services.Pac
 	return octopusPackage
 }
 
-func DeleteTestPackage(t *testing.T, client *octopusdeploy.client, octopusPackage *services.Package) {
+func DeleteTestPackage(t *testing.T, client *octopusdeploy.client, octopusPackage *service.Package) {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -58,7 +58,7 @@ func DeleteTestPackage(t *testing.T, client *octopusdeploy.client, octopusPackag
 	assert.Nil(t, deletedPackage)
 }
 
-func UpdatePackage(t *testing.T, client *octopusdeploy.client, octopusPackage *services.Package) *services.Package {
+func UpdatePackage(t *testing.T, client *octopusdeploy.client, octopusPackage *service.Package) *service.Package {
 	if client == nil {
 		client = getOctopusClient()
 	}

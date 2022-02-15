@@ -2,7 +2,7 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -16,12 +16,12 @@ func CreateAzureServicePrincipalExample() {
 		spaceID    string = "space-id"
 
 		// Azure-specific values
-		azureApplicationID  uuid.UUID                = uuid.MustParse("client-UUID")
-		azureSecret         *services.SensitiveValue = services.NewSensitiveValue("azure-secret")
-		azureSubscriptionID uuid.UUID                = uuid.MustParse("subscription-UUID")
-		azureTenantID       uuid.UUID                     = uuid.MustParse("tenant-UUID")
+		azureApplicationID  uuid.UUID               = uuid.MustParse("client-UUID")
+		azureSecret         *service.SensitiveValue = service.NewSensitiveValue("azure-secret")
+		azureSubscriptionID uuid.UUID               = uuid.MustParse("subscription-UUID")
+		azureTenantID       uuid.UUID               = uuid.MustParse("tenant-UUID")
 
-		// account values
+		// accountV1 values
 		accountName        string   = "Azure Account"
 		accountDescription string   = "My Azure Account"
 		tenantTags         []string = nil
@@ -41,27 +41,27 @@ func CreateAzureServicePrincipalExample() {
 		return
 	}
 
-	azureAccount, err := services.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
+	azureAccount, err := service.NewAzureServicePrincipalAccount(accountName, azureSubscriptionID, azureTenantID, azureApplicationID, azureSecret)
 	if err != nil {
-		_ = fmt.Errorf("error creating Azure service principal account: %v", err)
+		_ = fmt.Errorf("error creating Azure service principal accountV1: %v", err)
 		return
 	}
 
-	// fill in account details
+	// fill in accountV1 details
 	azureAccount.Description = accountDescription
 	azureAccount.TenantTags = tenantTags
 	azureAccount.TenantIDs = tenantIDs
 	azureAccount.EnvironmentIDs = environmentIDs
 
-	// create account
+	// create accountV1
 	createdAccount, err := client.Accounts.Add(azureAccount)
 	if err != nil {
-		_ = fmt.Errorf("error adding account: %v", err)
+		_ = fmt.Errorf("error adding accountV1: %v", err)
 	}
 
 	// type conversion required to access Username/Password-specific fields
-	azureAccount = createdAccount.(*services.AzureServicePrincipalAccount)
+	azureAccount = createdAccount.(*service.AzureServicePrincipalAccount)
 
-	// work with created account
-	fmt.Printf("account created: (%s)\n", azureAccount.GetID())
+	// work with created accountV1
+	fmt.Printf("accountV1 created: (%s)\n", azureAccount.GetID())
 }

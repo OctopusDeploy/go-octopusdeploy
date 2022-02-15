@@ -1,14 +1,15 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func IsEqualCommunityActionTemplates(t *testing.T, expected *services.CommunityActionTemplate, actual *services.CommunityActionTemplate) {
+func IsEqualCommunityActionTemplates(t *testing.T, expected *service.CommunityActionTemplate, actual *service.CommunityActionTemplate) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -67,7 +68,7 @@ func TestCommunityActionTemplateServiceGet(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	query := services.CommunityActionTemplatesQuery{
+	query := service2.CommunityActionTemplatesQuery{
 		Skip: 1,
 		Take: 20,
 	}
@@ -114,10 +115,10 @@ func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
-	resource, err := octopusClient.CommunityActionTemplates.Install(services.CommunityActionTemplate{})
+	resource, err := octopusClient.CommunityActionTemplates.Install(service.CommunityActionTemplate{})
 	require.Error(t, err)
 	require.Nil(t, resource)
 
-	resource = services.NewCommunityActionTemplate(getRandomName(), getRandomName())
+	resource = service.NewCommunityActionTemplate(getRandomName(), getRandomName())
 	require.NotNil(t, resource)
 }

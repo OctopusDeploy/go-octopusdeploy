@@ -2,7 +2,7 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -28,7 +28,7 @@ func DeleteFeedExample() {
 		return
 	}
 
-	query := services.FeedsQuery{
+	query := service.FeedsQuery{
 		PartialName: feedName,
 	}
 

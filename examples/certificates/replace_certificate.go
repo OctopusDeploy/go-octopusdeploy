@@ -3,7 +3,8 @@ package examples
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -36,7 +37,7 @@ func ReplaceCertificateExample() {
 	}
 
 	// construct query
-	query := services.CertificatesQuery{
+	query := service2.CertificatesQuery{
 		PartialName: certificateName,
 	}
 
@@ -66,7 +67,7 @@ func ReplaceCertificateExample() {
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
 
 	// replace certificate
-	replacementCertificate := services.NewReplacementCertificate(base64Certificate, pfxFilePassword)
+	replacementCertificate := service.NewReplacementCertificate(base64Certificate, pfxFilePassword)
 	if _, err = client.Certificates.Replace(certificate.GetID(), replacementCertificate); err != nil {
 		_ = fmt.Errorf("error replacing certificate: %v", err)
 	}

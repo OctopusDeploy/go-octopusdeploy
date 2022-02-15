@@ -2,7 +2,7 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -50,7 +50,7 @@ func CreateProjectExample() {
 	projectGroupID := "project-group-id"
 
 	// create project
-	project := services.NewProject(spaceID, name, lifecycleID, projectGroupID)
+	project := service.NewProject(spaceID, name, lifecycleID, projectGroupID)
 
 	// update any additional project fields here...
 

@@ -54,7 +54,7 @@ usernamePasswordAccount.Username = username
 
 createdAccount, err := client.Accounts.Add(usernamePasswordAccount)
 if err != nil {
-    _ = fmt.Errorf("error adding account: %v", err)
+    _ = fmt.Errorf("error adding accountV1: %v", err)
 }
 ```
 

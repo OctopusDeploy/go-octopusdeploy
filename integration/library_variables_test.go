@@ -1,7 +1,8 @@
 package integration
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/service"
+	service2 "github.com/OctopusDeploy/go-octopusdeploy/service"
 	"net/http"
 	"testing"
 
@@ -10,18 +11,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.client) *services.LibraryVariableSet {
+func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.client) *service.LibraryVariableSet {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
 	name := "Name " + getShortRandomName()
-	libraryVariableSet := services.NewLibraryVariableSet(name)
+	libraryVariableSet := service.NewLibraryVariableSet(name)
 	libraryVariableSet.Description = "Description " + getShortRandomName()
 
-	actionTemplateParameter := services.NewActionTemplateParameter()
-	propertyValue := services.NewPropertyValue(getShortRandomName(), false)
+	actionTemplateParameter := service.NewActionTemplateParameter()
+	propertyValue := service.NewPropertyValue(getShortRandomName(), false)
 	actionTemplateParameter.DefaultValue = &propertyValue
 	actionTemplateParameter.DisplaySettings = map[string]string{
 		"Octopus.ControlType": "SingleLineText",
@@ -31,8 +32,8 @@ func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.client) *servi
 	actionTemplateParameter.Name = "Name " + getShortRandomName()
 	libraryVariableSet.Templates = append(libraryVariableSet.Templates, *actionTemplateParameter)
 
-	actionTemplateParameter = services.NewActionTemplateParameter()
-	propertyValue = services.NewPropertyValue(getShortRandomName(), false)
+	actionTemplateParameter = service.NewActionTemplateParameter()
+	propertyValue = service.NewPropertyValue(getShortRandomName(), false)
 	actionTemplateParameter.DefaultValue = &propertyValue
 	actionTemplateParameter.DisplaySettings = map[string]string{
 		"Octopus.ControlType": "SingleLineText",
@@ -47,7 +48,7 @@ func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.client) *servi
 	require.NotNil(t, createdLibraryVariableSet)
 
 	name = "Name " + getShortRandomName()
-	variable := services.NewVariable(name)
+	variable := service.NewVariable(name)
 	variable.Description = "Description " + getShortRandomName()
 	variable.IsEditable = false
 	variable.IsSensitive = true
@@ -58,7 +59,7 @@ func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.client) *servi
 	require.NotNil(t, variableSet)
 
 	name = "Name " + getShortRandomName()
-	variable = services.NewVariable(name)
+	variable = service.NewVariable(name)
 	variable.Description = "Description " + getShortRandomName()
 	variable.Value = "Value " + getShortRandomName()
 
@@ -69,7 +70,7 @@ func CreateLibraryVariableSet(t *testing.T, client *octopusdeploy.client) *servi
 	return createdLibraryVariableSet
 }
 
-func DeleteLibraryVariableSet(t *testing.T, client *octopusdeploy.client, libraryVariableSet *services.LibraryVariableSet) {
+func DeleteLibraryVariableSet(t *testing.T, client *octopusdeploy.client, libraryVariableSet *service.LibraryVariableSet) {
 	require.NotNil(t, libraryVariableSet)
 
 	if client == nil {
@@ -95,7 +96,7 @@ func TestLibraryVariableSetServiceAddDelete(t *testing.T) {
 	defer DeleteLibraryVariableSet(t, client, libraryVariableSet)
 
 	name := libraryVariableSet.Name
-	query := services.LibraryVariablesQuery{
+	query := service2.LibraryVariablesQuery{
 		PartialName: name,
 		Take:        1,
 	}
@@ -103,7 +104,7 @@ func TestLibraryVariableSetServiceAddDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, namedLibraryVariableSets)
 
-	query = services.LibraryVariablesQuery{
+	query = service2.LibraryVariablesQuery{
 		IDs:  []string{libraryVariableSet.GetID()},
 		Take: 1,
 	}
@@ -113,7 +114,7 @@ func TestLibraryVariableSetServiceAddDelete(t *testing.T) {
 }
 
 func TestLibraryVariablesGet(t *testing.T) {
-	octopusClient, err := services.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariables-41", http.StatusOK, getLibraryVariablesResponseJSON)
+	octopusClient, err := service2.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariables-41", http.StatusOK, getLibraryVariablesResponseJSON)
 	require.NoError(t, err)
 	require.NotNil(t, octopusClient)
 
@@ -140,11 +141,11 @@ const getLibraryVariablesResponseJSON = `
 }`
 
 func TestValidateLibraryVariablesValuesJustANamePasses(t *testing.T) {
-	libraryVariables := services.NewLibraryVariableSet("My Set")
-	assert.Nil(t, services.ValidateLibraryVariableSetValues(libraryVariables))
+	libraryVariables := service.NewLibraryVariableSet("My Set")
+	assert.Nil(t, service.ValidateLibraryVariableSetValues(libraryVariables))
 }
 
 func TestValidateLibraryVariablesValuesMissingNameFails(t *testing.T) {
-	libraryVariables := &services.LibraryVariableSet{}
-	assert.Error(t, services.ValidateLibraryVariableSetValues(libraryVariables))
+	libraryVariables := &service.LibraryVariableSet{}
+	assert.Error(t, service.ValidateLibraryVariableSetValues(libraryVariables))
 }
