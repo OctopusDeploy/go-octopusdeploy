@@ -25,3 +25,5 @@ vendor
 .env
 
 go-octopusdeploy
+
+godepgraph.png
