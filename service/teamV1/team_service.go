@@ -25,7 +25,7 @@ type ITeamService interface {
 	GetScopedUserRoles(team Team) (service.IPagedResultsHandler[Team], error)
 }
 
-func NewTeamService(client *service.AdminClient) ITeamService {
+func NewTeamService(client service.IAdminClient) ITeamService {
 	teamService := &teamService{
 		IAdminService: service.NewAdminService(service.ServiceTeamService, teamsBasePath, client),
 	}

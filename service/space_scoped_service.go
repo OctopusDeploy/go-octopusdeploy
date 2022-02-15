@@ -1,18 +1,15 @@
 package service
 
-type SpaceScopedService struct {
-	spaceScopedClient *SpaceScopedClient
-	service
+type spaceScopedService struct {
 	IService
 }
 
-func NewSpaceScopedService(name string, basePathRelativeToRoot string, client *SpaceScopedClient) SpaceScopedService {
-	return SpaceScopedService{
-		service:           *NewService(name, basePathRelativeToRoot),
-		spaceScopedClient: client,
-	}
+type ISpaceScopedService interface {
+	IService
 }
 
-func (s SpaceScopedService) GetClient() IClient {
-	return s.spaceScopedClient
+func NewSpaceScopedService(name string, basePathRelativeToRoot string, client ISpaceScopedClient) ISpaceScopedService {
+	return spaceScopedService{
+		IService: NewService(name, basePathRelativeToRoot, client),
+	}
 }

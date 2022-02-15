@@ -7,11 +7,10 @@ import (
 const teamMembershipBasePath = "teammembership"
 
 type teamMembershipServiceV1 struct {
-	*service.AdminClient
 	service.IAdminService
 }
 
-func NewTeamMembershipService(client *service.AdminClient, previewTeamPath string) *teamMembershipServiceV1 {
+func NewTeamMembershipService(client service.IAdminClient, previewTeamPath string) *teamMembershipServiceV1 {
 	return &teamMembershipServiceV1{
 		IAdminService: service.NewAdminService(service.ServiceTeamMembershipService, teamMembershipBasePath, client),
 	}

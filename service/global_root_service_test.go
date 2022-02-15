@@ -27,7 +27,7 @@ func TestRootServiceGet(t *testing.T) {
 
 func TestRootServiceNew(t *testing.T) {
 	ServiceFunction := newGlobalRootService
-	client := &Client{}
+	client := &client{}
 	uriTemplate := emptyString
 	ServiceName := ServiceRootService
 

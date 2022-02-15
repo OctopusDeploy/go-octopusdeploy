@@ -22,7 +22,7 @@ type IClient interface {
 	getRequestingTool() *string
 }
 
-type Client struct {
+type client struct {
 	sling                 *sling.Sling
 	octopusServerEndpoint *octopusServerEndpoint
 	scopedBasePath        string
@@ -30,16 +30,21 @@ type Client struct {
 	IClient
 }
 
-type AdminClient struct {
-	Client
+type IAdminClient interface {
+	IClient
 }
 
-type SpaceScopedClient struct {
+type spaceScopedClient struct {
 	spaceID string
-	Client
+	IClient
 }
 
-func newClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *string, pathScope string) *Client {
+type ISpaceScopedClient interface {
+	IClient
+	GetSpaceID() string
+}
+
+func newClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *string, pathScope string) IClient {
 	httpClient := &http.Client{}
 	scopedBasePath := octopusServerEndpoint.BaseURLWithAPI.String()
 	if !internal.IsEmpty(pathScope) {
@@ -48,7 +53,7 @@ func newClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *str
 	base := sling.New().Client(httpClient).Base(scopedBasePath).Set(clientAPIKeyHTTPHeader, octopusServerEndpoint.ApiKey)
 	base.Set("User-Agent", getUserAgentString(requestingTool))
 
-	c := &Client{
+	c := &client{
 		sling:                 base,
 		octopusServerEndpoint: octopusServerEndpoint,
 		scopedBasePath:        scopedBasePath,
@@ -57,42 +62,44 @@ func newClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *str
 	return c
 }
 
-func (c Client) getSling() *sling.Sling {
+func (c client) getSling() *sling.Sling {
 	return c.sling
 }
 
-func (c Client) getScopedBasePath() string {
+func (c client) getScopedBasePath() string {
 	return c.scopedBasePath
 }
 
-func (c Client) getRequestingTool() *string {
+func (c client) getRequestingTool() *string {
 	return c.requestingTool
 }
 
 // NewAdminClient returns a new Octopus API Client.
-func NewAdminClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *string) (*AdminClient, error) {
+func NewAdminClient(octopusServerEndpoint *octopusServerEndpoint, requestingTool *string) (IAdminClient, error) {
 	if octopusServerEndpoint == nil {
 		return nil, internal.CreateInvalidParameterError("NewAdminClient", octopusdeploy.ParameterOctopusServerEndpoint)
 	}
 
-	c := AdminClient{
-		Client: *newClient(octopusServerEndpoint, requestingTool, internal.Empty),
-	}
+	c := newClient(octopusServerEndpoint, requestingTool, internal.Empty)
 
-	return &c, nil
+	return c, nil
 }
 
-func NewSpaceScopedClient(octopusServerEndpoint *octopusServerEndpoint, spaceID string, requestingTool *string) (*SpaceScopedClient, error) {
+func NewSpaceScopedClient(octopusServerEndpoint *octopusServerEndpoint, spaceID string, requestingTool *string) (ISpaceScopedClient, error) {
 	if octopusServerEndpoint == nil {
 		return nil, internal.CreateInvalidParameterError("NewSpaceScopedClient", octopusdeploy.ParameterOctopusServerEndpoint)
 	}
 
-	client := &SpaceScopedClient{
-		Client:  *newClient(octopusServerEndpoint, requestingTool, spaceID),
+	client := &spaceScopedClient{
+		IClient: newClient(octopusServerEndpoint, requestingTool, spaceID),
 		spaceID: spaceID,
 	}
 
 	return client, nil
+}
+
+func (s spaceScopedClient) GetSpaceID() string {
+	return s.spaceID
 }
 
 // APIError is a generic structure for containing errors for API operations.
@@ -239,7 +246,7 @@ func apiAddWithResponseStatus[T any](c IClient, inputStruct *T, path string, htt
 }
 
 // apiPost post to octopus and expect a 200 response code.
-func (c Client) apiPost(inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
+func (c client) apiPost(inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if internal.IsEmpty(path) {
 		return nil, internal.CreateInvalidParameterError(OperationAPIPost, octopusdeploy.ParameterPath)
 	}

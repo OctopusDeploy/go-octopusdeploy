@@ -3,7 +3,7 @@ package accountV1
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
 	"github.com/go-playground/validator/v10"
-	uuid "github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 // AccountResource represents accountV1 details used for deployments, including

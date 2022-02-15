@@ -1,22 +1,15 @@
 package service
 
-type AdminService struct {
-	AdminClient
+type adminService struct {
 	IService
 }
 
 type IAdminService interface {
-	GetClient() IClient
 	IService
 }
 
-func NewAdminService(name string, basePathRelativeToRoot string, client *AdminClient) IAdminService {
-	return &AdminService{
-		IService:    NewService(name, basePathRelativeToRoot),
-		AdminClient: *client,
+func NewAdminService(name string, basePathRelativeToRoot string, client IAdminClient) IAdminService {
+	return &adminService{
+		IService: NewService(name, basePathRelativeToRoot, client),
 	}
-}
-
-func (s AdminService) GetClient() IClient {
-	return s.Client
 }
