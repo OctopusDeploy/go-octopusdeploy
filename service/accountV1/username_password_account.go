@@ -8,7 +8,7 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-const UsernamePasswordAccountType string = "UsernamePassword"
+const UsernamePasswordAccountType AccountType = AccountType("UsernamePassword")
 
 // UsernamePasswordAccount represents a username/password accountV1.
 type UsernamePasswordAccount struct {
@@ -49,7 +49,7 @@ func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAc
 	}
 
 	account := UsernamePasswordAccount{
-		Account: *NewAccount(name, AccountType(UsernamePasswordAccountType)),
+		Account: *NewAccount(name, UsernamePasswordAccountType),
 	}
 
 	// iterate through configuration options and set fields (without checks)
@@ -58,7 +58,7 @@ func NewUsernamePasswordAccount(name string, options ...func(*UsernamePasswordAc
 	}
 
 	// assign pre-determined values to "mandatory" fields
-	account.AccountType = AccountType(UsernamePasswordAccountType)
+	account.AccountType = UsernamePasswordAccountType
 	account.Name = name
 
 	// validate to ensure that all expectations are met
