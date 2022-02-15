@@ -8,11 +8,11 @@ type Query struct {
 }
 
 type IdsQuery struct {
-	IDs []string `uri:"ids,omitempty" url:"ids,omitempty"`
+	IDs []string `url:"ids,omitempty"`
 }
 
 type PartialNameQuery struct {
-	PartialName string `uri:"partialName,omitempty" url:"partialName,omitempty"`
+	PartialName string `url:"partialName,omitempty"`
 }
 
 // AccountsQuery represents parameters to query the Accounts service.
@@ -452,8 +452,8 @@ type SignInQuery struct {
 }
 
 type SkipTakeQuery struct {
-	Skip int `uri:"skip,omitempty" url:"skip,omitempty"`
-	Take int `uri:"take,omitempty" url:"take,omitempty"`
+	Skip int `url:"skip,omitempty"`
+	Take int `url:"take,omitempty"`
 }
 
 type SpaceHomeQuery struct {

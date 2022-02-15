@@ -1,13 +1,17 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
+	"github.com/google/go-querystring/query"
 )
 
 type IPagedResultsHandler[T resources.IResource] interface {
 	HasMorePages() bool
 	GetPage(pageNumber int) (items []T, e error)
 	NextPage() (items []T, e error)
+	GetTotalResults() *int
 }
 
 type pagedResultsHandler[T resources.IResource] struct {
@@ -16,7 +20,6 @@ type pagedResultsHandler[T resources.IResource] struct {
 	basePathRelativeToRoot string
 	totalResults           *int
 	client                 IClient
-	IPagedResultsHandler[T]
 }
 
 func NewPagedResultsHandler[T resources.IResource](client IClient, pageSize int, basePathRelativeToRoot string) IPagedResultsHandler[T] {
@@ -41,20 +44,28 @@ func (t pagedResultsHandler[T]) GetPage(pageNumber int) (items []T, e error) {
 	return t.NextPage()
 }
 
-func (t pagedResultsHandler[T]) NextPage() (items []T, e error) {
-	//skipTakeQuery := &SkipTakeQuery{
-	//	Skip: t.currentPage * t.pageSize,
-	//	Take: t.pageSize,
-	//}
+func (t pagedResultsHandler[T]) GetTotalResults() *int {
+	return t.totalResults
+}
 
-	//TODO: include skip/take params in the basePathRelativeToRoot
-	resp, err := ApiGetMany[T](t.client, t.basePathRelativeToRoot)
+func (t pagedResultsHandler[T]) NextPage() (items []T, e error) {
+	skipTakeQuery := &SkipTakeQuery{
+		Skip: t.currentPage * t.pageSize,
+		Take: t.pageSize,
+	}
+	urlValues, err := query.Values(skipTakeQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	basePathRelativeToRootWithSkipTake := fmt.Sprintf("%s%s", t.basePathRelativeToRoot, urlValues.Encode())
+	resp, err := ApiGetMany[T](t.client, basePathRelativeToRootWithSkipTake)
 	if err != nil {
 		return nil, err
 	}
 
 	t.currentPage = t.currentPage + 1
-	t.totalResults = &resp.TotalResults
+	t.totalResults = resp.GetTotalResults()
 
 	return resp.Items, nil
 }

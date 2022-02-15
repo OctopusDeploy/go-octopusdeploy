@@ -9,7 +9,7 @@ type ISpaceScopedService interface {
 }
 
 func NewSpaceScopedService(name string, basePathRelativeToRoot string, client ISpaceScopedClient) ISpaceScopedService {
-	return spaceScopedService{
+	return &spaceScopedService{
 		IService: NewService(name, basePathRelativeToRoot, client),
 	}
 }

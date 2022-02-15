@@ -2,6 +2,7 @@ package accountV1
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/service"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
@@ -39,8 +40,14 @@ type AccountResource struct {
 	resources.Resource
 }
 
+type AccountsQuery struct {
+	AccountType AccountType `url:"accountType,omitempty"`
+	service.IdsQuery
+	service.PartialNameQuery
+}
+
 // NewAccount creates and initializes an accountV1 resource with a name and type.
-func NewAccountResource(spaceID string, name string, accountType AccountType) *AccountResource {
+func NewAccountResource(spaceID string, name string, accountType AccountType) IAccount {
 	return &AccountResource{
 		SpaceID:                spaceID,
 		AccountType:            accountType,
@@ -134,5 +141,3 @@ func (a *AccountResource) Validate() error {
 	}
 	return v.Struct(a)
 }
-
-var _ IAccount = &AccountResource{}

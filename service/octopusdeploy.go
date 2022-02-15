@@ -151,9 +151,9 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	return nil
 }
 
-func ApiGetMany[T resources.IResource](c IClient, pathRelativeToRoot string) (*IPagedResultsHandler[T], error) {
+func ApiGetMany[T resources.IResource](c IClient, pathRelativeToRoot string) (IPagedResultsHandler[T], error) {
 	resp, err := ApiGet[IPagedResultsHandler[T]](c, pathRelativeToRoot)
-	return resp, err
+	return *resp, err
 }
 
 func ApiGet[T any](c IClient, pathRelativeToRoot string) (*T, error) {
@@ -206,12 +206,12 @@ func getUserAgentString(requestingTool *string) string {
 }
 
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
-func ApiAdd[T resources.IResource](c IClient, inputStruct *T, path string) (*T, error) {
+func ApiAdd[T resources.IResource](c IClient, inputStruct T, path string) (*T, error) {
 	return apiAddWithResponseStatus[T](c, inputStruct, path, http.StatusCreated)
 }
 
 // apiAddWithResponseStatus function with defined response.
-func apiAddWithResponseStatus[T any](c IClient, inputStruct *T, path string, httpStatus int) (*T, error) {
+func apiAddWithResponseStatus[T resources.IResource](c IClient, inputStruct T, path string, httpStatus int) (*T, error) {
 	if internal.IsEmpty(path) {
 		return nil, internal.CreateInvalidParameterError(OperationAPIAdd, octopusdeploy.ParameterPath)
 	}
@@ -280,7 +280,7 @@ func (c client) apiPost(inputStruct interface{}, resource interface{}, path stri
 }
 
 // Generic OctopusDeploy API Update Function.
-func ApiUpdate[T resources.IResource](c IClient, inputStruct *T, path string) (*T, error) {
+func ApiUpdate[T resources.IResource](c IClient, inputStruct T, path string) (*T, error) {
 	putClient := c.getSling().New()
 	if putClient == nil {
 		return nil, internal.CreateClientInitializationError(OperationAPIUpdate)

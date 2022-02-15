@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy/resources"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
+	"github.com/google/go-querystring/query"
 )
 
 type CanGetByIDService[T resources.IResource] struct {
@@ -16,9 +16,27 @@ type GetsByIDer[T resources.IResource] interface {
 	IService
 }
 
-type ResourceQueryer[T resources.IResource] interface {
-	Query(queryStruct interface{}, template *uritemplates.UriTemplate) (IPagedResultsHandler[T], error)
+type ResourceQueryer[T resources.IResource, Q any] interface {
+	Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error)
 	IService
+}
+
+type CanQuery[T resources.IResource, Q any] struct {
+	IService
+}
+
+func (s CanQuery[T, Q]) Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error) {
+	sizeOfPage := 30
+	if pageSize != nil {
+		sizeOfPage = *pageSize
+	}
+	urlValues, err := query.Values(s)
+	if err != nil {
+		return nil, err
+	}
+	basePathRelativeToRootWithQuery := fmt.Sprintf("%s?%s", s.GetBasePathRelativeToRoot(), urlValues.Encode())
+	pageResultHandler := NewPagedResultsHandler[T](s.GetClient(), sizeOfPage, basePathRelativeToRootWithQuery)
+	return pageResultHandler, nil
 }
 
 func (s CanGetByIDService[T]) GetByID(id string) (*T, error) {
