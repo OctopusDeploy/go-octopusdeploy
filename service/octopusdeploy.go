@@ -151,8 +151,8 @@ func APIErrorChecker(urlPath string, resp *http.Response, wantedResponseCode int
 	return nil
 }
 
-func ApiGetMany[T resources.IResource](c IClient, pathRelativeToRoot string) (IPagedResultsHandler[T], error) {
-	resp, err := ApiGet[IPagedResultsHandler[T]](c, pathRelativeToRoot)
+func ApiGetMany[T resources.IResource](c IClient, pathRelativeToRoot string) (resources.PagedResults[T], error) {
+	resp, err := ApiGet[resources.PagedResults[T]](c, pathRelativeToRoot)
 	return *resp, err
 }
 

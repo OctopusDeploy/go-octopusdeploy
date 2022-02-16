@@ -15,15 +15,15 @@ type GetsByIDer[T resources.IResource] interface {
 	GetByID(id string) (*T, error)
 }
 
-type ResourceQueryer[T resources.IResource, Q any] interface {
+type ResourceQueryer[Q any, T resources.IResource] interface {
 	Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error)
 }
 
-type CanQueryService[T resources.IResource, Q any] struct {
+type CanQueryService[Q any, T resources.IResource] struct {
 	IService
 }
 
-func (s CanQueryService[T, Q]) Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error) {
+func (s CanQueryService[Q, T]) Query(queryStruct Q, pageSize *int) (IPagedResultsHandler[T], error) {
 	sizeOfPage := 30
 	if pageSize != nil {
 		sizeOfPage = *pageSize

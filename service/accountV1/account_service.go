@@ -13,7 +13,7 @@ type accountService struct {
 	service.CanAddService[IAccount]
 	service.CanUpdateService[IAccount]
 	service.CanDeleteService[IAccount]
-	service.CanQueryService[IAccount, service.AccountsQuery]
+	service.CanQueryService[service.AccountsQuery, IAccount]
 	service.ISpaceScopedService
 }
 
@@ -22,7 +22,7 @@ type IAccountService interface {
 	service.ResourceAdder[IAccount]
 	service.ResourceUpdater[IAccount]
 	service.DeleteByIDer[IAccount]
-	service.ResourceQueryer[IAccount, service.AccountsQuery]
+	service.ResourceQueryer[service.AccountsQuery, IAccount]
 	service.ISpaceScopedService
 }
 
@@ -43,7 +43,7 @@ func NewAccountService(client service.ISpaceScopedClient) IAccountService {
 		CanDeleteService: service.CanDeleteService[IAccount]{
 			IService: baseService,
 		},
-		CanQueryService: service.CanQueryService[IAccount, service.AccountsQuery]{
+		CanQueryService: service.CanQueryService[service.AccountsQuery, IAccount]{
 			IService: baseService,
 		},
 	}

@@ -1,6 +1,6 @@
 package resources
 
-type PagedResults[T Resource] struct {
+type PagedResults[T IResource] struct {
 	ItemType       string `json:"ItemType"`
 	TotalResults   int    `json:"TotalResults"`
 	ItemsPerPage   int    `json:"ItemsPerPage"`

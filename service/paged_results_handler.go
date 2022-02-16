@@ -11,7 +11,6 @@ type IPagedResultsHandler[T resources.IResource] interface {
 	HasMorePages() bool
 	GetPage(pageNumber int) (items []T, e error)
 	NextPage() (items []T, e error)
-	GetTotalResults() *int
 }
 
 type pagedResultsHandler[T resources.IResource] struct {
@@ -44,10 +43,6 @@ func (t pagedResultsHandler[T]) GetPage(pageNumber int) (items []T, e error) {
 	return t.NextPage()
 }
 
-func (t pagedResultsHandler[T]) GetTotalResults() *int {
-	return t.totalResults
-}
-
 func (t pagedResultsHandler[T]) NextPage() (items []T, e error) {
 	skipTakeQuery := &SkipTakeQuery{
 		Skip: t.currentPage * t.pageSize,
@@ -65,7 +60,7 @@ func (t pagedResultsHandler[T]) NextPage() (items []T, e error) {
 	}
 
 	t.currentPage = t.currentPage + 1
-	t.totalResults = resp.GetTotalResults()
+	t.totalResults = &resp.TotalResults
 
 	return resp.Items, nil
 }
