@@ -4,11 +4,11 @@ type amazonWebServicesAccountProvider struct {
 }
 
 func (p amazonWebServicesAccountProvider) AccountType() AccountType {
-	return AccountType(UsernamePasswordAccountType)
+	return AccountType(AmazonWebServicesAccountType)
 }
 
 func (p amazonWebServicesAccountProvider) Factory() IAccount {
-	return new(UsernamePasswordAccount)
+	return new(AmazonWebServicesAccount)
 }
 
 func init() {

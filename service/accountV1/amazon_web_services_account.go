@@ -8,6 +8,8 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+const AmazonWebServicesAccountType AccountType = AccountType("AmazonWebServices")
+
 // AmazonWebServicesAccount represents an Amazon Web Services (AWS) accountV1.
 type AmazonWebServicesAccount struct {
 	AccessKey string                    `validate:"required"`
