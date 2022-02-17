@@ -2,7 +2,10 @@ package accountV1
 
 import (
 	"encoding/json"
+	"sync"
 )
+
+var lock = &sync.Mutex{}
 
 type AccountDeserializationContainer struct {
 	Account IAccount
@@ -48,6 +51,8 @@ func (c *AccountDeserializationContainer) UnmarshalJSON(js []byte) error {
 
 func GetAccountTypeCacheAdder() AccountTypeProviderCacheAdder {
 	if accountTypeProviderCacher == nil {
+		lock.Lock()
+		defer lock.Unlock()
 		accountTypeProviderCacher = &accountTypeProviderCache{
 			providers: make(map[AccountType]IAccountTypeProvider),
 		}

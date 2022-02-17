@@ -12,11 +12,7 @@ func (p tokenAccountProvider) Factory() IAccount {
 	return new(TokenAccount)
 }
 
-func doTokenAccountTypeRegistration() *tokenAccountProvider {
+func init() {
 	provider := tokenAccountProvider{}
 	GetAccountTypeCacheAdder().Add(provider)
-	return &provider
 }
-
-var _ = doTokenAccountTypeRegistration()
-var _ IAccountTypeProvider = new(tokenAccountProvider)

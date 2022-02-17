@@ -11,11 +11,7 @@ func (p usernamePasswordAccountProvider) Factory() IAccount {
 	return new(UsernamePasswordAccount)
 }
 
-func doUsernamePasswordAccountTypeRegistration() *usernamePasswordAccountProvider {
+func init() {
 	provider := &usernamePasswordAccountProvider{}
 	GetAccountTypeCacheAdder().Add(provider)
-	return provider
 }
-
-var _ = doUsernamePasswordAccountTypeRegistration()
-var _ IAccountTypeProvider = new(usernamePasswordAccountProvider)
