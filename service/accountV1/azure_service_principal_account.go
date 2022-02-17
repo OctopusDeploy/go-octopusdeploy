@@ -9,6 +9,8 @@ import (
 	uuid "github.com/google/uuid"
 )
 
+const AzureServicePrincipalAccountType AccountType = AccountType("AzureServicePrincipal")
+
 // AzureServicePrincipalAccount represents an Azure service principal accountV1.
 type AzureServicePrincipalAccount struct {
 	ApplicationID           *uuid.UUID                `validate:"required"`
