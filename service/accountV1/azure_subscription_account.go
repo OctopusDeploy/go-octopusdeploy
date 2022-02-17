@@ -9,6 +9,8 @@ import (
 	uuid "github.com/google/uuid"
 )
 
+const AzureSubscriptionAccountType AccountType = AccountType("AzureSubscription")
+
 // AzureSubscriptionAccount represents an Azure subscription accountV1.
 type AzureSubscriptionAccount struct {
 	AzureEnvironment      string `validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
