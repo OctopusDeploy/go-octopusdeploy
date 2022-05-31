@@ -1,9 +1,12 @@
 package octopusdeploy
 
 import (
+	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
+	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -52,47 +55,70 @@ func TestAmazonWebServicesAccountNew(t *testing.T) {
 	require.Equal(t, secretKey, account.SecretKey)
 }
 
+func TestAmazonWebServicesAccountMarshalJSON(t *testing.T) {
+	accessKey := getRandomName()
+	name := getRandomName()
+	secretKey := NewSensitiveValue(getRandomName())
+
+	secretKeyAsJSON, err := json.Marshal(secretKey)
+	require.NoError(t, err)
+	require.NotNil(t, secretKeyAsJSON)
+
+	expectedJson := fmt.Sprintf(`{
+		"AccessKey": "%s",
+		"AccountType": "AmazonWebServicesAccount",
+		"Name": "%s",
+		"SecretKey": %s,
+		"TenantedDeploymentParticipation": "Untenanted"
+	}`, accessKey, name, secretKeyAsJSON)
+
+	account, err := NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	require.NoError(t, err)
+	require.NotNil(t, account)
+
+	accountAsJSON, err := json.Marshal(account)
+	require.NoError(t, err)
+	require.NotNil(t, accountAsJSON)
+
+	jsonassert.New(t).Assertf(expectedJson, string(accountAsJSON))
+}
+
 func TestAmazonWebServicesAccountNewWithConfigs(t *testing.T) {
 	accessKey := getRandomName()
 	accountType := AccountTypeAmazonWebServicesAccount
 	environmentIDs := []string{"environment-id-1", "environment-id-2"}
-	invalidID := getRandomName()
-	invalidModifiedBy := getRandomName()
-	invalidModifiedOn := time.Now()
-	invalidName := getRandomName()
+	id := getRandomName()
+	modifiedBy := getRandomName()
+	modifiedOn := time.Now()
 	name := getRandomName()
 	description := "Description for " + name + " (OK to Delete)"
 	secretKey := NewSensitiveValue(getRandomName())
 	spaceID := getRandomName()
 	tenantedDeploymentMode := TenantedDeploymentMode("Tenanted")
 
-	options := func(a *AmazonWebServicesAccount) {
-		a.Description = description
-		a.EnvironmentIDs = environmentIDs
-		a.ID = invalidID
-		a.ModifiedBy = invalidModifiedBy
-		a.ModifiedOn = &invalidModifiedOn
-		a.Name = invalidName
-		a.SecretKey = secretKey
-		a.SpaceID = spaceID
-		a.TenantedDeploymentMode = tenantedDeploymentMode
-	}
-
-	account, err := NewAmazonWebServicesAccount(name, accessKey, secretKey, options)
+	account, err := NewAmazonWebServicesAccount(name, accessKey, secretKey)
 	require.NoError(t, err)
 	require.NotNil(t, account)
 	require.NoError(t, account.Validate())
 
+	account.Description = description
+	account.EnvironmentIDs = environmentIDs
+	account.ID = id
+	account.ModifiedBy = modifiedBy
+	account.ModifiedOn = &modifiedOn
+	account.SpaceID = spaceID
+	account.TenantedDeploymentMode = tenantedDeploymentMode
+
 	// resource
-	require.Equal(t, emptyString, account.ID)
-	require.Equal(t, emptyString, account.ModifiedBy)
-	require.Nil(t, account.ModifiedOn)
+	require.Equal(t, id, account.ID)
+	require.Equal(t, modifiedBy, account.ModifiedBy)
+	require.Equal(t, &modifiedOn, account.ModifiedOn)
 	require.NotNil(t, account.Links)
 
 	// IResource
-	require.Equal(t, emptyString, account.GetID())
-	require.Equal(t, emptyString, account.GetModifiedBy())
-	require.Nil(t, account.GetModifiedOn())
+	require.Equal(t, id, account.GetID())
+	require.Equal(t, modifiedBy, account.GetModifiedBy())
+	require.Equal(t, &modifiedOn, account.GetModifiedOn())
 	require.NotNil(t, account.GetLinks())
 
 	// account
