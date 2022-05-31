@@ -7,7 +7,24 @@ import (
 )
 
 func TestToAccount(t *testing.T) {
-	account, err := ToAccount(nil)
+	var accountResource *AccountResource
+	account, err := ToAccount(accountResource)
 	require.Nil(t, account)
 	require.Error(t, err)
+
+	accountResource = NewAccountResource("", "")
+	account, err = ToAccount(accountResource)
+	require.Nil(t, account)
+	require.Error(t, err)
+
+	accountResource = NewAccountResource(getRandomName(), "")
+	account, err = ToAccount(accountResource)
+	require.Nil(t, account)
+	require.Error(t, err)
+
+	accountResource = NewAccountResource(getRandomName(), AccountTypeUsernamePassword)
+	account, err = ToAccount(accountResource)
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.EqualValues(t, account.GetAccountType(), "UsernamePassword")
 }
