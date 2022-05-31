@@ -184,7 +184,7 @@ func DeleteTestAccount(t *testing.T, client *octopusdeploy.Client, account octop
 	assert.Nil(t, deletedAccount)
 }
 
-func IsEqualAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octopusdeploy.IAccount) {
+func CompareAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octopusdeploy.IAccount) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -201,9 +201,67 @@ func IsEqualAccounts(t *testing.T, expected octopusdeploy.IAccount, actual octop
 	assert.Equal(t, expected.GetID(), actual.GetID())
 	assert.True(t, IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
 
-	// IAccount
-	assert.Equal(t, expected.GetAccountType(), actual.GetAccountType())
+	// IHasName
 	assert.Equal(t, expected.GetName(), actual.GetName())
+
+	// IHasSpace
+	assert.Equal(t, expected.GetSpaceID(), actual.GetSpaceID())
+
+	// IAccount
+	require.Equal(t, expected.GetAccountType(), actual.GetAccountType())
+	assert.Equal(t, expected.GetDescription(), actual.GetDescription())
+	assert.Equal(t, expected.GetEnvironmentIDs(), actual.GetEnvironmentIDs())
+	assert.Equal(t, expected.GetTenantedDeploymentMode(), actual.GetTenantedDeploymentMode())
+	assert.Equal(t, expected.GetTenantIDs(), actual.GetTenantIDs())
+	assert.Equal(t, expected.GetTenantTags(), actual.GetTenantTags())
+
+	// the account types are equal -- therefore, it is assumed safe to perform a type assertion
+
+	switch actual.GetAccountType() {
+	case octopusdeploy.AccountTypeAmazonWebServicesAccount:
+		expectedToCompare := expected.(*octopusdeploy.AmazonWebServicesAccount)
+		actualToCompare := actual.(*octopusdeploy.AmazonWebServicesAccount)
+		assert.Equal(t, expectedToCompare.AccessKey, actualToCompare.AccessKey)
+		assert.Equal(t, expectedToCompare.SecretKey, actualToCompare.SecretKey)
+	case octopusdeploy.AccountTypeAzureServicePrincipal:
+		expectedToCompare := expected.(*octopusdeploy.AzureServicePrincipalAccount)
+		actualToCompare := actual.(*octopusdeploy.AzureServicePrincipalAccount)
+		assert.Equal(t, expectedToCompare.ApplicationID, actualToCompare.ApplicationID)
+		assert.Equal(t, expectedToCompare.ApplicationPassword, actualToCompare.ApplicationPassword)
+		assert.Equal(t, expectedToCompare.AuthenticationEndpoint, actualToCompare.AuthenticationEndpoint)
+		assert.Equal(t, expectedToCompare.AzureEnvironment, actualToCompare.AzureEnvironment)
+		assert.Equal(t, expectedToCompare.ResourceManagerEndpoint, actualToCompare.ResourceManagerEndpoint)
+		assert.Equal(t, expectedToCompare.SubscriptionID, actualToCompare.SubscriptionID)
+		assert.Equal(t, expectedToCompare.TenantID, actualToCompare.TenantID)
+	case octopusdeploy.AccountTypeAzureSubscription:
+		expectedToCompare := expected.(*octopusdeploy.AzureSubscriptionAccount)
+		actualToCompare := actual.(*octopusdeploy.AzureSubscriptionAccount)
+		assert.Equal(t, expectedToCompare.AzureEnvironment, actualToCompare.AzureEnvironment)
+		assert.Equal(t, expectedToCompare.CertificateBytes, actualToCompare.CertificateBytes)
+		assert.Equal(t, expectedToCompare.CertificateThumbprint, actualToCompare.CertificateThumbprint)
+		assert.Equal(t, expectedToCompare.ManagementEndpoint, actualToCompare.ManagementEndpoint)
+		assert.Equal(t, expectedToCompare.StorageEndpointSuffix, actualToCompare.StorageEndpointSuffix)
+		assert.Equal(t, expectedToCompare.SubscriptionID, actualToCompare.SubscriptionID)
+	case octopusdeploy.AccountTypeGoogleCloudPlatformAccount:
+		expectedToCompare := expected.(*octopusdeploy.GoogleCloudPlatformAccount)
+		actualToCompare := actual.(*octopusdeploy.GoogleCloudPlatformAccount)
+		assert.Equal(t, expectedToCompare.JsonKey, actualToCompare.JsonKey)
+	case octopusdeploy.AccountTypeSSHKeyPair:
+		expectedToCompare := expected.(*octopusdeploy.SSHKeyAccount)
+		actualToCompare := actual.(*octopusdeploy.SSHKeyAccount)
+		assert.Equal(t, expectedToCompare.PrivateKeyFile, actualToCompare.PrivateKeyFile)
+		assert.Equal(t, expectedToCompare.PrivateKeyPassphrase, actualToCompare.PrivateKeyPassphrase)
+		assert.Equal(t, expectedToCompare.Username, actualToCompare.Username)
+	case octopusdeploy.AccountTypeToken:
+		expectedToCompare := expected.(*octopusdeploy.TokenAccount)
+		actualToCompare := actual.(*octopusdeploy.TokenAccount)
+		assert.Equal(t, expectedToCompare.Token, actualToCompare.Token)
+	case octopusdeploy.AccountTypeUsernamePassword:
+		expectedToCompare := expected.(*octopusdeploy.UsernamePasswordAccount)
+		actualToCompare := actual.(*octopusdeploy.UsernamePasswordAccount)
+		assert.Equal(t, expectedToCompare.Password, actualToCompare.Password)
+		assert.Equal(t, expectedToCompare.Username, actualToCompare.Username)
+	}
 }
 
 func UpdateAccount(t *testing.T, client *octopusdeploy.Client, account octopusdeploy.IAccount) octopusdeploy.IAccount {
@@ -281,17 +339,30 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 			PartialName: name,
 			Take:        1,
 		}
+
 		namedAccounts, err := client.Accounts.Get(query)
 		require.NoError(t, err)
 		require.NotNil(t, namedAccounts)
-		IsEqualAccounts(t, account, namedAccounts.Items[0])
+
+		for _, namedAccount := range namedAccounts.Items {
+			accountToCompare, err := client.Accounts.GetByID(namedAccount.GetID())
+			require.NoError(t, err)
+			require.NotNil(t, accountToCompare)
+			CompareAccounts(t, namedAccount, accountToCompare)
+		}
 
 		accountToCompare, err := client.Accounts.GetByID(account.GetID())
 		require.NoError(t, err)
 		require.NotNil(t, accountToCompare)
-		IsEqualAccounts(t, account, accountToCompare)
 
-		accountUsages, err := client.Accounts.GetUsages(accounts[0])
+		for _, namedAccount := range namedAccounts.Items {
+			accountToCompare, err := client.Accounts.GetByID(namedAccount.GetID())
+			require.NoError(t, err)
+			require.NotNil(t, accountToCompare)
+			CompareAccounts(t, namedAccount, accountToCompare)
+		}
+
+		accountUsages, err := client.Accounts.GetUsages(account)
 		require.NoError(t, err)
 		require.NotNil(t, accountUsages)
 	}
@@ -314,7 +385,7 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 		for _, account := range accounts.Items {
 			accountToCompare, err := client.Accounts.GetByID(account.GetID())
 			require.NoError(t, err)
-			IsEqualAccounts(t, account, accountToCompare)
+			CompareAccounts(t, account, accountToCompare)
 		}
 	}
 }
@@ -338,7 +409,7 @@ func TestAccountServiceGetByID(t *testing.T) {
 	for _, account := range accounts {
 		accountToCompare, err := client.Accounts.GetByID(account.GetID())
 		require.NoError(t, err)
-		IsEqualAccounts(t, account, accountToCompare)
+		CompareAccounts(t, account, accountToCompare)
 	}
 }
 
@@ -379,7 +450,7 @@ func TestAccountServiceTokenAccounts(t *testing.T) {
 	for _, account := range accounts {
 		accountToCompare, err := client.Accounts.GetByID(account.GetID())
 		require.NoError(t, err)
-		IsEqualAccounts(t, account, accountToCompare)
+		CompareAccounts(t, account, accountToCompare)
 	}
 }
 
@@ -389,35 +460,35 @@ func TestAccountServiceUpdate(t *testing.T) {
 
 	expected := CreateTestAzureServicePrincipalAccount(t, client)
 	actual := UpdateAccount(t, client, expected)
-	IsEqualAccounts(t, expected, actual)
+	CompareAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
 	defer DeleteTestAccount(t, client, expected)
 
 	expected = CreateTestAzureSubscriptionAccount(t, client)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, client, expected)
-	IsEqualAccounts(t, expected, actual)
+	CompareAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
 	defer DeleteTestAccount(t, client, expected)
 
 	expected = CreateTestSSHKeyAccount(t, client)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, client, expected)
-	IsEqualAccounts(t, expected, actual)
+	CompareAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
 	defer DeleteTestAccount(t, client, expected)
 
 	expected = CreateTestTokenAccount(t, client)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, client, expected)
-	IsEqualAccounts(t, expected, actual)
+	CompareAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
 	defer DeleteTestAccount(t, client, expected)
 
 	expected = CreateTestUsernamePasswordAccount(t, client)
 	expected.SetName(getRandomName())
 	actual = UpdateAccount(t, client, expected)
-	IsEqualAccounts(t, expected, actual)
+	CompareAccounts(t, expected, actual)
 	ValidateAccount(t, actual)
 	defer DeleteTestAccount(t, client, expected)
 }
