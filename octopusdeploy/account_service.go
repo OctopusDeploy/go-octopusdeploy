@@ -24,17 +24,12 @@ func (s *accountService) Add(account IAccount) (IAccount, error) {
 		return nil, createInvalidParameterError(OperationAdd, ParameterAccount)
 	}
 
-	accountResource, err := ToAccountResource(account)
+	response, err := apiAdd(s.getClient(), account, account, s.BasePath)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := apiAdd(s.getClient(), accountResource, new(AccountResource), s.BasePath)
-	if err != nil {
-		return nil, err
-	}
-
-	return ToAccount(response.(*AccountResource))
+	return response.(IAccount), nil
 }
 
 // Get returns a collection of accounts based on the criteria defined by its
