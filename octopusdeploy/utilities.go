@@ -87,9 +87,6 @@ func isNil(i interface{}) bool {
 	case *Environment:
 		v := i.(*Environment)
 		ret = v == nil
-	case *Feed:
-		v := i.(*Feed)
-		ret = v == nil
 	case *GoogleCloudPlatformAccount:
 		v := i.(*GoogleCloudPlatformAccount)
 		ret = v == nil

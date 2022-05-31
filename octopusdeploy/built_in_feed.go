@@ -7,22 +7,35 @@ import (
 
 // BuiltInFeed represents a built-in feed.
 type BuiltInFeed struct {
-	DeleteUnreleasedPackagesAfterDays *int `json:"DeleteUnreleasedPackagesAfterDays,omitempty"`
+	DeleteUnreleasedPackagesAfterDays int  `json:"DeleteUnreleasedPackagesAfterDays"`
 	DownloadAttempts                  int  `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds       int  `json:"DownloadRetryBackoffSeconds"`
 	IsBuiltInRepoSyncEnabled          bool `json:"IsBuiltInRepoSyncEnabled"`
 
-	Feed
+	feed
 }
 
 // NewBuiltInFeed creates and initializes a built-in feed.
-func NewBuiltInFeed(name string, feedURI string) *BuiltInFeed {
-	return &BuiltInFeed{
-		DownloadAttempts:            5,
-		DownloadRetryBackoffSeconds: 10,
-		IsBuiltInRepoSyncEnabled:    false,
-		Feed:                        *newFeed(name, FeedTypeBuiltIn),
+func NewBuiltInFeed(name string) (*BuiltInFeed, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
+
+	feed := BuiltInFeed{
+		DeleteUnreleasedPackagesAfterDays: 30,
+		DownloadAttempts:                  5,
+		DownloadRetryBackoffSeconds:       10,
+		IsBuiltInRepoSyncEnabled:          false,
+		feed:                              *newFeed(name, FeedTypeBuiltIn),
+	}
+
+	// validate to ensure that all expectations are met
+	err := feed.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &feed, nil
 }
 
 // Validate checks the state of this built-in feed and returns an error if

@@ -12,18 +12,30 @@ type NuGetFeed struct {
 	EnhancedMode                bool   `json:"EnhancedMode"`
 	FeedURI                     string `json:"FeedUri,omitempty"`
 
-	Feed
+	feed
 }
 
 // NewNuGetFeed creates and initializes a NuGet feed.
-func NewNuGetFeed(name string, feedURI string) *NuGetFeed {
-	return &NuGetFeed{
+func NewNuGetFeed(name string, feedURI string) (*NuGetFeed, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
+	}
+
+	feed := NuGetFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
 		EnhancedMode:                false,
 		FeedURI:                     feedURI,
-		Feed:                        *newFeed(name, FeedTypeNuGet),
+		feed:                        *newFeed(name, FeedTypeNuGet),
 	}
+
+	// validate to ensure that all expectations are met
+	err := feed.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &feed, nil
 }
 
 // Validate checks the state of this NuGet feed and returns an error if invalid.

@@ -11,19 +11,29 @@ type GitHubRepositoryFeed struct {
 	DownloadRetryBackoffSeconds int    `json:"DownloadRetryBackoffSeconds"`
 	FeedURI                     string `json:"FeedUri,omitempty"`
 
-	Feed
+	feed
 }
 
 // NewGitHubRepositoryFeed creates and initializes a GitHub repository feed.
-func NewGitHubRepositoryFeed(name string) *GitHubRepositoryFeed {
-	gitHubRepositoryFeed := GitHubRepositoryFeed{
+func NewGitHubRepositoryFeed(name string) (*GitHubRepositoryFeed, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
+	}
+
+	feed := GitHubRepositoryFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
-		Feed:                        *newFeed(name, FeedTypeGitHub),
+		FeedURI:                     "https://api.github.com",
+		feed:                        *newFeed(name, FeedTypeGitHub),
 	}
-	gitHubRepositoryFeed.FeedURI = "https://api.github.com"
 
-	return &gitHubRepositoryFeed
+	// validate to ensure that all expectations are met
+	err := feed.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &feed, nil
 }
 
 // Validate checks the state of this GitHub repository feed and returns an

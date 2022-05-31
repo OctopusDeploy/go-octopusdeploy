@@ -11,19 +11,29 @@ type MavenFeed struct {
 	DownloadRetryBackoffSeconds int    `json:"DownloadRetryBackoffSeconds"`
 	FeedURI                     string `json:"FeedUri,omitempty"`
 
-	Feed
+	feed
 }
 
 // NewMavenFeed creates and initializes a Maven feed.
-func NewMavenFeed(name string) *MavenFeed {
-	mavenFeed := MavenFeed{
+func NewMavenFeed(name string) (*MavenFeed, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
+	}
+
+	feed := MavenFeed{
 		DownloadAttempts:            5,
 		DownloadRetryBackoffSeconds: 10,
-		Feed:                        *newFeed(name, FeedTypeMaven),
+		FeedURI:                     "https://repo.maven.apache.org/maven2/",
+		feed:                        *newFeed(name, FeedTypeMaven),
 	}
-	mavenFeed.FeedURI = "https://repo.maven.apache.org/maven2/"
 
-	return &mavenFeed
+	// validate to ensure that all expectations are met
+	err := feed.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &feed, nil
 }
 
 // Validate checks the state of this Maven feed and returns an error if invalid.

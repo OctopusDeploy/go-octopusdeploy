@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -41,7 +40,8 @@ func CreateTestAwsElasticContainerRegistry(t *testing.T, client *octopusdeploy.C
 	secretKey := octopusdeploy.NewSensitiveValue("secret-key")
 	region := "ap-southeast-2"
 
-	feed := octopusdeploy.NewAwsElasticContainerRegistry(getRandomName(), accessKey, secretKey, region)
+	feed, err := octopusdeploy.NewAwsElasticContainerRegistry(getRandomName(), accessKey, secretKey, region)
+	require.NoError(t, err)
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -55,7 +55,8 @@ func CreateTestGitHubRepositoryFeed(t *testing.T, client *octopusdeploy.Client) 
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewGitHubRepositoryFeed(getRandomName())
+	feed, err := octopusdeploy.NewGitHubRepositoryFeed(getRandomName())
+	require.NoError(t, err)
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -69,7 +70,8 @@ func CreateTestHelmFeed(t *testing.T, client *octopusdeploy.Client) octopusdeplo
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewHelmFeed(getRandomName())
+	feed, err := octopusdeploy.NewHelmFeed(getRandomName())
+	require.NoError(t, err)
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -83,7 +85,8 @@ func CreateTestMavenFeed(t *testing.T, client *octopusdeploy.Client) octopusdepl
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewMavenFeed(getRandomName())
+	feed, err := octopusdeploy.NewMavenFeed(getRandomName())
+	require.NoError(t, err)
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -97,7 +100,8 @@ func CreateTestNuGetFeed(t *testing.T, client *octopusdeploy.Client) octopusdepl
 	}
 	require.NotNil(t, client)
 
-	feed := octopusdeploy.NewNuGetFeed(getRandomName(), "https://api.nuget.org/v3/index.json")
+	feed, err := octopusdeploy.NewNuGetFeed(getRandomName(), "https://api.nuget.org/v3/index.json")
+	require.NoError(t, err)
 
 	resource, err := client.Feeds.Add(feed)
 	require.NoError(t, err)
@@ -113,13 +117,16 @@ func DeleteTestFeed(t *testing.T, client *octopusdeploy.Client, feed octopusdepl
 	}
 	require.NotNil(t, client)
 
-	err := client.Feeds.DeleteByID(feed.GetID())
-	assert.NoError(t, err)
+	// built-in feeds cannot be deleted
+	if feed.GetFeedType() != octopusdeploy.FeedTypeBuiltIn && feed.GetFeedType() != octopusdeploy.FeedTypeOctopusProject {
+		err := client.Feeds.DeleteByID(feed.GetID())
+		require.NoError(t, err)
 
-	// verify the delete operation was successful
-	deletedFeed, err := client.Feeds.GetByID(feed.GetID())
-	assert.Error(t, err)
-	assert.Nil(t, deletedFeed)
+		// verify the delete operation was successful
+		deletedFeed, err := client.Feeds.GetByID(feed.GetID())
+		require.Error(t, err)
+		require.Nil(t, deletedFeed)
+	}
 }
 
 func TestFeedServiceAdd(t *testing.T) {
@@ -224,9 +231,7 @@ func TestFeedServiceDeleteAll(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, feed := range feeds {
-		if !strings.Contains(feed.GetID(), "builtin") {
-			defer DeleteTestFeed(t, client, feed)
-		}
+		defer DeleteTestFeed(t, client, feed)
 	}
 }
 
