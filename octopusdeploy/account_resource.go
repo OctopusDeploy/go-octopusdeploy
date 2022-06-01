@@ -16,7 +16,7 @@ type AccountResources struct {
 // username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type AccountResource struct {
 	AccessKey               string                 `json:"AccessKey,omitempty"`
-	AccountType             AccountType            `json:"AccountType"`
+	AccountType             AccountType            `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
 	ApplicationID           *uuid.UUID             `json:"ClientId,omitempty"`
 	ApplicationPassword     *SensitiveValue        `json:"Password,omitempty"`
 	AuthenticationEndpoint  string                 `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
@@ -35,7 +35,7 @@ type AccountResource struct {
 	StorageEndpointSuffix   string                 `json:"ServiceManagementEndpointSuffix,omitempty"`
 	SpaceID                 string                 `json:"SpaceId,omitempty"`
 	SubscriptionID          *uuid.UUID             `json:"SubscriptionNumber,omitempty"`
-	TenantedDeploymentMode  TenantedDeploymentMode `json:"TenantedDeploymentParticipation"`
+	TenantedDeploymentMode  TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 	TenantID                *uuid.UUID             `json:"TenantId,omitempty"`
 	TenantIDs               []string               `json:"TenantIds,omitempty"`
 	TenantTags              []string               `json:"TenantTags,omitempty"`
@@ -50,7 +50,7 @@ func NewAccountResource(name string, accountType AccountType) *AccountResource {
 	return &AccountResource{
 		AccountType:            accountType,
 		Name:                   name,
-		TenantedDeploymentMode: "Untenanted",
+		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
 		resource:               *newResource(),
 	}
 }

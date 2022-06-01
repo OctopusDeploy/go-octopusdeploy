@@ -61,7 +61,16 @@ type IEndpointWithProxy interface {
 type IFeed interface {
 	GetFeedType() FeedType
 	GetName() string
+	GetPackageAcquisitionLocationOptions() []string
+	GetPassword() *SensitiveValue
+	GetSpaceID() string
+	GetUsername() string
+	SetFeedType(FeedType)
 	SetName(string)
+	SetPackageAcquisitionLocationOptions([]string)
+	SetPassword(*SensitiveValue)
+	SetSpaceID(string)
+	SetUsername(string)
 
 	IResource
 }
@@ -139,8 +148,20 @@ type IUsernamePasswordAccount interface {
 
 // IWorkerPool defines the interface for worker pools.
 type IWorkerPool interface {
-	GetWorkerPoolType() WorkerPoolType
+	GetCanAddWorkers() bool
+	GetDescription() string
 	GetIsDefault() bool
+	GetName() string
+	GetSpaceID() string
+	GetSortOrder() int
+	GetWorkerPoolType() WorkerPoolType
+	SetCanAddWorkers(bool)
+	SetDescription(string)
+	SetIsDefault(bool)
+	SetName(string)
+	SetSpaceID(string)
+	SetSortOrder(int)
+	SetWorkerPoolType(WorkerPoolType)
 
 	IHasName
 	IResource

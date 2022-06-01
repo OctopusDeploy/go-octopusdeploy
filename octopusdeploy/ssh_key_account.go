@@ -56,6 +56,11 @@ func NewSSHKeyAccount(name string, username string, privateKeyFile *SensitiveVal
 	return &account, nil
 }
 
+// SetPrivateKeyPassphrase sets the private key [assphrase of this SSH key pair account.
+func (s *SSHKeyAccount) SetPrivateKeyPassphrase(privateKeyPassphrase *SensitiveValue) {
+	s.PrivateKeyPassphrase = privateKeyPassphrase
+}
+
 // Validate checks the state of this account and returns an error if invalid.
 func (s *SSHKeyAccount) Validate() error {
 	v := validator.New()
@@ -69,3 +74,5 @@ func (s *SSHKeyAccount) Validate() error {
 	}
 	return v.Struct(s)
 }
+
+var _ ISSHKeyAccount = &SSHKeyAccount{}

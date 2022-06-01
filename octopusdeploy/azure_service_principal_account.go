@@ -8,20 +8,19 @@ import (
 
 // AzureServicePrincipalAccount represents an Azure service principal account.
 type AzureServicePrincipalAccount struct {
-	ApplicationID           *uuid.UUID      `validate:"required"`
-	ApplicationPassword     *SensitiveValue `validate:"required"`
-	AuthenticationEndpoint  string          `validate:"required_with=AzureEnvironment,omitempty,uri"`
-	AzureEnvironment        string          `validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
-	ResourceManagerEndpoint string          `validate:"required_with=AzureEnvironment,omitempty,uri"`
-	SubscriptionID          *uuid.UUID      `validate:"required"`
-	TenantID                *uuid.UUID      `validate:"required"`
+	ApplicationID           *uuid.UUID      `json:"ClientId" validate:"required"`
+	ApplicationPassword     *SensitiveValue `json:"Password" validate:"required"`
+	AuthenticationEndpoint  string          `json:"ActiveDirectoryEndpointBaseUri,omitempty" validate:"required_with=AzureEnvironment,omitempty,uri"`
+	AzureEnvironment        string          `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
+	ResourceManagerEndpoint string          `json:"ResourceManagementEndpointBaseUri" validate:"required_with=AzureEnvironment,omitempty,uri"`
+	SubscriptionID          *uuid.UUID      `json:"SubscriptionNumber" validate:"required"`
+	TenantID                *uuid.UUID      `json:"TenantId" validate:"required"`
 
 	account
 }
 
-// NewAzureServicePrincipalAccount creates and initializes an Azure service
-// principal account.
-func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UUID, applicationID uuid.UUID, applicationPassword *SensitiveValue, options ...func(*AzureServicePrincipalAccount)) (*AzureServicePrincipalAccount, error) {
+// NewAzureServicePrincipalAccount creates and initializes an Azure service principal account.
+func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UUID, applicationID uuid.UUID, applicationPassword *SensitiveValue) (*AzureServicePrincipalAccount, error) {
 	if isEmpty(name) {
 		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
@@ -31,24 +30,12 @@ func NewAzureServicePrincipalAccount(name string, subscriptionID uuid.UUID, tena
 	}
 
 	account := AzureServicePrincipalAccount{
-		account: *newAccount(name, AccountType("AzureServicePrincipal")),
+		ApplicationID:       &applicationID,
+		ApplicationPassword: applicationPassword,
+		SubscriptionID:      &subscriptionID,
+		TenantID:            &tenantID,
+		account:             *newAccount(name, AccountType("AzureServicePrincipal")),
 	}
-
-	// iterate through configuration options and set fields (without checks)
-	for _, option := range options {
-		option(&account)
-	}
-
-	// assign pre-determined values to "mandatory" fields
-	account.AccountType = AccountType("AzureServicePrincipal")
-	account.ApplicationID = &applicationID
-	account.ApplicationPassword = applicationPassword
-	account.ID = emptyString
-	account.ModifiedBy = emptyString
-	account.ModifiedOn = nil
-	account.Name = name
-	account.SubscriptionID = &subscriptionID
-	account.TenantID = &tenantID
 
 	// validate to ensure that all expectations are met
 	err := account.Validate()

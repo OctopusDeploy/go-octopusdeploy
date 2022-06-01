@@ -7,14 +7,14 @@ import (
 
 // AmazonWebServicesAccount represents an Amazon Web Services (AWS) account.
 type AmazonWebServicesAccount struct {
-	AccessKey string          `validate:"required"`
-	SecretKey *SensitiveValue `validate:"required"`
+	AccessKey string          `json:"AccessKey" validate:"required"`
+	SecretKey *SensitiveValue `json:"SecretKey" validate:"required"`
 
 	account
 }
 
 // NewAmazonWebServicesAccount initializes and returns an AWS account with a name, access key, and secret key.
-func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *SensitiveValue, options ...func(*AmazonWebServicesAccount)) (*AmazonWebServicesAccount, error) {
+func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *SensitiveValue) (*AmazonWebServicesAccount, error) {
 	if isEmpty(name) {
 		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
@@ -28,22 +28,10 @@ func NewAmazonWebServicesAccount(name string, accessKey string, secretKey *Sensi
 	}
 
 	account := AmazonWebServicesAccount{
-		account: *newAccount(name, AccountType("AmazonWebServicesAccount")),
+		AccessKey: accessKey,
+		SecretKey: secretKey,
+		account:   *newAccount(name, AccountType("AmazonWebServicesAccount")),
 	}
-
-	// iterate through configuration options and set fields (without checks)
-	for _, option := range options {
-		option(&account)
-	}
-
-	// assign pre-determined values to "mandatory" fields
-	account.AccessKey = accessKey
-	account.AccountType = AccountType("AmazonWebServicesAccount")
-	account.ID = emptyString
-	account.ModifiedBy = emptyString
-	account.ModifiedOn = nil
-	account.Name = name
-	account.SecretKey = secretKey
 
 	// validate to ensure that all expectations are met
 	err := account.Validate()

@@ -36,8 +36,8 @@ func CreateUsernamePasswordExample() {
 	if err != nil {
 		_ = fmt.Errorf("error creating username/password account: %v", err)
 	}
-	usernamePasswordAccount.Password = octopusdeploy.NewSensitiveValue(password)
-	usernamePasswordAccount.Username = username
+	usernamePasswordAccount.SetPassword(octopusdeploy.NewSensitiveValue(password))
+	usernamePasswordAccount.SetUsername(username)
 
 	// option 2: create a username/password account and assign values to fields
 	// using the variadic configuration option

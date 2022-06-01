@@ -7,14 +7,14 @@ import (
 
 // account is the embedded struct used for all accounts.
 type account struct {
-	AccountType            AccountType `validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
-	Description            string
-	EnvironmentIDs         []string
-	Name                   string `validate:"required,notblank,notall"`
-	SpaceID                string `validate:"omitempty,notblank"`
-	TenantedDeploymentMode TenantedDeploymentMode
-	TenantIDs              []string
-	TenantTags             []string
+	AccountType            AccountType            `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
+	Description            string                 `json:"Description,omitempty"`
+	EnvironmentIDs         []string               `json:"EnvironmentIds,omitempty"`
+	Name                   string                 `json:"Name" validate:"required,notblank,notall"`
+	SpaceID                string                 `json:"SpaceId,omitempty"`
+	TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
+	TenantIDs              []string               `json:"TenantIds,omitempty"`
+	TenantTags             []string               `json:"TenantTags,omitempty"`
 
 	resource
 }

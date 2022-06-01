@@ -8,39 +8,26 @@ import (
 
 // AzureSubscriptionAccount represents an Azure subscription account.
 type AzureSubscriptionAccount struct {
-	AzureEnvironment      string `validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
-	CertificateBytes      *SensitiveValue
-	CertificateThumbprint string
-	ManagementEndpoint    string     `validate:"omitempty,uri"`
-	StorageEndpointSuffix string     `validate:"omitempty,hostname"`
-	SubscriptionID        *uuid.UUID `validate:"required"`
+	AzureEnvironment      string          `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
+	CertificateBytes      *SensitiveValue `json:"CertificateBytes,omitempty"`
+	CertificateThumbprint string          `json:"CertificateThumbprint,omitempty"`
+	ManagementEndpoint    string          `json:"ServiceManagementEndpointBaseUri,omitempty" validate:"omitempty,uri"`
+	StorageEndpointSuffix string          `json:"ServiceManagementEndpointSuffix,omitempty" validate:"omitempty,hostname"`
+	SubscriptionID        *uuid.UUID      `json:"SubscriptionNumber" validate:"required"`
 
 	account
 }
 
-// NewAzureSubscriptionAccount creates and initializes an Azure subscription
-// account with a name.
-func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID, options ...func(*AzureSubscriptionAccount)) (*AzureSubscriptionAccount, error) {
+// NewAzureSubscriptionAccount creates and initializes an Azure subscription account with a name.
+func NewAzureSubscriptionAccount(name string, subscriptionID uuid.UUID) (*AzureSubscriptionAccount, error) {
 	if isEmpty(name) {
 		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
 
 	account := AzureSubscriptionAccount{
-		account: *newAccount(name, AccountType("AzureSubscription")),
+		SubscriptionID: &subscriptionID,
+		account:        *newAccount(name, AccountType("AzureSubscription")),
 	}
-
-	// iterate through configuration options and set fields (without checks)
-	for _, option := range options {
-		option(&account)
-	}
-
-	// assign pre-determined values to "mandatory" fields
-	account.AccountType = AccountType("AzureSubscription")
-	account.ID = emptyString
-	account.ModifiedBy = emptyString
-	account.ModifiedOn = nil
-	account.Name = name
-	account.SubscriptionID = &subscriptionID
 
 	// validate to ensure that all expectations are met
 	err := account.Validate()
