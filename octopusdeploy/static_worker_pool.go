@@ -6,7 +6,7 @@ import (
 )
 
 type StaticWorkerPool struct {
-	WorkerPool
+	workerPool
 }
 
 type StaticWorkerPools struct {
@@ -17,12 +17,8 @@ type StaticWorkerPools struct {
 // NewStaticWorkerPool creates and initializes a static worker pool.
 func NewStaticWorkerPool(name string) *StaticWorkerPool {
 	return &StaticWorkerPool{
-		WorkerPool: *newWorkerPool(name, WorkerPoolTypeStatic),
+		workerPool: *newWorkerPool(name, WorkerPoolTypeStatic),
 	}
-}
-
-func (s *StaticWorkerPool) GetIsDefault() bool {
-	return s.IsDefault
 }
 
 // Validate checks the state of the static worker pool and returns an error if

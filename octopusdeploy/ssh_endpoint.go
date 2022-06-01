@@ -13,7 +13,6 @@ import (
 // fall back to username/password.
 type SSHEndpoint struct {
 	AccountID          string `json:"AccountId,omitempty"`
-	CommunicationStyle string `json:"CommunicationStyle" validate:"required,eq=Ssh"`
 	DotNetCorePlatform string
 	Fingerprint        string
 	Host               string
@@ -21,17 +20,16 @@ type SSHEndpoint struct {
 	Port               int
 	URI                *url.URL `json:"Uri"`
 
-	resource
+	endpoint
 }
 
 // NewSSHEndpoint creates and initializes a new SSH endpoint.
 func NewSSHEndpoint(host string, port int, fingerprint string) *SSHEndpoint {
 	sshEndpoint := &SSHEndpoint{
-		CommunicationStyle: "Ssh",
-		Fingerprint:        fingerprint,
-		Host:               host,
-		Port:               port,
-		resource:           *newResource(),
+		Fingerprint: fingerprint,
+		Host:        host,
+		Port:        port,
+		endpoint:    *newEndpoint("Ssh"),
 	}
 
 	url, _ := url.Parse("ssh://" + host + ":" + strconv.Itoa(port) + "/")

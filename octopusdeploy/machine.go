@@ -105,8 +105,7 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 		URI               string `json:"Uri,omitempty" validate:"omitempty,uri"`
 		resource
 	}
-	err := json.Unmarshal(b, &fields)
-	if err != nil {
+	if err := json.Unmarshal(b, &fields); err != nil {
 		return err
 	}
 
@@ -126,8 +125,7 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 	m.resource = fields.resource
 
 	var machine map[string]*json.RawMessage
-	err = json.Unmarshal(b, &machine)
-	if err != nil {
+	if err := json.Unmarshal(b, &machine); err != nil {
 		return err
 	}
 
@@ -138,13 +136,11 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 	if machine["Endpoint"] != nil {
 		endpointValue := machine["Endpoint"]
 
-		err = json.Unmarshal(*endpointValue, &endpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpointValue, &endpoint); err != nil {
 			return err
 		}
 
-		err = json.Unmarshal(*endpoint, &endpointProperties)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &endpointProperties); err != nil {
 			return err
 		}
 
@@ -157,64 +153,55 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 	switch communicationStyle {
 	case "AzureCloudService":
 		var azureCloudServiceEndpoint *AzureCloudServiceEndpoint
-		err := json.Unmarshal(*endpoint, &azureCloudServiceEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &azureCloudServiceEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = azureCloudServiceEndpoint
 	case "AzureServiceFabricCluster":
 		var azureServiceFabricEndpoint *AzureServiceFabricEndpoint
-		err := json.Unmarshal(*endpoint, &azureServiceFabricEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &azureServiceFabricEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = azureServiceFabricEndpoint
 	case "AzureWebApp":
 		var azureWebAppEndpoint *AzureWebAppEndpoint
-		err := json.Unmarshal(*endpoint, &azureWebAppEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &azureWebAppEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = azureWebAppEndpoint
 	case "Kubernetes":
 		var kubernetesEndpoint *KubernetesEndpoint
-		err := json.Unmarshal(*endpoint, &kubernetesEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &kubernetesEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = kubernetesEndpoint
 	case "None":
 		var cloudRegionEndpoint *CloudRegionEndpoint
-		err := json.Unmarshal(*endpoint, &cloudRegionEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &cloudRegionEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = cloudRegionEndpoint
 	case "OfflineDrop":
 		var offlinePackageDropEndpoint *OfflinePackageDropEndpoint
-		err := json.Unmarshal(*endpoint, &offlinePackageDropEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &offlinePackageDropEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = offlinePackageDropEndpoint
 	case "Ssh":
 		var sshEndpoint *SSHEndpoint
-		err := json.Unmarshal(*endpoint, &sshEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &sshEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = sshEndpoint
 	case "TentacleActive":
 		var pollingTentacleEndpoint *PollingTentacleEndpoint
-		err := json.Unmarshal(*endpoint, &pollingTentacleEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &pollingTentacleEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = pollingTentacleEndpoint
 	case "TentaclePassive":
 		var listeningTentacleEndpoint *ListeningTentacleEndpoint
-		err := json.Unmarshal(*endpoint, &listeningTentacleEndpoint)
-		if err != nil {
+		if err := json.Unmarshal(*endpoint, &listeningTentacleEndpoint); err != nil {
 			return err
 		}
 		m.Endpoint = listeningTentacleEndpoint

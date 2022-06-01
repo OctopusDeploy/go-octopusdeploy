@@ -1,18 +1,24 @@
 package octopusdeploy
 
-import "github.com/go-playground/validator/v10"
+import (
+	"net/url"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type tentacleEndpoint struct {
 	CertificateSignatureAlgorithm string                  `json:"CertificateSignatureAlgorithm,omitempty"`
 	TentacleVersionDetails        *TentacleVersionDetails `json:"TentacleVersionDetails,omitempty"`
 	Thumbprint                    string                  `json:"Thumbprint" validate:"required"`
+	URI                           *url.URL                `json:"Uri" validate:"required,uri"`
 
 	endpoint
 }
 
-func newTentacleEndpoint(communicationStyle string, thumbprint string) *tentacleEndpoint {
+func newTentacleEndpoint(communicationStyle string, thumbprint string, uri *url.URL) *tentacleEndpoint {
 	return &tentacleEndpoint{
 		Thumbprint: thumbprint,
+		URI:        uri,
 		endpoint:   *newEndpoint(communicationStyle),
 	}
 }
