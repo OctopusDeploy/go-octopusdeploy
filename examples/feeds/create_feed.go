@@ -31,7 +31,12 @@ func CreateFeedExample() {
 		return
 	}
 
-	nuGetFeed := octopusdeploy.NewNuGetFeed(feedName, feedURI)
+	nuGetFeed, err := octopusdeploy.NewNuGetFeed(feedName, feedURI)
+	if err != nil {
+		_ = fmt.Errorf("error creating NuGet feed: %v", err)
+		return
+	}
+
 	nuGetFeed.EnhancedMode = useExtendedAPI
 
 	if len(feedUsername) > 0 {

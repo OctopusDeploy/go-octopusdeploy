@@ -9,17 +9,27 @@ import (
 type HelmFeed struct {
 	FeedURI string `json:"FeedUri,omitempty"`
 
-	Feed
+	feed
 }
 
 // NewHelmFeed creates and initializes a Helm feed.
-func NewHelmFeed(name string) *HelmFeed {
-	helmFeed := HelmFeed{
-		Feed: *newFeed(name, FeedTypeHelm),
+func NewHelmFeed(name string) (*HelmFeed, error) {
+	if isEmpty(name) {
+		return nil, createRequiredParameterIsEmptyOrNilError(ParameterName)
 	}
-	helmFeed.FeedURI = "https://kubernetes-charts.storage.googleapis.com"
 
-	return &helmFeed
+	feed := HelmFeed{
+		FeedURI: "https://kubernetes-charts.storage.googleapis.com",
+		feed:    *newFeed(name, FeedTypeHelm),
+	}
+
+	// validate to ensure that all expectations are met
+	err := feed.Validate()
+	if err != nil {
+		return nil, err
+	}
+
+	return &feed, nil
 }
 
 // Validate checks the state of this Helm feed and returns an error if invalid.
