@@ -8,7 +8,7 @@ import (
 type DynamicWorkerPool struct {
 	WorkerType WorkerType `json:"WorkerType"`
 
-	WorkerPool
+	workerPool
 }
 
 type DynamicWorkerPools struct {
@@ -20,7 +20,7 @@ type DynamicWorkerPools struct {
 func NewDynamicWorkerPool(name string, workerType WorkerType) *DynamicWorkerPool {
 	return &DynamicWorkerPool{
 		WorkerType: workerType,
-		WorkerPool: *newWorkerPool(name, WorkerPoolTypeDynamic),
+		workerPool: *newWorkerPool(name, WorkerPoolTypeDynamic),
 	}
 }
 

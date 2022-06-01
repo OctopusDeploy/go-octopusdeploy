@@ -5,8 +5,8 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// WorkerPool is the embedded struct used for all worker pools.
-type WorkerPool struct {
+// workerPool is the embedded struct used for all worker pools.
+type workerPool struct {
 	CanAddWorkers  bool           `json:"CanAddWorkers"`
 	Description    string         `json:"Description,omitempty"`
 	IsDefault      bool           `json:"IsDefault"`
@@ -24,8 +24,8 @@ type WorkerPools struct {
 }
 
 // newWorkerPool creates and initializes a worker pool resource.
-func newWorkerPool(name string, workerPoolType WorkerPoolType) *WorkerPool {
-	return &WorkerPool{
+func newWorkerPool(name string, workerPoolType WorkerPoolType) *workerPool {
+	return &workerPool{
 		CanAddWorkers:  false,
 		Name:           name,
 		SortOrder:      0,
@@ -34,29 +34,68 @@ func newWorkerPool(name string, workerPoolType WorkerPoolType) *WorkerPool {
 	}
 }
 
-// GetIsDefaults returns the default status of this worker pool.
-func (w *WorkerPool) GetIsDefault() bool {
+func (w *workerPool) GetCanAddWorkers() bool {
+	return w.CanAddWorkers
+}
+
+func (w *workerPool) GetDescription() string {
+	return w.Description
+}
+
+func (w *workerPool) GetIsDefault() bool {
 	return w.IsDefault
 }
 
-// GetName returns the name of the worker pool.
-func (w *WorkerPool) GetName() string {
+// GetName returns the name of the worker pool resource.
+func (w *workerPool) GetName() string {
 	return w.Name
 }
 
+func (w *workerPool) GetSpaceID() string {
+	return w.SpaceID
+}
+
+func (w *workerPool) GetSortOrder() int {
+	return w.SortOrder
+}
+
 // GetWorkerPoolType returns the worker type for this worker pool.
-func (w *WorkerPool) GetWorkerPoolType() WorkerPoolType {
+func (w *workerPool) GetWorkerPoolType() WorkerPoolType {
 	return w.WorkerPoolType
 }
 
+func (w *workerPool) SetCanAddWorkers(canAddWorkers bool) {
+	w.CanAddWorkers = canAddWorkers
+}
+
+func (w *workerPool) SetDescription(description string) {
+	w.Description = description
+}
+
+func (w *workerPool) SetIsDefault(isDefault bool) {
+	w.IsDefault = isDefault
+}
+
 // SetName sets the name of the worker pool.
-func (w *WorkerPool) SetName(name string) {
+func (w *workerPool) SetName(name string) {
 	w.Name = name
+}
+
+func (w *workerPool) SetSpaceID(spaceID string) {
+	w.SpaceID = spaceID
+}
+
+func (w *workerPool) SetSortOrder(sortOrder int) {
+	w.SortOrder = sortOrder
+}
+
+func (w *workerPool) SetWorkerPoolType(workerPoolType WorkerPoolType) {
+	w.WorkerPoolType = workerPoolType
 }
 
 // Validate checks the state of the worker pool and returns an error if
 // invalid.
-func (w *WorkerPool) Validate() error {
+func (w *workerPool) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
@@ -65,5 +104,5 @@ func (w *WorkerPool) Validate() error {
 	return v.Struct(w)
 }
 
-var _ IHasName = &WorkerPool{}
-var _ IWorkerPool = &WorkerPool{}
+var _ IHasName = &workerPool{}
+var _ IWorkerPool = &workerPool{}

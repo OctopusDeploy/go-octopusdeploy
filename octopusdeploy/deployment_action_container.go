@@ -5,15 +5,15 @@ type DeploymentActionContainer struct {
 	Image  string `json:"Image,omitempty"`
 }
 
-// NewKubernetesEndpoint creates and initializes a new Kubernetes endpoint.
+// NewDeploymentActionContainer creates and initializes a new Kubernetes endpoint.
 func NewDeploymentActionContainer(feedID *string, image *string) *DeploymentActionContainer {
 	deploymentActionContainer := &DeploymentActionContainer{}
 
-	if len(*feedID) > 0 {
+	if feedID != nil && len(*feedID) > 0 {
 		deploymentActionContainer.FeedID = *feedID
 	}
 
-	if len(*image) > 0 {
+	if image != nil && len(*image) > 0 {
 		deploymentActionContainer.Image = *image
 	}
 

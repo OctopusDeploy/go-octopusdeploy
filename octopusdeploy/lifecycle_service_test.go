@@ -122,13 +122,12 @@ func TestLifecycleServiceStringParameters(t *testing.T) {
 
 func TestLifecycleServiceAdd(t *testing.T) {
 	service := createLifecycleService(t)
-	resource, err := service.Add(nil)
 
+	resource, err := service.Add(nil)
 	assert.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterResource))
 	assert.Nil(t, resource)
 
 	resource, err = service.Add(&Lifecycle{})
-
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
@@ -136,13 +135,9 @@ func TestLifecycleServiceAdd(t *testing.T) {
 	require.NotNil(t, resource)
 
 	resource, err = service.Add(resource)
-
 	assert.NoError(t, err)
 	assert.NotNil(t, resource)
-
-	err = service.DeleteByID(resource.GetID())
-
-	assert.NoError(t, err)
+	defer service.DeleteByID(resource.GetID())
 }
 
 func TestLifecycleServiceGetWithEmptyID(t *testing.T) {

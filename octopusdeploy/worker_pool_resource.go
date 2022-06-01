@@ -32,18 +32,29 @@ func NewWorkerPoolResource(name string, workerPoolType WorkerPoolType) *WorkerPo
 	}
 }
 
+func (w *WorkerPoolResource) GetCanAddWorkers() bool {
+	return w.CanAddWorkers
+}
+
+func (w *WorkerPoolResource) GetDescription() string {
+	return w.Description
+}
+
+func (w *WorkerPoolResource) GetIsDefault() bool {
+	return w.IsDefault
+}
+
 // GetName returns the name of the worker pool resource.
 func (w *WorkerPoolResource) GetName() string {
 	return w.Name
 }
 
-// SetName sets the name of the worker pool resource.
-func (w *WorkerPoolResource) SetName(name string) {
-	w.Name = name
+func (w *WorkerPoolResource) GetSpaceID() string {
+	return w.SpaceID
 }
 
-func (w *WorkerPoolResource) GetIsDefault() bool {
-	return w.IsDefault
+func (w *WorkerPoolResource) GetSortOrder() int {
+	return w.SortOrder
 }
 
 // GetWorkerPoolType returns the worker type for this worker pool resource.
@@ -54,6 +65,39 @@ func (w *WorkerPoolResource) GetWorkerPoolType() WorkerPoolType {
 // GetWorkerType returns the worker type for this worker pool resource.
 func (w *WorkerPoolResource) GetWorkerType() WorkerType {
 	return w.WorkerType
+}
+
+func (w *WorkerPoolResource) SetCanAddWorkers(canAddWorkers bool) {
+	w.CanAddWorkers = canAddWorkers
+}
+
+func (w *WorkerPoolResource) SetDescription(description string) {
+	w.Description = description
+}
+
+func (w *WorkerPoolResource) SetIsDefault(isDefault bool) {
+	w.IsDefault = isDefault
+}
+
+// SetName sets the name of the worker pool resource.
+func (w *WorkerPoolResource) SetName(name string) {
+	w.Name = name
+}
+
+func (w *WorkerPoolResource) SetSpaceID(spaceID string) {
+	w.SpaceID = spaceID
+}
+
+func (w *WorkerPoolResource) SetSortOrder(sortOrder int) {
+	w.SortOrder = sortOrder
+}
+
+func (w *WorkerPoolResource) SetWorkerPoolType(workerPoolType WorkerPoolType) {
+	w.WorkerPoolType = workerPoolType
+}
+
+func (w *WorkerPoolResource) SetWorkerType(workerType WorkerType) {
+	w.WorkerType = workerType
 }
 
 // Validate checks the state of the worker pool resource and returns an error

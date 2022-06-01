@@ -70,22 +70,22 @@ func TestListeningTentacleEndpointUnmarshalJSON(t *testing.T) {
 }
 
 const listeningTentacleEndpointAsJSON string = `{
-  "CommunicationStyle": "TentaclePassive",
-  "Uri": "https://example.com",
-  "ProxyId": "fake-proxy-id",
-  "Thumbprint": "0E80576D3BD8D40854802A4F8340A2E23AE961FD",
-  "TentacleVersionDetails": {
-	"UpgradeLocked": true,
-	"Version": "1.2.3",
-	"UpgradeSuggested": true,
-	"UpgradeRequired": false
-  },
   "CertificateSignatureAlgorithm": "fake-algorithm-1",
+  "CommunicationStyle": "TentaclePassive",
   "Id": "endpoint-123",
-  "LastModifiedOn": "2020-10-02T00:44:11.284Z",
   "LastModifiedBy": "john.smith@example.com",
+  "LastModifiedOn": "2020-10-02T00:44:11.284Z",
   "Links": {
     "Self": "/api/Spaces-1/fake/fake-1",
     "Fake-2": "/api/Spaces-1/fake/fake-1/fake-2"
-  }
+  },
+  "ProxyId": "fake-proxy-id",
+  "TentacleVersionDetails": {
+	"UpgradeLocked": true,
+	"UpgradeRequired": false,
+	"UpgradeSuggested": true,
+	"Version": "1.2.3"
+  },
+  "Thumbprint": "0E80576D3BD8D40854802A4F8340A2E23AE961FD",
+  "Uri": "https://example.com"
 }`

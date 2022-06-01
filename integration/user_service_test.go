@@ -96,11 +96,15 @@ func TestUserServiceAddGetDelete(t *testing.T) {
 		query := octopusdeploy.UsersQuery{
 			IDs: []string{user.GetID()},
 		}
+
 		usersToCompare, err := client.Users.Get(query)
 		require.NoError(t, err)
 		require.NotNil(t, usersToCompare)
+
 		for _, userToCompare := range usersToCompare.Items {
-			AssertEqualUsers(t, user, userToCompare)
+			if user.GetID() == userToCompare.GetID() {
+				AssertEqualUsers(t, user, userToCompare)
+			}
 		}
 
 		userToCompare, err := client.Users.GetByID(user.GetID())

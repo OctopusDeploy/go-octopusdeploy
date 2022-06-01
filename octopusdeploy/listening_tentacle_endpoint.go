@@ -8,70 +8,72 @@ import (
 )
 
 type ListeningTentacleEndpoint struct {
-	ProxyID string   `json:"ProxyId,omitempty"`
-	URI     *url.URL `json:"Uri" validate:"required,uri"`
+	ProxyID string `json:"ProxyId,omitempty"`
 
 	tentacleEndpoint
 }
 
 func NewListeningTentacleEndpoint(uri *url.URL, thumbprint string) *ListeningTentacleEndpoint {
 	return &ListeningTentacleEndpoint{
-		URI:              uri,
-		tentacleEndpoint: *newTentacleEndpoint("TentaclePassive", thumbprint),
+		tentacleEndpoint: *newTentacleEndpoint("TentaclePassive", thumbprint, uri),
 	}
 }
 
 func (l ListeningTentacleEndpoint) MarshalJSON() ([]byte, error) {
-	listeningTentacleEndpoint := struct {
-		ProxyID string `json:"ProxyId,omitempty"`
-		URI     string `json:"Uri,omitempty"`
-		tentacleEndpoint
+	te := struct {
+		CertificateSignatureAlgorithm string                  `json:"CertificateSignatureAlgorithm,omitempty"`
+		ProxyID                       string                  `json:"ProxyId,omitempty"`
+		TentacleVersionDetails        *TentacleVersionDetails `json:"TentacleVersionDetails,omitempty"`
+		Thumbprint                    string                  `json:"Thumbprint" validate:"required"`
+		URI                           string                  `json:"Uri" validate:"required,uri"`
+		endpoint
 	}{
-		ProxyID:          l.ProxyID,
-		tentacleEndpoint: l.tentacleEndpoint,
+		CertificateSignatureAlgorithm: l.CertificateSignatureAlgorithm,
+		ProxyID:                       l.ProxyID,
+		TentacleVersionDetails:        l.TentacleVersionDetails,
+		Thumbprint:                    l.Thumbprint,
+		endpoint:                      l.endpoint,
 	}
 
 	if l.URI != nil {
-		listeningTentacleEndpoint.URI = l.URI.String()
+		te.URI = l.URI.String()
 	}
 
-	return json.Marshal(listeningTentacleEndpoint)
+	return json.Marshal(te)
 }
 
-// UnmarshalJSON sets this listening tentacle endpoint to its representation in
-// JSON.
+// UnmarshalJSON sets this tentacle endpoint to its representation in JSON.
 func (l *ListeningTentacleEndpoint) UnmarshalJSON(b []byte) error {
 	var fields struct {
-		ProxyID string `json:"ProxyId,omitempty"`
-		URI     string `json:"Uri" validate:"required,uri"`
-		tentacleEndpoint
+		CertificateSignatureAlgorithm string                  `json:"CertificateSignatureAlgorithm,omitempty"`
+		ProxyID                       string                  `json:"ProxyId,omitempty"`
+		TentacleVersionDetails        *TentacleVersionDetails `json:"TentacleVersionDetails,omitempty"`
+		Thumbprint                    string                  `json:"Thumbprint" validate:"required"`
+		URI                           string                  `json:"Uri" validate:"required,uri"`
+		endpoint
 	}
-	err := json.Unmarshal(b, &fields)
-	if err != nil {
+
+	if err := json.Unmarshal(b, &fields); err != nil {
 		return err
 	}
 
 	// validate JSON representation
 	validate := validator.New()
-	err = validate.Struct(fields)
-	if err != nil {
+	if err := validate.Struct(fields); err != nil {
 		return err
 	}
-
-	l.ProxyID = fields.ProxyID
-	l.tentacleEndpoint = fields.tentacleEndpoint
 
 	u, err := url.Parse(fields.URI)
 	if err != nil {
 		return err
 	}
+
+	l.CertificateSignatureAlgorithm = fields.CertificateSignatureAlgorithm
+	l.ProxyID = fields.ProxyID
+	l.TentacleVersionDetails = fields.TentacleVersionDetails
+	l.Thumbprint = fields.Thumbprint
 	l.URI = u
+	l.endpoint = fields.endpoint
 
 	return nil
-}
-
-// Validate checks the state of the listening tentacle endpoint and returns an
-// error if invalid.
-func (l *ListeningTentacleEndpoint) Validate() error {
-	return validator.New().Struct(l)
 }

@@ -10,7 +10,7 @@ type EndpointResource struct {
 	AadClientCredentialSecret            string                         `json:"AadClientCredentialSecret,omitempty"`
 	AadCredentialType                    string                         `json:"AadCredentialType,omitempty" validate:"omitempty,oneof=ClientCredential UserCredential"`
 	AadUserCredentialUsername            string                         `json:"AadUserCredentialUsername,omitempty"`
-	AadUserCredentialPassword            SensitiveValue                 `json:"AadUserCredentialPassword,omitempty"`
+	AadUserCredentialPassword            *SensitiveValue                `json:"AadUserCredentialPassword,omitempty"`
 	AccountID                            string                         `json:"AccountId"`
 	ApplicationsDirectory                string                         `json:"ApplicationsDirectory,omitempty"`
 	Authentication                       IKubernetesAuthentication      `json:"Authentication,omitempty"`
@@ -20,6 +20,7 @@ type EndpointResource struct {
 	ClientCertificateVariable            string                         `json:"ClientCertVariable,omitempty"`
 	CloudServiceName                     string                         `json:"CloudServiceName"`
 	ClusterCertificate                   string                         `json:"ClusterCertificate,omitempty"`
+	ClusterCertificatePath               string                         `json:"ClusterCertificatePath,omitempty"`
 	ClusterURL                           *url.URL                       `json:"ClusterUrl" validate:"required,url"`
 	CommunicationStyle                   string                         `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
 	ConnectionEndpoint                   string                         `json:"ConnectionEndpoint,omitempty"`
@@ -35,7 +36,7 @@ type EndpointResource struct {
 	ResourceGroupName                    string                         `json:"ResourceGroupName,omitempty"`
 	RunningInContainer                   bool                           `json:"RunningInContainer"`
 	SecurityMode                         string                         `json:"SecurityMode,omitempty" validate:"omitempty,oneof=Unsecure SecureClientCertificate SecureAzureAD"`
-	SensitiveVariablesEncryptionPassword SensitiveValue                 `json:"SensitiveVariablesEncryptionPassword"`
+	SensitiveVariablesEncryptionPassword *SensitiveValue                `json:"SensitiveVariablesEncryptionPassword"`
 	ServerCertificateThumbprint          string                         `json:"ServerCertThumbprint,omitempty"`
 	SkipTLSVerification                  bool                           `json:"SkipTlsVerification"`
 	Slot                                 string                         `json:"Slot"`

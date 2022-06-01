@@ -178,7 +178,6 @@ func TestWorkerServiceGetAll(t *testing.T) {
 		worker, err := CreateTestWorker(t, client, staticWorkerPool)
 		require.NoError(t, err)
 		require.NotNil(t, worker)
-		defer DeleteTestWorker(t, client, worker)
 	}
 
 	workers, err := client.Workers.GetAll()

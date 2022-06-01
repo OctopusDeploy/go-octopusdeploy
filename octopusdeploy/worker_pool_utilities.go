@@ -1,14 +1,12 @@
 package octopusdeploy
 
-import "github.com/jinzhu/copier"
-
 func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 	if isNil(workerPoolResource) {
 		return nil, createInvalidParameterError("ToWorkerPool", "workerPoolResource")
 	}
 
 	var workerPool IWorkerPool
-	var err error
+
 	switch workerPoolResource.GetWorkerPoolType() {
 	case WorkerPoolTypeDynamic:
 		workerPool = NewDynamicWorkerPool(workerPoolResource.GetName(), workerPoolResource.GetWorkerType())
@@ -16,10 +14,17 @@ func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 		workerPool = NewStaticWorkerPool(workerPoolResource.GetName())
 	}
 
-	err = copier.Copy(workerPool, workerPoolResource)
-	if err != nil {
-		return nil, err
-	}
+	workerPool.SetCanAddWorkers((workerPoolResource.GetCanAddWorkers()))
+	workerPool.SetDescription((workerPoolResource.GetDescription()))
+	workerPool.SetID(workerPoolResource.GetID())
+	workerPool.SetIsDefault((workerPoolResource.GetIsDefault()))
+	workerPool.SetLinks(workerPoolResource.GetLinks())
+	workerPool.SetModifiedBy(workerPoolResource.GetModifiedBy())
+	workerPool.SetModifiedOn(workerPoolResource.GetModifiedOn())
+	workerPool.SetName((workerPoolResource.GetName()))
+	workerPool.SetSpaceID((workerPoolResource.GetSpaceID()))
+	workerPool.SetSortOrder((workerPoolResource.GetSortOrder()))
+	workerPool.SetWorkerPoolType((workerPoolResource.GetWorkerPoolType()))
 
 	return workerPool, nil
 }
@@ -38,10 +43,25 @@ func ToWorkerPoolResource(workerPool IWorkerPool) (*WorkerPoolResource, error) {
 
 	workerPoolResource := NewWorkerPoolResource(workerPool.GetName(), workerPool.GetWorkerPoolType())
 
-	err := copier.Copy(&workerPoolResource, workerPool)
-	if err != nil {
-		return nil, err
+	switch workerPoolResource.GetWorkerPoolType() {
+	case WorkerPoolTypeDynamic:
+		dynamicWorkerPool := workerPool.(*DynamicWorkerPool)
+		workerPoolResource.WorkerType = dynamicWorkerPool.GetWorkerType()
+	case WorkerPoolTypeStatic:
+		// nothing to copy
 	}
+
+	workerPoolResource.SetCanAddWorkers((workerPool.GetCanAddWorkers()))
+	workerPoolResource.SetDescription((workerPool.GetDescription()))
+	workerPoolResource.SetID(workerPool.GetID())
+	workerPoolResource.SetIsDefault((workerPool.GetIsDefault()))
+	workerPoolResource.SetLinks(workerPool.GetLinks())
+	workerPoolResource.SetModifiedBy(workerPool.GetModifiedBy())
+	workerPoolResource.SetModifiedOn(workerPool.GetModifiedOn())
+	workerPoolResource.SetName((workerPool.GetName()))
+	workerPoolResource.SetSpaceID((workerPool.GetSpaceID()))
+	workerPoolResource.SetSortOrder((workerPool.GetSortOrder()))
+	workerPoolResource.SetWorkerPoolType((workerPool.GetWorkerPoolType()))
 
 	return workerPoolResource, nil
 }
