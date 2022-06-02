@@ -5,6 +5,10 @@ func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 		return nil, createInvalidParameterError("ToWorkerPool", "workerPoolResource")
 	}
 
+	if err := workerPoolResource.Validate(); err != nil {
+		return nil, err
+	}
+
 	var workerPool IWorkerPool
 
 	switch workerPoolResource.GetWorkerPoolType() {
@@ -39,6 +43,11 @@ func ToWorkerPools(workerPoolResources *WorkerPoolResources) *WorkerPools {
 func ToWorkerPoolResource(workerPool IWorkerPool) (*WorkerPoolResource, error) {
 	if isNil(workerPool) {
 		return nil, createInvalidParameterError("ToWorkerPoolResource", "workerPool")
+	}
+
+	// conversion unnecessary if input worker pool is *WorkerPoolResource
+	if v, ok := workerPool.(*WorkerPoolResource); ok {
+		return v, nil
 	}
 
 	workerPoolResource := NewWorkerPoolResource(workerPool.GetName(), workerPool.GetWorkerPoolType())
