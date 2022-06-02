@@ -104,6 +104,11 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		return nil, createInvalidParameterError("ToFeedResource", ParameterFeed)
 	}
 
+	// conversion unnecessary if input feed is *FeedResource
+	if v, ok := feed.(*FeedResource); ok {
+		return v, nil
+	}
+
 	feedResource := NewFeedResource(feed.GetName(), feed.GetFeedType())
 
 	switch feedResource.GetFeedType() {
