@@ -89,6 +89,11 @@ func ToEndpointResource(endpoint IEndpoint) (*EndpointResource, error) {
 		return nil, createInvalidParameterError("ToEndpointResource", "endpoint")
 	}
 
+	// conversion unnecessary if input endpoint is *EndpointResource
+	if v, ok := endpoint.(*EndpointResource); ok {
+		return v, nil
+	}
+
 	endpointResource := NewEndpointResource(endpoint.GetCommunicationStyle())
 
 	switch endpointResource.GetCommunicationStyle() {

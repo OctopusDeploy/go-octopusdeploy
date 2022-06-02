@@ -93,6 +93,11 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		return nil, createInvalidParameterError("ToAccountResource", ParameterAccount)
 	}
 
+	// conversion unnecessary if input account is *AccountResource
+	if v, ok := account.(*AccountResource); ok {
+		return v, nil
+	}
+
 	accountResource := NewAccountResource(account.GetName(), account.GetAccountType())
 
 	switch accountResource.GetAccountType() {

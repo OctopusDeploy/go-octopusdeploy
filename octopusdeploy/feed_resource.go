@@ -1,6 +1,9 @@
 package octopusdeploy
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
+)
 
 type FeedResource struct {
 	AccessKey                         string          `json:"AccessKey,omitempty"`
@@ -9,10 +12,10 @@ type FeedResource struct {
 	DownloadAttempts                  int             `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds       int             `json:"DownloadRetryBackoffSeconds"`
 	EnhancedMode                      bool            `json:"EnhancedMode"`
-	FeedType                          FeedType        `json:"FeedType,omitempty"`
+	FeedType                          FeedType        `json:"FeedType" validate:"required,notblank"`
 	FeedURI                           string          `json:"FeedUri,omitempty"`
 	IsBuiltInRepoSyncEnabled          bool            `json:"IsBuiltInRepoSyncEnabled,omitempty"`
-	Name                              string          `json:"Name"`
+	Name                              string          `json:"Name" validate:"required,notblank"`
 	Password                          *SensitiveValue `json:"Password,omitempty"`
 	PackageAcquisitionLocationOptions []string        `json:"PackageAcquisitionLocationOptions,omitempty"`
 	Region                            string          `json:"Region,omitempty"`
@@ -100,7 +103,12 @@ func (f *FeedResource) SetUsername(username string) {
 // Validate checks the state of the feed resource and returns an error if
 // invalid.
 func (f FeedResource) Validate() error {
-	return validator.New().Struct(f)
+	v := validator.New()
+	err := v.RegisterValidation("notblank", validators.NotBlank)
+	if err != nil {
+		return err
+	}
+	return v.Struct(f)
 }
 
 var _ IFeed = &FeedResource{}

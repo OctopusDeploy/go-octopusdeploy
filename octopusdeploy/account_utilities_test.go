@@ -27,4 +27,9 @@ func TestToAccount(t *testing.T) {
 	require.NotNil(t, account)
 	require.NoError(t, err)
 	require.EqualValues(t, account.GetAccountType(), "UsernamePassword")
+
+	account, err = ToAccountResource(accountResource)
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.EqualValues(t, account.GetAccountType(), "UsernamePassword")
 }

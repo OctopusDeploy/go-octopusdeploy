@@ -7,7 +7,7 @@ import (
 
 // feed is the embedded struct used for all feeds.
 type feed struct {
-	FeedType                          FeedType        `json:"FeedType"`
+	FeedType                          FeedType        `json:"FeedType" validate:"required,notblank"`
 	Name                              string          `json:"Name" validate:"required,notblank"`
 	SpaceID                           string          `json:"SpaceId,omitempty"`
 	PackageAcquisitionLocationOptions []string        `json:"PackageAcquisitionLocationOptions,omitempty"`
@@ -102,4 +102,4 @@ func (f feed) Validate() error {
 	return v.Struct(f)
 }
 
-var _ IHasName = &feed{}
+var _ IFeed = &feed{}
