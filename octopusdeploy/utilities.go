@@ -87,6 +87,12 @@ func isNil(i interface{}) bool {
 	case *Environment:
 		v := i.(*Environment)
 		ret = v == nil
+	case *EndpointResource:
+		v := i.(*EndpointResource)
+		ret = v == nil
+	case *FeedResource:
+		v := i.(*FeedResource)
+		ret = v == nil
 	case *GoogleCloudPlatformAccount:
 		v := i.(*GoogleCloudPlatformAccount)
 		ret = v == nil
@@ -152,6 +158,9 @@ func isNil(i interface{}) bool {
 		ret = v == nil
 	case *User:
 		v := i.(*User)
+		ret = v == nil
+	case *WorkerPoolResource:
+		v := i.(*WorkerPoolResource)
 		ret = v == nil
 	}
 
