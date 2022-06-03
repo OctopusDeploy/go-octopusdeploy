@@ -28,6 +28,7 @@ func AssertEqualProjectGroups(t *testing.T, expected *octopusdeploy.ProjectGroup
 	assert.Equal(t, expected.EnvironmentIDs, actual.EnvironmentIDs)
 	assert.Equal(t, expected.Name, actual.Name)
 	assert.Equal(t, expected.RetentionPolicyID, actual.RetentionPolicyID)
+	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
 func CreateTestProjectGroup(t *testing.T, client *octopusdeploy.Client) *octopusdeploy.ProjectGroup {
