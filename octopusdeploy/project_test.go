@@ -14,9 +14,8 @@ func TestProjectNew(t *testing.T) {
 	var lifecycleID string
 	var name string
 	var projectGroupID string
-	var spaceID string
 
-	project := NewProject(spaceID, name, lifecycleID, projectGroupID)
+	project := NewProject(name, lifecycleID, projectGroupID)
 	require.NotNil(t, project)
 	require.Equal(t, name, project.Name)
 	require.Equal(t, lifecycleID, project.LifecycleID)
@@ -27,16 +26,14 @@ func TestProjectMarshalJSON(t *testing.T) {
 	lifecycleID := getRandomName()
 	name := getRandomName()
 	projectGroupID := getRandomName()
-	spaceID := getRandomName()
 
 	expectedJson := fmt.Sprintf(`{
 		"LifecycleId": "%s",
 		"Name": "%s",
-		"ProjectGroupId": "%s",
-		"SpaceId": "%s"
-	}`, lifecycleID, name, projectGroupID, spaceID)
+		"ProjectGroupId": "%s"
+	}`, lifecycleID, name, projectGroupID)
 
-	project := NewProject(spaceID, name, lifecycleID, projectGroupID)
+	project := NewProject(name, lifecycleID, projectGroupID)
 	projectAsJSON, err := json.Marshal(project)
 	require.NoError(t, err)
 	require.NotNil(t, projectAsJSON)
@@ -56,9 +53,8 @@ func TestProjectMarshalJSON(t *testing.T) {
 		"LifecycleId": "%s",
 		"Name": "%s",
 		"ProjectConnectivityPolicy": %s,
-		"ProjectGroupId": "%s",
-		"SpaceId": "%s"
-	}`, lifecycleID, name, connectivityPolicyAsJSON, projectGroupID, spaceID)
+		"ProjectGroupId": "%s"
+	}`, lifecycleID, name, connectivityPolicyAsJSON, projectGroupID)
 
 	jsonassert.New(t).Assertf(string(projectAsJSON), expectedJson)
 }
@@ -67,14 +63,12 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	lifecycleID := getRandomName()
 	name := getRandomName()
 	projectGroupID := getRandomName()
-	spaceID := getRandomName()
 
 	inputJSON := fmt.Sprintf(`{
 		"LifecycleId": "%s",
 		"Name": "%s",
-		"ProjectGroupId": "%s",
-		"SpaceId": "%s"
-	}`, lifecycleID, name, projectGroupID, spaceID)
+		"ProjectGroupId": "%s"
+	}`, lifecycleID, name, projectGroupID)
 
 	var project Project
 	err := json.Unmarshal([]byte(inputJSON), &project)
@@ -93,9 +87,8 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 		"LifecycleId": "%s",
 		"Name": "%s",
 		"PersistenceSettings": %s,
-		"ProjectGroupId": "%s",
-		"SpaceId": "%s"
-	}`, lifecycleID, name, persistenceSettingsAsJSON, projectGroupID, spaceID)
+		"ProjectGroupId": "%s"
+	}`, lifecycleID, name, persistenceSettingsAsJSON, projectGroupID)
 
 	err = json.Unmarshal([]byte(inputJSON), &project)
 	require.NoError(t, err)
@@ -123,9 +116,8 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 		"LifecycleId": "%s",
 		"Name": "%s",
 		"PersistenceSettings": %s,
-		"ProjectGroupId": "%s",
-		"SpaceId": "%s"
-	}`, lifecycleID, name, gitPersistenceSettingsAsJSON, projectGroupID, spaceID)
+		"ProjectGroupId": "%s"
+	}`, lifecycleID, name, gitPersistenceSettingsAsJSON, projectGroupID)
 
 	err = json.Unmarshal([]byte(inputJSON), &project)
 	require.NoError(t, err)

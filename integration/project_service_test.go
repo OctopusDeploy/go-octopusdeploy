@@ -62,7 +62,7 @@ func CreateTestProject(t *testing.T, client *octopusdeploy.Client, space *octopu
 
 	name := getRandomName()
 
-	project := octopusdeploy.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
+	project := octopusdeploy.NewProject(name, lifecycle.GetID(), projectGroup.GetID())
 	require.NotNil(t, project)
 
 	createdProject, err := client.Projects.Add(project)
@@ -113,7 +113,7 @@ func TestProjectAddWithPersistenceSettings(t *testing.T) {
 
 	name := getRandomName()
 
-	project := octopusdeploy.NewProject(space.GetID(), name, lifecycle.GetID(), projectGroup.GetID())
+	project := octopusdeploy.NewProject(name, lifecycle.GetID(), projectGroup.GetID())
 	require.NotNil(t, project)
 
 	basePath := getRandomName()

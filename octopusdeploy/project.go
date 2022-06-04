@@ -28,7 +28,7 @@ type Project struct {
 	ReleaseCreationStrategy         *ReleaseCreationStrategy    `json:"ReleaseCreationStrategy,omitempty"`
 	ReleaseNotesTemplate            string                      `json:"ReleaseNotesTemplate,omitempty"`
 	Slug                            string                      `json:"Slug,omitempty"`
-	SpaceID                         string                      `json:"SpaceId" validate:"required"`
+	SpaceID                         string                      `json:"SpaceId,omitempty"`
 	Templates                       []ActionTemplateParameter   `json:"Templates,omitempty"`
 	TenantedDeploymentMode          TenantedDeploymentMode      `json:"TenantedDeploymentMode,omitempty"`
 	VariableSetID                   string                      `json:"VariableSetId,omitempty"`
@@ -42,12 +42,11 @@ type Projects struct {
 	PagedResults
 }
 
-func NewProject(spaceID string, name string, lifecycleID string, projectGroupID string) *Project {
+func NewProject(name string, lifecycleID string, projectGroupID string) *Project {
 	return &Project{
 		LifecycleID:    lifecycleID,
 		Name:           name,
 		ProjectGroupID: projectGroupID,
-		SpaceID:        spaceID,
 		resource:       *newResource(),
 	}
 }
@@ -75,7 +74,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 		ReleaseCreationStrategy         *ReleaseCreationStrategy    `json:"ReleaseCreationStrategy,omitempty"`
 		ReleaseNotesTemplate            string                      `json:"ReleaseNotesTemplate,omitempty"`
 		Slug                            string                      `json:"Slug,omitempty"`
-		SpaceID                         string                      `json:"SpaceId" validate:"required"`
+		SpaceID                         string                      `json:"SpaceId,omitempty"`
 		Templates                       []ActionTemplateParameter   `json:"Templates,omitempty"`
 		TenantedDeploymentMode          TenantedDeploymentMode      `json:"TenantedDeploymentMode,omitempty"`
 		VariableSetID                   string                      `json:"VariableSetId,omitempty"`
@@ -181,6 +180,5 @@ func (resource Project) Validate() error {
 		ValidateRequiredPropertyValue("LifecycleID", resource.LifecycleID),
 		ValidateRequiredPropertyValue("Name", resource.Name),
 		ValidateRequiredPropertyValue("ProjectGroupID", resource.ProjectGroupID),
-		ValidateRequiredPropertyValue("SpaceID", resource.SpaceID),
 	})
 }

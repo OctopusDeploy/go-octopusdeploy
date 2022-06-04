@@ -49,7 +49,7 @@ func CreateProjectExample() {
 	projectGroupID := "project-group-id"
 
 	// create project
-	project := octopusdeploy.NewProject(spaceID, name, lifecycleID, projectGroupID)
+	project := octopusdeploy.NewProject(name, lifecycleID, projectGroupID)
 
 	// update any additional project fields here...
 
