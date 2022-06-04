@@ -1,37 +1,32 @@
-name: Run Integration Tests
-
+name: Integration Tests
 on:
   push:
     branches:
       - main
     paths:
       - octopusdeploy/**
-
 defaults:
   run:
     shell: bash
-
 jobs:
   test:
     env:
-      GO111MODULE: on
-      OCTOPUS_VERSION: "2020.2.7"
+      OCTOPUS_VERSION: "2022.1"
       OCTOPUS_URL: "http://localhost:8080"
-
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: Build octopusdeploy module
-        run: go build -v ./octopusdeploy
-
-      - name: Start the Octopus container
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Build
+        run: go build -a -race -v ./...
+      - name: Vet
+        run: go vet -v ./...
+      - uses: dominikh/staticcheck-action@v1.2.0
+      - name: Start Octopus Container
         run: cd ./tests && docker-compose up --detach
-
-      - name: Generate an API key
+      - name: Generate API Key
         run: ./tests/Create-ApiKey.ps1
         shell: pwsh
-
-      - name: Run integration tests
+      - name: Run Integration Tests
         run: go test -v ./integration/...
