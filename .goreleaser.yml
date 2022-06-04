@@ -6,16 +6,21 @@ builds:
 changelog:
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - "^docs:"
+      - "^test:"
+      - "^README.md"
+      - "^.goreleaser.yaml"
   groups:
     - title: 'New Features'
       regexp: "^.*feat[(\\w)]*:+.*$"
       order: 0
-    - title: 'Bug fixes'
+    - title: 'Breaking Changes'
+      regexp: "^.*break[(\\w)]*:+.*$"
+      order: 1
+    - title: 'Bug Fixes'
       regexp: "^.*fix[(\\w)]*:+.*$"
       order: 10
-    - title: Other work
+    - title: Other Work
       order: 999
   sort: asc
   use: github
