@@ -59,9 +59,7 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	resource, err = client.ActionTemplates.Add(resource)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
-
-	err = client.ActionTemplates.DeleteByID(resource.GetID())
-	assert.NoError(t, err)
+	defer client.ActionTemplates.DeleteByID(resource.GetID())
 }
 
 func TestActionTemplateServiceGetCategories(t *testing.T) {
@@ -97,7 +95,15 @@ func TestActionTemplateServiceSearch(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	resource, err := client.ActionTemplates.Search()
+	search := ""
+
+	resource, err := client.ActionTemplates.Search(search)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resource)
+
+	search = "Octopus.Script"
+
+	resource, err = client.ActionTemplates.Search(search)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, resource)
 }
