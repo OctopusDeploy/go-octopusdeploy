@@ -1,6 +1,9 @@
 package octopusdeploy
 
 import (
+	"strings"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -112,19 +115,30 @@ func (s actionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 
 // Search lists all available action templates including built-in, custom, and
 // community-contributed step templates.
-func (s actionTemplateService) Search() ([]ActionTemplateSearch, error) {
-	items := new([]ActionTemplateSearch)
-
+func (s actionTemplateService) Search(searchQuery string) ([]ActionTemplateSearch, error) {
+	searchResults := []ActionTemplateSearch{}
 	err := validateInternalState(s)
 	if err != nil {
-		return *items, err
+		return searchResults, err
 	}
 
-	path := s.searchPath
+	template, err := uritemplates.Parse(s.searchPath)
+	if err != nil {
+		return searchResults, err
+	}
 
-	_, err = apiGet(s.getClient(), items, path)
+	path, err := template.Expand(map[string]interface{}{"type": searchQuery})
+	if err != nil {
+		return searchResults, err
+	}
 
-	return *items, err
+	if len(searchQuery) <= 0 {
+		path = strings.Split(path, "?")[0]
+	}
+
+	_, err = apiGet(s.getClient(), &searchResults, path)
+
+	return searchResults, err
 }
 
 // Update modifies an ActionTemplate based on the one provided as input.

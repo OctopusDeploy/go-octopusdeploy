@@ -19,12 +19,7 @@ func createActionTemplate(t *testing.T) *ActionTemplate {
 }
 
 func createActionTemplateService(t *testing.T) *actionTemplateService {
-	categoriesPath := TestURIActionTemplatesCategories
-	logoPath := TestURIActionTemplatesLogo
-	searchPath := TestURIActionTemplatesSearch
-	versionedLogoPath := TestURIActionTemplateVersionedLogo
-
-	service := newActionTemplateService(nil, TestURIActionTemplates, categoriesPath, logoPath, searchPath, versionedLogoPath)
+	service := newActionTemplateService(nil, TestURIActionTemplates, TestURIActionTemplatesCategories, TestURIActionTemplatesLogo, TestURIActionTemplatesSearch, TestURIActionTemplateVersionedLogo)
 	testNewService(t, service, TestURIActionTemplates, ServiceActionTemplateService)
 	return service
 }
@@ -70,13 +65,6 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 
 	resource = createActionTemplate(t)
 	require.NotNil(t, resource)
-
-	resource, err = service.Add(resource)
-	require.NoError(t, err)
-	require.NotNil(t, resource)
-
-	err = service.DeleteByID(resource.GetID())
-	assert.NoError(t, err)
 }
 
 func TestActionTemplateServiceGetCategories(t *testing.T) {
@@ -104,16 +92,6 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	resource, err = service.GetByID(id)
 	require.Error(t, err)
 	require.Nil(t, resource)
-
-	resources, err := service.GetAll()
-	require.NoError(t, err)
-	require.NotNil(t, resources)
-
-	for _, resource := range resources {
-		resourceToCompare, err := service.GetByID(resource.GetID())
-		require.NoError(t, err)
-		IsEqualActionTemplates(t, resource, resourceToCompare)
-	}
 }
 
 func TestActionTemplateServiceNew(t *testing.T) {
@@ -146,13 +124,4 @@ func TestActionTemplateServiceNew(t *testing.T) {
 			testNewService(t, service, uriTemplate, ServiceName)
 		})
 	}
-}
-
-func TestActionTemplateServiceSearch(t *testing.T) {
-	service := createActionTemplateService(t)
-	require.NotNil(t, service)
-
-	resource, err := service.Search()
-	assert.NoError(t, err)
-	assert.NotEmpty(t, resource)
 }
