@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type KubernetesEndpoint struct {
@@ -76,7 +77,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 		Namespace:           k.Namespace,
 		ProxyID:             k.ProxyID,
 		RunningInContainer:  k.RunningInContainer,
-		SkipTLSVerification: strings.Title(strconv.FormatBool(k.SkipTLSVerification)),
+		SkipTLSVerification: cases.Title(language.Und, cases.NoLower).String(strconv.FormatBool(k.SkipTLSVerification)),
 		endpoint:            k.endpoint,
 	}
 
