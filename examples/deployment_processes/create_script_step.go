@@ -37,7 +37,7 @@ func CreateScriptStepExample() {
 	})
 
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 	}
 
 	// sub-optimal; iterate through collection
@@ -46,7 +46,7 @@ func CreateScriptStepExample() {
 	// Get the deployment process
 	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 	}
 
 	// Create new step object
@@ -65,6 +65,6 @@ func CreateScriptStepExample() {
 	// Update process
 	_, err = client.DeploymentProcesses.Update(deploymentProcess)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 	}
 }

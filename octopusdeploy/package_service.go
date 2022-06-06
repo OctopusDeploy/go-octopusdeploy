@@ -27,33 +27,17 @@ func newPackageService(sling *sling.Sling, uriTemplate string, deltaSignaturePat
 	return packageService
 }
 
-func (s packageService) getPagedResponse(path string) ([]*Package, error) {
-	resources := []*Package{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(Packages), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Packages)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // GetAll returns all packages. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s packageService) GetAll() ([]*Package, error) {
-	path, err := getPath(s)
+	items := []*Package{}
+	path, err := getAllPath(s)
 	if err != nil {
-		return []*Package{}, err
+		return items, err
 	}
 
-	return s.getPagedResponse(path)
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByID returns the package that matches the input ID. If one cannot be

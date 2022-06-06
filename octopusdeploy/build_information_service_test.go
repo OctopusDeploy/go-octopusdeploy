@@ -31,9 +31,3 @@ func TestNewBuildInformationService(t *testing.T) {
 		})
 	}
 }
-
-func createBuildInformationService(t *testing.T) *buildInformationService {
-	service := newBuildInformationService(nil, TestURIBuildInformation, TestURIBuildInformationBulk)
-	testNewService(t, service, TestURIBuildInformation, ServiceBuildInformationService)
-	return service
-}

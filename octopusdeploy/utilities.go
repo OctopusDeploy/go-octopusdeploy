@@ -5,166 +5,113 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"reflect"
 	"regexp"
 	"strings"
 
 	"github.com/dghubble/sling"
 )
 
-func isNilFixed(i interface{}) bool {
-	if i == nil {
-		return true
-	}
-	switch reflect.TypeOf(i).Kind() {
-	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
-		return reflect.ValueOf(i).IsNil()
-	}
-	return false
-}
-
 func isNil(i interface{}) bool {
-	var ret bool
-
-	switch i.(type) {
+	switch v := i.(type) {
 	case *AccountResource:
-		v := i.(*AccountResource)
-		ret = v == nil
+		return v == nil
 	case *ActionTemplate:
-		v := i.(*ActionTemplate)
-		ret = v == nil
+		return v == nil
 	case *ActionTemplateParameter:
-		v := i.(*ActionTemplateParameter)
-		ret = v == nil
+		return v == nil
 	case *AmazonWebServicesAccount:
-		v := i.(*AmazonWebServicesAccount)
-		ret = v == nil
+		return v == nil
 	case *APIKey:
-		v := i.(*APIKey)
-		ret = v == nil
+		return v == nil
 	case *Artifact:
-		v := i.(*Artifact)
-		ret = v == nil
+		return v == nil
 	case *Authentication:
-		v := i.(*Authentication)
-		ret = v == nil
+		return v == nil
 	case *AzureCloudServiceEndpoint:
-		v := i.(*AzureCloudServiceEndpoint)
-		ret = v == nil
+		return v == nil
 	case *AzureServiceFabricEndpoint:
-		v := i.(*AzureServiceFabricEndpoint)
-		ret = v == nil
+		return v == nil
 	case *AzureServicePrincipalAccount:
-		v := i.(*AzureServicePrincipalAccount)
-		ret = v == nil
+		return v == nil
 	case *AzureSubscriptionAccount:
-		v := i.(*AzureSubscriptionAccount)
-		ret = v == nil
+		return v == nil
 	case *AzureWebAppEndpoint:
-		v := i.(*AzureWebAppEndpoint)
-		ret = v == nil
+		return v == nil
 	case *CertificateResource:
-		v := i.(*CertificateResource)
-		ret = v == nil
+		return v == nil
 	case *Channel:
-		v := i.(*Channel)
-		ret = v == nil
+		return v == nil
 	case *CommunityActionTemplate:
-		v := i.(*CommunityActionTemplate)
-		ret = v == nil
+		return v == nil
 	case *ConfigurationSection:
-		v := i.(*ConfigurationSection)
-		ret = v == nil
+		return v == nil
 	case *DeploymentProcess:
-		v := i.(*DeploymentProcess)
-		ret = v == nil
+		return v == nil
 	case *DeploymentStep:
-		v := i.(*DeploymentStep)
-		ret = v == nil
+		return v == nil
 	case *DeploymentTarget:
-		v := i.(*DeploymentTarget)
-		ret = v == nil
+		return v == nil
 	case *Environment:
-		v := i.(*Environment)
-		ret = v == nil
+		return v == nil
 	case *EndpointResource:
-		v := i.(*EndpointResource)
-		ret = v == nil
+		return v == nil
 	case *FeedResource:
-		v := i.(*FeedResource)
-		ret = v == nil
+		return v == nil
 	case *GoogleCloudPlatformAccount:
-		v := i.(*GoogleCloudPlatformAccount)
-		ret = v == nil
+		return v == nil
 	case *Interruption:
-		v := i.(*Interruption)
-		ret = v == nil
+		return v == nil
 	case *KubernetesEndpoint:
-		v := i.(*KubernetesEndpoint)
-		ret = v == nil
+		return v == nil
 	case *LibraryVariableSetUsageEntry:
-		v := i.(*LibraryVariableSetUsageEntry)
-		ret = v == nil
+		return v == nil
 	case *LibraryVariableSet:
-		v := i.(*LibraryVariableSet)
-		ret = v == nil
+		return v == nil
 	case *Lifecycle:
-		v := i.(*Lifecycle)
-		ret = v == nil
+		return v == nil
 	case *MachineConnectionStatus:
-		v := i.(*MachineConnectionStatus)
-		ret = v == nil
+		return v == nil
 	case *MachinePolicy:
-		v := i.(*MachinePolicy)
-		ret = v == nil
+		return v == nil
 	case *Package:
-		v := i.(*Package)
-		ret = v == nil
+		return v == nil
 	case *ProjectGroup:
-		v := i.(*ProjectGroup)
-		ret = v == nil
+		return v == nil
 	case *ProjectTrigger:
-		v := i.(*ProjectTrigger)
-		ret = v == nil
+		return v == nil
 	case *Project:
-		v := i.(*Project)
-		ret = v == nil
+		return v == nil
 	case *Release:
-		v := i.(*Release)
-		ret = v == nil
+		return v == nil
 	case *ReleaseQuery:
-		v := i.(*ReleaseQuery)
-		ret = v == nil
+		return v == nil
 	case *RootResource:
-		v := i.(*RootResource)
-		ret = v == nil
+		return v == nil
 	case *Runbook:
-		v := i.(*Runbook)
-		ret = v == nil
+		return v == nil
 	case *ScriptModule:
-		v := i.(*ScriptModule)
-		ret = v == nil
+		return v == nil
 	case *Space:
-		v := i.(*Space)
-		ret = v == nil
+		return v == nil
+	case *SSHKeyAccount:
+		return v == nil
 	case *TagSet:
-		v := i.(*TagSet)
-		ret = v == nil
+		return v == nil
 	case *Team:
-		v := i.(*Team)
-		ret = v == nil
+		return v == nil
 	case *Tenant:
-		v := i.(*Tenant)
-		ret = v == nil
+		return v == nil
+	case *TokenAccount:
+		return v == nil
 	case *User:
-		v := i.(*User)
-		ret = v == nil
+		return v == nil
+	case *UsernamePasswordAccount:
+		return v == nil
 	case *WorkerPoolResource:
-		v := i.(*WorkerPoolResource)
-		ret = v == nil
+		return v == nil
+	default:
+		return v == nil
 	}
-
-	return ret
 }
 
 func isEmpty(s string) bool {
@@ -213,7 +160,7 @@ func trimTemplate(uri string) string {
 }
 
 func createBuiltInTeamsCannotDeleteError() error {
-	return fmt.Errorf("The built-in teams cannot be deleted.")
+	return fmt.Errorf("the built-in teams cannot be deleted")
 }
 
 func createInvalidParameterError(methodName string, ParameterName string) error {

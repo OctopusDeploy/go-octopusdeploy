@@ -6,12 +6,6 @@ import (
 	"github.com/dghubble/sling"
 )
 
-func createAuthenticationService(t *testing.T) *authenticationService {
-	service := newAuthenticationService(nil, TestURIAuthentication, TestURILoginInitiated)
-	testNewService(t, service, TestURIAuthentication, ServiceAuthenticationService)
-	return service
-}
-
 func TestNewAuthenticationService(t *testing.T) {
 	ServiceFunction := newAuthenticationService
 	client := &sling.Sling{}

@@ -22,7 +22,7 @@ func (e CloudRegionEndpoint) GetDefaultWorkerPoolID() string {
 }
 
 // SetDefaultWorkerPoolID sets the default worker pool ID of this endpoint.
-func (e CloudRegionEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID string) {
+func (e *CloudRegionEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID string) {
 	e.DefaultWorkerPoolID = defaultWorkerPoolID
 }
 

@@ -31,21 +31,3 @@ func (s configurationService) GetByID(id string) (*ConfigurationSection, error) 
 
 	return resp.(*ConfigurationSection), nil
 }
-
-func (s configurationService) getPagedResponse(path string) ([]*ConfigurationSection, error) {
-	resources := []*ConfigurationSection{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(ConfigurationSections), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*ConfigurationSections)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}

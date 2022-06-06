@@ -19,24 +19,6 @@ func newSpaceService(sling *sling.Sling, uriTemplate string, homePath string) *s
 	return spaceService
 }
 
-func (s spaceService) getPagedResponse(path string) ([]*Space, error) {
-	resources := []*Space{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(Spaces), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Spaces)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // Add creates a new space.
 func (s spaceService) Add(space *Space) (*Space, error) {
 	if space == nil {

@@ -68,9 +68,12 @@ func (s workerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools,
 // returns an empty collection.
 func (s *workerPoolService) GetAll() ([]IWorkerPool, error) {
 	items := []*WorkerPoolResource{}
-	path := s.BasePath + "/all"
+	path, err := getAllPath(s)
+	if err != nil {
+		return ToWorkerPoolArray(items), err
+	}
 
-	_, err := apiGet(s.getClient(), &items, path)
+	_, err = apiGet(s.getClient(), &items, path)
 	return ToWorkerPoolArray(items), err
 }
 
