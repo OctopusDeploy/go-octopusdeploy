@@ -6,13 +6,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// machines defines a collection of machines with built-in support for paged
-// results from the API.
-type machines struct {
-	Items []machine `json:"Items"`
-	PagedResults
-}
-
 // machine represents a machine on which Octopus can orchestrate actions. May
 // either be a deployment target or a worker. It may either correspond to a
 // running instance of the tentacle agent ("TentacleActive" and

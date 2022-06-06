@@ -28,7 +28,6 @@ type service struct {
 	Path        string
 	Sling       *sling.Sling
 	URITemplate *uritemplates.UriTemplate
-	itemType    IResource
 }
 
 type canDeleteService struct {
@@ -179,18 +178,6 @@ func getByPartialNamePath(s IService, name string) (string, error) {
 
 	values := make(map[string]interface{})
 	values[ParameterPartialName] = name
-
-	return s.getURITemplate().Expand(values)
-}
-
-func getByAccountTypePath(s IService, accountType string) (string, error) {
-	err := validateInternalState(s)
-	if err != nil {
-		return emptyString, err
-	}
-
-	values := make(map[string]interface{})
-	values[ParameterAccountType] = accountType
 
 	return s.getURITemplate().Expand(values)
 }
