@@ -31,7 +31,7 @@ func GetStepsUsingPackageExample() {
 	// Get projects
 	projects, err := client.Projects.GetAll()
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 		return
 	}
 
@@ -39,7 +39,7 @@ func GetStepsUsingPackageExample() {
 	for _, project := range projects {
 		deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 		if err != nil {
-			// TODO: handle error
+			_ = fmt.Errorf("error: %w", err)
 		}
 
 		for _, step := range deploymentProcess.Steps {

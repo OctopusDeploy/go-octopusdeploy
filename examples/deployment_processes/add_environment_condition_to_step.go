@@ -35,7 +35,7 @@ func AddEnvironmentConditionToStepExample() {
 	for _, environmentName := range environmentNames {
 		environments, err := client.Environments.GetByName(environmentName)
 		if err != nil {
-			// TODO: handle error
+			_ = fmt.Errorf("error: %w", err)
 		}
 
 		environmentIDs = append(environmentIDs, environments[0].GetID())
@@ -45,7 +45,7 @@ func AddEnvironmentConditionToStepExample() {
 		Name: projectName,
 	})
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 	}
 
 	// sub-optimal; iterate through collection
@@ -53,21 +53,19 @@ func AddEnvironmentConditionToStepExample() {
 
 	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 	}
 
 	for _, step := range deploymentProcess.Steps {
 		if step.Name == stepName {
 			for _, action := range step.Actions {
-				for _, environmentID := range environmentIDs {
-					action.Environments = append(action.Environments, environmentID)
-				}
+				action.Environments = append(action.Environments, environmentIDs...)
 			}
 		}
 	}
 
 	_, err = client.DeploymentProcesses.Update(deploymentProcess)
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 	}
 }

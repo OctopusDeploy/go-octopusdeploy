@@ -32,7 +32,7 @@ func GetStepsUsingRoleExample() {
 	// Get projects
 	projects, err := client.Projects.GetAll()
 	if err != nil {
-		// TODO: handle error
+		_ = fmt.Errorf("error: %w", err)
 		return
 	}
 
@@ -41,14 +41,14 @@ func GetStepsUsingRoleExample() {
 		deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 
 		if err != nil {
-			// TODO: handle error
+			_ = fmt.Errorf("error: %w", err)
 		}
 
 		for _, step := range deploymentProcess.Steps {
 			propertyValue := step.Properties["Octopus.Action.TargetRoles"]
 			if len(propertyValue.Value) > 0 {
 				for _, role := range strings.Split(propertyValue.Value, ",") {
-					if strings.ToLower(role) == strings.ToLower(roleName) {
+					if strings.EqualFold(role, roleName) {
 						fmt.Printf("Step [%s] from project [%s] is using the role [%s]\n", step.Name, project.Name, roleName)
 					}
 				}
