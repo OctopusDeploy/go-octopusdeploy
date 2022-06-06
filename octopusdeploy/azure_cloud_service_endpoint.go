@@ -37,7 +37,7 @@ func (a AzureCloudServiceEndpoint) GetDefaultWorkerPoolID() string {
 
 // SetDefaultWorkerPoolID sets the default worker pool ID of this Azure cloud
 // service endpoint.
-func (a AzureCloudServiceEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID string) {
+func (a *AzureCloudServiceEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID string) {
 	a.DefaultWorkerPoolID = defaultWorkerPoolID
 }
 
