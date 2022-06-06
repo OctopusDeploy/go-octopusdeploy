@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005,ST1006,S1007 3rd-party source file
+
 // Copyright 2013 Joshua Tacoma. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
