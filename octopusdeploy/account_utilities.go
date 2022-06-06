@@ -1,7 +1,7 @@
 package octopusdeploy
 
 func ToAccount(accountResource *AccountResource) (IAccount, error) {
-	if isNil(accountResource) {
+	if accountResource == nil {
 		return nil, createInvalidParameterError("ToAccount", ParameterAccountResource)
 	}
 
