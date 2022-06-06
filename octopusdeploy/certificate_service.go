@@ -34,6 +34,18 @@ func (s certificateService) Add(resource *CertificateResource) (*CertificateReso
 	return resp.(*CertificateResource), nil
 }
 
+// Archive sets the status of a certificate to an archived state.
+func (s certificateService) Archive(resource *CertificateResource) (*CertificateResource, error) {
+	path := resource.Links["Archive"]
+
+	_, err := apiPost(s.getClient(), resource, new(CertificateResource), path)
+	if err != nil {
+		return resource, err
+	}
+
+	return s.GetByID(resource.GetID())
+}
+
 // Get returns a collection of certificates based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
@@ -118,4 +130,16 @@ func (s certificateService) Replace(certificateID string, replacementCertificate
 	// The API endpoint /certificates/id/replace returns the old cert, we need
 	// to re-query to get the updated one
 	return s.GetByID(certificateID)
+}
+
+// Unarchive resets the status of an archived certificate.
+func (s certificateService) Unarchive(resource *CertificateResource) (*CertificateResource, error) {
+	path := resource.Links["Unarchive"]
+
+	_, err := apiPost(s.getClient(), resource, new(CertificateResource), path)
+	if err != nil {
+		return resource, err
+	}
+
+	return s.GetByID(resource.GetID())
 }
