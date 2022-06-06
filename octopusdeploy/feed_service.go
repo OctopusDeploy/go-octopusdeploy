@@ -66,9 +66,12 @@ func (s feedService) Get(feedsQuery FeedsQuery) (*Feeds, error) {
 // returns an empty collection.
 func (s feedService) GetAll() ([]IFeed, error) {
 	items := []*FeedResource{}
-	path := s.BasePath + "/all"
+	path, err := getAllPath(s)
+	if err != nil {
+		return ToFeedArray(items), err
+	}
 
-	_, err := apiGet(s.getClient(), &items, path)
+	_, err = apiGet(s.getClient(), &items, path)
 	return ToFeedArray(items), err
 }
 

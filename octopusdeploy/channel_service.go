@@ -20,24 +20,6 @@ func newChannelService(sling *sling.Sling, uriTemplate string, versionRuleTestPa
 	return channelService
 }
 
-func (s channelService) getPagedResponse(path string) ([]*Channel, error) {
-	resources := []*Channel{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(Channels), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Channels)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // Add creates a new channel.
 func (s channelService) Add(channel *Channel) (*Channel, error) {
 	if channel == nil {
@@ -78,9 +60,12 @@ func (s channelService) Get(channelsQuery ChannelsQuery) (*Channels, error) {
 // returns an empty collection.
 func (s channelService) GetAll() ([]*Channel, error) {
 	items := []*Channel{}
-	path := s.BasePath + "/all"
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
 
-	_, err := apiGet(s.getClient(), &items, path)
+	_, err = apiGet(s.getClient(), &items, path)
 	return items, err
 }
 

@@ -65,12 +65,14 @@ func (s interruptionService) GetByIDs(ids []string) ([]*Interruption, error) {
 // GetAll returns all interruptions. If none can be found or an error occurs,
 // it returns an empty collection.
 func (s interruptionService) GetAll() ([]*Interruption, error) {
-	path, err := getPath(s)
+	items := []*Interruption{}
+	path, err := getAllPath(s)
 	if err != nil {
-		return []*Interruption{}, err
+		return items, err
 	}
 
-	return s.getPagedResponse(path)
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // Submit Submits a dictionary of form values for the interruption. Only the user with responsibility for this interruption can submit this form.

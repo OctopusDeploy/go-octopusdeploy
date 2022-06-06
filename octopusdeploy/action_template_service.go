@@ -75,9 +75,12 @@ func (s actionTemplateService) Get(actionTemplatesQuery ActionTemplatesQuery) (*
 // occurs, it returns an empty collection.
 func (s actionTemplateService) GetAll() ([]*ActionTemplate, error) {
 	items := []*ActionTemplate{}
-	path := s.BasePath + "/all"
+	path, err := getAllPath(s)
+	if err != nil {
+		return items, err
+	}
 
-	_, err := apiGet(s.getClient(), &items, path)
+	_, err = apiGet(s.getClient(), &items, path)
 	return items, err
 }
 

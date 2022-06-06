@@ -14,33 +14,17 @@ func newRunbookProcessService(sling *sling.Sling, uriTemplate string) *runbookPr
 	}
 }
 
-func (s runbookProcessService) getPagedResponse(path string) ([]*RunbookProcess, error) {
-	resources := []*RunbookProcess{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := apiGet(s.getClient(), new(RunbookProcesses), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*RunbookProcesses)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // GetAll returns all runbook processes. If none can be found or an error
 // occurs, it returns an empty collection.
 func (s runbookProcessService) GetAll() ([]*RunbookProcess, error) {
-	path, err := getPath(s)
+	items := []*RunbookProcess{}
+	path, err := getAllPath(s)
 	if err != nil {
-		return []*RunbookProcess{}, err
+		return items, err
 	}
 
-	return s.getPagedResponse(path)
+	_, err = apiGet(s.getClient(), &items, path)
+	return items, err
 }
 
 // GetByID returns the runbook process that matches the input ID. If one cannot
