@@ -1,22 +1,44 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	validation "github.com/OctopusDeploy/go-octopusdeploy/pkg/validation"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+// IAccount defines the interface for accounts.
+type IAccount interface {
+	GetAccountType() AccountType
+	GetDescription() string
+	GetEnvironmentIDs() []string
+	GetTenantedDeploymentMode() core.TenantedDeploymentMode
+	GetTenantIDs() []string
+	GetTenantTags() []string
+	SetDescription(string)
+	SetEnvironmentIDs([]string)
+	SetTenantedDeploymentMode(core.TenantedDeploymentMode)
+	SetTenantIDs([]string)
+	SetTenantTags([]string)
+
+	resources.IHasName
+	resources.IHasSpace
+	resources.IResource
+}
+
 // account is the embedded struct used for all accounts.
 type account struct {
-	AccountType            AccountType            `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
-	Description            string                 `json:"Description,omitempty"`
-	EnvironmentIDs         []string               `json:"EnvironmentIds,omitempty"`
-	Name                   string                 `json:"Name" validate:"required,notblank,notall"`
-	SpaceID                string                 `json:"SpaceId,omitempty"`
-	TenantedDeploymentMode TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
-	TenantIDs              []string               `json:"TenantIds,omitempty"`
-	TenantTags             []string               `json:"TenantTags,omitempty"`
+	AccountType            AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
+	Description            string                      `json:"Description,omitempty"`
+	EnvironmentIDs         []string                    `json:"EnvironmentIds,omitempty"`
+	Name                   string                      `json:"Name" validate:"required,notblank,notall"`
+	SpaceID                string                      `json:"SpaceId,omitempty"`
+	TenantedDeploymentMode core.TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
+	TenantIDs              []string                    `json:"TenantIds,omitempty"`
+	TenantTags             []string                    `json:"TenantTags,omitempty"`
 
-	resource
+	resources.Resource
 }
 
 // newAccount creates and initializes an account.
@@ -25,10 +47,10 @@ func newAccount(name string, accountType AccountType) *account {
 		AccountType:            accountType,
 		EnvironmentIDs:         []string{},
 		Name:                   name,
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
+		TenantedDeploymentMode: core.TenantedDeploymentMode("Untenanted"),
 		TenantIDs:              []string{},
 		TenantTags:             []string{},
-		resource:               *newResource(),
+		Resource:               *resources.NewResource(),
 	}
 }
 
@@ -58,7 +80,7 @@ func (a *account) GetSpaceID() string {
 }
 
 // GetTenantedDeploymentMode returns the tenanted deployment mode of this account.
-func (a *account) GetTenantedDeploymentMode() TenantedDeploymentMode {
+func (a *account) GetTenantedDeploymentMode() core.TenantedDeploymentMode {
 	return a.TenantedDeploymentMode
 }
 
@@ -93,7 +115,7 @@ func (a *account) SetSpaceID(spaceID string) {
 }
 
 // SetTenantedDeploymentMode sets the tenanted deployment mode of this account.
-func (a *account) SetTenantedDeploymentMode(mode TenantedDeploymentMode) {
+func (a *account) SetTenantedDeploymentMode(mode core.TenantedDeploymentMode) {
 	a.TenantedDeploymentMode = mode
 }
 
@@ -115,7 +137,7 @@ func (a *account) Validate() error {
 	if err != nil {
 		return err
 	}
-	err = v.RegisterValidation("notall", NotAll)
+	err = v.RegisterValidation("notall", validation.NotAll)
 	if err != nil {
 		return err
 	}
