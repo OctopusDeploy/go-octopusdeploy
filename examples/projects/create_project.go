@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/projects"
 )
 
 func CreateProjectExample() {
@@ -22,7 +23,7 @@ func CreateProjectExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
@@ -49,7 +50,7 @@ func CreateProjectExample() {
 	projectGroupID := "project-group-id"
 
 	// create project
-	project := octopusdeploy.NewProject(name, lifecycleID, projectGroupID)
+	project := projects.NewProject(name, lifecycleID, projectGroupID)
 
 	// update any additional project fields here...
 

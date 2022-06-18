@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/projects"
 )
 
 func CreateScriptStepExample() {
@@ -25,19 +28,17 @@ func CreateScriptStepExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
 	// Get project
-	projects, err := client.Projects.Get(octopusdeploy.ProjectsQuery{
-		Name: projectName,
-	})
-
+	projects, err := client.Projects.Get(projects.ProjectsQuery{Name: projectName})
 	if err != nil {
 		_ = fmt.Errorf("error: %w", err)
+		return
 	}
 
 	// sub-optimal; iterate through collection
@@ -47,24 +48,23 @@ func CreateScriptStepExample() {
 	deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
 	if err != nil {
 		_ = fmt.Errorf("error: %w", err)
+		return
 	}
 
 	// Create new step object
-	newStep := octopusdeploy.NewDeploymentStep(stepName)
-	newStep.Condition = "Success"
-	newStep.Properties["Octopus.Action.TargetRoles"] = octopusdeploy.NewPropertyValue(roleName, false)
+	newStep := deployments.NewDeploymentStep(stepName)
+	newStep.Properties["Octopus.Action.TargetRoles"] = core.NewPropertyValue(roleName, false)
 
 	// Create new script action
-	stepAction := octopusdeploy.NewDeploymentAction(stepName, "Octopus.Script")
-	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = octopusdeploy.NewPropertyValue(scriptBody, false)
+	stepAction := deployments.NewDeploymentAction(stepName, "Octopus.Script")
+	stepAction.Properties["Octopus.Action.Script.ScriptBody"] = core.NewPropertyValue(scriptBody, false)
 
 	// Add step action and step to process
-	newStep.Actions = append(newStep.Actions, *stepAction)
-	deploymentProcess.Steps = append(deploymentProcess.Steps, *newStep)
+	newStep.Actions = append(newStep.Actions, stepAction)
+	deploymentProcess.Steps = append(deploymentProcess.Steps, newStep)
 
 	// Update process
-	_, err = client.DeploymentProcesses.Update(deploymentProcess)
-	if err != nil {
+	if _, err = client.DeploymentProcesses.Update(deploymentProcess); err != nil {
 		_ = fmt.Errorf("error: %w", err)
 	}
 }

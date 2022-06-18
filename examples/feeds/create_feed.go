@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/feeds"
 )
 
 func CreateFeedExample() {
@@ -25,13 +27,13 @@ func CreateFeedExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceName)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceName)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	nuGetFeed, err := octopusdeploy.NewNuGetFeed(feedName, feedURI)
+	nuGetFeed, err := feeds.NewNuGetFeed(feedName, feedURI)
 	if err != nil {
 		_ = fmt.Errorf("error creating NuGet feed: %v", err)
 		return
@@ -43,7 +45,7 @@ func CreateFeedExample() {
 		nuGetFeed.Username = feedUsername
 	}
 	if len(feedPassword) > 0 {
-		nuGetFeed.Password = octopusdeploy.NewSensitiveValue(feedPassword)
+		nuGetFeed.Password = core.NewSensitiveValue(feedPassword)
 	}
 
 	_, err = client.Feeds.Add(nuGetFeed)

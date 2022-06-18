@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/projects"
 )
 
 func AddEnvironmentConditionToStepExample() {
@@ -24,7 +25,7 @@ func AddEnvironmentConditionToStepExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
@@ -41,7 +42,7 @@ func AddEnvironmentConditionToStepExample() {
 		environmentIDs = append(environmentIDs, environments[0].GetID())
 	}
 
-	projects, err := client.Projects.Get(octopusdeploy.ProjectsQuery{
+	projects, err := client.Projects.Get(projects.ProjectsQuery{
 		Name: projectName,
 	})
 	if err != nil {

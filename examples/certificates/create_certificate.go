@@ -7,7 +7,9 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/certificates"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
 )
 
 // CreateCertificateExample shows how to create a certificate using go-octopusdeploy.
@@ -27,7 +29,7 @@ func CreateCertificateExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
@@ -47,11 +49,11 @@ func CreateCertificateExample() {
 
 	// certificate properties
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
-	certificateData := octopusdeploy.NewSensitiveValue(base64Certificate)
-	password := octopusdeploy.NewSensitiveValue(pfxFilePassword)
+	certificateData := core.NewSensitiveValue(base64Certificate)
+	password := core.NewSensitiveValue(pfxFilePassword)
 
 	// create certificate
-	certificate := octopusdeploy.NewCertificateResource(certificateName, certificateData, password)
+	certificate := certificates.NewCertificateResource(certificateName, certificateData, password)
 
 	// create certificate through Add(); returns error if fails
 	createdCertificate, err := client.Certificates.Add(certificate)

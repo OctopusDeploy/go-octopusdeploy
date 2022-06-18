@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
 	uuid "github.com/google/uuid"
 )
 
@@ -29,13 +30,13 @@ func CreateAzureSubscriptionAccountExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	azureAccount, err := octopusdeploy.NewAzureSubscriptionAccount(name, subscriptionID)
+	azureAccount, err := accounts.NewAzureSubscriptionAccount(name, subscriptionID)
 	if err != nil {
 		_ = fmt.Errorf("error creating Azure subscription account: %v", err)
 		return
@@ -54,7 +55,7 @@ func CreateAzureSubscriptionAccountExample() {
 	}
 
 	// type conversion required to access Azure-specific fields
-	azureAccount = createdAccount.(*octopusdeploy.AzureSubscriptionAccount)
+	azureAccount = createdAccount.(*accounts.AzureSubscriptionAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", azureAccount.GetID())

@@ -7,7 +7,8 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/certificates"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
 )
 
 // ReplaceCertificateExample provides an example of how to replace an existing
@@ -28,26 +29,26 @@ func ReplaceCertificateExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
 	// construct query
-	query := octopusdeploy.CertificatesQuery{
+	query := certificates.CertificatesQuery{
 		PartialName: certificateName,
 	}
 
 	// find the certificate with a specific name
-	certificates, err := client.Certificates.Get(query)
+	certificateResources, err := client.Certificates.Get(query)
 	if err != nil {
 		_ = fmt.Errorf("error matching certificate(s): %v", err)
 		return
 	}
 
 	// NOTE: this is lazy and should be replaced by something more robust
-	certificate := certificates.Items[0]
+	certificate := certificateResources.Items[0]
 
 	file, err := os.Open(pfxFilePath)
 	if err != nil {
@@ -65,7 +66,7 @@ func ReplaceCertificateExample() {
 	base64Certificate := base64.StdEncoding.EncodeToString(data)
 
 	// replace certificate
-	replacementCertificate := octopusdeploy.NewReplacementCertificate(base64Certificate, pfxFilePassword)
+	replacementCertificate := certificates.NewReplacementCertificate(base64Certificate, pfxFilePassword)
 	if _, err = client.Certificates.Replace(certificate.GetID(), replacementCertificate); err != nil {
 		_ = fmt.Errorf("error replacing certificate: %v", err)
 	}

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
 )
 
 func CreateSSHKeyAccountExample() {
@@ -14,9 +16,9 @@ func CreateSSHKeyAccountExample() {
 		spaceID    string = "space-id"
 
 		// account values
-		name           string                        = "SSH Key Account"
-		privateKeyFile *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("private-key")
-		username       string                        = "account-username"
+		name           string               = "SSH Key Account"
+		privateKeyFile *core.SensitiveValue = core.NewSensitiveValue("private-key")
+		username       string               = "account-username"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -25,13 +27,13 @@ func CreateSSHKeyAccountExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	sshKeyAccount, err := octopusdeploy.NewSSHKeyAccount(name, username, privateKeyFile)
+	sshKeyAccount, err := accounts.NewSSHKeyAccount(name, username, privateKeyFile)
 	if err != nil {
 		_ = fmt.Errorf("error creating SSH key account: %v", err)
 		return
@@ -44,7 +46,7 @@ func CreateSSHKeyAccountExample() {
 	}
 
 	// type conversion required to access SSH key-specific fields
-	sshKeyAccount = createdAccount.(*octopusdeploy.SSHKeyAccount)
+	sshKeyAccount = createdAccount.(*accounts.SSHKeyAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", sshKeyAccount.GetID())
