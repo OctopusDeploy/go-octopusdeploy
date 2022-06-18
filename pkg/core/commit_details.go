@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 type CommitDetails struct {
 	Comment string `json:"Comment,omitempty"`

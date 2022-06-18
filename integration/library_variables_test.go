@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
@@ -110,33 +111,32 @@ func TestLibraryVariableSetServiceAddDelete(t *testing.T) {
 	require.NotNil(t, namedLibraryVariableSets)
 }
 
-// TODO: fix test
-// func TestLibraryVariablesGet(t *testing.T) {
-// 	octopusClient, err := octopusdeploy.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariables-41", http.StatusOK, getLibraryVariablesResponseJSON)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, octopusClient)
+func TestLibraryVariablesGet(t *testing.T) {
+	octopusClient, err := octopusdeploy.GetFakeOctopusClient(t, "/api/libraryvariablesets/LibraryVariables-41", http.StatusOK, getLibraryVariablesResponseJSON)
+	require.NoError(t, err)
+	require.NotNil(t, octopusClient)
 
-// 	libraryVariables, err := octopusClient.LibraryVariableSets.GetByID("LibraryVariables-41")
-// 	require.NoError(t, err)
-// 	require.Equal(t, "MySet", libraryVariables.Name)
-// 	require.Equal(t, "The Description", libraryVariables.Description)
-// 	require.Equal(t, "variableset-LibraryVariables-41", libraryVariables.VariableSetID)
-// 	require.Equal(t, "Variables", libraryVariables.ContentType)
-// }
+	libraryVariables, err := octopusClient.LibraryVariableSets.GetByID("LibraryVariables-41")
+	require.NoError(t, err)
+	require.Equal(t, "MySet", libraryVariables.Name)
+	require.Equal(t, "The Description", libraryVariables.Description)
+	require.Equal(t, "variableset-LibraryVariables-41", libraryVariables.VariableSetID)
+	require.Equal(t, "Variables", libraryVariables.ContentType)
+}
 
-// const getLibraryVariablesResponseJSON = `
-// {
-//   "Id": "LibraryVariables-41",
-//   "Name": "MySet",
-//   "Description": "The Description",
-//   "VariableSetId": "variableset-LibraryVariables-41",
-//   "ContentType": "Variables",
-//   "Templates": [],
-//   "Links": {
-//     "Self": "/api/libraryvariablesets/LibraryVariables-481",
-//     "Variables": "/api/variables/variableset-LibraryVariables-481"
-//   }
-// }`
+const getLibraryVariablesResponseJSON = `
+{
+  "Id": "LibraryVariables-41",
+  "Name": "MySet",
+  "Description": "The Description",
+  "VariableSetId": "variableset-LibraryVariables-41",
+  "ContentType": "Variables",
+  "Templates": [],
+  "Links": {
+    "Self": "/api/libraryvariablesets/LibraryVariables-481",
+    "Variables": "/api/variables/variableset-LibraryVariables-481"
+  }
+}`
 
 func TestValidateLibraryVariablesValuesJustANamePasses(t *testing.T) {
 	libraryVariables := octopusdeploy.NewLibraryVariableSet("My Set")

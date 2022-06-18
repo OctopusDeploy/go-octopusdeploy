@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 type NamedReferenceItem struct {
 	DisplayIDAndName bool   `json:"DisplayIdAndName,omitempty"`

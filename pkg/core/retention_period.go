@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 type RetentionPeriod struct {
 	QuantityToKeep    int32  `json:"QuantityToKeep"`

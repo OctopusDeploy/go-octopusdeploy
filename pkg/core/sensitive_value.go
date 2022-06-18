@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 // NewSensitiveValue creates and initializes a sensitive value.
 func NewSensitiveValue(newValue string) *SensitiveValue {

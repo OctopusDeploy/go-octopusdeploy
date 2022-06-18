@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 type WorkItemLink struct {
 	Description string `json:"Description,omitempty"`

@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 type SkipMachineBehavior string
 

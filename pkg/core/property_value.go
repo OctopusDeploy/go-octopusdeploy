@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 import (
 	"encoding/json"

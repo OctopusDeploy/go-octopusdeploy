@@ -144,29 +144,28 @@ func TestCertificateServiceAddGetDelete(t *testing.T) {
 	AssertEqualCertificateResources(t, certificate, certificateToCompare)
 }
 
-// TODO: fix test
-// func TestCertificateServiceAddReplaceDelete(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestCertificateServiceAddReplaceDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	certificate := CreateTestCertificateResource(t, client)
-// 	require.NotNil(t, certificate)
+	certificate := CreateTestCertificateResource(t, client)
+	require.NotNil(t, certificate)
 
-// 	replacementCertificate := octopusdeploy.NewReplacementCertificate(testCertificates[1].Data, testCertificates[1].Password)
-// 	require.NotNil(t, replacementCertificate)
+	replacementCertificate := octopusdeploy.NewReplacementCertificate(testCertificates[1].Data, testCertificates[1].Password)
+	require.NotNil(t, replacementCertificate)
 
-// 	updatedCertificate, err := client.Certificates.Replace(certificate.GetID(), replacementCertificate)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, updatedCertificate)
-// 	require.NotEmpty(t, updatedCertificate.GetID())
-// 	require.Equal(t, testCertificates[1].Thumbprint, updatedCertificate.Thumbprint)
-// 	defer DeleteTestCertificateResource(t, client, updatedCertificate)
+	updatedCertificate, err := client.Certificates.Replace(certificate.GetID(), replacementCertificate)
+	require.NoError(t, err)
+	require.NotNil(t, updatedCertificate)
+	require.NotEmpty(t, updatedCertificate.GetID())
+	require.Equal(t, testCertificates[1].Thumbprint, updatedCertificate.Thumbprint)
+	defer DeleteTestCertificateResource(t, client, updatedCertificate)
 
-// 	certificateToCompare, err := client.Certificates.GetByID(updatedCertificate.GetID())
-// 	require.NotNil(t, certificateToCompare)
-// 	require.NoError(t, err)
-// 	AssertEqualCertificateResources(t, updatedCertificate, certificateToCompare)
-// }
+	certificateToCompare, err := client.Certificates.GetByID(updatedCertificate.GetID())
+	require.NotNil(t, certificateToCompare)
+	require.NoError(t, err)
+	AssertEqualCertificateResources(t, updatedCertificate, certificateToCompare)
+}
 
 func TestCertificateServiceArchiveUnarchive(t *testing.T) {
 	client := getOctopusClient()

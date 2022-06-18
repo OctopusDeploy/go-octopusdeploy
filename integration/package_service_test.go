@@ -70,74 +70,69 @@ func UpdatePackage(t *testing.T, client *octopusdeploy.Client, octopusPackage *o
 	return updatedPackage
 }
 
-// TODO: fix test
-// func TestPackageServiceAdd(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestPackageServiceAdd(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	octopusPackage := CreateTestPackage(t, client)
-// 	require.NotNil(t, octopusPackage)
-// 	defer DeleteTestPackage(t, client, octopusPackage)
-// }
+	octopusPackage := CreateTestPackage(t, client)
+	require.NotNil(t, octopusPackage)
+	defer DeleteTestPackage(t, client, octopusPackage)
+}
 
-// TODO: fix test
-// func TestPackageServiceDeleteAll(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestPackageServiceDeleteAll(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	packages, err := client.Packages.GetAll()
-// 	require.NoError(t, err)
-// 	require.NotNil(t, packages)
+	packages, err := client.Packages.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, packages)
 
-// 	for _, octopusPackage := range packages {
-// 		defer DeleteTestPackage(t, client, octopusPackage)
-// 	}
-// }
+	for _, octopusPackage := range packages {
+		defer DeleteTestPackage(t, client, octopusPackage)
+	}
+}
 
-// TODO: fix test
-// func TestPackageServiceGetAll(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestPackageServiceGetAll(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	resources, err := client.Packages.GetAll()
-// 	require.NoError(t, err)
-// 	require.NotNil(t, resources)
+	resources, err := client.Packages.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
-// 	for _, resource := range resources {
-// 		require.NotNil(t, resource)
-// 		assert.NotEmpty(t, resource.GetID())
-// 	}
-// }
+	for _, resource := range resources {
+		require.NotNil(t, resource)
+		assert.NotEmpty(t, resource.GetID())
+	}
+}
 
-// TODO: fix test
-// func TestPackageServiceGetByID(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestPackageServiceGetByID(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	id := getRandomName()
-// 	resource, err := client.Packages.GetByID(id)
-// 	require.Error(t, err)
-// 	require.Nil(t, resource)
+	id := getRandomName()
+	resource, err := client.Packages.GetByID(id)
+	require.Error(t, err)
+	require.Nil(t, resource)
 
-// 	resources, err := client.Packages.GetAll()
-// 	require.NoError(t, err)
-// 	require.NotNil(t, resources)
+	resources, err := client.Packages.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
-// 	for _, resource := range resources {
-// 		resourceToCompare, err := client.Packages.GetByID(resource.GetID())
-// 		require.NoError(t, err)
-// 		AssertEqualPackages(t, resource, resourceToCompare)
-// 	}
-// }
+	for _, resource := range resources {
+		resourceToCompare, err := client.Packages.GetByID(resource.GetID())
+		require.NoError(t, err)
+		AssertEqualPackages(t, resource, resourceToCompare)
+	}
+}
 
-// TODO: fix test
-// func TestPackageServiceUpdate(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestPackageServiceUpdate(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	expected := CreateTestPackage(t, client)
-// 	expected.Title = getRandomName()
-// 	actual := UpdatePackage(t, client, expected)
-// 	AssertEqualPackages(t, expected, actual)
-// 	defer DeleteTestPackage(t, client, expected)
-// }
+	expected := CreateTestPackage(t, client)
+	expected.Title = getRandomName()
+	actual := UpdatePackage(t, client, expected)
+	AssertEqualPackages(t, expected, actual)
+	defer DeleteTestPackage(t, client, expected)
+}

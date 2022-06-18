@@ -1,4 +1,4 @@
-package octopusdeploy
+package core
 
 type ConnectivityCheck struct {
 	DependsOnPropertyNames []string `json:"DependsOnPropertyNames"`

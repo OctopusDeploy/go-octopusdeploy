@@ -1,0 +1,33 @@
+package client
+
+import (
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/services"
+	"github.com/dghubble/sling"
+)
+
+type RootService struct {
+	services.Service
+}
+
+func NewRootService(sling *sling.Sling, uriTemplate string) *RootService {
+	return &RootService{
+		Service: services.NewService(constants.ServiceRootService, sling, uriTemplate),
+	}
+}
+
+func (s *RootService) Get() (*RootResource, error) {
+	path, err := services.GetPath(s)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := services.ApiGet(s.GetClient(), new(RootResource), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*RootResource), nil
+}
+
+var _ services.IService = &RootService{}
