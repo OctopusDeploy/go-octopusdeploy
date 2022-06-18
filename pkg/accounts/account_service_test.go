@@ -1,15 +1,29 @@
-package octopusdeploy
+package accounts
 
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/require"
 )
 
-func createAccountService(t *testing.T) *accountService {
-	service := newAccountService(nil, TestURIAccounts)
-	testNewService(t, service, TestURIAccounts, ServiceAccountService)
+func createAccountService(t *testing.T) *AccountService {
+	name := constants.ServiceAccountService
+	uriTemplate := constants.TestURIAccounts
+
+	service := NewAccountService(nil, uriTemplate)
+	require.NotNil(t, service)
+	require.NotNil(t, service.GetClient())
+
+	template, err := uritemplates.Parse(uriTemplate)
+	require.NoError(t, err)
+	require.Equal(t, service.GetURITemplate(), template)
+	require.Equal(t, service.GetName(), name)
+
 	return service
 }
 
@@ -18,7 +32,7 @@ func TestAccountServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, createInvalidParameterError(OperationAdd, ParameterAccount))
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterAccount), err)
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&AccountResource{})
@@ -30,35 +44,35 @@ func TestAccountServiceGetByID(t *testing.T) {
 	service := createAccountService(t)
 	require.NotNil(t, service)
 
-	resource, err := service.GetByID(emptyString)
-	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
+	resource, err := service.GetByID("")
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID), err)
 	require.Nil(t, resource)
 
-	resource, err = service.GetByID(whitespaceString)
-	require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
+	resource, err = service.GetByID(" ")
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID), err)
 	require.Nil(t, resource)
 }
 
 func TestAccountServiceNew(t *testing.T) {
-	ServiceFunction := newAccountService
 	client := &sling.Sling{}
-	uriTemplate := emptyString
-	ServiceName := ServiceAccountService
+	serviceName := constants.ServiceAccountService
+	serviceFunction := NewAccountService
+	uriTemplate := ""
 
 	testCases := []struct {
 		name        string
-		f           func(*sling.Sling, string) *accountService
+		f           func(*sling.Sling, string) *AccountService
 		client      *sling.Sling
 		uriTemplate string
 	}{
-		{"NilClient", ServiceFunction, nil, uriTemplate},
-		{"EmptyURITemplate", ServiceFunction, client, emptyString},
-		{"URITemplateWithWhitespace", ServiceFunction, client, whitespaceString},
+		{"NilClient", serviceFunction, nil, uriTemplate},
+		{"EmptyURITemplate", serviceFunction, client, ""},
+		{"URITemplateWithWhitespace", serviceFunction, client, " "},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := tc.f(tc.client, tc.uriTemplate)
-			testNewService(t, service, uriTemplate, ServiceName)
+			services.NewServiceTests(t, service, uriTemplate, serviceName)
 		})
 	}
 }
@@ -68,8 +82,8 @@ func TestAccountServiceParameters(t *testing.T) {
 		name      string
 		parameter string
 	}{
-		{"Empty", emptyString},
-		{"Whitespace", whitespaceString},
+		{"Empty", ""},
+		{"Whitespace", " "},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -77,12 +91,12 @@ func TestAccountServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			require.Equal(t, createInvalidParameterError(OperationGetByID, ParameterID), err)
+			require.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
 			require.Nil(t, resource)
 
 			err = service.DeleteByID(tc.parameter)
 			require.Error(t, err)
-			require.Equal(t, createInvalidParameterError(OperationDeleteByID, ParameterID), err)
+			require.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
 		})
 	}
 }
