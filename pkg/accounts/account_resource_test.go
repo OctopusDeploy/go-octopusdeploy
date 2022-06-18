@@ -1,32 +1,34 @@
-package octopusdeploy
+package accounts
 
 import (
 	"encoding/json"
 	"testing"
 	"time"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestAccountResource(t *testing.T) {
-	name := getRandomName()
-	spaceID := getRandomName()
-	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
+	name := internal.GetRandomName()
+	spaceID := internal.GetRandomName()
+	tenantedDeploymentMode := core.TenantedDeploymentMode("Untenanted")
 
 	testCases := []struct {
 		TestName               string
 		IsError                bool
 		Name                   string
 		SpaceID                string
-		TenantedDeploymentMode TenantedDeploymentMode
+		TenantedDeploymentMode core.TenantedDeploymentMode
 	}{
 		{"Valid", false, name, spaceID, tenantedDeploymentMode},
-		{"EmptyName", true, emptyString, spaceID, tenantedDeploymentMode},
-		{"WhitespaceName", true, whitespaceString, spaceID, tenantedDeploymentMode},
-		{"EmptySpaceID", false, name, emptyString, tenantedDeploymentMode},
-		{"WhitespaceSpaceID", true, name, whitespaceString, tenantedDeploymentMode},
+		{"EmptyName", true, "", spaceID, tenantedDeploymentMode},
+		{"WhitespaceName", true, " ", spaceID, tenantedDeploymentMode},
+		{"EmptySpaceID", false, name, "", tenantedDeploymentMode},
+		{"WhitespaceSpaceID", false, name, " ", tenantedDeploymentMode},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
@@ -61,7 +63,7 @@ func TestAccountResourceAsJSON(t *testing.T) {
 		"Foo":  "/test-2",
 	}
 	spaceID := "space-id"
-	tenantedDeploymentMode := TenantedDeploymentMode("Untenanted")
+	tenantedDeploymentMode := core.TenantedDeploymentMode("Untenanted")
 	tenantIDs := []string{
 		"tenant-id-1",
 		"tenant-id-2",
@@ -70,6 +72,33 @@ func TestAccountResourceAsJSON(t *testing.T) {
 		"tenant-tag-1",
 		"tenant-tag-2",
 	}
+
+	exampleAsJSON := `{
+		"AccountType": "None",
+		"Description": "description",
+		"EnvironmentIds": [
+			"environment-id-1",
+			"environment-id-2"
+		],
+		"Id": "id-value",
+		"LastModifiedOn": "2020-10-02T00:44:11.284Z",
+		"LastModifiedBy": "john.smith@example.com",
+		"Links": {
+		"Self": "/test",
+		"Foo": "/test-2"
+		},
+		"Name": "name",
+		"SpaceId": "space-id",
+		"TenantedDeploymentParticipation": "Untenanted",
+		"TenantIds": [
+			"tenant-id-1",
+			"tenant-id-2"
+		],
+		"TenantTags": [
+			"tenant-tag-1",
+			"tenant-tag-2"
+		]
+	}`
 
 	var account AccountResource
 	err := json.Unmarshal([]byte(exampleAsJSON), &account)
@@ -95,30 +124,3 @@ func TestAccountResourceAsJSON(t *testing.T) {
 
 	jsonassert.New(t).Assertf(exampleAsJSON, string(accountAsJSON))
 }
-
-const exampleAsJSON string = `{
-	"AccountType": "None",
-	"Description": "description",
-	"EnvironmentIds": [
-		"environment-id-1",
-		"environment-id-2"
-	],
-	"Id": "id-value",
-	"LastModifiedOn": "2020-10-02T00:44:11.284Z",
-	"LastModifiedBy": "john.smith@example.com",
-	"Links": {
-	  "Self": "/test",
-	  "Foo": "/test-2"
-	},
-	"Name": "name",
-	"SpaceId": "space-id",
-	"TenantedDeploymentParticipation": "Untenanted",
-	"TenantIds": [
-		"tenant-id-1",
-		"tenant-id-2"
-	],
-	"TenantTags": [
-		"tenant-tag-1",
-		"tenant-tag-2"
-	]
-  }`
