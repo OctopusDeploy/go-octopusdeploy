@@ -1,6 +1,9 @@
-package octopusdeploy
+package accounts
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+	resources "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	validation "github.com/OctopusDeploy/go-octopusdeploy/pkg/validation"
 	"github.com/go-playground/validator/v10"
 	uuid "github.com/google/uuid"
 )
@@ -9,40 +12,40 @@ import (
 // support for paged results.
 type AccountResources struct {
 	Items []*AccountResource `json:"Items"`
-	PagedResults
+	resources.PagedResults
 }
 
 // AccountResource represents account details used for deployments, including
 // username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type AccountResource struct {
-	AccessKey               string                 `json:"AccessKey,omitempty"`
-	AccountType             AccountType            `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
-	ApplicationID           *uuid.UUID             `json:"ClientId,omitempty"`
-	ApplicationPassword     *SensitiveValue        `json:"Password,omitempty"`
-	AuthenticationEndpoint  string                 `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
-	AzureEnvironment        string                 `json:"AzureEnvironment,omitempty"`
-	CertificateBytes        *SensitiveValue        `json:"CertificateBytes,omitempty"`
-	CertificateThumbprint   string                 `json:"CertificateThumbprint,omitempty"`
-	Description             string                 `json:"Description,omitempty"`
-	EnvironmentIDs          []string               `json:"EnvironmentIds,omitempty"`
-	JsonKey                 *SensitiveValue        `json:"JsonKey,omitempty"`
-	ManagementEndpoint      string                 `json:"ServiceManagementEndpointBaseUri,omitempty"`
-	Name                    string                 `json:"Name" validate:"required,notall"`
-	PrivateKeyFile          *SensitiveValue        `json:"PrivateKeyFile,omitempty"`
-	PrivateKeyPassphrase    *SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
-	ResourceManagerEndpoint string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
-	SecretKey               *SensitiveValue        `json:"SecretKey,omitempty"`
-	StorageEndpointSuffix   string                 `json:"ServiceManagementEndpointSuffix,omitempty"`
-	SpaceID                 string                 `json:"SpaceId,omitempty"`
-	SubscriptionID          *uuid.UUID             `json:"SubscriptionNumber,omitempty"`
-	TenantedDeploymentMode  TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
-	TenantID                *uuid.UUID             `json:"TenantId,omitempty"`
-	TenantIDs               []string               `json:"TenantIds,omitempty"`
-	TenantTags              []string               `json:"TenantTags,omitempty"`
-	Token                   *SensitiveValue        `json:"Token,omitempty"`
-	Username                string                 `json:"Username,omitempty"`
+	AccessKey               string                      `json:"AccessKey,omitempty"`
+	AccountType             AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
+	ApplicationID           *uuid.UUID                  `json:"ClientId,omitempty"`
+	ApplicationPassword     *core.SensitiveValue        `json:"Password,omitempty"`
+	AuthenticationEndpoint  string                      `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
+	AzureEnvironment        string                      `json:"AzureEnvironment,omitempty"`
+	CertificateBytes        *core.SensitiveValue        `json:"CertificateBytes,omitempty"`
+	CertificateThumbprint   string                      `json:"CertificateThumbprint,omitempty"`
+	Description             string                      `json:"Description,omitempty"`
+	EnvironmentIDs          []string                    `json:"EnvironmentIds,omitempty"`
+	JsonKey                 *core.SensitiveValue        `json:"JsonKey,omitempty"`
+	ManagementEndpoint      string                      `json:"ServiceManagementEndpointBaseUri,omitempty"`
+	Name                    string                      `json:"Name" validate:"required,notall"`
+	PrivateKeyFile          *core.SensitiveValue        `json:"PrivateKeyFile,omitempty"`
+	PrivateKeyPassphrase    *core.SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
+	ResourceManagerEndpoint string                      `json:"ResourceManagementEndpointBaseUri,omitempty"`
+	SecretKey               *core.SensitiveValue        `json:"SecretKey,omitempty"`
+	StorageEndpointSuffix   string                      `json:"ServiceManagementEndpointSuffix,omitempty"`
+	SpaceID                 string                      `json:"SpaceId,omitempty"`
+	SubscriptionID          *uuid.UUID                  `json:"SubscriptionNumber,omitempty"`
+	TenantedDeploymentMode  core.TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
+	TenantID                *uuid.UUID                  `json:"TenantId,omitempty"`
+	TenantIDs               []string                    `json:"TenantIds,omitempty"`
+	TenantTags              []string                    `json:"TenantTags,omitempty"`
+	Token                   *core.SensitiveValue        `json:"Token,omitempty"`
+	Username                string                      `json:"Username,omitempty"`
 
-	resource
+	resources.Resource
 }
 
 // NewAccount creates and initializes an account resource with a name and type.
@@ -50,8 +53,8 @@ func NewAccountResource(name string, accountType AccountType) *AccountResource {
 	return &AccountResource{
 		AccountType:            accountType,
 		Name:                   name,
-		TenantedDeploymentMode: TenantedDeploymentMode("Untenanted"),
-		resource:               *newResource(),
+		TenantedDeploymentMode: core.TenantedDeploymentMode("Untenanted"),
+		Resource:               *resources.NewResource(),
 	}
 }
 
@@ -80,7 +83,7 @@ func (a *AccountResource) GetSpaceID() string {
 }
 
 // GetTenantedDeploymentMode returns the tenanted deployment mode of this account resource.
-func (a *AccountResource) GetTenantedDeploymentMode() TenantedDeploymentMode {
+func (a *AccountResource) GetTenantedDeploymentMode() core.TenantedDeploymentMode {
 	return a.TenantedDeploymentMode
 }
 
@@ -115,7 +118,7 @@ func (a *AccountResource) SetSpaceID(spaceID string) {
 }
 
 // SetTenantedDeploymentMode sets the tenanted deployment mode of this account resource.
-func (a *AccountResource) SetTenantedDeploymentMode(mode TenantedDeploymentMode) {
+func (a *AccountResource) SetTenantedDeploymentMode(mode core.TenantedDeploymentMode) {
 	a.TenantedDeploymentMode = mode
 }
 
@@ -133,7 +136,7 @@ func (a *AccountResource) SetTenantTags(tenantTags []string) {
 // invalid.
 func (a *AccountResource) Validate() error {
 	v := validator.New()
-	err := v.RegisterValidation("notall", NotAll)
+	err := v.RegisterValidation("notall", validation.NotAll)
 	if err != nil {
 		return err
 	}
