@@ -1,10 +1,9 @@
 name: Integration Tests
 on:
   push:
-    branches:
-      - main
-    paths:
-      - octopusdeploy/**
+  schedule:
+    # Daily 5am australian/brisbane time (7pm UTC)
+    - cron: '0 19 * * *'
 defaults:
   run:
     shell: bash
