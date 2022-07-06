@@ -6,10 +6,6 @@ on:
       - integration/**
       - octopusdeploy/**
   pull_request:
-    branches: [ main ]
-    paths:
-      - integration/**
-      - octopusdeploy/**
 jobs:
   analyze:
     name: Analyze

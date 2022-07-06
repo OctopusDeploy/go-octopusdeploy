@@ -1,10 +1,8 @@
 name: Integration Tests
 on:
   push:
-    branches:
-      - main
-    paths:
-      - octopusdeploy/**
+    paths-ignore:
+      - '**.md'
 defaults:
   run:
     shell: bash
