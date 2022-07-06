@@ -3,12 +3,8 @@ package integration
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const (

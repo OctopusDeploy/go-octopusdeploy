@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
