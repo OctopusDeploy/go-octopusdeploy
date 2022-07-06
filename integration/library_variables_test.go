@@ -124,19 +124,19 @@ func TestLibraryVariableSetServiceAddDelete(t *testing.T) {
 // 	require.Equal(t, "Variables", libraryVariables.ContentType)
 // }
 
-const getLibraryVariablesResponseJSON = `
-{
-  "Id": "LibraryVariables-41",
-  "Name": "MySet",
-  "Description": "The Description",
-  "VariableSetId": "variableset-LibraryVariables-41",
-  "ContentType": "Variables",
-  "Templates": [],
-  "Links": {
-    "Self": "/api/libraryvariablesets/LibraryVariables-481",
-    "Variables": "/api/variables/variableset-LibraryVariables-481"
-  }
-}`
+// const getLibraryVariablesResponseJSON = `
+// {
+//   "Id": "LibraryVariables-41",
+//   "Name": "MySet",
+//   "Description": "The Description",
+//   "VariableSetId": "variableset-LibraryVariables-41",
+//   "ContentType": "Variables",
+//   "Templates": [],
+//   "Links": {
+//     "Self": "/api/libraryvariablesets/LibraryVariables-481",
+//     "Variables": "/api/variables/variableset-LibraryVariables-481"
+//   }
+// }`
 
 func TestValidateLibraryVariablesValuesJustANamePasses(t *testing.T) {
 	libraryVariables := octopusdeploy.NewLibraryVariableSet("My Set")

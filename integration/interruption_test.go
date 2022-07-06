@@ -1,16 +1,16 @@
 package integration
 
-import (
-	"encoding/json"
-	"fmt"
+// import (
+// 	"encoding/json"
+// 	"fmt"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
-)
+// 	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+// )
 
-const (
-	interruptionID    string = "Interruptions-1"
-	interruptionTitle string = "InterruptionTitle"
-)
+// const (
+// 	interruptionID    string = "Interruptions-1"
+// 	interruptionTitle string = "InterruptionTitle"
+// )
 
 // TODO: fix test
 // func TestInterruptionsGetAll(t *testing.T) {
@@ -112,194 +112,194 @@ const (
 // 	require.Equal(t, "Interruptions-1", i.GetID())
 // }
 
-var getInterruptionsResponseJSON = fmt.Sprintf(`
-{
-	"ItemType": "Interruption",
-	"TotalResults": 1,
-	"ItemsPerPage": 30,
-	"NumberOfPages": 1,
-	"LastPageNumber": 0,
-	"Items": [
-	  %v
-	],
-	"Links": {
-	  "Self": "/api/interruptions?regarding=&pendingOnly=False",
-	  "Template": "/api/interruptions{?skip,take,regarding,pendingOnly,ids}",
-	  "Page.All": "/api/interruptions?skip=0&take=2147483647",
-	  "Page.Current": "/api/interruptions?skip=0&take=30",
-	  "Page.Last": "/api/interruptions?skip=0&take=30"
-	}
-  }
-`, interruptionJSON)
+// var getInterruptionsResponseJSON = fmt.Sprintf(`
+// {
+// 	"ItemType": "Interruption",
+// 	"TotalResults": 1,
+// 	"ItemsPerPage": 30,
+// 	"NumberOfPages": 1,
+// 	"LastPageNumber": 0,
+// 	"Items": [
+// 	  %v
+// 	],
+// 	"Links": {
+// 	  "Self": "/api/interruptions?regarding=&pendingOnly=False",
+// 	  "Template": "/api/interruptions{?skip,take,regarding,pendingOnly,ids}",
+// 	  "Page.All": "/api/interruptions?skip=0&take=2147483647",
+// 	  "Page.Current": "/api/interruptions?skip=0&take=30",
+// 	  "Page.Last": "/api/interruptions?skip=0&take=30"
+// 	}
+//   }
+// `, interruptionJSON)
 
-const interruptionJSON = `
-{
-	"Id": "Interruptions-1",
-	"Title": "InterruptionTitle",
-	"Created": "2018-12-31T13:38:39.440+00:00",
-	"IsPending": true,
-	"Form": {
-	  "Values": {
-		"Instructions": null,
-		"Notes": null,
-		"Result": null
-	  },
-	  "Elements": [
-		{
-		  "Name": "Instructions",
-		  "Control": {
-			"Type": "Paragraph",
-			"Text": "Manual Approval",
-			"ResolveLinks": false
-		  },
-		  "IsValueRequired": false
-		},
-		{
-		  "Name": "Notes",
-		  "Control": {
-			"Type": "TextArea",
-			"Label": "Notes"
-		  },
-		  "IsValueRequired": false
-		},
-		{
-		  "Name": "Result",
-		  "Control": {
-			"Type": "SubmitButtonGroup",
-			"Buttons": [
-			  {
-				"Text": "Proceed",
-				"Value": "Proceed",
-				"RequiresConfirmation": false
-			  },
-			  {
-				"Text": "Abort",
-				"Value": "Abort",
-				"RequiresConfirmation": true
-			  }
-			]
-		  },
-		  "IsValueRequired": false
-		}
-	  ]
-	},
-	"RelatedDocumentIds": [
-	  "Deployments-1",
-	  "ServerTasks-1",
-	  "Projects-1",
-	  "Environments-1"
-	],
-	"ResponsibleTeamIds": [
-	  "Teams-1"
-	],
-	"ResponsibleUserId": null,
-	"CanTakeResponsibility": true,
-	"HasResponsibility": false,
-	"TaskId": "ServerTasks-1",
-	"CorrelationId": "ServerTasks-1_CNMPMXUEE6/24921723bcb741409134629931dd6b97/dbfadf8e4aaa4acbb45d45c4c39d0f12",
-	"IsLinkedToOtherInterruption": false,
-	"Links": {
-	  "Self": "/api/interruptions/Interruptions-1",
-	  "Submit": "/api/interruptions/Interruptions-1/submit",
-	  "Responsible": "/api/interruptions/Interruptions-1/responsible"
-	}
-  }
-  `
+// const interruptionJSON = `
+// {
+// 	"Id": "Interruptions-1",
+// 	"Title": "InterruptionTitle",
+// 	"Created": "2018-12-31T13:38:39.440+00:00",
+// 	"IsPending": true,
+// 	"Form": {
+// 	  "Values": {
+// 		"Instructions": null,
+// 		"Notes": null,
+// 		"Result": null
+// 	  },
+// 	  "Elements": [
+// 		{
+// 		  "Name": "Instructions",
+// 		  "Control": {
+// 			"Type": "Paragraph",
+// 			"Text": "Manual Approval",
+// 			"ResolveLinks": false
+// 		  },
+// 		  "IsValueRequired": false
+// 		},
+// 		{
+// 		  "Name": "Notes",
+// 		  "Control": {
+// 			"Type": "TextArea",
+// 			"Label": "Notes"
+// 		  },
+// 		  "IsValueRequired": false
+// 		},
+// 		{
+// 		  "Name": "Result",
+// 		  "Control": {
+// 			"Type": "SubmitButtonGroup",
+// 			"Buttons": [
+// 			  {
+// 				"Text": "Proceed",
+// 				"Value": "Proceed",
+// 				"RequiresConfirmation": false
+// 			  },
+// 			  {
+// 				"Text": "Abort",
+// 				"Value": "Abort",
+// 				"RequiresConfirmation": true
+// 			  }
+// 			]
+// 		  },
+// 		  "IsValueRequired": false
+// 		}
+// 	  ]
+// 	},
+// 	"RelatedDocumentIds": [
+// 	  "Deployments-1",
+// 	  "ServerTasks-1",
+// 	  "Projects-1",
+// 	  "Environments-1"
+// 	],
+// 	"ResponsibleTeamIds": [
+// 	  "Teams-1"
+// 	],
+// 	"ResponsibleUserId": null,
+// 	"CanTakeResponsibility": true,
+// 	"HasResponsibility": false,
+// 	"TaskId": "ServerTasks-1",
+// 	"CorrelationId": "ServerTasks-1_CNMPMXUEE6/24921723bcb741409134629931dd6b97/dbfadf8e4aaa4acbb45d45c4c39d0f12",
+// 	"IsLinkedToOtherInterruption": false,
+// 	"Links": {
+// 	  "Self": "/api/interruptions/Interruptions-1",
+// 	  "Submit": "/api/interruptions/Interruptions-1/submit",
+// 	  "Responsible": "/api/interruptions/Interruptions-1/responsible"
+// 	}
+//   }
+//   `
 
-const interruptionUserJSON = `
-  {
-	"Id": "Users-1",
-	"Username": "user@example.com",
-	"DisplayName": "User Name",
-	"IsActive": true,
-	"IsService": false,
-	"EmailAddress": "user@example.com",
-	"CanPasswordBeEdited": true,
-	"IsRequestor": true,
-	"Links": {
-	  "Self": "/api/users/Users-1",
-	  "Permissions": "/api/users/Users-1/permissions",
-	  "ApiKeys": "/api/users/Users-1/apikeys{/id}{?skip,take}",
-	  "Avatar": "https://www.gravatar.com/avatar/ae0e3d90eeddb248c041469b38cc64fd?d=blank"
-	}
-  }`
+// const interruptionUserJSON = `
+//   {
+// 	"Id": "Users-1",
+// 	"Username": "user@example.com",
+// 	"DisplayName": "User Name",
+// 	"IsActive": true,
+// 	"IsService": false,
+// 	"EmailAddress": "user@example.com",
+// 	"CanPasswordBeEdited": true,
+// 	"IsRequestor": true,
+// 	"Links": {
+// 	  "Self": "/api/users/Users-1",
+// 	  "Permissions": "/api/users/Users-1/permissions",
+// 	  "ApiKeys": "/api/users/Users-1/apikeys{/id}{?skip,take}",
+// 	  "Avatar": "https://www.gravatar.com/avatar/ae0e3d90eeddb248c041469b38cc64fd?d=blank"
+// 	}
+//   }`
 
-const interruptionSubmittedJSON = `
-  {
-	  "Id": "Interruptions-1",
-	  "Title": "InterruptionTitle",
-	  "Created": "2018-12-31T13:38:39.440+00:00",
-	  "IsPending": false,
-	  "Form": {
-		"Values": {
-		  "Instructions": null,
-		  "Notes": null,
-		  "Result": null
-		},
-		"Elements": [
-		  {
-			"Name": "Instructions",
-			"Control": {
-			  "Type": "Paragraph",
-			  "Text": "Manual Approval",
-			  "ResolveLinks": false
-			},
-			"IsValueRequired": false
-		  },
-		  {
-			"Name": "Notes",
-			"Control": {
-			  "Type": "TextArea",
-			  "Label": "Notes"
-			},
-			"IsValueRequired": false
-		  },
-		  {
-			"Name": "Result",
-			"Control": {
-			  "Type": "SubmitButtonGroup",
-			  "Buttons": [
-				{
-				  "Text": "Proceed",
-				  "Value": "Proceed",
-				  "RequiresConfirmation": false
-				},
-				{
-				  "Text": "Abort",
-				  "Value": "Abort",
-				  "RequiresConfirmation": true
-				}
-			  ]
-			},
-			"IsValueRequired": false
-		  }
-		]
-	  },
-	  "RelatedDocumentIds": [
-		"Deployments-1",
-		"ServerTasks-1",
-		"Projects-1",
-		"Environments-1"
-	  ],
-	  "ResponsibleTeamIds": [
-		"Teams-1"
-	  ],
-	  "ResponsibleUserId": null,
-	  "CanTakeResponsibility": true,
-	  "HasResponsibility": false,
-	  "TaskId": "ServerTasks-1",
-	  "CorrelationId": "ServerTasks-1_CNMPMXUEE6/24921723bcb741409134629931dd6b97/dbfadf8e4aaa4acbb45d45c4c39d0f12",
-	  "IsLinkedToOtherInterruption": false,
-	  "Links": {
-		"Self": "/api/interruptions/Interruptions-1",
-		"Submit": "/api/interruptions/Interruptions-1/submit",
-		"Responsible": "/api/interruptions/Interruptions-1/responsible"
-	  }
-	}
-	`
+// const interruptionSubmittedJSON = `
+//   {
+// 	  "Id": "Interruptions-1",
+// 	  "Title": "InterruptionTitle",
+// 	  "Created": "2018-12-31T13:38:39.440+00:00",
+// 	  "IsPending": false,
+// 	  "Form": {
+// 		"Values": {
+// 		  "Instructions": null,
+// 		  "Notes": null,
+// 		  "Result": null
+// 		},
+// 		"Elements": [
+// 		  {
+// 			"Name": "Instructions",
+// 			"Control": {
+// 			  "Type": "Paragraph",
+// 			  "Text": "Manual Approval",
+// 			  "ResolveLinks": false
+// 			},
+// 			"IsValueRequired": false
+// 		  },
+// 		  {
+// 			"Name": "Notes",
+// 			"Control": {
+// 			  "Type": "TextArea",
+// 			  "Label": "Notes"
+// 			},
+// 			"IsValueRequired": false
+// 		  },
+// 		  {
+// 			"Name": "Result",
+// 			"Control": {
+// 			  "Type": "SubmitButtonGroup",
+// 			  "Buttons": [
+// 				{
+// 				  "Text": "Proceed",
+// 				  "Value": "Proceed",
+// 				  "RequiresConfirmation": false
+// 				},
+// 				{
+// 				  "Text": "Abort",
+// 				  "Value": "Abort",
+// 				  "RequiresConfirmation": true
+// 				}
+// 			  ]
+// 			},
+// 			"IsValueRequired": false
+// 		  }
+// 		]
+// 	  },
+// 	  "RelatedDocumentIds": [
+// 		"Deployments-1",
+// 		"ServerTasks-1",
+// 		"Projects-1",
+// 		"Environments-1"
+// 	  ],
+// 	  "ResponsibleTeamIds": [
+// 		"Teams-1"
+// 	  ],
+// 	  "ResponsibleUserId": null,
+// 	  "CanTakeResponsibility": true,
+// 	  "HasResponsibility": false,
+// 	  "TaskId": "ServerTasks-1",
+// 	  "CorrelationId": "ServerTasks-1_CNMPMXUEE6/24921723bcb741409134629931dd6b97/dbfadf8e4aaa4acbb45d45c4c39d0f12",
+// 	  "IsLinkedToOtherInterruption": false,
+// 	  "Links": {
+// 		"Self": "/api/interruptions/Interruptions-1",
+// 		"Submit": "/api/interruptions/Interruptions-1/submit",
+// 		"Responsible": "/api/interruptions/Interruptions-1/responsible"
+// 	  }
+// 	}
+// 	`
 
-func getInterruptonFromJSON(interruptionJSON string) (*octopusdeploy.Interruption, error) {
-	var interruption octopusdeploy.Interruption
-	err := json.Unmarshal([]byte(interruptionJSON), &interruption)
-	return &interruption, err
-}
+// func getInterruptonFromJSON(interruptionJSON string) (*octopusdeploy.Interruption, error) {
+// 	var interruption octopusdeploy.Interruption
+// 	err := json.Unmarshal([]byte(interruptionJSON), &interruption)
+// 	return &interruption, err
+// }

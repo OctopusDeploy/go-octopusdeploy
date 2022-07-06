@@ -46,61 +46,61 @@ import (
 // 	assert.Equal(t, false, lifecycle.TentacleRetentionPolicy.ShouldKeepForever)
 // }
 
-const getLifecycleResponseJSON = `
-{
-  "Id": "Lifecycles-41",
-  "Phases": [
-    {
-      "Id": "61e30a4b-3bdb-4eff-8995-805de61da9ff",
-      "Name": "A",
-      "AutomaticDeploymentTargets": [
-	    "Environments-2"
-      ],
-      "OptionalDeploymentTargets": [
-        "Environments-1"
-      ],
-      "MinimumEnvironmentsBeforePromotion": 1,
-      "IsOptionalPhase": true,
-      "ReleaseRetentionPolicy": {
-        "Unit": "Days",
-        "QuantityToKeep": 1,
-        "ShouldKeepForever": false
-      },
-      "TentacleRetentionPolicy": {
-        "Unit": "Items",
-        "QuantityToKeep": 0,
-        "ShouldKeepForever": true
-      }
-    },
-    {
-      "Id": "670920c6-1065-4207-8d15-2c5d7947e795",
-      "Name": "B",
-      "AutomaticDeploymentTargets": [],
-      "OptionalDeploymentTargets": [],
-      "MinimumEnvironmentsBeforePromotion": 0,
-      "IsOptionalPhase": false,
-      "ReleaseRetentionPolicy": null,
-      "TentacleRetentionPolicy": null
-    }
-  ],
-  "Name": "Test",
-  "ReleaseRetentionPolicy": {
-    "Unit": "Days",
-    "QuantityToKeep": 3,
-    "ShouldKeepForever": false
-  },
-  "TentacleRetentionPolicy": {
-    "Unit": "Items",
-    "QuantityToKeep": 2,
-    "ShouldKeepForever": false
-  },
-  "Description": "",
-  "Links": {
-    "Self": "/api/lifecycles/Lifecycles-41",
-    "Preview": "/api/lifecycles/Lifecycles-41/preview",
-    "Projects": "/api/lifecycles/Lifecycles-41/projects"
-  }
-}`
+// const getLifecycleResponseJSON = `
+// {
+//   "Id": "Lifecycles-41",
+//   "Phases": [
+//     {
+//       "Id": "61e30a4b-3bdb-4eff-8995-805de61da9ff",
+//       "Name": "A",
+//       "AutomaticDeploymentTargets": [
+// 	    "Environments-2"
+//       ],
+//       "OptionalDeploymentTargets": [
+//         "Environments-1"
+//       ],
+//       "MinimumEnvironmentsBeforePromotion": 1,
+//       "IsOptionalPhase": true,
+//       "ReleaseRetentionPolicy": {
+//         "Unit": "Days",
+//         "QuantityToKeep": 1,
+//         "ShouldKeepForever": false
+//       },
+//       "TentacleRetentionPolicy": {
+//         "Unit": "Items",
+//         "QuantityToKeep": 0,
+//         "ShouldKeepForever": true
+//       }
+//     },
+//     {
+//       "Id": "670920c6-1065-4207-8d15-2c5d7947e795",
+//       "Name": "B",
+//       "AutomaticDeploymentTargets": [],
+//       "OptionalDeploymentTargets": [],
+//       "MinimumEnvironmentsBeforePromotion": 0,
+//       "IsOptionalPhase": false,
+//       "ReleaseRetentionPolicy": null,
+//       "TentacleRetentionPolicy": null
+//     }
+//   ],
+//   "Name": "Test",
+//   "ReleaseRetentionPolicy": {
+//     "Unit": "Days",
+//     "QuantityToKeep": 3,
+//     "ShouldKeepForever": false
+//   },
+//   "TentacleRetentionPolicy": {
+//     "Unit": "Items",
+//     "QuantityToKeep": 2,
+//     "ShouldKeepForever": false
+//   },
+//   "Description": "",
+//   "Links": {
+//     "Self": "/api/lifecycles/Lifecycles-41",
+//     "Preview": "/api/lifecycles/Lifecycles-41/preview",
+//     "Projects": "/api/lifecycles/Lifecycles-41/projects"
+//   }
+// }`
 
 func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
 	lifecycle := &octopusdeploy.Lifecycle{
