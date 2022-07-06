@@ -1,39 +1,31 @@
-# Contributing
+# Contributing Guide
 
-Thanks for considering contributing to the project!
+Thanks for contributing to this project! :+1: This project and everyone participating in it is governed by the [Octopus Deploy Code of Conduct](https://github.com/OctopusDeploy/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior using the instructions in the code of conduct.
 
-Here are some things that might help:
+This guide provides an overview of the contribution workflow from opening an issue, creating a PR, reviewing, and merging the PR.
 
-## Local Integration Tests
+## Getting Started
 
-To make development easier, run a local Octopus Deploy server on your machine. You can `vagrant up` [this image](https://github.com/MattHodge/VagrantBoxes/tree/master/OctopusDeployServer) to get a fully working Octopus Deploy Server.
+This project is built, tested, and released by workflows defined in GitHub Actions (see [Actions](../actions/) for more information). Release management is controlled through [Release-Please](https://github.com/googleapis/release-please).
 
-When it comes up, login on [http://localhost:8081](http://localhost:8081) with username `Administrator` and password `OctoVagrant!`.
+### Issues
 
-To get an API to use for local development, go to **Administrator | Profile | My API Keys** and click **New API Key**.
+We :heart: feedback! Submitting an issue (i.e. feature, bug) is the best way to document things your experience with this project. For example, if there's a feature missing or there's behavior that doesn't match your expectations then we strongly encourage you to submit an issue. That way, contributors can track them and have interested folks (like you) by notified if/when they're resolved.
 
-Set the two following environment variables:
+#### Create a New Issue
 
-```bash
-# bash
-export OCTOPUS_URL=http://localhost:8081/
-export OCTOPUS_APIKEY=API-YOUR-API-KEY
-```
+Use the Issues feature in GitHub to document bugs and/or features related to this project. Please ensure to apply any/all associated metadata (such as labels) in order to classify them appropriately. Also, please provide as much contextual information as you can, especially when documenting bugs. Templates are provided in this project to guide the authoring process.
 
-```powershell
-# PowerShell
-$env:OCTOPUS_URL = "http://localhost:8081/"
-$env:OCTOPUS_APIKEY = "API-YOUR-API-KEY"
-```
+#### Resolve an Issue
 
-You can now run integration tests.
+Issues will be triaged and modified (if necessary) by the [CODEOWNERS](CODEOWNERS) for this project. It is important to associate pull requests with issues by referencing their issue ID in the commit message. That way, issues will be able to document changes and/or fixes. This will assist visitors when reading through issue lists.
 
-## Tips
+### Commit Your Change(s) through Pull Requests
 
-* You can open up the Swagger UI of the Octopus Deploy Server at [http://localhost:8081/swaggerui/index.html](http://localhost:8081/swaggerui/index.html). This makes it easier to poke around with the API.
+This project employs [branch protection](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/managing-a-branch-protection-rule); the `main` branch is protected. Therefore, your changes MUST be committed to a branch and submitted as a pull request. Also, this project requires the use of [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for all commit messages. Using Conventional Commits enables this project to autogenerate its [CHANGELOG.md](../CHANGELOG.md) and release notes.
 
-* If you are trying to work out the API calls for something, use Chrome Developer Tools (or similar) to do them in the Octopus Web interface. You can then find out the data that was sent and which endpoints it was sent to.
+### Your Pull Request is Merged! Now What?
 
-![Chrome Developer Tools](https://i.imgur.com/TniEjnw.gif)
+Congratulations! :tada: And thank you very much for your contribution to this project!
 
-* It can be useful poking around the [Octopus Client built in .NET](https://github.com/OctopusDeploy/OctopusClients) to work out how things work. There are also some [API examples](https://github.com/OctopusDeploy/OctopusDeploy-Api) available.
+Once your pull request is merged, our build and test workflow will execute once again to validate changes. Afterward, your changes will be committed to the `main` branch.
