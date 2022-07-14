@@ -20,7 +20,7 @@ go get "github.com/OctopusDeploy/go-octopusdeploy"
 ## Usage
 
 ```go
-import "github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+import "github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
 ```
 
 The [Octopus REST API](https://octopus.com/docs/octopus-rest-api) is exposed through service fields of the client. An API key is required to communicate with the API (see [How to Create an API Key](https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key) for more information).
@@ -39,7 +39,7 @@ if err != nil {
 // the first parameter for NewClient can accept a http.Client if you wish to
 // override the default; also, the spaceID may be an empty string (i.e. "") if
 // you wish to load the default space
-client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+octopusClient, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 if err != nil {
     _ = fmt.Errorf("error creating API client: %v", err)
     return
@@ -49,7 +49,7 @@ if err != nil {
 Once the client has been initialized, APIs can be targeted through the model and services available:
 
 ```go
-usernamePasswordAccount := octopusdeploy.NewUsernamePasswordAccount(name)
+usernamePasswordAccount := accounts.NewUsernamePasswordAccount(name)
 usernamePasswordAccount.Username = username
 
 createdAccount, err := client.Accounts.Add(usernamePasswordAccount)
