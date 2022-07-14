@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/workerpools"
 )
 
 // CreateDynamicWorkerPoolExample provides an example of how to create a
@@ -17,7 +18,7 @@ func CreateDynamicWorkerPoolExample() {
 
 		// worker pool values
 		name       = "worker-pool-name"
-		workerType = octopusdeploy.WorkerTypeUbuntu1804
+		workerType = workerpools.WorkerTypeUbuntu1804
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -26,14 +27,14 @@ func CreateDynamicWorkerPoolExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
 	// create dynamic worker pool
-	dynamicWorkerPool := octopusdeploy.NewDynamicWorkerPool(name, workerType)
+	dynamicWorkerPool := workerpools.NewDynamicWorkerPool(name, workerType)
 	createdDynamicWorkerPool, err := client.WorkerPools.Add(dynamicWorkerPool)
 	if err != nil {
 		_ = fmt.Errorf("error creating dynamic worker pool: %v", err)

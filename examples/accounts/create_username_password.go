@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
 )
 
 func CreateUsernamePasswordExample() {
@@ -25,28 +27,28 @@ func CreateUsernamePasswordExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
 	// option 1: create a username/password account and assign values to fields
-	usernamePasswordAccount, err := octopusdeploy.NewUsernamePasswordAccount(name)
+	usernamePasswordAccount, err := accounts.NewUsernamePasswordAccount(name)
 	if err != nil {
 		_ = fmt.Errorf("error creating username/password account: %v", err)
 	}
-	usernamePasswordAccount.SetPassword(octopusdeploy.NewSensitiveValue(password))
+	usernamePasswordAccount.SetPassword(core.NewSensitiveValue(password))
 	usernamePasswordAccount.SetUsername(username)
 
 	// option 2: create a username/password account and assign values to fields
 	// using the variadic configuration option
-	options := func(u *octopusdeploy.UsernamePasswordAccount) {
-		u.Password = octopusdeploy.NewSensitiveValue(password)
+	options := func(u *accounts.UsernamePasswordAccount) {
+		u.Password = core.NewSensitiveValue(password)
 		u.Username = username
 	}
 
-	usernamePasswordAccount, err = octopusdeploy.NewUsernamePasswordAccount(name, options)
+	usernamePasswordAccount, err = accounts.NewUsernamePasswordAccount(name, options)
 	if err != nil {
 		_ = fmt.Errorf("error creating username/password account: %v", err)
 	}
@@ -58,7 +60,7 @@ func CreateUsernamePasswordExample() {
 	}
 
 	// type conversion required to access Username/Password-specific fields
-	usernamePasswordAccount = createdAccount.(*octopusdeploy.UsernamePasswordAccount)
+	usernamePasswordAccount = createdAccount.(*accounts.UsernamePasswordAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", usernamePasswordAccount.GetID())

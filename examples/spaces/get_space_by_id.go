@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
 )
 
 // GetSpaceByIDExample provides an example of how to get a space from Octopus
@@ -24,7 +24,7 @@ func GetSpaceByIDExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, "")
+	client, err := client.NewClient(nil, apiURL, apiKey, "")
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return

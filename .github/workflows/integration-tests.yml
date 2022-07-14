@@ -8,9 +8,6 @@ defaults:
     shell: bash
 jobs:
   test:
-    env:
-      OCTOPUS_VERSION: "2022.1"
-      OCTOPUS_URL: "http://localhost:8080"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,11 +17,4 @@ jobs:
         run: go build -a -race -v ./...
       - name: Vet
         run: go vet -v ./...
-      - uses: dominikh/staticcheck-action@v1.2.0
-      - name: Start Octopus Container
-        run: cd ./tests && docker-compose up --detach
-      - name: Generate API Key
-        run: ./tests/Create-ApiKey.ps1
-        shell: pwsh
-      - name: Run Integration Tests
-        run: go test -v ./integration/...
+      # TODO: added unit and integration tests that use the Docker container running Octopus

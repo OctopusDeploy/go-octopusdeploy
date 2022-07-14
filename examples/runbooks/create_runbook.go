@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/runbooks"
 )
 
 // CreateRunbookExample provides an example of how to create a runbook in
@@ -23,7 +24,7 @@ func CreateRunbookExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, "")
+	client, err := client.NewClient(nil, apiURL, apiKey, "")
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
@@ -40,7 +41,7 @@ func CreateRunbookExample() {
 	projectID := "project-id"
 
 	// create runbook
-	runbook := octopusdeploy.NewRunbook(name, projectID)
+	runbook := runbooks.NewRunbook(name, projectID)
 
 	// update any additional project fields here...
 

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/octopusdeploy"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/accounts"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
 )
 
 func CreateTokenExample() {
@@ -14,8 +16,8 @@ func CreateTokenExample() {
 		spaceID    string = "space-id"
 
 		// account values
-		name  string                        = "Token Account"
-		token *octopusdeploy.SensitiveValue = octopusdeploy.NewSensitiveValue("password-value")
+		name  string               = "Token Account"
+		token *core.SensitiveValue = core.NewSensitiveValue("password-value")
 	)
 
 	apiURL, err := url.Parse(octopusURL)
@@ -24,29 +26,18 @@ func CreateTokenExample() {
 		return
 	}
 
-	client, err := octopusdeploy.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
-	// option 1: create a token account and assign values to fields
-	account, err := octopusdeploy.NewTokenAccount(name, token)
+	// create a token account and assign values to fields
+	account, err := accounts.NewTokenAccount(name, token)
 	if err != nil {
 		_ = fmt.Errorf("error creating token account: %v", err)
 	}
 	account.Description = "This is the description."
-
-	// option 2: create a token account and assign values to fields using the
-	// variadic configuration option
-	options := func(t *octopusdeploy.TokenAccount) {
-		t.Description = "This is the description."
-	}
-
-	account, err = octopusdeploy.NewTokenAccount(name, token, options)
-	if err != nil {
-		_ = fmt.Errorf("error creating token account: %v", err)
-	}
 
 	// create account
 	createdAccount, err := client.Accounts.Add(account)
@@ -55,7 +46,7 @@ func CreateTokenExample() {
 	}
 
 	// type conversion required to access token-specific fields
-	account = createdAccount.(*octopusdeploy.TokenAccount)
+	account = createdAccount.(*accounts.TokenAccount)
 
 	// work with created account
 	fmt.Printf("account created: (%s)\n", account.GetID())
