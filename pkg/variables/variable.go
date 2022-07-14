@@ -1,6 +1,6 @@
 package variables
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 type Variable struct {
 	Description string                 `json:"Description"`

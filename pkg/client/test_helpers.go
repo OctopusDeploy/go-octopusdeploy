@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 )
 
 type roundTripFunc func(r *http.Request) (*http.Response, error)

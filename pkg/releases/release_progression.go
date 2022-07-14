@@ -1,9 +1,9 @@
 package releases
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/channels"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/dashboard"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/dashboard"
 )
 
 type ReleaseProgression struct {

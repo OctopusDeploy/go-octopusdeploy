@@ -3,7 +3,7 @@ package packages
 import (
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type PackageVersion struct {

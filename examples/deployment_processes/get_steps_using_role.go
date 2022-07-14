@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
 func GetStepsUsingRoleExample() {

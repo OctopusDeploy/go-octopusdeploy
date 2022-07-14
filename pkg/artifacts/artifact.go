@@ -3,7 +3,7 @@ package artifacts
 import (
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 // Artifacts defines a collection of artifacts with built-in support for paged

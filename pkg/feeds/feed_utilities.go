@@ -1,7 +1,7 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func ToFeed(feedResource *FeedResource) (IFeed, error) {

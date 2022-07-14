@@ -1,6 +1,6 @@
 package configuration
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 type ConfigurationSections struct {
 	Items []*ConfigurationSection `json:"Items"`

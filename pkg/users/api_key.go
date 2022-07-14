@@ -3,7 +3,7 @@ package users
 import (
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 // APIKeys defines a collection of API keys with built-in support for paged

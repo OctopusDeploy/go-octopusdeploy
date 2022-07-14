@@ -5,7 +5,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/machines"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/stretchr/testify/require"
 )
 

@@ -1,6 +1,6 @@
 package metadata
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 
 type DisplayInfo struct {
 	ConnectivityCheck     *core.ConnectivityCheck `json:"ConnectivityCheck,omitempty"`

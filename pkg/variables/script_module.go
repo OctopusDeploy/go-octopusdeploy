@@ -3,7 +3,7 @@ package variables
 import (
 	"encoding/json"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 )
 

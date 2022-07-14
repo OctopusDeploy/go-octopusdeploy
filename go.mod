@@ -1,4 +1,4 @@
-module github.com/OctopusDeploy/go-octopusdeploy
+module github.com/OctopusDeploy/go-octopusdeploy/v2
 
 go 1.18
 

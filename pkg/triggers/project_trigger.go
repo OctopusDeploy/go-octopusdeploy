@@ -3,9 +3,9 @@ package triggers
 import (
 	"encoding/json"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/actions"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/filters"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 )
 

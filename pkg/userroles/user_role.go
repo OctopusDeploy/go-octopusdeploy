@@ -1,6 +1,6 @@
 package userroles
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // UserRoles defines a collection of user roles with built-in support for paged
 // results.

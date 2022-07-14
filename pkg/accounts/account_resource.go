@@ -1,9 +1,9 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	resources "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
-	validation "github.com/OctopusDeploy/go-octopusdeploy/pkg/validation"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	resources "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
+	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
 	"github.com/go-playground/validator/v10"
 	uuid "github.com/google/uuid"
 )

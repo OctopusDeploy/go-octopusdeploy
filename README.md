@@ -3,9 +3,9 @@
   <h3 align="center">go-octopusdeploy</h3>
   <p align="center">Go API Client for <a href="https://octopus.com/">Octopus Deploy</a> 🐙</p>
   <p align="center">
-    <a href="https://github.com/OctopusDeploy/go-octopusdeploy/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/v/release/OctopusDeploy/go-octopusdeploy.svg?logo=github&style=flat-square"></a>
-    <a href="https://pkg.go.dev/github.com/OctopusDeploy/go-octopusdeploy"><img alt="PkgGoDev" src="https://pkg.go.dev/badge/github.com/OctopusDeploy/go-octopusdeploy"></a>
-    <a href="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy"><img src="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy" alt="Go Report"></a>
+    <a href="https://github.com/OctopusDeploy/go-octopusdeploy/v2/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/v/release/OctopusDeploy/go-octopusdeploy.svg?logo=github&style=flat-square"></a>
+    <a href="https://pkg.go.dev/github.com/OctopusDeploy/go-octopusdeploy/v2"><img alt="PkgGoDev" src="https://pkg.go.dev/badge/github.com/OctopusDeploy/go-octopusdeploy/v2"></a>
+    <a href="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy/v2"><img src="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy/v2" alt="Go Report"></a>
   </p>
 </div>
 
@@ -14,13 +14,13 @@
 ## Install
 
 ```bash
-go get "github.com/OctopusDeploy/go-octopusdeploy"
+go get "github.com/OctopusDeploy/go-octopusdeploy/v2"
 ```
 
 ## Usage
 
 ```go
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 ```
 
 The [Octopus REST API](https://octopus.com/docs/octopus-rest-api) is exposed through service fields of the client. An API key is required to communicate with the API (see [How to Create an API Key](https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key) for more information).
@@ -52,7 +52,7 @@ Once the client has been initialized, APIs can be targeted through the model and
 usernamePasswordAccount := accounts.NewUsernamePasswordAccount(name)
 usernamePasswordAccount.Username = username
 
-createdAccount, err := client.Accounts.Add(usernamePasswordAccount)
+createdAccount, err := octopusClient.Accounts.Add(usernamePasswordAccount)
 if err != nil {
     _ = fmt.Errorf("error adding account: %v", err)
 }

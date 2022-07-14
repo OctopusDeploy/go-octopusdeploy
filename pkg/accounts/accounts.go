@@ -3,7 +3,7 @@ package accounts
 import (
 	"encoding/json"
 
-	resources "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	resources "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 // Accounts defines a collection of accounts with built-in support for paged

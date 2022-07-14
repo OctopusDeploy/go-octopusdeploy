@@ -3,8 +3,8 @@ package releases
 import (
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/packages"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 // Releases defines a collection of Release instance with built-in support for paged results from the API.

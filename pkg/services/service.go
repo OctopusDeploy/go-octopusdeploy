@@ -8,11 +8,11 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -110,7 +110,7 @@ func (s *Service) GetPath() string {
 func GetUserAgentString() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, dep := range info.Deps {
-			if dep.Path == "github.com/OctopusDeploy/go-octopusdeploy" {
+			if dep.Path == "github.com/OctopusDeploy/go-octopusdeploy/v2" {
 				if dep.Version != "" {
 					version = dep.Version
 				}

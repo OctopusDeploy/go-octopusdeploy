@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )

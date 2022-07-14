@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/runbooks"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 )
 
 // CreateRunbookSnapshotExample provides an example of how to create a runbook

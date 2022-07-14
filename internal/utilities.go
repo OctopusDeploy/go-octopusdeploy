@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/dghubble/sling"
 	"github.com/google/uuid"
 )

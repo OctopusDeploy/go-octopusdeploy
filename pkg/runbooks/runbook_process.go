@@ -1,8 +1,8 @@
 package runbooks
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/deployments"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type RunbookProcesses struct {
