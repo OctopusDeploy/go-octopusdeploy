@@ -1,6 +1,6 @@
 package projects
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/packages"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 
 type VersioningStrategy struct {
 	DonorPackage       *packages.DeploymentActionPackage `json:"DonorPackage,omitempty"`

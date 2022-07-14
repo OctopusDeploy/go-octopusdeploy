@@ -3,7 +3,7 @@ package e2e
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/events"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/events"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

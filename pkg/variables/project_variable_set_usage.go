@@ -1,8 +1,8 @@
 package variables
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/releases"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/runbooks"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 )
 
 type ProjectVariableSetUsage struct {

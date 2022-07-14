@@ -1,6 +1,6 @@
 package machines
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // AzureWebAppEndpoint represents the an Azure web app-based endpoint.
 type AzureWebAppEndpoint struct {

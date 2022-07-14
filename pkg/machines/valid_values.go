@@ -1,6 +1,6 @@
 package machines
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 
 // Project
 

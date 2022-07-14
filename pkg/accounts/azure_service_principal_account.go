@@ -1,10 +1,10 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	validation "github.com/OctopusDeploy/go-octopusdeploy/pkg/validation"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 	uuid "github.com/google/uuid"

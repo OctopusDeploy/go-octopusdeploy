@@ -1,6 +1,6 @@
 package machines
 
-import "github.com/OctopusDeploy/go-octopusdeploy/internal"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 
 func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	if IsNil(endpointResource) {

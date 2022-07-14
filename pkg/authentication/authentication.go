@@ -1,6 +1,6 @@
 package authentication
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // Authentication represents enabled authentication providers.
 type Authentication struct {

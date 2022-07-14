@@ -1,6 +1,6 @@
 package runbooks
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/deployments"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 
 type RunbookStepUsage struct {
 	ProcessID   string                        `json:"ProcessId,omitempty"`

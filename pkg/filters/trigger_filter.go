@@ -1,6 +1,6 @@
 package filters
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // ITriggerFilter defines the interface for trigger filters.
 type ITriggerFilter interface {

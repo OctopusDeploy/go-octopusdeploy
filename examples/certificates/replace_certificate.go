@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/certificates"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/certificates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
 // ReplaceCertificateExample provides an example of how to replace an existing

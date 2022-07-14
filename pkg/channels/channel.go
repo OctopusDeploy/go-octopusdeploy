@@ -3,8 +3,8 @@ package channels
 import (
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/validation"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )

@@ -3,7 +3,7 @@ package resources
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/tasks"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tasks"
 	"github.com/stretchr/testify/require"
 )
 
