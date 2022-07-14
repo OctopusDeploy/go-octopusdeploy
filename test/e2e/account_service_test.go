@@ -304,25 +304,6 @@ func TestAccountServiceDeleteAll(t *testing.T) {
 	}
 }
 
-// func BenchmarkRootServiceGet(b *testing.B) {
-// 	NewRootService(nil, constants.TestURIRoot).Get()
-// }
-
-func FuzzAccountService(f *testing.F) {
-	f.Add("!12345")
-	f.Fuzz(func(t *testing.T, partialName string) {
-		query := accounts.AccountsQuery{
-			PartialName: partialName,
-		}
-
-		client := getOctopusClient()
-		namedAccounts, err := client.Accounts.Get(query)
-		if err != nil && namedAccounts == nil {
-			t.Errorf("%v", err)
-		}
-	})
-}
-
 func TestAccountServiceAddGetDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
