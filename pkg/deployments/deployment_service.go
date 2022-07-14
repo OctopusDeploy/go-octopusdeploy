@@ -98,6 +98,10 @@ func (s *DeploymentService) GetByIDs(ids []string) ([]*Deployment, error) {
 
 // GetByName performs a lookup and returns instances of a Deployment with a matching partial name.
 func (s *DeploymentService) GetByName(name string) ([]*Deployment, error) {
+	if internal.IsEmpty(name) {
+		return []*Deployment{}, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
 	path, err := services.GetByNamePath(s, name)
 	if err != nil {
 		return []*Deployment{}, err

@@ -56,7 +56,7 @@ func TestDeploymentProcessServiceParameters(t *testing.T) {
 
 			if internal.IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 				require.Nil(t, resource)
 			} else {
 				resource, err := service.GetByID(tc.parameter)
@@ -71,10 +71,10 @@ func TestDeploymentProcessServiceGetWithEmptyID(t *testing.T) {
 	service := NewDeploymentProcessService(&sling.Sling{}, "")
 
 	resource, err := service.GetByID("")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	require.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	require.Nil(t, resource)
 }

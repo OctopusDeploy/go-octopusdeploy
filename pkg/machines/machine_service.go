@@ -115,6 +115,10 @@ func (s *MachineService) GetAll() ([]*DeploymentTarget, error) {
 
 // GetByName performs a lookup and returns the Machine with a matching name.
 func (s *MachineService) GetByName(name string) ([]*DeploymentTarget, error) {
+	if internal.IsEmpty(name) {
+		return []*DeploymentTarget{}, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
 	path, err := services.GetByNamePath(s, name)
 	if err != nil {
 		return []*DeploymentTarget{}, err
@@ -125,8 +129,12 @@ func (s *MachineService) GetByName(name string) ([]*DeploymentTarget, error) {
 
 // GetByPartialName performs a lookup and returns the machine with a matching
 // partial name.
-func (s *MachineService) GetByPartialName(name string) ([]*DeploymentTarget, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *MachineService) GetByPartialName(partialName string) ([]*DeploymentTarget, error) {
+	if internal.IsEmpty(partialName) {
+		return []*DeploymentTarget{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*DeploymentTarget{}, err
 	}

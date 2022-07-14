@@ -143,12 +143,12 @@ func (s *EnvironmentService) GetByName(name string) ([]*Environment, error) {
 
 // GetByPartialName performs a lookup and returns enironments with a matching
 // partial name.
-func (s *EnvironmentService) GetByPartialName(name string) ([]*Environment, error) {
-	if internal.IsEmpty(name) {
-		return []*Environment{}, internal.CreateInvalidParameterError("GetByPartialName", "name")
+func (s *EnvironmentService) GetByPartialName(partialName string) ([]*Environment, error) {
+	if internal.IsEmpty(partialName) {
+		return []*Environment{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
 	}
 
-	path, err := services.GetByPartialNamePath(s, name)
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*Environment{}, err
 	}

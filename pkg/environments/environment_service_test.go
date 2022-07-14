@@ -35,10 +35,10 @@ func TestEnvironmentServiceDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	err := service.DeleteByID("")
-	require.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID), err)
 
 	err = service.DeleteByID(" ")
-	require.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID), err)
 }
 
 func TestEnvironmentServiceGetByID(t *testing.T) {
@@ -46,11 +46,11 @@ func TestEnvironmentServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID("")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 }
 
@@ -59,20 +59,20 @@ func TestEnvironmentServiceGetBy(t *testing.T) {
 	require.NotNil(t, service)
 
 	environments, err := service.GetByName("")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByName", "name"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
 	assert.NotNil(t, environments)
 
 	environments, err = service.GetByName(" ")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByName", "name"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
 	assert.NotNil(t, environments)
 
 	environments, err = service.GetByPartialName("")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, environments)
 	require.Len(t, environments, 0)
 
 	environments, err = service.GetByPartialName(" ")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, environments)
 	require.Len(t, environments, 0)
 }

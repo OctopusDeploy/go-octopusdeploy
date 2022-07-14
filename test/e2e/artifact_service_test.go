@@ -57,7 +57,7 @@ func AssertEqualArtifacts(t *testing.T, expected *artifacts.Artifact, actual *ar
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// Artifact
 	assert.Equal(t, expected.Created, actual.Created)

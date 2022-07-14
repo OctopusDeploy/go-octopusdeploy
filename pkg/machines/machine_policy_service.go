@@ -111,8 +111,12 @@ func (s *MachinePolicyService) GetByID(id string) (*MachinePolicy, error) {
 
 // GetByPartialName performs a lookup and returns machine policies with a
 // matching partial name.
-func (s *MachinePolicyService) GetByPartialName(name string) ([]*MachinePolicy, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *MachinePolicyService) GetByPartialName(partialName string) ([]*MachinePolicy, error) {
+	if internal.IsEmpty(partialName) {
+		return []*MachinePolicy{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*MachinePolicy{}, err
 	}

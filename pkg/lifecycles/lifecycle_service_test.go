@@ -109,16 +109,16 @@ func TestLifecycleServiceStringParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+			assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 			assert.Nil(t, resource)
 
 			resourceList, err := service.GetByPartialName(tc.parameter)
-			assert.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+			assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 			assert.NotNil(t, resourceList)
 
 			err = service.DeleteByID(tc.parameter)
 			assert.Error(t, err)
-			assert.Equal(t, err, internal.CreateInvalidParameterError("DeleteByID", "id"))
+			assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID))
 		})
 	}
 }
@@ -127,7 +127,7 @@ func TestLifecycleServiceAdd(t *testing.T) {
 	service := createLifecycleService(t)
 
 	resource, err := service.Add(nil)
-	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, "resource"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, "lifecycle"))
 	assert.Nil(t, resource)
 
 	resource, err = service.Add(&Lifecycle{})
@@ -148,12 +148,12 @@ func TestLifecycleServiceGetWithEmptyID(t *testing.T) {
 
 	resource, err := service.GetByID("")
 
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
 
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 }
 

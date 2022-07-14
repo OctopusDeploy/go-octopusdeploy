@@ -84,7 +84,7 @@ func IsEqualMachinePolicies(t *testing.T, expected *MachinePolicy, actual *Machi
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// machine policy
 	assert.Equal(t, expected.ConnectionConnectTimeout, actual.ConnectionConnectTimeout)
@@ -231,16 +231,16 @@ func TestMachinePolicyServiceParameters(t *testing.T) {
 
 			if internal.IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 				require.Nil(t, resource)
 
 				resourceList, err := service.GetByPartialName(tc.parameter)
-				require.Equal(t, internal.CreateInvalidParameterError("GetByPartialName", "name"), err)
+				require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName), err)
 				require.NotNil(t, resourceList)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, internal.CreateInvalidParameterError("DeleteByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
 				require.Error(t, err)
@@ -283,12 +283,12 @@ func TestMachinePolicyGetByPartialName(t *testing.T) {
 	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName("")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 
 	resources, err = service.GetByPartialName(" ")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 

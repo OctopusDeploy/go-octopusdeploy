@@ -27,7 +27,7 @@ func AssertEqualProjectTriggers(t *testing.T, expected *triggers.ProjectTrigger,
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// ProjectTrigger
 	assert.Equal(t, expected.Action, actual.Action)

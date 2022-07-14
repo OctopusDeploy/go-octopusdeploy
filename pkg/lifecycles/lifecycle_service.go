@@ -109,8 +109,12 @@ func (s *LifecycleService) GetByID(id string) (*Lifecycle, error) {
 
 // GetByPartialName performs a lookup and returns a collection of lifecycles
 // with a matching partial name.
-func (s *LifecycleService) GetByPartialName(name string) ([]*Lifecycle, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *LifecycleService) GetByPartialName(partialName string) ([]*Lifecycle, error) {
+	if internal.IsEmpty(partialName) {
+		return []*Lifecycle{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*Lifecycle{}, err
 	}

@@ -35,10 +35,10 @@ func TestFeedServiceDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	err := service.DeleteByID("")
-	assert.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
+	assert.Equal(t, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID), err)
 
 	err = service.DeleteByID(" ")
-	assert.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
+	assert.Equal(t, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID), err)
 }
 
 func TestFeedServiceGetByID(t *testing.T) {
@@ -46,11 +46,11 @@ func TestFeedServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID("")
-	require.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, "id"), err)
 	require.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
-	require.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, "id"), err)
 	require.Nil(t, resource)
 }
 

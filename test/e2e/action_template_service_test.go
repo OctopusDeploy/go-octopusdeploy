@@ -33,7 +33,7 @@ func IsEqualActionTemplates(t *testing.T, expected *actiontemplates.ActionTempla
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// ActionTemplate
 	assert.Equal(t, expected.ActionType, actual.ActionType)

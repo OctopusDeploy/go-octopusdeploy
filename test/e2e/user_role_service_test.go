@@ -62,7 +62,7 @@ func AssertEqualUserRoles(t *testing.T, expected *userroles.UserRole, actual *us
 	// missing fields
 
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.Links, actual.Links))
+	assert.True(t, internal.IsLinksEqual(expected.Links, actual.Links))
 }
 
 func TestUserRoleServiceAddGetDelete(t *testing.T) {

@@ -28,7 +28,7 @@ func AssertEqualRunbookSnapshots(
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// Project
 	assert.Equal(t, expected.Name, actual.Name)

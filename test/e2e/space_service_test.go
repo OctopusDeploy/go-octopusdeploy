@@ -79,7 +79,7 @@ func IsEqualSpaces(t *testing.T, expected *spaces.Space, actual *spaces.Space) {
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// space
 	assert.Equal(t, expected.Description, actual.Description)

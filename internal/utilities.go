@@ -21,8 +21,16 @@ func IsEmpty(s string) bool {
 }
 
 func GetDefaultClient() *sling.Sling {
-	octopusURL := os.Getenv(constants.ClientURLEnvironmentVariable)
-	octopusAPIKey := os.Getenv(constants.ClientAPIKeyEnvironmentVariable)
+	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
+	apiKey := os.Getenv(constants.EnvironmentVariableOctopusApiKey)
+
+	if len(host) == 0 {
+		host = os.Getenv(constants.ClientURLEnvironmentVariable)
+	}
+
+	if len(apiKey) == 0 {
+		apiKey = os.Getenv(constants.ClientAPIKeyEnvironmentVariable)
+	}
 
 	// NOTE: You can direct traffic through a proxy trace like Fiddler
 	// Everywhere by preconfiguring the client to route traffic through a
@@ -36,7 +44,7 @@ func GetDefaultClient() *sling.Sling {
 	// }
 	// httpClient := http.Client{Transport: tr}
 
-	return sling.New().Client(nil).Base(octopusURL).Set(constants.ClientAPIKeyHTTPHeader, octopusAPIKey)
+	return sling.New().Client(nil).Base(host).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
 }
 
 func TrimTemplate(uri string) string {

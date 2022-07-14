@@ -202,7 +202,7 @@ func CompareAccounts(t *testing.T, expected accounts.IAccount, actual accounts.I
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// IHasName
 	assert.Equal(t, expected.GetName(), actual.GetName())

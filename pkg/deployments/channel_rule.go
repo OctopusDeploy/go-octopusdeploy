@@ -1,12 +1,12 @@
 package deployments
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/channels"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
 )
 
 type ChannelRule struct {
-	ActionPackages []channels.DeploymentActionPackage `json:"ActionPackages,omitempty"`
+	ActionPackages []packages.DeploymentActionPackage `json:"ActionPackages,omitempty"`
 	ID             string                             `json:"Id,omitempty"`
 	Tag            string                             `json:"Tag,omitempty"`
 

@@ -55,7 +55,7 @@ func TestCommunityActionTemplateServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+			assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 			assert.Nil(t, resource)
 		})
 	}

@@ -28,6 +28,10 @@ func (s *ChannelService) Add(channel *Channel) (*Channel, error) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterChannel)
 	}
 
+	if err := channel.Validate(); err != nil {
+		return nil, internal.CreateValidationFailureError(constants.OperationAdd, err)
+	}
+
 	path, err := services.GetAddPath(s, channel)
 	if err != nil {
 		return nil, err
@@ -75,7 +79,7 @@ func (s *ChannelService) GetAll() ([]*Channel, error) {
 // found, it returns nil and an error.
 func (s *ChannelService) GetByID(id string) (*Channel, error) {
 	if internal.IsEmpty(id) {
-		return nil, internal.CreateInvalidParameterError("GetByID", "id")
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, "id")
 	}
 
 	path := s.BasePath + "/" + id

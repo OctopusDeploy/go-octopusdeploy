@@ -124,6 +124,10 @@ func (s *WorkerService) GetByIDs(ids []string) ([]*Worker, error) {
 
 // GetByName returns the workers with a matching partial name.
 func (s *WorkerService) GetByName(name string) ([]*Worker, error) {
+	if internal.IsEmpty(name) {
+		return []*Worker{}, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
 	path, err := services.GetByNamePath(s, name)
 	if err != nil {
 		return []*Worker{}, err
@@ -134,8 +138,12 @@ func (s *WorkerService) GetByName(name string) ([]*Worker, error) {
 
 // GetByPartialName performs a lookup and returns enironments with a matching
 // partial name.
-func (s *WorkerService) GetByPartialName(name string) ([]*Worker, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *WorkerService) GetByPartialName(partialName string) ([]*Worker, error) {
+	if internal.IsEmpty(partialName) {
+		return []*Worker{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*Worker{}, err
 	}

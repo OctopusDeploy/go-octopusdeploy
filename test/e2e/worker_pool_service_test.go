@@ -22,7 +22,7 @@ func AssertEqualWorkerPools(t *testing.T, expected workerpools.IWorkerPool, actu
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// TODO: add more validation
 }

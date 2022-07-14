@@ -34,12 +34,21 @@ func GetFakeOctopusClient(t *testing.T, apiPath string, statusCode int, response
 		}, nil
 	})
 
-	url, err := url.Parse(os.Getenv(constants.ClientURLEnvironmentVariable))
+	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
+	apiKey := os.Getenv(constants.EnvironmentVariableOctopusApiKey)
+
+	if len(host) == 0 {
+		host = os.Getenv(constants.ClientURLEnvironmentVariable)
+	}
+
+	if len(apiKey) == 0 {
+		apiKey = os.Getenv(constants.ClientAPIKeyEnvironmentVariable)
+	}
+
+	url, err := url.Parse(host)
 	if err != nil {
 		return nil, err
 	}
-
-	apiKey := os.Getenv(constants.ClientAPIKeyEnvironmentVariable)
 
 	octopusClient, err := NewClient(&httpClient, url, apiKey, "")
 	if err != nil {

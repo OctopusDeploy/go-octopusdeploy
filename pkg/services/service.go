@@ -61,17 +61,17 @@ func NewService(name string, sling *sling.Sling, uriTemplate string) Service {
 // Generic OctopusDeploy API Get Function.
 func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, internal.CreateInvalidParameterError("ApiGet", "sling")
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIGet, "sling")
 	}
 
 	client := sling.New()
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiGet")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIGet)
 	}
 
 	client = client.Get(path)
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiGet")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIGet)
 	}
 
 	client.Set("User-Agent", UserAgentString)
@@ -126,11 +126,11 @@ func (s *Service) GetURITemplate() *uritemplates.UriTemplate {
 
 func GetAddPath(s IService, resource resources.IResource) (string, error) {
 	if resource == nil || IsNil(resource) {
-		return "", internal.CreateInvalidParameterError("GetAddPath", constants.ParameterResource)
+		return "", internal.CreateInvalidParameterError(constants.OperationGetAddPath, constants.ParameterResource)
 	}
 
 	if err := resource.Validate(); err != nil {
-		return "", internal.CreateValidationFailureError("GetAddPath", err)
+		return "", internal.CreateValidationFailureError(constants.OperationGetAddPath, err)
 	}
 
 	if err := ValidateInternalState(s); err != nil {
@@ -160,7 +160,7 @@ func GetAllPath(s IService) (string, error) {
 
 func GetByIDPath(s IService, id string) (string, error) {
 	if internal.IsEmpty(id) {
-		return "", internal.CreateInvalidParameterError("GetByIDPath", constants.ParameterID)
+		return "", internal.CreateInvalidParameterError(constants.OperationGetByIDPath, constants.ParameterID)
 	}
 
 	if err := ValidateInternalState(s); err != nil {
@@ -199,7 +199,7 @@ func GetByIDsPath(s IService, ids []string) (string, error) {
 
 func GetByNamePath(s IService, name string) (string, error) {
 	if internal.IsEmpty(name) {
-		return "", internal.CreateInvalidParameterError("getByNamePath", constants.ParameterName)
+		return "", internal.CreateInvalidParameterError(constants.OperationGetByNamePath, constants.ParameterName)
 	}
 
 	if err := ValidateInternalState(s); err != nil {
@@ -214,7 +214,7 @@ func GetByNamePath(s IService, name string) (string, error) {
 
 func GetByPartialNamePath(s IService, name string) (string, error) {
 	if internal.IsEmpty(name) {
-		return "", internal.CreateInvalidParameterError("GetByPartialNamePath", constants.ParameterName)
+		return "", internal.CreateInvalidParameterError(constants.OperationGetByPartialNamePath, constants.ParameterName)
 	}
 
 	if err := ValidateInternalState(s); err != nil {
@@ -227,29 +227,13 @@ func GetByPartialNamePath(s IService, name string) (string, error) {
 	return s.GetURITemplate().Expand(values)
 }
 
-func (s *Service) deleteByID(id string) error {
-	if err := ValidateInternalState(s); err != nil {
-		return err
-	}
-
-	values := make(map[string]interface{})
-	values["id"] = id
-
-	path, err := s.GetURITemplate().Expand(values)
-	if err != nil {
-		return err
-	}
-
-	return ApiDelete(s.GetClient(), path)
-}
-
 func GetUpdatePath(s IService, resource resources.IResource) (string, error) {
 	if IsNil(resource) {
-		return "", internal.CreateInvalidParameterError("GetUpdatePath", constants.ParameterResource)
+		return "", internal.CreateInvalidParameterError(constants.OperationUpdatePath, constants.ParameterResource)
 	}
 
 	if err := resource.Validate(); err != nil {
-		return "", internal.CreateValidationFailureError("GetUpdatePath", err)
+		return "", internal.CreateValidationFailureError(constants.OperationUpdatePath, err)
 	}
 
 	if err := ValidateInternalState(s); err != nil {
@@ -282,7 +266,19 @@ func (s *CanDeleteService) DeleteByID(id string) error {
 		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
 	}
 
-	return s.deleteByID(id)
+	if err := ValidateInternalState(s); err != nil {
+		return err
+	}
+
+	values := make(map[string]interface{})
+	values["id"] = id
+
+	path, err := s.GetURITemplate().Expand(values)
+	if err != nil {
+		return err
+	}
+
+	return ApiDelete(s.GetClient(), path)
 }
 
 var _ IService = &Service{}
@@ -290,28 +286,28 @@ var _ IService = &Service{}
 // Generic OctopusDeploy API Add Function. Expects a 201 response.
 func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, internal.CreateInvalidParameterError("ApiAdd", "sling")
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIAdd, "sling")
 	}
 
 	if internal.IsEmpty(path) {
-		return nil, internal.CreateInvalidParameterError("ApiAdd", "path")
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIAdd, "path")
 	}
 
 	client := sling.New()
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiAdd")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
 	}
 
 	client = client.Post(path)
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiAdd")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
 	}
 
 	client.Set("User-Agent", UserAgentString)
 
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
-		return nil, internal.CreateClientInitializationError("ApiAdd")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
 	}
 
 	octopusDeployError := new(core.APIError)
@@ -327,28 +323,28 @@ func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 // ApiAddWithResponseStatus function with defined response.
 func ApiAddWithResponseStatus(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string, httpStatus int) (interface{}, error) {
 	if sling == nil {
-		return nil, internal.CreateInvalidParameterError("ApiAddWithResponseStatus", "sling")
+		return nil, internal.CreateInvalidParameterError(constants.OperationApiAddWithResponseStatus, "sling")
 	}
 
 	if internal.IsEmpty(path) {
-		return nil, internal.CreateInvalidParameterError("ApiAddWithResponseStatus", "path")
+		return nil, internal.CreateInvalidParameterError(constants.OperationApiAddWithResponseStatus, "path")
 	}
 
 	client := sling.New()
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiAddWithResponseStatus")
+		return nil, internal.CreateClientInitializationError(constants.OperationApiAddWithResponseStatus)
 	}
 
 	client = client.Post(path)
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiAddWithResponseStatus")
+		return nil, internal.CreateClientInitializationError(constants.OperationApiAddWithResponseStatus)
 	}
 
 	client.Set("User-Agent", UserAgentString)
 
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
-		return nil, internal.CreateClientInitializationError("ApiAddWithResponseStatus")
+		return nil, internal.CreateClientInitializationError(constants.OperationApiAddWithResponseStatus)
 	}
 
 	octopusDeployError := new(core.APIError)
@@ -364,28 +360,28 @@ func ApiAddWithResponseStatus(sling *sling.Sling, inputStruct interface{}, resou
 // ApiPost post to octopus and expect a 200 response code.
 func ApiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, internal.CreateInvalidParameterError("ApiPost", "sling")
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIPost, "sling")
 	}
 
 	if internal.IsEmpty(path) {
-		return nil, internal.CreateInvalidParameterError("ApiPost", "path")
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIPost, "path")
 	}
 
 	client := sling.New()
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiPost")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIPost)
 	}
 
 	client = client.Post(path)
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiPost")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIPost)
 	}
 
 	client.Set("User-Agent", UserAgentString)
 
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
-		return nil, internal.CreateClientInitializationError("ApiPost")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIPost)
 	}
 
 	octopusDeployError := new(core.APIError)
@@ -401,28 +397,28 @@ func ApiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, 
 // Generic OctopusDeploy API Update Function.
 func ApiUpdate(sling *sling.Sling, inputStruct interface{}, resource interface{}, path string) (interface{}, error) {
 	if sling == nil {
-		return nil, internal.CreateInvalidParameterError("ApiUpdate", "sling")
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIUpdate, "sling")
 	}
 
 	if internal.IsEmpty(path) {
-		return nil, internal.CreateInvalidParameterError("ApiUpdate", "path")
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIUpdate, "path")
 	}
 
 	client := sling.New()
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiUpdate")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIUpdate)
 	}
 
 	client = client.Put(path)
 	if client == nil {
-		return nil, internal.CreateClientInitializationError("ApiUpdate")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIUpdate)
 	}
 
 	client.Set("User-Agent", UserAgentString)
 
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
-		return nil, internal.CreateClientInitializationError("ApiUpdate")
+		return nil, internal.CreateClientInitializationError(constants.OperationAPIUpdate)
 	}
 
 	octopusDeployError := new(core.APIError)
@@ -438,21 +434,21 @@ func ApiUpdate(sling *sling.Sling, inputStruct interface{}, resource interface{}
 // Generic OctopusDeploy API Delete Function.
 func ApiDelete(sling *sling.Sling, path string) error {
 	if sling == nil {
-		return internal.CreateInvalidParameterError("ApiDelete", "sling")
+		return internal.CreateInvalidParameterError(constants.OperationAPIDelete, "sling")
 	}
 
 	if internal.IsEmpty(path) {
-		return internal.CreateInvalidParameterError("ApiDelete", "path")
+		return internal.CreateInvalidParameterError(constants.OperationAPIDelete, "path")
 	}
 
 	client := sling.New()
 	if client == nil {
-		return internal.CreateClientInitializationError("ApiDelete")
+		return internal.CreateClientInitializationError(constants.OperationAPIDelete)
 	}
 
 	client = client.Delete(path)
 	if client == nil {
-		return internal.CreateClientInitializationError("ApiDelete")
+		return internal.CreateClientInitializationError(constants.OperationAPIDelete)
 	}
 
 	client.Set("User-Agent", UserAgentString)

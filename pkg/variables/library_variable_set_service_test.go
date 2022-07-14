@@ -60,7 +60,7 @@ func IsEqualLibraryVariableSets(t *testing.T, expected *LibraryVariableSet, actu
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// library variable set
 	assert.Equal(t, expected.ContentType, actual.ContentType)
@@ -89,7 +89,7 @@ func TestLibraryVariableSetServiceSetAddGetDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, "resource"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, "libraryVariableSet"))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&LibraryVariableSet{})
@@ -113,7 +113,7 @@ func TestLibraryVariableSetServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, "resource"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, "libraryVariableSet"))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&LibraryVariableSet{})
@@ -201,16 +201,16 @@ func TestLibraryVariableSetServiceParameters(t *testing.T) {
 
 			if internal.IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 				require.Nil(t, resource)
 
 				resourceList, err := service.GetByPartialName(tc.parameter)
-				require.Equal(t, internal.CreateInvalidParameterError("GetByPartialName", "partialName"), err)
+				require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName), err)
 				require.NotNil(t, resourceList)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, internal.CreateInvalidParameterError("DeleteByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
 				require.Error(t, err)
@@ -252,12 +252,12 @@ func TestLibraryVariableSetGetByPartialName(t *testing.T) {
 	require.NotNil(t, service)
 
 	resources, err := service.GetByPartialName("")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 
 	resources, err = service.GetByPartialName(" ")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, resources)
 	require.Len(t, resources, 0)
 

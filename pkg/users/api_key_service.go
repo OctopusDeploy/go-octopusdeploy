@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -54,11 +55,11 @@ func (s *ApiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
 // GetByID the API key that belongs to the user by its ID.
 func (s *ApiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error) {
 	if internal.IsEmpty(userID) {
-		return nil, internal.CreateInvalidParameterError("GetByID", "userID")
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, "userID")
 	}
 
 	if internal.IsEmpty(apiKeyID) {
-		return nil, internal.CreateInvalidParameterError("GetByID", "apiKeyID")
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, "apiKeyID")
 	}
 
 	if err := services.ValidateInternalState(s); err != nil {

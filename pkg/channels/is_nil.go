@@ -6,8 +6,6 @@ func IsNil(i interface{}) bool {
 		return v == nil
 	case *Channels:
 		return v == nil
-	case *DeploymentActionPackage:
-		return v == nil
 	default:
 		return v == nil
 	}

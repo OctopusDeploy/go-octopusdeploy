@@ -12,14 +12,22 @@ import (
 )
 
 func getOctopusClient() *client.Client {
-	octopusURL := os.Getenv(constants.ClientURLEnvironmentVariable)
-	apiKey := os.Getenv(constants.ClientAPIKeyEnvironmentVariable)
+	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
+	apiKey := os.Getenv(constants.EnvironmentVariableOctopusApiKey)
 
-	if internal.IsEmpty(octopusURL) || internal.IsEmpty(apiKey) {
-		log.Fatal("Please make sure to set the env variables 'OCTOPUS_URL' and 'OCTOPUS_APIKEY' before running this test")
+	if len(host) == 0 {
+		host = os.Getenv(constants.ClientURLEnvironmentVariable)
 	}
 
-	apiURL, err := url.Parse(octopusURL)
+	if len(apiKey) == 0 {
+		apiKey = os.Getenv(constants.ClientAPIKeyEnvironmentVariable)
+	}
+
+	if internal.IsEmpty(host) || internal.IsEmpty(apiKey) {
+		log.Fatal("Please make sure to set the env variables 'OCTOPUS_HOST' and 'OCTOPUS_API_KEY' before running this test")
+	}
+
+	apiURL, err := url.Parse(host)
 	if err != nil {
 		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
 		return nil

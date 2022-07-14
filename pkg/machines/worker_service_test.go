@@ -48,10 +48,10 @@ func TestWorkerServiceDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	err := service.DeleteByID("")
-	require.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID), err)
 
 	err = service.DeleteByID(" ")
-	require.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID), err)
 }
 
 func TestWorkerServiceGetByID(t *testing.T) {
@@ -59,11 +59,11 @@ func TestWorkerServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID("")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 }
 
@@ -72,11 +72,11 @@ func TestWorkerServiceGetByName(t *testing.T) {
 	require.NotNil(t, service)
 
 	workers, err := service.GetByName("")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByName", "name"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
 	assert.NotNil(t, workers)
 
 	workers, err = service.GetByName(" ")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByName", "name"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
 	assert.NotNil(t, workers)
 }
 
@@ -85,12 +85,12 @@ func TestWorkerServiceGetByPartialName(t *testing.T) {
 	require.NotNil(t, service)
 
 	workers, err := service.GetByPartialName("")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, workers)
 	require.Len(t, workers, 0)
 
 	workers, err = service.GetByPartialName(" ")
-	require.Equal(t, err, internal.CreateInvalidParameterError("GetByPartialName", "name"))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName))
 	require.NotNil(t, workers)
 	require.Len(t, workers, 0)
 }

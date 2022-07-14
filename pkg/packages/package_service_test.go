@@ -21,11 +21,11 @@ func TestPackageServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID("")
-	require.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, "id"), err)
 	require.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
-	require.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
+	require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, "id"), err)
 	require.Nil(t, resource)
 }
 
@@ -67,12 +67,12 @@ func TestPackageServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+			require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 			require.Nil(t, resource)
 
 			err = service.DeleteByID(tc.parameter)
 			require.Error(t, err)
-			require.Equal(t, err, internal.CreateInvalidParameterError("DeleteByID", "id"))
+			require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID))
 		})
 	}
 }

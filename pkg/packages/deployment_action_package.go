@@ -1,4 +1,4 @@
-package channels
+package packages
 
 type DeploymentActionPackage struct {
 	DeploymentAction string `json:"DeploymentAction,omitempty"`

@@ -25,6 +25,10 @@ func (s *RunbookService) Add(runbook *Runbook) (*Runbook, error) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterRunbook)
 	}
 
+	if err := runbook.Validate(); err != nil {
+		return nil, internal.CreateValidationFailureError(constants.OperationAdd, err)
+	}
+
 	path, err := services.GetAddPath(s, runbook)
 	if err != nil {
 		return nil, err

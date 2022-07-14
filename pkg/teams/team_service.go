@@ -127,8 +127,12 @@ func (s *TeamService) GetByID(id string) (*Team, error) {
 
 // GetByPartialName performs a lookup and returns teams with a matching partial
 // name.
-func (s *TeamService) GetByPartialName(name string) ([]*Team, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *TeamService) GetByPartialName(partialName string) ([]*Team, error) {
+	if internal.IsEmpty(partialName) {
+		return []*Team{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*Team{}, err
 	}

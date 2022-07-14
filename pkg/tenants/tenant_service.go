@@ -186,8 +186,12 @@ func (s *TenantService) GetByProjectID(id string) ([]*Tenant, error) {
 
 // GetByPartialName performs a lookup and returns all tenants with a matching
 // partial name.
-func (s *TenantService) GetByPartialName(name string) ([]*Tenant, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *TenantService) GetByPartialName(partialName string) ([]*Tenant, error) {
+	if internal.IsEmpty(partialName) {
+		return []*Tenant{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*Tenant{}, nil
 	}

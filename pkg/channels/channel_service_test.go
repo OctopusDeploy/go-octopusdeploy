@@ -36,11 +36,11 @@ func TestChannelServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID("")
-	assert.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
+	assert.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, "id"), err)
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
-	assert.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
+	assert.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, "id"), err)
 	assert.Nil(t, resource)
 }
 

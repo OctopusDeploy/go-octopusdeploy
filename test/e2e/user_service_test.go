@@ -78,7 +78,7 @@ func AssertEqualUsers(t *testing.T, expected *users.User, actual *users.User) {
 	assert.Equal(t, expected.IsActive, actual.IsActive)
 	assert.Equal(t, expected.IsRequestor, actual.IsRequestor)
 	assert.Equal(t, expected.IsService, actual.IsService)
-	assert.True(t, internal.IsEqualLinks(expected.Links, actual.Links))
+	assert.True(t, internal.IsLinksEqual(expected.Links, actual.Links))
 	assert.Equal(t, expected.Password, actual.Password)
 	assert.Equal(t, expected.Username, actual.Username)
 }

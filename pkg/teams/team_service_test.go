@@ -21,7 +21,7 @@ func TestTeamSetAddGetDelete(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterResource))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterTeam))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&Team{})
@@ -34,7 +34,7 @@ func TestTeamServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterResource))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterTeam))
 	require.Nil(t, resource)
 
 	resource, err = service.Add(&Team{})
@@ -58,16 +58,16 @@ func TestTeamServiceParameters(t *testing.T) {
 
 			if internal.IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 				require.Nil(t, resource)
 
 				resourceList, err := service.GetByPartialName(tc.parameter)
-				require.Equal(t, internal.CreateInvalidParameterError("GetByPartialName", "name"), err)
+				require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName), err)
 				require.NotNil(t, resourceList)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, internal.CreateInvalidParameterError("DeleteByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
 				require.Error(t, err)

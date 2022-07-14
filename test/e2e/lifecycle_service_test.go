@@ -22,7 +22,7 @@ func AssertEqualLifecycles(t *testing.T, expected *lifecycles.Lifecycle, actual 
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// Lifecycle
 	assert.Equal(t, expected.Name, actual.Name)

@@ -24,6 +24,10 @@ func (s *ScopedUserRoleService) Add(scopedUserRole *ScopedUserRole) (*ScopedUser
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterScopedUserRole)
 	}
 
+	if err := scopedUserRole.Validate(); err != nil {
+		return nil, internal.CreateValidationFailureError(constants.OperationAdd, err)
+	}
+
 	path, err := services.GetAddPath(s, scopedUserRole)
 	if err != nil {
 		return nil, err

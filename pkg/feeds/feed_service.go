@@ -83,7 +83,7 @@ func (s *FeedService) GetAll() ([]IFeed, error) {
 // it returns nil and an error.
 func (s *FeedService) GetByID(id string) (IFeed, error) {
 	if internal.IsEmpty(id) {
-		return nil, internal.CreateInvalidParameterError("GetByID", "id")
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, "id")
 	}
 
 	path := s.BasePath + "/" + id

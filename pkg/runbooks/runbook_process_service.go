@@ -17,19 +17,6 @@ func NewRunbookProcessService(sling *sling.Sling, uriTemplate string) *RunbookPr
 	}
 }
 
-// GetAll returns all runbook processes. If none can be found or an error
-// occurs, it returns an empty collection.
-func (s *RunbookProcessService) GetAll() ([]*RunbookProcess, error) {
-	items := []*RunbookProcess{}
-	path, err := services.GetAllPath(s)
-	if err != nil {
-		return items, err
-	}
-
-	_, err = services.ApiGet(s.GetClient(), &items, path)
-	return items, err
-}
-
 // GetByID returns the runbook process that matches the input ID. If one cannot
 // be found, it returns nil and an error.
 func (s *RunbookProcessService) GetByID(id string) (*RunbookProcess, error) {

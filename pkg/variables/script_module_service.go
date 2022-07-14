@@ -163,8 +163,12 @@ func (s *ScriptModuleService) GetByID(id string) (*ScriptModule, error) {
 }
 
 // GetByPartialName performs a lookup and returns a list of script modules with a matching partial name.
-func (s *ScriptModuleService) GetByPartialName(name string) ([]*ScriptModule, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *ScriptModuleService) GetByPartialName(partialName string) ([]*ScriptModule, error) {
+	if internal.IsEmpty(partialName) {
+		return []*ScriptModule{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*ScriptModule{}, err
 	}

@@ -65,7 +65,7 @@ func IsEqualEnvironments(t *testing.T, expected *environments.Environment, actua
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// Environment
 	assert.Equal(t, expected.AllowDynamicInfrastructure, actual.AllowDynamicInfrastructure)

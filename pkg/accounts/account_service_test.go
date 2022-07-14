@@ -91,12 +91,12 @@ func TestAccountServiceParameters(t *testing.T) {
 			require.NotNil(t, service)
 
 			resource, err := service.GetByID(tc.parameter)
-			require.Equal(t, internal.CreateInvalidParameterError("GetByID", "id"), err)
+			require.Equal(t, internal.CreateInvalidParameterError(constants.OperationGetByID, "id"), err)
 			require.Nil(t, resource)
 
 			err = service.DeleteByID(tc.parameter)
 			require.Error(t, err)
-			require.Equal(t, internal.CreateInvalidParameterError("DeleteByID", "id"), err)
+			require.Equal(t, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID), err)
 		})
 	}
 }

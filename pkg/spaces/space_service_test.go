@@ -58,12 +58,12 @@ func TestSpaceServiceParameters(t *testing.T) {
 
 			if internal.IsEmpty(tc.parameter) {
 				resource, err := service.GetByID(tc.parameter)
-				require.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 				require.Nil(t, resource)
 
 				err = service.DeleteByID(tc.parameter)
 				require.Error(t, err)
-				require.Equal(t, err, internal.CreateInvalidParameterError("DeleteByID", "id"))
+				require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID))
 			} else {
 				resource, err := service.GetByID(tc.parameter)
 				require.Error(t, err)

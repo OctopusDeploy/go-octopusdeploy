@@ -107,8 +107,12 @@ func (s *LibraryVariableSetService) GetByID(id string) (*LibraryVariableSet, err
 }
 
 // GetByPartialName performs a lookup and returns a list of library variable sets with a matching partial name.
-func (s *LibraryVariableSetService) GetByPartialName(name string) ([]*LibraryVariableSet, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *LibraryVariableSetService) GetByPartialName(partialName string) ([]*LibraryVariableSet, error) {
+	if internal.IsEmpty(partialName) {
+		return []*LibraryVariableSet{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*LibraryVariableSet{}, err
 	}

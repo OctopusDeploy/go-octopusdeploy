@@ -41,7 +41,7 @@ func TestCertificateServiceAdd(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.Add(nil)
-	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterResource))
+	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterCertificate))
 	require.Nil(t, resource)
 
 	invalidResource := &CertificateResource{}
@@ -52,13 +52,6 @@ func TestCertificateServiceAdd(t *testing.T) {
 	resource, err = createCertificate(t)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
-
-	resource, err = service.Add(resource)
-	require.NoError(t, err)
-	require.NotNil(t, resource)
-
-	err = service.DeleteByID(resource.GetID())
-	require.NoError(t, err)
 }
 
 func TestCertificateServiceGetAll(t *testing.T) {
@@ -80,11 +73,11 @@ func TestCertificateServiceGetByID(t *testing.T) {
 	require.NotNil(t, service)
 
 	resource, err := service.GetByID("")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 
 	id := internal.GetRandomName()

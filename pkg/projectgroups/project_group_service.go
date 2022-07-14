@@ -111,8 +111,12 @@ func (s *ProjectGroupService) GetByID(id string) (*ProjectGroup, error) {
 
 // GetByPartialName performs a lookup and returns a collection of project
 // groups with a matching partial name.
-func (s *ProjectGroupService) GetByPartialName(name string) ([]*ProjectGroup, error) {
-	path, err := services.GetByPartialNamePath(s, name)
+func (s *ProjectGroupService) GetByPartialName(partialName string) ([]*ProjectGroup, error) {
+	if internal.IsEmpty(partialName) {
+		return []*ProjectGroup{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
 	if err != nil {
 		return []*ProjectGroup{}, err
 	}

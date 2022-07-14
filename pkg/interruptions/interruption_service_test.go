@@ -39,11 +39,11 @@ func TestInterruptionServiceGetWithEmptyID(t *testing.T) {
 
 	resource, err := service.GetByID("")
 
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 
 	resource, err = service.GetByID(" ")
 
-	assert.Equal(t, err, internal.CreateInvalidParameterError("GetByID", "id"))
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 }

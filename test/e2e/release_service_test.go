@@ -24,7 +24,7 @@ func AssertEqualReleases(t *testing.T, expected *releases.Release, actual *relea
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsEqualLinks(expected.GetLinks(), actual.GetLinks()))
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// Release
 	assert.Equal(t, expected.Assembled, actual.Assembled)
