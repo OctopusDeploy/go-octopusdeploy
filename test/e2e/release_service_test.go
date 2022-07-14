@@ -135,6 +135,37 @@ func TestReleaseServiceDeleteAll(t *testing.T) {
 	}
 }
 
+func TestReleaseServiceCreateV1(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	channel := CreateTestChannel(t, client, project)
+	require.NotNil(t, channel)
+	defer DeleteTestChannel(t, client, channel)
+
+	releaseCreate := releases.NewCreateReleaseV1(space.Name, project.Name)
+	createReleaseResponse, err := client.Releases.CreateV1(releaseCreate)
+	require.NoError(t, err)
+	require.NotNil(t, createReleaseResponse)
+	require.NotNil(t, createReleaseResponse.ReleaseID)
+	require.NotNil(t, createReleaseResponse.ReleaseVersion)
+}
+
 func TestReleaseServiceGetByID(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
