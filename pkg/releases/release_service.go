@@ -60,6 +60,18 @@ func (s *ReleaseService) Get(releasesQuery ...ReleasesQuery) (*Releases, error) 
 	return resp.(*Releases), nil
 }
 
+func (s *ReleaseService) CreateV1(createReleaseV1 *CreateReleaseV1) (*CreateReleaseResponseV1, error) {
+	if createReleaseV1 == nil {
+		return nil, internal.CreateInvalidParameterError("CreateV1", "createReleaseV1")
+	}
+	resp, err := services.ApiPost(s.GetClient(), createReleaseV1, new(CreateReleaseResponseV1), s.GetBasePath()+"/create/v1")
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*CreateReleaseResponseV1), nil
+}
+
 // GetByID returns the release that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s *ReleaseService) GetByID(id string) (*Release, error) {
