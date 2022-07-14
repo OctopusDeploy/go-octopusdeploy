@@ -1,6 +1,6 @@
 package projects
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/packages"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 
 type ReleaseCreationStrategy struct {
 	ChannelID                    string                            `json:"ChannelId,omitempty"`

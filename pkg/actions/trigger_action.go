@@ -1,6 +1,6 @@
 package actions
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // ITriggerAction defines the interface for trigger actions.
 type ITriggerAction interface {

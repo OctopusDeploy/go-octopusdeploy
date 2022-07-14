@@ -1,10 +1,10 @@
 package spaces
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
 

@@ -1,7 +1,7 @@
 package workerpools
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {

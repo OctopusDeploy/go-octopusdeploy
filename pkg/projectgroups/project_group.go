@@ -1,6 +1,6 @@
 package projectgroups
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 type ProjectGroups struct {
 	Items []*ProjectGroup `json:"Items"`

@@ -1,8 +1,8 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )

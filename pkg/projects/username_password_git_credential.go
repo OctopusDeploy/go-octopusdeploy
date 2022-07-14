@@ -1,6 +1,6 @@
 package projects
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 
 // UsernamePasswordGitCredential defines a username-password Git credential.
 type UsernamePasswordGitCredential struct {

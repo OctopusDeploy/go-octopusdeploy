@@ -3,10 +3,10 @@ package projects
 import (
 	"encoding/json"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/actiontemplates"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 )
 

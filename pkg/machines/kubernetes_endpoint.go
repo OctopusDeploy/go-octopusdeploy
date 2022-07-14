@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"

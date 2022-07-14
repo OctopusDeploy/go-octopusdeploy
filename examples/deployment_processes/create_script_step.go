@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/deployments"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/projects"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 )
 
 func CreateScriptStepExample() {

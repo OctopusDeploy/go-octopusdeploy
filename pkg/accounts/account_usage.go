@@ -1,11 +1,11 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/deployments"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/releases"
-	resources "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/runbooks"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/variables"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
+	resources "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 )
 
 // AccountUsage contains the projects and deployments which are using an

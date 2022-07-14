@@ -3,8 +3,8 @@ package resources
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/feeds"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/feeds"
 	"github.com/stretchr/testify/require"
 )
 

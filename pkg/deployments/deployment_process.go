@@ -1,6 +1,6 @@
 package deployments
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 type DeploymentProcesses struct {
 	Items []*DeploymentProcess `json:"Items"`

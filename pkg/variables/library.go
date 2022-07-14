@@ -1,8 +1,8 @@
 package variables
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/actiontemplates"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 type Library struct {

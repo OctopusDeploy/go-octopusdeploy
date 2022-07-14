@@ -1,8 +1,8 @@
 package actiontemplates
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 // ActionTemplateParameter represents an action template parameter.

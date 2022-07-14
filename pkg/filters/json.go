@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func FromJson(rawMessage *json.RawMessage) (ITriggerFilter, error) {

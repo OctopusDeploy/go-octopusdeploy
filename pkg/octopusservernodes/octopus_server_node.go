@@ -1,6 +1,6 @@
 package octopusservernodes
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 type OctopusServerNodeResource struct {
 	IsInMaintenanceMode bool   `json:"IsInMaintenanceMode,omitempty"`

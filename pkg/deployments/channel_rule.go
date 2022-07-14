@@ -1,8 +1,8 @@
 package deployments
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/packages"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type ChannelRule struct {

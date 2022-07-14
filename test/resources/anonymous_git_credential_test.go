@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/projects"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
 )

@@ -1,11 +1,11 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/packages"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/services"
-	"github.com/OctopusDeploy/go-octopusdeploy/uritemplates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )

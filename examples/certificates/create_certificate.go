@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/certificates"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/certificates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 // CreateCertificateExample shows how to create a certificate using go-octopusdeploy.

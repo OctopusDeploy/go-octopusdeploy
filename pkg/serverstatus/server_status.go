@@ -1,6 +1,6 @@
 package serverstatus
 
-import "github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 type ServerStatus struct {
 	IsDatabaseEncrypted                     bool   `json:"IsDatabaseEncrypted,omitempty"`

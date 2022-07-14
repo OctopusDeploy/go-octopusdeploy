@@ -1,30 +1,30 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 type FeedResource struct {
-	AccessKey                         string          `json:"AccessKey,omitempty"`
-	APIVersion                        string          `json:"ApiVersion,omitempty"`
-	DeleteUnreleasedPackagesAfterDays int             `json:"DeleteUnreleasedPackagesAfterDays"`
-	DownloadAttempts                  int             `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds       int             `json:"DownloadRetryBackoffSeconds"`
-	EnhancedMode                      bool            `json:"EnhancedMode"`
-	FeedType                          FeedType        `json:"FeedType" validate:"required,notblank"`
-	FeedURI                           string          `json:"FeedUri,omitempty"`
-	IsBuiltInRepoSyncEnabled          bool            `json:"IsBuiltInRepoSyncEnabled,omitempty"`
-	Name                              string          `json:"Name" validate:"required,notblank"`
+	AccessKey                         string               `json:"AccessKey,omitempty"`
+	APIVersion                        string               `json:"ApiVersion,omitempty"`
+	DeleteUnreleasedPackagesAfterDays int                  `json:"DeleteUnreleasedPackagesAfterDays"`
+	DownloadAttempts                  int                  `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds       int                  `json:"DownloadRetryBackoffSeconds"`
+	EnhancedMode                      bool                 `json:"EnhancedMode"`
+	FeedType                          FeedType             `json:"FeedType" validate:"required,notblank"`
+	FeedURI                           string               `json:"FeedUri,omitempty"`
+	IsBuiltInRepoSyncEnabled          bool                 `json:"IsBuiltInRepoSyncEnabled,omitempty"`
+	Name                              string               `json:"Name" validate:"required,notblank"`
 	Password                          *core.SensitiveValue `json:"Password,omitempty"`
-	PackageAcquisitionLocationOptions []string        `json:"PackageAcquisitionLocationOptions,omitempty"`
-	Region                            string          `json:"Region,omitempty"`
-	RegistryPath                      string          `json:"RegistryPath,omitempty"`
+	PackageAcquisitionLocationOptions []string             `json:"PackageAcquisitionLocationOptions,omitempty"`
+	Region                            string               `json:"Region,omitempty"`
+	RegistryPath                      string               `json:"RegistryPath,omitempty"`
 	SecretKey                         *core.SensitiveValue `json:"SecretKey,omitempty"`
-	SpaceID                           string          `json:"SpaceId,omitempty"`
-	Username                          string          `json:"Username,omitempty"`
+	SpaceID                           string               `json:"SpaceId,omitempty"`
+	Username                          string               `json:"Username,omitempty"`
 
 	resources.Resource
 }

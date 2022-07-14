@@ -6,9 +6,9 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 )
 
 func getOctopusClient() *client.Client {
