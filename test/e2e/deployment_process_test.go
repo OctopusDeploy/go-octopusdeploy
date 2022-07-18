@@ -97,6 +97,14 @@ func TestDeploymentProcessGet(t *testing.T) {
 	updatedDeploymentProcess, err := client.DeploymentProcesses.Update(deploymentProcess)
 	require.NotNil(t, updatedDeploymentProcess)
 	require.NoError(t, err)
+
+	channels, err := client.Projects.GetChannels(project)
+	require.NotNil(t, channels)
+	require.NoError(t, err)
+
+	template, err := client.DeploymentProcesses.GetTemplate(deploymentProcess, channels[0].GetID(), "")
+	require.NoError(t, err)
+	require.NotNil(t, template)
 }
 
 func TestDeploymentProcessGetAll(t *testing.T) {

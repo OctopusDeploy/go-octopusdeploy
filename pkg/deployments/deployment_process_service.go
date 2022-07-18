@@ -50,6 +50,33 @@ func (s *DeploymentProcessService) Get(project *projects.Project, gitRef string)
 	return deploymentProcess, err
 }
 
+func (s *DeploymentProcessService) GetTemplate(deploymentProcess *DeploymentProcess, channelID string, releaseID string) (*DeploymentProcessTemplate, error) {
+	if deploymentProcess == nil {
+		return nil, internal.CreateInvalidParameterError("GetTemplate", "deploymentProcess")
+	}
+
+	template, _ := uritemplates.Parse(deploymentProcess.Links["Template"])
+
+	values := map[string]interface{}{}
+
+	if len(channelID) > 0 {
+		values["channel"] = channelID
+	}
+
+	if len(releaseID) > 0 {
+		values["releaseId"] = releaseID
+	}
+
+	path, _ := template.Expand(values)
+
+	resp, err := services.ApiGet(s.GetClient(), new(DeploymentProcessTemplate), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*DeploymentProcessTemplate), nil
+}
+
 // GetAll returns all deployment processes. If none can be found or an error
 // occurs, it returns an empty collection.
 func (s *DeploymentProcessService) GetAll() ([]*DeploymentProcess, error) {
