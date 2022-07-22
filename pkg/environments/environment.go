@@ -35,3 +35,7 @@ func NewEnvironment(name string) *Environment {
 func (e *Environment) Validate() error {
 	return validator.New().Struct(e)
 }
+
+func (e *Environment) GetName() string {
+	return e.Name
+}
