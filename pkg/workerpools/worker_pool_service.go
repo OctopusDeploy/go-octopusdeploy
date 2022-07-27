@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -60,12 +61,12 @@ func (s *WorkerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[WorkerPoolResource]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*WorkerPoolResource]), path)
 	if err != nil {
 		return &WorkerPools{}, err
 	}
 
-	return ToWorkerPools(response.(*resources.Resources[WorkerPoolResource])), nil
+	return ToWorkerPools(response.(*resources.Resources[*WorkerPoolResource])), nil
 }
 
 // GetAll returns all worker pools. If none can be found or an error occurs, it
@@ -77,7 +78,7 @@ func (s *WorkerPoolService) GetAll() ([]IWorkerPool, error) {
 		return ToWorkerPoolArray(items), err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return ToWorkerPoolArray(items), err
 }
 
@@ -93,7 +94,7 @@ func (s *WorkerPoolService) GetByID(id string) (IWorkerPool, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(WorkerPoolResource), path)
+	resp, err := api.ApiGet(s.GetClient(), new(WorkerPoolResource), path)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -40,12 +41,12 @@ func (s *ApiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[APIKey]), path)
+		resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*APIKey]), path)
 		if err != nil {
 			return nil, err
 		}
 
-		r := resp.(*resources.Resources[APIKey])
+		r := resp.(*resources.Resources[*APIKey])
 		p = append(p, r.Items...)
 		path, loadNextPage = services.LoadNextPage(r.PagedResults)
 	}
@@ -70,7 +71,7 @@ func (s *ApiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error)
 	path := internal.TrimTemplate(s.GetPath())
 	path = fmt.Sprintf(path+"%s/apikeys/%s", userID, apiKeyID)
 
-	resp, err := services.ApiGet(s.GetClient(), new(APIKey), path)
+	resp, err := api.ApiGet(s.GetClient(), new(APIKey), path)
 	if err != nil {
 		return nil, err
 	}

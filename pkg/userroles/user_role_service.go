@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -42,18 +43,18 @@ func (s *UserRoleService) Add(userRole *UserRole) (*UserRole, error) {
 // Get returns a collection of user roles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *UserRoleService) Get(userRolesQuery UserRolesQuery) (*resources.Resources[UserRole], error) {
+func (s *UserRoleService) Get(userRolesQuery UserRolesQuery) (*resources.Resources[*UserRole], error) {
 	path, err := s.GetURITemplate().Expand(userRolesQuery)
 	if err != nil {
-		return &resources.Resources[UserRole]{}, err
+		return &resources.Resources[*UserRole]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[UserRole]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*UserRole]), path)
 	if err != nil {
-		return &resources.Resources[UserRole]{}, err
+		return &resources.Resources[*UserRole]{}, err
 	}
 
-	return response.(*resources.Resources[UserRole]), nil
+	return response.(*resources.Resources[*UserRole]), nil
 }
 
 // GetAll returns all user roles. If none can be found or an error occurs, it
@@ -65,7 +66,7 @@ func (s *UserRoleService) GetAll() ([]*UserRole, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -81,7 +82,7 @@ func (s *UserRoleService) GetByID(id string) (*UserRole, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(UserRole), path)
+	resp, err := api.ApiGet(s.GetClient(), new(UserRole), path)
 	if err != nil {
 		return nil, internal.CreateResourceNotFoundError("userRole", "ID", id)
 	}

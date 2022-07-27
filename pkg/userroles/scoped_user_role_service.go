@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -43,14 +44,14 @@ func (s *ScopedUserRoleService) Add(scopedUserRole *ScopedUserRole) (*ScopedUser
 
 // Currently no known query params, not even take and skip
 // Query params could exist, but are undocumented in the swagger
-func (s *ScopedUserRoleService) Get() (*resources.Resources[ScopedUserRole], error) {
+func (s *ScopedUserRoleService) Get() (*resources.Resources[*ScopedUserRole], error) {
 	path := s.BasePath
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[ScopedUserRole]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*ScopedUserRole]), path)
 	if err != nil {
-		return &resources.Resources[ScopedUserRole]{}, err
+		return &resources.Resources[*ScopedUserRole]{}, err
 	}
-	return resp.(*resources.Resources[ScopedUserRole]), nil
+	return resp.(*resources.Resources[*ScopedUserRole]), nil
 }
 
 func (s *ScopedUserRoleService) GetByID(id string) (*ScopedUserRole, error) {
@@ -63,7 +64,7 @@ func (s *ScopedUserRoleService) GetByID(id string) (*ScopedUserRole, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(ScopedUserRole), path)
+	resp, err := api.ApiGet(s.GetClient(), new(ScopedUserRole), path)
 	if err != nil {
 		return nil, err
 	}

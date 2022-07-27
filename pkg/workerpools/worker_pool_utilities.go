@@ -38,7 +38,7 @@ func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 	return workerPool, nil
 }
 
-func ToWorkerPools(workerPoolResources *resources.Resources[WorkerPoolResource]) *WorkerPools {
+func ToWorkerPools(workerPoolResources *resources.Resources[*WorkerPoolResource]) *WorkerPools {
 	return &WorkerPools{
 		Items:        ToWorkerPoolArray(workerPoolResources.Items),
 		PagedResults: workerPoolResources.PagedResults,

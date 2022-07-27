@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
@@ -63,7 +64,7 @@ func (s *ActionTemplateService) Add(actionTemplate *ActionTemplate) (*ActionTemp
 // Get returns a collection of action templates based on the criteria defined
 // by its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
-func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*resources.Resources[ActionTemplate], error) {
+func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*resources.Resources[*ActionTemplate], error) {
 	v, _ := query.Values(actionTemplatesQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -71,12 +72,12 @@ func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*resources.Reso
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[ActionTemplate]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*ActionTemplate]), path)
 	if err != nil {
-		return &resources.Resources[ActionTemplate]{}, err
+		return &resources.Resources[*ActionTemplate]{}, err
 	}
 
-	return resp.(*resources.Resources[ActionTemplate]), nil
+	return resp.(*resources.Resources[*ActionTemplate]), nil
 }
 
 // GetAll returns all action templates. If none can be found or an error
@@ -88,7 +89,7 @@ func (s *ActionTemplateService) GetAll() ([]*ActionTemplate, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -101,7 +102,7 @@ func (s *ActionTemplateService) GetCategories() ([]ActionTemplateCategory, error
 
 	path := s.categoriesPath
 
-	_, err := services.ApiGet(s.GetClient(), items, path)
+	_, err := api.ApiGet(s.GetClient(), items, path)
 
 	return *items, err
 }
@@ -118,7 +119,7 @@ func (s *ActionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(ActionTemplate), path)
+	resp, err := api.ApiGet(s.GetClient(), new(ActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +149,7 @@ func (s *ActionTemplateService) Search(searchQuery string) ([]ActionTemplateSear
 		path = strings.Split(path, "?")[0]
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &searchResults, path)
+	_, err = api.ApiGet(s.GetClient(), &searchResults, path)
 
 	return searchResults, err
 }

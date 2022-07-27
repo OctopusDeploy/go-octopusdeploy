@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -42,18 +43,18 @@ func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) 
 // Get returns a collection of library variable sets based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
-func (s *LibraryVariableSetService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[LibraryVariableSet], error) {
+func (s *LibraryVariableSetService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[*LibraryVariableSet], error) {
 	path, err := s.GetURITemplate().Expand(libraryVariablesQuery)
 	if err != nil {
-		return &resources.Resources[LibraryVariableSet]{}, err
+		return &resources.Resources[*LibraryVariableSet]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[LibraryVariableSet]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*LibraryVariableSet]), path)
 	if err != nil {
-		return &resources.Resources[LibraryVariableSet]{}, err
+		return &resources.Resources[*LibraryVariableSet]{}, err
 	}
 
-	return response.(*resources.Resources[LibraryVariableSet]), nil
+	return response.(*resources.Resources[*LibraryVariableSet]), nil
 }
 
 // GetAll returns all library variable sets. If none can be found or an error
@@ -65,7 +66,7 @@ func (s *LibraryVariableSetService) GetAll() ([]*LibraryVariableSet, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -81,7 +82,7 @@ func (s *LibraryVariableSetService) GetByID(id string) (*LibraryVariableSet, err
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(LibraryVariableSet), path)
+	resp, err := api.ApiGet(s.GetClient(), new(LibraryVariableSet), path)
 	if err != nil {
 		return nil, err
 	}

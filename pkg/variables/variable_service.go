@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -46,7 +47,7 @@ func (s *VariableService) GetAll(ownerID string) (VariableSet, error) {
 	path := internal.TrimTemplate(s.GetPath())
 	path = fmt.Sprintf(path+"/variableset-%s", ownerID)
 
-	resp, err := services.ApiGet(s.GetClient(), new(VariableSet), path)
+	resp, err := api.ApiGet(s.GetClient(), new(VariableSet), path)
 	if err != nil {
 		return VariableSet{}, err
 	}

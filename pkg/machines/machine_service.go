@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -49,18 +50,18 @@ func (s *MachineService) Add(deploymentTarget *DeploymentTarget) (*DeploymentTar
 // Get returns a collection of machines based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *MachineService) Get(machinesQuery MachinesQuery) (*resources.Resources[DeploymentTarget], error) {
+func (s *MachineService) Get(machinesQuery MachinesQuery) (*resources.Resources[*DeploymentTarget], error) {
 	path, err := s.GetURITemplate().Expand(machinesQuery)
 	if err != nil {
-		return &resources.Resources[DeploymentTarget]{}, err
+		return &resources.Resources[*DeploymentTarget]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[DeploymentTarget]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*DeploymentTarget]), path)
 	if err != nil {
-		return &resources.Resources[DeploymentTarget]{}, err
+		return &resources.Resources[*DeploymentTarget]{}, err
 	}
 
-	return response.(*resources.Resources[DeploymentTarget]), nil
+	return response.(*resources.Resources[*DeploymentTarget]), nil
 }
 
 // GetByID returns the machine that matches the input ID. If one cannot be
@@ -75,7 +76,7 @@ func (s *MachineService) GetByID(id string) (*DeploymentTarget, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(DeploymentTarget), path)
+	resp, err := api.ApiGet(s.GetClient(), new(DeploymentTarget), path)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +93,7 @@ func (s *MachineService) GetAll() ([]*DeploymentTarget, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 

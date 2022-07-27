@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -57,12 +58,12 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestGetUserAgentString(t *testing.T) {
-	userAgentString := services.GetUserAgentString()
+	userAgentString := api.GetUserAgentString()
 	assert.NotNil(t, userAgentString)
 }
 
 func TestGetWithEmptyParameters(t *testing.T) {
-	resource, err := services.ApiGet(nil, nil, "")
+	resource, err := api.ApiGet(nil, nil, "")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -70,7 +71,7 @@ func TestGetWithEmptyParameters(t *testing.T) {
 
 func TestGetWithEmptySling(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
-	resource, err := services.ApiGet(nil, input, "fake-path")
+	resource, err := api.ApiGet(nil, input, "fake-path")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
@@ -78,12 +79,12 @@ func TestGetWithEmptySling(t *testing.T) {
 
 func TestGetWithEmptyPath(t *testing.T) {
 	input := &inputTestValueStruct{test: "fake-value"}
-	resource, err := services.ApiGet(sling.New(), input, "")
+	resource, err := api.ApiGet(sling.New(), input, "")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)
 
-	resource, err = services.ApiGet(sling.New(), input, " ")
+	resource, err = api.ApiGet(sling.New(), input, " ")
 
 	assert.Error(t, err)
 	assert.Nil(t, resource)

@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -39,7 +40,7 @@ func (s *PackageService) GetAll() ([]*Package, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -55,7 +56,7 @@ func (s *PackageService) GetByID(id string) (*Package, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Package), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Package), path)
 	if err != nil {
 		return nil, err
 	}

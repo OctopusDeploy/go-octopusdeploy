@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/dghubble/sling"
 )
 
 // Accounts defines a collection of accounts with built-in support for paged
 // results.
-type Accounts struct {
-	Items []IAccount `json:"Items"`
-	resources.PagedResults
-}
+type Accounts resources.Resources[IAccount]
 
 // MarshalJSON returns an Accounts struct as its JSON encoding.
 func (a *Accounts) MarshalJSON() ([]byte, error) {
@@ -126,4 +125,34 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+// GetNextPage retrives the next page from the links collection. If no next page
+// exists it will return nill
+func (r *Accounts) GetNextPage(client *sling.Sling) (*Accounts, error) {
+	if r.Links.PageNext == "" {
+		return nil, nil
+	}
+	response, err := api.ApiGet(client, new(resources.Resources[*AccountResource]), r.Links.PageNext)
+	if err != nil {
+		return nil, err
+	}
+	return ToAccounts(response.(*resources.Resources[*AccountResource])), nil
+}
+
+// GetAllPages will retrive all remaining next pages in the link collection
+// and return the result as list of concatenated Items; Including the items
+// from the base Resource.
+func (r *Accounts) GetAllPages(client *sling.Sling) ([]IAccount, error) {
+	items := make([]IAccount, 0)
+	res := r
+	var err error
+	for res != nil {
+		items = append(items, res.Items...)
+		res, err = res.GetNextPage(client)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return items, nil
 }

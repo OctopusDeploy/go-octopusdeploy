@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -45,18 +46,18 @@ func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, er
 // Get returns a collection of project groups based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
-func (s *ProjectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*resources.Resources[ProjectGroup], error) {
+func (s *ProjectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*resources.Resources[*ProjectGroup], error) {
 	path, err := s.GetURITemplate().Expand(projectGroupsQuery)
 	if err != nil {
-		return &resources.Resources[ProjectGroup]{}, err
+		return &resources.Resources[*ProjectGroup]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[ProjectGroup]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*ProjectGroup]), path)
 	if err != nil {
-		return &resources.Resources[ProjectGroup]{}, err
+		return &resources.Resources[*ProjectGroup]{}, err
 	}
 
-	return response.(*resources.Resources[ProjectGroup]), nil
+	return response.(*resources.Resources[*ProjectGroup]), nil
 }
 
 // GetAll returns all project groups. If none can be found or an error occurs,
@@ -68,7 +69,7 @@ func (s *ProjectGroupService) GetAll() ([]*ProjectGroup, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -84,7 +85,7 @@ func (s *ProjectGroupService) GetByID(id string) (*ProjectGroup, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(ProjectGroup), path)
+	resp, err := api.ApiGet(s.GetClient(), new(ProjectGroup), path)
 	if err != nil {
 		return nil, err
 	}
@@ -119,12 +120,12 @@ func (s *ProjectGroupService) GetProjects(projectGroup *ProjectGroup) ([]*projec
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[projects.Project]), path)
+		resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*projects.Project]), path)
 		if err != nil {
 			return projectsToReturn, err
 		}
 
-		projectList := resp.(*resources.Resources[projects.Project])
+		projectList := resp.(*resources.Resources[*projects.Project])
 		projectsToReturn = append(projectsToReturn, projectList.Items...)
 		path, loadNextPage = services.LoadNextPage(projectList.PagedResults)
 	}

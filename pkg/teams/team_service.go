@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/userroles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
@@ -61,18 +62,18 @@ func (s *TeamService) Delete(team *Team) error {
 // Get returns a collection of teams based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
-func (s *TeamService) Get(teamsQuery TeamsQuery) (*resources.Resources[Team], error) {
+func (s *TeamService) Get(teamsQuery TeamsQuery) (*resources.Resources[*Team], error) {
 	path, err := s.GetURITemplate().Expand(teamsQuery)
 	if err != nil {
-		return &resources.Resources[Team]{}, err
+		return &resources.Resources[*Team]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Team]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Team]), path)
 	if err != nil {
-		return &resources.Resources[Team]{}, err
+		return &resources.Resources[*Team]{}, err
 	}
 
-	return response.(*resources.Resources[Team]), nil
+	return response.(*resources.Resources[*Team]), nil
 }
 
 // GetAll returns all teams. If none can be found or an error occurs, it
@@ -84,7 +85,7 @@ func (s *TeamService) GetAll() ([]*Team, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -100,7 +101,7 @@ func (s *TeamService) GetByID(id string) (*Team, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Team), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Team), path)
 	if err != nil {
 		return nil, err
 	}
@@ -138,14 +139,14 @@ func (s *TeamService) Update(team *Team) (*Team, error) {
 	return resp.(*Team), nil
 }
 
-func (s *TeamService) GetScopedUserRoles(team Team, query core.SkipTakeQuery) (*resources.Resources[userroles.ScopedUserRole], error) {
+func (s *TeamService) GetScopedUserRoles(team Team, query core.SkipTakeQuery) (*resources.Resources[*userroles.ScopedUserRole], error) {
 	template, _ := uritemplates.Parse(team.Links["ScopedUserRoles"])
 	path, _ := template.Expand(query)
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[userroles.ScopedUserRole]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*userroles.ScopedUserRole]), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*resources.Resources[userroles.ScopedUserRole]), nil
+	return resp.(*resources.Resources[*userroles.ScopedUserRole]), nil
 }

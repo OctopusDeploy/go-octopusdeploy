@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -49,18 +50,18 @@ func (s *ChannelService) Add(channel *Channel) (*Channel, error) {
 // Get returns a collection of channels based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *ChannelService) Get(channelsQuery Query) (*resources.Resources[Channel], error) {
+func (s *ChannelService) Get(channelsQuery Query) (*resources.Resources[*Channel], error) {
 	path, err := s.GetURITemplate().Expand(channelsQuery)
 	if err != nil {
-		return &resources.Resources[Channel]{}, err
+		return &resources.Resources[*Channel]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Channel]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Channel]), path)
 	if err != nil {
-		return &resources.Resources[Channel]{}, err
+		return &resources.Resources[*Channel]{}, err
 	}
 
-	return response.(*resources.Resources[Channel]), nil
+	return response.(*resources.Resources[*Channel]), nil
 }
 
 // GetAll returns all channels. If none can be found or an error occurs, it
@@ -72,7 +73,7 @@ func (s *ChannelService) GetAll() ([]*Channel, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -84,7 +85,7 @@ func (s *ChannelService) GetByID(id string) (*Channel, error) {
 	}
 
 	path := s.BasePath + "/" + id
-	resp, err := services.ApiGet(s.GetClient(), new(Channel), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Channel), path)
 	if err != nil {
 		return nil, err
 	}

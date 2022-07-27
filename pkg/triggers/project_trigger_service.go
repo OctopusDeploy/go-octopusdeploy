@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -31,7 +32,7 @@ func (s *ProjectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(ProjectTrigger), path)
+	resp, err := api.ApiGet(s.GetClient(), new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
 	}

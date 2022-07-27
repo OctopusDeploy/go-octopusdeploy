@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
 	"github.com/dghubble/sling"
 )
@@ -30,7 +31,7 @@ func (s *InterruptionService) GetByID(id string) (*Interruption, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Interruption), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Interruption), path)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +62,7 @@ func (s *InterruptionService) GetAll() ([]*Interruption, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -81,7 +82,7 @@ func (s *InterruptionService) Submit(resource *Interruption, r *InterruptionSubm
 func (s InterruptionService) GetResponsibility(resource *Interruption) (*users.User, error) {
 	path := resource.Links[constants.LinkResponsible]
 
-	resp, err := services.ApiGet(s.GetClient(), new(users.User), path)
+	resp, err := api.ApiGet(s.GetClient(), new(users.User), path)
 	if err != nil {
 		return nil, err
 	}

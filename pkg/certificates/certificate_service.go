@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -62,18 +63,18 @@ func (s *CertificateService) Archive(resource *CertificateResource) (*Certificat
 // Get returns a collection of certificates based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
-func (s *CertificateService) Get(certificatesQuery CertificatesQuery) (*resources.Resources[CertificateResource], error) {
+func (s *CertificateService) Get(certificatesQuery CertificatesQuery) (*resources.Resources[*CertificateResource], error) {
 	path, err := s.GetURITemplate().Expand(certificatesQuery)
 	if err != nil {
-		return &resources.Resources[CertificateResource]{}, err
+		return &resources.Resources[*CertificateResource]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[CertificateResource]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*CertificateResource]), path)
 	if err != nil {
-		return &resources.Resources[CertificateResource]{}, err
+		return &resources.Resources[*CertificateResource]{}, err
 	}
 
-	return response.(*resources.Resources[CertificateResource]), nil
+	return response.(*resources.Resources[*CertificateResource]), nil
 }
 
 // GetAll returns all certificates. If none are found or an error occurs, it
@@ -85,7 +86,7 @@ func (s *CertificateService) GetAll() ([]*CertificateResource, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -101,7 +102,7 @@ func (s *CertificateService) GetByID(id string) (*CertificateResource, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(CertificateResource), path)
+	resp, err := api.ApiGet(s.GetClient(), new(CertificateResource), path)
 	if err != nil {
 		return nil, err
 	}

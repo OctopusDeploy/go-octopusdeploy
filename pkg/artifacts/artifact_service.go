@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -46,7 +47,7 @@ func (s *ArtifactService) Add(artifact *Artifact) (*Artifact, error) {
 // Get returns a collection of artifacts based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *ArtifactService) Get(artifactsQuery Query) (*resources.Resources[Artifact], error) {
+func (s *ArtifactService) Get(artifactsQuery Query) (*resources.Resources[*Artifact], error) {
 	v, _ := query.Values(artifactsQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -54,12 +55,12 @@ func (s *ArtifactService) Get(artifactsQuery Query) (*resources.Resources[Artifa
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[Artifact]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Artifact]), path)
 	if err != nil {
-		return &resources.Resources[Artifact]{}, err
+		return &resources.Resources[*Artifact]{}, err
 	}
 
-	return resp.(*resources.Resources[Artifact]), nil
+	return resp.(*resources.Resources[*Artifact]), nil
 }
 
 // GetAll returns all artifacts. If none can be found or an error occurs, it
@@ -85,7 +86,7 @@ func (s *ArtifactService) GetByID(id string) (*Artifact, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Artifact), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Artifact), path)
 	if err != nil {
 		return nil, err
 	}
