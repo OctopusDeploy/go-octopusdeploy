@@ -6,9 +6,40 @@ on:
 defaults:
   run:
     shell: bash
+env:
+  SA_PASSWORD: ${{ secrets.DB_IMAGE_SA_PASSWORD }}
+  ADMIN_API_KEY: ${{ secrets.OD_IMAGE_ADMIN_API_KEY }}
+  SERVER_URL: 'http://localhost:8080'
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: ${{ env.SA_PASSWORD }}
+          MSSQL_PID: Developer
+        options: >-
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P \"$SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"
+          --health-interval 10s
+          --health-timeout 3s
+          --health-retries 10
+          --health-start-period 10s
+      octopusserver:
+        image: octopusdeploy/octopusdeploy
+        env:
+          ACCEPT_EULA: Y
+          DB_CONNECTION_STRING: 'Server=sqlserver;Database=OctopusDeploy;User Id=sa;Password=${{ env.SA_PASSWORD }};'
+          ADMIN_API_KEY: ${{ env.ADMIN_API_KEY }}
+          ENABLE_USAGE: N
+          OCTOPUS_SERVER_BASE64_LICENSE: ${{ secrets.OCTOPUS_SERVER_BASE64_LICENSE }}
+        ports:
+          - 8080:8080
+    # https://github.com/dorny/test-reporter/issues/168
+    permissions:
+      statuses: write
+      checks: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -20,4 +51,17 @@ jobs:
         run: go build -a -race -v ./...
       - name: Vet
         run: go vet -v ./...
-      # TODO: added unit and integration tests that use the Docker container running Octopus
+      - run: |
+          curl '${{ env.SERVER_URL }}/api/configuration/webportal/values' -X 'PUT' -H 'Content-Type: application/json' -H 'X-Octopus-ApiKey: ${{ env.ADMIN_API_KEY }}' --data-binary '{"Security":{"CorsWhitelist":"http://localhost,${{ env.SERVER_URL }}","ReferrerPolicy":"no-referrer","ContentSecurityPolicyEnabled":true,"HttpStrictTransportSecurityEnabled":false,"HttpStrictTransportSecurityMaxAge":31556926,"XOptions":{"XFrameOptionAllowFrom":null,"XFrameOptions":"None"}}}' -o /dev/null -s -w "%{http_code}\n"
+        name: Add server url to CORS
+      - run: go test -v ./...
+        env:
+          OCTOPUS_HOST: ${{ env.SERVER_URL }}
+          OCTOPUS_API_KEY: ${{ env.ADMIN_API_KEY }}
+      - uses: dorny/test-reporter@v1
+        if: success() || failure()
+        name: Tests report
+        with:
+          name: Tests report
+          path: 'reports/jest-*.xml'
+          reporter: jest-junit
