@@ -12,7 +12,8 @@ import (
 func CreateTestTag(t *testing.T) *tagsets.Tag {
 	name := internal.GetRandomName()
 
-	createdTag := tagsets.NewTag(name, 1)
+	// TODO: randomize color
+	createdTag := tagsets.NewTag(name, "#000000")
 	require.NotNil(t, createdTag)
 
 	return createdTag
