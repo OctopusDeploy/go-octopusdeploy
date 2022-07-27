@@ -41,13 +41,8 @@ type Project struct {
 	resources.Resource
 }
 
-type Projects struct {
-	Items []*Project `json:"Items"`
-	resources.PagedResults
-}
-
-func NewProjects() *Projects {
-	return &Projects{
+func NewProjects() *resources.Resources[Project] {
+	return &resources.Resources[Project]{
 		Items: []*Project{},
 		PagedResults: resources.PagedResults{
 			ItemType:       "Project",

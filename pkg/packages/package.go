@@ -23,11 +23,6 @@ type Package struct {
 	resources.Resource
 }
 
-type Packages struct {
-	Items []*Package `json:"Items"`
-	resources.PagedResults
-}
-
 func NewPackage() *Package {
 	return &Package{
 		Resource: *resources.NewResource(),

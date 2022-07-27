@@ -58,6 +58,24 @@ func NewService(name string, sling *sling.Sling, uriTemplate string) Service {
 	}
 }
 
+func GetPagedResponse[T any](s IService, path string) ([]*T, error) {
+	resourcesToReturn := []*T{}
+	loadNextPage := true
+
+	for loadNextPage {
+		resp, err := ApiGet(s.GetClient(), new(resources.Resources[T]), path)
+		if err != nil {
+			return resourcesToReturn, err
+		}
+
+		responseList := resp.(*resources.Resources[T])
+		resourcesToReturn = append(resourcesToReturn, responseList.Items...)
+		path, loadNextPage = LoadNextPage(responseList.PagedResults)
+	}
+
+	return resourcesToReturn, nil
+}
+
 // Generic OctopusDeploy API Get Function.
 func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
 	if sling == nil {

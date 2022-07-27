@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -39,12 +40,12 @@ func (s *ApiKeyService) GetByUserID(userID string) ([]*APIKey, error) {
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(APIKeys), path)
+		resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[APIKey]), path)
 		if err != nil {
 			return nil, err
 		}
 
-		r := resp.(*APIKeys)
+		r := resp.(*resources.Resources[APIKey])
 		p = append(p, r.Items...)
 		path, loadNextPage = services.LoadNextPage(r.PagedResults)
 	}

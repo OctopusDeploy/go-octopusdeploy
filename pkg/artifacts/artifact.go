@@ -6,13 +6,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-// Artifacts defines a collection of artifacts with built-in support for paged
-// results from the API.
-type Artifacts struct {
-	Items []*Artifact `json:"Items"`
-	resources.PagedResults
-}
-
 // Artifact represents an artifact.
 type Artifact struct {
 	Created          *time.Time `json:"Created,omitempty"`

@@ -2,6 +2,7 @@ package workerpools
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
@@ -37,7 +38,7 @@ func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 	return workerPool, nil
 }
 
-func ToWorkerPools(workerPoolResources *WorkerPoolResources) *WorkerPools {
+func ToWorkerPools(workerPoolResources *resources.Resources[WorkerPoolResource]) *WorkerPools {
 	return &WorkerPools{
 		Items:        ToWorkerPoolArray(workerPoolResources.Items),
 		PagedResults: workerPoolResources.PagedResults,

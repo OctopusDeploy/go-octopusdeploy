@@ -6,11 +6,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-type Interruptions struct {
-	Items []*Interruption `json:"Items"`
-	resources.PagedResults
-}
-
 type Interruption struct {
 	CanTakeResponsibility       bool      `json:"CanTakeResponsibility,omitempty"`
 	CorrelationID               string    `json:"CorrelationId,omitempty"`

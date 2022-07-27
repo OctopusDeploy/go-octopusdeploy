@@ -100,6 +100,13 @@ func TestEnvironmentServiceAddGetDelete(t *testing.T) {
 	environment, err := client.Environments.GetByID(createdEnvironment.GetID())
 	require.NoError(t, err)
 	require.NotNil(t, environment)
+
+	environments, err := client.Environments.Get(environments.EnvironmentsQuery{IDs: []string{createdEnvironment.GetID()}})
+	require.NoError(t, err)
+	require.NotNil(t, environments)
+
+	environmentToCompare := environments.Items[0]
+	IsEqualEnvironments(t, environment, environmentToCompare)
 }
 
 func TestEnvironmentServiceDeleteAll(t *testing.T) {

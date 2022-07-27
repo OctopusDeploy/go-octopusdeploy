@@ -14,13 +14,6 @@ type Worker struct {
 	machine
 }
 
-// Workers defines a collection of workers with built-in support for paged
-// results.
-type Workers struct {
-	Items []*Worker `json:"Items"`
-	resources.PagedResults
-}
-
 func NewWorker(name string, endpoint IEndpoint) *Worker {
 	worker := &Worker{
 		WorkerPoolIDs: []string{},

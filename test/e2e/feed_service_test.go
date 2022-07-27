@@ -293,3 +293,26 @@ func TestFeedServiceSearchPackages(t *testing.T) {
 	require.NotNil(t, packageDescriptions)
 	require.NoError(t, err)
 }
+
+func TestFeedServiceSearchPackageVersions(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	feed := CreateTestNuGetFeed(t, client)
+	require.NotNil(t, feed)
+
+	packageDescriptions, err := client.Feeds.SearchPackages(feed, feeds.SearchPackagesQuery{
+		Term: "OctopusTools",
+	})
+	require.NotNil(t, packageDescriptions)
+	require.NoError(t, err)
+
+	for _, v := range packageDescriptions.Items {
+		packageVersions, err := client.Feeds.SearchPackageVersions(v, feeds.SearchPackageVersionsQuery{
+			FeedID:    feed.GetID(),
+			PackageID: v.ID,
+		})
+		require.NotNil(t, packageVersions)
+		require.NoError(t, err)
+	}
+}

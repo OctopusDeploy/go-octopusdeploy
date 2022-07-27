@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -61,18 +62,18 @@ func (s *CertificateService) Archive(resource *CertificateResource) (*Certificat
 // Get returns a collection of certificates based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
-func (s *CertificateService) Get(certificatesQuery CertificatesQuery) (*CertificateResources, error) {
+func (s *CertificateService) Get(certificatesQuery CertificatesQuery) (*resources.Resources[CertificateResource], error) {
 	path, err := s.GetURITemplate().Expand(certificatesQuery)
 	if err != nil {
-		return &CertificateResources{}, err
+		return &resources.Resources[CertificateResource]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(CertificateResources), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[CertificateResource]), path)
 	if err != nil {
-		return &CertificateResources{}, err
+		return &resources.Resources[CertificateResource]{}, err
 	}
 
-	return response.(*CertificateResources), nil
+	return response.(*resources.Resources[CertificateResource]), nil
 }
 
 // GetAll returns all certificates. If none are found or an error occurs, it

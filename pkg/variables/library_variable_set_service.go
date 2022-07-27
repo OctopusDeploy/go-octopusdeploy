@@ -3,6 +3,7 @@ package variables
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -17,24 +18,6 @@ func NewLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *Libra
 			Service: services.NewService(constants.ServiceLibraryVariableSetService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *LibraryVariableSetService) getPagedResponse(path string) ([]*LibraryVariableSet, error) {
-	resources := []*LibraryVariableSet{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(LibraryVariableSets), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*LibraryVariableSets)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new library variable set.
@@ -59,18 +42,18 @@ func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) 
 // Get returns a collection of library variable sets based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
-func (s *LibraryVariableSetService) Get(libraryVariablesQuery LibraryVariablesQuery) (*LibraryVariableSets, error) {
+func (s *LibraryVariableSetService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[LibraryVariableSet], error) {
 	path, err := s.GetURITemplate().Expand(libraryVariablesQuery)
 	if err != nil {
-		return &LibraryVariableSets{}, err
+		return &resources.Resources[LibraryVariableSet]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(LibraryVariableSets), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[LibraryVariableSet]), path)
 	if err != nil {
-		return &LibraryVariableSets{}, err
+		return &resources.Resources[LibraryVariableSet]{}, err
 	}
 
-	return response.(*LibraryVariableSets), nil
+	return response.(*resources.Resources[LibraryVariableSet]), nil
 }
 
 // GetAll returns all library variable sets. If none can be found or an error
@@ -117,7 +100,7 @@ func (s *LibraryVariableSetService) GetByPartialName(partialName string) ([]*Lib
 		return []*LibraryVariableSet{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[LibraryVariableSet](s, path)
 }
 
 // Update modifies a library variable set based on the one provided as input.

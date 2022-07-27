@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/permissions"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"github.com/dghubble/sling"
@@ -102,7 +103,7 @@ func (s *UserService) GetAPIKeyByID(user *User, apiKeyID string) (*APIKey, error
 	return response.(*APIKey), nil
 }
 
-func (s *UserService) GetAPIKeys(user *User, apiQuery ...APIQuery) (*APIKeys, error) {
+func (s *UserService) GetAPIKeys(user *User, apiQuery ...APIQuery) (*resources.Resources[APIKey], error) {
 	if user == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetAPIKeys, constants.ParameterUser)
 	}
@@ -126,12 +127,12 @@ func (s *UserService) GetAPIKeys(user *User, apiQuery ...APIQuery) (*APIKeys, er
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(APIKeys), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[APIKey]), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.(*APIKeys), nil
+	return response.(*resources.Resources[APIKey]), nil
 }
 
 func (s *UserService) GetAuthentication() (*UserAuthentication, error) {
@@ -162,18 +163,18 @@ func (s *UserService) GetAuthenticationByUser(user *User) (*UserAuthentication, 
 // Get returns a collection of users based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
-func (s *UserService) Get(usersQuery UsersQuery) (*Users, error) {
+func (s *UserService) Get(usersQuery UsersQuery) (*resources.Resources[User], error) {
 	path, err := s.GetURITemplate().Expand(usersQuery)
 	if err != nil {
-		return &Users{}, err
+		return &resources.Resources[User]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Users), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[User]), path)
 	if err != nil {
-		return &Users{}, err
+		return &resources.Resources[User]{}, err
 	}
 
-	return response.(*Users), nil
+	return response.(*resources.Resources[User]), nil
 }
 
 // GetByID returns the user that matches the input ID. If one cannot be found,

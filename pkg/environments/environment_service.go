@@ -3,6 +3,7 @@ package environments
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -24,24 +25,6 @@ func NewEnvironmentService(sling *sling.Sling, uriTemplate string, sortOrderPath
 			Service: services.NewService(constants.ServiceEnvironmentService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *EnvironmentService) getPagedResponse(path string) ([]*Environment, error) {
-	resources := []*Environment{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Environments), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Environments)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new environment.
@@ -66,18 +49,18 @@ func (s *EnvironmentService) Add(environment *Environment) (*Environment, error)
 // Get returns a collection of environments based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
-func (s *EnvironmentService) Get(environmentsQuery EnvironmentsQuery) (*Environments, error) {
+func (s *EnvironmentService) Get(environmentsQuery EnvironmentsQuery) (*resources.Resources[Environment], error) {
 	path, err := s.GetURITemplate().Expand(environmentsQuery)
 	if err != nil {
-		return &Environments{}, err
+		return &resources.Resources[Environment]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Environments), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Environment]), path)
 	if err != nil {
-		return &Environments{}, err
+		return &resources.Resources[Environment]{}, err
 	}
 
-	return response.(*Environments), nil
+	return response.(*resources.Resources[Environment]), nil
 }
 
 // GetAll returns all environments. If none can be found or an error occurs, it
@@ -124,7 +107,7 @@ func (s *EnvironmentService) GetByIDs(ids []string) ([]*Environment, error) {
 		return []*Environment{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Environment](s, path)
 }
 
 // GetByName returns the environments with a matching partial name.
@@ -138,7 +121,7 @@ func (s *EnvironmentService) GetByName(name string) ([]*Environment, error) {
 		return []*Environment{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Environment](s, path)
 }
 
 // GetByPartialName performs a lookup and returns enironments with a matching
@@ -153,7 +136,7 @@ func (s *EnvironmentService) GetByPartialName(partialName string) ([]*Environmen
 		return []*Environment{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Environment](s, path)
 }
 
 // Update modifies an environment based on the one provided as input.

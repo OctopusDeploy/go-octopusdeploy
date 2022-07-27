@@ -42,13 +42,6 @@ type Deployment struct {
 	resources.Resource
 }
 
-// Deployments defines a collection of deployment instances with built-in
-// support for paged results.
-type Deployments struct {
-	Items []*Deployment `json:"Items"`
-	resources.PagedResults
-}
-
 // NewDeployment initializes a deployment with a name, environment ID, and
 // release ID.
 func NewDeployment(environmentID string, releaseID string) *Deployment {

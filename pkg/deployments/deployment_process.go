@@ -2,11 +2,6 @@ package deployments
 
 import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
-type DeploymentProcesses struct {
-	Items []*DeploymentProcess `json:"Items"`
-	resources.PagedResults
-}
-
 type DeploymentProcess struct {
 	Branch         string            `json:"-"`
 	LastSnapshotID string            `json:"LastSnapshotId,omitempty"`

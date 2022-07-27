@@ -3,6 +3,7 @@ package tagsets
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -44,18 +45,18 @@ func (s *TagSetService) Add(tagSet *TagSet) (*TagSet, error) {
 // Get returns a collection of tag sets based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *TagSetService) Get(tagSetsQuery TagSetsQuery) (*TagSets, error) {
+func (s *TagSetService) Get(tagSetsQuery TagSetsQuery) (*resources.Resources[TagSet], error) {
 	path, err := s.GetURITemplate().Expand(tagSetsQuery)
 	if err != nil {
-		return &TagSets{}, err
+		return &resources.Resources[TagSet]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(TagSets), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[TagSet]), path)
 	if err != nil {
-		return &TagSets{}, err
+		return &resources.Resources[TagSet]{}, err
 	}
 
-	return response.(*TagSets), nil
+	return response.(*resources.Resources[TagSet]), nil
 }
 
 // GetByID returns the tag set that matches the input ID. If one cannot be

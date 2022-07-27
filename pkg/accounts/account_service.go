@@ -3,6 +3,7 @@ package accounts
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -52,12 +53,12 @@ func (s *AccountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) 
 		}
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(AccountResources), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[AccountResource]), path)
 	if err != nil {
 		return &Accounts{}, err
 	}
 
-	return ToAccounts(response.(*AccountResources)), nil
+	return ToAccounts(response.(*resources.Resources[AccountResource])), nil
 }
 
 // GetAll returns all accounts. If none are found or an error occurs, it

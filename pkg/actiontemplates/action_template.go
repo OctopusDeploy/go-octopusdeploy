@@ -8,13 +8,6 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// ActionTemplates defines a collection of action templates with built-in
-// support for paged results.
-type ActionTemplates struct {
-	Items []*ActionTemplate `json:"Items"`
-	resources.PagedResults
-}
-
 // ActionTemplate represents an action template in Octopus Deploy.
 type ActionTemplate struct {
 	ActionType                string                        `json:"ActionType" validate:"required,notblank"`

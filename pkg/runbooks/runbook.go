@@ -23,13 +23,6 @@ type Runbook struct {
 	resources.Resource
 }
 
-// Runbooks defines a collection of runbooks with built-in support for paged
-// results.
-type Runbooks struct {
-	Items []*Runbook `json:"Items"`
-	resources.PagedResults
-}
-
 // NewRunbook creates and initializes a runbook.
 func NewRunbook(name string, projectID string) *Runbook {
 	return &Runbook{

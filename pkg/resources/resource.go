@@ -19,8 +19,8 @@ type IResource interface {
 	Validate() error
 }
 
-type Resources struct {
-	Items []*Resource `json:"Items"`
+type Resources[T any] struct {
+	Items []*T `json:"Items"`
 	PagedResults
 }
 

@@ -10,13 +10,6 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-// CommunityActionTemplates defines a collection of community action templates
-// with built-in support for paged results.
-type CommunityActionTemplates struct {
-	Items []*CommunityActionTemplate `json:"Items"`
-	resources.PagedResults
-}
-
 // CommunityActionTemplate represents a community action template in Octopus
 // Deploy.
 type CommunityActionTemplate struct {

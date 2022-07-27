@@ -3,6 +3,7 @@ package actions
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
@@ -38,28 +39,10 @@ func (s *CommunityActionTemplateService) getInstallationPath(resource CommunityA
 	return path, err
 }
 
-func (s *CommunityActionTemplateService) getPagedResponse(path string) ([]*CommunityActionTemplate, error) {
-	resources := []*CommunityActionTemplate{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(CommunityActionTemplates), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*CommunityActionTemplates)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // Get returns a collection of community action templates based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
-func (s *CommunityActionTemplateService) Get(communityActionTemplatesQuery CommunityActionTemplatesQuery) (*CommunityActionTemplates, error) {
+func (s *CommunityActionTemplateService) Get(communityActionTemplatesQuery CommunityActionTemplatesQuery) (*resources.Resources[CommunityActionTemplate], error) {
 	v, _ := query.Values(communityActionTemplatesQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -67,12 +50,12 @@ func (s *CommunityActionTemplateService) Get(communityActionTemplatesQuery Commu
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(CommunityActionTemplates), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[CommunityActionTemplate]), path)
 	if err != nil {
-		return &CommunityActionTemplates{}, err
+		return &resources.Resources[CommunityActionTemplate]{}, err
 	}
 
-	return resp.(*CommunityActionTemplates), nil
+	return resp.(*resources.Resources[CommunityActionTemplate]), nil
 }
 
 // GetAll returns all community action templates. If none can be found or an
@@ -83,7 +66,7 @@ func (s *CommunityActionTemplateService) GetAll() ([]*CommunityActionTemplate, e
 		return []*CommunityActionTemplate{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[CommunityActionTemplate](s, path)
 }
 
 // GetByID returns the community action template that matches the input ID. If
@@ -117,7 +100,7 @@ func (s *CommunityActionTemplateService) GetByIDs(ids []string) ([]*CommunityAct
 		return []*CommunityActionTemplate{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[CommunityActionTemplate](s, path)
 }
 
 // GetByName performs a lookup and returns the community action template with a

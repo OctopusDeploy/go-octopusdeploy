@@ -3,6 +3,7 @@ package tenants
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
@@ -44,24 +45,6 @@ func (s *TenantService) getByProjectIDPath(id string) (string, error) {
 	return s.GetURITemplate().Expand(values)
 }
 
-func (s *TenantService) getPagedResponse(path string) ([]*Tenant, error) {
-	resources := []*Tenant{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Tenants), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Tenants)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // Add creates a new Tenant.
 func (s *TenantService) Add(tenant *Tenant) (*Tenant, error) {
 	if IsNil(tenant) {
@@ -93,18 +76,18 @@ func (s *TenantService) CreateVariables(tenant *Tenant, tenantVariable *variable
 // Get returns a collection of tenants based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *TenantService) Get(tenantsQuery TenantsQuery) (*Tenants, error) {
+func (s *TenantService) Get(tenantsQuery TenantsQuery) (*resources.Resources[Tenant], error) {
 	path, err := s.GetURITemplate().Expand(tenantsQuery)
 	if err != nil {
-		return &Tenants{}, err
+		return &resources.Resources[Tenant]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Tenants), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Tenant]), path)
 	if err != nil {
-		return &Tenants{}, err
+		return &resources.Resources[Tenant]{}, err
 	}
 
-	return response.(*Tenants), nil
+	return response.(*resources.Resources[Tenant]), nil
 }
 
 // GetAll returns all tenants. If none can be found or an error occurs, it
@@ -151,7 +134,7 @@ func (s *TenantService) GetByIDs(ids []string) ([]*Tenant, error) {
 		return []*Tenant{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Tenant](s, path)
 }
 
 func (s *TenantService) GetMissingVariables(missibleVariablesQuery variables.MissingVariablesQuery) (*[]variables.TenantsMissingVariables, error) {
@@ -181,7 +164,7 @@ func (s *TenantService) GetByProjectID(id string) ([]*Tenant, error) {
 		return []*Tenant{}, nil
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Tenant](s, path)
 }
 
 // GetByPartialName performs a lookup and returns all tenants with a matching
@@ -196,7 +179,7 @@ func (s *TenantService) GetByPartialName(partialName string) ([]*Tenant, error) 
 		return []*Tenant{}, nil
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Tenant](s, path)
 }
 
 func (s *TenantService) GetVariables(tenant *Tenant) (*variables.TenantVariables, error) {

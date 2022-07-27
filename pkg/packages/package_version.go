@@ -18,11 +18,6 @@ type PackageVersion struct {
 	resources.Resource
 }
 
-type PackageVersions struct {
-	Items []*PackageVersion `json:"Items"`
-	resources.PagedResults
-}
-
 func NewPackageVersion() *PackageVersion {
 	return &PackageVersion{
 		Resource: *resources.NewResource(),

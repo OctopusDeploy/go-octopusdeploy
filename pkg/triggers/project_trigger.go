@@ -9,11 +9,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type ProjectTriggers struct {
-	Items []*ProjectTrigger `json:"Items"`
-	resources.PagedResults
-}
-
 type ProjectTrigger struct {
 	Action      actions.ITriggerAction `json:"Action"`
 	Description string                 `json:"Description,omitempty"`

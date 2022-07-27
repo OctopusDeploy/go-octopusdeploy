@@ -2,6 +2,7 @@ package feeds
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 func ToFeed(feedResource *FeedResource) (IFeed, error) {
@@ -96,7 +97,7 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 	return feed, nil
 }
 
-func ToFeeds(feedResources *FeedResources) *Feeds {
+func ToFeeds(feedResources *resources.Resources[FeedResource]) *Feeds {
 	return &Feeds{
 		Items:        ToFeedArray(feedResources.Items),
 		PagedResults: feedResources.PagedResults,

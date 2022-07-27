@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
@@ -38,18 +39,18 @@ func NewEventService(sling *sling.Sling, uriTemplate string, agentsPath string, 
 // Get returns a collection of events based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s EventService) Get(query EventsQuery) (*Events, error) {
+func (s EventService) Get(query EventsQuery) (*resources.Resources[Event], error) {
 	path, err := s.GetURITemplate().Expand(query)
 	if err != nil {
-		return &Events{}, err
+		return &resources.Resources[Event]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Events), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Event]), path)
 	if err != nil {
-		return &Events{}, err
+		return &resources.Resources[Event]{}, err
 	}
 
-	return response.(*Events), nil
+	return response.(*resources.Resources[Event]), nil
 }
 
 func (s EventService) GetAgents() (*[]EventAgent, error) {

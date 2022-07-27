@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
@@ -23,24 +24,6 @@ func NewDeploymentService(sling *sling.Sling, uriTemplate string) *DeploymentSer
 			Service: services.NewService(constants.ServiceDeploymentService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *DeploymentService) getPagedResponse(path string) ([]*Deployment, error) {
-	resources := []*Deployment{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Deployments), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Deployments)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new deployment.
@@ -93,7 +76,7 @@ func (s *DeploymentService) GetByIDs(ids []string) ([]*Deployment, error) {
 		return []*Deployment{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Deployment](s, path)
 }
 
 // GetByName performs a lookup and returns instances of a Deployment with a matching partial name.
@@ -107,7 +90,7 @@ func (s *DeploymentService) GetByName(name string) ([]*Deployment, error) {
 		return []*Deployment{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Deployment](s, path)
 }
 
 // Update modifies a Deployment based on the one provided as input.
@@ -125,35 +108,35 @@ func (s *DeploymentService) Update(resource Deployment) (*Deployment, error) {
 	return resp.(*Deployment), nil
 }
 
-func (s *DeploymentService) GetDeployments(release *releases.Release, deploymentQuery ...*DeploymentQuery) (*Deployments, error) {
+func (s *DeploymentService) GetDeployments(release *releases.Release, deploymentQuery ...*DeploymentQuery) (*resources.Resources[Deployment], error) {
 	if release == nil {
 		return nil, internal.CreateInvalidParameterError("GetDeployments", "release")
 	}
 
 	uriTemplate, err := uritemplates.Parse(release.GetLinks()[constants.LinkDeployments])
 	if err != nil {
-		return &Deployments{}, err
+		return &resources.Resources[Deployment]{}, err
 	}
 
 	values := make(map[string]interface{})
 	path, err := uriTemplate.Expand(values)
 	if err != nil {
-		return &Deployments{}, err
+		return &resources.Resources[Deployment]{}, err
 	}
 
 	if deploymentQuery != nil {
 		path, err = uriTemplate.Expand(deploymentQuery[0])
 		if err != nil {
-			return &Deployments{}, err
+			return &resources.Resources[Deployment]{}, err
 		}
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Deployments), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[Deployment]), path)
 	if err != nil {
-		return &Deployments{}, err
+		return &resources.Resources[Deployment]{}, err
 	}
 
-	return resp.(*Deployments), nil
+	return resp.(*resources.Resources[Deployment]), nil
 }
 
 func (s *DeploymentService) GetProgression(release *releases.Release) (*releases.Progression, error) {

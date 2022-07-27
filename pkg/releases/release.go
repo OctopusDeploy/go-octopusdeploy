@@ -7,12 +7,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-// Releases defines a collection of Release instance with built-in support for paged results from the API.
-type Releases struct {
-	Items []*Release `json:"Items"`
-	resources.PagedResults
-}
-
 type Release struct {
 	Assembled                          time.Time                                `json:"Assembled,omitempty"`
 	BuildInformation                   []*ReleasePackageVersionBuildInformation `json:"BuildInformation,omitempty"`

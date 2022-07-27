@@ -3,6 +3,7 @@ package workerpools
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
@@ -59,12 +60,12 @@ func (s *WorkerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(WorkerPoolResources), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[WorkerPoolResource]), path)
 	if err != nil {
 		return &WorkerPools{}, err
 	}
 
-	return ToWorkerPools(response.(*WorkerPoolResources)), nil
+	return ToWorkerPools(response.(*resources.Resources[WorkerPoolResource])), nil
 }
 
 // GetAll returns all worker pools. If none can be found or an error occurs, it

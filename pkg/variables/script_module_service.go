@@ -7,6 +7,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -21,24 +22,6 @@ func NewScriptModuleService(sling *sling.Sling, uriTemplate string) *ScriptModul
 			Service: services.NewService(constants.ServiceLibraryVariableSetService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *ScriptModuleService) getPagedResponse(path string) ([]*ScriptModule, error) {
-	resources := []*ScriptModule{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(ScriptModules), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*ScriptModules)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new script module.
@@ -89,37 +72,37 @@ func (s *ScriptModuleService) Add(scriptModule *ScriptModule) (*ScriptModule, er
 // Get returns a collection of script modules based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
-func (s *ScriptModuleService) Get(libraryVariablesQuery LibraryVariablesQuery) (*ScriptModules, error) {
+func (s *ScriptModuleService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[ScriptModule], error) {
 	path, err := s.GetURITemplate().Expand(libraryVariablesQuery)
 	if err != nil {
-		return &ScriptModules{}, err
+		return &resources.Resources[ScriptModule]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(ScriptModules), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[ScriptModule]), path)
 	if err != nil {
-		return &ScriptModules{}, err
+		return &resources.Resources[ScriptModule]{}, err
 	}
 
-	return response.(*ScriptModules), nil
+	return response.(*resources.Resources[ScriptModule]), nil
 }
 
 // GetAll returns all script modules. If none can be found or an error
 // occurs, it returns an empty collection.
-func (s *ScriptModuleService) GetAll() (*ScriptModules, error) {
+func (s *ScriptModuleService) GetAll() (*resources.Resources[ScriptModule], error) {
 	path, err := s.GetURITemplate().Expand(&LibraryVariablesQuery{
 		ContentType: "ScriptModule",
 		Take:        math.MaxInt32,
 	})
 	if err != nil {
-		return &ScriptModules{}, err
+		return &resources.Resources[ScriptModule]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(ScriptModules), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[ScriptModule]), path)
 	if err != nil {
-		return &ScriptModules{}, err
+		return &resources.Resources[ScriptModule]{}, err
 	}
 
-	return response.(*ScriptModules), nil
+	return response.(*resources.Resources[ScriptModule]), nil
 }
 
 // GetByID returns the script module that matches the input ID. If one
@@ -173,7 +156,7 @@ func (s *ScriptModuleService) GetByPartialName(partialName string) ([]*ScriptMod
 		return []*ScriptModule{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[ScriptModule](s, path)
 }
 
 // Update modifies a script module based on the one provided as input.

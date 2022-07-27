@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
@@ -62,7 +63,7 @@ func (s *ActionTemplateService) Add(actionTemplate *ActionTemplate) (*ActionTemp
 // Get returns a collection of action templates based on the criteria defined
 // by its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
-func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*ActionTemplates, error) {
+func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*resources.Resources[ActionTemplate], error) {
 	v, _ := query.Values(actionTemplatesQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -70,12 +71,12 @@ func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*ActionTemplate
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(ActionTemplates), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[ActionTemplate]), path)
 	if err != nil {
-		return &ActionTemplates{}, err
+		return &resources.Resources[ActionTemplate]{}, err
 	}
 
-	return resp.(*ActionTemplates), nil
+	return resp.(*resources.Resources[ActionTemplate]), nil
 }
 
 // GetAll returns all action templates. If none can be found or an error
