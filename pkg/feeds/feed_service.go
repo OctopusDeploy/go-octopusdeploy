@@ -106,7 +106,30 @@ func (s *FeedService) GetBuiltInFeedStatistics() (*BuiltInFeedStatistics, error)
 	return resp.(*BuiltInFeedStatistics), nil
 }
 
-func (s *FeedService) SearchPackages(feed IFeed, searchPackagesQuery ...SearchPackagesQuery) (*packages.PackageDescriptions, error) {
+func (s *FeedService) SearchPackageVersions(packageDescription *packages.PackageDescription, searchPackageVersionsQuery SearchPackageVersionsQuery) (*packages.PackageVersions, error) {
+	if packageDescription == nil {
+		return nil, internal.CreateInvalidParameterError("SearchPackageVersions", "packageDescription")
+	}
+
+	uriTemplate, err := uritemplates.Parse(packageDescription.GetLinks()[constants.LinkSearchPackageVersionsTemplate])
+	if err != nil {
+		return &packages.PackageVersions{}, err
+	}
+
+	path, err := uriTemplate.Expand(searchPackageVersionsQuery)
+	if err != nil {
+		return &packages.PackageVersions{}, err
+	}
+
+	resp, err := services.ApiGet(s.GetClient(), new(packages.PackageVersions), path)
+	if err != nil {
+		return &packages.PackageVersions{}, err
+	}
+
+	return resp.(*packages.PackageVersions), nil
+}
+
+func (s *FeedService) SearchPackages(feed IFeed, searchPackagesQuery SearchPackagesQuery) (*packages.PackageDescriptions, error) {
 	if feed == nil {
 		return nil, internal.CreateInvalidParameterError("SearchPackages", "feed")
 	}
@@ -116,17 +139,9 @@ func (s *FeedService) SearchPackages(feed IFeed, searchPackagesQuery ...SearchPa
 		return &packages.PackageDescriptions{}, err
 	}
 
-	values := make(map[string]interface{})
-	path, err := uriTemplate.Expand(values)
+	path, err := uriTemplate.Expand(searchPackagesQuery)
 	if err != nil {
 		return &packages.PackageDescriptions{}, err
-	}
-
-	if searchPackagesQuery != nil {
-		path, err = uriTemplate.Expand(searchPackagesQuery[0])
-		if err != nil {
-			return &packages.PackageDescriptions{}, err
-		}
 	}
 
 	resp, err := services.ApiGet(s.GetClient(), new(packages.PackageDescriptions), path)
