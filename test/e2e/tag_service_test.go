@@ -44,7 +44,8 @@ func TestTagServiceAddGetDelete(t *testing.T) {
 	require.NotNil(t, updatedTagSet)
 	require.NoError(t, err)
 
-	tagToCompare := updatedTagSet.Tags[0]
-	require.NotNil(t, tagToCompare)
-	IsEqualTags(t, tag, tagToCompare)
+	tagSetToCompare, err := client.TagSets.GetByID(updatedTagSet.GetID())
+	require.NotNil(t, tagSetToCompare)
+	require.NoError(t, err)
+	IsEqualTags(t, updatedTagSet.Tags[0], tagSetToCompare.Tags[0])
 }

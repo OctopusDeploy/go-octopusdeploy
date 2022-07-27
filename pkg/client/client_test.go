@@ -10,13 +10,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewClient(t *testing.T) {
 	client := &http.Client{}
-	octopusURL := os.Getenv("OCTOPUS_URL")
-	apiKey := os.Getenv("OCTOPUS_APIKEY")
-	spaceID := os.Getenv("OCTOPUS_SPACE_ID")
+	octopusURL := os.Getenv("OCTOPUS_HOST")
+	apiKey := os.Getenv("OCTOPUS_API_KEY")
+	spaceID := os.Getenv("OCTOPUS_SPACE")
 
 	apiURL, err := url.Parse(octopusURL)
 	if err != nil {
@@ -43,13 +44,13 @@ func TestNewClient(t *testing.T) {
 			client, err := NewClient(tc.client, tc.url, tc.apiKey, tc.spaceID)
 
 			if !tc.isValid {
-				assert.Error(t, err)
-				assert.Nil(t, client)
+				require.Error(t, err)
+				require.Nil(t, client)
 				return
 			}
 
-			assert.NoError(t, err)
-			assert.NotNil(t, client)
+			require.NoError(t, err)
+			require.NotNil(t, client)
 			assert.NotNil(t, client.Accounts)
 		})
 	}
