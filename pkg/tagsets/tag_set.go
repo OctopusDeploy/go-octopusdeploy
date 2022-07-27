@@ -8,11 +8,11 @@ type TagSets struct {
 }
 
 type TagSet struct {
-	Description string `json:"Description,omitempty"`
+	Description string `json:"Description"`
 	Name        string `json:"Name"`
 	SortOrder   int32  `json:"SortOrder,omitempty"`
 	SpaceID     string `json:"SpaceId,omitempty"`
-	Tags        []Tag  `json:"Tags,omitempty"`
+	Tags        []*Tag `json:"Tags,omitempty"`
 
 	resources.Resource
 }
