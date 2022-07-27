@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -18,24 +19,6 @@ func NewLifecycleService(sling *sling.Sling, uriTemplate string) *LifecycleServi
 			Service: services.NewService(constants.ServiceLifecycleService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *LifecycleService) getPagedResponse(path string) ([]*Lifecycle, error) {
-	resources := []*Lifecycle{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Lifecycles), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Lifecycles)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new lifecycle.
@@ -60,18 +43,18 @@ func (s *LifecycleService) Add(lifecycle *Lifecycle) (*Lifecycle, error) {
 // Get returns a collection of lifecycles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *LifecycleService) Get(lifecyclesQuery Query) (*Lifecycles, error) {
+func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[Lifecycle], error) {
 	path, err := s.GetURITemplate().Expand(lifecyclesQuery)
 	if err != nil {
-		return &Lifecycles{}, err
+		return &resources.Resources[Lifecycle]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Lifecycles), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Lifecycle]), path)
 	if err != nil {
-		return &Lifecycles{}, err
+		return &resources.Resources[Lifecycle]{}, err
 	}
 
-	return response.(*Lifecycles), nil
+	return response.(*resources.Resources[Lifecycle]), nil
 }
 
 // GetAll returns all lifecycles. If none can be found or an error occurs, it
@@ -119,7 +102,7 @@ func (s *LifecycleService) GetByPartialName(partialName string) ([]*Lifecycle, e
 		return []*Lifecycle{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Lifecycle](s, path)
 }
 
 func (s *LifecycleService) GetProjects(lifecycle *Lifecycle) ([]*projects.Project, error) {

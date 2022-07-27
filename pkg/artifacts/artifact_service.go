@@ -3,6 +3,7 @@ package artifacts
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
@@ -21,24 +22,6 @@ func NewArtifactService(sling *sling.Sling, uriTemplate string) *ArtifactService
 			Service: services.NewService(constants.ServiceArtifactService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *ArtifactService) getPagedResponse(path string) ([]*Artifact, error) {
-	resources := []*Artifact{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Artifacts), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Artifacts)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new artifact.
@@ -63,7 +46,7 @@ func (s *ArtifactService) Add(artifact *Artifact) (*Artifact, error) {
 // Get returns a collection of artifacts based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *ArtifactService) Get(artifactsQuery Query) (*Artifacts, error) {
+func (s *ArtifactService) Get(artifactsQuery Query) (*resources.Resources[Artifact], error) {
 	v, _ := query.Values(artifactsQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -71,12 +54,12 @@ func (s *ArtifactService) Get(artifactsQuery Query) (*Artifacts, error) {
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Artifacts), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[Artifact]), path)
 	if err != nil {
-		return &Artifacts{}, err
+		return &resources.Resources[Artifact]{}, err
 	}
 
-	return resp.(*Artifacts), nil
+	return resp.(*resources.Resources[Artifact]), nil
 }
 
 // GetAll returns all artifacts. If none can be found or an error occurs, it
@@ -87,7 +70,7 @@ func (s *ArtifactService) GetAll() ([]*Artifact, error) {
 		return []*Artifact{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Artifact](s, path)
 }
 
 // GetByID returns the artifact that matches the input ID. If one cannot be

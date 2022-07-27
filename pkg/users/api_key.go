@@ -6,13 +6,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-// APIKeys defines a collection of API keys with built-in support for paged
-// results.
-type APIKeys struct {
-	Items []*APIKey `json:"Items"`
-	resources.PagedResults
-}
-
 // APIKey represents an API key.
 type APIKey struct {
 	APIKey  string     `json:"ApiKey,omitempty"`

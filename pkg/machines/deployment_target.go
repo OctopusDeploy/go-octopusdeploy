@@ -4,18 +4,10 @@ import (
 	"encoding/json"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 )
 
 // TODO: research the JSON marshalling to include SpaceID
-
-// DeploymentTargets defines a collection of deployment targets with built-in
-// support for paged results from the API.
-type DeploymentTargets struct {
-	Items []*DeploymentTarget `json:"Items"`
-	resources.PagedResults
-}
 
 type DeploymentTarget struct {
 	EnvironmentIDs         []string                    `json:"EnvironmentIds,omitempty"`

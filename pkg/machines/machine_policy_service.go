@@ -3,6 +3,7 @@ package machines
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -20,24 +21,6 @@ func NewMachinePolicyService(sling *sling.Sling, uriTemplate string, templatePat
 			Service: services.NewService(constants.ServiceMachinePolicyService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *MachinePolicyService) getPagedResponse(path string) ([]*MachinePolicy, error) {
-	resources := []*MachinePolicy{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(MachinePolicies), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*MachinePolicies)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new machine policy.
@@ -62,18 +45,18 @@ func (s *MachinePolicyService) Add(machinePolicy *MachinePolicy) (*MachinePolicy
 // Get returns a collection of machine policies based on the criteria defined
 // by its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
-func (s *MachinePolicyService) Get(machinePoliciesQuery MachinePoliciesQuery) (*MachinePolicies, error) {
+func (s *MachinePolicyService) Get(machinePoliciesQuery MachinePoliciesQuery) (*resources.Resources[MachinePolicy], error) {
 	path, err := s.GetURITemplate().Expand(machinePoliciesQuery)
 	if err != nil {
-		return &MachinePolicies{}, err
+		return &resources.Resources[MachinePolicy]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(MachinePolicies), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[MachinePolicy]), path)
 	if err != nil {
-		return &MachinePolicies{}, err
+		return &resources.Resources[MachinePolicy]{}, err
 	}
 
-	return response.(*MachinePolicies), nil
+	return response.(*resources.Resources[MachinePolicy]), nil
 }
 
 // GetAll returns all machine policies. If none can be found or an error
@@ -121,7 +104,7 @@ func (s *MachinePolicyService) GetByPartialName(partialName string) ([]*MachineP
 		return []*MachinePolicy{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[MachinePolicy](s, path)
 }
 
 func (s *MachinePolicyService) GetTemplate() (*MachinePolicy, error) {

@@ -3,6 +3,7 @@ package machines
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -24,24 +25,6 @@ func NewMachineService(sling *sling.Sling, uriTemplate string, discoverMachinePa
 			Service: services.NewService(constants.ServiceMachineService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *MachineService) getPagedResponse(path string) ([]*DeploymentTarget, error) {
-	resources := []*DeploymentTarget{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(DeploymentTargets), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*DeploymentTargets)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new machine.
@@ -66,18 +49,18 @@ func (s *MachineService) Add(deploymentTarget *DeploymentTarget) (*DeploymentTar
 // Get returns a collection of machines based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *MachineService) Get(machinesQuery MachinesQuery) (*DeploymentTargets, error) {
+func (s *MachineService) Get(machinesQuery MachinesQuery) (*resources.Resources[DeploymentTarget], error) {
 	path, err := s.GetURITemplate().Expand(machinesQuery)
 	if err != nil {
-		return &DeploymentTargets{}, err
+		return &resources.Resources[DeploymentTarget]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(DeploymentTargets), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[DeploymentTarget]), path)
 	if err != nil {
-		return &DeploymentTargets{}, err
+		return &resources.Resources[DeploymentTarget]{}, err
 	}
 
-	return response.(*DeploymentTargets), nil
+	return response.(*resources.Resources[DeploymentTarget]), nil
 }
 
 // GetByID returns the machine that matches the input ID. If one cannot be
@@ -124,7 +107,7 @@ func (s *MachineService) GetByName(name string) ([]*DeploymentTarget, error) {
 		return []*DeploymentTarget{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[DeploymentTarget](s, path)
 }
 
 // GetByPartialName performs a lookup and returns the machine with a matching
@@ -139,7 +122,7 @@ func (s *MachineService) GetByPartialName(partialName string) ([]*DeploymentTarg
 		return []*DeploymentTarget{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[DeploymentTarget](s, path)
 }
 
 // Update updates an existing machine in Octopus Deploy

@@ -9,11 +9,6 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-type MachinePolicies struct {
-	Items []*MachinePolicy `json:"Items"`
-	resources.PagedResults
-}
-
 type MachinePolicy struct {
 	ConnectionConnectTimeout                      time.Duration              `json:"ConnectionConnectTimeout" validate:"required,min=10s"`
 	ConnectionRetryCountLimit                     int32                      `json:"ConnectionRetryCountLimit" validate:"required,gte=2"`

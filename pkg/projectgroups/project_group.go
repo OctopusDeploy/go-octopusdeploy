@@ -2,11 +2,6 @@ package projectgroups
 
 import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
-type ProjectGroups struct {
-	Items []*ProjectGroup `json:"Items"`
-	resources.PagedResults
-}
-
 type ProjectGroup struct {
 	Description       string   `json:"Description,omitempty"`
 	EnvironmentIDs    []string `json:"EnvironmentIds,omitempty"`

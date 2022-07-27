@@ -18,24 +18,6 @@ func NewInterruptionService(sling *sling.Sling, uriTemplate string) *Interruptio
 	}
 }
 
-func (s InterruptionService) getPagedResponse(path string) ([]*Interruption, error) {
-	resources := []*Interruption{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Interruptions), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Interruptions)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // GetByID returns the interruption that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s *InterruptionService) GetByID(id string) (*Interruption, error) {
@@ -67,7 +49,7 @@ func (s *InterruptionService) GetByIDs(ids []string) ([]*Interruption, error) {
 		return []*Interruption{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Interruption](s, path)
 }
 
 // GetAll returns all interruptions. If none can be found or an error occurs,

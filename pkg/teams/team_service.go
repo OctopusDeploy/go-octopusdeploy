@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/userroles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
@@ -20,24 +21,6 @@ func NewTeamService(sling *sling.Sling, uriTemplate string) *TeamService {
 			Service: services.NewService(constants.ServiceTeamService, sling, uriTemplate),
 		},
 	}
-}
-
-func (s *TeamService) getPagedResponse(path string) ([]*Team, error) {
-	resources := []*Team{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Teams), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Teams)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
 
 // Add creates a new team.
@@ -78,18 +61,18 @@ func (s *TeamService) Delete(team *Team) error {
 // Get returns a collection of teams based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
-func (s *TeamService) Get(teamsQuery TeamsQuery) (*Teams, error) {
+func (s *TeamService) Get(teamsQuery TeamsQuery) (*resources.Resources[Team], error) {
 	path, err := s.GetURITemplate().Expand(teamsQuery)
 	if err != nil {
-		return &Teams{}, err
+		return &resources.Resources[Team]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Teams), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Team]), path)
 	if err != nil {
-		return &Teams{}, err
+		return &resources.Resources[Team]{}, err
 	}
 
-	return response.(*Teams), nil
+	return response.(*resources.Resources[Team]), nil
 }
 
 // GetAll returns all teams. If none can be found or an error occurs, it
@@ -137,7 +120,7 @@ func (s *TeamService) GetByPartialName(partialName string) ([]*Team, error) {
 		return []*Team{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Team](s, path)
 }
 
 // Update modifies a team based on the one provided as input.
@@ -155,14 +138,14 @@ func (s *TeamService) Update(team *Team) (*Team, error) {
 	return resp.(*Team), nil
 }
 
-func (s *TeamService) GetScopedUserRoles(team Team, query core.SkipTakeQuery) (*userroles.ScopedUserRoles, error) {
+func (s *TeamService) GetScopedUserRoles(team Team, query core.SkipTakeQuery) (*resources.Resources[userroles.ScopedUserRole], error) {
 	template, _ := uritemplates.Parse(team.Links["ScopedUserRoles"])
 	path, _ := template.Expand(query)
 
-	resp, err := services.ApiGet(s.GetClient(), new(userroles.ScopedUserRoles), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[userroles.ScopedUserRole]), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*userroles.ScopedUserRoles), nil
+	return resp.(*resources.Resources[userroles.ScopedUserRole]), nil
 }

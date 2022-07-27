@@ -5,11 +5,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-type RunbookProcesses struct {
-	Items []*RunbookProcess `json:"Items"`
-	resources.PagedResults
-}
-
 type RunbookProcess struct {
 	LastSnapshotID string                        `json:"LastSnapshotId,omitempty"`
 	ProjectID      string                        `json:"ProjectId,omitempty"`

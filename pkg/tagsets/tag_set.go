@@ -2,11 +2,6 @@ package tagsets
 
 import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
-type TagSets struct {
-	Items []*TagSet `json:"Items"`
-	resources.PagedResults
-}
-
 type TagSet struct {
 	Description string `json:"Description"`
 	Name        string `json:"Name"`

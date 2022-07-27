@@ -19,24 +19,6 @@ func NewProjectTriggerService(sling *sling.Sling, uriTemplate string) *ProjectTr
 	}
 }
 
-func (s *ProjectTriggerService) getPagedResponse(path string) ([]*ProjectTrigger, error) {
-	resources := []*ProjectTrigger{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(ProjectTriggers), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*ProjectTriggers)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // GetByID returns the project trigger that matches the input ID. If one cannot
 // be found, it returns nil and an error.
 func (s *ProjectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
@@ -79,7 +61,7 @@ func (s *ProjectTriggerService) GetAll() ([]*ProjectTrigger, error) {
 		return []*ProjectTrigger{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[ProjectTrigger](s, path)
 }
 
 // Add creates a new project trigger.

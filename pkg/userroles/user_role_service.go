@@ -3,6 +3,7 @@ package userroles
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -41,18 +42,18 @@ func (s *UserRoleService) Add(userRole *UserRole) (*UserRole, error) {
 // Get returns a collection of user roles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *UserRoleService) Get(userRolesQuery UserRolesQuery) (*UserRoles, error) {
+func (s *UserRoleService) Get(userRolesQuery UserRolesQuery) (*resources.Resources[UserRole], error) {
 	path, err := s.GetURITemplate().Expand(userRolesQuery)
 	if err != nil {
-		return &UserRoles{}, err
+		return &resources.Resources[UserRole]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(UserRoles), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[UserRole]), path)
 	if err != nil {
-		return &UserRoles{}, err
+		return &resources.Resources[UserRole]{}, err
 	}
 
-	return response.(*UserRoles), nil
+	return response.(*resources.Resources[UserRole]), nil
 }
 
 // GetAll returns all user roles. If none can be found or an error occurs, it

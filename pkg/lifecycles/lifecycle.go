@@ -8,11 +8,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Lifecycles struct {
-	Items []*Lifecycle `json:"Items"`
-	resources.PagedResults
-}
-
 type Lifecycle struct {
 	Description             string               `json:"Description,omitempty"`
 	Name                    string               `json:"Name" validate:"required"`

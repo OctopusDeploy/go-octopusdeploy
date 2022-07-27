@@ -9,8 +9,3 @@ type PackageDescription struct {
 
 	resources.Resource
 }
-
-type PackageDescriptions struct {
-	Items []*PackageDescription `json:"Items"`
-	resources.PagedResults
-}

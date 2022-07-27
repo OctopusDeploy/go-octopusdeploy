@@ -1,18 +1,12 @@
 package workerpools
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 type StaticWorkerPool struct {
 	workerPool
-}
-
-type StaticWorkerPools struct {
-	Items []*StaticWorkerPool `json:"Items"`
-	resources.PagedResults
 }
 
 // NewStaticWorkerPool creates and initializes a static worker pool.

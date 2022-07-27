@@ -5,11 +5,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type Environments struct {
-	Items []*Environment `json:"Items"`
-	resources.PagedResults
-}
-
 type Environment struct {
 	AllowDynamicInfrastructure bool   `json:"AllowDynamicInfrastructure"`
 	Description                string `json:"Description,omitempty"`
@@ -36,6 +31,14 @@ func (e *Environment) Validate() error {
 	return validator.New().Struct(e)
 }
 
+// GetName returns the name of the environment.
 func (e *Environment) GetName() string {
 	return e.Name
 }
+
+// SetName sets the name of the environment.
+func (e *Environment) SetName(name string) {
+	e.Name = name
+}
+
+var _ resources.IHasName = &Environment{}

@@ -31,11 +31,6 @@ type Task struct {
 	resources.Resource
 }
 
-type Tasks struct {
-	Items []*Task `json:"Items"`
-	resources.PagedResults
-}
-
 // NewTask creates and initializes a task.
 func NewTask() *Task {
 	return &Task{

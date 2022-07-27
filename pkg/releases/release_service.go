@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
@@ -44,7 +45,7 @@ func (s *ReleaseService) Add(release *Release) (*Release, error) {
 // Get returns a collection of releases based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *ReleaseService) Get(releasesQuery ...ReleasesQuery) (*Releases, error) {
+func (s *ReleaseService) Get(releasesQuery ...ReleasesQuery) (*resources.Resources[Release], error) {
 	v, _ := query.Values(releasesQuery[0])
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -52,12 +53,12 @@ func (s *ReleaseService) Get(releasesQuery ...ReleasesQuery) (*Releases, error) 
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Releases), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[Release]), path)
 	if err != nil {
-		return &Releases{}, err
+		return &resources.Resources[Release]{}, err
 	}
 
-	return resp.(*Releases), nil
+	return resp.(*resources.Resources[Release]), nil
 }
 
 func (s *ReleaseService) CreateV1(createReleaseV1 *CreateReleaseV1) (*CreateReleaseResponseV1, error) {
@@ -92,33 +93,33 @@ func (s *ReleaseService) GetByID(id string) (*Release, error) {
 	return resp.(*Release), nil
 }
 
-func (s *ReleaseService) GetReleases(channel *channels.Channel, releaseQuery ...*ReleaseQuery) (*Releases, error) {
+func (s *ReleaseService) GetReleases(channel *channels.Channel, releaseQuery ...*ReleaseQuery) (*resources.Resources[Release], error) {
 	if channel == nil {
 		return nil, internal.CreateInvalidParameterError("GetReleases", "channel")
 	}
 
 	uriTemplate, err := uritemplates.Parse(channel.GetLinks()[constants.LinkReleases])
 	if err != nil {
-		return &Releases{}, err
+		return &resources.Resources[Release]{}, err
 	}
 
 	values := make(map[string]interface{})
 	path, err := uriTemplate.Expand(values)
 	if err != nil {
-		return &Releases{}, err
+		return &resources.Resources[Release]{}, err
 	}
 
 	if releaseQuery != nil {
 		path, err = uriTemplate.Expand(releaseQuery[0])
 		if err != nil {
-			return &Releases{}, err
+			return &resources.Resources[Release]{}, err
 		}
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Releases), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[Release]), path)
 	if err != nil {
-		return &Releases{}, err
+		return &resources.Resources[Release]{}, err
 	}
 
-	return resp.(*Releases), nil
+	return resp.(*resources.Resources[Release]), nil
 }

@@ -26,24 +26,6 @@ func NewWorkerService(sling *sling.Sling, uriTemplate string, discoverWorkerPath
 	}
 }
 
-func (s *WorkerService) getPagedResponse(path string) ([]*Worker, error) {
-	resources := []*Worker{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(Workers), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*Workers)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
-}
-
 // Add creates a new worker.
 func (s *WorkerService) Add(worker *Worker) (*Worker, error) {
 	if IsNil(worker) {
@@ -119,7 +101,7 @@ func (s *WorkerService) GetByIDs(ids []string) ([]*Worker, error) {
 		return []*Worker{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Worker](s, path)
 }
 
 // GetByName returns the workers with a matching partial name.
@@ -133,7 +115,7 @@ func (s *WorkerService) GetByName(name string) ([]*Worker, error) {
 		return []*Worker{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Worker](s, path)
 }
 
 // GetByPartialName performs a lookup and returns enironments with a matching
@@ -148,7 +130,7 @@ func (s *WorkerService) GetByPartialName(partialName string) ([]*Worker, error) 
 		return []*Worker{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[Worker](s, path)
 }
 
 // Update modifies an worker based on the one provided as input.

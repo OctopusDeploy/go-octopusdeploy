@@ -6,12 +6,6 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// Teams defines a collection of teams with built-in support for paged results.
-type Teams struct {
-	Items []*Team `json:"Items"`
-	resources.PagedResults
-}
-
 type Team struct {
 	CanBeDeleted           bool                      `json:"CanBeDeleted,omitempty"`
 	CanBeRenamed           bool                      `json:"CanBeRenamed,omitempty"`

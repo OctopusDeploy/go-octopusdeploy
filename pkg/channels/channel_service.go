@@ -3,6 +3,7 @@ package channels
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -48,18 +49,18 @@ func (s *ChannelService) Add(channel *Channel) (*Channel, error) {
 // Get returns a collection of channels based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *ChannelService) Get(channelsQuery Query) (*Channels, error) {
+func (s *ChannelService) Get(channelsQuery Query) (*resources.Resources[Channel], error) {
 	path, err := s.GetURITemplate().Expand(channelsQuery)
 	if err != nil {
-		return &Channels{}, err
+		return &resources.Resources[Channel]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Channels), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Channel]), path)
 	if err != nil {
-		return &Channels{}, err
+		return &resources.Resources[Channel]{}, err
 	}
 
-	return response.(*Channels), nil
+	return response.(*resources.Resources[Channel]), nil
 }
 
 // GetAll returns all channels. If none can be found or an error occurs, it

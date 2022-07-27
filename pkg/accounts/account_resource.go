@@ -8,13 +8,6 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-// AccountResources defines a collection of account resources with built-in
-// support for paged results.
-type AccountResources struct {
-	Items []*AccountResource `json:"Items"`
-	resources.PagedResults
-}
-
 // AccountResource represents account details used for deployments, including
 // username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type AccountResource struct {

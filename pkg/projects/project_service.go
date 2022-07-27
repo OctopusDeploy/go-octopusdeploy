@@ -10,6 +10,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
@@ -91,7 +92,7 @@ func (s *ProjectService) ConvertToVcs(project *Project, versionControlSettings *
 // Get returns a collection of projects based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *ProjectService) Get(projectsQuery ProjectsQuery) (*Projects, error) {
+func (s *ProjectService) Get(projectsQuery ProjectsQuery) (*resources.Resources[Project], error) {
 	v, _ := query.Values(projectsQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -99,12 +100,12 @@ func (s *ProjectService) Get(projectsQuery ProjectsQuery) (*Projects, error) {
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Projects), path)
+	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[Project]), path)
 	if err != nil {
-		return &Projects{}, err
+		return &resources.Resources[Project]{}, err
 	}
 
-	return resp.(*Projects), nil
+	return resp.(*resources.Resources[Project]), nil
 }
 
 // GetAll returns all projects. If none can be found or an error occurs, it
@@ -175,13 +176,13 @@ func (s *ProjectService) GetChannels(project *Project) ([]*channels.Channel, err
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(channels.Channels), path)
+		resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[channels.Channel]), path)
 
 		if err != nil {
 			return projectChannels, err
 		}
 
-		r := resp.(*channels.Channels)
+		r := resp.(*resources.Resources[channels.Channel])
 		projectChannels = append(projectChannels, r.Items...)
 		path, loadNextPage = services.LoadNextPage(r.PagedResults)
 	}
@@ -228,12 +229,12 @@ func (s *ProjectService) GetReleases(project *Project) ([]*releases.Release, err
 	loadNextPage := true
 
 	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(releases.Releases), path)
+		resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[releases.Release]), path)
 		if err != nil {
 			return nil, err
 		}
 
-		r := resp.(*releases.Releases)
+		r := resp.(*resources.Resources[releases.Release])
 		p = append(p, r.Items...)
 		path, loadNextPage = services.LoadNextPage(r.PagedResults)
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 )
@@ -45,18 +46,18 @@ func (s *SpaceService) Add(space *Space) (*Space, error) {
 // Get returns a collection of spaces based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *SpaceService) Get(spacesQuery SpacesQuery) (*Spaces, error) {
+func (s *SpaceService) Get(spacesQuery SpacesQuery) (*resources.Resources[Space], error) {
 	path, err := s.GetURITemplate().Expand(spacesQuery)
 	if err != nil {
-		return &Spaces{}, err
+		return &resources.Resources[Space]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(Spaces), path)
+	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Space]), path)
 	if err != nil {
-		return &Spaces{}, err
+		return &resources.Resources[Space]{}, err
 	}
 
-	return response.(*Spaces), nil
+	return response.(*resources.Resources[Space]), nil
 }
 
 // GetByID returns the space that matches the input ID. If one cannot be found,

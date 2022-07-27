@@ -85,7 +85,7 @@ func (s *DeploymentProcessService) GetAll() ([]*DeploymentProcess, error) {
 		return []*DeploymentProcess{}, err
 	}
 
-	return s.getPagedResponse(path)
+	return services.GetPagedResponse[DeploymentProcess](s, path)
 }
 
 // GetByID returns the deployment process that matches the input ID. If one
@@ -120,22 +120,4 @@ func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcess) 
 	}
 
 	return resp.(*DeploymentProcess), nil
-}
-
-func (s *DeploymentProcessService) getPagedResponse(path string) ([]*DeploymentProcess, error) {
-	resources := []*DeploymentProcess{}
-	loadNextPage := true
-
-	for loadNextPage {
-		resp, err := services.ApiGet(s.GetClient(), new(DeploymentProcesses), path)
-		if err != nil {
-			return resources, err
-		}
-
-		responseList := resp.(*DeploymentProcesses)
-		resources = append(resources, responseList.Items...)
-		path, loadNextPage = services.LoadNextPage(responseList.PagedResults)
-	}
-
-	return resources, nil
 }
