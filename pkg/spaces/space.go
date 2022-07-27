@@ -43,3 +43,5 @@ func (s *Space) SetName(name string) {
 func (s *Space) Validate() error {
 	return validator.New().Struct(s)
 }
+
+var _ resources.IHasName = &Space{}
