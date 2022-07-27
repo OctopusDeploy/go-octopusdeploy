@@ -99,6 +99,7 @@ const (
 	LinkScheduler                         string = "Scheduler"
 	LinkScopedUserRoles                   string = "ScopedUserRoles"
 	LinkSearchPackagesTemplate            string = "SearchPackagesTemplate"
+	LinkSearchPackageVersionsTemplate     string = "SearchPackageVersionsTemplate"
 	LinkSelf                              string = "Self"
 	LinkServerConfiguration               string = "ServerConfiguration"
 	LinkServerConfigurationSettings       string = "ServerConfigurationSettings"
