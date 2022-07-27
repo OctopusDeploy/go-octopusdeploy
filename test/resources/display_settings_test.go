@@ -44,24 +44,25 @@ func TestDisplaySettingsAsJson(t *testing.T) {
 
 	jsonassert.New(t).Assertf(expectedJson, string(displaySettingsAsJson))
 
-	option1 := "Option-1"
-	value1 := "Value-1"
-	option2 := "Option-2"
-	value2 := "Value-2"
-	option3 := "Option-3"
-	value3 := "Value-3"
+	option1 := internal.GetRandomName()
+	value1 := internal.GetRandomName()
+	option2 := internal.GetRandomName()
+	value2 := internal.GetRandomName()
+	option3 := internal.GetRandomName()
+	value3 := internal.GetRandomName()
 
-	selectOptions := map[string]string{}
-	selectOptions[value1] = option1
-	selectOptions[value2] = option2
-	selectOptions[value3] = option3
+	selectOptions := map[string]string{
+		option1: value1,
+		option2: value2,
+		option3: value3,
+	}
 
 	displaySettings = variables.NewDisplaySettings(controlType, selectOptions)
 
 	expectedJson = fmt.Sprintf(`{
 		"Octopus.ControlType": "%s",
-		"Octopus.SelectOptions": "Value-1|Option-1\nValue-2|Option-2\nValue-3|Option-3"
-	}`, controlType)
+		"Octopus.SelectOptions": "%s|%s\n%s|%s\n%s|%s"
+	}`, controlType, option1, value1, option2, value2, option3, value3)
 
 	displaySettingsAsJson, err = json.Marshal(displaySettings)
 	require.NoError(t, err)
