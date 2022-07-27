@@ -41,8 +41,8 @@ type Project struct {
 	resources.Resource
 }
 
-func NewProjects() *resources.Resources[Project] {
-	return &resources.Resources[Project]{
+func NewProjects() *resources.Resources[*Project] {
+	return &resources.Resources[*Project]{
 		Items: []*Project{},
 		PagedResults: resources.PagedResults{
 			ItemType:       "Project",

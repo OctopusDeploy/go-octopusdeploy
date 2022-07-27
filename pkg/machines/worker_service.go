@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -48,7 +49,7 @@ func (s *WorkerService) Add(worker *Worker) (*Worker, error) {
 // TODO: validation implementation
 
 // func (s workerService) DiscoverWorker() ([]string, error) {
-// 	resp, err := services.ApiGet(s.GetClient(), new([]string), s.discoverWorkerPath)
+// 	resp, err := api.ApiGet(s.GetClient(), new([]string), s.discoverWorkerPath)
 // 	if err != nil {
 // 		return nil, err
 // 	}
@@ -66,7 +67,7 @@ func (s *WorkerService) GetAll() ([]*Worker, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -82,7 +83,7 @@ func (s *WorkerService) GetByID(id string) (*Worker, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Worker), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Worker), path)
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +154,7 @@ func (s *WorkerService) Update(worker *Worker) (*Worker, error) {
 }
 
 func (s *WorkerService) GetWorkerOperatingSystems() ([]string, error) {
-	resp, err := services.ApiGet(s.GetClient(), new([]string), s.operatingSystemsPath)
+	resp, err := api.ApiGet(s.GetClient(), new([]string), s.operatingSystemsPath)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +164,7 @@ func (s *WorkerService) GetWorkerOperatingSystems() ([]string, error) {
 }
 
 func (s *WorkerService) GetWorkerShells() ([]string, error) {
-	resp, err := services.ApiGet(s.GetClient(), new([]string), s.shellsPath)
+	resp, err := api.ApiGet(s.GetClient(), new([]string), s.shellsPath)
 	if err != nil {
 		return nil, err
 	}

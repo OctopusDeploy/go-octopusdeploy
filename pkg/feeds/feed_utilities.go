@@ -97,7 +97,7 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 	return feed, nil
 }
 
-func ToFeeds(feedResources *resources.Resources[FeedResource]) *Feeds {
+func ToFeeds(feedResources *resources.Resources[*FeedResource]) *Feeds {
 	return &Feeds{
 		Items:        ToFeedArray(feedResources.Items),
 		PagedResults: feedResources.PagedResults,

@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -42,7 +43,7 @@ func (s *CommunityActionTemplateService) getInstallationPath(resource CommunityA
 // Get returns a collection of community action templates based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
-func (s *CommunityActionTemplateService) Get(communityActionTemplatesQuery CommunityActionTemplatesQuery) (*resources.Resources[CommunityActionTemplate], error) {
+func (s *CommunityActionTemplateService) Get(communityActionTemplatesQuery CommunityActionTemplatesQuery) (*resources.Resources[*CommunityActionTemplate], error) {
 	v, _ := query.Values(communityActionTemplatesQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -50,12 +51,12 @@ func (s *CommunityActionTemplateService) Get(communityActionTemplatesQuery Commu
 		path += "?" + encodedQueryString
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[CommunityActionTemplate]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*CommunityActionTemplate]), path)
 	if err != nil {
-		return &resources.Resources[CommunityActionTemplate]{}, err
+		return &resources.Resources[*CommunityActionTemplate]{}, err
 	}
 
-	return resp.(*resources.Resources[CommunityActionTemplate]), nil
+	return resp.(*resources.Resources[*CommunityActionTemplate]), nil
 }
 
 // GetAll returns all community action templates. If none can be found or an
@@ -81,7 +82,7 @@ func (s *CommunityActionTemplateService) GetByID(id string) (*CommunityActionTem
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(CommunityActionTemplate), path)
+	resp, err := api.ApiGet(s.GetClient(), new(CommunityActionTemplate), path)
 	if err != nil {
 		return nil, err
 	}

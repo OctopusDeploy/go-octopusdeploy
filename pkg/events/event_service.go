@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
@@ -39,22 +40,22 @@ func NewEventService(sling *sling.Sling, uriTemplate string, agentsPath string, 
 // Get returns a collection of events based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s EventService) Get(query EventsQuery) (*resources.Resources[Event], error) {
+func (s EventService) Get(query EventsQuery) (*resources.Resources[*Event], error) {
 	path, err := s.GetURITemplate().Expand(query)
 	if err != nil {
-		return &resources.Resources[Event]{}, err
+		return &resources.Resources[*Event]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Event]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Event]), path)
 	if err != nil {
-		return &resources.Resources[Event]{}, err
+		return &resources.Resources[*Event]{}, err
 	}
 
-	return response.(*resources.Resources[Event]), nil
+	return response.(*resources.Resources[*Event]), nil
 }
 
 func (s EventService) GetAgents() (*[]EventAgent, error) {
-	resp, err := services.ApiGet(s.GetClient(), new([]EventAgent), s.agentsPath.String())
+	resp, err := api.ApiGet(s.GetClient(), new([]EventAgent), s.agentsPath.String())
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +69,7 @@ func (s EventService) GetCategories(query EventCategoriesQuery) (*[]EventCategor
 		return &[]EventCategory{}, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new([]EventCategory), path)
+	resp, err := api.ApiGet(s.GetClient(), new([]EventCategory), path)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +78,7 @@ func (s EventService) GetCategories(query EventCategoriesQuery) (*[]EventCategor
 }
 
 func (s EventService) GetDocumentTypes() (*[]DocumentType, error) {
-	resp, err := services.ApiGet(s.GetClient(), new([]DocumentType), s.documentTypesPath.String())
+	resp, err := api.ApiGet(s.GetClient(), new([]DocumentType), s.documentTypesPath.String())
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +92,7 @@ func (s EventService) GetGroups(query EventGroupsQuery) (*[]EventGroup, error) {
 		return &[]EventGroup{}, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new([]EventGroup), path)
+	resp, err := api.ApiGet(s.GetClient(), new([]EventGroup), path)
 	if err != nil {
 		return nil, err
 	}

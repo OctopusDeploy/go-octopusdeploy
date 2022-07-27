@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
@@ -39,7 +40,7 @@ func (s *DeploymentProcessService) Get(project *projects.Project, gitRef string)
 	template, _ := uritemplates.Parse(project.Links["DeploymentProcess"])
 	path, _ := template.Expand(map[string]interface{}{"gitRef": gitRef})
 
-	resp, err := services.ApiGet(s.GetClient(), new(DeploymentProcess), path)
+	resp, err := api.ApiGet(s.GetClient(), new(DeploymentProcess), path)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +70,7 @@ func (s *DeploymentProcessService) GetTemplate(deploymentProcess *DeploymentProc
 
 	path, _ := template.Expand(values)
 
-	resp, err := services.ApiGet(s.GetClient(), new(DeploymentProcessTemplate), path)
+	resp, err := api.ApiGet(s.GetClient(), new(DeploymentProcessTemplate), path)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +101,7 @@ func (s *DeploymentProcessService) GetByID(id string) (*DeploymentProcess, error
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(DeploymentProcess), path)
+	resp, err := api.ApiGet(s.GetClient(), new(DeploymentProcess), path)
 	if err != nil {
 		return nil, err
 	}

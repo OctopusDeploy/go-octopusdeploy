@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -43,18 +44,18 @@ func (s *LifecycleService) Add(lifecycle *Lifecycle) (*Lifecycle, error) {
 // Get returns a collection of lifecycles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[Lifecycle], error) {
+func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[*Lifecycle], error) {
 	path, err := s.GetURITemplate().Expand(lifecyclesQuery)
 	if err != nil {
-		return &resources.Resources[Lifecycle]{}, err
+		return &resources.Resources[*Lifecycle]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Lifecycle]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Lifecycle]), path)
 	if err != nil {
-		return &resources.Resources[Lifecycle]{}, err
+		return &resources.Resources[*Lifecycle]{}, err
 	}
 
-	return response.(*resources.Resources[Lifecycle]), nil
+	return response.(*resources.Resources[*Lifecycle]), nil
 }
 
 // GetAll returns all lifecycles. If none can be found or an error occurs, it
@@ -66,7 +67,7 @@ func (s *LifecycleService) GetAll() ([]*Lifecycle, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -82,7 +83,7 @@ func (s *LifecycleService) GetByID(id string) (*Lifecycle, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Lifecycle), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Lifecycle), path)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +114,7 @@ func (s *LifecycleService) GetProjects(lifecycle *Lifecycle) ([]*projects.Projec
 	}
 
 	path := lifecycle.Links["Projects"]
-	resp, err := services.ApiGet(s.GetClient(), new([]*projects.Project), path)
+	resp, err := api.ApiGet(s.GetClient(), new([]*projects.Project), path)
 	if err != nil {
 		return items, err
 	}

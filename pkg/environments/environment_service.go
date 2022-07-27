@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -49,18 +50,18 @@ func (s *EnvironmentService) Add(environment *Environment) (*Environment, error)
 // Get returns a collection of environments based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
-func (s *EnvironmentService) Get(environmentsQuery EnvironmentsQuery) (*resources.Resources[Environment], error) {
+func (s *EnvironmentService) Get(environmentsQuery EnvironmentsQuery) (*resources.Resources[*Environment], error) {
 	path, err := s.GetURITemplate().Expand(environmentsQuery)
 	if err != nil {
-		return &resources.Resources[Environment]{}, err
+		return &resources.Resources[*Environment]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Environment]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Environment]), path)
 	if err != nil {
-		return &resources.Resources[Environment]{}, err
+		return &resources.Resources[*Environment]{}, err
 	}
 
-	return response.(*resources.Resources[Environment]), nil
+	return response.(*resources.Resources[*Environment]), nil
 }
 
 // GetAll returns all environments. If none can be found or an error occurs, it
@@ -72,7 +73,7 @@ func (s *EnvironmentService) GetAll() ([]*Environment, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -88,7 +89,7 @@ func (s *EnvironmentService) GetByID(id string) (*Environment, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Environment), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Environment), path)
 	if err != nil {
 		return nil, err
 	}

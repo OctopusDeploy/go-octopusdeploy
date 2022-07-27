@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
@@ -76,18 +77,18 @@ func (s *TenantService) CreateVariables(tenant *Tenant, tenantVariable *variable
 // Get returns a collection of tenants based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func (s *TenantService) Get(tenantsQuery TenantsQuery) (*resources.Resources[Tenant], error) {
+func (s *TenantService) Get(tenantsQuery TenantsQuery) (*resources.Resources[*Tenant], error) {
 	path, err := s.GetURITemplate().Expand(tenantsQuery)
 	if err != nil {
-		return &resources.Resources[Tenant]{}, err
+		return &resources.Resources[*Tenant]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[Tenant]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Tenant]), path)
 	if err != nil {
-		return &resources.Resources[Tenant]{}, err
+		return &resources.Resources[*Tenant]{}, err
 	}
 
-	return response.(*resources.Resources[Tenant]), nil
+	return response.(*resources.Resources[*Tenant]), nil
 }
 
 // GetAll returns all tenants. If none can be found or an error occurs, it
@@ -99,7 +100,7 @@ func (s *TenantService) GetAll() ([]*Tenant, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -115,7 +116,7 @@ func (s *TenantService) GetByID(id string) (*Tenant, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Tenant), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Tenant), path)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +149,7 @@ func (s *TenantService) GetMissingVariables(missibleVariablesQuery variables.Mis
 		return &[]variables.TenantsMissingVariables{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new([]variables.TenantsMissingVariables), path)
+	response, err := api.ApiGet(s.GetClient(), new([]variables.TenantsMissingVariables), path)
 	if err != nil {
 		return &[]variables.TenantsMissingVariables{}, err
 	}
@@ -183,7 +184,7 @@ func (s *TenantService) GetByPartialName(partialName string) ([]*Tenant, error) 
 }
 
 func (s *TenantService) GetVariables(tenant *Tenant) (*variables.TenantVariables, error) {
-	resp, err := services.ApiGet(s.GetClient(), new(variables.TenantVariables), tenant.Links["Variables"])
+	resp, err := api.ApiGet(s.GetClient(), new(variables.TenantVariables), tenant.Links["Variables"])
 	if err != nil {
 		return nil, err
 	}

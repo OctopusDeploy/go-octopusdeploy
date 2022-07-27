@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -51,7 +52,7 @@ func (s *RunbookService) GetAll() ([]*Runbook, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -67,7 +68,7 @@ func (s *RunbookService) GetByID(id string) (*Runbook, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Runbook), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Runbook), path)
 	if err != nil {
 		return nil, internal.CreateResourceNotFoundError("runbook", "ID", id)
 	}
@@ -76,7 +77,7 @@ func (s *RunbookService) GetByID(id string) (*Runbook, error) {
 }
 
 func (s *RunbookService) GetRunbookSnapshotTemplate(runbook *Runbook) (*RunbookSnapshotTemplate, error) {
-	resp, err := services.ApiGet(s.GetClient(), new(RunbookSnapshotTemplate), runbook.Links["RunbookSnapshotTemplate"])
+	resp, err := api.ApiGet(s.GetClient(), new(RunbookSnapshotTemplate), runbook.Links["RunbookSnapshotTemplate"])
 	if err != nil {
 		return nil, err
 	}

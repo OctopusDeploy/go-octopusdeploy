@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
@@ -57,7 +58,7 @@ func (s *DeploymentService) GetByID(id string) (*Deployment, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(Deployment), path)
+	resp, err := api.ApiGet(s.GetClient(), new(Deployment), path)
 	if err != nil {
 		return nil, err
 	}
@@ -108,35 +109,35 @@ func (s *DeploymentService) Update(resource Deployment) (*Deployment, error) {
 	return resp.(*Deployment), nil
 }
 
-func (s *DeploymentService) GetDeployments(release *releases.Release, deploymentQuery ...*DeploymentQuery) (*resources.Resources[Deployment], error) {
+func (s *DeploymentService) GetDeployments(release *releases.Release, deploymentQuery ...*DeploymentQuery) (*resources.Resources[*Deployment], error) {
 	if release == nil {
 		return nil, internal.CreateInvalidParameterError("GetDeployments", "release")
 	}
 
 	uriTemplate, err := uritemplates.Parse(release.GetLinks()[constants.LinkDeployments])
 	if err != nil {
-		return &resources.Resources[Deployment]{}, err
+		return &resources.Resources[*Deployment]{}, err
 	}
 
 	values := make(map[string]interface{})
 	path, err := uriTemplate.Expand(values)
 	if err != nil {
-		return &resources.Resources[Deployment]{}, err
+		return &resources.Resources[*Deployment]{}, err
 	}
 
 	if deploymentQuery != nil {
 		path, err = uriTemplate.Expand(deploymentQuery[0])
 		if err != nil {
-			return &resources.Resources[Deployment]{}, err
+			return &resources.Resources[*Deployment]{}, err
 		}
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[Deployment]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Deployment]), path)
 	if err != nil {
-		return &resources.Resources[Deployment]{}, err
+		return &resources.Resources[*Deployment]{}, err
 	}
 
-	return resp.(*resources.Resources[Deployment]), nil
+	return resp.(*resources.Resources[*Deployment]), nil
 }
 
 func (s *DeploymentService) GetProgression(release *releases.Release) (*releases.Progression, error) {
@@ -145,7 +146,7 @@ func (s *DeploymentService) GetProgression(release *releases.Release) (*releases
 	}
 
 	path := release.GetLinks()[constants.LinkProgression]
-	resp, err := services.ApiGet(s.GetClient(), new(releases.Progression), path)
+	resp, err := api.ApiGet(s.GetClient(), new(releases.Progression), path)
 	if err != nil {
 		return nil, err
 	}

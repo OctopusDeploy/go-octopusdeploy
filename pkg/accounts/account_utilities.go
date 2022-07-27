@@ -87,7 +87,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 	return account, nil
 }
 
-func ToAccounts(accountResources *resources.Resources[AccountResource]) *Accounts {
+func ToAccounts(accountResources *resources.Resources[*AccountResource]) *Accounts {
 	return &Accounts{
 		Items:        ToAccountArray(accountResources.Items),
 		PagedResults: accountResources.PagedResults,

@@ -3,6 +3,7 @@ package serverstatus
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -30,7 +31,7 @@ func (s *ServerStatusService) Get() (*ServerStatus, error) {
 		return nil, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(ServerStatus), path)
+	response, err := api.ApiGet(s.GetClient(), new(ServerStatus), path)
 	if err != nil {
 		return nil, err
 	}

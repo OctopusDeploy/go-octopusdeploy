@@ -9,6 +9,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -44,7 +45,7 @@ func (s *ScriptModuleService) Add(scriptModule *ScriptModule) (*ScriptModule, er
 
 	// update associated variable set; add script body and syntax
 	variablesPath := scriptModuleResponse.Links[constants.LinkVariables]
-	variablesResponse, err := services.ApiGet(s.GetClient(), new(VariableSet), variablesPath)
+	variablesResponse, err := api.ApiGet(s.GetClient(), new(VariableSet), variablesPath)
 	if err != nil {
 		return nil, err
 	}
@@ -72,37 +73,37 @@ func (s *ScriptModuleService) Add(scriptModule *ScriptModule) (*ScriptModule, er
 // Get returns a collection of script modules based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
-func (s *ScriptModuleService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[ScriptModule], error) {
+func (s *ScriptModuleService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[*ScriptModule], error) {
 	path, err := s.GetURITemplate().Expand(libraryVariablesQuery)
 	if err != nil {
-		return &resources.Resources[ScriptModule]{}, err
+		return &resources.Resources[*ScriptModule]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[ScriptModule]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*ScriptModule]), path)
 	if err != nil {
-		return &resources.Resources[ScriptModule]{}, err
+		return &resources.Resources[*ScriptModule]{}, err
 	}
 
-	return response.(*resources.Resources[ScriptModule]), nil
+	return response.(*resources.Resources[*ScriptModule]), nil
 }
 
 // GetAll returns all script modules. If none can be found or an error
 // occurs, it returns an empty collection.
-func (s *ScriptModuleService) GetAll() (*resources.Resources[ScriptModule], error) {
+func (s *ScriptModuleService) GetAll() (*resources.Resources[*ScriptModule], error) {
 	path, err := s.GetURITemplate().Expand(&LibraryVariablesQuery{
 		ContentType: "ScriptModule",
 		Take:        math.MaxInt32,
 	})
 	if err != nil {
-		return &resources.Resources[ScriptModule]{}, err
+		return &resources.Resources[*ScriptModule]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[ScriptModule]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*ScriptModule]), path)
 	if err != nil {
-		return &resources.Resources[ScriptModule]{}, err
+		return &resources.Resources[*ScriptModule]{}, err
 	}
 
-	return response.(*resources.Resources[ScriptModule]), nil
+	return response.(*resources.Resources[*ScriptModule]), nil
 }
 
 // GetByID returns the script module that matches the input ID. If one
@@ -117,7 +118,7 @@ func (s *ScriptModuleService) GetByID(id string) (*ScriptModule, error) {
 		return nil, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(ScriptModule), path)
+	response, err := api.ApiGet(s.GetClient(), new(ScriptModule), path)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +127,7 @@ func (s *ScriptModuleService) GetByID(id string) (*ScriptModule, error) {
 
 	// get associated variable set
 	variablesPath := scriptModuleResponse.Links[constants.LinkVariables]
-	variablesResponse, err := services.ApiGet(s.GetClient(), new(VariableSet), variablesPath)
+	variablesResponse, err := api.ApiGet(s.GetClient(), new(VariableSet), variablesPath)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +181,7 @@ func (s *ScriptModuleService) Update(scriptModule *ScriptModule) (*ScriptModule,
 
 	// update associated variable set
 	variablesPath := scriptModuleResponse.Links[constants.LinkVariables]
-	variablesResponse, err := services.ApiGet(s.GetClient(), new(VariableSet), variablesPath)
+	variablesResponse, err := api.ApiGet(s.GetClient(), new(VariableSet), variablesPath)
 	if err != nil {
 		return nil, err
 	}

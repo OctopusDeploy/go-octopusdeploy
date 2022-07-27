@@ -48,6 +48,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/scheduler"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/serverstatus"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/subscriptions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tagsets"
@@ -180,7 +181,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 	// fetch root resource and process paths
 	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
-	base.Set("User-Agent", services.GetUserAgentString())
+	base.Set("User-Agent", api.GetUserAgentString())
 	rootService := NewRootService(base, baseURLWithAPI)
 
 	root, err := rootService.Get()
@@ -194,7 +195,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 	if !internal.IsEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
 		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
-		base.Set("User-Agent", services.GetUserAgentString())
+		base.Set("User-Agent", api.GetUserAgentString())
 		rootService = NewRootService(base, baseURLWithAPI)
 		sroot, err = rootService.Get()
 

@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -45,18 +46,18 @@ func (s *MachinePolicyService) Add(machinePolicy *MachinePolicy) (*MachinePolicy
 // Get returns a collection of machine policies based on the criteria defined
 // by its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
-func (s *MachinePolicyService) Get(machinePoliciesQuery MachinePoliciesQuery) (*resources.Resources[MachinePolicy], error) {
+func (s *MachinePolicyService) Get(machinePoliciesQuery MachinePoliciesQuery) (*resources.Resources[*MachinePolicy], error) {
 	path, err := s.GetURITemplate().Expand(machinePoliciesQuery)
 	if err != nil {
-		return &resources.Resources[MachinePolicy]{}, err
+		return &resources.Resources[*MachinePolicy]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[MachinePolicy]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*MachinePolicy]), path)
 	if err != nil {
-		return &resources.Resources[MachinePolicy]{}, err
+		return &resources.Resources[*MachinePolicy]{}, err
 	}
 
-	return response.(*resources.Resources[MachinePolicy]), nil
+	return response.(*resources.Resources[*MachinePolicy]), nil
 }
 
 // GetAll returns all machine policies. If none can be found or an error
@@ -68,7 +69,7 @@ func (s *MachinePolicyService) GetAll() ([]*MachinePolicy, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -84,7 +85,7 @@ func (s *MachinePolicyService) GetByID(id string) (*MachinePolicy, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(MachinePolicy), path)
+	resp, err := api.ApiGet(s.GetClient(), new(MachinePolicy), path)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func (s *MachinePolicyService) GetByPartialName(partialName string) ([]*MachineP
 }
 
 func (s *MachinePolicyService) GetTemplate() (*MachinePolicy, error) {
-	resp, err := services.ApiGet(s.GetClient(), new(MachinePolicy), s.templatePath)
+	resp, err := api.ApiGet(s.GetClient(), new(MachinePolicy), s.templatePath)
 	if err != nil {
 		return nil, err
 	}

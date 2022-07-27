@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
@@ -59,12 +60,12 @@ func (s *FeedService) Get(feedsQuery FeedsQuery) (*Feeds, error) {
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[FeedResource]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*FeedResource]), path)
 	if err != nil {
 		return &Feeds{}, err
 	}
 
-	return ToFeeds(response.(*resources.Resources[FeedResource])), nil
+	return ToFeeds(response.(*resources.Resources[*FeedResource])), nil
 }
 
 // GetAll returns all feeds. If none can be found or an error occurs, it
@@ -76,7 +77,7 @@ func (s *FeedService) GetAll() ([]IFeed, error) {
 		return ToFeedArray(items), err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return ToFeedArray(items), err
 }
 
@@ -88,7 +89,7 @@ func (s *FeedService) GetByID(id string) (IFeed, error) {
 	}
 
 	path := s.BasePath + "/" + id
-	resp, err := services.ApiGet(s.GetClient(), new(FeedResource), path)
+	resp, err := api.ApiGet(s.GetClient(), new(FeedResource), path)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +100,7 @@ func (s *FeedService) GetByID(id string) (IFeed, error) {
 // GetBuiltInFeedStatistics returns statistics for the built-in feeds.
 func (s *FeedService) GetBuiltInFeedStatistics() (*BuiltInFeedStatistics, error) {
 	path := s.builtInFeedStats
-	resp, err := services.ApiGet(s.GetClient(), new(BuiltInFeedStatistics), path)
+	resp, err := api.ApiGet(s.GetClient(), new(BuiltInFeedStatistics), path)
 	if err != nil {
 		return nil, err
 	}
@@ -107,50 +108,50 @@ func (s *FeedService) GetBuiltInFeedStatistics() (*BuiltInFeedStatistics, error)
 	return resp.(*BuiltInFeedStatistics), nil
 }
 
-func (s *FeedService) SearchPackageVersions(packageDescription *packages.PackageDescription, searchPackageVersionsQuery SearchPackageVersionsQuery) (*resources.Resources[packages.PackageVersion], error) {
+func (s *FeedService) SearchPackageVersions(packageDescription *packages.PackageDescription, searchPackageVersionsQuery SearchPackageVersionsQuery) (*resources.Resources[*packages.PackageVersion], error) {
 	if packageDescription == nil {
 		return nil, internal.CreateInvalidParameterError("SearchPackageVersions", "packageDescription")
 	}
 
 	uriTemplate, err := uritemplates.Parse(packageDescription.GetLinks()[constants.LinkSearchPackageVersionsTemplate])
 	if err != nil {
-		return &resources.Resources[packages.PackageVersion]{}, err
+		return &resources.Resources[*packages.PackageVersion]{}, err
 	}
 
 	path, err := uriTemplate.Expand(searchPackageVersionsQuery)
 	if err != nil {
-		return &resources.Resources[packages.PackageVersion]{}, err
+		return &resources.Resources[*packages.PackageVersion]{}, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[packages.PackageVersion]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*packages.PackageVersion]), path)
 	if err != nil {
-		return &resources.Resources[packages.PackageVersion]{}, err
+		return &resources.Resources[*packages.PackageVersion]{}, err
 	}
 
-	return resp.(*resources.Resources[packages.PackageVersion]), nil
+	return resp.(*resources.Resources[*packages.PackageVersion]), nil
 }
 
-func (s *FeedService) SearchPackages(feed IFeed, searchPackagesQuery SearchPackagesQuery) (*resources.Resources[packages.PackageDescription], error) {
+func (s *FeedService) SearchPackages(feed IFeed, searchPackagesQuery SearchPackagesQuery) (*resources.Resources[*packages.PackageDescription], error) {
 	if feed == nil {
 		return nil, internal.CreateInvalidParameterError("SearchPackages", "feed")
 	}
 
 	uriTemplate, err := uritemplates.Parse(feed.GetLinks()[constants.LinkSearchPackagesTemplate])
 	if err != nil {
-		return &resources.Resources[packages.PackageDescription]{}, err
+		return &resources.Resources[*packages.PackageDescription]{}, err
 	}
 
 	path, err := uriTemplate.Expand(searchPackagesQuery)
 	if err != nil {
-		return &resources.Resources[packages.PackageDescription]{}, err
+		return &resources.Resources[*packages.PackageDescription]{}, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(resources.Resources[packages.PackageDescription]), path)
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*packages.PackageDescription]), path)
 	if err != nil {
-		return &resources.Resources[packages.PackageDescription]{}, err
+		return &resources.Resources[*packages.PackageDescription]{}, err
 	}
 
-	return resp.(*resources.Resources[packages.PackageDescription]), nil
+	return resp.(*resources.Resources[*packages.PackageDescription]), nil
 }
 
 // Update modifies a feed based on the one provided as input.

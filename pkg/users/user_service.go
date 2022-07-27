@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/permissions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
@@ -82,7 +83,7 @@ func (s *UserService) GetAll() ([]*User, error) {
 		return items, err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -95,7 +96,7 @@ func (s *UserService) GetAPIKeyByID(user *User, apiKeyID string) (*APIKey, error
 
 	path := internal.TrimTemplate(user.Links[constants.LinkAPIKeys]) + "/" + apiKeyID
 
-	response, err := services.ApiGet(s.GetClient(), new(APIKey), path)
+	response, err := api.ApiGet(s.GetClient(), new(APIKey), path)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +104,7 @@ func (s *UserService) GetAPIKeyByID(user *User, apiKeyID string) (*APIKey, error
 	return response.(*APIKey), nil
 }
 
-func (s *UserService) GetAPIKeys(user *User, apiQuery ...APIQuery) (*resources.Resources[APIKey], error) {
+func (s *UserService) GetAPIKeys(user *User, apiQuery ...APIQuery) (*resources.Resources[*APIKey], error) {
 	if user == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetAPIKeys, constants.ParameterUser)
 	}
@@ -127,17 +128,17 @@ func (s *UserService) GetAPIKeys(user *User, apiQuery ...APIQuery) (*resources.R
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[APIKey]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*APIKey]), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.(*resources.Resources[APIKey]), nil
+	return response.(*resources.Resources[*APIKey]), nil
 }
 
 func (s *UserService) GetAuthentication() (*UserAuthentication, error) {
 	path := internal.TrimTemplate(s.userAuthenticationPath)
-	resp, err := services.ApiGet(s.GetClient(), new(UserAuthentication), path)
+	resp, err := api.ApiGet(s.GetClient(), new(UserAuthentication), path)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +153,7 @@ func (s *UserService) GetAuthenticationByUser(user *User) (*UserAuthentication, 
 
 	path := internal.TrimTemplate(s.userAuthenticationPath) + "/" + user.GetID()
 
-	resp, err := services.ApiGet(s.GetClient(), new(UserAuthentication), path)
+	resp, err := api.ApiGet(s.GetClient(), new(UserAuthentication), path)
 	if err != nil {
 		return nil, err
 	}
@@ -163,18 +164,18 @@ func (s *UserService) GetAuthenticationByUser(user *User) (*UserAuthentication, 
 // Get returns a collection of users based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
-func (s *UserService) Get(usersQuery UsersQuery) (*resources.Resources[User], error) {
+func (s *UserService) Get(usersQuery UsersQuery) (*resources.Resources[*User], error) {
 	path, err := s.GetURITemplate().Expand(usersQuery)
 	if err != nil {
-		return &resources.Resources[User]{}, err
+		return &resources.Resources[*User]{}, err
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[User]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*User]), path)
 	if err != nil {
-		return &resources.Resources[User]{}, err
+		return &resources.Resources[*User]{}, err
 	}
 
-	return response.(*resources.Resources[User]), nil
+	return response.(*resources.Resources[*User]), nil
 }
 
 // GetByID returns the user that matches the input ID. If one cannot be found,
@@ -189,7 +190,7 @@ func (s *UserService) GetByID(id string) (*User, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(User), path)
+	resp, err := api.ApiGet(s.GetClient(), new(User), path)
 	if err != nil {
 		return nil, internal.CreateResourceNotFoundError("user", "ID", id)
 	}
@@ -206,7 +207,7 @@ func (s *UserService) GetMe() (*User, error) {
 	path := internal.TrimTemplate(s.GetPath())
 	path = path + "/me"
 
-	resp, err := services.ApiGet(s.GetClient(), new(User), path)
+	resp, err := api.ApiGet(s.GetClient(), new(User), path)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +227,7 @@ func (s *UserService) GetPermissions(user *User, userQuery ...UserQuery) (*permi
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(permissions.UserPermissionSet), path)
+	response, err := api.ApiGet(s.GetClient(), new(permissions.UserPermissionSet), path)
 	return response.(*permissions.UserPermissionSet), err
 }
 
@@ -242,7 +243,7 @@ func (s *UserService) GetPermissionsConfiguration(user *User, userQuery ...UserQ
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(permissions.UserPermissionSet), path)
+	response, err := api.ApiGet(s.GetClient(), new(permissions.UserPermissionSet), path)
 	return response.(*permissions.UserPermissionSet), err
 }
 
@@ -255,7 +256,7 @@ func (s *UserService) GetSpaces(user *User) ([]*spaces.Space, error) {
 
 	path := internal.TrimTemplate(user.Links[constants.LinkSpaces])
 	items := []*spaces.Space{}
-	_, err := services.ApiGet(s.GetClient(), &items, path)
+	_, err := api.ApiGet(s.GetClient(), &items, path)
 	return items, err
 }
 
@@ -271,7 +272,7 @@ func (s *UserService) GetTeams(user *User, userQuery ...UserQuery) (*[]permissio
 		path += "?" + encodedQueryString
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new([]permissions.ProjectedTeamReferenceDataItem), path)
+	response, err := api.ApiGet(s.GetClient(), new([]permissions.ProjectedTeamReferenceDataItem), path)
 	if err != nil {
 		return nil, err
 	}

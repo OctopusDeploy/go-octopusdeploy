@@ -5,6 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 )
 
@@ -53,12 +54,12 @@ func (s *AccountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) 
 		}
 	}
 
-	response, err := services.ApiGet(s.GetClient(), new(resources.Resources[AccountResource]), path)
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*AccountResource]), path)
 	if err != nil {
 		return &Accounts{}, err
 	}
 
-	return ToAccounts(response.(*resources.Resources[AccountResource])), nil
+	return ToAccounts(response.(*resources.Resources[*AccountResource])), nil
 }
 
 // GetAll returns all accounts. If none are found or an error occurs, it
@@ -70,7 +71,7 @@ func (s *AccountService) GetAll() ([]IAccount, error) {
 		return ToAccountArray(items), err
 	}
 
-	_, err = services.ApiGet(s.GetClient(), &items, path)
+	_, err = api.ApiGet(s.GetClient(), &items, path)
 	return ToAccountArray(items), err
 }
 
@@ -86,7 +87,7 @@ func (s *AccountService) GetByID(id string) (IAccount, error) {
 		return nil, err
 	}
 
-	resp, err := services.ApiGet(s.GetClient(), new(AccountResource), path)
+	resp, err := api.ApiGet(s.GetClient(), new(AccountResource), path)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +98,7 @@ func (s *AccountService) GetByID(id string) (IAccount, error) {
 // GetUsages lists the projects and deployments which are using an account.
 func (s *AccountService) GetUsages(account IAccount) (*AccountUsage, error) {
 	path := account.GetLinks()[constants.LinkUsages]
-	resp, err := services.ApiGet(s.GetClient(), new(AccountUsage), path)
+	resp, err := api.ApiGet(s.GetClient(), new(AccountUsage), path)
 	if err != nil {
 		return nil, err
 	}
