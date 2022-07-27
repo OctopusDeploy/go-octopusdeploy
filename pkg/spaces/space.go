@@ -29,8 +29,17 @@ func NewSpace(name string) *Space {
 	}
 }
 
-// Validate checks the state of the space and returns an error if
-// invalid.
+// GetName returns the name of the space.
+func (s *Space) GetName() string {
+	return s.Name
+}
+
+// SetName sets the name of the space.
+func (s *Space) SetName(name string) {
+	s.Name = name
+}
+
+// Validate checks the state of the space and returns an error if invalid.
 func (s *Space) Validate() error {
 	return validator.New().Struct(s)
 }
