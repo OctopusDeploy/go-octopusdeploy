@@ -43,7 +43,3 @@ func (s *Space) SetName(name string) {
 func (s *Space) Validate() error {
 	return validator.New().Struct(s)
 }
-
-func (s *Space) GetName() string {
-	return s.Name
-}
