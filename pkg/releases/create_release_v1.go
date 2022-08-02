@@ -6,30 +6,33 @@ type ICreateReleaseV1 interface {
 }
 
 type CreateReleaseV1 struct {
-	ChannelNameOrID       string   `json:"channelIdOrName,omitempty"`
-	IgnoreChannelRules    bool     `json:"ignoreChannelRules,omitempty"`
-	IgnoreIfAlreadyExists bool     `json:"ignoreIfAlreadyExists,omitempty"`
+	// server requires "spaceId" as well, but this redundant data is mapped in MarshalJSON
+	SpaceIDOrName         string   `json:"spaceIdOrName"`
+	ProjectIDOrName       string   `json:"projectName"`
+	PackageVersion        string   `json:"packageVersion,omitempty"`
 	GitCommit             string   `json:"gitCommit,omitempty"`
 	GitRef                string   `json:"gitRef,omitempty"`
-	SpaceNameOrID         string   `json:"spaceIdOrName"`
-	PackagePrerelease     string   `json:"packagePrerelease,omitempty"`
-	Packages              []string `json:"packages,omitempty"`
-	PackageVersion        string   `json:"packageVersion,omitempty"`
-	ProjectNameOrID       string   `json:"projectName"`
 	ReleaseVersion        string   `json:"releaseVersion,omitempty"`
+	ChannelIDOrName       string   `json:"channelName,omitempty"`
+	Packages              []string `json:"packages,omitempty"`
 	ReleaseNotes          string   `json:"releaseNotes,omitempty"`
+	IgnoreIfAlreadyExists bool     `json:"ignoreIfAlreadyExists,omitempty"`
+	IgnoreChannelRules    bool     `json:"ignoreChannelRules,omitempty"`
+	PackagePrerelease     string   `json:"packagePrerelease,omitempty"`
 }
 
 type CreateReleaseResponseV1 struct {
-	ReleaseID                         string `json:"ReleaseId"`
-	ReleaseVersion                    string `json:"ReleaseVersion"`
+	ReleaseID      string `json:"ReleaseId"`
+	ReleaseVersion string `json:"ReleaseVersion"`
+	// q: the server has this as IDictionary<DeploymentEnvironmentName, IEnumerable<TenantName>> which would
+	// translate to map[string][]string in go. Can JSON serialize that?
 	AutomaticallyDeployedEnvironments string `json:"AutomaticallyDeployedEnvironments,omitempty"`
 }
 
-func NewCreateReleaseV1(spaceNameOrID string, projectNameOrID string) *CreateReleaseV1 {
+func NewCreateReleaseV1(spaceIDOrName string, projectIDOrName string) *CreateReleaseV1 {
 	return &CreateReleaseV1{
-		SpaceNameOrID:   spaceNameOrID,
-		ProjectNameOrID: projectNameOrID,
+		SpaceIDOrName:   spaceIDOrName,
+		ProjectIDOrName: projectIDOrName,
 	}
 }
 
@@ -39,18 +42,18 @@ func (c *CreateReleaseV1) MarshalJSON() ([]byte, error) {
 		SpaceID string `json:"spaceId"`
 		CreateReleaseV1
 	}{
-		SpaceID: c.SpaceNameOrID,
+		SpaceID: c.SpaceIDOrName,
 		CreateReleaseV1: CreateReleaseV1{
-			ChannelNameOrID:       c.ChannelNameOrID,
+			ChannelIDOrName:       c.ChannelIDOrName,
 			IgnoreChannelRules:    c.IgnoreChannelRules,
 			IgnoreIfAlreadyExists: c.IgnoreIfAlreadyExists,
 			GitCommit:             c.GitCommit,
 			GitRef:                c.GitRef,
-			SpaceNameOrID:         c.SpaceNameOrID,
+			SpaceIDOrName:         c.SpaceIDOrName,
 			PackagePrerelease:     c.PackagePrerelease,
 			Packages:              c.Packages,
 			PackageVersion:        c.PackageVersion,
-			ProjectNameOrID:       c.ProjectNameOrID,
+			ProjectIDOrName:       c.ProjectIDOrName,
 			ReleaseVersion:        c.ReleaseVersion,
 			ReleaseNotes:          c.ReleaseNotes,
 		},
