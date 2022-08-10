@@ -97,8 +97,11 @@ func (s *ProjectService) GetGitBranches(project *Project) ([]*GitReference, erro
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err
 	}
-
-	return getGitBranchesOrTags(s.GetClient(), project.Links[constants.LinkBranches])
+	if link, ok := project.Links[constants.LinkBranches]; ok {
+		return getGitBranchesOrTags(s.GetClient(), link)
+	} else {
+		return nil, fmt.Errorf("cannot get git branches on project %s; no Branches link. GetGitBranches requires a version-controlled project", project.Name)
+	}
 }
 
 func (s *ProjectService) GetGitTags(project *Project) ([]*GitReference, error) {
@@ -108,8 +111,11 @@ func (s *ProjectService) GetGitTags(project *Project) ([]*GitReference, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err
 	}
-
-	return getGitBranchesOrTags(s.GetClient(), project.Links[constants.LinkTags])
+	if link, ok := project.Links[constants.LinkTags]; ok {
+		return getGitBranchesOrTags(s.GetClient(), link)
+	} else {
+		return nil, fmt.Errorf("cannot get git tags on project %s; no Tags link. GetGitTags requires a version-controlled project", project.Name)
+	}
 }
 
 func (s *ProjectService) GetGitBranch(project *Project, name string) (*GitReference, error) {
@@ -119,7 +125,12 @@ func (s *ProjectService) GetGitBranch(project *Project, name string) (*GitRefere
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err
 	}
-	return getGitReference(s.GetClient(), project.Links[constants.LinkBranches], GitRefTypeBranch, map[string]interface{}{"name": name})
+	if link, ok := project.Links[constants.LinkBranches]; ok {
+		return getGitReference(s.GetClient(), link, GitRefTypeBranch, map[string]interface{}{"name": name})
+	} else {
+		// deliberately don't echo back attacker-controlled input (name) in the error
+		return nil, fmt.Errorf("cannot get git branch on project %s; no Branches link. GetGitBranch requires a version-controlled project", project.Name)
+	}
 }
 
 func (s *ProjectService) GetGitTag(project *Project, name string) (*GitReference, error) {
@@ -129,7 +140,12 @@ func (s *ProjectService) GetGitTag(project *Project, name string) (*GitReference
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err
 	}
-	return getGitReference(s.GetClient(), project.Links[constants.LinkTags], GitRefTypeTag, map[string]interface{}{"name": name})
+	if link, ok := project.Links[constants.LinkTags]; ok {
+		return getGitReference(s.GetClient(), link, GitRefTypeTag, map[string]interface{}{"name": name})
+	} else {
+		// deliberately don't echo back attacker-controlled input (name) in the error
+		return nil, fmt.Errorf("cannot get git tag on project %s; no Tags link. GetGitTag requires a version-controlled project", project.Name)
+	}
 }
 
 func (s *ProjectService) GetGitCommit(project *Project, hash string) (*GitReference, error) {
@@ -139,5 +155,10 @@ func (s *ProjectService) GetGitCommit(project *Project, hash string) (*GitRefere
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err
 	}
-	return getGitReference(s.GetClient(), project.Links[constants.LinkCommits], GitRefTypeCommit, map[string]interface{}{"hash": hash})
+	if link, ok := project.Links[constants.LinkCommits]; ok {
+		return getGitReference(s.GetClient(), link, GitRefTypeCommit, map[string]interface{}{"hash": hash})
+	} else {
+		// deliberately don't echo back attacker-controlled input (hash) in the error
+		return nil, fmt.Errorf("cannot get git commit on project %s; no Commits link. GetGitCommit requires a version-controlled project", project.Name)
+	}
 }

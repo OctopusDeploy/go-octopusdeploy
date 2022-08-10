@@ -41,13 +41,18 @@ func (d jsonDecoder) Decode(resp *http.Response, v interface{}) error {
 // is likely to be deserialization errors; we can catch them here fairly easily.
 
 func TestProjectGitReferencesTest(t *testing.T) {
-	project := projects.NewProject("proj-1", "Lifecycles-1", "ProjectGroups-1")
-	project.ID = "Projects-1"
-	project.Links = map[string]string{
+	vcProject := projects.NewProject("proj-vc", "Lifecycles-1", "ProjectGroups-1")
+	vcProject.ID = "Projects-1"
+	vcProject.Links = map[string]string{
 		constants.LinkTags:     "/api/Spaces-1/projects/Projects-1/git/tags{/name}{?skip,take,searchByName,refresh}",
 		constants.LinkCommits:  "/api/Spaces-1/projects/Projects-1/git/commits{/hash}{?skip,take,refresh}",
 		constants.LinkBranches: "/api/Spaces-1/projects/Projects-1/git/branches{/name}{?skip,take,searchByName,refresh}",
 	}
+
+	dbProject := projects.NewProject("proj-db", "Lifecycles-1", "ProjectGroups-1")
+	dbProject.ID = "Projects-2"
+	// only version controlled projects have the Tags, Commits and Branches links
+	dbProject.Links = map[string]string{}
 
 	fakeSling := &sling.Sling{}
 	fakeSling.ResponseDecoder(jsonDecoder{})
@@ -82,7 +87,7 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			}, nil
 		}))
 
-		branches, err := svc.GetGitBranches(project)
+		branches, err := svc.GetGitBranches(vcProject)
 		assert.Nil(t, err)
 		assert.Equal(t, []*projects.GitReference{
 			{
@@ -98,6 +103,12 @@ func TestProjectGitReferencesTest(t *testing.T) {
 				Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2fheads%2fmain/deploymentprocesses"},
 			},
 		}, branches)
+	})
+
+	t.Run("can't get collection of branches from non version-controlled project", func(t *testing.T) {
+		result, err := svc.GetGitBranches(dbProject)
+		assert.Nil(t, result)
+		assert.EqualError(t, err, "cannot get git branches on project proj-db; no Branches link. GetGitBranches requires a version-controlled project")
 	})
 
 	t.Run("can get collection of tags", func(t *testing.T) {
@@ -128,7 +139,7 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			}, nil
 		}))
 
-		branches, err := svc.GetGitTags(project)
+		branches, err := svc.GetGitTags(vcProject)
 		assert.Nil(t, err)
 		assert.Equal(t, []*projects.GitReference{
 			{
@@ -144,6 +155,12 @@ func TestProjectGitReferencesTest(t *testing.T) {
 				Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses"},
 			},
 		}, branches)
+	})
+
+	t.Run("can't get collection of tags from non version-controlled project", func(t *testing.T) {
+		result, err := svc.GetGitTags(dbProject)
+		assert.Nil(t, result)
+		assert.EqualError(t, err, "cannot get git tags on project proj-db; no Tags link. GetGitTags requires a version-controlled project")
 	})
 
 	t.Run("can get single branch", func(t *testing.T) {
@@ -163,7 +180,7 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			}, nil
 		}))
 
-		branch, err := svc.GetGitBranch(project, "develop")
+		branch, err := svc.GetGitBranch(vcProject, "develop")
 		assert.Nil(t, err)
 		assert.Equal(t, &projects.GitReference{
 			Type:          projects.GitRefTypeBranch,
@@ -171,6 +188,12 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			CanonicalName: "refs/heads/develop",
 			Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2fheads%2fdevelop/deploymentprocesses"},
 		}, branch)
+	})
+
+	t.Run("can't get single branch from non version-controlled project", func(t *testing.T) {
+		result, err := svc.GetGitBranch(dbProject, "main")
+		assert.Nil(t, result)
+		assert.EqualError(t, err, "cannot get git branch on project proj-db; no Branches link. GetGitBranch requires a version-controlled project")
 	})
 
 	t.Run("can get single tag", func(t *testing.T) {
@@ -190,7 +213,7 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			}, nil
 		}))
 
-		branch, err := svc.GetGitTag(project, "v5")
+		branch, err := svc.GetGitTag(vcProject, "v5")
 		assert.Nil(t, err)
 		assert.Equal(t, &projects.GitReference{
 			Type:          projects.GitRefTypeTag,
@@ -198,6 +221,12 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			CanonicalName: "refs/tags/v5",
 			Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses"},
 		}, branch)
+	})
+
+	t.Run("can't get single tag from non version-controlled project", func(t *testing.T) {
+		result, err := svc.GetGitTag(dbProject, "v3")
+		assert.Nil(t, result)
+		assert.EqualError(t, err, "cannot get git tag on project proj-db; no Tags link. GetGitTag requires a version-controlled project")
 	})
 
 	t.Run("can get single commit", func(t *testing.T) {
@@ -217,7 +246,7 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			}, nil
 		}))
 
-		branch, err := svc.GetGitCommit(project, "59d550fb")
+		branch, err := svc.GetGitCommit(vcProject, "59d550fb")
 		assert.Nil(t, err)
 		assert.Equal(t, &projects.GitReference{
 			Type:          projects.GitRefTypeCommit,
@@ -226,4 +255,11 @@ func TestProjectGitReferencesTest(t *testing.T) {
 			Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c/deploymentprocesses"},
 		}, branch)
 	})
+
+	t.Run("can't get single commit from non version-controlled project", func(t *testing.T) {
+		result, err := svc.GetGitCommit(dbProject, "59d550fb")
+		assert.Nil(t, result)
+		assert.EqualError(t, err, "cannot get git commit on project proj-db; no Commits link. GetGitCommit requires a version-controlled project")
+	})
+
 }
