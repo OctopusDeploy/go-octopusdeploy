@@ -1,40 +1,12 @@
 package projects_test
 
 import (
-	"encoding/json"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
-	"github.com/dghubble/sling"
+	testutil "github.com/OctopusDeploy/go-octopusdeploy/v2/test"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"net/http"
-	"strings"
 	"testing"
 )
-
-// annoying junk to mock sling. TODO discuss with JB, he's probably done this a better way
-
-type AnyDoer struct {
-	impl func(req *http.Request) (*http.Response, error)
-}
-
-func NewAnyDoer(impl func(req *http.Request) (*http.Response, error)) *AnyDoer {
-	return &AnyDoer{impl: impl}
-}
-
-// conformance with sling.Doer
-func (f *AnyDoer) Do(req *http.Request) (*http.Response, error) {
-	return f.impl(req)
-}
-
-// jsonDecoder decodes http response JSON into a JSON-tagged struct value.
-type jsonDecoder struct{}
-
-// Decode decodes the Response Body into the value pointed to by v.
-// Caller must provide a non-nil v and close the resp.Body.
-func (d jsonDecoder) Decode(resp *http.Response, v interface{}) error {
-	return json.NewDecoder(resp.Body).Decode(v)
-}
 
 // Ideally we would have an integration test talking to the octopus server, however setting up VCS projects
 // in integration tests is very expensive; unit tests are very nearly as good; the main source of bugs
@@ -54,14 +26,17 @@ func TestProjectGitReferencesTest(t *testing.T) {
 	// only version controlled projects have the Tags, Commits and Branches links
 	dbProject.Links = map[string]string{}
 
-	fakeSling := &sling.Sling{}
-	fakeSling.ResponseDecoder(jsonDecoder{})
-	svc := projects.NewProjectService(fakeSling, "/api/Spaces-1/projects{/id}{?name,skip,ids,clone,take,partialName,clonedFromProjectId}", "", "", "", "")
+	s := testutil.NewMockHttpServer()
+	svc := projects.NewProjectService(s.Sling(), "/api/Spaces-1/projects{/id}{?name,skip,ids,clone,take,partialName,clonedFromProjectId}", "", "", "", "")
 
 	t.Run("can get collection of branches", func(t *testing.T) {
+		receiver := testutil.GoBegin2(func() ([]*projects.GitReference, error) {
+			return svc.GetGitBranches(vcProject)
+		})
+
 		// value captured from a real octopus server;
 		// note: the real server returns more links, but because links is just a dump map[string]string we only need one thing to test the deserialization.
-		responseString := `{
+		s.ExpectRequest(t, "GET", "/api/Spaces-1/projects/Projects-1/git/branches").RespondWithText(`{
   "ItemType": "GitBranch", "TotalResults": 2, "ItemsPerPage": 30, "NumberOfPages": 1, "LastPageNumber": 0,
   "Items": [
     {
@@ -76,18 +51,10 @@ func TestProjectGitReferencesTest(t *testing.T) {
     }
   ],
   "Links": { "Self": "/api/Spaces-1/projects/Projects-1/git/branches?skip=0&take=30" }
-}`
-		fakeSling.Doer(NewAnyDoer(func(req *http.Request) (*http.Response, error) {
-			assert.Equal(t, "GET", req.Method)
-			assert.Equal(t, "/api/Spaces-1/projects/Projects-1/git/branches", req.URL.String())
-			return &http.Response{
-				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(strings.NewReader(responseString)),
-				ContentLength: int64(len(responseString)),
-			}, nil
-		}))
+}`)
 
-		branches, err := svc.GetGitBranches(vcProject)
+		branches, err := testutil.ReceivePair(receiver)
+
 		assert.Nil(t, err)
 		assert.Equal(t, []*projects.GitReference{
 			{
@@ -112,34 +79,28 @@ func TestProjectGitReferencesTest(t *testing.T) {
 	})
 
 	t.Run("can get collection of tags", func(t *testing.T) {
-		responseString := `{
-  "ItemType": "GitTag", "TotalResults": 2, "ItemsPerPage": 30, "NumberOfPages": 1, "LastPageNumber": 0,
-  "Items": [
-    {
-      "Name": "v3",
-      "CanonicalName": "refs/tags/v3",
-      "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv3/deploymentprocesses" }
-    },
-    {
-      "Name": "v5",
-      "CanonicalName": "refs/tags/v5",
-      "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses" }
-    }
-  ],
-  "Links": { "Self": "/api/Spaces-1/projects/Projects-1/git/branches?skip=0&take=30" }
-}
-`
-		fakeSling.Doer(NewAnyDoer(func(req *http.Request) (*http.Response, error) {
-			assert.Equal(t, "GET", req.Method)
-			assert.Equal(t, "/api/Spaces-1/projects/Projects-1/git/tags", req.URL.String())
-			return &http.Response{
-				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(strings.NewReader(responseString)),
-				ContentLength: int64(len(responseString)),
-			}, nil
-		}))
+		receiver := testutil.GoBegin2(func() ([]*projects.GitReference, error) {
+			return svc.GetGitTags(vcProject)
+		})
 
-		branches, err := svc.GetGitTags(vcProject)
+		s.ExpectRequest(t, "GET", "/api/Spaces-1/projects/Projects-1/git/tags").RespondWithText(`{
+ "ItemType": "GitTag", "TotalResults": 2, "ItemsPerPage": 30, "NumberOfPages": 1, "LastPageNumber": 0,
+ "Items": [
+   {
+	 "Name": "v3",
+	 "CanonicalName": "refs/tags/v3",
+	 "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv3/deploymentprocesses" }
+   },
+   {
+	 "Name": "v5",
+	 "CanonicalName": "refs/tags/v5",
+	 "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses" }
+   }
+ ],
+ "Links": { "Self": "/api/Spaces-1/projects/Projects-1/git/branches?skip=0&take=30" }
+}`)
+
+		tags, err := testutil.ReceivePair(receiver)
 		assert.Nil(t, err)
 		assert.Equal(t, []*projects.GitReference{
 			{
@@ -154,7 +115,7 @@ func TestProjectGitReferencesTest(t *testing.T) {
 				CanonicalName: "refs/tags/v5",
 				Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses"},
 			},
-		}, branches)
+		}, tags)
 	})
 
 	t.Run("can't get collection of tags from non version-controlled project", func(t *testing.T) {
@@ -164,23 +125,17 @@ func TestProjectGitReferencesTest(t *testing.T) {
 	})
 
 	t.Run("can get single branch", func(t *testing.T) {
-		responseString := `{
-  "Name": "develop",
-  "CanonicalName": "refs/heads/develop",
-  "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2fheads%2fdevelop/deploymentprocesses" }
-}
-`
-		fakeSling.Doer(NewAnyDoer(func(req *http.Request) (*http.Response, error) {
-			assert.Equal(t, "GET", req.Method)
-			assert.Equal(t, "/api/Spaces-1/projects/Projects-1/git/branches/develop", req.URL.String())
-			return &http.Response{
-				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(strings.NewReader(responseString)),
-				ContentLength: int64(len(responseString)),
-			}, nil
-		}))
+		receiver := testutil.GoBegin2(func() (*projects.GitReference, error) {
+			return svc.GetGitBranch(vcProject, "develop")
+		})
 
-		branch, err := svc.GetGitBranch(vcProject, "develop")
+		s.ExpectRequest(t, "GET", "/api/Spaces-1/projects/Projects-1/git/branches/develop").RespondWithText(`{
+ "Name": "develop",
+ "CanonicalName": "refs/heads/develop",
+ "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2fheads%2fdevelop/deploymentprocesses" }
+}`)
+
+		branch, err := testutil.ReceivePair(receiver)
 		assert.Nil(t, err)
 		assert.Equal(t, &projects.GitReference{
 			Type:          projects.GitRefTypeBranch,
@@ -197,30 +152,24 @@ func TestProjectGitReferencesTest(t *testing.T) {
 	})
 
 	t.Run("can get single tag", func(t *testing.T) {
-		responseString := `{
-  "Name": "v5",
-  "CanonicalName": "refs/tags/v5",
-  "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses" }
-}
-`
-		fakeSling.Doer(NewAnyDoer(func(req *http.Request) (*http.Response, error) {
-			assert.Equal(t, "GET", req.Method)
-			assert.Equal(t, "/api/Spaces-1/projects/Projects-1/git/tags/v5", req.URL.String())
-			return &http.Response{
-				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(strings.NewReader(responseString)),
-				ContentLength: int64(len(responseString)),
-			}, nil
-		}))
+		receiver := testutil.GoBegin2(func() (*projects.GitReference, error) {
+			return svc.GetGitTag(vcProject, "v5")
+		})
 
-		branch, err := svc.GetGitTag(vcProject, "v5")
+		s.ExpectRequest(t, "GET", "/api/Spaces-1/projects/Projects-1/git/tags/v5").RespondWithText(`{
+ "Name": "v5",
+ "CanonicalName": "refs/tags/v5",
+ "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses" }
+}`)
+
+		tag, err := testutil.ReceivePair(receiver)
 		assert.Nil(t, err)
 		assert.Equal(t, &projects.GitReference{
 			Type:          projects.GitRefTypeTag,
 			Name:          "v5",
 			CanonicalName: "refs/tags/v5",
 			Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses"},
-		}, branch)
+		}, tag)
 	})
 
 	t.Run("can't get single tag from non version-controlled project", func(t *testing.T) {
@@ -230,30 +179,24 @@ func TestProjectGitReferencesTest(t *testing.T) {
 	})
 
 	t.Run("can get single commit", func(t *testing.T) {
-		responseString := `{
-  "Name": "59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c",
-  "CanonicalName": "59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c",
-  "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c/deploymentprocesses" }
-}
-`
-		fakeSling.Doer(NewAnyDoer(func(req *http.Request) (*http.Response, error) {
-			assert.Equal(t, "GET", req.Method)
-			assert.Equal(t, "/api/Spaces-1/projects/Projects-1/git/commits/59d550fb", req.URL.String())
-			return &http.Response{
-				StatusCode:    http.StatusOK,
-				Body:          ioutil.NopCloser(strings.NewReader(responseString)),
-				ContentLength: int64(len(responseString)),
-			}, nil
-		}))
+		receiver := testutil.GoBegin2(func() (*projects.GitReference, error) {
+			return svc.GetGitCommit(vcProject, "59d550fb")
+		})
 
-		branch, err := svc.GetGitCommit(vcProject, "59d550fb")
+		s.ExpectRequest(t, "GET", "/api/Spaces-1/projects/Projects-1/git/commits/59d550fb").RespondWithText(`{
+ "Name": "59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c",
+ "CanonicalName": "59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c",
+ "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c/deploymentprocesses" }
+}`)
+
+		commit, err := testutil.ReceivePair(receiver)
 		assert.Nil(t, err)
 		assert.Equal(t, &projects.GitReference{
 			Type:          projects.GitRefTypeCommit,
 			Name:          "59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c",
 			CanonicalName: "59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c",
 			Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/59d550fbdf82b83619a72fdbd331cc8fa3cb2f3c/deploymentprocesses"},
-		}, branch)
+		}, commit)
 	})
 
 	t.Run("can't get single commit from non version-controlled project", func(t *testing.T) {
@@ -261,5 +204,4 @@ func TestProjectGitReferencesTest(t *testing.T) {
 		assert.Nil(t, result)
 		assert.EqualError(t, err, "cannot get git commit on project proj-db; no Commits link. GetGitCommit requires a version-controlled project")
 	})
-
 }
