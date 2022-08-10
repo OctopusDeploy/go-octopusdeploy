@@ -40,13 +40,11 @@ func TestProjectGitReferencesTest(t *testing.T) {
   "ItemType": "GitBranch", "TotalResults": 2, "ItemsPerPage": 30, "NumberOfPages": 1, "LastPageNumber": 0,
   "Items": [
     {
-      "Name": "develop",
-      "CanonicalName": "refs/heads/develop",
+      "Name": "develop", "CanonicalName": "refs/heads/develop",
       "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2fheads%2fdevelop/deploymentprocesses" }
     },
     {
-      "Name": "main",
-      "CanonicalName": "refs/heads/main",
+      "Name": "main", "CanonicalName": "refs/heads/main",
       "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2fheads%2fmain/deploymentprocesses" }
     }
   ],
@@ -87,13 +85,11 @@ func TestProjectGitReferencesTest(t *testing.T) {
  "ItemType": "GitTag", "TotalResults": 2, "ItemsPerPage": 30, "NumberOfPages": 1, "LastPageNumber": 0,
  "Items": [
    {
-	 "Name": "v3",
-	 "CanonicalName": "refs/tags/v3",
+	 "Name": "v3", "CanonicalName": "refs/tags/v3",
 	 "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv3/deploymentprocesses" }
    },
    {
-	 "Name": "v5",
-	 "CanonicalName": "refs/tags/v5",
+	 "Name": "v5", "CanonicalName": "refs/tags/v5",
 	 "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses" }
    }
  ],
@@ -122,6 +118,68 @@ func TestProjectGitReferencesTest(t *testing.T) {
 		result, err := svc.GetGitTags(dbProject)
 		assert.Nil(t, result)
 		assert.EqualError(t, err, "cannot get git tags on project proj-db; no Tags link. GetGitTags requires a version-controlled project")
+	})
+
+	t.Run("can get collection of tags spanning multiple pages", func(t *testing.T) {
+		receiver := testutil.GoBegin2(func() ([]*projects.GitReference, error) {
+			return svc.GetGitTags(vcProject)
+		})
+
+		// page size of 2; first page
+		s.ExpectRequest(t, "GET", "/api/Spaces-1/projects/Projects-1/git/tags").RespondWithText(`{
+ "ItemType": "GitTag", "TotalResults": 3, "ItemsPerPage": 2, "NumberOfPages": 2, "LastPageNumber": 1,
+ "Items": [
+   {
+	 "Name": "v3", "CanonicalName": "refs/tags/v3",
+	 "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv3/deploymentprocesses" }
+   },
+   {
+	 "Name": "v5", "CanonicalName": "refs/tags/v5",
+	 "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses" }
+   }
+ ],
+ "Links": { 
+    "Self": "/api/Spaces-1/projects/Projects-1/git/tags?skip=0&take=2",
+    "Page.Next": "/api/Spaces-1/projects/Projects-1/git/tags?skip=2&take=2"
+  }
+}`)
+
+		// second page
+		s.ExpectRequest(t, "GET", "/api/Spaces-1/projects/Projects-1/git/tags?skip=2&take=2").RespondWithText(`{
+ "ItemType": "GitTag", "TotalResults": 3, "ItemsPerPage": 1, "NumberOfPages": 2, "LastPageNumber": 1,
+ "Items": [
+   {
+	 "Name": "v7", "CanonicalName": "refs/tags/v7",
+	 "Links": { "DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv7/deploymentprocesses" }
+   }
+ ],
+ "Links": { 
+    "Self": "/api/Spaces-1/projects/Projects-1/git/tags?skip=0&take=2"
+  }
+}`)
+
+		tags, err := testutil.ReceivePair(receiver)
+		assert.Nil(t, err)
+		assert.Equal(t, []*projects.GitReference{
+			{
+				Type:          projects.GitRefTypeTag,
+				Name:          "v3",
+				CanonicalName: "refs/tags/v3",
+				Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv3/deploymentprocesses"},
+			},
+			{
+				Type:          projects.GitRefTypeTag,
+				Name:          "v5",
+				CanonicalName: "refs/tags/v5",
+				Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv5/deploymentprocesses"},
+			},
+			{
+				Type:          projects.GitRefTypeTag,
+				Name:          "v7",
+				CanonicalName: "refs/tags/v7",
+				Links:         map[string]string{"DeploymentProcess": "/api/Spaces-1/projects/Projects-1/refs%2ftags%2fv7/deploymentprocesses"},
+			},
+		}, tags)
 	})
 
 	t.Run("can get single branch", func(t *testing.T) {
