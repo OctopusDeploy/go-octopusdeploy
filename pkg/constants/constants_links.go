@@ -13,6 +13,7 @@ const (
 	LinkAuthentication                    string = "Authentication"
 	LinkAzureDevOpsConnectivityCheck      string = "AzureDevOpsConnectivityCheck"
 	LinkAzureEnvironments                 string = "AzureEnvironments"
+	LinkBranches                          string = "Branches" // git branches for version controlled projects
 	LinkBuildInformation                  string = "BuildInformation"
 	LinkBuildInformationBulk              string = "BuildInformationBulk"
 	LinkBuiltInFeedStats                  string = "BuiltInFeedStats"
@@ -20,6 +21,7 @@ const (
 	LinkCertificates                      string = "Certificates"
 	LinkChannels                          string = "Channels"
 	LinkCloudTemplate                     string = "CloudTemplate"
+	LinkCommits                           string = "Commits" // git commits for version controlled projects
 	LinkCommunityActionTemplates          string = "CommunityActionTemplates"
 	LinkConfiguration                     string = "Configuration"
 	LinkCurrentLicense                    string = "CurrentLicense"
@@ -114,6 +116,7 @@ const (
 	LinkSubmit                            string = "Submit"
 	LinkSubscriptions                     string = "Subscriptions"
 	LinkSummary                           string = "Summary"
+	LinkTags                              string = "Tags" // git tags for version controlled projects
 	LinkTagSets                           string = "TagSets"
 	LinkTagSetSortOrder                   string = "TagSetSortOrder"
 	LinkTasks                             string = "Tasks"

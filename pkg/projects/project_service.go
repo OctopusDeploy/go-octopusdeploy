@@ -218,15 +218,15 @@ func (s *ProjectService) GetReleases(project *Project) ([]*releases.Release, err
 		return nil, err
 	}
 
-	url, err := url.Parse(project.Links[constants.LinkReleases])
+	releasesUrl, err := url.Parse(project.Links[constants.LinkReleases])
 
 	if err != nil {
 		return nil, err
 	}
 
-	path := strings.Split(url.Path, "{")[0]
+	path := strings.Split(releasesUrl.Path, "{")[0]
 
-	p := []*releases.Release{}
+	result := make([]*releases.Release, 0, 4)
 	loadNextPage := true
 
 	for loadNextPage {
@@ -236,11 +236,11 @@ func (s *ProjectService) GetReleases(project *Project) ([]*releases.Release, err
 		}
 
 		r := resp.(*resources.Resources[*releases.Release])
-		p = append(p, r.Items...)
+		result = append(result, r.Items...)
 		path, loadNextPage = services.LoadNextPage(r.PagedResults)
 	}
 
-	return p, nil
+	return result, nil
 }
 
 // Update modifies a project based on the one provided as input.
