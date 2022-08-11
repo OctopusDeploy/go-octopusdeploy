@@ -31,6 +31,7 @@ const (
 	LinkDashboardConfiguration            string = "DashboardConfiguration"
 	LinkDashboardDynamic                  string = "DashboardDynamic"
 	LinkDeploymentProcesses               string = "DeploymentProcesses"
+	LinkDeploymentSettings                string = "DeploymentSettings"
 	LinkDeployments                       string = "Deployments"
 	LinkDiscoverMachine                   string = "DiscoverMachine"
 	LinkDiscoverWorker                    string = "DiscoverWorker"

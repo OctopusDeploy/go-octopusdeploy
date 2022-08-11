@@ -3,6 +3,7 @@ package deployments
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -152,4 +153,37 @@ func (s *DeploymentService) GetProgression(release *releases.Release) (*releases
 	}
 
 	return resp.(*releases.Progression), nil
+}
+
+// GetDeploymentSettings loads the deployment settings for a project.
+// If the project is version controlled you'll need to specify a gitRef such as 'main'
+func (s *DeploymentService) GetDeploymentSettings(project *projects.Project, gitRef string) (*DeploymentSettings, error) {
+	if project == nil {
+		return nil, internal.CreateInvalidParameterError("GetDeploymentSettings", constants.ParameterProject)
+	}
+	if s.GetClient() == nil { // don't call ValidateInternalState because it checks the "Deployments" link which we don't use or need
+		return nil, internal.CreateInvalidClientStateError(s.GetName())
+	}
+
+	template, err := uritemplates.Parse(project.Links[constants.LinkDeploymentSettings])
+	if err != nil {
+		return nil, err
+	}
+
+	var templateParameters map[string]interface{}
+	if gitRef != "" {
+		templateParameters = map[string]interface{}{"gitRef": gitRef}
+	} else { // non-CaC project links don't have templates so this is a no-op, but it would safely remove any {?extra}{junk} that might be on the query string
+		templateParameters = map[string]interface{}{}
+	}
+
+	path, err := template.Expand(templateParameters)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := api.ApiGet(s.GetClient(), new(DeploymentSettings), path)
+	if err != nil {
+		return nil, err
+	}
+	return resp.(*DeploymentSettings), nil
 }

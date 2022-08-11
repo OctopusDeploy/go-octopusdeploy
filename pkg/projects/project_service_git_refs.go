@@ -29,6 +29,23 @@ type GitReference struct {
 	Links         map[string]string `json:"Links,omitempty"`
 }
 
+func NewGitBranchReference(name string, canonicalName string) *GitReference {
+	return &GitReference{
+		Type:          GitRefTypeBranch,
+		Name:          name,
+		CanonicalName: canonicalName,
+		// the server returns links here but the CLI doesn't follow them anyway
+	}
+}
+
+func NewGitTagReference(name string, canonicalName string) *GitReference {
+	return &GitReference{
+		Type:          GitRefTypeTag,
+		Name:          name,
+		CanonicalName: canonicalName,
+	}
+}
+
 // getGitReference loads a singular item from either
 // - api/Spaces-1/projects/Projects-1/git/branches/NAME
 // - api/Spaces-1/projects/Projects-1/git/tags/NAME

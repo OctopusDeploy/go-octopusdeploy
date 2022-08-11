@@ -167,13 +167,13 @@ func (s *ProjectService) GetChannels(project *Project) ([]*channels.Channel, err
 		return projectChannels, err
 	}
 
-	url, err := url.Parse(project.Links[constants.LinkChannels])
+	channelsUrl, err := url.Parse(project.Links[constants.LinkChannels])
 
 	if err != nil {
 		return projectChannels, err
 	}
 
-	path := strings.Split(url.Path, "{")[0]
+	path := strings.Split(channelsUrl.Path, "{")[0]
 	loadNextPage := true
 
 	for loadNextPage {

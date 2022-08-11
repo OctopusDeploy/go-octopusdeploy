@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
+// DeploymentSettings are loaded by the ProjectService because deployment settings are a subresource of Projects
 type DeploymentSettings struct {
 	ChangeDescription               string                       `json:"ChangeDescription,omitempty"`
 	ConnectivityPolicy              *core.ConnectivityPolicy     `json:"ProjectConnectivityPolicy,omitempty"`
