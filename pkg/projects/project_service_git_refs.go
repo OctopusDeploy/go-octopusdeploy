@@ -13,6 +13,20 @@ import (
 
 type GitRefType string
 
+// Description returns a human-readable string representing the ref type; Not suitable for programmatic use
+func (refType GitRefType) Description() string {
+	switch refType {
+	case GitRefTypeBranch:
+		return "Branch"
+	case GitRefTypeTag:
+		return "Tag"
+	case GitRefTypeCommit:
+		return "Commit"
+	default:
+		return fmt.Sprintf("Unknown GitRefType %s", refType)
+	}
+}
+
 const (
 	GitRefTypeBranch = GitRefType("GitBranch")
 	GitRefTypeTag    = GitRefType("GitTag")
