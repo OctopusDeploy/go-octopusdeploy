@@ -5,105 +5,117 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
 )
 
-// TODO: fix test
-// func TestLifecycleGet(t *testing.T) {
-// 	client, err := octopusdeploy.GetFakeOctopusClient(t, "/api/lifecycles/Lifecycles-41", http.StatusOK, getLifecycleResponseJSON)
-// 	assert.NotNil(t, client)
-// 	require.NoError(t, err)
+func TestLifecycleAsJSON(t *testing.T) {
+	lifecycle := NewLifecycle("test-lifecycle-name")
+	lifecycle.Description = "test-description"
+	lifecycle.ID = "test-lifecycle-id"
+	lifecycle.Links["Self"] = "test-self-link"
+	lifecycle.Links["Preview"] = "test-preview-link"
+	lifecycle.Links["Projects"] = "test-projects-link"
+	lifecycle.Phases = append(lifecycle.Phases, NewPhase("test-phase-name-1"))
+	lifecycle.Phases[0].AutomaticDeploymentTargets = []string{"test-AutomaticDeploymentTargets-1"}
+	lifecycle.Phases[0].ID = "test-phase-id-1"
+	lifecycle.Phases[0].IsOptionalPhase = true
+	lifecycle.Phases[0].MinimumEnvironmentsBeforePromotion = 123
+	lifecycle.Phases[0].OptionalDeploymentTargets = []string{"Environments-1"}
+	lifecycle.Phases[0].ReleaseRetentionPolicy = core.NewRetentionPeriod(1, "Days", false)
+	lifecycle.Phases[0].TentacleRetentionPolicy = core.NewRetentionPeriod(0, "Items", true)
+	lifecycle.Phases = append(lifecycle.Phases, NewPhase("test-phase-name-2"))
+	lifecycle.Phases[1].ID = "test-phase-id-2"
+	lifecycle.Phases[1].ReleaseRetentionPolicy = nil
+	lifecycle.Phases[1].TentacleRetentionPolicy = nil
+	lifecycle.TentacleRetentionPolicy.Unit = "Items"
 
-// 	lifecycle, err := client.Lifecycles.GetByID("Lifecycles-41")
-// 	assert.NotNil(t, lifecycle)
-// 	require.NoError(t, err)
+	lifecycle.ReleaseRetentionPolicy.QuantityToKeep = 3
+	lifecycle.TentacleRetentionPolicy.QuantityToKeep = 2
 
-// 	assert.Equal(t, "Test", lifecycle.Name)
-// 	assert.Equal(t, 2, len(lifecycle.Phases))
+	expectedJSON := `{
+		"Description": "test-description",
+		"Id": "test-lifecycle-id",
+		"Name": "test-lifecycle-name",
+		"Phases": [
+			{
+				"AutomaticDeploymentTargets": ["test-AutomaticDeploymentTargets-1"],
+				"Id": "test-phase-id-1",
+				"IsOptionalPhase": true,
+				"MinimumEnvironmentsBeforePromotion": 123,
+				"Name": "test-phase-name-1",
+				"OptionalDeploymentTargets": ["Environments-1"],
+				"ReleaseRetentionPolicy": {
+					"Unit": "Days",
+					"QuantityToKeep": 1,
+					"ShouldKeepForever": false
+				},
+				"TentacleRetentionPolicy": {
+					"Unit": "Items",
+					"QuantityToKeep": 0,
+					"ShouldKeepForever": true
+				}
+			},
+			{
+				"Id": "test-phase-id-2",
+				"Name": "test-phase-name-2",
+				"AutomaticDeploymentTargets": [],
+				"OptionalDeploymentTargets": [],
+				"MinimumEnvironmentsBeforePromotion": 0,
+				"IsOptionalPhase": false,
+				"ReleaseRetentionPolicy": null,
+				"TentacleRetentionPolicy": null
+			}
+		],
+		"ReleaseRetentionPolicy": {
+			"Unit": "Days",
+			"QuantityToKeep": 3,
+			"ShouldKeepForever": false
+		},
+		"TentacleRetentionPolicy": {
+			"Unit": "Items",
+			"QuantityToKeep": 2,
+			"ShouldKeepForever": false
+		},
+		"Links": {
+			"Self": "test-self-link",
+			"Preview": "test-preview-link",
+			"Projects": "test-projects-link"
+		}
+	}`
 
-// 	phase0 := lifecycle.Phases[0]
-// 	assert.Equal(t, "A", phase0.Name)
-// 	assert.Equal(t, int32(1), phase0.MinimumEnvironmentsBeforePromotion)
-// 	assert.Equal(t, true, phase0.IsOptionalPhase)
-// 	assert.Equal(t, 1, len(phase0.AutomaticDeploymentTargets))
-// 	assert.Equal(t, "Environments-2", phase0.AutomaticDeploymentTargets[0])
-// 	assert.Equal(t, 1, len(phase0.OptionalDeploymentTargets))
-// 	assert.Equal(t, "Environments-1", phase0.OptionalDeploymentTargets[0])
-// 	assert.Equal(t, octopusdeploy.RetentionUnitDays, phase0.ReleaseRetentionPolicy.Unit)
-// 	assert.Equal(t, int32(1), phase0.ReleaseRetentionPolicy.QuantityToKeep)
-// 	assert.Equal(t, false, phase0.ReleaseRetentionPolicy.ShouldKeepForever)
-// 	assert.Equal(t, octopusdeploy.RetentionUnitItems, phase0.TentacleRetentionPolicy.Unit)
-// 	assert.Equal(t, int32(0), phase0.TentacleRetentionPolicy.QuantityToKeep)
-// 	assert.Equal(t, true, phase0.TentacleRetentionPolicy.ShouldKeepForever)
+	lifecycleAsJSON, err := json.Marshal(lifecycle)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycleAsJSON)
 
-// 	assert.Equal(t, (*octopusdeploy.RetentionPeriod)(nil), lifecycle.Phases[1].ReleaseRetentionPolicy)
-// 	assert.Equal(t, (*octopusdeploy.RetentionPeriod)(nil), lifecycle.Phases[1].TentacleRetentionPolicy)
+	jsonassert.New(t).Assertf(expectedJSON, string(lifecycleAsJSON))
+}
 
-// 	assert.Equal(t, octopusdeploy.RetentionUnitDays, lifecycle.ReleaseRetentionPolicy.Unit)
-// 	assert.Equal(t, int32(3), lifecycle.ReleaseRetentionPolicy.QuantityToKeep)
-// 	assert.Equal(t, false, lifecycle.ReleaseRetentionPolicy.ShouldKeepForever)
-// 	assert.Equal(t, octopusdeploy.RetentionUnitItems, lifecycle.TentacleRetentionPolicy.Unit)
-// 	assert.Equal(t, int32(2), lifecycle.TentacleRetentionPolicy.QuantityToKeep)
-// 	assert.Equal(t, false, lifecycle.TentacleRetentionPolicy.ShouldKeepForever)
-// }
+func TestLifecycleUnmarshalJSON(t *testing.T) {
+	description := internal.GetRandomName()
+	name := internal.GetRandomName()
+	spaceID := internal.GetRandomName()
 
-// const getLifecycleResponseJSON = `
-// {
-//   "Id": "Lifecycles-41",
-//   "Phases": [
-//     {
-//       "Id": "61e30a4b-3bdb-4eff-8995-805de61da9ff",
-//       "Name": "A",
-//       "AutomaticDeploymentTargets": [
-// 	    "Environments-2"
-//       ],
-//       "OptionalDeploymentTargets": [
-//         "Environments-1"
-//       ],
-//       "MinimumEnvironmentsBeforePromotion": 1,
-//       "IsOptionalPhase": true,
-//       "ReleaseRetentionPolicy": {
-//         "Unit": "Days",
-//         "QuantityToKeep": 1,
-//         "ShouldKeepForever": false
-//       },
-//       "TentacleRetentionPolicy": {
-//         "Unit": "Items",
-//         "QuantityToKeep": 0,
-//         "ShouldKeepForever": true
-//       }
-//     },
-//     {
-//       "Id": "670920c6-1065-4207-8d15-2c5d7947e795",
-//       "Name": "B",
-//       "AutomaticDeploymentTargets": [],
-//       "OptionalDeploymentTargets": [],
-//       "MinimumEnvironmentsBeforePromotion": 0,
-//       "IsOptionalPhase": false,
-//       "ReleaseRetentionPolicy": null,
-//       "TentacleRetentionPolicy": null
-//     }
-//   ],
-//   "Name": "Test",
-//   "ReleaseRetentionPolicy": {
-//     "Unit": "Days",
-//     "QuantityToKeep": 3,
-//     "ShouldKeepForever": false
-//   },
-//   "TentacleRetentionPolicy": {
-//     "Unit": "Items",
-//     "QuantityToKeep": 2,
-//     "ShouldKeepForever": false
-//   },
-//   "Description": "",
-//   "Links": {
-//     "Self": "/api/lifecycles/Lifecycles-41",
-//     "Preview": "/api/lifecycles/Lifecycles-41/preview",
-//     "Projects": "/api/lifecycles/Lifecycles-41/projects"
-//   }
-// }`
+	inputJSON := fmt.Sprintf(`{
+		"Description": "%s",
+		"Name": "%s",
+		"SpaceId": "%s"
+	}`, description, name, spaceID)
+
+	var lifecycle Lifecycle
+	err := json.Unmarshal([]byte(inputJSON), &lifecycle)
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+	require.Equal(t, description, lifecycle.Description)
+	require.Equal(t, name, lifecycle.Name)
+	require.Nil(t, lifecycle.Phases)
+	require.Len(t, lifecycle.Phases, 0)
+	require.Nil(t, lifecycle.ReleaseRetentionPolicy)
+	require.Equal(t, spaceID, lifecycle.SpaceID)
+	require.Nil(t, lifecycle.TentacleRetentionPolicy)
+}
 
 func TestLifecycleNew(t *testing.T) {
 	name := "name"
@@ -130,8 +142,7 @@ func TestLifecycleNew(t *testing.T) {
 }
 
 func TestLifecycleToJson(t *testing.T) {
-	name := "test-name"
-
+	name := internal.GetRandomName()
 	lifecycle := NewLifecycle(name)
 	require.NotNil(t, lifecycle)
 
@@ -269,10 +280,8 @@ func TestLifecycleFromJson(t *testing.T) {
 
 func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
 	lifecycle := &Lifecycle{
-		Name: "My Lifecycle",
-		Phases: []Phase{
-			{Name: "My Phase"},
-		},
+		Name:   "My Lifecycle",
+		Phases: []*Phase{NewPhase("phase")},
 	}
 
 	require.NoError(t, lifecycle.Validate())
@@ -285,10 +294,8 @@ func TestValidateLifecycleValuesMissingNameFails(t *testing.T) {
 
 func TestValidateLifecycleValuesPhaseWithMissingNameFails(t *testing.T) {
 	lifecycle := &Lifecycle{
-		Name: "My Lifecycle",
-		Phases: []Phase{
-			{},
-		},
+		Name:   "My Lifecycle",
+		Phases: []*Phase{NewPhase("")},
 	}
 
 	require.Error(t, lifecycle.Validate())
