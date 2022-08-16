@@ -9,12 +9,12 @@ import (
 )
 
 type Lifecycle struct {
-	Description             string               `json:"Description,omitempty"`
-	Name                    string               `json:"Name" validate:"required"`
-	Phases                  []Phase              `json:"Phases,omitempty"`
-	ReleaseRetentionPolicy  core.RetentionPeriod `json:"ReleaseRetentionPolicy,omitempty"`
-	SpaceID                 string               `json:"SpaceId,omitempty"`
-	TentacleRetentionPolicy core.RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
+	Description             string                `json:"Description,omitempty"`
+	Name                    string                `json:"Name" validate:"required"`
+	Phases                  []*Phase              `json:"Phases,omitempty"`
+	ReleaseRetentionPolicy  *core.RetentionPeriod `json:"ReleaseRetentionPolicy,omitempty"`
+	SpaceID                 string                `json:"SpaceId,omitempty"`
+	TentacleRetentionPolicy *core.RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
 
 	resources.Resource
 }
@@ -26,17 +26,11 @@ const (
 
 func NewLifecycle(name string) *Lifecycle {
 	return &Lifecycle{
-		Name:   strings.TrimSpace(name),
-		Phases: []Phase{},
-		ReleaseRetentionPolicy: core.RetentionPeriod{
-			Unit:           "Days",
-			QuantityToKeep: 30,
-		},
-		TentacleRetentionPolicy: core.RetentionPeriod{
-			Unit:           "Days",
-			QuantityToKeep: 30,
-		},
-		Resource: *resources.NewResource(),
+		Name:                    strings.TrimSpace(name),
+		Phases:                  []*Phase{},
+		ReleaseRetentionPolicy:  core.NewRetentionPeriod(30, RetentionUnitDays, false),
+		TentacleRetentionPolicy: core.NewRetentionPeriod(30, RetentionUnitDays, false),
+		Resource:                *resources.NewResource(),
 	}
 }
 
