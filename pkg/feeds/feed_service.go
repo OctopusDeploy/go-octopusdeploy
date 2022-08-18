@@ -53,6 +53,10 @@ func (s *FeedService) Add(feed IFeed) (IFeed, error) {
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
 func (s *FeedService) Get(feedsQuery FeedsQuery) (*Feeds, error) {
+	// TODO this method is wired for /api/Spaces-1/feeds?ids=feeds-builtin
+	// but the server also supports a simpler single-value at /api/Spaces-1/feeds/feeds-builtin
+	// we should support that too.
+
 	v, _ := query.Values(feedsQuery)
 	path := s.BasePath
 	encodedQueryString := v.Encode()
@@ -108,6 +112,7 @@ func (s *FeedService) GetBuiltInFeedStatistics() (*BuiltInFeedStatistics, error)
 	return resp.(*BuiltInFeedStatistics), nil
 }
 
+// TODO remove or rename this method in API Client v3; the first parameter wants to be an IFeed, not a PackageDescription
 func (s *FeedService) SearchPackageVersions(packageDescription *packages.PackageDescription, searchPackageVersionsQuery SearchPackageVersionsQuery) (*resources.Resources[*packages.PackageVersion], error) {
 	if packageDescription == nil {
 		return nil, internal.CreateInvalidParameterError("SearchPackageVersions", "packageDescription")
@@ -126,6 +131,30 @@ func (s *FeedService) SearchPackageVersions(packageDescription *packages.Package
 	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*packages.PackageVersion]), path)
 	if err != nil {
 		return &resources.Resources[*packages.PackageVersion]{}, err
+	}
+
+	return resp.(*resources.Resources[*packages.PackageVersion]), nil
+}
+
+// TODO this method should be called SearchFeedPackageVersions for consistency, but that would be a breaking change in v2 of the client; defer to v3
+func (s *FeedService) SearchFeedPackageVersions(feed IFeed, searchPackageVersionsQuery SearchPackageVersionsQuery) (*resources.Resources[*packages.PackageVersion], error) {
+	if feed == nil {
+		return nil, internal.CreateInvalidParameterError("SearchFeedPackageVersions", "feed")
+	}
+
+	uriTemplate, err := uritemplates.Parse(feed.GetLinks()[constants.LinkSearchPackageVersionsTemplate])
+	if err != nil {
+		return nil, err
+	}
+
+	path, err := uriTemplate.Expand(searchPackageVersionsQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*packages.PackageVersion]), path)
+	if err != nil {
+		return nil, err
 	}
 
 	return resp.(*resources.Resources[*packages.PackageVersion]), nil
