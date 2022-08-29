@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/uritemplates"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -146,6 +147,19 @@ type Client struct {
 	WorkerPools                    *workerpools.WorkerPoolService
 	Workers                        *machines.WorkerService
 	WorkerToolsLatestImages        *workertoolslatestimages.WorkerToolsLatestImageService
+
+	// new, experimental
+	RootResource *RootResource // should not be nil
+
+	// If the client is space-scoped, this will be set, and it must be valid or the client would fail to init; else empty
+	SpaceID string
+
+	// If the client is space-scoped, this will point to the root resource with all the space-scoped links; else nil.
+	// REMEMBER TO NIL-CHECK THIS.
+	SpacedRootResource *RootResource
+
+	// Cache for parsed URI templates
+	URITemplateCache *uritemplates.URITemplateCache
 }
 
 func IsAPIKey(apiKey string) bool {
@@ -191,6 +205,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 	// Root with specified Space ID, if it's defined
 	sroot := NewRootResource()
+	var srootOrNil *RootResource = nil
 
 	if !internal.IsEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
@@ -205,6 +220,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 			}
 			return nil, err
 		}
+		srootOrNil = sroot // if we have a spaceID then sroot is valid
 	}
 
 	rootPath := root.GetLinkPath(sroot, constants.LinkSelf)
@@ -431,5 +447,11 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		WorkerPools:                    workerpools.NewWorkerPoolService(base, workerPoolsPath, workerPoolsDynamicWorkerTypesPath, workerPoolsSortOrderPath, workerPoolsSummaryPath, workerPoolsSupportedTypesPath),
 		Workers:                        machines.NewWorkerService(base, workersPath, discoverWorkerPath, workerOperatingSystemsPath, workerShellsPath),
 		WorkerToolsLatestImages:        workertoolslatestimages.NewWorkerToolsLatestImageService(base, workerToolsLatestImagesPath),
+
+		// additional experimental things in the lead-up to v3 of the apiclient; please don't use these
+		RootResource:       root,
+		SpaceID:            spaceID,
+		SpacedRootResource: srootOrNil,
+		URITemplateCache:   uritemplates.NewUriTemplateCache(),
 	}, nil
 }
