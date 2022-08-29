@@ -33,6 +33,12 @@ type CreateDeploymentResponseV1 struct {
 // ----- Tenanted -----------------------------------------------
 
 type CreateDeploymentTenantedCommandV1 struct {
+	ReleaseVersion           string   `json:"releaseVersion"`  // required
+	EnvironmentName          string   `json:"environmentName"` // required
+	Tenant                   []string `json:"tenants,omitempty"`
+	TenantTags               []string `json:"tenantTags,omitempty"`
+	ForcePackageRedeployment string   `json:"forcePackageRedeployment,omitempty"`
+	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot,omitempty"`
 	CreateExecutionAbstractCommandV1
 }
 
@@ -65,6 +71,12 @@ func CreateDeploymentTenantedV1(client *client.Client, command *CreateDeployment
 	if client.SpaceID == "" {
 		return nil, internal.CreateInvalidClientStateError("CreateDeploymentTenantedV1")
 	}
+	if command.ReleaseVersion == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.ReleaseVersion")
+	}
+	if command.EnvironmentName == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.EnvironmentName")
+	}
 
 	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
 	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
@@ -83,6 +95,10 @@ func CreateDeploymentTenantedV1(client *client.Client, command *CreateDeployment
 // ----- Untenanted -----------------------------------------------
 
 type CreateDeploymentUntenantedCommandV1 struct {
+	ReleaseVersion           string   `json:"releaseVersion"`   // required
+	EnvironmentNames         []string `json:"environmentNames"` // required
+	ForcePackageRedeployment string   `json:"forcePackageRedeployment,omitempty"`
+	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot,omitempty"`
 	CreateExecutionAbstractCommandV1
 }
 
@@ -114,6 +130,12 @@ func CreateDeploymentUntenantedV1(client *client.Client, command *CreateDeployme
 	}
 	if client.SpaceID == "" {
 		return nil, internal.CreateInvalidClientStateError("CreateDeploymentUntenantedV1")
+	}
+	if command.ReleaseVersion == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.ReleaseVersion")
+	}
+	if len(command.EnvironmentNames) == 0 {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.EnvironmentNames")
 	}
 
 	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it

@@ -9,6 +9,11 @@ import (
 )
 
 type RunbookRunCommandV1 struct {
+	RunbookName      string   `json:"runbookName"` // required
+	EnvironmentNames []string `json:"environmentNames,omitempty"`
+	TenantNames      []string `json:"tenants,omitempty"`
+	TenantTags       []string `json:"tenantTags,omitempty"`
+	Snapshot         []string `json:"snapshot,omitempty"`
 	CreateExecutionAbstractCommandV1
 }
 
@@ -18,7 +23,7 @@ type RunbookRunResponseV1 struct {
 
 func NewRunbookRunCommandV1(spaceIDOrName string, projectIDOrName string) *RunbookRunCommandV1 {
 	return &RunbookRunCommandV1{
-		CreateExecutionAbstractCommandV1{
+		CreateExecutionAbstractCommandV1: CreateExecutionAbstractCommandV1{
 			SpaceIDOrName:   spaceIDOrName,
 			ProjectIDOrName: projectIDOrName,
 		},
