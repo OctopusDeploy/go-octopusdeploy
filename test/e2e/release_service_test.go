@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/executionsapi"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -158,8 +159,8 @@ func TestReleaseServiceCreateV1(t *testing.T) {
 	require.NotNil(t, channel)
 	defer DeleteTestChannel(t, client, channel)
 
-	releaseCreate := releases.NewCreateReleaseV1(space.Name, project.Name)
-	createReleaseResponse, err := client.Releases.CreateV1(releaseCreate)
+	releaseCreate := executionsapi.NewCreateReleaseCommandV1(space.Name, project.Name)
+	createReleaseResponse, err := executionsapi.CreateReleaseV1(client, releaseCreate)
 
 	// if HTTP 404 response then Executions API is unavailable
 	if err == nil {
