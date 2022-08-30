@@ -2,7 +2,6 @@ package projects
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"net/http"
 	"net/url"
 	"strings"
@@ -242,89 +241,6 @@ func (s *ProjectService) GetReleases(project *Project) ([]*releases.Release, err
 	}
 
 	return result, nil
-}
-
-// carries either a response or error
-type ResourcesOrError[T any] struct {
-	Response *resources.Resources[T]
-	Error    error
-}
-
-type Disposable interface {
-	Dispose()
-}
-
-type anonymousDisposable struct {
-	isDisposed bool
-	dispose    func()
-}
-
-// conforms to Disposable
-func (a *anonymousDisposable) Dispose() {
-	a.isDisposed = true
-	a.dispose()
-}
-
-// EXPERIMENTAL. This is basically rx
-func GetReleasesForChannel(client newclient.Client, project *Project, channel *channels.Channel) (chan ResourcesOrError[*releases.Release], Disposable) {
-	result := make(chan ResourcesOrError[*releases.Release])
-
-	disposable := &anonymousDisposable{
-		dispose: func() {
-			close(result)
-		},
-	}
-
-	go func() {
-		defer disposable.Dispose()
-		if client == nil {
-			result <- ResourcesOrError[*releases.Release]{Error: internal.CreateInvalidParameterError("GetReleasesForChannel", "client")}
-			return
-		}
-		if project == nil {
-			result <- ResourcesOrError[*releases.Release]{Error: internal.CreateInvalidParameterError("GetReleasesForChannel", "project")}
-			return
-		}
-		if channel == nil {
-			result <- ResourcesOrError[*releases.Release]{Error: internal.CreateInvalidParameterError("GetReleasesForChannel", "channel")}
-			return
-		}
-		if client.SpaceID() == "" {
-			result <- ResourcesOrError[*releases.Release]{Error: internal.CreateInvalidClientStateError("GetReleasesForChannel")}
-			return
-		}
-
-		// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
-		// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-		expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleasesByProjectAndChannel, map[string]any{
-			"spaceId":   client.SpaceID,
-			"projectId": project.ID,
-			"channelId": channel.ID,
-		})
-		if err != nil {
-			result <- ResourcesOrError[*releases.Release]{Error: err}
-			return
-		}
-
-		loadNextPage := true
-
-		for loadNextPage {
-			if disposable.isDisposed {
-				return
-			}
-			rawResp, err := api.ApiGet(client.Sling(), new(*resources.Resources[*releases.Release]), expandedUri)
-			if err != nil {
-				result <- ResourcesOrError[*releases.Release]{Error: err}
-				return
-			}
-
-			resp := rawResp.(*resources.Resources[*releases.Release])
-			result <- ResourcesOrError[*releases.Release]{Response: resp}
-
-			expandedUri, loadNextPage = services.LoadNextPage(resp.PagedResults)
-		}
-	}()
-	return result, disposable
 }
 
 // Update modifies a project based on the one provided as input.
