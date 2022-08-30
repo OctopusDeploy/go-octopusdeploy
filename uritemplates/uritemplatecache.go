@@ -3,26 +3,25 @@ package uritemplates
 import (
 	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
 type URITemplateCache struct {
-	cache map[string]*uritemplates.UriTemplate
+	cache map[string]*UriTemplate
 }
 
 func NewUriTemplateCache() *URITemplateCache {
 	return &URITemplateCache{
-		cache: map[string]*uritemplates.UriTemplate{},
+		cache: map[string]*UriTemplate{},
 	}
 }
 
-func (c *URITemplateCache) Intern(uriTemplate string) (*uritemplates.UriTemplate, error) {
+func (c *URITemplateCache) Intern(uriTemplate string) (*UriTemplate, error) {
 	cachedTemplate, ok := c.cache[uriTemplate]
 	if ok {
 		return cachedTemplate, nil
 	}
 
-	template, err := uritemplates.Parse(uriTemplate)
+	template, err := Parse(uriTemplate)
 	if err != nil {
 		return nil, err
 	}

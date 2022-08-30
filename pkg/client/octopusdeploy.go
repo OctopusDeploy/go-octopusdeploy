@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/uritemplates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -148,18 +148,9 @@ type Client struct {
 	Workers                        *machines.WorkerService
 	WorkerToolsLatestImages        *workertoolslatestimages.WorkerToolsLatestImageService
 
-	// new, experimental
-	RootResource *RootResource // should not be nil
-
-	// If the client is space-scoped, this will be set, and it must be valid or the client would fail to init; else empty
-	SpaceID string
-
-	// If the client is space-scoped, this will point to the root resource with all the space-scoped links; else nil.
-	// REMEMBER TO NIL-CHECK THIS.
-	SpacedRootResource *RootResource
-
-	// Cache for parsed URI templates
-	URITemplateCache *uritemplates.URITemplateCache
+	// conform to newclient.Client temporarily until this class goes away
+	spaceID          string
+	uriTemplateCache *uritemplates.URITemplateCache
 }
 
 func IsAPIKey(apiKey string) bool {
@@ -205,7 +196,6 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 	// Root with specified Space ID, if it's defined
 	sroot := NewRootResource()
-	var srootOrNil *RootResource = nil
 
 	if !internal.IsEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
@@ -220,7 +210,6 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 			}
 			return nil, err
 		}
-		srootOrNil = sroot // if we have a spaceID then sroot is valid
 	}
 
 	rootPath := root.GetLinkPath(sroot, constants.LinkSelf)
@@ -448,10 +437,21 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		Workers:                        machines.NewWorkerService(base, workersPath, discoverWorkerPath, workerOperatingSystemsPath, workerShellsPath),
 		WorkerToolsLatestImages:        workertoolslatestimages.NewWorkerToolsLatestImageService(base, workerToolsLatestImagesPath),
 
-		// additional experimental things in the lead-up to v3 of the apiclient; please don't use these
-		RootResource:       root,
-		SpaceID:            spaceID,
-		SpacedRootResource: srootOrNil,
-		URITemplateCache:   uritemplates.NewUriTemplateCache(),
+		spaceID:          spaceID,
+		uriTemplateCache: uritemplates.NewUriTemplateCache(),
 	}, nil
 }
+
+// confirm to newclient.Client interface for compatibility
+func (n *Client) Sling() *sling.Sling {
+	return n.sling
+}
+
+func (n *Client) SpaceID() string {
+	return n.spaceID
+}
+
+func (n *Client) URITemplateCache() *uritemplates.URITemplateCache {
+	return n.uriTemplateCache
+}
+

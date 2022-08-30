@@ -3,9 +3,9 @@ package executionsapi
 import (
 	"encoding/json"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/uritemplates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
 type CreateExecutionAbstractCommandV1 struct {
@@ -64,11 +64,11 @@ func (c *CreateDeploymentTenantedCommandV1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(converted)
 }
 
-func CreateDeploymentTenantedV1(client *client.Client, command *CreateDeploymentTenantedCommandV1) (*CreateDeploymentResponseV1, error) {
+func CreateDeploymentTenantedV1(client newclient.Client, command *CreateDeploymentTenantedCommandV1) (*CreateDeploymentResponseV1, error) {
 	if command == nil {
 		return nil, internal.CreateInvalidParameterError("CreateDeploymentTenantedV1", "command")
 	}
-	if client.SpaceID == "" {
+	if client.SpaceID() == "" {
 		return nil, internal.CreateInvalidClientStateError("CreateDeploymentTenantedV1")
 	}
 	if command.ReleaseVersion == "" {
@@ -80,12 +80,12 @@ func CreateDeploymentTenantedV1(client *client.Client, command *CreateDeployment
 
 	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
 	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-	command.SpaceIDOrName = client.SpaceID
-	url, err := client.URITemplateCache.Expand(uritemplates.CreateDeploymentTenantedCommandV1, map[string]any{"spaceId": client.SpaceID})
+	command.SpaceIDOrName = client.SpaceID()
+	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentTenantedCommandV1, map[string]any{"spaceId": client.SpaceID()})
 	if err != nil {
 		return nil, err
 	}
-	resp, err := services.ApiPost(client.Root.GetClient(), command, new(CreateDeploymentResponseV1), url)
+	resp, err := services.ApiPost(client.Sling(), command, new(CreateDeploymentResponseV1), url)
 	if err != nil {
 		return nil, err
 	}
@@ -124,11 +124,11 @@ func (c *CreateDeploymentUntenantedCommandV1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(converted)
 }
 
-func CreateDeploymentUntenantedV1(client *client.Client, command *CreateDeploymentUntenantedCommandV1) (*CreateDeploymentResponseV1, error) {
+func CreateDeploymentUntenantedV1(client newclient.Client, command *CreateDeploymentUntenantedCommandV1) (*CreateDeploymentResponseV1, error) {
 	if command == nil {
 		return nil, internal.CreateInvalidParameterError("CreateDeploymentUntenantedV1", "command")
 	}
-	if client.SpaceID == "" {
+	if client.SpaceID() == "" {
 		return nil, internal.CreateInvalidClientStateError("CreateDeploymentUntenantedV1")
 	}
 	if command.ReleaseVersion == "" {
@@ -140,12 +140,12 @@ func CreateDeploymentUntenantedV1(client *client.Client, command *CreateDeployme
 
 	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
 	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-	command.SpaceIDOrName = client.SpaceID
-	url, err := client.URITemplateCache.Expand(uritemplates.CreateDeploymentUntenantedCommandV1, map[string]any{"spaceId": client.SpaceID})
+	command.SpaceIDOrName = client.SpaceID()
+	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentUntenantedCommandV1, map[string]any{"spaceId": client.SpaceID()})
 	if err != nil {
 		return nil, err
 	}
-	resp, err := services.ApiPost(client.Root.GetClient(), command, new(CreateDeploymentResponseV1), url)
+	resp, err := services.ApiPost(client.Sling(), command, new(CreateDeploymentResponseV1), url)
 	if err != nil {
 		return nil, err
 	}

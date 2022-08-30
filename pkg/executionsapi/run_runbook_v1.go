@@ -3,9 +3,9 @@ package executionsapi
 import (
 	"encoding/json"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/uritemplates"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
 type RunbookRunCommandV1 struct {
@@ -42,22 +42,22 @@ func (r *RunbookRunCommandV1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(command)
 }
 
-func RunbookRunV1(client *client.Client, command *RunbookRunCommandV1) (*RunbookRunResponseV1, error) {
+func RunbookRunV1(client newclient.Client, command *RunbookRunCommandV1) (*RunbookRunResponseV1, error) {
 	if command == nil {
 		return nil, internal.CreateInvalidParameterError("RunbookRunV1", "command")
 	}
-	if client.SpaceID == "" {
+	if client.SpaceID() == "" {
 		return nil, internal.CreateInvalidClientStateError("RunbookRunV1")
 	}
 
 	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
 	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-	command.SpaceIDOrName = client.SpaceID
-	url, err := client.URITemplateCache.Expand(uritemplates.CreateRunRunbookCommand, map[string]any{"spaceId": client.SpaceID})
+	command.SpaceIDOrName = client.SpaceID()
+	url, err := client.URITemplateCache().Expand(uritemplates.CreateRunRunbookCommand, map[string]any{"spaceId": client.SpaceID()})
 	if err != nil {
 		return nil, err
 	}
-	resp, err := services.ApiPost(client.Root.GetClient(), command, new(RunbookRunResponseV1), url)
+	resp, err := services.ApiPost(client.Sling(), command, new(RunbookRunResponseV1), url)
 	if err != nil {
 		return nil, err
 	}
