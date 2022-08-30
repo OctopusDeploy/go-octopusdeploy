@@ -1,8 +1,9 @@
-package executionsapi
+package runbooks
 
 import (
 	"encoding/json"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
@@ -14,16 +15,16 @@ type RunbookRunCommandV1 struct {
 	TenantNames      []string `json:"tenants,omitempty"`
 	TenantTags       []string `json:"tenantTags,omitempty"`
 	Snapshot         []string `json:"snapshot,omitempty"`
-	CreateExecutionAbstractCommandV1
+	deployments.CreateExecutionAbstractCommandV1
 }
 
 type RunbookRunResponseV1 struct {
-	DeploymentServerTasks []*DeploymentServerTask `json:"DeploymentServerTasks,omitempty"`
+	DeploymentServerTasks []*deployments.DeploymentServerTask `json:"DeploymentServerTasks,omitempty"`
 }
 
 func NewRunbookRunCommandV1(spaceIDOrName string, projectIDOrName string) *RunbookRunCommandV1 {
 	return &RunbookRunCommandV1{
-		CreateExecutionAbstractCommandV1: CreateExecutionAbstractCommandV1{
+		CreateExecutionAbstractCommandV1: deployments.CreateExecutionAbstractCommandV1{
 			SpaceIDOrName:   spaceIDOrName,
 			ProjectIDOrName: projectIDOrName,
 		},

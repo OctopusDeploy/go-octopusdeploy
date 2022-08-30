@@ -1,4 +1,4 @@
-package executionsapi
+package deployments
 
 import (
 	"encoding/json"

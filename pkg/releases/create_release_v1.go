@@ -1,4 +1,4 @@
-package executionsapi
+package releases
 
 import (
 	"encoding/json"
