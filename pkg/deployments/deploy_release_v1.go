@@ -36,9 +36,9 @@ type CreateDeploymentResponseV1 struct {
 type CreateDeploymentTenantedCommandV1 struct {
 	ReleaseVersion           string   `json:"releaseVersion"`  // required
 	EnvironmentName          string   `json:"environmentName"` // required
-	Tenant                   []string `json:"tenants,omitempty"`
+	Tenants                  []string `json:"tenants,omitempty"`
 	TenantTags               []string `json:"tenantTags,omitempty"`
-	ForcePackageRedeployment string   `json:"forcePackageRedeployment,omitempty"`
+	ForcePackageRedeployment bool     `json:"forcePackageRedeployment,omitempty"`
 	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot,omitempty"`
 	CreateExecutionAbstractCommandV1
 }
@@ -95,7 +95,7 @@ func CreateDeploymentTenantedV1(client newclient.Client, command *CreateDeployme
 type CreateDeploymentUntenantedCommandV1 struct {
 	ReleaseVersion           string   `json:"releaseVersion"`   // required
 	EnvironmentNames         []string `json:"environmentNames"` // required
-	ForcePackageRedeployment string   `json:"forcePackageRedeployment,omitempty"`
+	ForcePackageRedeployment bool     `json:"forcePackageRedeployment,omitempty"`
 	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot,omitempty"`
 	CreateExecutionAbstractCommandV1
 }
