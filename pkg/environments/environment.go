@@ -11,6 +11,7 @@ type Environment struct {
 	Name                       string `json:"Name" validate:"required"`
 	SortOrder                  int    `json:"SortOrder"`
 	UseGuidedFailure           bool   `json:"UseGuidedFailure"`
+	SpaceID                    string `json:"SpaceId"`
 
 	resources.Resource
 }

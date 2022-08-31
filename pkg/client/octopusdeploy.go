@@ -149,7 +149,6 @@ type Client struct {
 	WorkerToolsLatestImages        *workertoolslatestimages.WorkerToolsLatestImageService
 
 	// conform to newclient.Client temporarily until this class goes away
-	spaceID          string
 	uriTemplateCache *uritemplates.URITemplateCache
 }
 
@@ -437,7 +436,6 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		Workers:                        machines.NewWorkerService(base, workersPath, discoverWorkerPath, workerOperatingSystemsPath, workerShellsPath),
 		WorkerToolsLatestImages:        workertoolslatestimages.NewWorkerToolsLatestImageService(base, workerToolsLatestImagesPath),
 
-		spaceID:          spaceID,
 		uriTemplateCache: uritemplates.NewUriTemplateCache(),
 	}, nil
 }
@@ -447,11 +445,6 @@ func (n *Client) Sling() *sling.Sling {
 	return n.sling
 }
 
-func (n *Client) SpaceID() string {
-	return n.spaceID
-}
-
 func (n *Client) URITemplateCache() *uritemplates.URITemplateCache {
 	return n.uriTemplateCache
 }
-
