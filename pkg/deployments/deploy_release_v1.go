@@ -9,7 +9,8 @@ import (
 )
 
 type CreateExecutionAbstractCommandV1 struct {
-	SpaceIDOrName        string            `json:"spaceIdOrName"`
+	// also has awkward SpaceIDOrName; see CreateReleaseV1 for explanation
+	SpaceID              string            `json:"spaceId"`
 	ProjectIDOrName      string            `json:"projectName"`
 	ForcePackageDownload bool              `json:"forcePackageDownload,omitempty"`
 	SpecificMachineNames []string          `json:"specificMachineNames,omitempty"`
@@ -42,22 +43,22 @@ type CreateDeploymentTenantedCommandV1 struct {
 	CreateExecutionAbstractCommandV1
 }
 
-func NewCreateDeploymentTenantedCommandV1(spaceIDOrName string, projectIDOrName string) *CreateDeploymentTenantedCommandV1 {
+func NewCreateDeploymentTenantedCommandV1(spaceID string, projectIDOrName string) *CreateDeploymentTenantedCommandV1 {
 	return &CreateDeploymentTenantedCommandV1{
 		CreateExecutionAbstractCommandV1: CreateExecutionAbstractCommandV1{
-			SpaceIDOrName:   spaceIDOrName,
+			SpaceID:         spaceID,
 			ProjectIDOrName: projectIDOrName,
 		},
 	}
 }
 
-// MarshalJSON adds the redundant 'spaceId' parameter which is required by the server
+// MarshalJSON adds the redundant 'spaceIdOrName' parameter which is required by the server
 func (c *CreateDeploymentTenantedCommandV1) MarshalJSON() ([]byte, error) {
 	converted := struct {
-		SpaceID string `json:"spaceId"`
+		SpaceIDOrName string `json:"spaceIdOrName"`
 		CreateDeploymentTenantedCommandV1
 	}{
-		SpaceID:                           c.SpaceIDOrName,
+		SpaceIDOrName:                     c.SpaceID,
 		CreateDeploymentTenantedCommandV1: *c,
 	}
 
@@ -68,8 +69,8 @@ func CreateDeploymentTenantedV1(client newclient.Client, command *CreateDeployme
 	if command == nil {
 		return nil, internal.CreateInvalidParameterError("CreateDeploymentTenantedV1", "command")
 	}
-	if client.SpaceID() == "" {
-		return nil, internal.CreateInvalidClientStateError("CreateDeploymentTenantedV1")
+	if command.SpaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.SpaceID")
 	}
 	if command.ReleaseVersion == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.ReleaseVersion")
@@ -78,10 +79,7 @@ func CreateDeploymentTenantedV1(client newclient.Client, command *CreateDeployme
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.EnvironmentName")
 	}
 
-	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
-	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-	command.SpaceIDOrName = client.SpaceID()
-	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentTenantedCommandV1, map[string]any{"spaceId": client.SpaceID()})
+	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentTenantedCommandV1, map[string]any{"spaceId": command.SpaceID})
 	if err != nil {
 		return nil, err
 	}
@@ -102,25 +100,24 @@ type CreateDeploymentUntenantedCommandV1 struct {
 	CreateExecutionAbstractCommandV1
 }
 
-func NewCreateDeploymentUntenantedCommandV1(spaceIDOrName string, projectIDOrName string) *CreateDeploymentUntenantedCommandV1 {
+func NewCreateDeploymentUntenantedCommandV1(spaceID string, projectIDOrName string) *CreateDeploymentUntenantedCommandV1 {
 	return &CreateDeploymentUntenantedCommandV1{
 		CreateExecutionAbstractCommandV1: CreateExecutionAbstractCommandV1{
-			SpaceIDOrName:   spaceIDOrName,
+			SpaceID:         spaceID,
 			ProjectIDOrName: projectIDOrName,
 		},
 	}
 }
 
-// MarshalJSON adds the redundant 'spaceId' parameter which is required by the server
+// MarshalJSON adds the redundant 'spaceIdOrName' parameter which is required by the server
 func (c *CreateDeploymentUntenantedCommandV1) MarshalJSON() ([]byte, error) {
 	converted := struct {
-		SpaceID string `json:"spaceId"`
+		SpaceIDOrName string `json:"spaceIdOrName"`
 		CreateDeploymentUntenantedCommandV1
 	}{
-		SpaceID:                             c.SpaceIDOrName,
+		SpaceIDOrName:                       c.SpaceID,
 		CreateDeploymentUntenantedCommandV1: *c,
 	}
-
 	return json.Marshal(converted)
 }
 
@@ -128,8 +125,8 @@ func CreateDeploymentUntenantedV1(client newclient.Client, command *CreateDeploy
 	if command == nil {
 		return nil, internal.CreateInvalidParameterError("CreateDeploymentUntenantedV1", "command")
 	}
-	if client.SpaceID() == "" {
-		return nil, internal.CreateInvalidClientStateError("CreateDeploymentUntenantedV1")
+	if command.SpaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.SpaceID")
 	}
 	if command.ReleaseVersion == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.ReleaseVersion")
@@ -138,10 +135,7 @@ func CreateDeploymentUntenantedV1(client newclient.Client, command *CreateDeploy
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.EnvironmentNames")
 	}
 
-	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
-	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-	command.SpaceIDOrName = client.SpaceID()
-	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentUntenantedCommandV1, map[string]any{"spaceId": client.SpaceID()})
+	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentUntenantedCommandV1, map[string]any{"spaceId": command.SpaceID})
 	if err != nil {
 		return nil, err
 	}

@@ -8,9 +8,12 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
-type CreateReleaseCommandV1 struct {
-	// server requires "spaceId" as well, but this redundant data is mapped in MarshalJSON
-	SpaceIDOrName         string   `json:"spaceIdOrName"`
+type CreateCommandV1 struct {
+	// Note: the server requires both SpaceID and SpaceIDOrName, and is capable of looking up names from the JSON
+	// payload.
+	// It'd be nice to allow SpaceIDOrName, but the current server implementation requires a SpaceID
+	// (not a name) in the URL route, so we must force the caller to specify an ID only.
+	SpaceID               string   `json:"spaceId"`
 	ProjectIDOrName       string   `json:"projectName"`
 	PackageVersion        string   `json:"packageVersion,omitempty"`
 	GitCommit             string   `json:"gitCommit,omitempty"`
@@ -32,37 +35,36 @@ type CreateReleaseResponseV1 struct {
 	AutomaticallyDeployedEnvironments string `json:"AutomaticallyDeployedEnvironments,omitempty"`
 }
 
-func NewCreateReleaseCommandV1(spaceIDOrName string, projectIDOrName string) *CreateReleaseCommandV1 {
-	return &CreateReleaseCommandV1{
-		SpaceIDOrName:   spaceIDOrName,
+func NewCreateReleaseCommandV1(spaceID string, projectIDOrName string) *CreateCommandV1 {
+	return &CreateCommandV1{
+		SpaceID:         spaceID,
 		ProjectIDOrName: projectIDOrName,
 	}
 }
 
-// MarshalJSON adds the redundant 'spaceId' parameter which is required by the server
-func (c *CreateReleaseCommandV1) MarshalJSON() ([]byte, error) {
+// MarshalJSON adds the redundant 'SpaceIDOrName' parameter which is required by the server
+func (c *CreateCommandV1) MarshalJSON() ([]byte, error) {
 	createReleaseV1 := struct {
-		SpaceID string `json:"spaceId"`
-		CreateReleaseCommandV1
+		SpaceIDOrName string `json:"spaceIdOrName"`
+		CreateCommandV1
 	}{
-		SpaceID:                c.SpaceIDOrName,
-		CreateReleaseCommandV1: *c,
+		SpaceIDOrName:   c.SpaceID,
+		CreateCommandV1: *c,
 	}
 	return json.Marshal(createReleaseV1)
 }
 
-func CreateReleaseV1(client newclient.Client, command *CreateReleaseCommandV1) (*CreateReleaseResponseV1, error) {
+func CreateReleaseV1(client newclient.Client, command *CreateCommandV1) (*CreateReleaseResponseV1, error) {
 	if command == nil {
-		return nil, internal.CreateInvalidParameterError("CreateV1", "command")
+		return nil, internal.CreateInvalidParameterError("CreateReleaseV1", "command")
 	}
-	if client.SpaceID() == "" {
-		return nil, internal.CreateInvalidClientStateError("CreateV1")
+	if command.SpaceID == "" {
+		return nil, internal.CreateInvalidParameterError("CreateReleaseV1", "command.SpaceID")
 	}
 
 	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
 	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-	command.SpaceIDOrName = client.SpaceID()
-	url, err := client.URITemplateCache().Expand(uritemplates.CreateReleaseCommandV1, map[string]any{"spaceId": client.SpaceID()})
+	url, err := client.URITemplateCache().Expand(uritemplates.CreateReleaseCommandV1, map[string]any{"spaceId": command.SpaceID})
 	if err != nil {
 		return nil, err
 	}

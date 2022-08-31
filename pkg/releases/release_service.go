@@ -149,26 +149,33 @@ func (a *anonymousDisposable) IsDisposed() bool {
 	return a.isDisposed
 }
 
-func getReleasesInProjectChannel(client newclient.Client, projectID string, channelID string, disposable BooleanDisposable, dispatch func(*resources.Resources[*Release], error)) {
+func getReleasesInProjectChannel(
+	client newclient.Client,
+	spaceID string,
+	projectID string,
+	channelID string,
+	disposable BooleanDisposable,
+	dispatch func(*resources.Resources[*Release], error),
+) {
 	if client == nil {
-		dispatch(nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "client"))
+		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "client"))
 		return
 	}
 	if projectID == "" {
-		dispatch(nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "project"))
+		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "project"))
 		return
 	}
 	if channelID == "" {
-		dispatch(nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "channel"))
+		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "channel"))
 		return
 	}
-	if client.SpaceID() == "" {
-		dispatch(nil, internal.CreateInvalidClientStateError("GetReleasesForChannel"))
+	if spaceID == "" {
+		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "spaceID"))
 		return
 	}
 
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleasesByProjectAndChannel, map[string]any{
-		"spaceId":   client.SpaceID(),
+		"spaceId":   spaceID,
 		"projectId": projectID,
 		"channelId": channelID,
 	})
@@ -197,11 +204,11 @@ func getReleasesInProjectChannel(client newclient.Client, projectID string, chan
 }
 
 // GetReleasesInProjectChannel is EXPERIMENTAL
-func GetReleasesInProjectChannel(client newclient.Client, projectID string, channelID string) ([]*Release, error) {
+func GetReleasesInProjectChannel(client newclient.Client, spaceID string, projectID string, channelID string) ([]*Release, error) {
 	var results []*Release
 	var errorResult error
 
-	getReleasesInProjectChannel(client, projectID, channelID, nil, func(pageOfResults *resources.Resources[*Release], err error) {
+	getReleasesInProjectChannel(client, spaceID, projectID, channelID, nil, func(pageOfResults *resources.Resources[*Release], err error) {
 		if err != nil {
 			errorResult = err
 		} else if pageOfResults != nil {
@@ -212,7 +219,7 @@ func GetReleasesInProjectChannel(client newclient.Client, projectID string, chan
 }
 
 // GetReleasesInProjectChannelAsync is EXPERIMENTAL. This is basically rx
-func GetReleasesInProjectChannelAsync(client newclient.Client, projectID string, channelID string) (chan ResourcesOrError[*Release], Disposable) {
+func GetReleasesInProjectChannelAsync(client newclient.Client, spaceID string, projectID string, channelID string) (chan ResourcesOrError[*Release], Disposable) {
 	result := make(chan ResourcesOrError[*Release])
 
 	disposable := &anonymousDisposable{
@@ -222,7 +229,7 @@ func GetReleasesInProjectChannelAsync(client newclient.Client, projectID string,
 	}
 
 	go func() {
-		getReleasesInProjectChannel(client, projectID, channelID, disposable, func(pageOfResults *resources.Resources[*Release], err error) {
+		getReleasesInProjectChannel(client, spaceID, projectID, channelID, disposable, func(pageOfResults *resources.Resources[*Release], err error) {
 			if err != nil {
 				result <- ResourcesOrError[*Release]{Error: err}
 			} else if pageOfResults != nil {
@@ -235,9 +242,12 @@ func GetReleasesInProjectChannelAsync(client newclient.Client, projectID string,
 }
 
 // GetReleaseInProject looks up a single release in the given project
-func GetReleaseInProject(client newclient.Client, projectID string, releaseVersion string) (*Release, error) {
+func GetReleaseInProject(client newclient.Client, spaceID string, projectID string, releaseVersion string) (*Release, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "project")
 	}
 	if projectID == "" {
 		return nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "project")
@@ -247,7 +257,7 @@ func GetReleaseInProject(client newclient.Client, projectID string, releaseVersi
 	}
 
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleasesByProject, map[string]any{
-		"spaceId":   client.SpaceID(),
+		"spaceId":   spaceID,
 		"projectId": projectID,
 		"version":   releaseVersion,
 	})
@@ -259,6 +269,5 @@ func GetReleaseInProject(client newclient.Client, projectID string, releaseVersi
 	if err != nil {
 		return nil, err
 	}
-
 	return rawResp.(*Release), nil
 }

@@ -3,6 +3,7 @@ package deployments
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -121,4 +122,34 @@ func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcess) 
 	}
 
 	return resp.(*DeploymentProcess), nil
+}
+
+// ----- Experimental --------
+
+// GetDeploymentProcess fetches a deployment process. This may either be the project level process (template),
+// or a process snapshot from a Release, depending on the value of ID
+func GetDeploymentProcess(client newclient.Client, spaceID string, ID string) (*DeploymentProcess, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetDeploymentProcess", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetDeploymentProcess", "spaceID")
+	}
+	if ID == "" {
+		return nil, internal.CreateInvalidParameterError("GetDeploymentProcess", "ID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.DeploymentProcesses, map[string]any{
+		"spaceId": spaceID,
+		"id":      ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	rawResp, err := api.ApiGet(client.Sling(), new(DeploymentProcess), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	return rawResp.(*DeploymentProcess), nil
 }

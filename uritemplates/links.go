@@ -5,11 +5,12 @@ package uritemplates
 // NOTE: If the server *were* to ever remove an api link, we'd need to do some sort of version detection to compensate.
 
 const (
-	Releases                            = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"
 	CreateReleaseCommandV1              = "/api/{spaceId}/releases/create/v1"
 	CreateDeploymentTenantedCommandV1   = "/api/{spaceId}/deployments/create/tenanted/v1"
 	CreateDeploymentUntenantedCommandV1 = "/api/{spaceId}/deployments/create/untenanted/v1"
 	CreateRunRunbookCommand             = "/api/{spaceId}/runbook-runs/create/v1"
+	DeploymentProcesses                 = "/api/{spaceId}/deploymentprocesses{/id}{?skip,take,ids}"
+	Releases                            = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"
 	ReleasesByProject                   = "/api/{spaceId}/projects/{projectId}/releases{/version}{?skip,take,searchByVersion}"
 	ReleasesByProjectAndChannel         = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"
 )
