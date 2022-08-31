@@ -13,4 +13,5 @@ const (
 	Releases                            = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"
 	ReleasesByProject                   = "/api/{spaceId}/projects/{projectId}/releases{/version}{?skip,take,searchByVersion}"
 	ReleasesByProjectAndChannel         = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"
+	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"
 )
