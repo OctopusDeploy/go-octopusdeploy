@@ -8,7 +8,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
-type CreateCommandV1 struct {
+type CreateReleaseCommandV1 struct {
 	// Note: the server requires both SpaceID and SpaceIDOrName, and is capable of looking up names from the JSON
 	// payload.
 	// It'd be nice to allow SpaceIDOrName, but the current server implementation requires a SpaceID
@@ -35,26 +35,26 @@ type CreateReleaseResponseV1 struct {
 	AutomaticallyDeployedEnvironments string `json:"AutomaticallyDeployedEnvironments,omitempty"`
 }
 
-func NewCreateReleaseCommandV1(spaceID string, projectIDOrName string) *CreateCommandV1 {
-	return &CreateCommandV1{
+func NewCreateReleaseCommandV1(spaceID string, projectIDOrName string) *CreateReleaseCommandV1 {
+	return &CreateReleaseCommandV1{
 		SpaceID:         spaceID,
 		ProjectIDOrName: projectIDOrName,
 	}
 }
 
 // MarshalJSON adds the redundant 'SpaceIDOrName' parameter which is required by the server
-func (c *CreateCommandV1) MarshalJSON() ([]byte, error) {
+func (c *CreateReleaseCommandV1) MarshalJSON() ([]byte, error) {
 	createReleaseV1 := struct {
 		SpaceIDOrName string `json:"spaceIdOrName"`
-		CreateCommandV1
+		CreateReleaseCommandV1
 	}{
-		SpaceIDOrName:   c.SpaceID,
-		CreateCommandV1: *c,
+		SpaceIDOrName:          c.SpaceID,
+		CreateReleaseCommandV1: *c,
 	}
 	return json.Marshal(createReleaseV1)
 }
 
-func CreateReleaseV1(client newclient.Client, command *CreateCommandV1) (*CreateReleaseResponseV1, error) {
+func CreateReleaseV1(client newclient.Client, command *CreateReleaseCommandV1) (*CreateReleaseResponseV1, error) {
 	if command == nil {
 		return nil, internal.CreateInvalidParameterError("CreateReleaseV1", "command")
 	}
