@@ -5,12 +5,25 @@ import (
 	"strings"
 )
 
+type ControlType string
+
+const (
+	ControlTypeSingleLineText = ControlType("SingleLineText")
+	ControlTypeMultiLineText  = ControlType("MultiLineText")
+	ControlTypeSelect         = ControlType("Select")
+	ControlTypeCheckbox       = ControlType("Checkbox")
+	ControlTypeSensitive      = ControlType("Sensitive")
+	ControlTypeStepName       = ControlType("StepName")
+	ControlTypeCertificate    = ControlType("Certificate")
+	ControlTypeWorkerPool     = ControlType("WorkerPool")
+)
+
 type DisplaySettings struct {
-	ControlType   string            `json:"Octopus.ControlType"`
+	ControlType   ControlType       `json:"Octopus.ControlType"`
 	SelectOptions map[string]string `json:"Octopus.SelectOptions,omitempty"`
 }
 
-func NewDisplaySettings(controlType string, selectOptions map[string]string) *DisplaySettings {
+func NewDisplaySettings(controlType ControlType, selectOptions map[string]string) *DisplaySettings {
 	return &DisplaySettings{
 		ControlType:   controlType,
 		SelectOptions: selectOptions,
@@ -23,7 +36,7 @@ func (d *DisplaySettings) MarshalJSON() ([]byte, error) {
 		ControlType   string `json:"Octopus.ControlType"`
 		SelectOptions string `json:"Octopus.SelectOptions,omitempty"`
 	}{
-		ControlType: d.ControlType,
+		ControlType: string(d.ControlType),
 	}
 
 	for k, v := range d.SelectOptions {
@@ -44,7 +57,7 @@ func (d *DisplaySettings) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	d.ControlType = fields.ControlType
+	d.ControlType = ControlType(fields.ControlType)
 
 	var displaySettings map[string]*json.RawMessage
 	if err := json.Unmarshal(b, &displaySettings); err != nil {
