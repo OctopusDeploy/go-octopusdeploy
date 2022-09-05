@@ -19,8 +19,8 @@ func TestDisplaySettings(t *testing.T) {
 	value2 := internal.GetRandomName()
 
 	selectOptions := []*variables.SelectOption{
-		{Key: value1, Value: option1},
-		{Key: value2, Value: option2},
+		{Value: value1, DisplayName: option1},
+		{Value: value2, DisplayName: option2},
 	}
 
 	displaySettings := variables.NewDisplaySettings(controlType, selectOptions)
@@ -33,9 +33,9 @@ func TestDisplaySettingsAsJson(t *testing.T) {
 	controlType := variables.ControlTypeSelect
 
 	displaySettings := variables.NewDisplaySettings(controlType, []*variables.SelectOption{
-		{Key: "Value-1", Value: "Option-1"},
-		{Key: "Value-2", Value: "Option-2"},
-		{Key: "Value-3", Value: "Option-3"},
+		{Value: "Value-1", DisplayName: "Option-1"},
+		{Value: "Value-2", DisplayName: "Option-2"},
+		{Value: "Value-3", DisplayName: "Option-3"},
 	})
 	require.NotNil(t, displaySettings)
 
@@ -61,9 +61,9 @@ func TestSelectOptions(t *testing.T) {
 	value3 := internal.GetRandomName()
 
 	selectOptions := []*variables.SelectOption{
-		{Key: value1, Value: option1},
-		{Key: value2, Value: option2},
-		{Key: value3, Value: option3},
+		{Value: value1, DisplayName: option1},
+		{Value: value2, DisplayName: option2},
+		{Value: value3, DisplayName: option3},
 	}
 	displaySettings := variables.NewDisplaySettings(controlType, selectOptions)
 
@@ -91,8 +91,8 @@ func TestDisplaySettingsFromJson(t *testing.T) {
 	require.NotNil(t, displaySettings.SelectOptions)
 	require.Len(t, displaySettings.SelectOptions, 3)
 	require.Equal(t, []*variables.SelectOption{
-		{Key: "Value-1", Value: "Option-1"},
-		{Key: "Value-2", Value: "Option-2"},
-		{Key: "Value-3", Value: "Option-3"},
+		{Value: "Value-1", DisplayName: "Option-1"},
+		{Value: "Value-2", DisplayName: "Option-2"},
+		{Value: "Value-3", DisplayName: "Option-3"},
 	}, displaySettings.SelectOptions)
 }

@@ -20,8 +20,8 @@ const (
 )
 
 type SelectOption struct {
-	Key   string
-	Value string
+	Value       string
+	DisplayName string
 }
 
 type DisplaySettings struct {
@@ -46,7 +46,7 @@ func (d *DisplaySettings) MarshalJSON() ([]byte, error) {
 	}
 
 	for _, opt := range d.SelectOptions {
-		displaySettings.SelectOptions += fmt.Sprintf("%s|%s\n", opt.Key, opt.Value)
+		displaySettings.SelectOptions += fmt.Sprintf("%s|%s\n", opt.Value, opt.DisplayName)
 	}
 
 	displaySettings.SelectOptions = strings.TrimSuffix(displaySettings.SelectOptions, "\n")
@@ -81,7 +81,7 @@ func (d *DisplaySettings) UnmarshalJSON(b []byte) error {
 		for _, kv := range strings.Split(*selectOptionsDelimitedString, "\n") {
 			pairs := strings.SplitN(kv, "|", 2)
 			if len(pairs) == 2 { // ignore malformed options; server shouldn't send them anyway
-				d.SelectOptions = append(d.SelectOptions, &SelectOption{Key: pairs[0], Value: pairs[1]})
+				d.SelectOptions = append(d.SelectOptions, &SelectOption{Value: pairs[0], DisplayName: pairs[1]})
 			}
 		}
 	}
