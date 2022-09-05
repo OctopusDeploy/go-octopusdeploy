@@ -2,6 +2,7 @@ package variables
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -18,12 +19,17 @@ const (
 	ControlTypeWorkerPool     = ControlType("WorkerPool")
 )
 
-type DisplaySettings struct {
-	ControlType   ControlType       `json:"Octopus.ControlType"`
-	SelectOptions map[string]string `json:"Octopus.SelectOptions,omitempty"`
+type SelectOption struct {
+	Key   string
+	Value string
 }
 
-func NewDisplaySettings(controlType ControlType, selectOptions map[string]string) *DisplaySettings {
+type DisplaySettings struct {
+	ControlType   ControlType     `json:"Octopus.ControlType"`
+	SelectOptions []*SelectOption `json:"Octopus.SelectOptions,omitempty"`
+}
+
+func NewDisplaySettings(controlType ControlType, selectOptions []*SelectOption) *DisplaySettings {
 	return &DisplaySettings{
 		ControlType:   controlType,
 		SelectOptions: selectOptions,
@@ -39,8 +45,8 @@ func (d *DisplaySettings) MarshalJSON() ([]byte, error) {
 		ControlType: string(d.ControlType),
 	}
 
-	for k, v := range d.SelectOptions {
-		displaySettings.SelectOptions += k + "|" + v + "\n"
+	for _, opt := range d.SelectOptions {
+		displaySettings.SelectOptions += fmt.Sprintf("%s|%s\n", opt.Key, opt.Value)
 	}
 
 	displaySettings.SelectOptions = strings.TrimSuffix(displaySettings.SelectOptions, "\n")
@@ -65,7 +71,7 @@ func (d *DisplaySettings) UnmarshalJSON(b []byte) error {
 	}
 
 	if displaySettings["Octopus.SelectOptions"] != nil {
-		d.SelectOptions = map[string]string{}
+		d.SelectOptions = make([]*SelectOption, 0)
 
 		var selectOptionsDelimitedString *string
 		if err := json.Unmarshal(*displaySettings["Octopus.SelectOptions"], &selectOptionsDelimitedString); err != nil {
@@ -73,8 +79,10 @@ func (d *DisplaySettings) UnmarshalJSON(b []byte) error {
 		}
 
 		for _, kv := range strings.Split(*selectOptionsDelimitedString, "\n") {
-			pairs := strings.Split(kv, "|")
-			d.SelectOptions[pairs[0]] = pairs[1]
+			pairs := strings.SplitN(kv, "|", 2)
+			if len(pairs) == 2 { // ignore malformed options; server shouldn't send them anyway
+				d.SelectOptions = append(d.SelectOptions, &SelectOption{Key: pairs[0], Value: pairs[1]})
+			}
 		}
 	}
 
