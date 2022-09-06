@@ -116,62 +116,19 @@ func (s *ReleaseService) GetReleases(channel *channels.Channel, releaseQuery ...
 
 // ----- Experimental ---------------------------------------------------------
 
-// ResourcesOrError carries either a resources response or error
-type ResourcesOrError[T any] struct {
-	Response *resources.Resources[T]
-	Error    error
-}
-
-type Disposable interface {
-	Dispose()
-}
-
-type BooleanDisposable interface {
-	Disposable
-	IsDisposed() bool
-}
-
-type anonymousDisposable struct {
-	isDisposed bool
-	dispose    func()
-}
-
-// Dispose conforms our anonymousDisposable to Disposable
-func (a *anonymousDisposable) Dispose() {
-	a.isDisposed = true
-	if a.dispose != nil {
-		a.dispose()
-	}
-}
-
-// IsDisposed conforms our anonymousDisposable to BooleanDisposable
-func (a *anonymousDisposable) IsDisposed() bool {
-	return a.isDisposed
-}
-
-func getReleasesInProjectChannel(
-	client newclient.Client,
-	spaceID string,
-	projectID string,
-	channelID string,
-	disposable BooleanDisposable,
-	dispatch func(*resources.Resources[*Release], error),
-) {
+// GetReleasesInProjectChannel is EXPERIMENTAL
+func GetReleasesInProjectChannel(client newclient.Client, spaceID string, projectID string, channelID string) ([]*Release, error) {
 	if client == nil {
-		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "client"))
-		return
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "client")
 	}
 	if projectID == "" {
-		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "project"))
-		return
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "project")
 	}
 	if channelID == "" {
-		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "channel"))
-		return
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "channel")
 	}
 	if spaceID == "" {
-		dispatch(nil, internal.CreateInvalidParameterError("getReleasesInProjectChannel", "spaceID"))
-		return
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "spaceID")
 	}
 
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleasesByProjectAndChannel, map[string]any{
@@ -180,65 +137,26 @@ func getReleasesInProjectChannel(
 		"channelId": channelID,
 	})
 	if err != nil {
-		dispatch(nil, err)
-		return
+		return nil, err
 	}
 
 	loadNextPage := true
 
-	for loadNextPage {
+	var allResults []*Release
+	for loadNextPage { // can't stop the loop
 		rawResp, err := api.ApiGet(client.Sling(), new(resources.Resources[*Release]), expandedUri)
-		if disposable != nil && disposable.IsDisposed() {
-			return
-		}
+
 		if err != nil {
-			dispatch(nil, err)
-			return
+			return nil, err
 		}
 
 		resp := rawResp.(*resources.Resources[*Release])
-		dispatch(resp, nil)
+		allResults = append(allResults, resp.Items...)
 
 		expandedUri, loadNextPage = services.LoadNextPage(resp.PagedResults)
 	}
-}
 
-// GetReleasesInProjectChannel is EXPERIMENTAL
-func GetReleasesInProjectChannel(client newclient.Client, spaceID string, projectID string, channelID string) ([]*Release, error) {
-	var results []*Release
-	var errorResult error
-
-	getReleasesInProjectChannel(client, spaceID, projectID, channelID, nil, func(pageOfResults *resources.Resources[*Release], err error) {
-		if err != nil {
-			errorResult = err
-		} else if pageOfResults != nil {
-			results = append(results, pageOfResults.Items...)
-		} // else if both are nil we have all the results, nothing to do here
-	})
-	return results, errorResult
-}
-
-// GetReleasesInProjectChannelAsync is EXPERIMENTAL. This is basically rx
-func GetReleasesInProjectChannelAsync(client newclient.Client, spaceID string, projectID string, channelID string) (chan ResourcesOrError[*Release], Disposable) {
-	result := make(chan ResourcesOrError[*Release])
-
-	disposable := &anonymousDisposable{
-		dispose: func() {
-			close(result)
-		},
-	}
-
-	go func() {
-		getReleasesInProjectChannel(client, spaceID, projectID, channelID, disposable, func(pageOfResults *resources.Resources[*Release], err error) {
-			if err != nil {
-				result <- ResourcesOrError[*Release]{Error: err}
-			} else if pageOfResults != nil {
-				result <- ResourcesOrError[*Release]{Response: pageOfResults}
-			} // else if both are nil we have all the results, nothing to do here
-		})
-		disposable.Dispose()
-	}()
-	return result, disposable
+	return allResults, nil
 }
 
 // GetReleaseInProject looks up a single release in the given project
