@@ -141,18 +141,18 @@ func (s *DeploymentService) GetDeployments(release *releases.Release, deployment
 	return resp.(*resources.Resources[*Deployment]), nil
 }
 
-func (s *DeploymentService) GetProgression(release *releases.Release) (*releases.Progression, error) {
+func (s *DeploymentService) GetProgression(release *releases.Release) (*releases.LifecycleProgression, error) {
 	if release == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetDeployments, constants.ParameterRelease)
 	}
 
 	path := release.GetLinks()[constants.LinkProgression]
-	resp, err := api.ApiGet(s.GetClient(), new(releases.Progression), path)
+	resp, err := api.ApiGet(s.GetClient(), new(releases.LifecycleProgression), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*releases.Progression), nil
+	return resp.(*releases.LifecycleProgression), nil
 }
 
 // GetDeploymentSettings loads the deployment settings for a project.
