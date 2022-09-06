@@ -3,6 +3,7 @@ package deployments
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
@@ -186,4 +187,38 @@ func (s *DeploymentService) GetDeploymentSettings(project *projects.Project, git
 		return nil, err
 	}
 	return resp.(*DeploymentSettings), nil
+}
+
+// GetReleaseDeploymentPreview gets a preview of a release for a given environment.
+// This is used by the portal to show which machines would be deployed to, and other information about the deployment,
+// before proceeding with it. The CLI uses it to build the selector for picking specific machines to deploy to
+func GetReleaseDeploymentPreview(client newclient.Client, spaceID string, releaseID string, environmentID string, includeDisabledSteps bool) (*DeploymentPreview, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreview", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreview", "spaceID")
+	}
+	if releaseID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreview", "releaseID")
+	}
+	if environmentID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreview", "environmentID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseDeploymentPreview, map[string]any{
+		"spaceId":              spaceID,
+		"releaseId":            releaseID,
+		"environmentId":        environmentID,
+		"includeDisabledSteps": includeDisabledSteps,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	rawResp, err := api.ApiGet(client.Sling(), new(DeploymentPreview), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	return rawResp.(*DeploymentPreview), nil
 }
