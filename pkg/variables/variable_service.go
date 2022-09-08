@@ -2,6 +2,8 @@ package variables
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -313,3 +315,34 @@ func (s *VariableService) MatchesScope(variableScope VariableScope, definedScope
 }
 
 var _ services.IService = &VariableService{}
+
+// ----- new -------
+
+// GetVariableSet returns the variable set with matching ID.
+// This might be a project level variable set (ID might be 'variableset-Projects-314')
+// or it might be a release snapshot variable set (ID might be 'variableset-Projects-314-s-2-XM74V')
+func GetVariableSet(client newclient.Client, spaceID string, ID string) (*VariableSet, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetVariableSet", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetVariableSet", "project")
+	}
+	if ID == "" {
+		return nil, internal.CreateInvalidParameterError("GetVariableSet", "ID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.Variables, map[string]any{
+		"spaceId": spaceID,
+		"id":      ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	rawResp, err := api.ApiGet(client.Sling(), new(VariableSet), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	return rawResp.(*VariableSet), nil
+}

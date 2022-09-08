@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -146,6 +147,9 @@ type Client struct {
 	WorkerPools                    *workerpools.WorkerPoolService
 	Workers                        *machines.WorkerService
 	WorkerToolsLatestImages        *workertoolslatestimages.WorkerToolsLatestImageService
+
+	// conform to newclient.Client temporarily until this class goes away
+	uriTemplateCache *uritemplates.URITemplateCache
 }
 
 func IsAPIKey(apiKey string) bool {
@@ -431,5 +435,16 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		WorkerPools:                    workerpools.NewWorkerPoolService(base, workerPoolsPath, workerPoolsDynamicWorkerTypesPath, workerPoolsSortOrderPath, workerPoolsSummaryPath, workerPoolsSupportedTypesPath),
 		Workers:                        machines.NewWorkerService(base, workersPath, discoverWorkerPath, workerOperatingSystemsPath, workerShellsPath),
 		WorkerToolsLatestImages:        workertoolslatestimages.NewWorkerToolsLatestImageService(base, workerToolsLatestImagesPath),
+
+		uriTemplateCache: uritemplates.NewUriTemplateCache(),
 	}, nil
+}
+
+// confirm to newclient.Client interface for compatibility
+func (n *Client) Sling() *sling.Sling {
+	return n.sling
+}
+
+func (n *Client) URITemplateCache() *uritemplates.URITemplateCache {
+	return n.uriTemplateCache
 }

@@ -2,15 +2,34 @@ package variables
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
-type DisplaySettings struct {
-	ControlType   string            `json:"Octopus.ControlType"`
-	SelectOptions map[string]string `json:"Octopus.SelectOptions,omitempty"`
+type ControlType string
+
+const (
+	ControlTypeSingleLineText = ControlType("SingleLineText")
+	ControlTypeMultiLineText  = ControlType("MultiLineText")
+	ControlTypeSelect         = ControlType("Select")
+	ControlTypeCheckbox       = ControlType("Checkbox")
+	ControlTypeSensitive      = ControlType("Sensitive")
+	ControlTypeStepName       = ControlType("StepName")
+	ControlTypeCertificate    = ControlType("Certificate")
+	ControlTypeWorkerPool     = ControlType("WorkerPool")
+)
+
+type SelectOption struct {
+	Value       string
+	DisplayName string
 }
 
-func NewDisplaySettings(controlType string, selectOptions map[string]string) *DisplaySettings {
+type DisplaySettings struct {
+	ControlType   ControlType     `json:"Octopus.ControlType"`
+	SelectOptions []*SelectOption `json:"Octopus.SelectOptions,omitempty"`
+}
+
+func NewDisplaySettings(controlType ControlType, selectOptions []*SelectOption) *DisplaySettings {
 	return &DisplaySettings{
 		ControlType:   controlType,
 		SelectOptions: selectOptions,
@@ -23,11 +42,11 @@ func (d *DisplaySettings) MarshalJSON() ([]byte, error) {
 		ControlType   string `json:"Octopus.ControlType"`
 		SelectOptions string `json:"Octopus.SelectOptions,omitempty"`
 	}{
-		ControlType: d.ControlType,
+		ControlType: string(d.ControlType),
 	}
 
-	for k, v := range d.SelectOptions {
-		displaySettings.SelectOptions += k + "|" + v + "\n"
+	for _, opt := range d.SelectOptions {
+		displaySettings.SelectOptions += fmt.Sprintf("%s|%s\n", opt.Value, opt.DisplayName)
 	}
 
 	displaySettings.SelectOptions = strings.TrimSuffix(displaySettings.SelectOptions, "\n")
@@ -44,7 +63,7 @@ func (d *DisplaySettings) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	d.ControlType = fields.ControlType
+	d.ControlType = ControlType(fields.ControlType)
 
 	var displaySettings map[string]*json.RawMessage
 	if err := json.Unmarshal(b, &displaySettings); err != nil {
@@ -52,7 +71,7 @@ func (d *DisplaySettings) UnmarshalJSON(b []byte) error {
 	}
 
 	if displaySettings["Octopus.SelectOptions"] != nil {
-		d.SelectOptions = map[string]string{}
+		d.SelectOptions = make([]*SelectOption, 0)
 
 		var selectOptionsDelimitedString *string
 		if err := json.Unmarshal(*displaySettings["Octopus.SelectOptions"], &selectOptionsDelimitedString); err != nil {
@@ -60,8 +79,10 @@ func (d *DisplaySettings) UnmarshalJSON(b []byte) error {
 		}
 
 		for _, kv := range strings.Split(*selectOptionsDelimitedString, "\n") {
-			pairs := strings.Split(kv, "|")
-			d.SelectOptions[pairs[0]] = pairs[1]
+			pairs := strings.SplitN(kv, "|", 2)
+			if len(pairs) == 2 { // ignore malformed options; server shouldn't send them anyway
+				d.SelectOptions = append(d.SelectOptions, &SelectOption{Value: pairs[0], DisplayName: pairs[1]})
+			}
 		}
 	}
 

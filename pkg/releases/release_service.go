@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -62,18 +63,6 @@ func (s *ReleaseService) Get(releasesQuery ...ReleasesQuery) (*resources.Resourc
 	return resp.(*resources.Resources[*Release]), nil
 }
 
-func (s *ReleaseService) CreateV1(createReleaseV1 *CreateReleaseV1) (*CreateReleaseResponseV1, error) {
-	if createReleaseV1 == nil {
-		return nil, internal.CreateInvalidParameterError("CreateV1", "createReleaseV1")
-	}
-	resp, err := services.ApiPost(s.GetClient(), createReleaseV1, new(CreateReleaseResponseV1), s.GetBasePath()+"/create/v1")
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*CreateReleaseResponseV1), nil
-}
-
 // GetByID returns the release that matches the input ID. If one cannot be
 // found, it returns nil and an error.
 func (s *ReleaseService) GetByID(id string) (*Release, error) {
@@ -123,4 +112,80 @@ func (s *ReleaseService) GetReleases(channel *channels.Channel, releaseQuery ...
 	}
 
 	return resp.(*resources.Resources[*Release]), nil
+}
+
+// ----- Experimental ---------------------------------------------------------
+
+// GetReleasesInProjectChannel is EXPERIMENTAL
+func GetReleasesInProjectChannel(client newclient.Client, spaceID string, projectID string, channelID string) ([]*Release, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "client")
+	}
+	if projectID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "project")
+	}
+	if channelID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "channel")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleasesInProjectChannel", "spaceID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleasesByProjectAndChannel, map[string]any{
+		"spaceId":   spaceID,
+		"projectId": projectID,
+		"channelId": channelID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	loadNextPage := true
+
+	var allResults []*Release
+	for loadNextPage { // can't stop the loop
+		rawResp, err := api.ApiGet(client.Sling(), new(resources.Resources[*Release]), expandedUri)
+
+		if err != nil {
+			return nil, err
+		}
+
+		resp := rawResp.(*resources.Resources[*Release])
+		allResults = append(allResults, resp.Items...)
+
+		expandedUri, loadNextPage = services.LoadNextPage(resp.PagedResults)
+	}
+
+	return allResults, nil
+}
+
+// GetReleaseInProject looks up a single release in the given project
+func GetReleaseInProject(client newclient.Client, spaceID string, projectID string, releaseVersion string) (*Release, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "project")
+	}
+	if projectID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "project")
+	}
+	if releaseVersion == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleasesForChannel", "channel")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleasesByProject, map[string]any{
+		"spaceId":   spaceID,
+		"projectId": projectID,
+		"version":   releaseVersion,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	rawResp, err := api.ApiGet(client.Sling(), new(Release), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	return rawResp.(*Release), nil
 }
