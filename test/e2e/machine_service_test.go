@@ -94,7 +94,7 @@ func IsEqualDeploymentTargets(t *testing.T, expected *machines.DeploymentTarget,
 
 	// machine fields
 	assert.Equal(t, expected.Endpoint, actual.Endpoint)
-	assert.Equal(t, expected.HasLatestCalamari, actual.HasLatestCalamari)
+	// asserting on actual.HasLatestCalamari is unreliable in an e2e test because it changes randomly depending on the octopus server docker container
 	assert.Equal(t, expected.HealthStatus, actual.HealthStatus)
 	assert.Equal(t, expected.IsDisabled, actual.IsDisabled)
 	assert.Equal(t, expected.IsInProcess, actual.IsInProcess)
