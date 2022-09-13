@@ -30,9 +30,9 @@ type CreateReleaseCommandV1 struct {
 type CreateReleaseResponseV1 struct {
 	ReleaseID      string `json:"ReleaseId"`
 	ReleaseVersion string `json:"ReleaseVersion"`
-	// q: the server has this as IDictionary<DeploymentEnvironmentName, IEnumerable<TenantName>> which would
-	// translate to map[string][]string in go. Can JSON serialize that?
-	AutomaticallyDeployedEnvironments string `json:"AutomaticallyDeployedEnvironments,omitempty"`
+	// the server returns AutomaticallyDeployedEnvironments as an IDictionary<DeploymentEnvironmentName, IEnumerable<TenantName>> which would
+	// translate to map[string][]string in go. However, AutomaticallyDeployedEnvironments is an unfinished+abandoned feature so
+	// don't return it to the end user
 }
 
 func NewCreateReleaseCommandV1(spaceID string, projectIDOrName string) *CreateReleaseCommandV1 {
