@@ -31,7 +31,7 @@ func FromJson(rawMessage *json.RawMessage) (ITriggerFilter, error) {
 		err := json.Unmarshal(*rawMessage, &filter)
 		return filter, err
 	case DaysPerMonthSchedule:
-		var filter *monthlyScheduledTriggerFilter
+		var filter *DaysPerMonthScheduledTriggerFilter
 		err := json.Unmarshal(*rawMessage, &filter)
 		return filter, err
 	case DaysPerWeekSchedule:

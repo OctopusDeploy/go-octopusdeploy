@@ -59,7 +59,7 @@ func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *proj
 	// OnceDailyScheduledTriggerFilter
 	// filter := filters.NewOnceDailyScheduledTriggerFilter(days, start)
 
-	filter := filters.NewDayOfWeekScheduledTriggerFilter("1", filters.Tuesday, start)
+	filter := filters.NewOnceDailyScheduledTriggerFilter([]filters.Weekday{filters.Tuesday}, start)
 
 	projectTrigger := triggers.NewProjectTrigger(internal.GetRandomName(), internal.GetRandomName(), createRandomBoolean(), project.GetID(), action, filter)
 	require.NotNil(t, projectTrigger)

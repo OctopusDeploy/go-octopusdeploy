@@ -3,6 +3,7 @@ module github.com/OctopusDeploy/go-octopusdeploy/v2
 go 1.18
 
 require (
+	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/dghubble/sling v1.4.0
 	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-playground/validator/v10 v10.11.0
