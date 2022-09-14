@@ -1,16 +1,14 @@
 package filters
 
-import "time"
-
 type scheduleTriggerFilter struct {
 	TimeZone string `json:"Timezone,omitempty"`
 
 	triggerFilter
 }
 
-func newScheduleTriggerFilter(filterType FilterType, timeZone *time.Location) *scheduleTriggerFilter {
+func newScheduleTriggerFilter(filterType FilterType, timeZone string) *scheduleTriggerFilter {
 	return &scheduleTriggerFilter{
-		TimeZone:      timeZone.String(),
+		TimeZone:      timeZone,
 		triggerFilter: *newTriggerFilter(filterType),
 	}
 }

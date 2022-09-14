@@ -15,7 +15,7 @@ type ContinuousDailyScheduledTriggerFilter struct {
 	scheduleTriggerFilter
 }
 
-func NewContinuousDailyScheduledTriggerFilter(days []Weekday, timeZone *time.Location) *ContinuousDailyScheduledTriggerFilter {
+func NewContinuousDailyScheduledTriggerFilter(days []Weekday, timeZone string) *ContinuousDailyScheduledTriggerFilter {
 	return &ContinuousDailyScheduledTriggerFilter{
 		Days:                  days,
 		scheduleTriggerFilter: *newScheduleTriggerFilter(ContinuousDailySchedule, timeZone),
