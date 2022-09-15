@@ -28,6 +28,7 @@ type AccountResource struct {
 	PrivateKeyPassphrase    *core.SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
 	ResourceManagerEndpoint string                      `json:"ResourceManagementEndpointBaseUri,omitempty"`
 	SecretKey               *core.SensitiveValue        `json:"SecretKey,omitempty"`
+	Slug                    string                      `json:"Slug,omitempty"`
 	StorageEndpointSuffix   string                      `json:"ServiceManagementEndpointSuffix,omitempty"`
 	SpaceID                 string                      `json:"SpaceId,omitempty"`
 	SubscriptionID          *uuid.UUID                  `json:"SubscriptionNumber,omitempty"`
@@ -90,6 +91,11 @@ func (a *AccountResource) GetTenantTags() []string {
 	return a.TenantTags
 }
 
+// GetSlug returns the slug to this account.
+func (a *AccountResource) GetSlug() string {
+	return a.Slug
+}
+
 // SetDescription sets the description of the account resource.
 func (a *AccountResource) SetDescription(description string) {
 	a.Description = description
@@ -123,6 +129,11 @@ func (a *AccountResource) SetTenantIDs(tenantIds []string) {
 // SetTenantTags sets the tenant tags associated with this account resource.
 func (a *AccountResource) SetTenantTags(tenantTags []string) {
 	a.TenantTags = tenantTags
+}
+
+// SetSlug sets the slug of this account.
+func (a *AccountResource) SetSlug(slug string) {
+	a.Slug = slug
 }
 
 // Validate checks the state of the account resource and returns an error if
