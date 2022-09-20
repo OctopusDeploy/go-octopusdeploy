@@ -1,7 +1,7 @@
 package client
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -24,13 +24,13 @@ func GetFakeOctopusClient(t *testing.T, apiPath string, statusCode int, response
 		if request.URL.Path == "/api" {
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       ioutil.NopCloser(strings.NewReader(constants.ApiReplyRoot)),
+				Body:       io.NopCloser(strings.NewReader(constants.ApiReplyRoot)),
 			}, nil
 		}
 
 		return &http.Response{
 			StatusCode: statusCode,
-			Body:       ioutil.NopCloser(strings.NewReader(responseBody)),
+			Body:       io.NopCloser(strings.NewReader(responseBody)),
 		}, nil
 	})
 
