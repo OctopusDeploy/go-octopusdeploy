@@ -1,10 +1,20 @@
 package packages
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -62,6 +72,54 @@ func (s *PackageService) GetByID(id string) (*Package, error) {
 	}
 
 	return resp.(*Package), nil
+}
+
+func Upload(client *http.Client, command *PackageUploadCommand) (*PackageUploadResponse, error) {
+	file, _ := os.Open(command.FileName)
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name()))
+	io.Copy(part, file)
+	writer.Close()
+
+	// TODO: replace infrastructure (below)
+	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
+	path, err := uritemplates.NewUriTemplateCache().Expand(uritemplates.PackageUpload, command)
+	if err != nil {
+		return nil, err
+	}
+	url := host + path
+
+	r, err := http.NewRequest(http.MethodPost, url, body)
+	if err != nil {
+		return nil, err
+	}
+	r.Header.Add("Content-Type", writer.FormDataContentType())
+
+	res, err := client.Do(r)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusCreated {
+		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, body)
+	}
+
+	var data *PackageUploadResponse
+	err = json.Unmarshal(resBody, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // Update modifies a package based on the one provided as input.
