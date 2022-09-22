@@ -83,6 +83,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 	account.SetTenantedDeploymentMode(accountResource.GetTenantedDeploymentMode())
 	account.SetTenantIDs(accountResource.GetTenantIDs())
 	account.SetTenantTags(accountResource.GetTenantTags())
+	account.SetSlug(accountResource.GetSlug())
 
 	return account, nil
 }
