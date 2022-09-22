@@ -130,37 +130,38 @@ func (m *MovableWriter) Write(p []byte) (n int, err error) {
 }
 
 // conforms to io.Reader
-func (m *multipartFileStreamingReader) Read(p []byte) (n int, err error) {
-	maxBytesWritable := len(p)
+func (m *multipartFileStreamingReader) Read(p []byte) (int, error) {
 	pWriter := byteSliceWriter{Buf: p}
-	if m.currentPart == nil { // we haven't written the part header yet
-		if maxBytesWritable < 255+len(m.FileName) { // len(string) in go returns byte count, not char count, which is good here
-			panic("wat") // TODO allocate tmpBuffer, write the form guff into it and split across Reads
-		}
-		// else the form stuff should fit within our current buffer, just write it all now
+	var err error = nil
 
+	if m.currentPart == nil { // we haven't written the part header yet
 		m.MovableWriter.CurrentWriter = &pWriter
 		m.currentPart, err = m.MultipartWriter.CreateFormFile("file", m.FileName)
-		// part is writing into p
-		if err != nil && err != io.EOF {
+		// TODO: if there's not enough space in the buffer to write the initial multipart header we must spill over into a temp buffer
+		// and let the other end call Read again to pick it up
+		if err != nil {
 			return 0, err
 		}
-		// this would have 4gb buf problems on 32 bit systems, but we don't support any of those so :shrug:
-		cbWritten, err := io.CopyN(m.currentPart, m.FileReader, int64(pWriter.Remaining()))
-		if err != nil && err != io.EOF {
-			return 0, err
-		}
-		return int(cbWritten), err // we must return EOF if we get given one
 	} else {
 		// routine copying until we've done it all
 		m.MovableWriter.CurrentWriter = &pWriter
-		cbWritten, err := io.CopyN(m.currentPart, m.FileReader, int64(maxBytesWritable))
-		if err != nil && err != io.EOF {
-			return 0, err
-		}
-		return int(cbWritten), err // we must return EOF if we get given it
 	}
-	// TODO what happens at the end?
+	// copy as many bytes as will fit in the buffer
+	_, err = io.CopyN(m.currentPart, m.FileReader, int64(pWriter.Remaining()))
+	if err == io.EOF {
+		// writes the final boundary.
+		// TODO: if there's not enough space remaining in the buffer we must spill over into a temp buffer
+		// and let the other end call Read again to pick it up
+		e2 := m.MultipartWriter.Close()
+		if e2 != nil {
+			return 0, e2
+		}
+	} else if err != nil {
+		return 0, err
+	}
+
+	// return how many bytes were written to p
+	return pWriter.Pos, err // we must return EOF if we get given it
 }
 
 func (m *multipartFileStreamingReader) FormDataContentType() string {
