@@ -3,6 +3,7 @@ package packages
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"io"
 	"log"
 	"mime/multipart"
@@ -74,7 +75,7 @@ func (s *PackageService) GetByID(id string) (*Package, error) {
 	return resp.(*Package), nil
 }
 
-func Upload(client *http.Client, command *PackageUploadCommand) (*PackageUploadResponse, error) {
+func Upload(httpSession *newclient.HttpSession, command *PackageUploadCommand) (*PackageUploadResponse, error) {
 	file, _ := os.Open(command.FileName)
 	defer file.Close()
 
@@ -84,33 +85,30 @@ func Upload(client *http.Client, command *PackageUploadCommand) (*PackageUploadR
 	io.Copy(part, file)
 	writer.Close()
 
-	// TODO: replace infrastructure (below)
-	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
 	path, err := uritemplates.NewUriTemplateCache().Expand(uritemplates.PackageUpload, command)
 	if err != nil {
 		return nil, err
 	}
-	url := host + path
 
-	r, err := http.NewRequest(http.MethodPost, url, body)
+	r, err := http.NewRequest(http.MethodPost, path, body)
 	if err != nil {
 		return nil, err
 	}
 	r.Header.Add("Content-Type", writer.FormDataContentType())
 
-	res, err := client.Do(r)
+	resp, err := httpSession.DoRawRequest(r)
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer newclient.CloseResponse(resp)
 
-	resBody, err := io.ReadAll(res.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	if res.StatusCode != http.StatusCreated {
-		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, body)
+	if resp.StatusCode != http.StatusCreated {
+		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", resp.StatusCode, body)
 	}
 
 	var data *PackageUploadResponse
