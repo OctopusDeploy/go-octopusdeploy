@@ -3,9 +3,9 @@ package packages
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -75,49 +75,53 @@ func (s *PackageService) GetByID(id string) (*Package, error) {
 	return resp.(*Package), nil
 }
 
-func Upload(httpSession *newclient.HttpSession, command *PackageUploadCommand) (*PackageUploadResponse, error) {
+func Upload(client newclient.Client, command *PackageUploadCommand) (*PackageUploadResponse, error) {
+	// TODO implement upload streaming once tests are in place
 	file, _ := os.Open(command.FileName)
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
+	defer func() { _ = writer.Close() }()
 	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name()))
-	io.Copy(part, file)
-	writer.Close()
-
-	path, err := uritemplates.NewUriTemplateCache().Expand(uritemplates.PackageUpload, command)
+	_, err := io.Copy(part, file)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := http.NewRequest(http.MethodPost, path, body)
+	path, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, command)
 	if err != nil {
 		return nil, err
 	}
-	r.Header.Add("Content-Type", writer.FormDataContentType())
 
-	resp, err := httpSession.DoRawRequest(r)
+	req, err := http.NewRequest(http.MethodPost, path, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	resp, err := client.HttpSession().DoRawRequest(req)
 	if err != nil {
 		return nil, err
 	}
 	defer newclient.CloseResponse(resp)
 
-	resBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+	bodyDecoder := json.NewDecoder(resp.Body)
+	if resp.StatusCode == 201 {
+		outputResponseBody := new(PackageUploadResponse)
+		err = bodyDecoder.Decode(outputResponseBody)
+		if err != nil {
+			return nil, err
+		}
+		return outputResponseBody, nil
+	} else {
+		outputResponseError := new(core.APIError)
+		err = bodyDecoder.Decode(outputResponseError)
+		if err != nil {
+			return nil, err
+		}
+		return nil, outputResponseError
 	}
-
-	if resp.StatusCode != http.StatusCreated {
-		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", resp.StatusCode, body)
-	}
-
-	var data *PackageUploadResponse
-	err = json.Unmarshal(resBody, &data)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
 }
 
 // Update modifies a package based on the one provided as input.

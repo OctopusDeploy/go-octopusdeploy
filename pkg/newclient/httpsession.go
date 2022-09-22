@@ -87,7 +87,6 @@ func (h *HttpSession) DoRawJsonRequest(req *http.Request, requestBody any, outpu
 	}
 
 	bodyDecoder := json.NewDecoder(resp.Body)
-
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		err = bodyDecoder.Decode(outputResponseBody)
 		if err != nil {
