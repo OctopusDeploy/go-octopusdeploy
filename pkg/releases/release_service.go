@@ -144,15 +144,12 @@ func GetReleasesInProjectChannel(client newclient.Client, spaceID string, projec
 
 	var allResults []*Release
 	for loadNextPage { // can't stop the loop
-		rawResp, err := api.ApiGet(client.Sling(), new(resources.Resources[*Release]), expandedUri)
-
+		resp, err := newclient.Get[resources.Resources[*Release]](client.HttpSession(), expandedUri)
 		if err != nil {
 			return nil, err
 		}
 
-		resp := rawResp.(*resources.Resources[*Release])
 		allResults = append(allResults, resp.Items...)
-
 		expandedUri, loadNextPage = services.LoadNextPage(resp.PagedResults)
 	}
 
@@ -182,10 +179,5 @@ func GetReleaseInProject(client newclient.Client, spaceID string, projectID stri
 	if err != nil {
 		return nil, err
 	}
-
-	rawResp, err := api.ApiGet(client.Sling(), new(Release), expandedUri)
-	if err != nil {
-		return nil, err
-	}
-	return rawResp.(*Release), nil
+	return newclient.Get[Release](client.HttpSession(), expandedUri)
 }

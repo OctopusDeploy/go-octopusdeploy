@@ -5,7 +5,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
@@ -51,13 +50,9 @@ func RunbookRunV1(client newclient.Client, command *RunbookRunCommandV1) (*Runbo
 		return nil, internal.CreateInvalidParameterError("RunbookRunV1", "command.SpaceID")
 	}
 
-	url, err := client.URITemplateCache().Expand(uritemplates.CreateRunRunbookCommand, map[string]any{"spaceId": command.SpaceID})
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.CreateRunRunbookCommand, map[string]any{"spaceId": command.SpaceID})
 	if err != nil {
 		return nil, err
 	}
-	resp, err := services.ApiPost(client.Sling(), command, new(RunbookRunResponseV1), url)
-	if err != nil {
-		return nil, err
-	}
-	return resp.(*RunbookRunResponseV1), nil
+	return newclient.Post[RunbookRunResponseV1](client.HttpSession(), expandedUri, command)
 }

@@ -146,10 +146,5 @@ func GetDeploymentProcess(client newclient.Client, spaceID string, ID string) (*
 	if err != nil {
 		return nil, err
 	}
-
-	rawResp, err := api.ApiGet(client.Sling(), new(DeploymentProcess), expandedUri)
-	if err != nil {
-		return nil, err
-	}
-	return rawResp.(*DeploymentProcess), nil
+	return newclient.Get[DeploymentProcess](client.HttpSession(), expandedUri)
 }
