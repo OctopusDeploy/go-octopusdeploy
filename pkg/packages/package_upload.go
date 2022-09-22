@@ -1,18 +1,22 @@
 package packages
 
 import (
+	"io"
 	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/buildinformation"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
+// PackageUploadCommand has no json tags because it is never sent to the server; we use a multipart/binary form post
+// to send packages, not JSON
 type PackageUploadCommand struct {
-	Contents      []byte        `json:"Contents" uri:"-"`
-	FileName      string        `json:"FileName" uri:"-"`
-	OverwriteMode OverwriteMode `json:"-" uri:"overwriteMode,omitempty"`
-	Replace       string        `json:"-" uri:"replace,omitempty"`
-	SpaceID       string        `json:"-" uri:"spaceId"`
+	FileName   string    // the name of the file (no directory information)
+	FileReader io.Reader // provides the contents
+
+	OverwriteMode OverwriteMode `uri:"overwriteMode,omitempty"` // sent as a querystring parameter
+	Replace       string        `uri:"replace,omitempty"`       // sent as a querystring parameter
+	SpaceID       string        `uri:"spaceId"`                 // sent in the URL route
 }
 
 type PackageUploadResponse struct {
