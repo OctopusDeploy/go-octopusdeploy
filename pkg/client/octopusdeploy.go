@@ -153,7 +153,6 @@ type Client struct {
 
 	// conform to newclient.Client temporarily until this class goes away
 	uriTemplateCache *uritemplates.URITemplateCache
-	baseURL          *url.URL
 }
 
 func IsAPIKey(apiKey string) bool {
@@ -456,17 +455,12 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		WorkerToolsLatestImages:        workertoolslatestimages.NewWorkerToolsLatestImageService(base, workerToolsLatestImagesPath),
 
 		uriTemplateCache: uritemplates.NewUriTemplateCache(),
-		baseURL:          baseURLWithAPIParsed,
 	}, nil
 }
 
 // confirm to newclient.Client interface for compatibility
 func (n *Client) HttpSession() *newclient.HttpSession {
 	return n.httpSession
-}
-
-func (n *Client) BaseURL() *url.URL {
-	return n.baseURL
 }
 
 func (n *Client) Sling() *sling.Sling {
