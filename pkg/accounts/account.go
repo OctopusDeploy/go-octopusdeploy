@@ -16,11 +16,13 @@ type IAccount interface {
 	GetTenantedDeploymentMode() core.TenantedDeploymentMode
 	GetTenantIDs() []string
 	GetTenantTags() []string
+	GetSlug() string
 	SetDescription(string)
 	SetEnvironmentIDs([]string)
 	SetTenantedDeploymentMode(core.TenantedDeploymentMode)
 	SetTenantIDs([]string)
 	SetTenantTags([]string)
+	SetSlug(string)
 
 	resources.IHasName
 	resources.IHasSpace
@@ -37,6 +39,7 @@ type account struct {
 	TenantedDeploymentMode core.TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 	TenantIDs              []string                    `json:"TenantIds,omitempty"`
 	TenantTags             []string                    `json:"TenantTags,omitempty"`
+	Slug                   string                      `json:"Slug,omitempty"`
 
 	resources.Resource
 }
@@ -94,6 +97,11 @@ func (a *account) GetTenantTags() []string {
 	return a.TenantTags
 }
 
+// GetSlug returns the slug to this account.
+func (a *account) GetSlug() string {
+	return a.Slug
+}
+
 // SetDescription sets the description of the account.
 func (a *account) SetDescription(description string) {
 	a.Description = description
@@ -127,6 +135,11 @@ func (a *account) SetTenantIDs(tenantIds []string) {
 // SetTenantTags sets the tenant tags associated with this account.
 func (a *account) SetTenantTags(tenantTags []string) {
 	a.TenantTags = tenantTags
+}
+
+// SetSlug sets the slug of this account.
+func (a *account) SetSlug(slug string) {
+	a.Slug = slug
 }
 
 // Validate checks the state of the account and returns an error if
