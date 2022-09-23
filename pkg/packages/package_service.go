@@ -90,14 +90,14 @@ func Upload(client newclient.Client, command *PackageUploadCommand) (*PackageUpl
 	defer newclient.CloseResponse(resp)
 
 	bodyDecoder := json.NewDecoder(resp.Body)
-	if resp.StatusCode == 201 || resp.StatusCode == 200 {
+	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
 		outputResponseBody := new(PackageUploadResponse)
 		err = bodyDecoder.Decode(outputResponseBody)
 		if err != nil {
 			return nil, false, err
 		}
 		// the server returns 201 if it created a new file, 200 if it ignored an existing file
-		createdNewFile := resp.StatusCode == 201
+		createdNewFile := resp.StatusCode == http.StatusCreated
 		return outputResponseBody, createdNewFile, nil
 	} else {
 		outputResponseError := new(core.APIError)

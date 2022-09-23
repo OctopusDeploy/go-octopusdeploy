@@ -384,7 +384,7 @@ func ApiPostNew[TResponse any](httpClient *http.Client, absoluteUrl *url.URL, ap
 		body = bytes.NewReader(payload)
 	}
 
-	req, err := http.NewRequest("POST", absoluteUrl.String(), body)
+	req, err := http.NewRequest(http.MethodPost, absoluteUrl.String(), body)
 	if err != nil {
 		return nil, err
 	}

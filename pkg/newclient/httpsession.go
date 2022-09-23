@@ -130,19 +130,19 @@ func DoRequest[TResponse any](httpSession *HttpSession, method string, path stri
 }
 
 func Get[TResponse any](httpSession *HttpSession, url string) (*TResponse, error) {
-	return DoRequest[TResponse](httpSession, "GET", url, nil)
+	return DoRequest[TResponse](httpSession, http.MethodGet, url, nil)
 }
 
 func Post[TResponse any](httpSession *HttpSession, url string, body any) (*TResponse, error) {
-	return DoRequest[TResponse](httpSession, "POST", url, body)
+	return DoRequest[TResponse](httpSession, http.MethodPost, url, body)
 }
 
 func Put[TResponse any](httpSession *HttpSession, url string, body any) (*TResponse, error) {
-	return DoRequest[TResponse](httpSession, "PUT", url, body)
+	return DoRequest[TResponse](httpSession, http.MethodPut, url, body)
 }
 
 func Delete[TResponse any](httpSession *HttpSession, url string) (*TResponse, error) {
-	return DoRequest[TResponse](httpSession, "DELETE", url, nil)
+	return DoRequest[TResponse](httpSession, http.MethodDelete, url, nil)
 }
 
 // CloseResponse closes a response body; If you use DoRequest, and not one of the higher level helpers like Get or Post,
