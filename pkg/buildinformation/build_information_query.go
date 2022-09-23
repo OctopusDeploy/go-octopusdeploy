@@ -8,7 +8,3 @@ type BuildInformationQuery struct {
 	Skip          int    `uri:"skip,omitempty" url:"skip,omitempty"`
 	Take          int    `uri:"take,omitempty" url:"take,omitempty"`
 }
-
-type BuildInformationBulkQuery struct {
-	IDs []string `uri:"ids,omitempty" url:"ids,omitempty"`
-}
