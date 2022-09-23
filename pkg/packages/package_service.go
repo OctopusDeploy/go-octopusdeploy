@@ -2,7 +2,6 @@ package packages
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -11,8 +10,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
-	"io"
-	"mime/multipart"
 	"net/http"
 )
 
@@ -72,121 +69,19 @@ func (s *PackageService) GetByID(id string) (*Package, error) {
 	return resp.(*Package), nil
 }
 
-type multipartFileStreamingReader struct {
-	MovableWriter   *MovableWriter    // must initialize this before using the struct
-	MultipartWriter *multipart.Writer // must initialize this before using the struct
-	FileName        string            // must initialize this before using the struct
-	FileReader      io.Reader         // must initialize this before using the struct
-
-	currentPart io.Writer // internal state tracking
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-// surely go has this built-in, but I can't find it
-type byteSliceWriter struct {
-	Buf []byte
-	Pos int
-}
-
-// Remaining returns the number of bytes in the underlying buffer that have not yet been written to
-func (b *byteSliceWriter) Remaining() int {
-	return len(b.Buf) - b.Pos
-}
-
-func (b *byteSliceWriter) Write(p []byte) (n int, err error) {
-	cb := min(
-		b.Remaining(),
-		len(p))
-
-	subSlice := b.Buf[b.Pos : b.Pos+cb]
-	bytesCopied := copy(subSlice, p)
-	b.Pos = b.Pos + bytesCopied
-
-	return bytesCopied, err
-}
-
-type MovableWriter struct {
-	CurrentWriter io.Writer
-}
-
-func (m *MovableWriter) Write(p []byte) (n int, err error) {
-	if m.CurrentWriter == nil {
-		return 0, errors.New("MovableWriter.CurrentWriter was nil on call to Write")
-	}
-	return m.CurrentWriter.Write(p)
-}
-
-// conforms to io.Reader
-func (m *multipartFileStreamingReader) Read(p []byte) (int, error) {
-	pWriter := byteSliceWriter{Buf: p}
-	var err error = nil
-
-	if m.currentPart == nil { // we haven't written the part header yet
-		m.MovableWriter.CurrentWriter = &pWriter
-		m.currentPart, err = m.MultipartWriter.CreateFormFile("file", m.FileName)
-		// TODO: if there's not enough space in the buffer to write the initial multipart header we must spill over into a temp buffer
-		// and let the other end call Read again to pick it up
-		if err != nil {
-			return 0, err
-		}
-	} else {
-		// routine copying until we've done it all
-		m.MovableWriter.CurrentWriter = &pWriter
-	}
-	// copy as many bytes as will fit in the buffer
-	_, err = io.CopyN(m.currentPart, m.FileReader, int64(pWriter.Remaining()))
-	if err == io.EOF {
-		// writes the final boundary.
-		// TODO: if there's not enough space remaining in the buffer we must spill over into a temp buffer
-		// and let the other end call Read again to pick it up
-		e2 := m.MultipartWriter.Close()
-		if e2 != nil {
-			return 0, e2
-		}
-	} else if err != nil {
-		return 0, err
-	}
-
-	// return how many bytes were written to p
-	return pWriter.Pos, err // we must return EOF if we get given it
-}
-
-func (m *multipartFileStreamingReader) FormDataContentType() string {
-	return m.MultipartWriter.FormDataContentType()
-}
-
 func Upload(client newclient.Client, command *PackageUploadCommand) (*PackageUploadResponse, bool, error) {
-	movableWriter := &MovableWriter{}
-	m := &multipartFileStreamingReader{
-		MovableWriter:   movableWriter,
-		MultipartWriter: multipart.NewWriter(movableWriter), // creates the random boundary, but doesn't assign an internal writer; this moves around
-		FileName:        command.FileName,
-		FileReader:      command.FileReader,
-	}
+	multipartWriter := NewMultipartFileStreamingReader(command.FileName, command.FileReader)
 
 	path, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, command)
 	if err != nil {
 		return nil, false, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, path, m)
+	req, err := http.NewRequest(http.MethodPost, path, multipartWriter)
 	if err != nil {
 		return nil, false, err
 	}
-	req.Header.Add("Content-Type", m.FormDataContentType())
+	req.Header.Add("Content-Type", multipartWriter.FormDataContentType())
 
 	resp, err := client.HttpSession().DoRawRequest(req)
 	if err != nil {
