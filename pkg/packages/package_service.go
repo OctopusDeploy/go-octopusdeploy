@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
@@ -69,15 +70,36 @@ func (s *PackageService) GetByID(id string) (*Package, error) {
 	return resp.(*Package), nil
 }
 
+// Update modifies a package based on the one provided as input.
+func (s *PackageService) Update(octopusPackage *Package) (*Package, error) {
+	if octopusPackage == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "octopusPackage")
+	}
+
+	path, err := services.GetUpdatePath(s, octopusPackage)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := services.ApiUpdate(s.GetClient(), octopusPackage, new(Package), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*Package), nil
+}
+
+// ----------------------
+
 func Upload(client newclient.Client, command *PackageUploadCommand) (*PackageUploadResponse, bool, error) {
 	multipartWriter := NewMultipartFileStreamingReader(command.FileName, command.FileReader)
 
-	path, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, command)
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, command)
 	if err != nil {
 		return nil, false, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, path, multipartWriter)
+	req, err := http.NewRequest(http.MethodPost, expandedUri, multipartWriter)
 	if err != nil {
 		return nil, false, err
 	}
@@ -109,21 +131,26 @@ func Upload(client newclient.Client, command *PackageUploadCommand) (*PackageUpl
 	}
 }
 
-// Update modifies a package based on the one provided as input.
-func (s *PackageService) Update(octopusPackage *Package) (*Package, error) {
-	if octopusPackage == nil {
-		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "octopusPackage")
+// List returns a list of packages from the server, in a standard Octopus paginated result structure.
+// If you don't specify --limit the server will use a default limit (typically 30)
+func List(client newclient.Client, spaceID string, filter string, limit int32) (*resources.Resources[*Package], error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
 	}
-
-	path, err := services.GetUpdatePath(s, octopusPackage)
+	templateParams := map[string]any{"spaceId": spaceID}
+	if filter != "" {
+		templateParams["filter"] = filter
+	}
+	if limit > 0 {
+		templateParams["take"] = int(limit)
+	}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.Packages, templateParams)
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := services.ApiUpdate(s.GetClient(), octopusPackage, new(Package), path)
 	if err != nil {
 		return nil, err
 	}
-
-	return resp.(*Package), nil
+	return newclient.Get[resources.Resources[*Package]](client.HttpSession(), expandedUri)
 }
