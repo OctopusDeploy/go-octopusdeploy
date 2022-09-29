@@ -3,6 +3,7 @@ package feeds
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -205,4 +206,35 @@ func (s *FeedService) Update(feed IFeed) (IFeed, error) {
 	}
 
 	return resp.(IFeed), nil
+}
+
+// --------------------
+
+// note, the FeedID here has to be a real ID. You can't supply "feeds-builtin", you need to lookup the ID as "Feeds-101" etc, and use that instead
+func SearchPackageVersions(client newclient.Client, spaceID string, feedID string, packageID string, filter string, limit int) (*resources.Resources[*packages.PackageVersion], error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if feedID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("feedID")
+	}
+	if packageID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("packageID")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "feedId": feedID, "packageId": packageID}
+	if filter != "" {
+		templateParams["filter"] = filter
+	}
+	if limit > 0 {
+		templateParams["take"] = limit
+	}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.FeedSearchPackageVersions, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Get[resources.Resources[*packages.PackageVersion]](client.HttpSession(), expandedUri)
 }

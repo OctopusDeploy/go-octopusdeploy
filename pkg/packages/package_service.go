@@ -11,6 +11,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
+	"io"
 	"net/http"
 )
 
@@ -91,10 +92,37 @@ func (s *PackageService) Update(octopusPackage *Package) (*Package, error) {
 
 // ----------------------
 
-func Upload(client newclient.Client, command *PackageUploadCommand) (*PackageUploadResponse, bool, error) {
-	multipartWriter := NewMultipartFileStreamingReader(command.FileName, command.FileReader)
+// Upload uploads a package to the octopus server's builtin package feed.
+// Parameters:
+// - client: The API client reference
+// - spaceID: ID of the octopus space to work within
+// - fileName: The string which we tell the server to use for the file name (may not necessarily be an actual filename on disk)
+// - reader: io.Reader which provides the binary file data to upload
+// - overwriteMode: Instructs the server what to do in the case that the package already exists.
+func Upload(client newclient.Client, spaceID string, fileName string, reader io.Reader, overwriteMode OverwriteMode) (*PackageUploadResponse, bool, error) {
+	if client == nil {
+		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("client")
+	}
+	if spaceID == "" {
+		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if fileName == "" {
+		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("fileName")
+	}
+	if reader == nil {
+		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("reader")
+	}
 
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, command)
+	multipartWriter := NewMultipartFileStreamingReader(fileName, reader)
+
+	params := map[string]any{
+		"spaceId": spaceID,
+	}
+	if overwriteMode != "" {
+		params["overwriteMode"] = overwriteMode
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, params)
 	if err != nil {
 		return nil, false, err
 	}
@@ -133,7 +161,7 @@ func Upload(client newclient.Client, command *PackageUploadCommand) (*PackageUpl
 
 // List returns a list of packages from the server, in a standard Octopus paginated result structure.
 // If you don't specify --limit the server will use a default limit (typically 30)
-func List(client newclient.Client, spaceID string, filter string, limit int32) (*resources.Resources[*Package], error) {
+func List(client newclient.Client, spaceID string, filter string, limit int) (*resources.Resources[*Package], error) {
 	if spaceID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
 	}
@@ -142,7 +170,7 @@ func List(client newclient.Client, spaceID string, filter string, limit int32) (
 		templateParams["filter"] = filter
 	}
 	if limit > 0 {
-		templateParams["take"] = int(limit)
+		templateParams["take"] = limit
 	}
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.Packages, templateParams)
 	if err != nil {
