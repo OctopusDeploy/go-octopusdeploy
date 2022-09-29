@@ -21,5 +21,9 @@ const (
 	ReleasesByProjectAndChannel         = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"
 	Runbooks                            = "/api/{spaceId}/runbooks{/id}{?skip,take,ids,partialName,clone,projectIds}"
 	RunbooksByProject                   = "/api/{spaceId}/projects/{projectId}/runbooks{?skip,take,partialName}"
+	RunbookEnvironments                 = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/environments"
+	RunbookProcess                      = "/api/{spaceId}/projects/{projectId}/runbookProcesses/{id}"
+	RunbookSnapshotsByRunbook           = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookSnapshots{/name}{?skip,take,searchByName}"
+	RunbookSnapshotsByProject           = "/api/{spaceId}/projects/{projectId}/runbookSnapshots{/name}{?skip,take,searchByName}"
 	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"
 )
