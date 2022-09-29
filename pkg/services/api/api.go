@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"runtime"
@@ -38,6 +39,11 @@ func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 	// if err != nil {
 	// 	return nil, err
 	// }
+
+	// core.APIErrorChecker doesn't give us useful handling for auth errors; do this specifically
+	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
+		return nil, errors.New("unauthorized")
+	}
 
 	apiErrorCheck := core.APIErrorChecker(path, resp, http.StatusOK, err, octopusDeployError)
 	if apiErrorCheck != nil {

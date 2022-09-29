@@ -339,10 +339,5 @@ func GetVariableSet(client newclient.Client, spaceID string, ID string) (*Variab
 	if err != nil {
 		return nil, err
 	}
-
-	rawResp, err := api.ApiGet(client.Sling(), new(VariableSet), expandedUri)
-	if err != nil {
-		return nil, err
-	}
-	return rawResp.(*VariableSet), nil
+	return newclient.Get[VariableSet](client.HttpSession(), expandedUri)
 }

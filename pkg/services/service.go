@@ -1,8 +1,12 @@
 package services
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -359,6 +363,85 @@ func ApiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, 
 	}
 
 	return resource, nil
+}
+
+// ApiPost post some JSON to octopus and expect a 200 response code.
+func ApiPostNew[TResponse any](httpClient *http.Client, absoluteUrl *url.URL, apiKey string, requestPayload any) (*TResponse, error) {
+	if httpClient == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIPost, "httpClient")
+	}
+
+	if absoluteUrl == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAPIPost, "absoluteUrl")
+	}
+
+	var body io.Reader = nil
+	if requestPayload != nil {
+		payload, err := json.Marshal(requestPayload)
+		if err != nil {
+			return nil, err
+		}
+		body = bytes.NewReader(payload)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, absoluteUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	req.Header.Set("User-Agent", api.UserAgentString)
+	req.Header.Set(constants.ClientAPIKeyHTTPHeader, apiKey)
+	return doRequestReturningJson[TResponse](httpClient, req)
+}
+
+func doRequestReturningJson[TResponse any](httpClient *http.Client, req *http.Request) (*TResponse, error) {
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	// behaviour copied from Sling
+	defer func() {
+		// The default HTTP client's Transport may not
+		// reuse HTTP/1.x "keep-alive" TCP connections if the Body is
+		// not read to completion and closed.
+		// See: https://golang.org/pkg/net/http/#Response
+		_, _ = io.Copy(io.Discard, resp.Body)
+
+		// when err is nil, resp contains a non-nil resp.Body which must be closed
+		_ = resp.Body.Close()
+	}()
+
+	if resp.StatusCode == http.StatusNoContent || resp.ContentLength == 0 {
+		// Potential gotcha: If someone calls this with TResponse of string, int or other non-nullable primitive,
+		// then this may panic. But why are you using a non-nullable response type on a server endpoint that can return no content?
+
+		// TODO the ContentLength check is copied from Sling, but it's valid for servers to stream responses
+		// without a known content length (which this won't handle), which would be a bug. Does it matter?
+		return nil, nil
+	}
+
+	bodyDecoder := json.NewDecoder(resp.Body)
+
+	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+		responsePayload := new(TResponse)
+		err = bodyDecoder.Decode(responsePayload)
+		if err != nil {
+			return nil, err
+		}
+		return responsePayload, nil
+	} else {
+		errorPayload := new(core.APIError)
+		err = bodyDecoder.Decode(errorPayload)
+		if err != nil {
+			return nil, err
+		}
+		return nil, errorPayload
+	}
+	// don't use core.APIErrorChecker, it's overly helpful and gets in the way of error handling.
 }
 
 // Generic OctopusDeploy API Update Function.

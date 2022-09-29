@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
@@ -79,15 +78,11 @@ func CreateDeploymentTenantedV1(client newclient.Client, command *CreateDeployme
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.EnvironmentName")
 	}
 
-	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentTenantedCommandV1, map[string]any{"spaceId": command.SpaceID})
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentTenantedCommandV1, map[string]any{"spaceId": command.SpaceID})
 	if err != nil {
 		return nil, err
 	}
-	resp, err := services.ApiPost(client.Sling(), command, new(CreateDeploymentResponseV1), url)
-	if err != nil {
-		return nil, err
-	}
-	return resp.(*CreateDeploymentResponseV1), nil
+	return newclient.Post[CreateDeploymentResponseV1](client.HttpSession(), expandedUri, command)
 }
 
 // ----- Untenanted -----------------------------------------------
@@ -135,13 +130,9 @@ func CreateDeploymentUntenantedV1(client newclient.Client, command *CreateDeploy
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("command.EnvironmentNames")
 	}
 
-	url, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentUntenantedCommandV1, map[string]any{"spaceId": command.SpaceID})
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.CreateDeploymentUntenantedCommandV1, map[string]any{"spaceId": command.SpaceID})
 	if err != nil {
 		return nil, err
 	}
-	resp, err := services.ApiPost(client.Sling(), command, new(CreateDeploymentResponseV1), url)
-	if err != nil {
-		return nil, err
-	}
-	return resp.(*CreateDeploymentResponseV1), nil
+	return newclient.Post[CreateDeploymentResponseV1](client.HttpSession(), expandedUri, command)
 }

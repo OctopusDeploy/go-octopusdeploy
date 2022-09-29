@@ -215,10 +215,5 @@ func GetReleaseDeploymentPreview(client newclient.Client, spaceID string, releas
 	if err != nil {
 		return nil, err
 	}
-
-	rawResp, err := api.ApiGet(client.Sling(), new(DeploymentPreview), expandedUri)
-	if err != nil {
-		return nil, err
-	}
-	return rawResp.(*DeploymentPreview), nil
+	return newclient.Get[DeploymentPreview](client.HttpSession(), expandedUri)
 }

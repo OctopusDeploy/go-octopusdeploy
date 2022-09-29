@@ -1,4 +1,4 @@
-package core
+package issuetrackers
 
 type CommitDetails struct {
 	Comment string `json:"Comment,omitempty"`

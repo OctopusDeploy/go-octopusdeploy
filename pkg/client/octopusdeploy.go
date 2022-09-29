@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"net/http"
 	"net/url"
@@ -69,7 +70,9 @@ import (
 
 // Client is an OctopusDeploy for making Octopus API requests.
 type Client struct {
-	sling                          *sling.Sling
+	httpSession *newclient.HttpSession
+	sling       *sling.Sling // note sling will be removed in v3. The sling instance is wired up to use the same underlying http.Client as the httpSession
+
 	Accounts                       *accounts.AccountService
 	ActionTemplates                *actiontemplates.ActionTemplateService
 	APIKeys                        *users.ApiKeyService
@@ -209,6 +212,20 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 			}
 			return nil, err
 		}
+	}
+
+	baseURLWithAPIParsed, fatalErr := url.Parse(baseURLWithAPI)
+	if fatalErr != nil { // should never fail because baseURLWithAPI is entirely constructed out of things that are known to be parseable
+		panic("failure parsing baseURL " + fatalErr.Error())
+	}
+
+	httpSession := &newclient.HttpSession{
+		HttpClient: httpClient,
+		BaseURL:    baseURLWithAPIParsed,
+		DefaultHeaders: map[string]string{
+			constants.ClientAPIKeyHTTPHeader: apiKey,
+			"User-Agent":                     api.GetUserAgentString(),
+		},
 	}
 
 	rootPath := root.GetLinkPath(sroot, constants.LinkSelf)
@@ -358,6 +375,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 	workerToolsLatestImagesPath := root.GetLinkPath(sroot, constants.LinkWorkerToolsLatestImages)
 
 	return &Client{
+		httpSession:                    httpSession,
 		sling:                          base,
 		Accounts:                       accounts.NewAccountService(base, accountsPath),
 		ActionTemplates:                actiontemplates.NewActionTemplateService(base, actionTemplatesPath, actionTemplatesCategories, actionTemplatesLogo, actionTemplatesSearch, actionTemplateVersionedLogo),
@@ -441,6 +459,10 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 }
 
 // confirm to newclient.Client interface for compatibility
+func (n *Client) HttpSession() *newclient.HttpSession {
+	return n.httpSession
+}
+
 func (n *Client) Sling() *sling.Sling {
 	return n.sling
 }

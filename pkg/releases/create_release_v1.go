@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
@@ -61,13 +60,9 @@ func CreateReleaseV1(client newclient.Client, command *CreateReleaseCommandV1) (
 
 	// Note: command has a SpaceIDOrName field in it, which carries the space, however, we can't use it
 	// as the server's route URL *requires* a space **ID**, not a name. In fact, the client's spaceID should always win.
-	url, err := client.URITemplateCache().Expand(uritemplates.CreateReleaseCommandV1, map[string]any{"spaceId": command.SpaceID})
+	path, err := client.URITemplateCache().Expand(uritemplates.CreateReleaseCommandV1, map[string]any{"spaceId": command.SpaceID})
 	if err != nil {
 		return nil, err
 	}
-	resp, err := services.ApiPost(client.Sling(), command, new(CreateReleaseResponseV1), url)
-	if err != nil {
-		return nil, err
-	}
-	return resp.(*CreateReleaseResponseV1), nil
+	return newclient.Post[CreateReleaseResponseV1](client.HttpSession(), path, command)
 }
