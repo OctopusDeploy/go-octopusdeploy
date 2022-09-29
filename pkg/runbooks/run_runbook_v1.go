@@ -11,9 +11,9 @@ import (
 type RunbookRunCommandV1 struct {
 	RunbookName      string   `json:"runbookName"` // required
 	EnvironmentNames []string `json:"environmentNames,omitempty"`
-	TenantNames      []string `json:"tenants,omitempty"`
+	Tenants          []string `json:"tenants,omitempty"`
 	TenantTags       []string `json:"tenantTags,omitempty"`
-	Snapshot         []string `json:"snapshot,omitempty"`
+	Snapshot         string   `json:"snapshot,omitempty"`
 	deployments.CreateExecutionAbstractCommandV1
 }
 
