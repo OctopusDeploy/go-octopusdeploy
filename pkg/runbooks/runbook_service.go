@@ -3,8 +3,11 @@ package runbooks
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -102,4 +105,33 @@ func (s *RunbookService) Update(runbook *Runbook) (*Runbook, error) {
 	}
 
 	return resp.(*Runbook), nil
+}
+
+// ---------------------------
+
+// List returns a list of runbooks from the server, in a standard Octopus paginated result structure.
+// If you don't specify --limit the server will use a default limit (typically 30)
+func List(client newclient.Client, spaceID string, projectID string, filter string, limit int) (*resources.Resources[*Runbook], error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID}
+	if filter != "" {
+		templateParams["partialName"] = filter
+	}
+	if limit > 0 {
+		templateParams["take"] = limit
+	}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbooksByProject, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
 }

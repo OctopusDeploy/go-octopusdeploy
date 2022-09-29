@@ -19,5 +19,7 @@ const (
 	Releases                            = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"
 	ReleasesByProject                   = "/api/{spaceId}/projects/{projectId}/releases{/version}{?skip,take,searchByVersion}"
 	ReleasesByProjectAndChannel         = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"
+	Runbooks                            = "/api/{spaceId}/runbooks{/id}{?skip,take,ids,partialName,clone,projectIds}"
+	RunbooksByProject                   = "/api/{spaceId}/projects/{projectId}/runbooks{?skip,take,partialName}"
 	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"
 )
