@@ -17,8 +17,13 @@ type RunbookRunCommandV1 struct {
 	deployments.CreateExecutionAbstractCommandV1
 }
 
+type RunbookRunServerTask struct {
+	RunbookRunID string `json:"RunbookRunId"`
+	ServerTaskID string `json:"ServerTaskId"`
+}
+
 type RunbookRunResponseV1 struct {
-	DeploymentServerTasks []*deployments.DeploymentServerTask `json:"DeploymentServerTasks,omitempty"`
+	RunbookRunServerTasks []*RunbookRunServerTask `json:"RunbookRunServerTasks,omitempty"`
 }
 
 func NewRunbookRunCommandV1(spaceID string, projectIDOrName string) *RunbookRunCommandV1 {
