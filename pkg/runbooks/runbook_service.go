@@ -262,3 +262,59 @@ func GetProcess(client newclient.Client, spaceID string, projectID string, ID st
 	}
 	return newclient.Get[RunbookProcess](client.HttpSession(), expandedUri)
 }
+
+// GetRunbookSnapshotRunPreview gets a preview of a snapshot run for a given environment.
+// This is used by the portal to show which machines would be deployed to, and other information about the deployment,
+// before proceeding with it. The CLI uses it to build the selector for picking specific machines to deploy to
+func GetRunbookSnapshotRunPreview(client newclient.Client, spaceID string, snapshotID string, environmentID string, includeDisabledSteps bool) (*RunPreview, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetRunbookRunPreview", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetRunbookRunPreview", "spaceID")
+	}
+	if snapshotID == "" {
+		return nil, internal.CreateInvalidParameterError("GetRunbookRunPreview", "snapshotID")
+	}
+	if environmentID == "" {
+		return nil, internal.CreateInvalidParameterError("GetRunbookRunPreview", "environmentID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbookSnapshotRunPreview, map[string]any{
+		"spaceId":              spaceID,
+		"snapshotId":           snapshotID,
+		"environmentId":        environmentID,
+		"includeDisabledSteps": includeDisabledSteps,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Get[RunPreview](client.HttpSession(), expandedUri)
+}
+
+// TODO there is also a tenanted preview, request/response below.
+// There's one preview per selected tenant, and the web portal resolves tenant tags down into specific tenants before
+// calling the preview endpoint (you can't preview by tag).
+// This is how it figures out what the deployment targets are.
+
+// Unresolved: How do we want to resolve this in the CLI?
+// Note: like deploy, the executions API doesn't support target machines per-tenant, only a single list.
+//
+// We could
+// - A: resolve all the tags down into tenants, call the multi-preview endpoint, and union all the target envs together?
+// - B: always use the untenanted preview endpoint (which is easier, but maybe not perfectly correct)
+// [I've gone with B at the moment in the CLI]
+//
+// POST http://localhost:8050/api/Spaces-1/projects/Projects-561/runbooks/Runbooks-82/runbookRuns/previews
+// {"DeploymentPreviews":[{"TenantId":"Tenants-41","EnvironmentId":"Environments-101"},{"TenantId":"Tenants-42","EnvironmentId":"Environments-101"}]}
+// Response shape is like this:
+/*
+[
+  {
+    // preview for the first tenant/environment combo
+  },
+  {
+     // preview for the second tenant/environment combo
+  },
+]
+*/
