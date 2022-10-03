@@ -12,6 +12,7 @@ type Environment struct {
 	SortOrder                  int    `json:"SortOrder"`
 	UseGuidedFailure           bool   `json:"UseGuidedFailure"`
 	SpaceID                    string `json:"SpaceId"`
+	Slug                       string `json:"Slug"` // deliberately send empty string
 
 	resources.Resource
 }

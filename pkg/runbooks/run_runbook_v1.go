@@ -11,14 +11,19 @@ import (
 type RunbookRunCommandV1 struct {
 	RunbookName      string   `json:"runbookName"` // required
 	EnvironmentNames []string `json:"environmentNames,omitempty"`
-	TenantNames      []string `json:"tenants,omitempty"`
+	Tenants          []string `json:"tenants,omitempty"`
 	TenantTags       []string `json:"tenantTags,omitempty"`
-	Snapshot         []string `json:"snapshot,omitempty"`
+	Snapshot         string   `json:"snapshot,omitempty"`
 	deployments.CreateExecutionAbstractCommandV1
 }
 
+type RunbookRunServerTask struct {
+	RunbookRunID string `json:"RunbookRunId"`
+	ServerTaskID string `json:"ServerTaskId"`
+}
+
 type RunbookRunResponseV1 struct {
-	DeploymentServerTasks []*deployments.DeploymentServerTask `json:"DeploymentServerTasks,omitempty"`
+	RunbookRunServerTasks []*RunbookRunServerTask `json:"RunbookRunServerTasks,omitempty"`
 }
 
 func NewRunbookRunCommandV1(spaceID string, projectIDOrName string) *RunbookRunCommandV1 {
