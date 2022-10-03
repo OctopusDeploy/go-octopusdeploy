@@ -7,6 +7,7 @@ import (
 
 type Space struct {
 	Description              string   `json:"Description,omitempty"`
+	Slug                     string   `json:"Slug,omitempty"`
 	IsDefault                bool     `json:"IsDefault,omitempty"`
 	Name                     string   `json:"Name" validate:"required,max=20"`
 	SpaceManagersTeamMembers []string `json:"SpaceManagersTeamMembers,omitempty"`
