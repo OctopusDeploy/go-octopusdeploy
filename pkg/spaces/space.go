@@ -7,10 +7,11 @@ import (
 
 type Space struct {
 	Description              string   `json:"Description,omitempty"`
+	Slug                     string   `json:"Slug"` // deliberately send empty string
 	IsDefault                bool     `json:"IsDefault,omitempty"`
 	Name                     string   `json:"Name" validate:"required,max=20"`
-	SpaceManagersTeamMembers []string `json:"SpaceManagersTeamMembers,omitempty"`
-	SpaceManagersTeams       []string `json:"SpaceManagersTeams,omitempty"`
+	SpaceManagersTeamMembers []string `json:"SpaceManagersTeamMembers"` // deliberately send empty array
+	SpaceManagersTeams       []string `json:"SpaceManagersTeams"`       // deliberately send empty array
 	TaskQueueStopped         bool     `json:"TaskQueueStopped,omitempty"`
 
 	resources.Resource
