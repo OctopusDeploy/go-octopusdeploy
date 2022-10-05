@@ -8,6 +8,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 type SpaceService struct {
@@ -92,7 +93,7 @@ func (s *SpaceService) GetByName(name string) (*Space, error) {
 	}
 
 	for _, space := range spaces.Items {
-		if space.Name == name {
+		if strings.EqualFold(space.Name, name) {
 			return space, nil
 		}
 	}

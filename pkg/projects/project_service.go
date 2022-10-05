@@ -156,7 +156,7 @@ func (p *ProjectService) GetByName(name string) (*Project, error) {
 	}
 
 	for _, project := range projects.Items {
-		if project.Name == name {
+		if strings.EqualFold(project.Name, name) {
 			return project, nil
 		}
 	}
