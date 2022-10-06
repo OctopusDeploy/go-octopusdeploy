@@ -2,6 +2,7 @@ package projects
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"net/http"
 	"net/url"
 	"strings"
@@ -140,6 +141,43 @@ func (s *ProjectService) GetByID(id string) (*Project, error) {
 	}
 
 	return resp.(*Project), nil
+}
+
+func (p *ProjectService) GetByName(name string) (*Project, error) {
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	projects, err := p.Get(ProjectsQuery{
+		PartialName: name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, project := range projects.Items {
+		if strings.EqualFold(project.Name, name) {
+			return project, nil
+		}
+	}
+
+	return nil, services.ErrItemNotFound
+}
+
+func (p *ProjectService) GetByIdOrName(idOrName string) (*Project, error) {
+	project, err := p.GetByID(idOrName)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if project != nil {
+			return project, nil
+		}
+	}
+
+	return p.GetByName(idOrName)
 }
 
 func (s *ProjectService) GetProject(channel *channels.Channel) (*Project, error) {

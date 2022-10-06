@@ -8,6 +8,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
+	"strings"
 )
 
 // CommunityActionTemplateService handles communication with Account-related methods of the Octopus API.
@@ -121,7 +122,7 @@ func (s *CommunityActionTemplateService) GetByName(name string) (*CommunityActio
 	}
 
 	for _, item := range collection {
-		if item.Name == name {
+		if strings.EqualFold(item.Name, name) {
 			return item, nil
 		}
 	}

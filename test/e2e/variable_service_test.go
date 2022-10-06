@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -28,7 +29,7 @@ func CreateTestVariable(t *testing.T, ownerID string, name string) *variables.Va
 	require.Len(t, variableSet.Variables, 1)
 
 	for _, v := range variableSet.Variables {
-		if v.Name == name {
+		if strings.EqualFold(v.Name, name) {
 			createdVariable, err := client.Variables.GetByID(ownerID, v.GetID())
 			require.NoError(t, err)
 			require.NotNil(t, createdVariable)

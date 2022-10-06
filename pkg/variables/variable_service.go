@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -112,7 +113,7 @@ func (s *VariableService) GetByName(ownerID string, name string, scope *Variable
 	var matchedVariables []*Variable
 
 	for _, variable := range variables.Variables {
-		if variable.Name == name {
+		if strings.EqualFold(variable.Name, name) {
 			matchScope, _, err := s.MatchesScope(variable.Scope, scope)
 			if err != nil {
 				return nil, err
