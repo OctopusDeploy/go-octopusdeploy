@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 type TagSetService struct {
@@ -110,7 +111,7 @@ func (s *TagSetService) GetByName(name string) (*TagSet, error) {
 	}
 
 	for _, item := range collection {
-		if item.Name == name {
+		if strings.EqualFold(item.Name, name) {
 			return item, nil
 		}
 	}

@@ -3,6 +3,7 @@ package examples
 import (
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
@@ -58,7 +59,7 @@ func AddEnvironmentConditionToStepExample() {
 	}
 
 	for _, step := range deploymentProcess.Steps {
-		if step.Name == stepName {
+		if strings.EqualFold(step.Name, stepName) {
 			for _, action := range step.Actions {
 				action.Environments = append(action.Environments, environmentIDs...)
 			}
