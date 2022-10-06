@@ -157,6 +157,20 @@ func TestLifecycleServiceGetWithEmptyID(t *testing.T) {
 	assert.Nil(t, resource)
 }
 
+func TestLifecycleServiceGetByNameWithEmptyID(t *testing.T) {
+	service := NewLifecycleService(&sling.Sling{}, "")
+
+	resource, err := service.GetByName("")
+
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
+	assert.Nil(t, resource)
+
+	resource, err = service.GetByName(" ")
+
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
+	assert.Nil(t, resource)
+}
+
 func TestLifecycleServiceUpdateWithEmptyLifecycle(t *testing.T) {
 	service := createLifecycleService(t)
 

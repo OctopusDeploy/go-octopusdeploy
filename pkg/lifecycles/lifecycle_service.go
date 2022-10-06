@@ -3,11 +3,13 @@ package lifecycles
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 type LifecycleService struct {
@@ -104,6 +106,42 @@ func (s *LifecycleService) GetByPartialName(partialName string) ([]*Lifecycle, e
 	}
 
 	return services.GetPagedResponse[Lifecycle](s, path)
+}
+
+func (s *LifecycleService) GetByName(name string) (*Lifecycle, error) {
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	lifecycles, err := s.GetByPartialName(name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, lifecycle := range lifecycles {
+		if strings.EqualFold(lifecycle.Name, name) {
+			return lifecycle, nil
+		}
+	}
+
+	return nil, services.ErrItemNotFound
+}
+
+func (s *LifecycleService) GetByIDOrName(idOrName string) (*Lifecycle, error) {
+	lifecycle, err := s.GetByID(idOrName)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if lifecycle != nil {
+			return lifecycle, nil
+		}
+	}
+
+	return s.GetByName(idOrName)
 }
 
 func (s *LifecycleService) GetProjects(lifecycle *Lifecycle) ([]*projects.Project, error) {
