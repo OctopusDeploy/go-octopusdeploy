@@ -3,11 +3,13 @@ package projectgroups
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 // ProjectGroupService handles communication with ProjectGroup-related methods of the Octopus API.
@@ -106,6 +108,42 @@ func (s *ProjectGroupService) GetByPartialName(partialName string) ([]*ProjectGr
 	}
 
 	return services.GetPagedResponse[ProjectGroup](s, path)
+}
+
+func (s *ProjectGroupService) GetByName(name string) (*ProjectGroup, error) {
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	projectGroups, err := s.GetByPartialName(name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, lifecycle := range projectGroups {
+		if strings.EqualFold(lifecycle.Name, name) {
+			return lifecycle, nil
+		}
+	}
+
+	return nil, services.ErrItemNotFound
+}
+
+func (s *ProjectGroupService) GetByIDOrName(idOrName string) (*ProjectGroup, error) {
+	projectGroup, err := s.GetByID(idOrName)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if projectGroup != nil {
+			return projectGroup, nil
+		}
+	}
+
+	return s.GetByName(idOrName)
 }
 
 func (s *ProjectGroupService) GetProjects(projectGroup *ProjectGroup) ([]*projects.Project, error) {
