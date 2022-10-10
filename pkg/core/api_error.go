@@ -7,7 +7,6 @@ import (
 
 // APIError is a generic structure for containing errors for API operations.
 type APIError struct {
-	Details         string   `json:"Details,omitempty"`
 	ErrorMessage    string   `json:"ErrorMessage,omitempty"`
 	Errors          []string `json:"Errors,omitempty"`
 	FullException   string   `json:"FullException,omitempty"`
