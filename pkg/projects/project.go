@@ -192,3 +192,7 @@ func (resource Project) Validate() error {
 		internal.ValidateRequiredPropertyValue("ProjectGroupID", resource.ProjectGroupID),
 	})
 }
+
+func (s *Project) GetName() string {
+	return s.Name
+}
