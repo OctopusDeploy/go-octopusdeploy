@@ -52,6 +52,7 @@ const (
 	LinkExternalUserSearch                string = "ExternalUserSearch"
 	LinkFeaturesConfiguration             string = "FeaturesConfiguration"
 	LinkFeeds                             string = "Feeds"
+	LinkGitCredentials                    string = "GitCredentials"
 	LinkImportProjects                    string = "ImportProjects"
 	LinkInterruptions                     string = "Interruptions"
 	LinkInvitations                       string = "Invitations"

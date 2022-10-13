@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestAnonymousGitCredentialNew(t *testing.T) {
-	anonymousGitCredential := projects.NewAnonymousGitCredential()
+	anonymousGitCredential := credentials.NewAnonymous()
 	require.NotNil(t, anonymousGitCredential)
-	require.Equal(t, projects.GitCredentialType("Anonymous"), anonymousGitCredential.GetType())
+	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.GetType())
 }
 
 func TestAnonymousGitCredentialMarshalJSON(t *testing.T) {
@@ -20,8 +20,8 @@ func TestAnonymousGitCredentialMarshalJSON(t *testing.T) {
 		"Type": "Anonymous"
 	}`
 
-	anonymousGitCredential := projects.NewAnonymousGitCredential()
-	require.Equal(t, projects.GitCredentialType("Anonymous"), anonymousGitCredential.GetType())
+	anonymousGitCredential := credentials.NewAnonymous()
+	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.GetType())
 
 	anonymousGitCredentialAsJSON, err := json.Marshal(anonymousGitCredential)
 	require.NoError(t, err)
@@ -35,9 +35,9 @@ func TestAnonymousGitCredentialUnmarshalJSON(t *testing.T) {
 		"Type": "Anonymous"
 	}`
 
-	var anonymousGitCredential projects.AnonymousGitCredential
+	var anonymousGitCredential credentials.Anonymous
 	err := json.Unmarshal([]byte(inputJSON), &anonymousGitCredential)
 	require.NoError(t, err)
 	require.NotNil(t, anonymousGitCredential)
-	require.Equal(t, projects.GitCredentialType("Anonymous"), anonymousGitCredential.GetType())
+	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.GetType())
 }
