@@ -56,5 +56,5 @@ jobs:
         name: Add server url to CORS
       - run: go test -v ./...
         env:
-          OCTOPUS_HOST: ${{ env.SERVER_URL }}
-          OCTOPUS_API_KEY: ${{ env.ADMIN_API_KEY }}
+          TEST_OCTOPUS_HOST: ${{ env.SERVER_URL }}
+          TEST_OCTOPUS_API_KEY: ${{ env.ADMIN_API_KEY }}

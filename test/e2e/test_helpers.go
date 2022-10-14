@@ -8,23 +8,19 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+)
+
+const (
+	TestVariableOctopusHost   string = "TEST_OCTOPUS_HOST"
+	TestVariableOctopusApiKey string = "TEST_OCTOPUS_API_KEY"
 )
 
 func getOctopusClient() *client.Client {
-	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
-	apiKey := os.Getenv(constants.EnvironmentVariableOctopusApiKey)
-
-	if len(host) == 0 {
-		host = os.Getenv(constants.ClientURLEnvironmentVariable)
-	}
-
-	if len(apiKey) == 0 {
-		apiKey = os.Getenv(constants.ClientAPIKeyEnvironmentVariable)
-	}
+	host := os.Getenv(TestVariableOctopusHost)
+	apiKey := os.Getenv(TestVariableOctopusApiKey)
 
 	if internal.IsEmpty(host) || internal.IsEmpty(apiKey) {
-		log.Fatal("Please make sure to set the env variables 'OCTOPUS_HOST' and 'OCTOPUS_API_KEY' before running this test")
+		log.Fatal("Please make sure to set the env variables '" + TestVariableOctopusHost + "' and '" + TestVariableOctopusApiKey + "' before running this test")
 	}
 
 	apiURL, err := url.Parse(host)
