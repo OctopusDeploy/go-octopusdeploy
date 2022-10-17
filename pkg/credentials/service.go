@@ -3,10 +3,12 @@ package credentials
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 type Service struct {
@@ -75,6 +77,53 @@ func (s *Service) GetByID(id string) (*Resource, error) {
 	}
 
 	return resp.(*Resource), nil
+}
+
+func (s *Service) GetByPartialName(partialName string) ([]*Resource, error) {
+	if internal.IsEmpty(partialName) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
+	}
+
+	path, err := services.GetByPartialNamePath(s, partialName)
+	if err != nil {
+		return []*Resource{}, err
+	}
+
+	return services.GetPagedResponse[Resource](s, path)
+}
+
+func (s *Service) GetByName(name string) (*Resource, error) {
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	credentials, err := s.GetByPartialName(name)
+	if err != nil {
+		return nil, err
+	}
+	for _, creds := range credentials {
+		if strings.EqualFold(creds.Name, name) {
+			return creds, nil
+		}
+	}
+
+	return nil, services.ErrItemNotFound
+}
+
+func (s *Service) GetByIDOrName(idOrName string) (*Resource, error) {
+	creds, err := s.GetByID(idOrName)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if creds != nil {
+			return creds, nil
+		}
+	}
+
+	return s.GetByName(idOrName)
 }
 
 // Update modifies a Git credential based on the one provided as input.
