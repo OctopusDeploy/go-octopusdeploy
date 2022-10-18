@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"net/url"
-	"sync"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -163,17 +162,9 @@ func TestProjectAddGetDelete(t *testing.T) {
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, octopus, projectGroup)
 
-	wg := new(sync.WaitGroup)
-	for i := 0; i < 50; i++ {
-		wg.Add(1)
-		go func(t *testing.T, c *client.Client, s *spaces.Space, l *lifecycles.Lifecycle, pg *projectgroups.ProjectGroup, wg *sync.WaitGroup) {
-			defer wg.Done()
-			project := CreateTestProject(t, c, s, l, pg)
-			require.NotNil(t, project)
-			//defer DeleteTestProject(t, c, project)
-		}(t, octopus, space, lifecycle, projectGroup, wg)
-	}
-	wg.Wait()
+	project := CreateTestProject(t, octopus, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, octopus, project)
 }
 
 func TestProjectServiceDeleteAll(t *testing.T) {
