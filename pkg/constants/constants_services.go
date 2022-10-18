@@ -25,6 +25,7 @@ const (
 	ServiceExternalSecurityGroupProviderService string = "ExternalSecurityGroupProviderService"
 	ServiceFeaturesConfigurationService         string = "FeaturesConfigurationService"
 	ServiceFeedService                          string = "FeedService"
+	ServiceGitCredentialService                 string = "GitCredentialService"
 	ServiceHomeService                          string = "HomeService"
 	ServiceIssueTrackerService                  string = "IssueTrackerService"
 	ServiceInterruptionService                  string = "InterruptionService"

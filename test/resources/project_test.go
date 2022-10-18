@@ -8,6 +8,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
@@ -105,12 +106,14 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	username := internal.GetRandomName()
 
 	basePath := internal.GetRandomName()
-	credentials := projects.NewUsernamePasswordGitCredential(username, password)
+	conversionState := projects.NewConversionState(false)
+	credentials := credentials.NewUsernamePassword(username, password)
 	defaultBranch := internal.GetRandomName()
+	protectedBranchNamePatterns := []string{}
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, credentials, defaultBranch, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, conversionState, credentials, defaultBranch, protectedBranchNamePatterns, url)
 	gitPersistenceSettingsAsJSON, err := json.Marshal(gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)

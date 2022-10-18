@@ -7,7 +7,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
 )
@@ -16,15 +16,15 @@ func TestUsernamePasswordGitCredentialNew(t *testing.T) {
 	var password *core.SensitiveValue
 	var username string
 
-	usernamePasswordGitCredential := projects.NewUsernamePasswordGitCredential(username, password)
+	usernamePasswordGitCredential := credentials.NewUsernamePassword(username, password)
 	require.NotNil(t, usernamePasswordGitCredential)
-	require.Equal(t, projects.GitCredentialType("UsernamePassword"), usernamePasswordGitCredential.GetType())
+	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.GetType())
 	require.Equal(t, password, usernamePasswordGitCredential.Password)
 	require.Equal(t, username, usernamePasswordGitCredential.Username)
 
 	password = core.NewSensitiveValue(internal.GetRandomName())
 	username = internal.GetRandomName()
-	usernamePasswordGitCredential = projects.NewUsernamePasswordGitCredential(username, password)
+	usernamePasswordGitCredential = credentials.NewUsernamePassword(username, password)
 	require.Equal(t, password, usernamePasswordGitCredential.Password)
 	require.Equal(t, username, usernamePasswordGitCredential.Username)
 }
@@ -43,9 +43,9 @@ func TestUsernamePasswordGitCredentialMarshalJSON(t *testing.T) {
 		"Username": "%s"
 	}`, passwordAsJSON, username)
 
-	usernamePasswordGitCredential := projects.NewUsernamePasswordGitCredential(username, password)
+	usernamePasswordGitCredential := credentials.NewUsernamePassword(username, password)
 	require.NotNil(t, usernamePasswordGitCredential)
-	require.Equal(t, projects.GitCredentialType("UsernamePassword"), usernamePasswordGitCredential.GetType())
+	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.GetType())
 	require.Equal(t, password, usernamePasswordGitCredential.Password)
 	require.Equal(t, username, usernamePasswordGitCredential.Username)
 
@@ -70,11 +70,11 @@ func TestUsernamePasswordGitCredentialUnmarshalJSON(t *testing.T) {
 		"Username": "%s"
 	}`, passwordAsJSON, username)
 
-	var usernamePasswordGitCredential projects.UsernamePasswordGitCredential
+	var usernamePasswordGitCredential credentials.UsernamePassword
 	err = json.Unmarshal([]byte(inputJSON), &usernamePasswordGitCredential)
 	require.NoError(t, err)
 	require.NotNil(t, usernamePasswordGitCredential)
-	require.Equal(t, projects.GitCredentialType("UsernamePassword"), usernamePasswordGitCredential.GetType())
+	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.GetType())
 	require.Equal(t, password, usernamePasswordGitCredential.Password)
 	require.Equal(t, username, usernamePasswordGitCredential.Username)
 }

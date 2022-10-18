@@ -50,6 +50,7 @@ const (
 	TestURIExternalUserSearch                string = "/api/users/external-search{?partialName}"
 	TestURIFeaturesConfiguration             string = "/api/featuresconfiguration"
 	TestURIFeeds                             string = "/api/feeds{/id}{?skip,take,ids,partialName,feedType}"
+	TestURIGitCredentials                    string = "/api/Spaces-1/git-credentials{/id}{?skip,take,name}"
 	TestURIInterruptions                     string = "/api/Spaces-1/interruptions{/id}{?skip,take,regarding,pendingOnly,ids}"
 	TestURIInvitations                       string = "/api/users/invitations"
 	TestURIIssueTrackers                     string = "/api/issuetrackers{?skip,take,ids,partialName}"

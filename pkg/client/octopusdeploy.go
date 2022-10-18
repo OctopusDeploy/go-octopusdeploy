@@ -2,8 +2,6 @@ package client
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -23,6 +21,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/cloudtemplate"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/configuration"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/dashboard"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
@@ -38,6 +37,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/migrations"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/octopusservernodes"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/permissions"
@@ -65,6 +65,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workerpools"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workertoolslatestimages"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -87,6 +88,7 @@ type Client struct {
 	CloudTemplate                  *cloudtemplate.CloudTemplateService
 	CommunityActionTemplates       *actions.CommunityActionTemplateService
 	Configuration                  *configuration.ConfigurationService
+	GitCredentials                 *credentials.Service
 	DashboardConfigurations        *dashboard.DashboardConfigurationService
 	Dashboards                     *dashboard.DashboardService
 	DeploymentProcesses            *deployments.DeploymentProcessService
@@ -282,6 +284,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 	externalUserSearchPath := root.GetLinkPath(sroot, constants.LinkExternalUserSearch)
 	featuresConfigurationPath := root.GetLinkPath(sroot, constants.LinkFeaturesConfiguration)
 	feedsPath := root.GetLinkPath(sroot, constants.LinkFeeds)
+	gitCredentialsPath := root.GetLinkPath(sroot, constants.LinkGitCredentials)
 	interruptionsPath := root.GetLinkPath(sroot, constants.LinkInterruptions)
 	invitationsPath := root.GetLinkPath(sroot, constants.LinkInvitations)
 	issueTrackersPath := root.GetLinkPath(sroot, constants.LinkIssueTrackers)
@@ -401,6 +404,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		ExternalSecurityGroupProviders: externalsecuritygroupproviders.NewExternalSecurityGroupProviderService(base, externalSecurityGroupProvidersPath),
 		FeaturesConfiguration:          configuration.NewFeaturesConfigurationService(base, featuresConfigurationPath),
 		Feeds:                          feeds.NewFeedService(base, feedsPath, builtInFeedStatsPath),
+		GitCredentials:                 credentials.NewService(base, gitCredentialsPath),
 		Interruptions:                  interruptions.NewInterruptionService(base, interruptionsPath),
 		Invitations:                    invitations.NewInvitationService(base, invitationsPath),
 		IssueTrackers:                  issuetrackers.NewIssueTrackerService(base, issueTrackersPath),

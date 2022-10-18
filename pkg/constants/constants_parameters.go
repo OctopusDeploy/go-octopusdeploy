@@ -16,6 +16,7 @@ const (
 	ParameterDeploymentTarget       string = "deploymentTarget"
 	ParameterEnvironment            string = "environment"
 	ParameterFeed                   string = "feed"
+	ParameterGitCredential          string = "gitCredential"
 	ParameterID                     string = "id"
 	ParameterIDs                    string = "ids"
 	ParameterLibraryVariableSet     string = "libraryVariableSet"

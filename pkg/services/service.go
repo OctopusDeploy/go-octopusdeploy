@@ -274,6 +274,7 @@ func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
 	}
 
+	client.Set("Accept", `application/json`)
 	client.Set("User-Agent", api.UserAgentString)
 
 	request := client.BodyJSON(inputStruct)
@@ -283,6 +284,11 @@ func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 
 	octopusDeployError := new(core.APIError)
 	resp, err := request.Receive(resource, &octopusDeployError)
+
+	// workaround to account for API responses where it's either 200 or 201
+	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
+		return resource, nil
+	}
 
 	if apiErrorCheck := core.APIErrorChecker(path, resp, http.StatusCreated, err, octopusDeployError); apiErrorCheck != nil {
 		return nil, apiErrorCheck

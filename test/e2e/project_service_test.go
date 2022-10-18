@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectgroups"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
@@ -123,12 +124,14 @@ func TestProjectAddWithPersistenceSettings(t *testing.T) {
 	require.NotNil(t, project)
 
 	basePath := internal.GetRandomName()
-	credentials := projects.NewAnonymousGitCredential()
+	conversionState := projects.NewConversionState(false)
+	credentials := credentials.NewAnonymous()
 	defaultBranch := "main"
+	protectedBranchNamePatterns := []string{}
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	project.PersistenceSettings = projects.NewGitPersistenceSettings(basePath, credentials, defaultBranch, url)
+	project.PersistenceSettings = projects.NewGitPersistenceSettings(basePath, conversionState, credentials, defaultBranch, protectedBranchNamePatterns, url)
 
 	createdProject, err := client.Projects.Add(project)
 	require.NoError(t, err)
@@ -145,23 +148,23 @@ func TestProjectAddWithPersistenceSettings(t *testing.T) {
 }
 
 func TestProjectAddGetDelete(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
+	octopus := getOctopusClient()
+	require.NotNil(t, octopus)
 
-	space := GetDefaultSpace(t, client)
+	space := GetDefaultSpace(t, octopus)
 	require.NotNil(t, space)
 
-	lifecycle := CreateTestLifecycle(t, client)
+	lifecycle := CreateTestLifecycle(t, octopus)
 	require.NotNil(t, lifecycle)
-	defer DeleteTestLifecycle(t, client, lifecycle)
+	defer DeleteTestLifecycle(t, octopus, lifecycle)
 
-	projectGroup := CreateTestProjectGroup(t, client)
+	projectGroup := CreateTestProjectGroup(t, octopus)
 	require.NotNil(t, projectGroup)
-	defer DeleteTestProjectGroup(t, client, projectGroup)
+	defer DeleteTestProjectGroup(t, octopus, projectGroup)
 
-	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	project := CreateTestProject(t, octopus, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
-	defer DeleteTestProject(t, client, project)
+	defer DeleteTestProject(t, octopus, project)
 }
 
 func TestProjectServiceDeleteAll(t *testing.T) {
@@ -173,7 +176,9 @@ func TestProjectServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, projects)
 
 	for _, project := range projects {
-		defer DeleteTestProject(t, client, project)
+		if project.Name != "Test Project" {
+			defer DeleteTestProject(t, client, project)
+		}
 	}
 }
 

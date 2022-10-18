@@ -3,12 +3,14 @@ package projects
 import (
 	"encoding/json"
 	"net/url"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 )
 
 // VersionControlSettings represents version control settings associated with a project.
 type VersionControlSettings struct {
 	BasePath      string
-	Credentials   IGitCredential
+	Credentials   credentials.IGitCredential
 	DefaultBranch string
 	Type          string
 	URL           *url.URL
@@ -17,7 +19,7 @@ type VersionControlSettings struct {
 // NewVersionControlSettings creates an instance of version control settings.
 func NewVersionControlSettings(
 	basePath string,
-	credentials IGitCredential,
+	credentials credentials.IGitCredential,
 	defaultBranch string,
 	persistenceType string,
 	url *url.URL) *VersionControlSettings {
@@ -33,11 +35,11 @@ func NewVersionControlSettings(
 // MarshalJSON returns version control settings as its JSON encoding.
 func (v *VersionControlSettings) MarshalJSON() ([]byte, error) {
 	versionControlSettings := struct {
-		BasePath      string         `json:"BasePath,omitempty"`
-		Credentials   IGitCredential `json:"Credentials,omitempty"`
-		DefaultBranch string         `json:"DefaultBranch,omitempty"`
-		Type          string         `json:"Type"`
-		Url           string         `json:"Url,omitempty"`
+		BasePath      string                     `json:"BasePath,omitempty"`
+		Credentials   credentials.IGitCredential `json:"Credentials,omitempty"`
+		DefaultBranch string                     `json:"DefaultBranch,omitempty"`
+		Type          string                     `json:"Type"`
+		Url           string                     `json:"Url,omitempty"`
 	}{
 		BasePath:      v.BasePath,
 		Credentials:   v.Credentials,
@@ -83,18 +85,18 @@ func (v *VersionControlSettings) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	var credentials *json.RawMessage
+	var gitCredentials *json.RawMessage
 	var credentialsProperties map[string]*json.RawMessage
 	var gitCredentialType string
 
 	credentialsValue := versionControlSettings["Credentials"]
 
-	err = json.Unmarshal(*credentialsValue, &credentials)
+	err = json.Unmarshal(*credentialsValue, &gitCredentials)
 	if err != nil {
 		return err
 	}
 
-	err = json.Unmarshal(*credentials, &credentialsProperties)
+	err = json.Unmarshal(*gitCredentials, &credentialsProperties)
 	if err != nil {
 		return err
 	}
@@ -106,15 +108,15 @@ func (v *VersionControlSettings) UnmarshalJSON(b []byte) error {
 
 	switch gitCredentialType {
 	case "Anonymous":
-		var anonymousGitCredential *AnonymousGitCredential
-		err := json.Unmarshal(*credentials, &anonymousGitCredential)
+		var anonymousGitCredential *credentials.Anonymous
+		err := json.Unmarshal(*gitCredentials, &anonymousGitCredential)
 		if err != nil {
 			return err
 		}
 		v.Credentials = anonymousGitCredential
 	case "UsernamePassword":
-		var usernamePasswordGitCredential *UsernamePasswordGitCredential
-		err := json.Unmarshal(*credentials, &usernamePasswordGitCredential)
+		var usernamePasswordGitCredential *credentials.UsernamePassword
+		err := json.Unmarshal(*gitCredentials, &usernamePasswordGitCredential)
 		if err != nil {
 			return err
 		}
