@@ -52,3 +52,16 @@ func TestServiceGetByID(t *testing.T) {
 	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	assert.Nil(t, resource)
 }
+
+func TestService_GetByName(t *testing.T) {
+	service := createService(t)
+	require.NotNil(t, service)
+
+	resource, err := service.GetByName("")
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
+	assert.Nil(t, resource)
+
+	resource, err = service.GetByName(" ")
+	assert.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName))
+	assert.Nil(t, resource)
+}
