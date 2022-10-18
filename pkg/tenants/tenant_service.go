@@ -3,12 +3,14 @@ package tenants
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 type TenantService struct {
@@ -181,6 +183,43 @@ func (s *TenantService) GetByPartialName(partialName string) ([]*Tenant, error) 
 	}
 
 	return services.GetPagedResponse[Tenant](s, path)
+}
+
+func (s *TenantService) GetByName(name string) (*Tenant, error) {
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	tenants, err := s.Get(TenantsQuery{
+		PartialName: name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, tenant := range tenants.Items {
+		if strings.EqualFold(tenant.Name, name) {
+			return tenant, nil
+		}
+	}
+
+	return nil, services.ErrItemNotFound
+}
+
+func (s *TenantService) GetByIdOrName(idOrName string) (*Tenant, error) {
+	tenant, err := s.GetByID(idOrName)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if tenant != nil {
+			return tenant, nil
+		}
+	}
+
+	return s.GetByName(idOrName)
 }
 
 func (s *TenantService) GetVariables(tenant *Tenant) (*variables.TenantVariables, error) {
