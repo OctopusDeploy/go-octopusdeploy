@@ -25,6 +25,14 @@ func AssertEqualFeeds(t *testing.T, expected feeds.IFeed, actual feeds.IFeed) {
 	assert.Equal(t, expected.GetID(), actual.GetID())
 	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
+	// IFeed
+	assert.Equal(t, expected.GetFeedType(), actual.GetFeedType())
+	assert.Equal(t, expected.GetName(), actual.GetName())
+	assert.Equal(t, expected.GetPackageAcquisitionLocationOptions(), actual.GetPackageAcquisitionLocationOptions())
+	assert.Equal(t, expected.GetPassword(), actual.GetPassword())
+	assert.Equal(t, expected.GetSpaceID(), actual.GetSpaceID())
+	assert.Equal(t, expected.GetUsername(), actual.GetUsername())
+
 	// TODO: compare remaining values
 }
 
