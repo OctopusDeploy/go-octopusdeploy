@@ -164,8 +164,8 @@ func (p *ProjectService) GetByName(name string) (*Project, error) {
 	return nil, services.ErrItemNotFound
 }
 
-func (p *ProjectService) GetByIdOrName(idOrName string) (*Project, error) {
-	project, err := p.GetByID(idOrName)
+func (p *ProjectService) GetByIdentifier(identifier string) (*Project, error) {
+	project, err := p.GetByID(identifier)
 	if err != nil {
 		apiError, ok := err.(*core.APIError)
 		if ok && apiError.StatusCode != 404 {
@@ -177,7 +177,7 @@ func (p *ProjectService) GetByIdOrName(idOrName string) (*Project, error) {
 		}
 	}
 
-	return p.GetByName(idOrName)
+	return p.GetByName(identifier)
 }
 
 func (s *ProjectService) GetProject(channel *channels.Channel) (*Project, error) {
@@ -334,4 +334,29 @@ func (s *ProjectService) UpdateWithGitRef(project *Project, gitRef string) (*Pro
 	}
 
 	return resp.(*Project), nil
+}
+
+func (s *ProjectService) GetProgression(project *Project) (*Progression, error) {
+	if project == nil {
+		return nil, internal.CreateInvalidParameterError("GetProgression", "project")
+	}
+
+	if err := services.ValidateInternalState(s); err != nil {
+		return nil, err
+	}
+
+	url, err := url.Parse(project.Links[constants.LinkProgression])
+
+	if err != nil {
+		return nil, err
+	}
+
+	path := strings.Split(url.Path, "{")[0]
+	resp, err := api.ApiGet(s.GetClient(), new(Progression), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*Progression), nil
+
 }
