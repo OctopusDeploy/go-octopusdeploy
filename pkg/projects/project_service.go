@@ -164,8 +164,8 @@ func (p *ProjectService) GetByName(name string) (*Project, error) {
 	return nil, services.ErrItemNotFound
 }
 
-func (p *ProjectService) GetByIdOrName(idOrName string) (*Project, error) {
-	project, err := p.GetByID(idOrName)
+func (p *ProjectService) GetByIdentifier(identifier string) (*Project, error) {
+	project, err := p.GetByID(identifier)
 	if err != nil {
 		apiError, ok := err.(*core.APIError)
 		if ok && apiError.StatusCode != 404 {
@@ -177,7 +177,7 @@ func (p *ProjectService) GetByIdOrName(idOrName string) (*Project, error) {
 		}
 	}
 
-	return p.GetByName(idOrName)
+	return p.GetByName(identifier)
 }
 
 func (s *ProjectService) GetProject(channel *channels.Channel) (*Project, error) {

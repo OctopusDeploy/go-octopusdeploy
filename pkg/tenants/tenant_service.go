@@ -206,8 +206,8 @@ func (s *TenantService) GetByName(name string) (*Tenant, error) {
 	return nil, services.ErrItemNotFound
 }
 
-func (s *TenantService) GetByIdOrName(idOrName string) (*Tenant, error) {
-	tenant, err := s.GetByID(idOrName)
+func (s *TenantService) GetByIdentifier(identifier string) (*Tenant, error) {
+	tenant, err := s.GetByID(identifier)
 	if err != nil {
 		apiError, ok := err.(*core.APIError)
 		if ok && apiError.StatusCode != 404 {
@@ -219,7 +219,7 @@ func (s *TenantService) GetByIdOrName(idOrName string) (*Tenant, error) {
 		}
 	}
 
-	return s.GetByName(idOrName)
+	return s.GetByName(identifier)
 }
 
 func (s *TenantService) GetVariables(tenant *Tenant) (*variables.TenantVariables, error) {
