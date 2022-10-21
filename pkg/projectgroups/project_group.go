@@ -18,3 +18,7 @@ func NewProjectGroup(name string) *ProjectGroup {
 		Resource: *resources.NewResource(),
 	}
 }
+
+func (s *ProjectGroup) GetName() string {
+	return s.Name
+}
