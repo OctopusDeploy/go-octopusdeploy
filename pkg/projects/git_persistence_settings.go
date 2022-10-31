@@ -8,8 +8,17 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+type GitPersistenceSettings interface {
+	GetBasePath() string
+	GetDefaultBranch() string
+	GetProtectedBranchNamePatterns() []string
+	GetURL() *url.URL
+	GetCredential() credentials.IGitCredential
+	PersistenceSettings
+}
+
 // GitPersistenceSettings represents persistence settings associated with a project.
-type GitPersistenceSettings struct {
+type gitPersistenceSettings struct {
 	BasePath                    string
 	ConversionState             *ConversionState
 	Credentials                 credentials.IGitCredential
@@ -23,14 +32,12 @@ type GitPersistenceSettings struct {
 // NewGitPersistenceSettings creates an instance of persistence settings.
 func NewGitPersistenceSettings(
 	basePath string,
-	conversionState *ConversionState,
 	credentials credentials.IGitCredential,
 	defaultBranch string,
 	protectedBranchNamePatterns []string,
-	url *url.URL) *GitPersistenceSettings {
-	return &GitPersistenceSettings{
+	url *url.URL) GitPersistenceSettings {
+	return &gitPersistenceSettings{
 		BasePath:                    basePath,
-		ConversionState:             conversionState,
 		Credentials:                 credentials,
 		DefaultBranch:               defaultBranch,
 		ProtectedBranchNamePatterns: protectedBranchNamePatterns,
@@ -40,12 +47,32 @@ func NewGitPersistenceSettings(
 }
 
 // GetType returns the type for this persistence settings.
-func (g *GitPersistenceSettings) GetType() PersistenceSettingsType {
+func (g *gitPersistenceSettings) GetType() PersistenceSettingsType {
 	return g.Type
 }
 
+func (g *gitPersistenceSettings) GetBasePath() string {
+	return g.BasePath
+}
+
+func (g *gitPersistenceSettings) GetDefaultBranch() string {
+	return g.DefaultBranch
+}
+
+func (g *gitPersistenceSettings) GetProtectedBranchNamePatterns() []string {
+	return g.ProtectedBranchNamePatterns
+}
+
+func (g *gitPersistenceSettings) GetURL() *url.URL {
+	return g.URL
+}
+
+func (g *gitPersistenceSettings) GetCredential() credentials.IGitCredential {
+	return g.Credentials
+}
+
 // MarshalJSON returns persistence settings as its JSON encoding.
-func (p *GitPersistenceSettings) MarshalJSON() ([]byte, error) {
+func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 	persistenceSettings := struct {
 		BasePath                    string                     `json:"BasePath,omitempty"`
 		ConversionState             *ConversionState           `json:"ConversionState,omitempty"`
@@ -68,7 +95,7 @@ func (p *GitPersistenceSettings) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON sets the persistence settings to its representation in JSON.
-func (p *GitPersistenceSettings) UnmarshalJSON(b []byte) error {
+func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	var fields struct {
 		BasePath                    string           `json:"BasePath,omitempty"`
 		ConversionState             *ConversionState `json:"ConversionState,omitempty"`
@@ -160,4 +187,4 @@ func (p *GitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-var _ IPersistenceSettings = &GitPersistenceSettings{}
+var _ GitPersistenceSettings = &gitPersistenceSettings{}

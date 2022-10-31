@@ -65,12 +65,12 @@ func (s *ProjectService) Add(project *Project) (*Project, error) {
 }
 
 // ConvertToVcs converts an input project to use a version-control system (VCS) for its persistence.
-func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, versionControlSettings *VersionControlSettings) (*Project, error) {
+func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError("ConvertToVcs", "project")
 	}
 
-	if versionControlSettings == nil {
+	if gitPersistenceSettings == nil {
 		return nil, fmt.Errorf("input parameter (versionControlSettings) is nil")
 	}
 
@@ -82,7 +82,7 @@ func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, ve
 		return nil, fmt.Errorf("the state of the input project is not valid; cannot resolve ConvertToVcs link")
 	}
 
-	convertToVcs := NewConvertToVcs(commitMessage, versionControlSettings)
+	convertToVcs := NewConvertToVcs(commitMessage, gitPersistenceSettings)
 	_, err := services.ApiAddWithResponseStatus(s.GetClient(), convertToVcs, new(ConvertToVcsResponse), project.Links["ConvertToVcs"], http.StatusOK)
 	if err != nil {
 		return nil, err
@@ -287,8 +287,8 @@ func (s *ProjectService) Update(project *Project) (*Project, error) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterProject)
 	}
 
-	if project.PersistenceSettings != nil && project.PersistenceSettings.GetType() == "VersionControlled" {
-		defaultBranch := project.PersistenceSettings.(*GitPersistenceSettings).DefaultBranch
+	if project.PersistenceSettings != nil && project.PersistenceSettings.GetType() == PersistenceSettingsTypeVersionControlled {
+		defaultBranch := project.PersistenceSettings.(GitPersistenceSettings).GetDefaultBranch()
 		return s.UpdateWithGitRef(project, defaultBranch)
 	}
 
@@ -312,12 +312,12 @@ func (s *ProjectService) UpdateWithGitRef(project *Project, gitRef string) (*Pro
 		return nil, internal.CreateInvalidParameterError("UpdateWithGitRef", "project")
 	}
 
-	if project.PersistenceSettings == nil || project.PersistenceSettings.GetType() != "VersionControlled" {
+	if project.PersistenceSettings == nil || project.PersistenceSettings.GetType() != PersistenceSettingsTypeVersionControlled {
 		return s.Update(project)
 	}
 
 	if len(gitRef) == 0 {
-		gitRef = project.PersistenceSettings.(*GitPersistenceSettings).DefaultBranch
+		gitRef = project.PersistenceSettings.(GitPersistenceSettings).GetDefaultBranch()
 	}
 
 	if len(gitRef) == 0 {

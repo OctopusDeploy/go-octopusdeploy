@@ -1,7 +1,7 @@
 package projects
 
-// IPersistenceSettings defines the interface for persistence settings.
-type IPersistenceSettings interface {
+// PersistenceSettings defines the interface for persistence settings.
+type PersistenceSettings interface {
 	GetType() PersistenceSettingsType
 }
 
