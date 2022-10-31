@@ -72,7 +72,7 @@ func (g gitPersistenceSettings) GetCredential() credentials.IGitCredential {
 }
 
 // MarshalJSON returns persistence settings as its JSON encoding.
-func (p gitPersistenceSettings) MarshalJSON() ([]byte, error) {
+func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 	persistenceSettings := struct {
 		BasePath                    string                     `json:"BasePath,omitempty"`
 		ConversionState             *ConversionState           `json:"ConversionState,omitempty"`
@@ -95,7 +95,7 @@ func (p gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON sets the persistence settings to its representation in JSON.
-func (p gitPersistenceSettings) UnmarshalJSON(b []byte) error {
+func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	var fields struct {
 		BasePath                    string           `json:"BasePath,omitempty"`
 		ConversionState             *ConversionState `json:"ConversionState,omitempty"`
