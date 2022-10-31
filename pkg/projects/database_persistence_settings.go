@@ -17,7 +17,7 @@ func NewDatabasePersistenceSettings() DatabasePersistenceSettings {
 }
 
 // GetType returns the type for this persistence settings.
-func (d *databasePersistenceSettings) GetType() PersistenceSettingsType {
+func (d databasePersistenceSettings) GetType() PersistenceSettingsType {
 	return d.Type
 }
 

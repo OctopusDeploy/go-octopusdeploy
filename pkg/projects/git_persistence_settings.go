@@ -47,32 +47,32 @@ func NewGitPersistenceSettings(
 }
 
 // GetType returns the type for this persistence settings.
-func (g *gitPersistenceSettings) GetType() PersistenceSettingsType {
+func (g gitPersistenceSettings) GetType() PersistenceSettingsType {
 	return g.Type
 }
 
-func (g *gitPersistenceSettings) GetBasePath() string {
+func (g gitPersistenceSettings) GetBasePath() string {
 	return g.BasePath
 }
 
-func (g *gitPersistenceSettings) GetDefaultBranch() string {
+func (g gitPersistenceSettings) GetDefaultBranch() string {
 	return g.DefaultBranch
 }
 
-func (g *gitPersistenceSettings) GetProtectedBranchNamePatterns() []string {
+func (g gitPersistenceSettings) GetProtectedBranchNamePatterns() []string {
 	return g.ProtectedBranchNamePatterns
 }
 
-func (g *gitPersistenceSettings) GetURL() *url.URL {
+func (g gitPersistenceSettings) GetURL() *url.URL {
 	return g.URL
 }
 
-func (g *gitPersistenceSettings) GetCredential() credentials.IGitCredential {
+func (g gitPersistenceSettings) GetCredential() credentials.IGitCredential {
 	return g.Credentials
 }
 
 // MarshalJSON returns persistence settings as its JSON encoding.
-func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
+func (p gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 	persistenceSettings := struct {
 		BasePath                    string                     `json:"BasePath,omitempty"`
 		ConversionState             *ConversionState           `json:"ConversionState,omitempty"`
@@ -95,7 +95,7 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON sets the persistence settings to its representation in JSON.
-func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
+func (p gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	var fields struct {
 		BasePath                    string           `json:"BasePath,omitempty"`
 		ConversionState             *ConversionState `json:"ConversionState,omitempty"`

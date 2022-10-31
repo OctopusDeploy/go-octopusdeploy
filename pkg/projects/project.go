@@ -159,13 +159,13 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 
 	switch persistenceSettingsType {
 	case PersistenceSettingsTypeDatabase:
-		var databasePersistenceSettings DatabasePersistenceSettings
+		var databasePersistenceSettings databasePersistenceSettings
 		if err := json.Unmarshal(*persistenceSettings, &databasePersistenceSettings); err != nil {
 			return err
 		}
 		p.PersistenceSettings = databasePersistenceSettings
 	case PersistenceSettingsTypeVersionControlled:
-		var gitPersistenceSettings GitPersistenceSettings
+		var gitPersistenceSettings gitPersistenceSettings
 		if err := json.Unmarshal(*persistenceSettings, &gitPersistenceSettings); err != nil {
 			return err
 		}
