@@ -52,13 +52,13 @@ func NewGitPersistenceSettings(
 		defaultBranch:               defaultBranch,
 		protectedBranchNamePatterns: protectedBranchNamePatterns,
 		url:                         url,
-		persistenceSettings:         persistenceSettings{settingsType: PersistenceSettingsTypeVersionControlled},
+		persistenceSettings:         persistenceSettings{SettingsType: PersistenceSettingsTypeVersionControlled},
 	}
 }
 
 // Type returns the type for this persistence settings.
 func (g *gitPersistenceSettings) Type() PersistenceSettingsType {
-	return g.settingsType
+	return g.SettingsType
 }
 
 func (g *gitPersistenceSettings) BasePath() string {
@@ -110,7 +110,7 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 		DefaultBranch               string                    `json:"DefaultBranch,omitempty"`
 		ProtectedBranchNamePatterns []string                  `json:"ProtectedBranchNamePatterns"`
 		URL                         string                    `json:"Url,omitempty"`
-		persistenceSettings
+		Type                        PersistenceSettingsType   `json:"Type,omitempty"`
 	}{
 		BasePath:                    p.basePath,
 		ConversionState:             p.conversionState,
@@ -118,7 +118,7 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 		DefaultBranch:               p.defaultBranch,
 		ProtectedBranchNamePatterns: p.protectedBranchNamePatterns,
 		URL:                         p.url.String(),
-		persistenceSettings:         p.persistenceSettings,
+		Type:                        p.persistenceSettings.SettingsType,
 	}
 
 	return json.Marshal(persistenceSettings)
@@ -157,7 +157,7 @@ func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	p.conversionState = fields.ConversionState
 	p.defaultBranch = fields.DefaultBranch
 	p.protectedBranchNamePatterns = fields.ProtectedBranchNamePatterns
-	p.settingsType = fields.Type
+	p.SettingsType = fields.Type
 	p.url = url
 
 	var persistenceSettings map[string]*json.RawMessage
