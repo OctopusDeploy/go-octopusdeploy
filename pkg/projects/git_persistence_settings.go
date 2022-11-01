@@ -8,14 +8,33 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+type GitPersistenceSettings interface {
+	BasePath() string
+	SetBasePath(basePath string)
+
+	DefaultBranch() string
+	SetDefaultBranch(defaultBranch string)
+
+	ProtectedBranchNamePatterns() []string
+	SetProtectedBranchNamePatterns(protectedBranchNamePatterns []string)
+
+	URL() *url.URL
+	SetURL(url *url.URL)
+
+	Credential() credentials.GitCredential
+	SetCredential(credential credentials.GitCredential)
+
+	PersistenceSettings
+}
+
 // GitPersistenceSettings represents persistence settings associated with a project.
-type GitPersistenceSettings struct {
-	BasePath                    string
-	ConversionState             *ConversionState
-	Credentials                 credentials.IGitCredential
-	DefaultBranch               string
-	ProtectedBranchNamePatterns []string
-	URL                         *url.URL
+type gitPersistenceSettings struct {
+	basePath                    string
+	conversionState             *ConversionState
+	credential                  credentials.GitCredential
+	defaultBranch               string
+	protectedBranchNamePatterns []string
+	url                         *url.URL
 
 	persistenceSettings
 }
@@ -23,59 +42,97 @@ type GitPersistenceSettings struct {
 // NewGitPersistenceSettings creates an instance of persistence settings.
 func NewGitPersistenceSettings(
 	basePath string,
-	conversionState *ConversionState,
-	credentials credentials.IGitCredential,
+	credentials credentials.GitCredential,
 	defaultBranch string,
 	protectedBranchNamePatterns []string,
-	url *url.URL) *GitPersistenceSettings {
-	return &GitPersistenceSettings{
-		BasePath:                    basePath,
-		ConversionState:             conversionState,
-		Credentials:                 credentials,
-		DefaultBranch:               defaultBranch,
-		ProtectedBranchNamePatterns: protectedBranchNamePatterns,
-		URL:                         url,
-		persistenceSettings:         persistenceSettings{Type: PersistenceSettingsTypeVersionControlled},
+	url *url.URL) GitPersistenceSettings {
+	return &gitPersistenceSettings{
+		basePath:                    basePath,
+		credential:                  credentials,
+		defaultBranch:               defaultBranch,
+		protectedBranchNamePatterns: protectedBranchNamePatterns,
+		url:                         url,
+		persistenceSettings:         persistenceSettings{SettingsType: PersistenceSettingsTypeVersionControlled},
 	}
 }
 
-// GetType returns the type for this persistence settings.
-func (g *GitPersistenceSettings) GetType() PersistenceSettingsType {
-	return g.Type
+// Type returns the type for this persistence settings.
+func (g *gitPersistenceSettings) Type() PersistenceSettingsType {
+	return g.SettingsType
+}
+
+func (g *gitPersistenceSettings) BasePath() string {
+	return g.basePath
+}
+
+func (g *gitPersistenceSettings) SetBasePath(basePath string) {
+	g.basePath = basePath
+}
+
+func (g *gitPersistenceSettings) DefaultBranch() string {
+	return g.defaultBranch
+}
+
+func (g *gitPersistenceSettings) SetDefaultBranch(defaultBranch string) {
+	g.defaultBranch = defaultBranch
+}
+
+func (g *gitPersistenceSettings) ProtectedBranchNamePatterns() []string {
+	return g.protectedBranchNamePatterns
+}
+
+func (g *gitPersistenceSettings) SetProtectedBranchNamePatterns(protectedBranchNamePatterns []string) {
+	g.protectedBranchNamePatterns = protectedBranchNamePatterns
+}
+
+func (g *gitPersistenceSettings) URL() *url.URL {
+	return g.url
+}
+
+func (g *gitPersistenceSettings) SetURL(url *url.URL) {
+	g.url = url
+}
+
+func (g *gitPersistenceSettings) Credential() credentials.GitCredential {
+	return g.credential
+}
+
+func (g *gitPersistenceSettings) SetCredential(credential credentials.GitCredential) {
+	g.credential = credential
 }
 
 // MarshalJSON returns persistence settings as its JSON encoding.
-func (p *GitPersistenceSettings) MarshalJSON() ([]byte, error) {
+func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 	persistenceSettings := struct {
-		BasePath                    string                     `json:"BasePath,omitempty"`
-		ConversionState             *ConversionState           `json:"ConversionState,omitempty"`
-		Credentials                 credentials.IGitCredential `json:"Credentials,omitempty"`
-		DefaultBranch               string                     `json:"DefaultBranch,omitempty"`
-		ProtectedBranchNamePatterns []string                   `json:"ProtectedBranchNamePatterns"`
-		URL                         string                     `json:"Url,omitempty"`
-		persistenceSettings
+		BasePath                    string                    `json:"BasePath,omitempty"`
+		ConversionState             *ConversionState          `json:"ConversionState,omitempty"`
+		Credentials                 credentials.GitCredential `json:"Credentials,omitempty"`
+		DefaultBranch               string                    `json:"DefaultBranch,omitempty"`
+		ProtectedBranchNamePatterns []string                  `json:"ProtectedBranchNamePatterns"`
+		URL                         string                    `json:"Url,omitempty"`
+		Type                        PersistenceSettingsType   `json:"Type,omitempty"`
 	}{
-		BasePath:                    p.BasePath,
-		ConversionState:             p.ConversionState,
-		Credentials:                 p.Credentials,
-		DefaultBranch:               p.DefaultBranch,
-		ProtectedBranchNamePatterns: p.ProtectedBranchNamePatterns,
-		URL:                         p.URL.String(),
-		persistenceSettings:         p.persistenceSettings,
+		BasePath:                    p.basePath,
+		ConversionState:             p.conversionState,
+		Credentials:                 p.credential,
+		DefaultBranch:               p.defaultBranch,
+		ProtectedBranchNamePatterns: p.protectedBranchNamePatterns,
+		URL:                         p.url.String(),
+		Type:                        p.persistenceSettings.SettingsType,
 	}
 
 	return json.Marshal(persistenceSettings)
 }
 
 // UnmarshalJSON sets the persistence settings to its representation in JSON.
-func (p *GitPersistenceSettings) UnmarshalJSON(b []byte) error {
+func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	var fields struct {
-		BasePath                    string           `json:"BasePath,omitempty"`
-		ConversionState             *ConversionState `json:"ConversionState,omitempty"`
-		DefaultBranch               string           `json:"DefaultBranch,omitempty"`
-		ProtectedBranchNamePatterns []string         `json:"ProtectedBranchNamePatterns"`
-		URL                         string           `json:"Url,omitempty"`
-		persistenceSettings
+		BasePath                    string                  `json:"BasePath,omitempty"`
+		ConversionState             *ConversionState        `json:"ConversionState,omitempty"`
+		DefaultBranch               string                  `json:"DefaultBranch,omitempty"`
+		ProtectedBranchNamePatterns []string                `json:"ProtectedBranchNamePatterns"`
+		URL                         string                  `json:"Url,omitempty"`
+		Type                        PersistenceSettingsType `json:"Type"`
 	}
 	err := json.Unmarshal(b, &fields)
 	if err != nil {
@@ -96,13 +153,12 @@ func (p *GitPersistenceSettings) UnmarshalJSON(b []byte) error {
 		}
 	}
 
-	p.BasePath = fields.BasePath
-	p.ConversionState = fields.ConversionState
-	p.DefaultBranch = fields.DefaultBranch
-	p.ProtectedBranchNamePatterns = fields.ProtectedBranchNamePatterns
-	p.Type = fields.Type
-	p.URL = url
-	p.persistenceSettings = fields.persistenceSettings
+	p.basePath = fields.BasePath
+	p.conversionState = fields.ConversionState
+	p.defaultBranch = fields.DefaultBranch
+	p.protectedBranchNamePatterns = fields.ProtectedBranchNamePatterns
+	p.SettingsType = fields.Type
+	p.url = url
 
 	var persistenceSettings map[string]*json.RawMessage
 	err = json.Unmarshal(b, &persistenceSettings)
@@ -140,24 +196,24 @@ func (p *GitPersistenceSettings) UnmarshalJSON(b []byte) error {
 		if err != nil {
 			return err
 		}
-		p.Credentials = anonymousGitCredential
+		p.credential = anonymousGitCredential
 	case credentials.GitCredentialTypeReference:
 		var referenceProjectGitCredential *credentials.Reference
 		err := json.Unmarshal(*gitCredentials, &referenceProjectGitCredential)
 		if err != nil {
 			return err
 		}
-		p.Credentials = referenceProjectGitCredential
+		p.credential = referenceProjectGitCredential
 	case credentials.GitCredentialTypeUsernamePassword:
 		var usernamePasswordGitCredential *credentials.UsernamePassword
 		err := json.Unmarshal(*gitCredentials, &usernamePasswordGitCredential)
 		if err != nil {
 			return err
 		}
-		p.Credentials = usernamePasswordGitCredential
+		p.credential = usernamePasswordGitCredential
 	}
 
 	return nil
 }
 
-var _ IPersistenceSettings = &GitPersistenceSettings{}
+var _ GitPersistenceSettings = &gitPersistenceSettings{}

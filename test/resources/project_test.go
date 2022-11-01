@@ -100,20 +100,19 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	require.Equal(t, lifecycleID, project.LifecycleID)
 	require.Equal(t, name, project.Name)
 	require.Equal(t, projectGroupID, project.ProjectGroupID)
-	require.Equal(t, persistenceSettings, project.PersistenceSettings)
+	require.Equal(t, persistenceSettings.Type(), project.PersistenceSettings.Type())
 
 	password := core.NewSensitiveValue(internal.GetRandomName())
 	username := internal.GetRandomName()
 
 	basePath := internal.GetRandomName()
-	conversionState := projects.NewConversionState(false)
 	credentials := credentials.NewUsernamePassword(username, password)
 	defaultBranch := internal.GetRandomName()
 	protectedBranchNamePatterns := []string{}
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, conversionState, credentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, credentials, defaultBranch, protectedBranchNamePatterns, url)
 	gitPersistenceSettingsAsJSON, err := json.Marshal(gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
@@ -131,5 +130,6 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	require.Equal(t, lifecycleID, project.LifecycleID)
 	require.Equal(t, name, project.Name)
 	require.Equal(t, projectGroupID, project.ProjectGroupID)
-	require.Equal(t, gitPersistenceSettings, project.PersistenceSettings)
+	require.Equal(t, gitPersistenceSettings.Type(), project.PersistenceSettings.Type())
+	require.Equal(t, gitPersistenceSettings.Credential().Type(), project.PersistenceSettings.(projects.GitPersistenceSettings).Credential().Type())
 }

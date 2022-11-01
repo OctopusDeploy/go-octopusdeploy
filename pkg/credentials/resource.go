@@ -7,15 +7,15 @@ import (
 )
 
 type Resource struct {
-	Description string         `json:"Description,omitempty"`
-	Details     IGitCredential `json:"Details"`
-	Name        string         `json:"Name"`
-	SpaceID     string         `json:"SpaceId,omitempty"`
+	Description string        `json:"Description,omitempty"`
+	Details     GitCredential `json:"Details"`
+	Name        string        `json:"Name"`
+	SpaceID     string        `json:"SpaceId,omitempty"`
 
 	resources.Resource
 }
 
-func NewResource(name string, credential IGitCredential) *Resource {
+func NewResource(name string, credential GitCredential) *Resource {
 	return &Resource{
 		Details:  credential,
 		Name:     name,

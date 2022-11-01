@@ -1,23 +1,24 @@
-package projects
+package projects_test
 
 import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 )
 
-func createProjectService(t *testing.T) *ProjectService {
-	service := NewProjectService(nil, constants.TestURIProjects, constants.TestURIProjectPulse, constants.TestURIProjectsExperimentalSummaries, constants.TestURIProjectsImportProjects, constants.TestURIProjectsExportProjects)
+func createProjectService(t *testing.T) *projects.ProjectService {
+	service := projects.NewProjectService(nil, constants.TestURIProjects, constants.TestURIProjectPulse, constants.TestURIProjectsExperimentalSummaries, constants.TestURIProjectsImportProjects, constants.TestURIProjectsExportProjects)
 	services.NewServiceTests(t, service, constants.TestURIProjects, constants.ServiceProjectService)
 	return service
 }
 
 func TestNewProjectService(t *testing.T) {
-	ServiceFunction := NewProjectService
+	ServiceFunction := projects.NewProjectService
 	client := &sling.Sling{}
 	experimentalSummariesPath := ""
 	pulsePath := ""
@@ -28,7 +29,7 @@ func TestNewProjectService(t *testing.T) {
 
 	testCases := []struct {
 		name                      string
-		f                         func(*sling.Sling, string, string, string, string, string) *ProjectService
+		f                         func(*sling.Sling, string, string, string, string, string) *projects.ProjectService
 		client                    *sling.Sling
 		uriTemplate               string
 		experimentalSummariesPath string

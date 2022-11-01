@@ -1,6 +1,7 @@
-package deployments
+package deployments_test
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -20,8 +21,8 @@ func TestDeploymentServiceGetByIDs(t *testing.T) {
 	assert.NotNil(t, resources)
 }
 
-func createDeploymentService(t *testing.T) *DeploymentService {
-	service := NewDeploymentService(nil, constants.TestURIDeployments)
+func createDeploymentService(t *testing.T) *deployments.DeploymentService {
+	service := deployments.NewDeploymentService(nil, constants.TestURIDeployments)
 	services.NewServiceTests(t, service, constants.TestURIDeployments, constants.ServiceDeploymentService)
 	return service
 }
