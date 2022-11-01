@@ -287,8 +287,8 @@ func (s *ProjectService) Update(project *Project) (*Project, error) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterProject)
 	}
 
-	if project.PersistenceSettings != nil && project.PersistenceSettings.GetType() == PersistenceSettingsTypeVersionControlled {
-		defaultBranch := project.PersistenceSettings.(GitPersistenceSettings).GetDefaultBranch()
+	if project.PersistenceSettings != nil && project.PersistenceSettings.Type() == PersistenceSettingsTypeVersionControlled {
+		defaultBranch := project.PersistenceSettings.(GitPersistenceSettings).DefaultBranch()
 		return s.UpdateWithGitRef(project, defaultBranch)
 	}
 
@@ -312,12 +312,12 @@ func (s *ProjectService) UpdateWithGitRef(project *Project, gitRef string) (*Pro
 		return nil, internal.CreateInvalidParameterError("UpdateWithGitRef", "project")
 	}
 
-	if project.PersistenceSettings == nil || project.PersistenceSettings.GetType() != PersistenceSettingsTypeVersionControlled {
+	if project.PersistenceSettings == nil || project.PersistenceSettings.Type() != PersistenceSettingsTypeVersionControlled {
 		return s.Update(project)
 	}
 
 	if len(gitRef) == 0 {
-		gitRef = project.PersistenceSettings.(GitPersistenceSettings).GetDefaultBranch()
+		gitRef = project.PersistenceSettings.(GitPersistenceSettings).DefaultBranch()
 	}
 
 	if len(gitRef) == 0 {

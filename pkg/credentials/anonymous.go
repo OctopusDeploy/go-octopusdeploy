@@ -7,14 +7,14 @@ type Anonymous struct {
 func NewAnonymous() *Anonymous {
 	return &Anonymous{
 		gitCredential: gitCredential{
-			Type: GitCredentialTypeAnonymous,
+			credentialType: GitCredentialTypeAnonymous,
 		},
 	}
 }
 
-// GitCredentialType returns the type for this Git credential.
-func (a *Anonymous) GetType() Type {
-	return a.Type
+// Type returns the type for this Git credential.
+func (a *Anonymous) Type() Type {
+	return a.credentialType
 }
 
-var _ IGitCredential = &Anonymous{}
+var _ GitCredential = &Anonymous{}

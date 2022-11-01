@@ -12,14 +12,14 @@ func NewReference(id string) *Reference {
 	return &Reference{
 		Id: id,
 		gitCredential: gitCredential{
-			Type: GitCredentialTypeReference,
+			credentialType: GitCredentialTypeReference,
 		},
 	}
 }
 
-// GitCredentialType returns the type for this Git credential.
-func (u *Reference) GetType() Type {
-	return u.Type
+// Type returns the type for this Git credential.
+func (u *Reference) Type() Type {
+	return u.credentialType
 }
 
-var _ IGitCredential = &Reference{}
+var _ GitCredential = &Reference{}

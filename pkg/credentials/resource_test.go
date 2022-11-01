@@ -1,4 +1,4 @@
-package credentials
+package credentials_test
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,13 +20,13 @@ func TestResourceWithUsernamePasswordAsJSON(t *testing.T) {
 	selfLink := internal.GetRandomName()
 	username := internal.GetRandomName()
 
-	usernamePassword := NewUsernamePassword(username, password)
+	usernamePassword := credentials.NewUsernamePassword(username, password)
 
 	usernamePasswordAsJSON, err := json.Marshal(usernamePassword)
 	require.NoError(t, err)
 	require.NotNil(t, usernamePasswordAsJSON)
 
-	resource := NewResource(name, usernamePassword)
+	resource := credentials.NewResource(name, usernamePassword)
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink
@@ -48,7 +49,7 @@ func TestResourceWithUsernamePasswordAsJSON(t *testing.T) {
 }
 
 func TestResourceWithAnonymousAsJSON(t *testing.T) {
-	anonymous := NewAnonymous()
+	anonymous := credentials.NewAnonymous()
 	description := internal.GetRandomName()
 	id := internal.GetRandomName()
 	name := internal.GetRandomName()
@@ -58,7 +59,7 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, anonymousdAsJSON)
 
-	resource := NewResource(name, anonymous)
+	resource := credentials.NewResource(name, anonymous)
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink

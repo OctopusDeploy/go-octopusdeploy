@@ -1,4 +1,4 @@
-package projects
+package projects_test
 
 import (
 	"encoding/json"
@@ -9,25 +9,26 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGitPersistenceSettingsNew(t *testing.T) {
 	var basePath string
-	var gitCredentials credentials.IGitCredential
+	var gitCredentials credentials.GitCredential
 	var defaultBranch string
 	var protectedBranchNamePatterns []string
 	var url *url.URL
 
-	gitPersistenceSettings := NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
 	require.NotNil(t, gitPersistenceSettings)
-	require.Equal(t, PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.GetType())
-	require.Equal(t, basePath, gitPersistenceSettings.GetBasePath())
-	require.Equal(t, gitCredentials, gitPersistenceSettings.GetCredential())
-	require.Equal(t, defaultBranch, gitPersistenceSettings.GetDefaultBranch())
-	require.Equal(t, protectedBranchNamePatterns, gitPersistenceSettings.GetProtectedBranchNamePatterns())
-	require.Equal(t, url, gitPersistenceSettings.GetURL())
+	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
+	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
+	require.Equal(t, gitCredentials, gitPersistenceSettings.Credential())
+	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
+	require.Equal(t, protectedBranchNamePatterns, gitPersistenceSettings.ProtectedBranchNamePatterns())
+	require.Equal(t, url, gitPersistenceSettings.URL())
 
 	basePath = internal.GetRandomName()
 	gitCredentials = credentials.NewAnonymous()
@@ -36,14 +37,14 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	gitPersistenceSettings = NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings = projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
 	require.NotNil(t, gitPersistenceSettings)
-	require.Equal(t, PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.GetType())
-	require.Equal(t, basePath, gitPersistenceSettings.GetBasePath())
-	require.Equal(t, gitCredentials, gitPersistenceSettings.GetCredential())
-	require.Equal(t, defaultBranch, gitPersistenceSettings.GetDefaultBranch())
-	require.Equal(t, protectedBranchNamePatterns, gitPersistenceSettings.GetProtectedBranchNamePatterns())
-	require.Equal(t, url, gitPersistenceSettings.GetURL())
+	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
+	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
+	require.Equal(t, gitCredentials, gitPersistenceSettings.Credential())
+	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
+	require.Equal(t, protectedBranchNamePatterns, gitPersistenceSettings.ProtectedBranchNamePatterns())
+	require.Equal(t, url, gitPersistenceSettings.URL())
 
 	password := core.NewSensitiveValue(internal.GetRandomName())
 	username := internal.GetRandomName()
@@ -55,14 +56,14 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	url, err = url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	gitPersistenceSettings = NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings = projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
 	require.NotNil(t, gitPersistenceSettings)
-	require.Equal(t, PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.GetType())
-	require.Equal(t, basePath, gitPersistenceSettings.GetBasePath())
-	require.Equal(t, gitCredentials, gitPersistenceSettings.GetCredential())
-	require.Equal(t, defaultBranch, gitPersistenceSettings.GetDefaultBranch())
-	require.Equal(t, protectedBranchNamePatterns, gitPersistenceSettings.GetProtectedBranchNamePatterns())
-	require.Equal(t, url, gitPersistenceSettings.GetURL())
+	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
+	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
+	require.Equal(t, gitCredentials, gitPersistenceSettings.Credential())
+	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
+	require.Equal(t, protectedBranchNamePatterns, gitPersistenceSettings.ProtectedBranchNamePatterns())
+	require.Equal(t, url, gitPersistenceSettings.URL())
 }
 
 func TestGitPersistenceSettingsMarshalJSON(t *testing.T) {
@@ -87,9 +88,9 @@ func TestGitPersistenceSettingsMarshalJSON(t *testing.T) {
 		"ProtectedBranchNamePatterns": [],
 		"Type": "%s",
 		"Url": "%s"
-	}`, basePath, gitCredentialsAsJSON, defaultBranch, PersistenceSettingsTypeVersionControlled, url.String())
+	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
-	gitPersistenceSettings := NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
 	gitPersistenceSettingsAsJSON, err := json.Marshal(gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
@@ -99,7 +100,7 @@ func TestGitPersistenceSettingsMarshalJSON(t *testing.T) {
 
 func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 	basePath := ""
-	var anonymousGitCredential credentials.IGitCredential
+	var anonymousGitCredential credentials.GitCredential
 	defaultBranch := ""
 	var url *url.URL
 
@@ -109,17 +110,17 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 
 	inputJSON := fmt.Sprintf(`{
 		"Type": "%s"
-	}`, PersistenceSettingsTypeVersionControlled)
+	}`, projects.PersistenceSettingsTypeVersionControlled)
 
-	var gitPersistenceSettings GitPersistenceSettings
+	var gitPersistenceSettings projects.GitPersistenceSettings
 	err = json.Unmarshal([]byte(inputJSON), &gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettings)
-	require.Equal(t, PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.GetType())
-	require.Equal(t, basePath, gitPersistenceSettings.GetBasePath())
-	require.Equal(t, anonymousGitCredential, gitPersistenceSettings.GetCredential())
-	require.Equal(t, defaultBranch, gitPersistenceSettings.GetDefaultBranch())
-	require.Equal(t, url, gitPersistenceSettings.GetURL())
+	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
+	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
+	require.Equal(t, anonymousGitCredential, gitPersistenceSettings.Credential())
+	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
+	require.Equal(t, url, gitPersistenceSettings.URL())
 
 	basePath = internal.GetRandomName()
 	defaultBranch = internal.GetRandomName()
@@ -132,16 +133,16 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 		"BasePath": "%s",
 		"DefaultBranch": "%s",
 		"Type": "%s"
-	}`, basePath, defaultBranch, PersistenceSettingsTypeVersionControlled)
+	}`, basePath, defaultBranch, projects.PersistenceSettingsTypeVersionControlled)
 
 	err = json.Unmarshal([]byte(inputJSON), &gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettings)
-	require.Equal(t, PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.GetType())
-	require.Equal(t, basePath, gitPersistenceSettings.GetBasePath())
-	require.Equal(t, anonymousGitCredential, gitPersistenceSettings.GetCredential())
-	require.Equal(t, defaultBranch, gitPersistenceSettings.GetDefaultBranch())
-	require.Equal(t, url, gitPersistenceSettings.GetURL())
+	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
+	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
+	require.Equal(t, anonymousGitCredential, gitPersistenceSettings.Credential())
+	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
+	require.Equal(t, url, gitPersistenceSettings.URL())
 
 	basePath = internal.GetRandomName()
 	anonymousGitCredential = credentials.NewAnonymous()
@@ -159,16 +160,16 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 		"DefaultBranch": "%s",
 		"Type": "%s",
 		"Url": "%s"
-	}`, basePath, gitCredentialsAsJSON, defaultBranch, PersistenceSettingsTypeVersionControlled, url.String())
+	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	err = json.Unmarshal([]byte(inputJSON), &gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettings)
-	require.Equal(t, PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.GetType())
-	require.Equal(t, basePath, gitPersistenceSettings.GetBasePath())
-	require.Equal(t, anonymousGitCredential, gitPersistenceSettings.GetCredential())
-	require.Equal(t, defaultBranch, gitPersistenceSettings.GetDefaultBranch())
-	require.Equal(t, url, gitPersistenceSettings.GetURL())
+	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
+	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
+	require.Equal(t, anonymousGitCredential, gitPersistenceSettings.Credential())
+	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
+	require.Equal(t, url, gitPersistenceSettings.URL())
 
 	password := core.NewSensitiveValue(internal.GetRandomName())
 	username := internal.GetRandomName()
@@ -189,14 +190,14 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 		"DefaultBranch": "%s",
 		"Type": "%s",
 		"Url": "%s"
-	}`, basePath, gitCredentialsAsJSON, defaultBranch, PersistenceSettingsTypeVersionControlled, url.String())
+	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	err = json.Unmarshal([]byte(inputJSON), &gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettings)
-	require.Equal(t, PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.GetType())
-	require.Equal(t, basePath, gitPersistenceSettings.GetBasePath())
-	require.Equal(t, usernamePasswordGitCredential, gitPersistenceSettings.GetCredential())
-	require.Equal(t, defaultBranch, gitPersistenceSettings.GetDefaultBranch())
-	require.Equal(t, url, gitPersistenceSettings.GetURL())
+	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
+	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
+	require.Equal(t, usernamePasswordGitCredential, gitPersistenceSettings.Credential())
+	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
+	require.Equal(t, url, gitPersistenceSettings.URL())
 }

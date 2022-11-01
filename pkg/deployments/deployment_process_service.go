@@ -28,14 +28,14 @@ func (s *DeploymentProcessService) Get(project *projects.Project, gitRef string)
 		return nil, internal.CreateInvalidParameterError("Get", "project")
 	}
 
-	if project.PersistenceSettings == nil || project.PersistenceSettings.GetType() != projects.PersistenceSettingsTypeVersionControlled {
+	if project.PersistenceSettings == nil || project.PersistenceSettings.Type() != projects.PersistenceSettingsTypeVersionControlled {
 		return s.GetByID(project.DeploymentProcessID)
 	}
 
 	gitPersistenceSettings := project.PersistenceSettings.(projects.GitPersistenceSettings)
 
 	if len(gitRef) <= 0 {
-		gitRef = gitPersistenceSettings.GetDefaultBranch()
+		gitRef = gitPersistenceSettings.DefaultBranch()
 	}
 
 	template, _ := uritemplates.Parse(project.Links["DeploymentProcess"])

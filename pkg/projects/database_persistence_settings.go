@@ -12,13 +12,13 @@ type databasePersistenceSettings struct {
 // NewDatabasePersistenceSettings creates an instance of database persistence settings.
 func NewDatabasePersistenceSettings() DatabasePersistenceSettings {
 	return &databasePersistenceSettings{
-		persistenceSettings: persistenceSettings{Type: PersistenceSettingsTypeDatabase},
+		persistenceSettings: persistenceSettings{settingsType: PersistenceSettingsTypeDatabase},
 	}
 }
 
-// GetType returns the type for this persistence settings.
-func (d databasePersistenceSettings) GetType() PersistenceSettingsType {
-	return d.Type
+// Type returns the type for this persistence settings.
+func (d databasePersistenceSettings) Type() PersistenceSettingsType {
+	return d.settingsType
 }
 
 var _ DatabasePersistenceSettings = &databasePersistenceSettings{}
