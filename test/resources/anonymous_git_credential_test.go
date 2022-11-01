@@ -12,7 +12,7 @@ import (
 func TestAnonymousGitCredentialNew(t *testing.T) {
 	anonymousGitCredential := credentials.NewAnonymous()
 	require.NotNil(t, anonymousGitCredential)
-	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.GetType())
+	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.Type())
 }
 
 func TestAnonymousGitCredentialMarshalJSON(t *testing.T) {
@@ -21,7 +21,7 @@ func TestAnonymousGitCredentialMarshalJSON(t *testing.T) {
 	}`
 
 	anonymousGitCredential := credentials.NewAnonymous()
-	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.GetType())
+	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.Type())
 
 	anonymousGitCredentialAsJSON, err := json.Marshal(anonymousGitCredential)
 	require.NoError(t, err)
@@ -39,5 +39,5 @@ func TestAnonymousGitCredentialUnmarshalJSON(t *testing.T) {
 	err := json.Unmarshal([]byte(inputJSON), &anonymousGitCredential)
 	require.NoError(t, err)
 	require.NotNil(t, anonymousGitCredential)
-	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.GetType())
+	require.Equal(t, credentials.Type("Anonymous"), anonymousGitCredential.Type())
 }

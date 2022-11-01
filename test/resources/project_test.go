@@ -100,7 +100,7 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	require.Equal(t, lifecycleID, project.LifecycleID)
 	require.Equal(t, name, project.Name)
 	require.Equal(t, projectGroupID, project.ProjectGroupID)
-	require.Equal(t, persistenceSettings.GetType(), project.PersistenceSettings.GetType())
+	require.Equal(t, persistenceSettings.Type(), project.PersistenceSettings.Type())
 
 	password := core.NewSensitiveValue(internal.GetRandomName())
 	username := internal.GetRandomName()
@@ -130,6 +130,6 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	require.Equal(t, lifecycleID, project.LifecycleID)
 	require.Equal(t, name, project.Name)
 	require.Equal(t, projectGroupID, project.ProjectGroupID)
-	require.Equal(t, gitPersistenceSettings.GetType(), project.PersistenceSettings.GetType())
-	require.Equal(t, gitPersistenceSettings.(projects.GitPersistenceSettings).GetCredential().GetType(), project.PersistenceSettings.(projects.GitPersistenceSettings).GetCredential().GetType())
+	require.Equal(t, gitPersistenceSettings.Type(), project.PersistenceSettings.Type())
+	require.Equal(t, gitPersistenceSettings.Credential().Type(), project.PersistenceSettings.(projects.GitPersistenceSettings).Credential().Type())
 }
