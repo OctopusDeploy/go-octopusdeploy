@@ -18,7 +18,7 @@ func TestUsernamePasswordGitCredentialNew(t *testing.T) {
 
 	usernamePasswordGitCredential := credentials.NewUsernamePassword(username, password)
 	require.NotNil(t, usernamePasswordGitCredential)
-	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.GetType())
+	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.Type())
 	require.Equal(t, password, usernamePasswordGitCredential.Password)
 	require.Equal(t, username, usernamePasswordGitCredential.Username)
 
@@ -45,7 +45,7 @@ func TestUsernamePasswordGitCredentialMarshalJSON(t *testing.T) {
 
 	usernamePasswordGitCredential := credentials.NewUsernamePassword(username, password)
 	require.NotNil(t, usernamePasswordGitCredential)
-	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.GetType())
+	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.Type())
 	require.Equal(t, password, usernamePasswordGitCredential.Password)
 	require.Equal(t, username, usernamePasswordGitCredential.Username)
 
@@ -74,7 +74,7 @@ func TestUsernamePasswordGitCredentialUnmarshalJSON(t *testing.T) {
 	err = json.Unmarshal([]byte(inputJSON), &usernamePasswordGitCredential)
 	require.NoError(t, err)
 	require.NotNil(t, usernamePasswordGitCredential)
-	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.GetType())
+	require.Equal(t, credentials.GitCredentialTypeUsernamePassword, usernamePasswordGitCredential.Type())
 	require.Equal(t, password, usernamePasswordGitCredential.Password)
 	require.Equal(t, username, usernamePasswordGitCredential.Username)
 }

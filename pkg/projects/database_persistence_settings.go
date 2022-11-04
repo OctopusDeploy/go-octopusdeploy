@@ -1,20 +1,24 @@
 package projects
 
 // DatabasePersistenceSettings represents database persistence settings associated with a project.
-type DatabasePersistenceSettings struct {
+type DatabasePersistenceSettings interface {
+	PersistenceSettings
+}
+
+type databasePersistenceSettings struct {
 	persistenceSettings
 }
 
 // NewDatabasePersistenceSettings creates an instance of database persistence settings.
-func NewDatabasePersistenceSettings() *DatabasePersistenceSettings {
-	return &DatabasePersistenceSettings{
-		persistenceSettings: persistenceSettings{Type: PersistenceSettingsTypeDatabase},
+func NewDatabasePersistenceSettings() DatabasePersistenceSettings {
+	return &databasePersistenceSettings{
+		persistenceSettings: persistenceSettings{SettingsType: PersistenceSettingsTypeDatabase},
 	}
 }
 
-// GetType returns the type for this persistence settings.
-func (d *DatabasePersistenceSettings) GetType() PersistenceSettingsType {
-	return d.Type
+// Type returns the type for this persistence settings.
+func (d databasePersistenceSettings) Type() PersistenceSettingsType {
+	return d.SettingsType
 }
 
-var _ IPersistenceSettings = &DatabasePersistenceSettings{}
+var _ DatabasePersistenceSettings = &databasePersistenceSettings{}

@@ -1,11 +1,11 @@
 package projects
 
-// IPersistenceSettings defines the interface for persistence settings.
-type IPersistenceSettings interface {
-	GetType() PersistenceSettingsType
+// PersistenceSettings defines the interface for persistence settings.
+type PersistenceSettings interface {
+	Type() PersistenceSettingsType
 }
 
 // persistenceSettings represents persistence settings associated with a project.
 type persistenceSettings struct {
-	Type PersistenceSettingsType `json:"Type"`
+	SettingsType PersistenceSettingsType `json:"Type"`
 }

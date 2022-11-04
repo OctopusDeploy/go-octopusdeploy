@@ -2,7 +2,7 @@ package credentials
 
 // Reference defines a reference Git credential.
 type Reference struct {
-	Id string `json:"Id"`
+	ID string `json:"Id"`
 
 	gitCredential
 }
@@ -10,16 +10,16 @@ type Reference struct {
 // NewReference creates and initializes a reference Git credential.
 func NewReference(id string) *Reference {
 	return &Reference{
-		Id: id,
+		ID: id,
 		gitCredential: gitCredential{
-			Type: GitCredentialTypeReference,
+			CredentialType: GitCredentialTypeReference,
 		},
 	}
 }
 
-// GitCredentialType returns the type for this Git credential.
-func (u *Reference) GetType() Type {
-	return u.Type
+// Type returns the type for this Git credential.
+func (u *Reference) Type() Type {
+	return u.CredentialType
 }
 
-var _ IGitCredential = &Reference{}
+var _ GitCredential = &Reference{}

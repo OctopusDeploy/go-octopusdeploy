@@ -1,17 +1,18 @@
-package credentials
+package credentials_test
 
 import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func createService(t *testing.T) *Service {
-	service := NewService(nil, constants.TestURIGitCredentials)
+func createService(t *testing.T) *credentials.Service {
+	service := credentials.NewService(nil, constants.TestURIGitCredentials)
 	services.NewServiceTests(t, service, constants.TestURIGitCredentials, constants.ServiceGitCredentialService)
 	return service
 }
@@ -24,7 +25,7 @@ func TestServiceAdd(t *testing.T) {
 	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterGitCredential))
 	require.Nil(t, resource)
 
-	resource, err = service.Add(&Resource{})
+	resource, err = service.Add(&credentials.Resource{})
 	require.Error(t, err)
 	require.Nil(t, resource)
 }

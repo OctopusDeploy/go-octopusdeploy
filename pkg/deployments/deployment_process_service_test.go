@@ -1,6 +1,7 @@
-package deployments
+package deployments_test
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -10,21 +11,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createDeploymentProcessService(t *testing.T) *DeploymentProcessService {
-	service := NewDeploymentProcessService(nil, constants.TestURIDeploymentProcesses)
+func createDeploymentProcessService(t *testing.T) *deployments.DeploymentProcessService {
+	service := deployments.NewDeploymentProcessService(nil, constants.TestURIDeploymentProcesses)
 	services.NewServiceTests(t, service, constants.TestURIDeploymentProcesses, constants.ServiceDeploymentProcessesService)
 	return service
 }
 
 func TestNewDeploymentProcessService(t *testing.T) {
-	ServiceFunction := NewDeploymentProcessService
+	ServiceFunction := deployments.NewDeploymentProcessService
 	client := &sling.Sling{}
 	uriTemplate := ""
 	ServiceName := constants.ServiceDeploymentProcessesService
 
 	testCases := []struct {
 		name        string
-		f           func(*sling.Sling, string) *DeploymentProcessService
+		f           func(*sling.Sling, string) *deployments.DeploymentProcessService
 		client      *sling.Sling
 		uriTemplate string
 	}{
@@ -68,7 +69,7 @@ func TestDeploymentProcessServiceParameters(t *testing.T) {
 }
 
 func TestDeploymentProcessServiceGetWithEmptyID(t *testing.T) {
-	service := NewDeploymentProcessService(&sling.Sling{}, "")
+	service := deployments.NewDeploymentProcessService(&sling.Sling{}, "")
 
 	resource, err := service.GetByID("")
 	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))

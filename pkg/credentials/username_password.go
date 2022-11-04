@@ -18,14 +18,14 @@ func NewUsernamePassword(username string, password *core.SensitiveValue) *Userna
 		Password: password,
 		Username: username,
 		gitCredential: gitCredential{
-			Type: GitCredentialTypeUsernamePassword,
+			CredentialType: GitCredentialTypeUsernamePassword,
 		},
 	}
 }
 
-// GitCredentialType returns the type for this Git credential.
-func (u *UsernamePassword) GetType() Type {
-	return u.Type
+// Type returns the type for this Git credential.
+func (u *UsernamePassword) Type() Type {
+	return u.CredentialType
 }
 
-var _ IGitCredential = &UsernamePassword{}
+var _ GitCredential = &UsernamePassword{}

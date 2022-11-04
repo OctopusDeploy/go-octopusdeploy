@@ -27,7 +27,7 @@ type Project struct {
 	IsVersionControlled             bool                                      `json:"IsVersionControlled,omitempty"`
 	LifecycleID                     string                                    `json:"LifecycleId" validate:"required"`
 	Name                            string                                    `json:"Name" validate:"required"`
-	PersistenceSettings             IPersistenceSettings                      `json:"PersistenceSettings,omitempty"`
+	PersistenceSettings             PersistenceSettings                       `json:"PersistenceSettings,omitempty"`
 	ProjectGroupID                  string                                    `json:"ProjectGroupId" validate:"required"`
 	ReleaseCreationStrategy         *ReleaseCreationStrategy                  `json:"ReleaseCreationStrategy,omitempty"`
 	ReleaseNotesTemplate            string                                    `json:"ReleaseNotesTemplate,omitempty"`
@@ -138,7 +138,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 
 	var persistenceSettings *json.RawMessage
 	var persistenceSettingsProperties map[string]*json.RawMessage
-	var persistenceSettingsType string
+	var persistenceSettingsType PersistenceSettingsType
 
 	if project["PersistenceSettings"] != nil {
 		persistenceSettingsValue := project["PersistenceSettings"]
@@ -158,14 +158,14 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	}
 
 	switch persistenceSettingsType {
-	case "Database":
-		var databasePersistenceSettings *DatabasePersistenceSettings
+	case PersistenceSettingsTypeDatabase:
+		var databasePersistenceSettings *databasePersistenceSettings
 		if err := json.Unmarshal(*persistenceSettings, &databasePersistenceSettings); err != nil {
 			return err
 		}
 		p.PersistenceSettings = databasePersistenceSettings
-	case "VersionControlled":
-		var gitPersistenceSettings *GitPersistenceSettings
+	case PersistenceSettingsTypeVersionControlled:
+		var gitPersistenceSettings *gitPersistenceSettings
 		if err := json.Unmarshal(*persistenceSettings, &gitPersistenceSettings); err != nil {
 			return err
 		}
