@@ -107,7 +107,7 @@ func TestWorkerServiceAdd(t *testing.T) {
 
 	staticWorkerPool := CreateTestStaticWorkerPool(t, client)
 	require.NotNil(t, staticWorkerPool)
-	defer DeleteTestWorkerPool(t, client, staticWorkerPool)
+	defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
 
 	worker, err := CreateTestWorker(t, client, staticWorkerPool)
 	require.NoError(t, err)
@@ -121,7 +121,7 @@ func TestWorkerServiceAddGetDelete(t *testing.T) {
 
 	staticWorkerPool := CreateTestStaticWorkerPool(t, client)
 	require.NotNil(t, staticWorkerPool)
-	defer DeleteTestWorkerPool(t, client, staticWorkerPool)
+	defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
 
 	worker, err := CreateTestWorker(t, client, staticWorkerPool)
 	require.NoError(t, err)
