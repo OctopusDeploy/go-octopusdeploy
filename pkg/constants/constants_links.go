@@ -145,6 +145,8 @@ const (
 	LinkVersionControlClearCache          string = "VersionControlClearCache"
 	LinkVersionRuleTest                   string = "VersionRuleTest"
 	LinkWeb                               string = "Web"
+	LinkWebSites                          string = "WebSites"
+	LinkWebSiteSlots                      string = "WebSiteSlots"
 	LinkWorkerOperatingSystems            string = "WorkerOperatingSystems"
 	LinkWorkerPools                       string = "WorkerPools"
 	LinkWorkerPoolsDynamicWorkerTypes     string = "WorkerPoolsDynamicWorkerTypes"
