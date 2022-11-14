@@ -71,15 +71,15 @@ func (s *WorkerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools
 
 // GetAll returns all worker pools. If none can be found or an error occurs, it
 // returns an empty collection.
-func (s *WorkerPoolService) GetAll() ([]IWorkerPool, error) {
-	items := []*WorkerPoolResource{}
+func (s *WorkerPoolService) GetAll() ([]*WorkerPoolListResult, error) {
+	items := []*WorkerPoolListResult{}
 	path, err := services.GetAllPath(s)
 	if err != nil {
-		return ToWorkerPoolArray(items), err
+		return nil, err
 	}
 
 	_, err = api.ApiGet(s.GetClient(), &items, path)
-	return ToWorkerPoolArray(items), err
+	return items, err
 }
 
 // GetByID returns the worker pool that matches the input ID. If one cannot be

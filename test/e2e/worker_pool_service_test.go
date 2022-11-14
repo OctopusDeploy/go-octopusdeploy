@@ -80,19 +80,18 @@ func CreateTestStaticWorkerPool(t *testing.T, client *client.Client) workerpools
 	return createdStaticWorkerPool
 }
 
-func DeleteTestWorkerPool(t *testing.T, client *client.Client, workerPool workerpools.IWorkerPool) {
-	require.NotNil(t, workerPool)
+func DeleteTestWorkerPool(t *testing.T, client *client.Client, workerPoolId string) {
 
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	err := client.WorkerPools.DeleteByID(workerPool.GetID())
+	err := client.WorkerPools.DeleteByID(workerPoolId)
 	require.NoError(t, err)
 
 	// verify the delete operation was successful
-	deletedWorkerPool, err := client.WorkerPools.GetByID(workerPool.GetID())
+	deletedWorkerPool, err := client.WorkerPools.GetByID(workerPoolId)
 	require.Error(t, err)
 	require.Nil(t, deletedWorkerPool)
 }
@@ -122,11 +121,11 @@ func TestWorkerPoolServiceAdd(t *testing.T) {
 
 	dynamicWorkerPool := CreateTestDynamicWorkerPool(t, client)
 	require.NotNil(t, dynamicWorkerPool)
-	defer DeleteTestWorkerPool(t, client, dynamicWorkerPool)
+	defer DeleteTestWorkerPool(t, client, dynamicWorkerPool.GetID())
 
 	staticWorkerPool := CreateTestStaticWorkerPool(t, client)
 	require.NotNil(t, staticWorkerPool)
-	defer DeleteTestWorkerPool(t, client, staticWorkerPool)
+	defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
 }
 
 func TestWorkerPoolServiceGet(t *testing.T) {
@@ -138,7 +137,7 @@ func TestWorkerPoolServiceGet(t *testing.T) {
 	require.NotNil(t, workerPools)
 
 	for _, workerPool := range workerPools {
-		name := workerPool.GetName()
+		name := workerPool.Name
 		query := workerpools.WorkerPoolsQuery{
 			PartialName: name,
 			Take:        1,
@@ -146,16 +145,19 @@ func TestWorkerPoolServiceGet(t *testing.T) {
 		namedWorkerPools, err := client.WorkerPools.Get(query)
 		require.NoError(t, err)
 		require.NotNil(t, namedWorkerPools)
-		AssertEqualWorkerPools(t, workerPool, namedWorkerPools.Items[0])
+
+		wp, err := client.WorkerPools.GetByID(workerPool.ID)
+		AssertEqualWorkerPools(t, wp, namedWorkerPools.Items[0])
 
 		query = workerpools.WorkerPoolsQuery{
-			IDs:  []string{workerPool.GetID()},
+			IDs:  []string{workerPool.ID},
 			Take: 1,
 		}
 		namedWorkerPools, err = client.WorkerPools.Get(query)
 		require.NoError(t, err)
 		require.NotNil(t, namedWorkerPools)
-		AssertEqualWorkerPools(t, workerPool, namedWorkerPools.Items[0])
+		wp, err = client.WorkerPools.GetByID(workerPool.ID)
+		AssertEqualWorkerPools(t, wp, namedWorkerPools.Items[0])
 	}
 }
 
@@ -165,7 +167,7 @@ func TestWorkerPoolServiceCRUD(t *testing.T) {
 
 	dynamicWorkerPool := CreateTestDynamicWorkerPool(t, client)
 	require.NotNil(t, dynamicWorkerPool)
-	defer DeleteTestWorkerPool(t, client, dynamicWorkerPool)
+	defer DeleteTestWorkerPool(t, client, dynamicWorkerPool.GetID())
 
 	dynamicWorkerPoolToCompare, err := client.WorkerPools.GetByID(dynamicWorkerPool.GetID())
 	require.NoError(t, err)
@@ -174,7 +176,7 @@ func TestWorkerPoolServiceCRUD(t *testing.T) {
 
 	staticWorkerPool := CreateTestStaticWorkerPool(t, client)
 	require.NotNil(t, staticWorkerPool)
-	defer DeleteTestWorkerPool(t, client, staticWorkerPool)
+	defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
 
 	updatedName := internal.GetRandomName()
 
@@ -198,8 +200,8 @@ func TestWorkerPoolServiceDeleteAll(t *testing.T) {
 	require.NotNil(t, workerPools)
 
 	for _, workerPool := range workerPools {
-		if !workerPool.GetIsDefault() {
-			defer DeleteTestWorkerPool(t, client, workerPool)
+		if !workerPool.IsDefault {
+			defer DeleteTestWorkerPool(t, client, workerPool.ID)
 		}
 	}
 }
@@ -212,7 +214,7 @@ func TestWorkerPoolServiceGetAll(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		dynamicWorkerPool := CreateTestDynamicWorkerPool(t, client)
 		require.NotNil(t, dynamicWorkerPool)
-		defer DeleteTestWorkerPool(t, client, dynamicWorkerPool)
+		defer DeleteTestWorkerPool(t, client, dynamicWorkerPool.GetID())
 	}
 
 	workerPools, err := client.WorkerPools.GetAll()
@@ -222,14 +224,14 @@ func TestWorkerPoolServiceGetAll(t *testing.T) {
 
 	for _, workerPool := range workerPools {
 		require.NotNil(t, workerPool)
-		require.NotEmpty(t, workerPool.GetID())
+		require.NotEmpty(t, workerPool.ID)
 	}
 
 	// create 10 test static worker pools (to be deleted)
 	for i := 0; i < 10; i++ {
 		staticWorkerPool := CreateTestStaticWorkerPool(t, client)
 		require.NotNil(t, staticWorkerPool)
-		defer DeleteTestWorkerPool(t, client, staticWorkerPool)
+		defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
 	}
 
 	workerPools, err = client.WorkerPools.GetAll()
@@ -239,6 +241,6 @@ func TestWorkerPoolServiceGetAll(t *testing.T) {
 
 	for _, workerPool := range workerPools {
 		require.NotNil(t, workerPool)
-		require.NotEmpty(t, workerPool.GetID())
+		require.NotEmpty(t, workerPool.ID)
 	}
 }

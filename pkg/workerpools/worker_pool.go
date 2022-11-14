@@ -27,6 +27,13 @@ type IWorkerPool interface {
 	resources.IResource
 }
 
+type WorkerPoolListResult struct {
+	ID             string         `json:"Id,omitempty"`
+	Name           string         `json:"Name" validate:"required,notblank"`
+	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
+	IsDefault      bool           `json:"IsDefault"`
+}
+
 // workerPool is the embedded struct used for all worker pools.
 type workerPool struct {
 	CanAddWorkers  bool           `json:"CanAddWorkers"`
