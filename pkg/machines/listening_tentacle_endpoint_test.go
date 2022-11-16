@@ -27,7 +27,7 @@ func TestListeningTentacleEndpointMarshalJSON(t *testing.T) {
 	listeningTentacleEndpoint.ModifiedOn = &lastModifiedOn
 	listeningTentacleEndpoint.Links = links
 	listeningTentacleEndpoint.ProxyID = "fake-proxy-id"
-	listeningTentacleEndpoint.TentacleVersionDetails = NewTentacleVersionDetails(&version, true, true, false)
+	listeningTentacleEndpoint.TentacleVersionDetails = NewTentacleVersionDetails(version, true, true, false)
 	listeningTentacleEndpoint.Thumbprint = "0E80576D3BD8D40854802A4F8340A2E23AE961FD"
 
 	jsonEncoding, err := json.Marshal(listeningTentacleEndpoint)
@@ -53,7 +53,7 @@ func TestListeningTentacleEndpointUnmarshalJSON(t *testing.T) {
 	}
 
 	version := "1.2.3"
-	tentacleVersionDetails := NewTentacleVersionDetails(&version, true, true, false)
+	tentacleVersionDetails := NewTentacleVersionDetails(version, true, true, false)
 
 	url, _ := url.Parse("https://example.com")
 

@@ -46,7 +46,7 @@ func TestWorkersUnmarshalJSON(t *testing.T) {
 	endpoint.ModifiedBy = "john.smith@example.com"
 	endpoint.ModifiedOn = &endpointLastModifiedOn
 	endpoint.ProxyID = "fake-proxy-id"
-	endpoint.TentacleVersionDetails = NewTentacleVersionDetails(&version, true, true, false)
+	endpoint.TentacleVersionDetails = NewTentacleVersionDetails(version, true, true, false)
 
 	listeningTentacleEndpoint := tentaclePassiveWorker.Endpoint.(*ListeningTentacleEndpoint)
 

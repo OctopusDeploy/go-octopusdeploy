@@ -1,12 +1,15 @@
 package machines
 
 import (
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 type MachineService struct {
@@ -109,6 +112,34 @@ func (s *MachineService) GetByName(name string) ([]*DeploymentTarget, error) {
 	}
 
 	return services.GetPagedResponse[DeploymentTarget](s, path)
+}
+
+func (s *MachineService) GetByIdentifier(identifier string) (*DeploymentTarget, error) {
+	// the machines endpoint doesn't currently support slugs
+	target, err := s.GetByID(identifier)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if target != nil {
+			return target, nil
+		}
+	}
+
+	possibleTargets, err := s.GetByName(identifier)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, t := range possibleTargets {
+		if strings.EqualFold(identifier, t.Name) {
+			return t, nil
+		}
+	}
+
+	return nil, fmt.Errorf("cannot find machine with the name or ID of '%s'", identifier)
 }
 
 // GetByPartialName performs a lookup and returns the machine with a matching
