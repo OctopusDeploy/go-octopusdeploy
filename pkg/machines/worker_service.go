@@ -3,6 +3,7 @@ package machines
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
@@ -25,6 +26,23 @@ func NewWorkerService(sling *sling.Sling, uriTemplate string, discoverWorkerPath
 			Service: services.NewService(constants.ServiceWorkerService, sling, uriTemplate),
 		},
 	}
+}
+
+// Get returns a collection of machines based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func (s *WorkerService) Get(workersQuery WorkersQuery) (*resources.Resources[*Worker], error) {
+	path, err := s.GetURITemplate().Expand(workersQuery)
+	if err != nil {
+		return &resources.Resources[*Worker]{}, err
+	}
+
+	response, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Worker]), path)
+	if err != nil {
+		return &resources.Resources[*Worker]{}, err
+	}
+
+	return response.(*resources.Resources[*Worker]), nil
 }
 
 // Add creates a new worker.
