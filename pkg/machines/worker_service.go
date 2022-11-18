@@ -1,12 +1,15 @@
 package machines
 
 import (
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+	"strings"
 )
 
 type WorkerService struct {
@@ -137,7 +140,35 @@ func (s *WorkerService) GetByName(name string) ([]*Worker, error) {
 	return services.GetPagedResponse[Worker](s, path)
 }
 
-// GetByPartialName performs a lookup and returns enironments with a matching
+// GetByIdentifier returns the worker with a matching ID or name.
+func (s *WorkerService) GetByIdentifier(identifer string) (*Worker, error) {
+	worker, err := s.GetByID(identifer)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if worker != nil {
+			return worker, nil
+		}
+	}
+
+	possibleWorkers, err := s.GetByName(identifer)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, w := range possibleWorkers {
+		if strings.EqualFold(identifer, w.Name) {
+			return w, nil
+		}
+	}
+
+	return nil, fmt.Errorf("cannot find worker with name or ID of '%s'", identifer)
+}
+
+// GetByPartialName performs a lookup and returns environments with a matching
 // partial name.
 func (s *WorkerService) GetByPartialName(partialName string) ([]*Worker, error) {
 	if internal.IsEmpty(partialName) {
@@ -152,7 +183,7 @@ func (s *WorkerService) GetByPartialName(partialName string) ([]*Worker, error) 
 	return services.GetPagedResponse[Worker](s, path)
 }
 
-// Update modifies an worker based on the one provided as input.
+// Update modifies a worker based on the one provided as input.
 func (s *WorkerService) Update(worker *Worker) (*Worker, error) {
 	if worker == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterWorker)
