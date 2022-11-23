@@ -42,7 +42,7 @@ func TestNewClient(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			client, err := NewClient(tc.client, tc.url, tc.apiKey, tc.spaceID)
+			client, err := NewClient(tc.client, tc.url, tc.apiKey, tc.spaceID, "test")
 
 			if !tc.isValid {
 				require.Error(t, err)
@@ -58,7 +58,7 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestGetUserAgentString(t *testing.T) {
-	userAgentString := api.GetUserAgentString()
+	userAgentString := api.GetUserAgentString("test")
 	assert.NotNil(t, userAgentString)
 }
 

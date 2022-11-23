@@ -50,7 +50,7 @@ func GetFakeOctopusClient(t *testing.T, apiPath string, statusCode int, response
 		return nil, err
 	}
 
-	octopusClient, err := NewClient(&httpClient, url, apiKey, "")
+	octopusClient, err := NewClient(&httpClient, url, apiKey, "", "test")
 	if err != nil {
 		return nil, err
 	}
