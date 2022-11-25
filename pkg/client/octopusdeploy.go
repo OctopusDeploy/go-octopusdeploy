@@ -173,7 +173,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 }
 
 // NewClientForTool returns a new Octopus API client with a tool reference in the useragent string.
-//If a nil client is provided, a new http.Client will be used.
+// If a nil client is provided, a new http.Client will be used.
 func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
@@ -191,14 +191,7 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 	baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
 
 	if httpClient == nil {
-		proxyStr := "http://127.0.0.1:8866"
-		proxyURL, _ := url.Parse(proxyStr)
-
-		tr := &http.Transport{
-			Proxy: http.ProxyURL(proxyURL),
-		}
-		httpClient = &http.Client{Transport: tr}
-		//httpClient = &http.Client{}
+		httpClient = &http.Client{}
 	}
 
 	// fetch root resource and process paths
