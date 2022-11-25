@@ -166,9 +166,13 @@ func IsAPIKey(apiKey string) bool {
 	return expression.MatchString(apiKey)
 }
 
+func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string) (*Client, error) {
+	return NewClientWithTool(httpClient, apiURL, apiKey, spaceID, "")
+}
+
 // NewClient returns a new Octopus API client. If a nil client is provided, a
 // new http.Client will be used.
-func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
+func NewClientWithTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
