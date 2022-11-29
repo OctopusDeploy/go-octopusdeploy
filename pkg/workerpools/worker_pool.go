@@ -33,6 +33,7 @@ type WorkerPoolListResult struct {
 	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
 	IsDefault      bool           `json:"IsDefault"`
 	CanAddWorkers  bool           `json:"CanAddWorkers"`
+	Slug           string         `json:"Slug"`
 }
 
 // workerPool is the embedded struct used for all worker pools.

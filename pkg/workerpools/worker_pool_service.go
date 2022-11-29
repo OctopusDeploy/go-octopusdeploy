@@ -1,13 +1,16 @@
 package workerpools
 
 import (
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
+	"strings"
 )
 
 type WorkerPoolService struct {
@@ -100,6 +103,59 @@ func (s *WorkerPoolService) GetByID(id string) (IWorkerPool, error) {
 	}
 
 	return ToWorkerPool(resp.(*WorkerPoolResource))
+}
+
+func (s *WorkerPoolService) GetByName(name string) ([]IWorkerPool, error) {
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	path, err := services.GetByNamePath(s, name)
+	if err != nil {
+		return []IWorkerPool{}, err
+	}
+
+	response, err := services.GetPagedResponse[WorkerPoolResource](s, path)
+	return ToWorkerPoolArray(response), nil
+}
+
+func (s *WorkerPoolService) GetByIdentifier(identifier string) (IWorkerPool, error) {
+	workerPool, err := s.GetByID(identifier)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if workerPool != nil {
+			return workerPool, nil
+		}
+	}
+
+	possibleWorkerPools, err := s.GetByName(identifier)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, w := range possibleWorkerPools {
+		if strings.EqualFold(identifier, w.GetName()) {
+			return w, nil
+		}
+	}
+
+	// this is a workaround as the api does not support querying via the worker pool slug
+	allWorkerPools, err := s.GetAll()
+	for _, pool := range allWorkerPools {
+		if strings.EqualFold(identifier, pool.Slug) {
+			workerPool, err := s.GetByID(pool.ID)
+			if err != nil {
+				return nil, err
+			}
+			return workerPool, nil
+		}
+	}
+
+	return nil, fmt.Errorf("cannot find worker pool with identifier of '%s'", identifier)
 }
 
 // Update modifies a worker pool based on the one provided as input.
