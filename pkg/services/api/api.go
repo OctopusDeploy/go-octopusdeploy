@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"runtime"
 	"runtime/debug"
+	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -14,7 +15,7 @@ import (
 )
 
 var version = "development"
-var UserAgentString = GetUserAgentString()
+var UserAgentString = GetUserAgentString("")
 
 // Generic OctopusDeploy API Get Function.
 func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {
@@ -53,7 +54,7 @@ func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 	return inputStruct, nil
 }
 
-func GetUserAgentString() string {
+func GetUserAgentString(requestingTool string) string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, dep := range info.Deps {
 			if dep.Path == "github.com/OctopusDeploy/go-octopusdeploy/v2" {
@@ -63,5 +64,8 @@ func GetUserAgentString() string {
 			}
 		}
 	}
-	return fmt.Sprintf("%s/%s (%s; %s) go/%s", "go-octopusdeploy", version, runtime.GOOS, runtime.GOARCH, runtime.Version())
+
+	automationEnvironment := GetAutomationEnvironment(&OsEnvironment{})
+
+	return strings.TrimSpace(fmt.Sprintf("%s/%s (%s; %s) go/%s %s %s", "go-octopusdeploy", version, runtime.GOOS, runtime.GOARCH, runtime.Version(), automationEnvironment, requestingTool))
 }

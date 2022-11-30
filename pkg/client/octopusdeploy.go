@@ -169,6 +169,12 @@ func IsAPIKey(apiKey string) bool {
 // NewClient returns a new Octopus API client. If a nil client is provided, a
 // new http.Client will be used.
 func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string) (*Client, error) {
+	return NewClientForTool(httpClient, apiURL, apiKey, spaceID, "")
+}
+
+// NewClientForTool returns a new Octopus API client with a tool reference in the useragent string.
+// If a nil client is provided, a new http.Client will be used.
+func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
@@ -190,7 +196,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 	// fetch root resource and process paths
 	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
-	base.Set("User-Agent", api.GetUserAgentString())
+	base.Set("User-Agent", api.GetUserAgentString(requestingTool))
 	rootService := NewRootService(base, baseURLWithAPI)
 
 	root, err := rootService.Get()
@@ -204,7 +210,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 	if !internal.IsEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
 		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
-		base.Set("User-Agent", api.GetUserAgentString())
+		base.Set("User-Agent", api.GetUserAgentString(requestingTool))
 		rootService = NewRootService(base, baseURLWithAPI)
 		sroot, err = rootService.Get()
 
@@ -226,7 +232,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 		BaseURL:    baseURLWithAPIParsed,
 		DefaultHeaders: map[string]string{
 			constants.ClientAPIKeyHTTPHeader: apiKey,
-			"User-Agent":                     api.GetUserAgentString(),
+			"User-Agent":                     api.GetUserAgentString(requestingTool),
 		},
 	}
 
