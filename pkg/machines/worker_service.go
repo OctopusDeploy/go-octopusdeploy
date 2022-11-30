@@ -141,8 +141,8 @@ func (s *WorkerService) GetByName(name string) ([]*Worker, error) {
 }
 
 // GetByIdentifier returns the worker with a matching ID or name.
-func (s *WorkerService) GetByIdentifier(identifer string) (*Worker, error) {
-	worker, err := s.GetByID(identifer)
+func (s *WorkerService) GetByIdentifier(identifier string) (*Worker, error) {
+	worker, err := s.GetByID(identifier)
 	if err != nil {
 		apiError, ok := err.(*core.APIError)
 		if ok && apiError.StatusCode != 404 {
@@ -154,18 +154,18 @@ func (s *WorkerService) GetByIdentifier(identifer string) (*Worker, error) {
 		}
 	}
 
-	possibleWorkers, err := s.GetByName(identifer)
+	possibleWorkers, err := s.GetByName(identifier)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, w := range possibleWorkers {
-		if strings.EqualFold(identifer, w.Name) {
+		if strings.EqualFold(identifier, w.Name) {
 			return w, nil
 		}
 	}
 
-	return nil, fmt.Errorf("cannot find worker with name or ID of '%s'", identifer)
+	return nil, fmt.Errorf("cannot find worker with name or ID of '%s'", identifier)
 }
 
 // GetByPartialName performs a lookup and returns environments with a matching
