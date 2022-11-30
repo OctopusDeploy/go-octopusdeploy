@@ -209,8 +209,13 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 
 	if !internal.IsEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
-		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
-		base.Set("User-Agent", api.GetUserAgentString(requestingTool))
+		base = sling.
+			New().
+			Client(httpClient).
+			Base(baseURLWithAPI).
+			Set(constants.ClientAPIKeyHTTPHeader, apiKey).
+			Set("Accept", `application/json`).
+			Set("User-Agent", api.GetUserAgentString(requestingTool))
 		rootService = NewRootService(base, baseURLWithAPI)
 		sroot, err = rootService.Get()
 

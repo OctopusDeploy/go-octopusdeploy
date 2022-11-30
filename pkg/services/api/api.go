@@ -33,8 +33,6 @@ func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIGet)
 	}
 
-	client.Set("User-Agent", UserAgentString)
-
 	octopusDeployError := new(core.APIError)
 	resp, err := client.Receive(inputStruct, &octopusDeployError)
 	// if err != nil {
