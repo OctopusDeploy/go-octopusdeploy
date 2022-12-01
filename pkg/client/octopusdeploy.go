@@ -195,24 +195,16 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 	}
 
 	// fetch root resource and process paths
-	base := sling.New().Client(httpClient).Base(baseURLWithAPI).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
-	base.Set("User-Agent", api.GetUserAgentString(requestingTool))
-	rootService := NewRootService(base, baseURLWithAPI)
-
-	root, err := rootService.Get()
+	base, root, err := getRoot(httpClient, baseURLWithAPI, apiKey, requestingTool)
 	if err != nil {
 		return nil, err
 	}
 
 	// Root with specified Space ID, if it's defined
 	sroot := NewRootResource()
-
 	if !internal.IsEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
-		base = sling.New().Client(httpClient).Base(baseURLWithAPI).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
-		base.Set("User-Agent", api.GetUserAgentString(requestingTool))
-		rootService = NewRootService(base, baseURLWithAPI)
-		sroot, err = rootService.Get()
+		base, sroot, err = getRoot(httpClient, baseURLWithAPI, apiKey, requestingTool)
 
 		if err != nil {
 			if err == services.ErrItemNotFound {
@@ -466,6 +458,20 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 
 		uriTemplateCache: uritemplates.NewUriTemplateCache(),
 	}, nil
+}
+
+func getRoot(httpClient *http.Client, baseURLWithAPI string, apiKey string, requestingTool string) (*sling.Sling, *RootResource, error) {
+	base := sling.
+		New().
+		Client(httpClient).
+		Base(baseURLWithAPI).
+		Set(constants.ClientAPIKeyHTTPHeader, apiKey).
+		Set("User-Agent", api.GetUserAgentString(requestingTool)).
+		Set("Accept", `application/json`)
+	rootService := NewRootService(base, baseURLWithAPI)
+
+	root, err := rootService.Get()
+	return base, root, err
 }
 
 // confirm to newclient.Client interface for compatibility

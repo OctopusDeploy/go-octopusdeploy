@@ -274,9 +274,6 @@ func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
 	}
 
-	client.Set("Accept", `application/json`)
-	client.Set("User-Agent", api.UserAgentString)
-
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
@@ -317,8 +314,6 @@ func ApiAddWithResponseStatus(sling *sling.Sling, inputStruct interface{}, resou
 		return nil, internal.CreateClientInitializationError(constants.OperationApiAddWithResponseStatus)
 	}
 
-	client.Set("User-Agent", api.UserAgentString)
-
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
 		return nil, internal.CreateClientInitializationError(constants.OperationApiAddWithResponseStatus)
@@ -353,8 +348,6 @@ func ApiPost(sling *sling.Sling, inputStruct interface{}, resource interface{}, 
 	if client == nil {
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIPost)
 	}
-
-	client.Set("User-Agent", api.UserAgentString)
 
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
@@ -399,7 +392,10 @@ func ApiPostNew[TResponse any](httpClient *http.Client, absoluteUrl *url.URL, ap
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	req.Header.Set("User-Agent", api.UserAgentString)
+	if req.Header.Get("User-Agent") == "" {
+		req.Header.Set("User-Agent", api.UserAgentString)
+	}
+
 	req.Header.Set(constants.ClientAPIKeyHTTPHeader, apiKey)
 	return doRequestReturningJson[TResponse](httpClient, req)
 }
@@ -470,8 +466,6 @@ func ApiUpdate(sling *sling.Sling, inputStruct interface{}, resource interface{}
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIUpdate)
 	}
 
-	client.Set("User-Agent", api.UserAgentString)
-
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIUpdate)
@@ -506,8 +500,6 @@ func ApiDelete(sling *sling.Sling, path string) error {
 	if client == nil {
 		return internal.CreateClientInitializationError(constants.OperationAPIDelete)
 	}
-
-	client.Set("User-Agent", api.UserAgentString)
 
 	octopusDeployError := new(core.APIError)
 	resp, err := client.Receive(nil, &octopusDeployError)
