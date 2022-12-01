@@ -123,20 +123,19 @@ func UpdateTestSpace(t *testing.T, client *client.Client, space *spaces.Space) *
 	return updatedSpace
 }
 
-// TODO: fix test
-// func TestSpaceSetAddGetDelete(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestSpaceSetAddGetDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	space := CreateTestSpace(t, client)
-// 	require.NotNil(t, space)
-// 	defer DeleteTestSpace(t, client, space)
+	space := CreateTestSpace(t, client)
+	require.NotNil(t, space)
+	defer DeleteTestSpace(t, client, space)
 
-// 	spaceToCompare, err := client.Spaces.GetByID(space.GetID())
-// 	require.NoError(t, err)
-// 	require.NotNil(t, spaceToCompare)
-// 	IsEqualSpaces(t, space, spaceToCompare)
-// }
+	spaceToCompare, err := client.Spaces.GetByID(space.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, spaceToCompare)
+	IsEqualSpaces(t, space, spaceToCompare)
+}
 
 // TODO: fix test
 // func TestSpaceServiceGetAll(t *testing.T) {
