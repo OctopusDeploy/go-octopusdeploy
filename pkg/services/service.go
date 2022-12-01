@@ -274,8 +274,6 @@ func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
 	}
 
-	client.Set("Accept", `application/json`)
-
 	request := client.BodyJSON(inputStruct)
 	if request == nil {
 		return nil, internal.CreateClientInitializationError(constants.OperationAPIAdd)
