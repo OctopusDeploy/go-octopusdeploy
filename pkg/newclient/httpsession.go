@@ -122,7 +122,7 @@ func DoRequest[TResponse any](httpSession *HttpSession, method string, path stri
 		return nil, err
 	}
 
-	// erroPayload is never nil because we allocated it just above
+	// errorPayload is never nil because we allocated it just above
 	if errorPayload.StatusCode != 0 {
 		return nil, errorPayload
 	}
