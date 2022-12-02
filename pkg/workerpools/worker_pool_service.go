@@ -5,9 +5,11 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 	"strings"
@@ -180,4 +182,23 @@ func (s *WorkerPoolService) Update(workerPool IWorkerPool) (IWorkerPool, error) 
 	}
 
 	return ToWorkerPool(resp.(*WorkerPoolResource))
+}
+
+func (s *WorkerPoolService) GetWorkers(workerPool IWorkerPool) ([]*machines.Worker, error) {
+	if workerPool == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterWorkerPool)
+	}
+
+	uriTemplate, err := uritemplates.Parse(workerPool.GetLinks()[constants.LinkWorkers])
+	if err != nil {
+		return nil, err
+	}
+
+	values := make(map[string]interface{})
+	path, err := uriTemplate.Expand(values)
+	if err != nil {
+		return nil, err
+	}
+
+	return services.GetPagedResponse[machines.Worker](s, path)
 }
