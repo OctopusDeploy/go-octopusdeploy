@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/extensions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 )
@@ -20,7 +21,7 @@ type Project struct {
 	DeploymentChangesTemplate       string                                    `json:"DeploymentChangesTemplate,omitempty"`
 	DeploymentProcessID             string                                    `json:"DeploymentProcessId,omitempty"`
 	Description                     string                                    `json:"Description,omitempty"`
-	ExtensionSettings               []ExtensionSettingsValues                 `json:"ExtensionSettings,omitempty"`
+	ExtensionSettings               []extensions.ExtensionSettings            `json:"ExtensionSettings,omitempty"`
 	IncludedLibraryVariableSets     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
 	IsDisabled                      bool                                      `json:"IsDisabled,omitempty"`
 	IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease,omitempty"`
@@ -56,10 +57,11 @@ func NewProjects() *resources.Resources[*Project] {
 
 func NewProject(name string, lifecycleID string, projectGroupID string) *Project {
 	return &Project{
-		LifecycleID:    lifecycleID,
-		Name:           name,
-		ProjectGroupID: projectGroupID,
-		Resource:       *resources.NewResource(),
+		ExtensionSettings: []extensions.ExtensionSettings{},
+		LifecycleID:       lifecycleID,
+		Name:              name,
+		ProjectGroupID:    projectGroupID,
+		Resource:          *resources.NewResource(),
 	}
 }
 
@@ -75,7 +77,6 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 		DeploymentChangesTemplate       string                                    `json:"DeploymentChangesTemplate,omitempty"`
 		DeploymentProcessID             string                                    `json:"DeploymentProcessId,omitempty"`
 		Description                     string                                    `json:"Description,omitempty"`
-		ExtensionSettings               []ExtensionSettingsValues                 `json:"ExtensionSettings,omitempty"`
 		IncludedLibraryVariableSets     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
 		IsDisabled                      bool                                      `json:"IsDisabled,omitempty"`
 		IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease,omitempty"`
@@ -113,7 +114,6 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	p.DeploymentChangesTemplate = fields.DeploymentChangesTemplate
 	p.DeploymentProcessID = fields.DeploymentProcessID
 	p.Description = fields.Description
-	p.ExtensionSettings = fields.ExtensionSettings
 	p.IncludedLibraryVariableSets = fields.IncludedLibraryVariableSets
 	p.IsDisabled = fields.IsDisabled
 	p.IsDiscreteChannelRelease = fields.IsDiscreteChannelRelease
@@ -134,6 +134,48 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	var project map[string]*json.RawMessage
 	if err := json.Unmarshal(data, &project); err != nil {
 		return err
+	}
+
+	var extensionSettings *json.RawMessage
+	var extensionSettingsCollection []*json.RawMessage
+
+	if project["ExtensionSettings"] != nil {
+		extensionSettingsValue := project["ExtensionSettings"]
+
+		if err := json.Unmarshal(*extensionSettingsValue, &extensionSettings); err != nil {
+			return err
+		}
+
+		if err := json.Unmarshal(*extensionSettings, &extensionSettingsCollection); err != nil {
+			return err
+		}
+
+		for _, v := range extensionSettingsCollection {
+			var extensionSettingsItem map[string]*json.RawMessage
+			if err := json.Unmarshal(*v, &extensionSettingsItem); err != nil {
+				return err
+			}
+
+			if extensionSettingsItem["ExtensionId"] != nil {
+				var extensionID extensions.ExtensionID
+				json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
+
+				switch extensionID {
+				case extensions.ExtensionIDJiraServiceManagement:
+					var jiraServiceManagementExtensionSettings *JiraServiceManagementExtensionSettings
+					if err := json.Unmarshal(*v, &jiraServiceManagementExtensionSettings); err != nil {
+						return err
+					}
+					p.ExtensionSettings = append(p.ExtensionSettings, jiraServiceManagementExtensionSettings)
+				case extensions.ExtensionIDServiceNow:
+					var serviceNowExtensionSettings *ServiceNowExtensionSettings
+					if err := json.Unmarshal(*v, &serviceNowExtensionSettings); err != nil {
+						return err
+					}
+					p.ExtensionSettings = append(p.ExtensionSettings, serviceNowExtensionSettings)
+				}
+			}
+		}
 	}
 
 	var persistenceSettings *json.RawMessage
