@@ -14,7 +14,7 @@ type WorkerPoolResource struct {
 	SpaceID        string         `json:"SpaceId,omitempty" validate:"omitempty,notblank"`
 	SortOrder      int            `json:"SortOrder"`
 	WorkerPoolType WorkerPoolType `json:"WorkerPoolType"`
-	WorkerType     WorkerType     `json:"WorkerType,omitempty"`
+	WorkerType     string         `json:"WorkerType,omitempty"`
 
 	resources.Resource
 }
@@ -59,7 +59,7 @@ func (w *WorkerPoolResource) GetWorkerPoolType() WorkerPoolType {
 }
 
 // GetWorkerType returns the worker type for this worker pool resource.
-func (w *WorkerPoolResource) GetWorkerType() WorkerType {
+func (w *WorkerPoolResource) GetWorkerType() string {
 	return w.WorkerType
 }
 
@@ -92,7 +92,7 @@ func (w *WorkerPoolResource) SetWorkerPoolType(workerPoolType WorkerPoolType) {
 	w.WorkerPoolType = workerPoolType
 }
 
-func (w *WorkerPoolResource) SetWorkerType(workerType WorkerType) {
+func (w *WorkerPoolResource) SetWorkerType(workerType string) {
 	w.WorkerType = workerType
 }
 
