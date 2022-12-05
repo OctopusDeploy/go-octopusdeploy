@@ -19,7 +19,7 @@ func NewServiceNowExtensionSettings(connectionID string, isChangeControlled bool
 	return &ServiceNowExtensionSettings{
 		IsStateAutomaticallyTransitioned:        isStateAutomaticallyTransitioned,
 		StandardChangeTemplateName:              standardChangeTemplateName,
-		ConnectedChangeControlExtensionSettings: ext.NewConnectedChangeControlExtensionSettings(extensions.ExtensionIDServiceNow, isChangeControlled, connectionID),
+		ConnectedChangeControlExtensionSettings: ext.NewConnectedChangeControlExtensionSettings(extensions.ServiceNowExtensionID, isChangeControlled, connectionID),
 	}
 }
 

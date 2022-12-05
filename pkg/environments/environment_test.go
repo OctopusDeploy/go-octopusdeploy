@@ -46,10 +46,10 @@ func TestEnvironmentExtensionSettingsAsJSON(t *testing.T) {
 		"SpaceId": "%s",
 		"UseGuidedFailure": true
 	}`,
-		extensions.ExtensionIDJira,
+		extensions.JiraExtensionID,
 		jiraEnvironmentType,
-		extensions.ExtensionIDJiraServiceManagement,
-		extensions.ExtensionIDServiceNow,
+		extensions.JiraServiceManagementExtensionID,
+		extensions.ServiceNowExtensionID,
 		name,
 		slug,
 		spaceID,

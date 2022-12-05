@@ -94,19 +94,19 @@ func (e *Environment) UnmarshalJSON(data []byte) error {
 				json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
 
 				switch extensionID {
-				case extensions.ExtensionIDJira:
+				case extensions.JiraExtensionID:
 					var jiraExtensionSettings *JiraExtensionSettings
 					if err := json.Unmarshal(*v, &jiraExtensionSettings); err != nil {
 						return err
 					}
 					e.ExtensionSettings = append(e.ExtensionSettings, jiraExtensionSettings)
-				case extensions.ExtensionIDJiraServiceManagement:
+				case extensions.JiraServiceManagementExtensionID:
 					var jiraServiceManagementExtensionSettings *JiraServiceManagementExtensionSettings
 					if err := json.Unmarshal(*v, &jiraServiceManagementExtensionSettings); err != nil {
 						return err
 					}
 					e.ExtensionSettings = append(e.ExtensionSettings, jiraServiceManagementExtensionSettings)
-				case extensions.ExtensionIDServiceNow:
+				case extensions.ServiceNowExtensionID:
 					var serviceNowExtensionSettings *ServiceNowExtensionSettings
 					if err := json.Unmarshal(*v, &serviceNowExtensionSettings); err != nil {
 						return err

@@ -17,7 +17,7 @@ type JiraServiceManagementExtensionSettings struct {
 func NewJiraServiceManagementExtensionSettings(connectionID string, isChangeControlled bool, serviceDeskProjectName string) *JiraServiceManagementExtensionSettings {
 	return &JiraServiceManagementExtensionSettings{
 		ServiceDeskProjectName:                  serviceDeskProjectName,
-		ConnectedChangeControlExtensionSettings: ext.NewConnectedChangeControlExtensionSettings(extensions.ExtensionIDJiraServiceManagement, isChangeControlled, connectionID),
+		ConnectedChangeControlExtensionSettings: ext.NewConnectedChangeControlExtensionSettings(extensions.JiraServiceManagementExtensionID, isChangeControlled, connectionID),
 	}
 }
 

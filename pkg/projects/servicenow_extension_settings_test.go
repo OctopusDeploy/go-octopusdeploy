@@ -57,7 +57,7 @@ func TestServiceNowExtensionSettingsMarshalJSON(t *testing.T) {
 			"ServiceNowChangeControlled": %v,
 			"ServiceNowConnectionId": "%s"
 		}
-	}`, extensions.ExtensionIDServiceNow, isStateAutomaticallyTransitioned, standardChangeTemplateName, isChangeControlled, connectionID)
+	}`, extensions.ServiceNowExtensionID, isStateAutomaticallyTransitioned, standardChangeTemplateName, isChangeControlled, connectionID)
 
 	jsonassert.New(t).Assertf(expectedJson, string(serviceNowExtensionSettingsAsJSON))
 }
@@ -76,7 +76,7 @@ func TestServiceNowExtensionSettingsUnmarshalJSON(t *testing.T) {
 			"ServiceNowChangeControlled": %v,
 			"ServiceNowConnectionId": "%s"
 		}
-	}`, extensions.ExtensionIDServiceNow, isStateAutomaticallyTransitioned, standardChangeTemplateName, isChangeControlled, connectionID)
+	}`, extensions.ServiceNowExtensionID, isStateAutomaticallyTransitioned, standardChangeTemplateName, isChangeControlled, connectionID)
 
 	var serviceNowExtensionSettings projects.ServiceNowExtensionSettings
 	err := json.Unmarshal([]byte(inputJSON), &serviceNowExtensionSettings)

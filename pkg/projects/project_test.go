@@ -45,7 +45,7 @@ func TestProjectExtensionSettingsAsJSON(t *testing.T) {
 		"Name": "%s",
 		"ProjectGroupId": "%s"
 	}`,
-		extensions.ExtensionIDJiraServiceManagement,
+		extensions.JiraServiceManagementExtensionID,
 		jsmConnectionID,
 		serviceDeskProjectName,
 		serviceNowConnectionID,

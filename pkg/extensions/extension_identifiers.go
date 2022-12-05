@@ -3,7 +3,7 @@ package extensions
 type ExtensionID string
 
 const (
-	ExtensionIDJira                  = ExtensionID("jira-integration")
-	ExtensionIDJiraServiceManagement = ExtensionID("jiraservicemanagement-integration")
-	ExtensionIDServiceNow            = ExtensionID("servicenow-integration")
+	JiraExtensionID                  = ExtensionID("jira-integration")
+	JiraServiceManagementExtensionID = ExtensionID("jiraservicemanagement-integration")
+	ServiceNowExtensionID            = ExtensionID("servicenow-integration")
 )
