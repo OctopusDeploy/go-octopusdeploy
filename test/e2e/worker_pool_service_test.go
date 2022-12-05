@@ -34,7 +34,7 @@ func CreateTestDynamicWorkerPool(t *testing.T, client *client.Client) workerpool
 	require.NotNil(t, client)
 
 	name := internal.GetRandomName()
-	workerType := workerpools.WorkerTypeUbuntu1804
+	workerType := "Ubuntu1804"
 
 	dynamicWorkerPool := workerpools.NewDynamicWorkerPool(name, workerType)
 	require.NotNil(t, dynamicWorkerPool)
@@ -243,4 +243,13 @@ func TestWorkerPoolServiceGetAll(t *testing.T) {
 		require.NotNil(t, workerPool)
 		require.NotEmpty(t, workerPool.ID)
 	}
+}
+
+func TestWorkerPoolServiceGetDynamicWorkerTypes(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	types, err := client.WorkerPools.GetDynamicWorkerTypes()
+	require.NoError(t, err)
+	require.NotNil(t, types)
 }

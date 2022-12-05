@@ -202,3 +202,12 @@ func (s *WorkerPoolService) GetWorkers(workerPool IWorkerPool) ([]*machines.Work
 
 	return services.GetPagedResponse[machines.Worker](s, path)
 }
+
+func (s *WorkerPoolService) GetDynamicWorkerTypes() ([]*DynamicWorkerPoolType, error) {
+	var retValue *DynamicWorkerPoolTypes
+	_, err := api.ApiGet(s.GetClient(), &retValue, s.dynamicWorkerTypesPath)
+	if err != nil {
+		return nil, err
+	}
+	return retValue.WorkerTypes, nil
+}
