@@ -16,7 +16,7 @@ type JiraExtensionSettings struct {
 func NewJiraExtensionSettings(environmentType string) *JiraExtensionSettings {
 	return &JiraExtensionSettings{
 		JiraEnvironmentType: environmentType,
-		ExtensionSettings:   ext.NewExtensionSettings(extensions.ExtensionIDJira),
+		ExtensionSettings:   ext.NewExtensionSettings(extensions.JiraExtensionID),
 	}
 }
 

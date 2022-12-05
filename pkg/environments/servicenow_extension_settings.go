@@ -14,7 +14,7 @@ type ServiceNowExtensionSettings struct {
 // NewServiceNowExtensionSettings creates an instance of extension settings for ServiceNow.
 func NewServiceNowExtensionSettings(isChangeControlled bool) *ServiceNowExtensionSettings {
 	return &ServiceNowExtensionSettings{
-		ChangeControlExtensionSettings: ext.NewChangeControlExtensionSettings(extensions.ExtensionIDServiceNow, isChangeControlled),
+		ChangeControlExtensionSettings: ext.NewChangeControlExtensionSettings(extensions.ServiceNowExtensionID, isChangeControlled),
 	}
 }
 

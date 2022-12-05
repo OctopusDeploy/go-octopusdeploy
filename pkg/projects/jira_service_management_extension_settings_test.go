@@ -51,7 +51,7 @@ func TestJiraServiceManagementExtensionSettingsMarshalJSON(t *testing.T) {
 			"JsmConnectionId": "%s",
 			"ServiceDeskProjectName": "%s"
 		}
-	}`, extensions.ExtensionIDJiraServiceManagement, isChangeControlled, connectionID, serviceDeskProjectName)
+	}`, extensions.JiraServiceManagementExtensionID, isChangeControlled, connectionID, serviceDeskProjectName)
 
 	jsonassert.New(t).Assertf(expectedJson, string(jiraServiceManagementExtensionSettingsAsJSON))
 }
@@ -68,7 +68,7 @@ func TestJiraServiceManagementExtensionSettingsUnmarshalJSON(t *testing.T) {
 			"JsmChangeControlled": %v,
 			"ServiceDeskProjectName": "%s"
 		}
-	}`, extensions.ExtensionIDServiceNow, connectionID, isChangeControlled, serviceDeskProjectName)
+	}`, extensions.ServiceNowExtensionID, connectionID, isChangeControlled, serviceDeskProjectName)
 
 	var j projects.JiraServiceManagementExtensionSettings
 	err := json.Unmarshal([]byte(inputJSON), &j)

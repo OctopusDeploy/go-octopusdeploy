@@ -53,11 +53,11 @@ func TestExtensionSettingsMarshalJSON(t *testing.T) {
 			}
 		}
 	]`,
-		extensions.ExtensionIDJiraServiceManagement,
+		extensions.JiraServiceManagementExtensionID,
 		jsmChangeControlled,
 		jsmConnectionID,
 		serviceDeskProjectName,
-		extensions.ExtensionIDServiceNow,
+		extensions.ServiceNowExtensionID,
 		isStateAutomaticallyTransitioned,
 		serviceNowChangeControlled,
 		serviceNowConnectionID,

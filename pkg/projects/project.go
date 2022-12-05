@@ -161,13 +161,13 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 				json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
 
 				switch extensionID {
-				case extensions.ExtensionIDJiraServiceManagement:
+				case extensions.JiraServiceManagementExtensionID:
 					var jiraServiceManagementExtensionSettings *JiraServiceManagementExtensionSettings
 					if err := json.Unmarshal(*v, &jiraServiceManagementExtensionSettings); err != nil {
 						return err
 					}
 					p.ExtensionSettings = append(p.ExtensionSettings, jiraServiceManagementExtensionSettings)
-				case extensions.ExtensionIDServiceNow:
+				case extensions.ServiceNowExtensionID:
 					var serviceNowExtensionSettings *ServiceNowExtensionSettings
 					if err := json.Unmarshal(*v, &serviceNowExtensionSettings); err != nil {
 						return err

@@ -14,7 +14,7 @@ type JiraServiceManagementExtensionSettings struct {
 // NewJiraServiceManagementExtensionSettings creates an instance of extension settings for Jira Service Management (JSM).
 func NewJiraServiceManagementExtensionSettings(isChangeControlled bool) *JiraServiceManagementExtensionSettings {
 	return &JiraServiceManagementExtensionSettings{
-		ChangeControlExtensionSettings: ext.NewChangeControlExtensionSettings(extensions.ExtensionIDJiraServiceManagement, isChangeControlled),
+		ChangeControlExtensionSettings: ext.NewChangeControlExtensionSettings(extensions.JiraServiceManagementExtensionID, isChangeControlled),
 	}
 }
 
