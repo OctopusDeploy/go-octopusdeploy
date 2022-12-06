@@ -37,17 +37,12 @@ func (s *FeedService) Add(feed IFeed) (IFeed, error) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterFeed)
 	}
 
-	feedResource, err := ToFeedResource(feed)
+	response, err := services.ApiAdd(s.GetClient(), feed, feed, s.BasePath)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := services.ApiAdd(s.GetClient(), feedResource, new(FeedResource), s.BasePath)
-	if err != nil {
-		return nil, err
-	}
-
-	return ToFeed(response.(*FeedResource))
+	return response.(IFeed), nil
 }
 
 // Get returns a collection of feeds based on the criteria defined by its
@@ -195,12 +190,7 @@ func (s *FeedService) Update(feed IFeed) (IFeed, error) {
 		return nil, err
 	}
 
-	feedResource, err := ToFeedResource(feed)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := services.ApiUpdate(s.GetClient(), feedResource, new(FeedResource), path)
+	resp, err := services.ApiUpdate(s.GetClient(), feed, feed, path)
 	if err != nil {
 		return nil, err
 	}
