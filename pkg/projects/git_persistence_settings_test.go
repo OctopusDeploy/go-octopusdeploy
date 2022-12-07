@@ -21,7 +21,7 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	var protectedBranchNamePatterns []string
 	var url *url.URL
 
-	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, false, protectedBranchNamePatterns, url)
 	require.NotNil(t, gitPersistenceSettings)
 	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
 	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
@@ -37,7 +37,7 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	gitPersistenceSettings = projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings = projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, false, protectedBranchNamePatterns, url)
 	require.NotNil(t, gitPersistenceSettings)
 	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
 	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
@@ -56,7 +56,7 @@ func TestGitPersistenceSettingsNew(t *testing.T) {
 	url, err = url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	gitPersistenceSettings = projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings = projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, false, protectedBranchNamePatterns, url)
 	require.NotNil(t, gitPersistenceSettings)
 	require.Equal(t, projects.PersistenceSettingsTypeVersionControlled, gitPersistenceSettings.Type())
 	require.Equal(t, basePath, gitPersistenceSettings.BasePath())
@@ -90,7 +90,7 @@ func TestGitPersistenceSettingsMarshalJSON(t *testing.T) {
 		"Url": "%s"
 	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
-	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, false, protectedBranchNamePatterns, url)
 	gitPersistenceSettingsAsJSON, err := json.Marshal(gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
@@ -112,7 +112,7 @@ func TestGitPersistenceSettingsUnmarshalJSON(t *testing.T) {
 		"Type": "%s"
 	}`, projects.PersistenceSettingsTypeVersionControlled)
 
-	gitPersistenceSettings := projects.NewGitPersistenceSettings("", nil, "", []string{}, nil)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings("", nil, "", false, []string{}, nil)
 	err = json.Unmarshal([]byte(inputJSON), gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettings)

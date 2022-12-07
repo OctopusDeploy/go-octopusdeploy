@@ -1,13 +1,15 @@
 package projects
 
 type ConvertToVcs struct {
-	CommitMessage          string
-	VersionControlSettings GitPersistenceSettings
+	CommitMessage           string                 `json:"CommitMessage"`
+	VersionControlSettings  GitPersistenceSettings `json:"VersionControlSettings"`
+	InitialCommitBranchName string                 `json:"InitialCommitBranchName"`
 }
 
-func NewConvertToVcs(commitMessage string, gitPersistenceSettings GitPersistenceSettings) *ConvertToVcs {
+func NewConvertToVcs(commitMessage string, initialCommitBranchName string, gitPersistenceSettings GitPersistenceSettings) *ConvertToVcs {
 	return &ConvertToVcs{
-		CommitMessage:          commitMessage,
-		VersionControlSettings: gitPersistenceSettings,
+		CommitMessage:           commitMessage,
+		VersionControlSettings:  gitPersistenceSettings,
+		InitialCommitBranchName: initialCommitBranchName,
 	}
 }
