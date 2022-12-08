@@ -81,16 +81,22 @@ func TestGitPersistenceSettingsMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, gitCredentialsAsJSON)
 
+	conversionStateAsJSON, err := json.Marshal(&projects.ConversionState{VariablesAreInGit: false})
+	require.NoError(t, err)
+	require.NotNil(t, conversionStateAsJSON)
+
 	expectedJson := fmt.Sprintf(`{
 		"BasePath": "%s",
+		"ConversionState": %s,
 		"Credentials": %s,
 		"DefaultBranch": "%s",
 		"ProtectedBranchNamePatterns": [],
+		"ProtectedDefaultBranch": true,
 		"Type": "%s",
 		"Url": "%s"
-	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
+	}`, basePath, conversionStateAsJSON, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
-	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, false, protectedBranchNamePatterns, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, true, protectedBranchNamePatterns, url)
 	gitPersistenceSettingsAsJSON, err := json.Marshal(gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
