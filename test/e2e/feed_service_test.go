@@ -172,22 +172,25 @@ func TestFeedServiceCRUD(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	expected := CreateTestGitHubRepositoryFeed(t, client)
-	require.NotNil(t, expected)
-	defer DeleteTestFeed(t, client, expected)
+	gitHubRepositoryFeed := CreateTestGitHubRepositoryFeed(t, client).(*feeds.GitHubRepositoryFeed)
+	require.NotNil(t, gitHubRepositoryFeed)
+	defer DeleteTestFeed(t, client, gitHubRepositoryFeed)
 
-	actual, err := client.Feeds.GetByID(expected.GetID())
+	actual, err := client.Feeds.GetByID(gitHubRepositoryFeed.GetID())
 	require.NoError(t, err)
-	AssertEqualFeeds(t, expected, actual)
+	AssertEqualFeeds(t, gitHubRepositoryFeed, actual)
 
 	name := internal.GetRandomName()
-	expected.SetName(name)
+	gitHubRepositoryFeed.SetName(name)
 
-	actual, err = client.Feeds.Update(expected)
+	actual, err = client.Feeds.Update(gitHubRepositoryFeed)
 	require.NoError(t, err)
-	AssertEqualFeeds(t, expected, actual)
+	AssertEqualFeeds(t, gitHubRepositoryFeed, actual)
 
-	expected = CreateTestHelmFeed(t, client)
+	gitHubRepositoryFeed = actual.(*feeds.GitHubRepositoryFeed)
+	require.NotNil(t, gitHubRepositoryFeed)
+
+	expected := CreateTestHelmFeed(t, client)
 	require.NotNil(t, expected)
 	defer DeleteTestFeed(t, client, expected)
 
