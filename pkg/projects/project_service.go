@@ -65,7 +65,7 @@ func (s *ProjectService) Add(project *Project) (*Project, error) {
 }
 
 // ConvertToVcs converts an input project to use a version-control system (VCS) for its persistence.
-func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
+func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, initalCommitBranch string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError("ConvertToVcs", "project")
 	}
@@ -82,7 +82,7 @@ func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, gi
 		return nil, fmt.Errorf("the state of the input project is not valid; cannot resolve ConvertToVcs link")
 	}
 
-	convertToVcs := NewConvertToVcs(commitMessage, gitPersistenceSettings)
+	convertToVcs := NewConvertToVcs(commitMessage, initalCommitBranch, gitPersistenceSettings)
 	_, err := services.ApiAddWithResponseStatus(s.GetClient(), convertToVcs, new(ConvertToVcsResponse), project.Links["ConvertToVcs"], http.StatusOK)
 	if err != nil {
 		return nil, err
