@@ -1,7 +1,7 @@
 package projects
 
 type ProjectsQuery struct {
-	ClonedFromProjectID string   `url:"clonedFromProjectId"`
+	ClonedFromProjectID string   `uri:"clonedFromProjectId,omitempty" url:"clonedFromProjectId,omitempty"`
 	IDs                 []string `uri:"ids,omitempty" url:"ids,omitempty"`
 	IsClone             bool     `uri:"clone,omitempty" url:"clone,omitempty"`
 	Name                string   `uri:"name,omitempty" url:"name,omitempty"`
