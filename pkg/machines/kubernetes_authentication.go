@@ -23,6 +23,7 @@ type KubernetesAuthentication struct {
 	UseInstanceRole           bool   `json:"UseInstanceRole,omitempty"`
 	UseVmServiceAccount       bool   `json:"UseVmServiceAccount,omitempty"`
 	Zone                      string `json:"Zone,omitempty"`
+	TokenPath                 string `json:"TokenPath,omitempty"`
 }
 
 // GetAuthenticationType returns the authentication type of this
