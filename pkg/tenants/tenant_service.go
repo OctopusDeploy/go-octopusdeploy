@@ -67,6 +67,17 @@ func (s *TenantService) Add(tenant *Tenant) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
+func (s *TenantService) Clone(sourceTenant *Tenant, request TenantCloneRequest) (*Tenant, error) {
+	path, err := s.GetURITemplate().Expand(&TenantCloneQuery{CloneTenantID: sourceTenant.GetID()})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := services.ApiPost(s.GetClient(), request, new(Tenant), path)
+
+	return resp.(*Tenant), nil
+}
+
 func (s *TenantService) CreateVariables(tenant *Tenant, tenantVariable *variables.TenantVariables) (*variables.TenantVariables, error) {
 	resp, err := services.ApiAdd(s.GetClient(), tenantVariable, new(variables.TenantVariables), tenant.Links["Variables"])
 	if err != nil {
