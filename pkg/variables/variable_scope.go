@@ -1,12 +1,13 @@
 package variables
 
 type VariableScope struct {
-	Environments []string `json:"Environment,omitempty"`
-	Machines     []string `json:"Machine,omitempty"`
-	Actions      []string `json:"Action,omitempty"`
-	Roles        []string `json:"Role,omitempty"`
-	Channels     []string `json:"Channel,omitempty"`
-	TenantTags   []string `json:"TenantTag,omitempty"`
+	Environments  []string `json:"Environment,omitempty"`
+	Machines      []string `json:"Machine,omitempty"`
+	Actions       []string `json:"Action,omitempty"`
+	Roles         []string `json:"Role,omitempty"`
+	Channels      []string `json:"Channel,omitempty"`
+	TenantTags    []string `json:"TenantTag,omitempty"`
+	ProcessOwners []string `json:"ProcessOwner,omitempty"`
 }
 
 func (scope VariableScope) IsEmpty() bool {
@@ -15,5 +16,6 @@ func (scope VariableScope) IsEmpty() bool {
 		len(scope.Environments) == 0 &&
 		len(scope.Machines) == 0 &&
 		len(scope.Roles) == 0 &&
-		len(scope.TenantTags) == 0
+		len(scope.TenantTags) == 0 &&
+		len(scope.ProcessOwners) == 0
 }
