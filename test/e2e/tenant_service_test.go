@@ -130,7 +130,7 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	propertyValue := core.NewPropertyValue(internal.GetRandomName(), false)
+	propertyValue := core.NewPropertyValue("#{binding}", false)
 
 	tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()] = propertyValue
 	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
