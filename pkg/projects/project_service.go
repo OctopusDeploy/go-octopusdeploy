@@ -2,7 +2,6 @@ package projects
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"net/http"
 	"net/url"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -285,11 +285,6 @@ func (s *ProjectService) GetReleases(project *Project) ([]*releases.Release, err
 func (s *ProjectService) Update(project *Project) (*Project, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterProject)
-	}
-
-	if project.PersistenceSettings != nil && project.PersistenceSettings.Type() == PersistenceSettingsTypeVersionControlled {
-		defaultBranch := project.PersistenceSettings.(GitPersistenceSettings).DefaultBranch()
-		return s.UpdateWithGitRef(project, defaultBranch)
 	}
 
 	path, err := services.GetUpdatePath(s, project)

@@ -6,6 +6,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/exp/slices"
 )
 
 type GitPersistenceSettings interface {
@@ -14,9 +15,6 @@ type GitPersistenceSettings interface {
 
 	DefaultBranch() string
 	SetDefaultBranch(defaultBranch string)
-
-	ProtectedDefaultBranch() bool
-	SetProtectedDefaultBranch(isProtected bool)
 
 	ProtectedBranchNamePatterns() []string
 	SetProtectedBranchNamePatterns(protectedBranchNamePatterns []string)
@@ -33,10 +31,8 @@ type GitPersistenceSettings interface {
 // GitPersistenceSettings represents persistence settings associated with a project.
 type gitPersistenceSettings struct {
 	basePath                    string
-	conversionState             *ConversionState
 	credential                  credentials.GitCredential
 	defaultBranch               string
-	protectedDefaultBranch      bool
 	protectedBranchNamePatterns []string
 	url                         *url.URL
 
@@ -48,17 +44,14 @@ func NewGitPersistenceSettings(
 	basePath string,
 	credentials credentials.GitCredential,
 	defaultBranch string,
-	protectedDefaultBranch bool,
 	protectedBranchNamePatterns []string,
 	url *url.URL) GitPersistenceSettings {
 	return &gitPersistenceSettings{
 		basePath:                    basePath,
 		credential:                  credentials,
 		defaultBranch:               defaultBranch,
-		protectedDefaultBranch:      protectedDefaultBranch,
 		protectedBranchNamePatterns: protectedBranchNamePatterns,
 		url:                         url,
-		conversionState:             NewConversionState(false),
 		persistenceSettings:         persistenceSettings{SettingsType: PersistenceSettingsTypeVersionControlled},
 	}
 }
@@ -78,14 +71,6 @@ func (g *gitPersistenceSettings) SetBasePath(basePath string) {
 
 func (g *gitPersistenceSettings) DefaultBranch() string {
 	return g.defaultBranch
-}
-
-func (g *gitPersistenceSettings) ProtectedDefaultBranch() bool {
-	return g.protectedDefaultBranch
-}
-
-func (g *gitPersistenceSettings) SetProtectedDefaultBranch(isProtected bool) {
-	g.protectedDefaultBranch = isProtected
 }
 
 func (g *gitPersistenceSettings) SetDefaultBranch(defaultBranch string) {
@@ -118,24 +103,31 @@ func (g *gitPersistenceSettings) SetCredential(credential credentials.GitCredent
 
 // MarshalJSON returns persistence settings as its JSON encoding.
 func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
+	defaultBranch := p.DefaultBranch()
+	protectedBranches := p.ProtectedBranchNamePatterns()
+	isDefaultBranchProtected := slices.Contains(protectedBranches, defaultBranch)
+
+	if isDefaultBranchProtected {
+		i := slices.Index(protectedBranches, defaultBranch)
+		protectedBranches = slices.Delete(protectedBranches, i, i+1)
+	}
+
 	persistenceSettings := struct {
 		BasePath                    string                    `json:"BasePath,omitempty"`
-		ConversionState             *ConversionState          `json:"ConversionState,omitempty"`
 		Credentials                 credentials.GitCredential `json:"Credentials,omitempty"`
 		DefaultBranch               string                    `json:"DefaultBranch,omitempty"`
-		ProtectedDefaultBranch      bool                      `json:"ProtectedDefaultBranch"`
+		IsDefaultBranchProtected    bool                      `json:"ProtectedDefaultBranch"`
 		ProtectedBranchNamePatterns []string                  `json:"ProtectedBranchNamePatterns"`
 		URL                         string                    `json:"Url,omitempty"`
 		Type                        PersistenceSettingsType   `json:"Type,omitempty"`
 	}{
-		BasePath:                    p.basePath,
-		ConversionState:             p.conversionState,
-		Credentials:                 p.credential,
-		DefaultBranch:               p.defaultBranch,
-		ProtectedDefaultBranch:      p.protectedDefaultBranch,
-		ProtectedBranchNamePatterns: p.protectedBranchNamePatterns,
-		URL:                         p.url.String(),
-		Type:                        p.persistenceSettings.SettingsType,
+		BasePath:                    p.BasePath(),
+		Credentials:                 p.Credential(),
+		DefaultBranch:               p.DefaultBranch(),
+		IsDefaultBranchProtected:    isDefaultBranchProtected,
+		ProtectedBranchNamePatterns: protectedBranches,
+		URL:                         p.URL().String(),
+		Type:                        p.Type(),
 	}
 
 	return json.Marshal(persistenceSettings)
@@ -145,9 +137,8 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	var fields struct {
 		BasePath                    string                  `json:"BasePath,omitempty"`
-		ConversionState             *ConversionState        `json:"ConversionState,omitempty"`
 		DefaultBranch               string                  `json:"DefaultBranch,omitempty"`
-		ProtectedDefaultBranch      bool                    `json:"ProtectedDefaultBranch"`
+		IsDefaultBranchProtected    bool                    `json:"ProtectedDefaultBranch"`
 		ProtectedBranchNamePatterns []string                `json:"ProtectedBranchNamePatterns"`
 		URL                         string                  `json:"Url,omitempty"`
 		Type                        PersistenceSettingsType `json:"Type"`
@@ -171,11 +162,16 @@ func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 		}
 	}
 
+	isDefaultBranchProtected := fields.IsDefaultBranchProtected
+
 	p.basePath = fields.BasePath
-	p.conversionState = fields.ConversionState
 	p.defaultBranch = fields.DefaultBranch
-	p.protectedDefaultBranch = fields.ProtectedDefaultBranch
 	p.protectedBranchNamePatterns = fields.ProtectedBranchNamePatterns
+
+	if isDefaultBranchProtected {
+		p.protectedBranchNamePatterns = append(p.protectedBranchNamePatterns, p.defaultBranch)
+	}
+
 	p.SettingsType = fields.Type
 	p.url = url
 

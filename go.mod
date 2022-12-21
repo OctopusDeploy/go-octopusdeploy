@@ -11,6 +11,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/kinbiko/jsonassert v1.1.1
 	github.com/stretchr/testify v1.8.1
+	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
 	golang.org/x/text v0.5.0
 )
 
