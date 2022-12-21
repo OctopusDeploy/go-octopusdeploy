@@ -130,7 +130,7 @@ func TestProjectAddWithPersistenceSettings(t *testing.T) {
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	project.PersistenceSettings = projects.NewGitPersistenceSettings(basePath, credentials, defaultBranch, false, protectedBranchNamePatterns, url)
+	project.PersistenceSettings = projects.NewGitPersistenceSettings(basePath, credentials, defaultBranch, protectedBranchNamePatterns, url)
 
 	createdProject, err := client.Projects.Add(project)
 	require.NoError(t, err)
