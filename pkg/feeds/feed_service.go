@@ -94,7 +94,7 @@ func (s *FeedService) GetByID(id string) (IFeed, error) {
 		return nil, err
 	}
 
-	return resp.(IFeed), nil
+	return ToFeed(resp.(*FeedResource))
 }
 
 // GetBuiltInFeedStatistics returns statistics for the built-in feeds.
