@@ -112,7 +112,7 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
 
-	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, credentials, defaultBranch, true, protectedBranchNamePatterns, url)
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, credentials, defaultBranch, protectedBranchNamePatterns, url)
 	gitPersistenceSettingsAsJSON, err := json.Marshal(gitPersistenceSettings)
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
@@ -132,5 +132,4 @@ func TestProjectUnmarshalJSON(t *testing.T) {
 	require.Equal(t, projectGroupID, project.ProjectGroupID)
 	require.Equal(t, gitPersistenceSettings.Type(), project.PersistenceSettings.Type())
 	require.Equal(t, gitPersistenceSettings.Credential().Type(), project.PersistenceSettings.(projects.GitPersistenceSettings).Credential().Type())
-	require.Equal(t, gitPersistenceSettings.ProtectedDefaultBranch(), true)
 }
