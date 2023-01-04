@@ -55,3 +55,7 @@ func NewCertificateResource(name string, certificateData *core.SensitiveValue, p
 func (c CertificateResource) Validate() error {
 	return validator.New().Struct(c)
 }
+
+func (c *CertificateResource) GetName() string {
+	return c.Name
+}

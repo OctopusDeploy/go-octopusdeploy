@@ -124,6 +124,14 @@ func (w *workerPool) SetWorkerPoolType(workerPoolType WorkerPoolType) {
 	w.WorkerPoolType = workerPoolType
 }
 
+func (w *WorkerPoolListResult) GetName() string {
+	return w.Name
+}
+
+func (w *WorkerPoolListResult) GetID() string {
+	return w.ID
+}
+
 // Validate checks the state of the worker pool and returns an error if
 // invalid.
 func (w *workerPool) Validate() error {
