@@ -13,16 +13,16 @@ type IAccount interface {
 	GetAccountType() AccountType
 	GetDescription() string
 	GetEnvironmentIDs() []string
+	GetSlug() string
 	GetTenantedDeploymentMode() core.TenantedDeploymentMode
 	GetTenantIDs() []string
 	GetTenantTags() []string
-	GetSlug() string
 	SetDescription(string)
 	SetEnvironmentIDs([]string)
+	SetSlug(string)
 	SetTenantedDeploymentMode(core.TenantedDeploymentMode)
 	SetTenantIDs([]string)
 	SetTenantTags([]string)
-	SetSlug(string)
 
 	resources.IHasName
 	resources.IHasSpace
@@ -35,11 +35,11 @@ type account struct {
 	Description            string                      `json:"Description,omitempty"`
 	EnvironmentIDs         []string                    `json:"EnvironmentIds,omitempty"`
 	Name                   string                      `json:"Name" validate:"required,notblank,notall"`
+	Slug                   string                      `json:"Slug,omitempty"`
 	SpaceID                string                      `json:"SpaceId,omitempty"`
 	TenantedDeploymentMode core.TenantedDeploymentMode `json:"TenantedDeploymentParticipation,omitempty"`
 	TenantIDs              []string                    `json:"TenantIds,omitempty"`
 	TenantTags             []string                    `json:"TenantTags,omitempty"`
-	Slug                   string                      `json:"Slug,omitempty"`
 
 	resources.Resource
 }
@@ -77,6 +77,11 @@ func (a *account) GetName() string {
 	return a.Name
 }
 
+// GetSlug returns the slug to this account.
+func (a *account) GetSlug() string {
+	return a.Slug
+}
+
 // GetSpaceID returns the space ID of this account.
 func (a *account) GetSpaceID() string {
 	return a.SpaceID
@@ -97,11 +102,6 @@ func (a *account) GetTenantTags() []string {
 	return a.TenantTags
 }
 
-// GetSlug returns the slug to this account.
-func (a *account) GetSlug() string {
-	return a.Slug
-}
-
 // SetDescription sets the description of the account.
 func (a *account) SetDescription(description string) {
 	a.Description = description
@@ -115,6 +115,11 @@ func (a *account) SetEnvironmentIDs(environmentIds []string) {
 // SetName sets the name of the account.
 func (a *account) SetName(name string) {
 	a.Name = name
+}
+
+// SetSlug sets the slug of this account.
+func (a *account) SetSlug(slug string) {
+	a.Slug = slug
 }
 
 // SetSpaceID sets the space ID of this account.
@@ -135,11 +140,6 @@ func (a *account) SetTenantIDs(tenantIds []string) {
 // SetTenantTags sets the tenant tags associated with this account.
 func (a *account) SetTenantTags(tenantTags []string) {
 	a.TenantTags = tenantTags
-}
-
-// SetSlug sets the slug of this account.
-func (a *account) SetSlug(slug string) {
-	a.Slug = slug
 }
 
 // Validate checks the state of the account and returns an error if
