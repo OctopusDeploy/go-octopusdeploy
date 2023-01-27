@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -23,6 +24,8 @@ func AssertEqualFeeds(t *testing.T, expected feeds.IFeed, actual feeds.IFeed) {
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
+	fmt.Println(expected.GetLinks())
+	fmt.Println(actual.GetLinks())
 	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// IFeed
