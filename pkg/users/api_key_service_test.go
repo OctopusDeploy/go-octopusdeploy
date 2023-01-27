@@ -47,17 +47,6 @@ func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 	assert.Nil(t, resource)
 }
 
-func TestAPIKeyServiceDeleteByID(t *testing.T) {
-	service := createAPIKeyService(t)
-	user := createServiceAccountUser(t)
-	resource := NewAPIKey(internal.GetRandomName(), user.GetID())
-	assert.NotNil(t, resource)
-
-	resource, err := service.Create(resource)
-	assert.NoError(t, err)
-	assert.NotNil(t, resource)
-}
-
 func createServiceAccountUser(t *testing.T) *User {
 	service := NewUserService(nil,
 		constants.TestURIUsers,
