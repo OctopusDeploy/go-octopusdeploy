@@ -282,6 +282,10 @@ func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 	octopusDeployError := new(core.APIError)
 	resp, err := request.Receive(resource, &octopusDeployError)
 
+	if err != nil {
+		return nil, err
+	}
+
 	// workaround to account for API responses where it's either 200 or 201
 	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusOK {
 		return resource, nil
