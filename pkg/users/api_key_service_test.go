@@ -2,6 +2,7 @@ package users
 
 import (
 	"testing"
+	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -47,15 +48,18 @@ func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 	assert.Nil(t, resource)
 }
 
-func TestAPIKeyServiceDeleteByID(t *testing.T) {
+func TestAPIKeyServiceCreate(t *testing.T) {
 	service := createAPIKeyService(t)
 	user := createServiceAccountUser(t)
 	resource := NewAPIKey(internal.GetRandomName(), user.GetID())
+	expiryTime := time.Now().Add(time.Hour * 72)
+	resource.Expires = &expiryTime
 	assert.NotNil(t, resource)
 
 	resource, err := service.Create(resource)
 	assert.NoError(t, err)
 	assert.NotNil(t, resource)
+	assert.Equal(t, resource.Expires, expiryTime)
 }
 
 func createServiceAccountUser(t *testing.T) *User {
