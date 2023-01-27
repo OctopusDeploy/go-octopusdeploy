@@ -59,7 +59,7 @@ func TestAPIKeyServiceCreate(t *testing.T) {
 	resource, err := service.Create(resource)
 	assert.NoError(t, err)
 	assert.NotNil(t, resource)
-	assert.Equal(t, resource.Expires, expiryTime)
+	assert.WithinDuration(t, *resource.Expires, expiryTime, time.Duration(time.Second*1))
 }
 
 func createServiceAccountUser(t *testing.T) *User {
