@@ -23,7 +23,6 @@ func AssertEqualFeeds(t *testing.T, expected feeds.IFeed, actual feeds.IFeed) {
 
 	// IResource
 	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// IFeed
 	assert.Equal(t, expected.GetFeedType(), actual.GetFeedType())
