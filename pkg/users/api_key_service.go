@@ -92,7 +92,7 @@ func (s *ApiKeyService) Create(apiKey *APIKey) (*APIKey, error) {
 	}
 
 	path := internal.TrimTemplate(s.GetPath())
-	path = fmt.Sprintf(path+"/%s/apikeys", apiKey.UserID)
+	path = fmt.Sprintf("%s%s/apikeys", path, apiKey.UserID)
 
 	resp, err := services.ApiPost(s.GetClient(), apiKey, new(APIKey), path)
 	if err != nil {

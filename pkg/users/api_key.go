@@ -12,6 +12,7 @@ type APIKey struct {
 	Created *time.Time `json:"Created,omitempty"`
 	Purpose string     `json:"Purpose,omitempty"`
 	UserID  string     `json:"UserId,omitempty"`
+	Expires *time.Time `json:"Expires,omitempty"`
 
 	resources.Resource
 }
