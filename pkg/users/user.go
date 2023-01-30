@@ -8,7 +8,7 @@ type User struct {
 	DisplayName         string     `json:"DisplayName,omitempty"`
 	EmailAddress        string     `json:"EmailAddress,omitempty"`
 	Identities          []Identity `json:"Identities,omitempty"`
-	IsActive            bool       `json:"IsActive,omitempty"`
+	IsActive            bool       `json:"IsActive"`
 	IsRequestor         bool       `json:"IsRequestor,omitempty"`
 	IsService           bool       `json:"IsService,omitempty"`
 	Password            string     `json:"Password,omitempty" validate:"max=20"`
@@ -23,5 +23,6 @@ func NewUser(username string, displayName string) *User {
 		DisplayName: displayName,
 		Username:    username,
 		Resource:    *resources.NewResource(),
+		IsActive:    true,
 	}
 }
