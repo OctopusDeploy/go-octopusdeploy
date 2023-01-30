@@ -48,5 +48,5 @@ func GetDefaultClient() *sling.Sling {
 }
 
 func TrimTemplate(uri string) string {
-	return strings.Split(uri, "{")[0]
+	return strings.TrimRight(strings.Split(uri, "{")[0], "/")
 }
