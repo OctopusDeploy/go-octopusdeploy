@@ -1,4 +1,4 @@
-name: Integration Tests
+name: Skip Tests
 on:
   pull_request:
     path:
