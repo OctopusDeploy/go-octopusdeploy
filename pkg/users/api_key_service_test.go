@@ -47,6 +47,43 @@ func TestAPIKeyServiceGetWithEmptyID(t *testing.T) {
 	assert.Nil(t, resource)
 }
 
+func TestAPIKeyServiceCreate(t *testing.T) {
+	service := createAPIKeyService(t)
+	user := createServiceAccountUser(t)
+	resource := NewAPIKey(internal.GetRandomName(), user.GetID())
+	assert.NotNil(t, resource)
+
+	resource, err := service.Create(resource)
+	assert.NoError(t, err)
+	assert.NotNil(t, resource)
+}
+
+func createServiceAccountUser(t *testing.T) *User {
+	service := NewUserService(nil,
+		constants.TestURIUsers,
+		constants.TestURIAPIKeys,
+		constants.TestURIAuthenticateOctopusID,
+		constants.TestURICurrentUser,
+		constants.TestURIExternalUserSearch,
+		constants.TestURIRegister,
+		constants.TestURISignIn,
+		constants.TestURISignOut,
+		constants.TestURIUserAuthentication,
+		constants.TestURIUserIdentityMetadata,
+	)
+	services.NewServiceTests(t, service, constants.TestURIUsers, constants.ServiceUserService)
+
+	user := NewUser(internal.GetRandomName(), internal.GetRandomName())
+	user.IsService = true
+	assert.NotNil(t, user)
+
+	resource, err := service.Add(user)
+	assert.NoError(t, err)
+	assert.NotNil(t, resource)
+
+	return resource
+}
+
 func createAPIKeyService(t *testing.T) *ApiKeyService {
 	service := NewAPIKeyService(nil, constants.TestURIAPIKeys)
 	services.NewServiceTests(t, service, constants.TestURIAPIKeys, constants.ServiceAPIKeyService)

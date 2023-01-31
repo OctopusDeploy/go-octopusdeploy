@@ -81,3 +81,14 @@ func TestValidateSemanticVersion(t *testing.T) {
 	err = ValidateSemanticVersion(propertyName, semanticVersion)
 	assert.NoError(t, err)
 }
+
+func TestTrimTemplate(t *testing.T) {
+	template := "/api/users{/id}{?skip,take,ids,filter}"
+	result := TrimTemplate(template)
+	assert.Equal(t, "/api/users", result)
+
+	template = "/api/users/{userId}/apikeys"
+	result = TrimTemplate(template)
+	assert.Equal(t, "/api/users", result)
+
+}
