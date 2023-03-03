@@ -15,7 +15,7 @@ type ProjectTrigger struct {
 	Filter      filters.ITriggerFilter `json:"Filter"`
 	IsDisabled  bool                   `json:"IsDisabled"`
 	Name        string                 `json:"Name"`
-	ProjectID   string                 `json:"ProjectId,omitempty"`
+	ProjectID   string                 `json:"ProjectId"`
 	SpaceID     string                 `json:"SpaceId,omitempty"`
 
 	resources.Resource

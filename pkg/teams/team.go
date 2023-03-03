@@ -12,7 +12,7 @@ type Team struct {
 	CanChangeMembers       bool                      `json:"CanChangeMembers"`
 	CanChangeRoles         bool                      `json:"CanChangeRoles"`
 	Description            string                    `json:"Description,omitempty"`
-	ExternalSecurityGroups []core.NamedReferenceItem `json:"ExternalSecurityGroups,omitempty"`
+	ExternalSecurityGroups []core.NamedReferenceItem `json:"ExternalSecurityGroups"`
 	MemberUserIDs          []string                  `json:"MemberUserIds"`
 	Name                   string                    `json:"Name" validate:"required"`
 	SpaceID                string                    `json:"SpaceId,omitempty"`
@@ -22,8 +22,9 @@ type Team struct {
 
 func NewTeam(name string) *Team {
 	return &Team{
-		Name:     name,
-		Resource: *resources.NewResource(),
+		Name:                   name,
+		ExternalSecurityGroups: make([]core.NamedReferenceItem, 0),
+		Resource:               *resources.NewResource(),
 	}
 }
 
