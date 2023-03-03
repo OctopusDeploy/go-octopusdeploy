@@ -12,7 +12,7 @@ type Event struct {
 	Comments                string            `json:"Comments,omitempty"`
 	Details                 string            `json:"Details,omitempty"`
 	IdentityEstablishedWith string            `json:"IdentityEstablishedWith,omitempty"`
-	IsService               bool              `json:"IsService,omitempty"`
+	IsService               bool              `json:"IsService"`
 	Message                 string            `json:"Message,omitempty"`
 	MessageHTML             string            `json:"MessageHtml,omitempty"`
 	MessageReferences       []*EventReference `json:"MessageReferences"`

@@ -10,14 +10,14 @@ import (
 
 type DeploymentAction struct {
 	ActionType                    string                        `json:"ActionType" validate:"required,notblank"`
-	CanBeUsedForProjectVersioning bool                          `json:"CanBeUsedForProjectVersioning,omitempty"`
+	CanBeUsedForProjectVersioning bool                          `json:"CanBeUsedForProjectVersioning"`
 	Channels                      []string                      `json:"Channels,omitempty"`
 	Condition                     string                        `json:"Condition,omitempty"`
 	Container                     *DeploymentActionContainer    `json:"Container,omitempty"`
 	Environments                  []string                      `json:"Environments,omitempty"`
 	ExcludedEnvironments          []string                      `json:"ExcludedEnvironments,omitempty"`
-	IsDisabled                    bool                          `json:"IsDisabled,omitempty"`
-	IsRequired                    bool                          `json:"IsRequired,omitempty"`
+	IsDisabled                    bool                          `json:"IsDisabled"`
+	IsRequired                    bool                          `json:"IsRequired"`
 	Name                          string                        `json:"Name" validate:"required,notblank"`
 	Notes                         string                        `json:"Notes,omitempty"`
 	Packages                      []*packages.PackageReference  `json:"Packages,omitempty"`

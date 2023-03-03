@@ -11,7 +11,7 @@ type DeploymentSettings struct {
 	ChangeDescription               string                       `json:"ChangeDescription,omitempty"`
 	ConnectivityPolicy              *core.ConnectivityPolicy     `json:"ProjectConnectivityPolicy,omitempty"`
 	DefaultGuidedFailureMode        core.GuidedFailureMode       `json:"DefaultGuidedFailureMode,omitempty"`
-	DefaultToSkipIfAlreadyInstalled bool                         `json:"DefaultToSkipIfAlreadyInstalled,omitempty"`
+	DefaultToSkipIfAlreadyInstalled bool                         `json:"DefaultToSkipIfAlreadyInstalled"`
 	DeploymentChangesTemplate       string                       `json:"DeploymentChangesTemplate,omitempty"`
 	ProjectID                       string                       `json:"ProjectId"`
 	ReleaseNotesTemplate            string                       `json:"ReleaseNotesTemplate,omitempty"`

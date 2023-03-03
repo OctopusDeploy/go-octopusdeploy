@@ -13,7 +13,7 @@ type ProjectTrigger struct {
 	Action      actions.ITriggerAction `json:"Action"`
 	Description string                 `json:"Description,omitempty"`
 	Filter      filters.ITriggerFilter `json:"Filter"`
-	IsDisabled  bool                   `json:"IsDisabled,omitempty"`
+	IsDisabled  bool                   `json:"IsDisabled"`
 	Name        string                 `json:"Name"`
 	ProjectID   string                 `json:"ProjectId,omitempty"`
 	SpaceID     string                 `json:"SpaceId,omitempty"`

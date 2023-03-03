@@ -7,7 +7,7 @@ import (
 )
 
 type Interruption struct {
-	CanTakeResponsibility       bool      `json:"CanTakeResponsibility,omitempty"`
+	CanTakeResponsibility       bool      `json:"CanTakeResponsibility"`
 	CorrelationID               string    `json:"CorrelationId,omitempty"`
 	Created                     time.Time `json:"Created,omitempty"`
 	Form                        *Form     `json:"Form,omitempty"`

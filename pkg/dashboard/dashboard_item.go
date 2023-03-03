@@ -10,11 +10,11 @@ type DashboardItem struct {
 	Duration                string     `json:"Duration,omitempty"`
 	EnvironmentID           string     `json:"EnvironmentId,omitempty"`
 	ErrorMessage            string     `json:"ErrorMessage,omitempty"`
-	HasPendingInterruptions bool       `json:"HasPendingInterruptions,omitempty"`
-	HasWarningsOrErrors     bool       `json:"HasWarningsOrErrors,omitempty"`
-	IsCompleted             bool       `json:"IsCompleted,omitempty"`
-	IsCurrent               bool       `json:"IsCurrent,omitempty"`
-	IsPrevious              bool       `json:"IsPrevious,omitempty"`
+	HasPendingInterruptions bool       `json:"HasPendingInterruptions"`
+	HasWarningsOrErrors     bool       `json:"HasWarningsOrErrors"`
+	IsCompleted             bool       `json:"IsCompleted"`
+	IsCurrent               bool       `json:"IsCurrent"`
+	IsPrevious              bool       `json:"IsPrevious"`
 	ProjectID               string     `json:"ProjectId,omitempty"`
 	QueueTime               *time.Time `json:"QueueTime,omitempty"`
 	ReleaseID               string     `json:"ReleaseId,omitempty"`

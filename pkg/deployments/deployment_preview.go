@@ -28,5 +28,5 @@ type DeploymentPreview struct {
 	// ChangesMarkdown string  // we don't use this at the moment, and it is large+expensive, so don't de-serialize for now
 	// Form *Form // we don't use this at the moment, and it is large+expensive, so don't de-serialize for now
 	StepsToExecute                []*DeploymentTemplateStep `json:"StepsToExecute,omitempty"`
-	UseGuidedFailureModeByDefault bool                      `json:"UseGuidedFailureModeByDefault,omitempty"`
+	UseGuidedFailureModeByDefault bool                      `json:"UseGuidedFailureModeByDefault"`
 }

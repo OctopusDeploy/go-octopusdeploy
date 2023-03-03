@@ -4,13 +4,13 @@ import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // User represents a user in Octopus.
 type User struct {
-	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited,omitempty"`
+	CanPasswordBeEdited bool       `json:"CanPasswordBeEdited"`
 	DisplayName         string     `json:"DisplayName,omitempty"`
 	EmailAddress        string     `json:"EmailAddress,omitempty"`
 	Identities          []Identity `json:"Identities,omitempty"`
 	IsActive            bool       `json:"IsActive"`
-	IsRequestor         bool       `json:"IsRequestor,omitempty"`
-	IsService           bool       `json:"IsService,omitempty"`
+	IsRequestor         bool       `json:"IsRequestor"`
+	IsService           bool       `json:"IsService"`
 	Password            string     `json:"Password,omitempty" validate:"max=20"`
 	Username            string     `json:"Username,omitempty"`
 

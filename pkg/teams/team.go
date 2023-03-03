@@ -7,10 +7,10 @@ import (
 )
 
 type Team struct {
-	CanBeDeleted           bool                      `json:"CanBeDeleted,omitempty"`
-	CanBeRenamed           bool                      `json:"CanBeRenamed,omitempty"`
-	CanChangeMembers       bool                      `json:"CanChangeMembers,omitempty"`
-	CanChangeRoles         bool                      `json:"CanChangeRoles,omitempty"`
+	CanBeDeleted           bool                      `json:"CanBeDeleted"`
+	CanBeRenamed           bool                      `json:"CanBeRenamed"`
+	CanChangeMembers       bool                      `json:"CanChangeMembers"`
+	CanChangeRoles         bool                      `json:"CanChangeRoles"`
 	Description            string                    `json:"Description,omitempty"`
 	ExternalSecurityGroups []core.NamedReferenceItem `json:"ExternalSecurityGroups,omitempty"`
 	MemberUserIDs          []string                  `json:"MemberUserIds"`

@@ -15,10 +15,10 @@ type IDeploymentTarget interface {
 type ListeningTentacleDeploymentTarget struct {
 	Endpoint               *ListeningTentacleEndpoint  `json:"Endpoint" validate:"required"`
 	EnvironmentIDs         []string                    `json:"EnvironmentIds,omitempty"`
-	HasLatestCalamari      bool                        `json:"HasLatestCalamari,omitempty"`
+	HasLatestCalamari      bool                        `json:"HasLatestCalamari"`
 	HealthStatus           string                      `json:"HealthStatus,omitempty" validate:"omitempty,oneof=HasWarnings Healthy Unavailable Unhealthy Unknown"`
-	IsDisabled             bool                        `json:"IsDisabled,omitempty"`
-	IsInProcess            bool                        `json:"IsInProcess,omitempty"`
+	IsDisabled             bool                        `json:"IsDisabled"`
+	IsInProcess            bool                        `json:"IsInProcess"`
 	MachinePolicyID        string                      `json:"MachinePolicyId,omitempty"`
 	Name                   string                      `json:"Name,omitempty"`
 	OperatingSystem        string                      `json:"OperatingSystem,omitempty"`

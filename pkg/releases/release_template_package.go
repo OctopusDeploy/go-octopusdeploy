@@ -4,7 +4,7 @@ type ReleaseTemplatePackage struct {
 	ActionName                 string `json:"ActionName,omitempty"`
 	FeedID                     string `json:"FeedId,omitempty"`
 	FeedName                   string `json:"FeedName,omitempty"`
-	IsResolvable               bool   `json:"IsResolvable,omitempty"`
+	IsResolvable               bool   `json:"IsResolvable"`
 	NuGetFeedID                string `json:"NuGetFeedId,omitempty"`
 	NuGetFeedName              string `json:"NuGetFeedName,omitempty"`
 	NuGetPackageID             string `json:"NuGetPackageId,omitempty"`
