@@ -1,14 +1,13 @@
 package machines
 
 import (
-	"testing"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func createMachinePolicyService(t *testing.T) *MachinePolicyService {
@@ -24,10 +23,10 @@ func CreateTestMachinePolicy(t *testing.T, service *MachinePolicyService) *Machi
 	require.NotNil(t, service)
 
 	name := internal.GetRandomName()
-	connectionConnectTimeout := getRandomDuration(0)
+	connectionConnectTimeout := getRandomDuration(10)
 	connectionRetrySleepInterval := getRandomDuration(0)
-	connectionRetryTimeLimit := getRandomDuration(0)
-	pollingRequestMaximumMessageProcessingTimeout := getRandomDuration(0)
+	connectionRetryTimeLimit := getRandomDuration(10)
+	pollingRequestMaximumMessageProcessingTimeout := getRandomDuration(20)
 	pollingRequestQueueTimeout := getRandomDuration(0)
 
 	machineCleanupPolicy := NewMachineCleanupPolicy()
