@@ -24,16 +24,16 @@ func CreateTestMachinePolicy(t *testing.T, service *MachinePolicyService) *Machi
 
 	name := internal.GetRandomName()
 	connectionConnectTimeout := getRandomDuration(10)
-	connectionRetrySleepInterval := getRandomDuration(0)
+	connectionRetrySleepInterval := getRandomDuration(1)
 	connectionRetryTimeLimit := getRandomDuration(10)
 	pollingRequestMaximumMessageProcessingTimeout := getRandomDuration(20)
 	pollingRequestQueueTimeout := getRandomDuration(10)
 
 	machineCleanupPolicy := NewMachineCleanupPolicy()
-	machineCleanupPolicy.DeleteMachinesElapsedTimeSpan = getRandomDuration(0)
+	machineCleanupPolicy.DeleteMachinesElapsedTimeSpan = getRandomDuration(1)
 
 	machineHealthCheckPolicy := NewMachineHealthCheckPolicy()
-	machineHealthCheckPolicy.HealthCheckInterval = getRandomDuration(0)
+	machineHealthCheckPolicy.HealthCheckInterval = getRandomDuration(1)
 
 	machinePolicy := NewMachinePolicy(name)
 	machinePolicy.ConnectionConnectTimeout = connectionConnectTimeout
