@@ -72,7 +72,6 @@ func TestNewLifecycleService(t *testing.T) {
 }
 
 func TestLifecycleServiceGetByID(t *testing.T) {
-	t.Skip("This test is not working.")
 	service := createLifecycleService(t)
 	require.NotNil(t, service)
 
@@ -88,7 +87,6 @@ func TestLifecycleServiceGetByID(t *testing.T) {
 }
 
 func TestLifecycleServiceGetAll(t *testing.T) {
-	t.Skip("This test is not working.")
 	service := createLifecycleService(t)
 	require.NotNil(t, service)
 
