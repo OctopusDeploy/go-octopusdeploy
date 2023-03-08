@@ -25,6 +25,7 @@ type CertificateResource struct {
 	SelfSigned               bool                        `json:"SelfSigned"`
 	SerialNumber             string                      `json:"SerialNumber,omitempty"`
 	SignatureAlgorithmName   string                      `json:"SignatureAlgorithmName,omitempty"`
+	SpaceID                  string                      `json:"SpaceId,omitempty"`
 	SubjectAlternativeNames  []string                    `json:"SubjectAlternativeNames,omitempty"`
 	SubjectCommonName        string                      `json:"SubjectCommonName,omitempty"`
 	SubjectDistinguishedName string                      `json:"SubjectDistinguishedName,omitempty"`
