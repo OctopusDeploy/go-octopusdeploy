@@ -1,6 +1,8 @@
 package triggers
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -27,11 +29,7 @@ func (s *ProjectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
 	}
 
-	path, err := services.GetByIDPath(s, id)
-	if err != nil {
-		return nil, err
-	}
-
+	path := fmt.Sprintf("/api/projecttriggers/%s", id)
 	resp, err := api.ApiGet(s.GetClient(), new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
@@ -67,15 +65,11 @@ func (s *ProjectTriggerService) GetAll() ([]*ProjectTrigger, error) {
 
 // Add creates a new project trigger.
 func (s *ProjectTriggerService) Add(projectTrigger *ProjectTrigger) (*ProjectTrigger, error) {
-	if IsNil(projectTrigger) {
-		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterProjectTrigger)
+	if projectTrigger == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationDelete, constants.ParameterProjectTrigger)
 	}
 
-	path, err := services.GetAddPath(s, projectTrigger)
-	if err != nil {
-		return nil, err
-	}
-
+	path := fmt.Sprintf("/api/%s/projecttriggers", projectTrigger.SpaceID)
 	resp, err := services.ApiAdd(s.GetClient(), projectTrigger, new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
@@ -84,14 +78,24 @@ func (s *ProjectTriggerService) Add(projectTrigger *ProjectTrigger) (*ProjectTri
 	return resp.(*ProjectTrigger), nil
 }
 
-// Update modifies a project trigger based on the one provided as input.
-func (s *ProjectTriggerService) Update(resource ProjectTrigger) (*ProjectTrigger, error) {
-	path, err := services.GetUpdatePath(s, &resource)
-	if err != nil {
-		return nil, err
+// Delete will delete a project trigger.
+func (s *ProjectTriggerService) Delete(projectTrigger *ProjectTrigger) error {
+	if projectTrigger == nil {
+		return internal.CreateInvalidParameterError(constants.OperationDelete, constants.ParameterProjectTrigger)
 	}
 
-	resp, err := services.ApiUpdate(s.GetClient(), resource, new(ProjectTrigger), path)
+	path := fmt.Sprintf("/api/%s/projecttriggers/%s", projectTrigger.SpaceID, projectTrigger.GetID())
+	return services.ApiDelete(s.GetClient(), path)
+}
+
+// Update modifies a project trigger based on the one provided as input.
+func (s *ProjectTriggerService) Update(projectTrigger *ProjectTrigger) (*ProjectTrigger, error) {
+	if projectTrigger == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterProjectTrigger)
+	}
+
+	path := fmt.Sprintf("/api/%s/projecttriggers/%s", projectTrigger.SpaceID, projectTrigger.GetID())
+	resp, err := services.ApiUpdate(s.GetClient(), projectTrigger, new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
 	}

@@ -61,7 +61,7 @@ func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *proj
 
 	filter := filters.NewOnceDailyScheduledTriggerFilter([]filters.Weekday{filters.Tuesday}, start)
 
-	projectTrigger := triggers.NewProjectTrigger(internal.GetRandomName(), internal.GetRandomName(), createRandomBoolean(), project.GetID(), action, filter)
+	projectTrigger := triggers.NewProjectTrigger(internal.GetRandomName(), internal.GetRandomName(), createRandomBoolean(), project, action, filter)
 	require.NotNil(t, projectTrigger)
 	require.NoError(t, projectTrigger.Validate())
 
@@ -87,7 +87,7 @@ func DeleteTestProjectTrigger(t *testing.T, client *client.Client, projectTrigge
 	}
 	require.NotNil(t, client)
 
-	err := client.ProjectTriggers.DeleteByID(projectTrigger.GetID())
+	err := client.ProjectTriggers.Delete(projectTrigger)
 	assert.NoError(t, err)
 
 	// verify the delete operation was successful
@@ -96,10 +96,22 @@ func DeleteTestProjectTrigger(t *testing.T, client *client.Client, projectTrigge
 	assert.Nil(t, deletedProjectTrigger)
 }
 
-func TestProjectTriggerAddGetAndDelete(t *testing.T) {
+func UpdateTestProjectTrigger(t *testing.T, client *client.Client, projectTrigger *triggers.ProjectTrigger) *triggers.ProjectTrigger {
+	require.NotNil(t, projectTrigger)
 
-	t.Skip("This test is not working.")
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
 
+	projectTrigger, err := client.ProjectTriggers.Update(projectTrigger)
+	assert.NoError(t, err)
+	assert.NotNil(t, projectTrigger)
+
+	return projectTrigger
+}
+
+func TestProjectTriggerAddGetUpdateDelete(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
@@ -125,6 +137,10 @@ func TestProjectTriggerAddGetAndDelete(t *testing.T) {
 	projectTrigger := CreateTestProjectTrigger(t, client, project, environment)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestProjectTrigger(t, client, projectTrigger)
+
+	projectTrigger.Name = GetRandomName()
+	updatedProjectTrigger := UpdateTestProjectTrigger(t, client, projectTrigger)
+	require.NotNil(t, updatedProjectTrigger)
 }
 
 func TestProjectTriggerGetAll(t *testing.T) {

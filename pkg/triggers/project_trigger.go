@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 )
@@ -16,18 +17,19 @@ type ProjectTrigger struct {
 	IsDisabled  bool                   `json:"IsDisabled"`
 	Name        string                 `json:"Name"`
 	ProjectID   string                 `json:"ProjectId"`
-	SpaceID     string                 `json:"SpaceId,omitempty"`
+	SpaceID     string                 `json:"SpaceId"`
 
 	resources.Resource
 }
 
-func NewProjectTrigger(name string, description string, isDisabled bool, projectID string, action actions.ITriggerAction, filter filters.ITriggerFilter) *ProjectTrigger {
+func NewProjectTrigger(name string, description string, isDisabled bool, project *projects.Project, action actions.ITriggerAction, filter filters.ITriggerFilter) *ProjectTrigger {
 	return &ProjectTrigger{
 		Action:     action,
 		Filter:     filter,
 		IsDisabled: isDisabled,
 		Name:       name,
-		ProjectID:  projectID,
+		ProjectID:  project.GetID(),
+		SpaceID:    project.SpaceID,
 		Resource:   *resources.NewResource(),
 	}
 }
