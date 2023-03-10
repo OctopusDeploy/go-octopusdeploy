@@ -35,7 +35,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 
 		// note that Go puts a 'Z' on the time
 		assert.Equal(t, heredoc.Doc(`
-			{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00Z","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"IsDisabled":false,"Name":"triggerName","ProjectId":"Projects-123"}
+			{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00Z","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"IsDisabled":false,"Name":"triggerName","ProjectId":"Projects-123","SpaceId":""}
 			`), output.String())
 	})
 
