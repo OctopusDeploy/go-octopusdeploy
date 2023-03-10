@@ -1,8 +1,8 @@
 package core
 
 type ConnectivityPolicy struct {
-	AllowDeploymentsToNoTargets bool                `json:"AllowDeploymentsToNoTargets,omitempty"`
-	ExcludeUnhealthyTargets     bool                `json:"ExcludeUnhealthyTargets,omitempty"`
+	AllowDeploymentsToNoTargets bool                `json:"AllowDeploymentsToNoTargets"`
+	ExcludeUnhealthyTargets     bool                `json:"ExcludeUnhealthyTargets"`
 	SkipMachineBehavior         SkipMachineBehavior `json:"SkipMachineBehavior,omitempty"`
 	TargetRoles                 []string            `json:"TargetRoles,omitempty"`
 }

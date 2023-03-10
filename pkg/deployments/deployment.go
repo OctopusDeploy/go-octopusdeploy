@@ -21,9 +21,9 @@ type Deployment struct {
 	DeploymentProcessID      string                     `json:"DeploymentProcessId,omitempty"`
 	EnvironmentID            string                     `json:"EnvironmentId" validate:"required"`
 	ExcludedMachineIDs       []string                   `json:"ExcludedMachineIds"`
-	FailureEncountered       bool                       `json:"FailureEncountered,omitempty"`
-	ForcePackageDownload     bool                       `json:"ForcePackageDownload,omitempty"`
-	ForcePackageRedeployment bool                       `json:"ForcePackageRedeployment,omitempty"`
+	FailureEncountered       bool                       `json:"FailureEncountered"`
+	ForcePackageDownload     bool                       `json:"ForcePackageDownload"`
+	ForcePackageRedeployment bool                       `json:"ForcePackageRedeployment"`
 	FormValues               map[string]string          `json:"FormValues,omitempty"`
 	ManifestVariableSetID    string                     `json:"ManifestVariableSetId,omitempty"`
 	Name                     string                     `json:"Name,omitempty"`
@@ -37,7 +37,7 @@ type Deployment struct {
 	TaskID                   string                     `json:"TaskId,omitempty"`
 	TenantID                 string                     `json:"TenantId,omitempty"`
 	TentacleRetentionPeriod  *core.RetentionPeriod      `json:"TentacleRetentionPeriod,omitempty"`
-	UseGuidedFailure         bool                       `json:"UseGuidedFailure,omitempty"`
+	UseGuidedFailure         bool                       `json:"UseGuidedFailure"`
 
 	resources.Resource
 }

@@ -8,17 +8,17 @@ import (
 
 type Task struct {
 	Arguments                  map[string]interface{} `json:"Arguments,omitempty"`
-	CanRerun                   bool                   `json:"CanRerun,omitempty"`
+	CanRerun                   bool                   `json:"CanRerun"`
 	Completed                  string                 `json:"Completed,omitempty"`
 	CompletedTime              *time.Time             `json:"CompletedTime,omitempty"`
 	Description                string                 `json:"Description,omitempty"`
 	Duration                   string                 `json:"Duration,omitempty"`
 	ErrorMessage               string                 `json:"ErrorMessage,omitempty"`
-	FinishedSuccessfully       *bool                  `json:"FinishedSuccessfully,omitempty"`
-	HasBeenPickedUpByProcessor bool                   `json:"HasBeenPickedUpByProcessor,omitempty"`
-	HasPendingInterruptions    bool                   `json:"HasPendingInterruptions,omitempty"`
-	HasWarningsOrErrors        bool                   `json:"HasWarningsOrErrors,omitempty"`
-	IsCompleted                *bool                  `json:"IsCompleted,omitempty"`
+	FinishedSuccessfully       *bool                  `json:"FinishedSuccessfully"`
+	HasBeenPickedUpByProcessor bool                   `json:"HasBeenPickedUpByProcessor"`
+	HasPendingInterruptions    bool                   `json:"HasPendingInterruptions"`
+	HasWarningsOrErrors        bool                   `json:"HasWarningsOrErrors"`
+	IsCompleted                *bool                  `json:"IsCompleted"`
 	LastUpdatedTime            *time.Time             `json:"LastUpdatedTime,omitempty"`
 	Name                       string                 `json:"Name,omitempty"`
 	QueueTime                  *time.Time             `json:"QueueTime,omitempty"`

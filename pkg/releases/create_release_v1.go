@@ -21,8 +21,8 @@ type CreateReleaseCommandV1 struct {
 	ChannelIDOrName       string   `json:"channelName,omitempty"`
 	Packages              []string `json:"packages,omitempty"`
 	ReleaseNotes          string   `json:"releaseNotes,omitempty"`
-	IgnoreIfAlreadyExists bool     `json:"ignoreIfAlreadyExists,omitempty"`
-	IgnoreChannelRules    bool     `json:"ignoreChannelRules,omitempty"`
+	IgnoreIfAlreadyExists bool     `json:"ignoreIfAlreadyExists"`
+	IgnoreChannelRules    bool     `json:"ignoreChannelRules"`
 	PackagePrerelease     string   `json:"packagePrerelease,omitempty"`
 }
 

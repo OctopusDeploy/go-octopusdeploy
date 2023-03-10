@@ -22,6 +22,8 @@ func TestProjectExtensionSettingsAsJSON(t *testing.T) {
 	standardChangeTemplateName := internal.GetRandomName()
 
 	expectedJSON := fmt.Sprintf(`{
+		"AutoCreateRelease": false,
+ 		"DefaultToSkipIfAlreadyInstalled": false,
 		"ExtensionSettings": [
 			{
 				"ExtensionId": "%s",
@@ -41,6 +43,9 @@ func TestProjectExtensionSettingsAsJSON(t *testing.T) {
 				}
 			}
 		],
+		"IsDisabled": false,
+		"DiscreteChannelRelease": false,
+		"IsVersionControlled": false,
 		"LifecycleId": "%s",
 		"Name": "%s",
 		"ProjectGroupId": "%s"

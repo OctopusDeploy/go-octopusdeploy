@@ -5,7 +5,7 @@ import (
 )
 
 type PropertyValue struct {
-	IsSensitive    bool            `json:"IsSensitive,omitempty"`
+	IsSensitive    bool            `json:"IsSensitive"`
 	SensitiveValue *SensitiveValue `json:"SensitiveValue,omitempty"`
 	Value          string          `json:"Value,omitempty"`
 }

@@ -3,14 +3,16 @@ package triggers_test
 import (
 	"bytes"
 	"encoding/json"
+	"testing"
+	"time"
+
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/triggers"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func TestTriggerJsonSerialization(t *testing.T) {
@@ -22,7 +24,10 @@ func TestTriggerJsonSerialization(t *testing.T) {
 		filter.DayNumberOfMonth = "1"
 		filter.TimeZone = "Asia/Kuala_Lumpur"
 
-		projectTrigger := triggers.NewProjectTrigger("trigerName", "triggerDescription", false, "Projects-123", action, filter)
+		project := projects.NewProject("foo", "Lifecycles-123", "ProjectGroup-123")
+		project.SetID("Projects-123")
+
+		projectTrigger := triggers.NewProjectTrigger("triggerName", "triggerDescription", false, project, action, filter)
 
 		output := &bytes.Buffer{}
 		err := json.NewEncoder(output).Encode(projectTrigger)
@@ -30,12 +35,12 @@ func TestTriggerJsonSerialization(t *testing.T) {
 
 		// note that Go puts a 'Z' on the time
 		assert.Equal(t, heredoc.Doc(`
-			{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00Z","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"Name":"trigerName","ProjectId":"Projects-123"}
+			{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00Z","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"IsDisabled":false,"Name":"triggerName","ProjectId":"Projects-123","SpaceId":""}
 			`), output.String())
 	})
 
 	t.Run("deserialize scheduled filter with standard go timeformat", func(t *testing.T) {
-		data := []byte(`{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00Z","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"Name":"trigerName","ProjectId":"Projects-123"}`)
+		data := []byte(`{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00Z","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"Name":"triggerName","ProjectId":"Projects-123"}`)
 		var output = new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
@@ -56,14 +61,14 @@ func TestTriggerJsonSerialization(t *testing.T) {
 			Description: "",
 			Filter:      filter,
 			IsDisabled:  false,
-			Name:        "trigerName",
+			Name:        "triggerName",
 			ProjectID:   "Projects-123",
 		}, output)
 	})
 
 	t.Run("deserialize scheduled filter with an unzoned ISO format with milliseconds", func(t *testing.T) {
 		// 2022.3 server returns this
-		data := []byte(`{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00.000","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"Name":"trigerName","ProjectId":"Projects-123"}`)
+		data := []byte(`{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00.000","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"Name":"triggerName","ProjectId":"Projects-123"}`)
 		var output = new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
@@ -84,7 +89,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 			Description: "",
 			Filter:      filter,
 			IsDisabled:  false,
-			Name:        "trigerName",
+			Name:        "triggerName",
 			ProjectID:   "Projects-123",
 		}, output)
 	})

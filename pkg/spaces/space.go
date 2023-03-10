@@ -12,7 +12,7 @@ type Space struct {
 	Name                     string   `json:"Name" validate:"required,max=20"`
 	SpaceManagersTeamMembers []string `json:"SpaceManagersTeamMembers"` // deliberately send empty array
 	SpaceManagersTeams       []string `json:"SpaceManagersTeams"`       // deliberately send empty array
-	TaskQueueStopped         bool     `json:"TaskQueueStopped,omitempty"`
+	TaskQueueStopped         bool     `json:"TaskQueueStopped"`
 
 	resources.Resource
 }

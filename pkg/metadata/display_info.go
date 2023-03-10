@@ -9,9 +9,9 @@ type DisplayInfo struct {
 	ListAPI               *ListAPIMetadata        `json:"ListApi,omitempty"`
 	Options               *OptionsMetadata        `json:"Options,omitempty"`
 	PropertyApplicability *PropertyApplicability  `json:"PropertyApplicability,omitempty"`
-	ReadOnly              bool                    `json:"ReadOnly,omitempty"`
-	Required              bool                    `json:"Required,omitempty"`
-	ShowCopyToClipboard   bool                    `json:"ShowCopyToClipboard,omitempty"`
+	ReadOnly              bool                    `json:"ReadOnly"`
+	Required              bool                    `json:"Required"`
+	ShowCopyToClipboard   bool                    `json:"ShowCopyToClipboard"`
 }
 
 func NewDisplayInfo() *DisplayInfo {

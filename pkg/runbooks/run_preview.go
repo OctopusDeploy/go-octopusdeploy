@@ -6,5 +6,5 @@ import (
 
 type RunPreview struct {
 	StepsToExecute                []*deployments.DeploymentTemplateStep `json:"StepsToExecute,omitempty"`
-	UseGuidedFailureModeByDefault bool                                  `json:"UseGuidedFailureModeByDefault,omitempty"`
+	UseGuidedFailureModeByDefault bool                                  `json:"UseGuidedFailureModeByDefault"`
 }

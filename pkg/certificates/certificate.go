@@ -11,8 +11,8 @@ type CertificateResource struct {
 	CertificateData          *core.SensitiveValue        `json:"CertificateData,omitempty" validate:"required"`
 	CertificateDataFormat    string                      `json:"CertificateDataFormat,omitempty"`
 	EnvironmentIDs           []string                    `json:"EnvironmentIds,omitempty"`
-	HasPrivateKey            bool                        `json:"HasPrivateKey,omitempty"`
-	IsExpired                bool                        `json:"IsExpired,omitempty"`
+	HasPrivateKey            bool                        `json:"HasPrivateKey"`
+	IsExpired                bool                        `json:"IsExpired"`
 	IssuerCommonName         string                      `json:"IssuerCommonName,omitempty"`
 	IssuerDistinguishedName  string                      `json:"IssuerDistinguishedName,omitempty"`
 	IssuerOrganization       string                      `json:"IssuerOrganization,omitempty"`
@@ -22,9 +22,10 @@ type CertificateResource struct {
 	Notes                    string                      `json:"Notes,omitempty"`
 	Password                 *core.SensitiveValue        `json:"Password,omitempty"`
 	ReplacedBy               string                      `json:"ReplacedBy,omitempty"`
-	SelfSigned               bool                        `json:"SelfSigned,omitempty"`
+	SelfSigned               bool                        `json:"SelfSigned"`
 	SerialNumber             string                      `json:"SerialNumber,omitempty"`
 	SignatureAlgorithmName   string                      `json:"SignatureAlgorithmName,omitempty"`
+	SpaceID                  string                      `json:"SpaceId,omitempty"`
 	SubjectAlternativeNames  []string                    `json:"SubjectAlternativeNames,omitempty"`
 	SubjectCommonName        string                      `json:"SubjectCommonName,omitempty"`
 	SubjectDistinguishedName string                      `json:"SubjectDistinguishedName,omitempty"`

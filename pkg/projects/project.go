@@ -12,20 +12,20 @@ import (
 )
 
 type Project struct {
-	AutoCreateRelease               bool                                      `json:"AutoCreateRelease,omitempty"`
+	AutoCreateRelease               bool                                      `json:"AutoCreateRelease"`
 	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
 	ClonedFromProjectID             string                                    `json:"ClonedFromProjectId,omitempty"`
 	ConnectivityPolicy              *core.ConnectivityPolicy                  `json:"ProjectConnectivityPolicy,omitempty"`
 	DefaultGuidedFailureMode        string                                    `json:"DefaultGuidedFailureMode,omitempty"`
-	DefaultToSkipIfAlreadyInstalled bool                                      `json:"DefaultToSkipIfAlreadyInstalled,omitempty"`
+	DefaultToSkipIfAlreadyInstalled bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
 	DeploymentChangesTemplate       string                                    `json:"DeploymentChangesTemplate,omitempty"`
 	DeploymentProcessID             string                                    `json:"DeploymentProcessId,omitempty"`
 	Description                     string                                    `json:"Description,omitempty"`
 	ExtensionSettings               []extensions.ExtensionSettings            `json:"ExtensionSettings,omitempty"`
 	IncludedLibraryVariableSets     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
-	IsDisabled                      bool                                      `json:"IsDisabled,omitempty"`
-	IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease,omitempty"`
-	IsVersionControlled             bool                                      `json:"IsVersionControlled,omitempty"`
+	IsDisabled                      bool                                      `json:"IsDisabled"`
+	IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease"`
+	IsVersionControlled             bool                                      `json:"IsVersionControlled"`
 	LifecycleID                     string                                    `json:"LifecycleId" validate:"required"`
 	Name                            string                                    `json:"Name" validate:"required"`
 	PersistenceSettings             PersistenceSettings                       `json:"PersistenceSettings,omitempty"`
@@ -68,19 +68,19 @@ func NewProject(name string, lifecycleID string, projectGroupID string) *Project
 // UnmarshalJSON sets this project to its representation in JSON.
 func (p *Project) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		AutoCreateRelease               bool                                      `json:"AutoCreateRelease,omitempty"`
+		AutoCreateRelease               bool                                      `json:"AutoCreateRelease"`
 		AutoDeployReleaseOverrides      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
 		ClonedFromProjectID             string                                    `json:"ClonedFromProjectId,omitempty"`
 		ConnectivityPolicy              *core.ConnectivityPolicy                  `json:"ProjectConnectivityPolicy,omitempty"`
 		DefaultGuidedFailureMode        string                                    `json:"DefaultGuidedFailureMode,omitempty"`
-		DefaultToSkipIfAlreadyInstalled bool                                      `json:"DefaultToSkipIfAlreadyInstalled,omitempty"`
+		DefaultToSkipIfAlreadyInstalled bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
 		DeploymentChangesTemplate       string                                    `json:"DeploymentChangesTemplate,omitempty"`
 		DeploymentProcessID             string                                    `json:"DeploymentProcessId,omitempty"`
 		Description                     string                                    `json:"Description,omitempty"`
 		IncludedLibraryVariableSets     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
-		IsDisabled                      bool                                      `json:"IsDisabled,omitempty"`
-		IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease,omitempty"`
-		IsVersionControlled             bool                                      `json:"IsVersionControlled,omitempty"`
+		IsDisabled                      bool                                      `json:"IsDisabled"`
+		IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease"`
+		IsVersionControlled             bool                                      `json:"IsVersionControlled"`
 		LifecycleID                     string                                    `json:"LifecycleId" validate:"required"`
 		Name                            string                                    `json:"Name" validate:"required"`
 		ProjectGroupID                  string                                    `json:"ProjectGroupId" validate:"required"`

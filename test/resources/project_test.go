@@ -34,7 +34,12 @@ func TestProjectMarshalJSON(t *testing.T) {
 	expectedJson := fmt.Sprintf(`{
 		"LifecycleId": "%s",
 		"Name": "%s",
-		"ProjectGroupId": "%s"
+		"ProjectGroupId": "%s",
+		"AutoCreateRelease": false,
+		"DefaultToSkipIfAlreadyInstalled": false,
+		"IsDisabled": false,
+		"DiscreteChannelRelease": false,
+		"IsVersionControlled": false
 	}`, lifecycleID, name, projectGroupID)
 
 	project := projects.NewProject(name, lifecycleID, projectGroupID)
@@ -57,7 +62,12 @@ func TestProjectMarshalJSON(t *testing.T) {
 		"LifecycleId": "%s",
 		"Name": "%s",
 		"ProjectConnectivityPolicy": %s,
-		"ProjectGroupId": "%s"
+		"ProjectGroupId": "%s",
+		"AutoCreateRelease": false,
+		"DefaultToSkipIfAlreadyInstalled": false,
+		"IsDisabled": false,
+		"DiscreteChannelRelease": false,
+		"IsVersionControlled": false
 	}`, lifecycleID, name, connectivityPolicyAsJSON, projectGroupID)
 
 	jsonassert.New(t).Assertf(string(projectAsJSON), expectedJson)

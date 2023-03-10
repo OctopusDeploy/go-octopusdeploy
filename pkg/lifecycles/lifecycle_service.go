@@ -1,6 +1,8 @@
 package lifecycles
 
 import (
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -9,7 +11,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
-	"strings"
 )
 
 type LifecycleService struct {
@@ -63,14 +64,18 @@ func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[*Lif
 // GetAll returns all lifecycles. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s *LifecycleService) GetAll() ([]*Lifecycle, error) {
-	items := []*Lifecycle{}
 	path, err := services.GetAllPath(s)
 	if err != nil {
-		return items, err
+		return []*Lifecycle{}, err
 	}
 
-	_, err = api.ApiGet(s.GetClient(), &items, path)
-	return items, err
+	response, err := api.ApiGet(s.GetClient(), new([]*Lifecycle), path)
+	if err != nil {
+		return []*Lifecycle{}, err
+	}
+
+	items := response.(*[]*Lifecycle)
+	return *items, nil
 }
 
 // GetByID returns the lifecycle that matches the input ID. If one cannot be

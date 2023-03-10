@@ -4,7 +4,7 @@ import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // UserRole represents a user role in Octopus.
 type UserRole struct {
-	CanBeDeleted                 bool     `json:"CanBeDeleted,omitempty"`
+	CanBeDeleted                 bool     `json:"CanBeDeleted"`
 	Description                  string   `json:"Description,omitempty"`
 	GrantedSpacePermissions      []string `json:"GrantedSpacePermissions"`
 	GrantedSystemPermissions     []string `json:"GrantedSystemPermissions"`

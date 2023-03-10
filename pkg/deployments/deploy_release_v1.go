@@ -11,13 +11,13 @@ type CreateExecutionAbstractCommandV1 struct {
 	// also has awkward SpaceIDOrName; see CreateReleaseV1 for explanation
 	SpaceID              string            `json:"spaceId"`
 	ProjectIDOrName      string            `json:"projectName"`
-	ForcePackageDownload bool              `json:"forcePackageDownload,omitempty"`
+	ForcePackageDownload bool              `json:"forcePackageDownload"`
 	SpecificMachineNames []string          `json:"specificMachineNames,omitempty"`
 	ExcludedMachineNames []string          `json:"excludedMachineNames,omitempty"`
 	SkipStepNames        []string          `json:"skipStepNames,omitempty"`
-	UseGuidedFailure     *bool             `json:"useGuidedFailure,omitempty"` // note: nil is valid, meaning 'use default'
-	RunAt                string            `json:"runAt,omitempty"`            // contains a datetimeOffset-parseable value
-	NoRunAfter           string            `json:"noRunAfter,omitempty"`       // contains a datetimeOffset-parseable value
+	UseGuidedFailure     *bool             `json:"useGuidedFailure"`     // note: nil is valid, meaning 'use default'
+	RunAt                string            `json:"runAt,omitempty"`      // contains a datetimeOffset-parseable value
+	NoRunAfter           string            `json:"noRunAfter,omitempty"` // contains a datetimeOffset-parseable value
 	Variables            map[string]string `json:"variables,omitempty"`
 }
 
@@ -37,8 +37,8 @@ type CreateDeploymentTenantedCommandV1 struct {
 	EnvironmentName          string   `json:"environmentName"` // required
 	Tenants                  []string `json:"tenants,omitempty"`
 	TenantTags               []string `json:"tenantTags,omitempty"`
-	ForcePackageRedeployment bool     `json:"forcePackageRedeployment,omitempty"`
-	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot,omitempty"`
+	ForcePackageRedeployment bool     `json:"forcePackageRedeployment"`
+	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot"`
 	CreateExecutionAbstractCommandV1
 }
 
@@ -90,8 +90,8 @@ func CreateDeploymentTenantedV1(client newclient.Client, command *CreateDeployme
 type CreateDeploymentUntenantedCommandV1 struct {
 	ReleaseVersion           string   `json:"releaseVersion"`   // required
 	EnvironmentNames         []string `json:"environmentNames"` // required
-	ForcePackageRedeployment bool     `json:"forcePackageRedeployment,omitempty"`
-	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot,omitempty"`
+	ForcePackageRedeployment bool     `json:"forcePackageRedeployment"`
+	UpdateVariableSnapshot   bool     `json:"updateVariableSnapshot"`
 	CreateExecutionAbstractCommandV1
 }
 

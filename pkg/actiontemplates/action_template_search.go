@@ -7,10 +7,10 @@ type ActionTemplateSearch struct {
 	Category                  string            `json:"Category,omitempty"`
 	CommunityActionTemplateID string            `json:"CommunityActionTemplateId,omitempty"`
 	Description               string            `json:"Description,omitempty"`
-	HasUpdate                 bool              `json:"HasUpdate,omitempty"`
+	HasUpdate                 bool              `json:"HasUpdate"`
 	ID                        string            `json:"Id,omitempty"`
-	IsBuiltIn                 bool              `json:"IsBuiltIn,omitempty"`
-	IsInstalled               bool              `json:"IsInstalled,omitempty"`
+	IsBuiltIn                 bool              `json:"IsBuiltIn"`
+	IsInstalled               bool              `json:"IsInstalled"`
 	Keywords                  string            `json:"Keywords,omitempty"`
 	Links                     map[string]string `json:"Links,omitempty"`
 	Name                      string            `json:"Name,omitempty"`
