@@ -70,6 +70,10 @@ func (s *ProjectTriggerService) Add(projectTrigger *ProjectTrigger) (*ProjectTri
 	}
 
 	path := fmt.Sprintf("/api/%s/projecttriggers", projectTrigger.SpaceID)
+
+	// TODO: use this updated path (below) once new path resides in production
+	// path := fmt.Sprintf("/api/%s/projects/%s/triggers", projectTrigger.SpaceID, projectTrigger.ProjectID)
+
 	resp, err := services.ApiAdd(s.GetClient(), projectTrigger, new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
@@ -84,7 +88,7 @@ func (s *ProjectTriggerService) Delete(projectTrigger *ProjectTrigger) error {
 		return internal.CreateInvalidParameterError(constants.OperationDelete, constants.ParameterProjectTrigger)
 	}
 
-	path := fmt.Sprintf("/api/%s/projecttriggers/%s", projectTrigger.SpaceID, projectTrigger.GetID())
+	path := fmt.Sprintf("/api/%s/projects/%s/triggers/%s", projectTrigger.SpaceID, projectTrigger.ProjectID, projectTrigger.GetID())
 	return services.ApiDelete(s.GetClient(), path)
 }
 
@@ -94,7 +98,7 @@ func (s *ProjectTriggerService) Update(projectTrigger *ProjectTrigger) (*Project
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterProjectTrigger)
 	}
 
-	path := fmt.Sprintf("/api/%s/projecttriggers/%s", projectTrigger.SpaceID, projectTrigger.GetID())
+	path := fmt.Sprintf("/api/%s/projects/%s/triggers/%s", projectTrigger.SpaceID, projectTrigger.ProjectID, projectTrigger.GetID())
 	resp, err := services.ApiUpdate(s.GetClient(), projectTrigger, new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err
