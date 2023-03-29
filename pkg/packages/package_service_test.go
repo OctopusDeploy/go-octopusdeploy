@@ -1,6 +1,8 @@
 package packages
 
 import (
+	"errors"
+	"github.com/stretchr/testify/assert"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -88,4 +90,41 @@ func TestPackageServiceUpdateWithEmptyPackage(t *testing.T) {
 	updatedPackage, err = service.Update(&Package{})
 	require.Error(t, err)
 	require.Nil(t, updatedPackage)
+}
+
+func TestParsePackageIdAndVersion(t *testing.T) {
+	cannotParseError := errors.New("could not determine the package ID and/or version based on the supplied filename")
+
+	testCases := []struct {
+		fileName  string
+		packageId string
+		version   string
+		err       error
+	}{
+		{"Octopus.Tentacle.6.3.417-x64", "Octopus.Tentacle", "6.3.417-x64", nil},
+		{"NuGet.CommandLine.6.2.3", "NuGet.CommandLine", "6.2.3", nil},
+		{"pterm.0.12.42", "pterm", "0.12.42", nil},
+
+		// quirk: If someone zips an msi they may get .msi.zip. We remove the zip extension but .msi stays behind.
+		// this matches the behaviour of the C# client
+		{"Octopus.Tentacle.6.3.417-x64.msi", "Octopus.Tentacle", "6.3.417-x64.msi", nil},
+
+		// quirk. If someone uses a hyphen as a version separator then we think it's part of the package name.
+		// this matches the C# client
+		{"pterm-0.12.42", "pterm-0", "12.42", nil},
+
+		// error cases
+		{"SqlServer2000", "", "", cannotParseError},
+		{"Octopus.Tentacle", "", "", cannotParseError},
+		{"Octopus.Tentacle-77", "", "", cannotParseError},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.fileName, func(t *testing.T) {
+			packageId, version, err := ParsePackageIDAndVersion(tc.fileName)
+
+			assert.Equal(t, tc.err, err)
+			assert.Equal(t, tc.packageId, packageId)
+			assert.Equal(t, tc.version, version)
+		})
+	}
 }

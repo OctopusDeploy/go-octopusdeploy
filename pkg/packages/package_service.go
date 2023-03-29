@@ -2,6 +2,7 @@ package packages
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -13,6 +14,7 @@ import (
 	"github.com/dghubble/sling"
 	"io"
 	"net/http"
+	"regexp"
 )
 
 type PackageService struct {
@@ -100,6 +102,16 @@ func (s *PackageService) Update(octopusPackage *Package) (*Package, error) {
 // - reader: io.Reader which provides the binary file data to upload
 // - overwriteMode: Instructs the server what to do in the case that the package already exists.
 func Upload(client newclient.Client, spaceID string, fileName string, reader io.Reader, overwriteMode OverwriteMode) (*PackageUploadResponse, bool, error) {
+	// directly uploading a file only requires a forward-moving `io.Reader`.
+	//
+	// UploadV2 requires `io.ReadSeeker` because delta upload needs it.
+	// If we pass useDeltaCompression: false to UploadV2 then it promises not to
+	// call Seek, so we can preserve our existing `reader` contract here by faking it out
+
+	return UploadV2(client, spaceID, fileName, &fakeReadSeeker{reader: reader}, overwriteMode, false)
+}
+
+func UploadV2(client newclient.Client, spaceID string, fileName string, reader io.ReadSeeker, overwriteMode OverwriteMode, useDeltaCompression bool) (*PackageUploadResponse, bool, error) {
 	if client == nil {
 		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("client")
 	}
@@ -113,8 +125,34 @@ func Upload(client newclient.Client, spaceID string, fileName string, reader io.
 		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("reader")
 	}
 
-	multipartWriter := NewMultipartFileStreamingReader(fileName, reader)
+	if useDeltaCompression {
+		fileLength, err := reader.Seek(0, io.SeekEnd)
+		if err != nil {
+			return nil, false, err
+		}
+		_, err = reader.Seek(0, io.SeekStart)
+		if err != nil {
+			return nil, false, err
+		}
+		response, createdNewPackage, err := attemptDeltaPush(client, spaceID, fileName, reader, fileLength, overwriteMode)
 
+		// If the delta upload was good, we are all done here
+		if err == nil {
+			return response, createdNewPackage, err
+		}
+
+		// something went wrong pushing a delta package. Log it and then fallback to plain package upload
+
+		// need to seek back to the start or the regular forward-read will fail
+		_, seekBackErr := reader.Seek(0, io.SeekStart)
+		if seekBackErr != nil {
+			return nil, false, seekBackErr
+		}
+
+		// fallthrough to pushing a complete package.
+		// TODO we should be smarter about this and only fallback if the signature request returned 404, not just blind fallback on everything
+	}
+	// else/fallback: push complete package to server
 	params := map[string]any{
 		"spaceId": spaceID,
 	}
@@ -127,15 +165,24 @@ func Upload(client newclient.Client, spaceID string, fileName string, reader io.
 		return nil, false, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, expandedUri, multipartWriter)
+	return httpUploadPackageFile(client, expandedUri, fileName, reader)
+}
+
+// httpUploadFile creates a multipart POST to upload a file and sends it to the server for either a full package upload
+// or a delta upload. Both have the same response type so we deserialize that too
+func httpUploadPackageFile(client newclient.Client, url string, fileName string, reader io.Reader) (response *PackageUploadResponse, createdNewFile bool, err error) {
+
+	multipartWriter := NewMultipartFileStreamingReader(fileName, reader)
+
+	req, err := http.NewRequest(http.MethodPost, url, multipartWriter)
 	if err != nil {
-		return nil, false, err
+		return
 	}
 	req.Header.Add("Content-Type", multipartWriter.FormDataContentType())
 
 	resp, err := client.HttpSession().DoRawRequest(req)
 	if err != nil {
-		return nil, false, err
+		return
 	}
 	defer newclient.CloseResponse(resp)
 
@@ -144,18 +191,20 @@ func Upload(client newclient.Client, spaceID string, fileName string, reader io.
 		outputResponseBody := new(PackageUploadResponse)
 		err = bodyDecoder.Decode(outputResponseBody)
 		if err != nil {
-			return nil, false, err
+			return
 		}
 		// the server returns 201 if it created a new file, 200 if it ignored an existing file
-		createdNewFile := resp.StatusCode == http.StatusCreated
-		return outputResponseBody, createdNewFile, nil
+		createdNewFile = resp.StatusCode == http.StatusCreated
+		response = outputResponseBody
+		return
 	} else {
 		outputResponseError := new(core.APIError)
 		err = bodyDecoder.Decode(outputResponseError)
 		if err != nil {
-			return nil, false, err
+			return
 		}
-		return nil, false, outputResponseError
+		err = outputResponseError
+		return
 	}
 }
 
@@ -181,4 +230,45 @@ func List(client newclient.Client, spaceID string, filter string, limit int) (*r
 		return nil, err
 	}
 	return newclient.Get[resources.Resources[*Package]](client.HttpSession(), expandedUri)
+}
+
+// ---- internal helpers -----
+
+// ParsePackageIDAndVersion ported from OctopusServer's PackageIdentity class
+// See PackageIdentityParser in the C# Octopus Client SDK
+func ParsePackageIDAndVersion(fileName string) (packageID string, version string, err error) {
+	pattern := regexp.MustCompile(
+		"^" + // start of line
+			"(?P<packageId>(\\w+([_.-]\\w+)*?))" + // Package ID
+			"\\." + // version separator
+			"(?P<semanticVersion>(\\d+(\\.\\d+){0,3}" + // Major Minor Patch
+			"(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?)" + // Pre-release identifiers
+			"(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?)" + // Build Metadata
+			"$") // EOL
+
+	match := pattern.FindStringSubmatch(fileName)
+	if match == nil {
+		err = errors.New("could not determine the package ID and/or version based on the supplied filename")
+		return
+	}
+	for i, name := range pattern.SubexpNames() {
+		if name == "packageId" {
+			packageID = match[i]
+		} else if name == "semanticVersion" {
+			version = match[i]
+		}
+	}
+	return
+}
+
+type fakeReadSeeker struct {
+	reader io.Reader
+}
+
+func (f *fakeReadSeeker) Read(p []byte) (n int, err error) {
+	return f.reader.Read(p)
+}
+
+func (f *fakeReadSeeker) Seek(offset int64, whence int) (int64, error) {
+	return 0, errors.New("seek is not supported for fakeReadSeeker")
 }
