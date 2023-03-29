@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
+	"fmt"
 	"github.com/OctopusDeploy/go-octodiff/pkg/octodiff"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"io"
@@ -31,7 +33,7 @@ func attemptDeltaPush(
 	fileName string,
 	input io.ReadSeeker,
 	inputLength int64,
-	overwriteMode OverwriteMode) (outResponse *PackageUploadResponse, outCreatedNewPackage bool, outErr error) {
+	overwriteMode OverwriteMode) (outResponse *PackageUploadResponse, outCreatedNewPackage bool, outErr error, outErrorIsRecoverable bool) {
 	// theoretically very old servers might not support delta push, but the Go Client is new enough that
 	// we don't need to worry about gracefully handling those and can just fail with an HTTP 404 if we happen to hit one of those
 
@@ -49,8 +51,9 @@ func attemptDeltaPush(
 
 	packageSignatureResponse, outErr := newclient.Get[PackageSignatureResponse](client.HttpSession(), signatureUri)
 	if outErr != nil {
-		// this can legitimately 404, which means the server doesn't have a prior version of this package and we should fallback to full upload
-		// TODO do we let the caller handle the 404 or do we return some specific "package did not exist" indicator?
+		// if we get an API error, then it's almost certainly a 404 (newclient doesn't give us enough info to check the status code)
+		// and the correct thing to do is for the caller to recover with a full package upload. Other kinds of errors we should abort
+		_, outErrorIsRecoverable = outErr.(*core.APIError)
 		return
 	}
 	signature, outErr := base64.StdEncoding.DecodeString(packageSignatureResponse.Signature)
@@ -85,10 +88,8 @@ func attemptDeltaPush(
 	ratio := float64(tmpFileInfo.Size()) / float64(inputLength)
 	if ratio > 0.95 {
 		// If the delta file is more than 95% the size of the full file, just upload the full file directly
-
-		// TODO tell the caller to do a full upload. See-also 404 case above
-		// TODO what about logging etc?
-		return
+		outErr = fmt.Errorf("The delta file (%d bytes) is more than 95%% the size of the original file (%d bytes)", tmpFileInfo.Size(), inputLength)
+		outErrorIsRecoverable = true
 	}
 
 	_, outErr = tmpFile.Seek(0, io.SeekStart)

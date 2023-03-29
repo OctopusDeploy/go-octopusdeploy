@@ -134,25 +134,29 @@ func UploadV2(client newclient.Client, spaceID string, fileName string, reader i
 		if err != nil {
 			return nil, false, err
 		}
-		response, createdNewPackage, err := attemptDeltaPush(client, spaceID, fileName, reader, fileLength, overwriteMode)
+		response, createdNewPackage, err, errIsRecoverable := attemptDeltaPush(client, spaceID, fileName, reader, fileLength, overwriteMode)
 
 		// If the delta upload was good, we are all done here
 		if err == nil {
 			return response, createdNewPackage, err
 		}
 
-		// something went wrong pushing a delta package. Log it and then fallback to plain package upload
-
-		// need to seek back to the start or the regular forward-read will fail
-		_, seekBackErr := reader.Seek(0, io.SeekStart)
-		if seekBackErr != nil {
-			return nil, false, seekBackErr
+		if !errIsRecoverable {
+			// we should log the error, but we don't have access to a logger
+			return nil, false, err
 		}
 
-		// fallthrough to pushing a complete package.
-		// TODO we should be smarter about this and only fallback if the signature request returned 404, not just blind fallback on everything
+		// at this point we lose the error from attemptDeltaPush, but we don't do anything with it anyway
+
+		// we can recover by pushing the full file
+		// need to seek back to the start or the regular forward-read will fail
+		_, err = reader.Seek(0, io.SeekStart)
+		if err != nil {
+			return nil, false, err
+		}
 	}
-	// else/fallback: push complete package to server
+
+	// push complete package to server
 	params := map[string]any{
 		"spaceId": spaceID,
 	}
