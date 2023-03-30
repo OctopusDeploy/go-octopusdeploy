@@ -4,12 +4,14 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/OctopusDeploy/go-octodiff/pkg/octodiff"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -47,13 +49,8 @@ func attemptDeltaPush(
 		"packageId": packageID,
 		"version":   version,
 	}
-	signatureUri, outErr := client.URITemplateCache().Expand(uritemplates.PackageDeltaSignature, params)
-
-	packageSignatureResponse, outErr := newclient.Get[PackageSignatureResponse](client.HttpSession(), signatureUri)
+	packageSignatureResponse, outErrorIsRecoverable, outErr := requestDeltaSignature(client, params)
 	if outErr != nil {
-		// if we get an API error, then it's almost certainly a 404 (newclient doesn't give us enough info to check the status code)
-		// and the correct thing to do is for the caller to recover with a full package upload. Other kinds of errors we should abort
-		_, outErrorIsRecoverable = outErr.(*core.APIError)
 		return
 	}
 	signature, outErr := base64.StdEncoding.DecodeString(packageSignatureResponse.Signature)
@@ -112,4 +109,47 @@ func attemptDeltaPush(
 
 	outResponse, outCreatedNewPackage, outErr = httpUploadPackageFile(client, deltaUploadUri, fileName, tmpFile)
 	return
+}
+
+func requestDeltaSignature(client newclient.Client, params map[string]any) (response *PackageSignatureResponse, errorIsRecoverable bool, err error) {
+	signatureUri, err := client.URITemplateCache().Expand(uritemplates.PackageDeltaSignature, params)
+	if err != nil {
+		return
+	}
+
+	req, err := http.NewRequest(http.MethodGet, signatureUri, nil)
+	if err != nil {
+		return
+	}
+	resp, outErr := client.HttpSession().DoRawRequest(req)
+	if outErr != nil { // lower level error e.g. socket error, nonrecoverable
+		return
+	}
+	defer newclient.CloseResponse(resp)
+
+	var outputResponseBody = new(PackageSignatureResponse)
+	var outputResponseError = new(core.APIError)
+	bodyDecoder := json.NewDecoder(resp.Body)
+	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+		err = bodyDecoder.Decode(outputResponseBody)
+		if err != nil { // the server sent us a good response but we couldn't deserialize?
+			return
+		}
+		response = outputResponseBody
+		return
+	} else {
+		// The server responds with 404 if we ask for a signature and there are no prior versions of that package.
+		// Give up attempting to delta and recover by just uploading the whole file.
+		// Other kinds of errors are non-recoverable
+		errorIsRecoverable = resp.StatusCode == 404
+
+		// don't use core.APIErrorChecker, it's overly helpful and gets in the way of error handling.
+		err = bodyDecoder.Decode(outputResponseError)
+		if err != nil { // can't deserialize the error JSON?
+			return
+		}
+		// always return the error here, even if there was nothing to deserialize
+		err = outputResponseError
+		return
+	}
 }
