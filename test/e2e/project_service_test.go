@@ -325,6 +325,6 @@ func TestConvertProjectToVcsWithInvalidBranchProtection(t *testing.T) {
 
 	project, err = client.Projects.ConvertToVcs(project, "Initial Commit", "", gps)
 
-	assert.Error(t, err)
+	assert.EqualError(t, err, "the default branch is defined as protected but no initial commit branch name provided")
 	assert.Nil(t, project)
 }
