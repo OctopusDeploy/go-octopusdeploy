@@ -1,9 +1,6 @@
 package e2e
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
-	"net/url"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
@@ -21,30 +18,6 @@ func TestAddNilProject(t *testing.T) {
 	require.NotNil(t, client)
 
 	project, err := client.Projects.Add(nil)
-
-	assert.Error(t, err)
-	assert.Nil(t, project)
-}
-
-func TestConvertProjectToVcs(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
-
-	credentials := credentials.NewAnonymous()
-	url, err := url.Parse("https://example.com/")
-	gps := projects.NewGitPersistenceSettings(".octopus/foobar2", credentials, "master", nil, url)
-
-	space := GetDefaultSpace(t, client)
-	lifecycle := CreateTestLifecycle(t, client)
-	defer DeleteTestLifecycle(t, client, lifecycle)
-
-	projectGroup := CreateTestProjectGroup(t, client)
-	defer DeleteTestProjectGroup(t, client, projectGroup)
-
-	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
-	defer DeleteTestProject(t, client, project)
-
-	client.Projects.ConvertToVcs(project, "Initial Commit", "X", gps)
 
 	assert.Error(t, err)
 	assert.Nil(t, project)

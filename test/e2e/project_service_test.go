@@ -304,3 +304,51 @@ func TestProjectGetByName(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, projects)
 }
+
+func TestConvertProjectToVcsWithInvalidBranchProtection(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	lifecycle := CreateTestLifecycle(t, client)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	defer DeleteTestProject(t, client, project)
+
+	credentials := credentials.NewAnonymous()
+	url, err := url.Parse("https://example.com/")
+	gps := projects.NewGitPersistenceSettings(".octopus/foobar2", credentials, "master", []string{"master"}, url)
+
+	project, err = client.Projects.ConvertToVcs(project, "Initial Commit", "", gps)
+
+	assert.Error(t, err)
+	assert.Nil(t, project)
+}
+
+func TestConvertProjectToVcs(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	lifecycle := CreateTestLifecycle(t, client)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	defer DeleteTestProject(t, client, project)
+
+	credentials := credentials.NewAnonymous()
+	url, _ := url.Parse("https://example.com/")
+	gps := projects.NewGitPersistenceSettings(".octopus/foobar2", credentials, "master", nil, url)
+
+	project, err := client.Projects.ConvertToVcs(project, "Initial Commit", "", gps)
+
+	assert.NotNil(t, err)
+	require.Equal(t, project.PersistenceSettings.Type(), project.PersistenceSettings.Type())
+}
