@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
+// PackageUploadResponse represents the data returned by the Octopus server after uploading a package
 type PackageUploadResponse struct {
 	PackageSizeBytes int
 	Hash             string

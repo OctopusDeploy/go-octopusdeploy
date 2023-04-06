@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/OctopusDeploy/go-octodiff/pkg/octodiff"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -14,7 +13,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
+	"time"
 )
 
 type PackageSignatureResponse struct {
@@ -22,24 +21,17 @@ type PackageSignatureResponse struct {
 	BaseVersion string `json:"BaseVersion" validate:"required"`
 }
 
-func fileBaseNameWithoutExtension(fileName string) string {
-	if pos := strings.LastIndexByte(fileName, '.'); pos != -1 {
-		return filepath.Base(fileName[:pos])
-	}
-	return filepath.Base(fileName)
-}
-
-func attemptDeltaPush(
+func uploadDelta(
 	client newclient.Client,
 	spaceID string,
 	fileName string,
 	input io.ReadSeeker,
 	inputLength int64,
-	overwriteMode OverwriteMode) (outResponse *PackageUploadResponse, outCreatedNewPackage bool, outErr error, outErrorIsRecoverable bool) {
+	overwriteMode OverwriteMode) (outResponse *PackageUploadResponseV2, outErr error) {
 	// theoretically very old servers might not support delta push, but the Go Client is new enough that
 	// we don't need to worry about gracefully handling those and can just fail with an HTTP 404 if we happen to hit one of those
 
-	packageID, version, outErr := ParsePackageIDAndVersion(fileBaseNameWithoutExtension(fileName))
+	packageID, version, outErr := ParsePackageIDAndVersion(filepath.Base(fileName))
 	if outErr != nil {
 		return
 	}
@@ -49,10 +41,24 @@ func attemptDeltaPush(
 		"packageId": packageID,
 		"version":   version,
 	}
-	packageSignatureResponse, outErrorIsRecoverable, outErr := requestDeltaSignature(client, params)
+	requestSignatureStartTime := time.Now()
+	packageSignatureResponse, outErr := requestDeltaSignature(client, params)
 	if outErr != nil {
 		return
 	}
+	requestSignatureDuration := time.Since(requestSignatureStartTime)
+	if packageSignatureResponse == nil {
+		return deltaFallbackUploadFullFile(client, spaceID,
+			fileName,
+			input,
+			inputLength,
+			overwriteMode,
+			0,
+			requestSignatureDuration,
+			0,
+			DeltaBehaviourNoPreviousFile)
+	}
+
 	signature, outErr := base64.StdEncoding.DecodeString(packageSignatureResponse.Signature)
 	if outErr != nil {
 		return
@@ -60,6 +66,7 @@ func attemptDeltaPush(
 
 	// Worst-case deltas for files can be equal to the size of the file itself. For something like a 5GB ISO, this means 5GB,
 	// so we need to stream the delta into a temp file rather than hold it in memory.
+	buildDeltaStartTime := time.Now()
 	tmpFile, outErr := os.CreateTemp("", "go-octopusdeploy-pkg-delta")
 	if outErr != nil {
 		return
@@ -77,16 +84,24 @@ func attemptDeltaPush(
 	if outErr != nil {
 		return
 	}
+	buildDeltaDuration := time.Since(buildDeltaStartTime)
 
 	tmpFileInfo, outErr := tmpFile.Stat()
 	if outErr != nil {
 		return
 	}
 	ratio := float64(tmpFileInfo.Size()) / float64(inputLength)
+	// If the delta file is more than 95% the size of the full file, just upload the full file directly
 	if ratio > 0.95 {
-		// If the delta file is more than 95% the size of the full file, just upload the full file directly
-		outErr = fmt.Errorf("The delta file (%d bytes) is more than 95%% the size of the original file (%d bytes)", tmpFileInfo.Size(), inputLength)
-		outErrorIsRecoverable = true
+		return deltaFallbackUploadFullFile(client, spaceID,
+			fileName,
+			input,
+			inputLength,
+			overwriteMode,
+			tmpFileInfo.Size(),
+			requestSignatureDuration,
+			buildDeltaDuration,
+			DeltaBehaviourNotEfficient)
 	}
 
 	_, outErr = tmpFile.Seek(0, io.SeekStart)
@@ -107,49 +122,122 @@ func attemptDeltaPush(
 		return
 	}
 
-	outResponse, outCreatedNewPackage, outErr = httpUploadPackageFile(client, deltaUploadUri, fileName, tmpFile)
-	return
+	uploadStartTime := time.Now()
+	stdResponse, createdNewPackage, outErr := httpUploadPackageFile(client, deltaUploadUri, fileName, tmpFile)
+	if outErr != nil {
+		return
+	}
+	uploadDuration := time.Since(uploadStartTime)
+
+	return &PackageUploadResponseV2{
+		CreatedNewFile:        createdNewPackage,
+		UploadMethod:          UploadMethodDelta,
+		PackageUploadResponse: *stdResponse,
+		UploadInfo: &DeltaUploadedPackageInfo{
+			FileSize:                 inputLength,
+			DeltaSize:                tmpFileInfo.Size(),
+			RequestSignatureDuration: requestSignatureDuration,
+			BuildDeltaDuration:       buildDeltaDuration,
+			UploadDuration:           uploadDuration,
+			DeltaBehaviour:           DeltaBehaviourUploadedDeltaFile,
+		},
+	}, nil
 }
 
-func requestDeltaSignature(client newclient.Client, params map[string]any) (response *PackageSignatureResponse, errorIsRecoverable bool, err error) {
+func deltaFallbackUploadFullFile(
+	client newclient.Client,
+	spaceID string,
+	fileName string,
+	input io.ReadSeeker,
+	inputLength int64,
+	overwriteMode OverwriteMode,
+	deltaLength int64,
+	requestSignatureDuration time.Duration,
+	buildDeltaDuration time.Duration,
+	deltaBehaviour DeltaBehaviour) (*PackageUploadResponseV2, error) {
+	// we can recover by pushing the full file
+	// need to seek back to the start or the regular forward-read will fail
+	_, err := input.Seek(0, io.SeekStart)
+	if err != nil {
+		return nil, err
+	}
+
+	fuParams := map[string]any{
+		"spaceId": spaceID,
+	}
+	if overwriteMode != "" {
+		fuParams["overwriteMode"] = overwriteMode
+	}
+
+	fullUploadUri, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, fuParams)
+	if err != nil {
+		return nil, err
+	}
+
+	uploadStartTime := time.Now()
+	stdResponse, createdNewPackage, err := httpUploadPackageFile(client, fullUploadUri, fileName, input)
+	if err != nil {
+		return nil, err
+	}
+	uploadDuration := time.Since(uploadStartTime)
+
+	return &PackageUploadResponseV2{
+		CreatedNewFile:        createdNewPackage,
+		UploadMethod:          UploadMethodDelta,
+		PackageUploadResponse: *stdResponse,
+		UploadInfo: &DeltaUploadedPackageInfo{
+			FileSize:                 inputLength,
+			DeltaSize:                deltaLength,
+			RequestSignatureDuration: requestSignatureDuration,
+			BuildDeltaDuration:       buildDeltaDuration,
+			UploadDuration:           uploadDuration,
+			DeltaBehaviour:           deltaBehaviour,
+		},
+	}, nil
+}
+
+// requestDeltaSignature asks the server for a signature for a package (packageId and version in the params map).
+// If the server returns 404 (not found) this indicates there's no existing package to delta off, in which case
+// requestDeltaSignature will return (nil, nil) indiciating no signature but also no error.
+func requestDeltaSignature(client newclient.Client, params map[string]any) (*PackageSignatureResponse, error) {
 	signatureUri, err := client.URITemplateCache().Expand(uritemplates.PackageDeltaSignature, params)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	req, err := http.NewRequest(http.MethodGet, signatureUri, nil)
 	if err != nil {
-		return
+		return nil, err
 	}
 	resp, outErr := client.HttpSession().DoRawRequest(req)
 	if outErr != nil { // lower level error e.g. socket error, nonrecoverable
-		return
+		return nil, err
 	}
 	defer newclient.CloseResponse(resp)
 
-	var outputResponseBody = new(PackageSignatureResponse)
-	var outputResponseError = new(core.APIError)
+	var responseBody = new(PackageSignatureResponse)
+	var responseError = new(core.APIError)
 	bodyDecoder := json.NewDecoder(resp.Body)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
-		err = bodyDecoder.Decode(outputResponseBody)
+		err = bodyDecoder.Decode(responseBody)
 		if err != nil { // the server sent us a good response but we couldn't deserialize?
-			return
+			return nil, err
 		}
-		response = outputResponseBody
-		return
+		return responseBody, nil
 	} else {
 		// The server responds with 404 if we ask for a signature and there are no prior versions of that package.
 		// Give up attempting to delta and recover by just uploading the whole file.
 		// Other kinds of errors are non-recoverable
-		errorIsRecoverable = resp.StatusCode == 404
+		if resp.StatusCode == 404 {
+			return nil, nil
+		}
 
 		// don't use core.APIErrorChecker, it's overly helpful and gets in the way of error handling.
-		err = bodyDecoder.Decode(outputResponseError)
+		err = bodyDecoder.Decode(responseError)
 		if err != nil { // can't deserialize the error JSON?
-			return
+			return nil, err
 		}
 		// always return the error here, even if there was nothing to deserialize
-		err = outputResponseError
-		return
+		return nil, responseError
 	}
 }

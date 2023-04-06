@@ -14,7 +14,10 @@ import (
 	"github.com/dghubble/sling"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 type PackageService struct {
@@ -108,68 +111,64 @@ func Upload(client newclient.Client, spaceID string, fileName string, reader io.
 	// If we pass useDeltaCompression: false to UploadV2 then it promises not to
 	// call Seek, so we can preserve our existing `reader` contract here by faking it out
 
-	return UploadV2(client, spaceID, fileName, &fakeReadSeeker{reader: reader}, overwriteMode, false)
+	v2Response, err := UploadV2(client, spaceID, fileName, &fakeReadSeeker{reader: reader}, overwriteMode, false)
+	if err != nil {
+		return nil, false, err
+	}
+	return &v2Response.PackageUploadResponse, v2Response.CreatedNewFile, nil
 }
 
-func UploadV2(client newclient.Client, spaceID string, fileName string, reader io.ReadSeeker, overwriteMode OverwriteMode, useDeltaCompression bool) (*PackageUploadResponse, bool, error) {
+func UploadV2(client newclient.Client, spaceID string, fileName string, reader io.ReadSeeker, overwriteMode OverwriteMode, useDeltaCompression bool) (*PackageUploadResponseV2, error) {
 	if client == nil {
-		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("client")
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("client")
 	}
 	if spaceID == "" {
-		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
 	}
 	if fileName == "" {
-		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("fileName")
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("fileName")
 	}
 	if reader == nil {
-		return nil, false, internal.CreateRequiredParameterIsEmptyOrNilError("reader")
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("reader")
 	}
 
 	if useDeltaCompression {
 		fileLength, err := reader.Seek(0, io.SeekEnd)
 		if err != nil {
-			return nil, false, err
+			return nil, err
 		}
 		_, err = reader.Seek(0, io.SeekStart)
 		if err != nil {
-			return nil, false, err
+			return nil, err
 		}
-		response, createdNewPackage, err, errIsRecoverable := attemptDeltaPush(client, spaceID, fileName, reader, fileLength, overwriteMode)
-
-		// If the delta upload was good, we are all done here
-		if err == nil {
-			return response, createdNewPackage, err
+		return uploadDelta(client, spaceID, fileName, reader, fileLength, overwriteMode)
+	} else {
+		// push complete package to server
+		params := map[string]any{
+			"spaceId": spaceID,
 		}
-
-		if !errIsRecoverable {
-			// we should log the error, but we don't have access to a logger
-			return nil, false, err
+		if overwriteMode != "" {
+			params["overwriteMode"] = overwriteMode
 		}
 
-		// at this point we lose the error from attemptDeltaPush, but we don't do anything with it anyway
-
-		// we can recover by pushing the full file
-		// need to seek back to the start or the regular forward-read will fail
-		_, err = reader.Seek(0, io.SeekStart)
+		expandedUri, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, params)
 		if err != nil {
-			return nil, false, err
+			return nil, err
 		}
-	}
 
-	// push complete package to server
-	params := map[string]any{
-		"spaceId": spaceID,
-	}
-	if overwriteMode != "" {
-		params["overwriteMode"] = overwriteMode
-	}
+		stdResponse, createdNewFile, err := httpUploadPackageFile(client, expandedUri, fileName, reader)
+		if err != nil {
+			return nil, err
+		}
 
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.PackageUpload, params)
-	if err != nil {
-		return nil, false, err
-	}
+		return &PackageUploadResponseV2{
+			CreatedNewFile:        createdNewFile,
+			UploadMethod:          UploadMethodStandard,
+			PackageUploadResponse: *stdResponse,
+			UploadInfo:            nil,
+		}, nil
 
-	return httpUploadPackageFile(client, expandedUri, fileName, reader)
+	}
 }
 
 // httpUploadFile creates a multipart POST to upload a file and sends it to the server for either a full package upload
@@ -238,8 +237,28 @@ func List(client newclient.Client, spaceID string, filter string, limit int) (*r
 
 // ---- internal helpers -----
 
+func withoutLastExtension(path string) string {
+	for i := len(path) - 1; i >= 0 && !os.IsPathSeparator(path[i]); i-- {
+		if path[i] == '.' {
+			return path[:i]
+		}
+	}
+	return path
+}
+
+// conventional wisdom in go is that the file extension is always the thing after the last .
+// but this mishandles .tar.gz files, so we need a special case to handle them (and .tar.bz2 etc)
+func removeExtension(fileName string) string {
+	candidate := withoutLastExtension(fileName)
+	if len(candidate) > 3 && strings.EqualFold(filepath.Ext(candidate), ".tar") {
+		return withoutLastExtension(candidate)
+	}
+	return candidate
+}
+
 // ParsePackageIDAndVersion ported from OctopusServer's PackageIdentity class
 // See PackageIdentityParser in the C# Octopus Client SDK
+// Note: Unlike in C#, fileName here includes the file extension
 func ParsePackageIDAndVersion(fileName string) (packageID string, version string, err error) {
 	pattern := regexp.MustCompile(
 		"^" + // start of line
@@ -250,7 +269,7 @@ func ParsePackageIDAndVersion(fileName string) (packageID string, version string
 			"(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?)" + // Build Metadata
 			"$") // EOL
 
-	match := pattern.FindStringSubmatch(fileName)
+	match := pattern.FindStringSubmatch(removeExtension(fileName))
 	if match == nil {
 		err = errors.New("could not determine the package ID and/or version based on the supplied filename")
 		return
