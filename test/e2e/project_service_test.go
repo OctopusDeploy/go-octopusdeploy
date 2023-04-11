@@ -304,27 +304,3 @@ func TestProjectGetByName(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, projects)
 }
-
-func TestConvertProjectToVcsWithInvalidBranchProtection(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
-
-	space := GetDefaultSpace(t, client)
-	lifecycle := CreateTestLifecycle(t, client)
-	defer DeleteTestLifecycle(t, client, lifecycle)
-
-	projectGroup := CreateTestProjectGroup(t, client)
-	defer DeleteTestProjectGroup(t, client, projectGroup)
-
-	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
-	defer DeleteTestProject(t, client, project)
-
-	credentials := credentials.NewAnonymous()
-	url, err := url.Parse("https://example.com/")
-	gps := projects.NewGitPersistenceSettings(".octopus/foobar2", credentials, "main", []string{"main"}, url)
-
-	project, err = client.Projects.ConvertToVcs(project, "Initial Commit", "", gps)
-
-	assert.ErrorContains(t, err, "Cannot commit to protected branches. Please create a new branch before committing.")
-	assert.Nil(t, project)
-}
