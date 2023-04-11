@@ -84,12 +84,9 @@ func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, in
 		return nil, fmt.Errorf("the state of the input project is not valid; cannot resolve ConvertToVcs link")
 	}
 
-	convertToVcs, err := NewConvertToVcs(commitMessage, initialCommitBranch, gitPersistenceSettings)
-	if err != nil {
-		return nil, err
-	}
+	convertToVcs := NewConvertToVcs(commitMessage, initialCommitBranch, gitPersistenceSettings)
 
-	_, err = services.ApiAddWithResponseStatus(s.GetClient(), convertToVcs, new(ConvertToVcsResponse), project.Links["ConvertToVcs"], http.StatusOK)
+	_, err := services.ApiAddWithResponseStatus(s.GetClient(), convertToVcs, new(ConvertToVcsResponse), project.Links["ConvertToVcs"], http.StatusOK)
 	if err != nil {
 		return nil, err
 	}

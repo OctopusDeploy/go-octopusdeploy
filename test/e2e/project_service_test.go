@@ -321,10 +321,10 @@ func TestConvertProjectToVcsWithInvalidBranchProtection(t *testing.T) {
 
 	credentials := credentials.NewAnonymous()
 	url, err := url.Parse("https://example.com/")
-	gps := projects.NewGitPersistenceSettings(".octopus/foobar2", credentials, "master", []string{"master"}, url)
+	gps := projects.NewGitPersistenceSettings(".octopus/foobar2", credentials, "main", []string{"main"}, url)
 
 	project, err = client.Projects.ConvertToVcs(project, "Initial Commit", "", gps)
 
-	assert.EqualError(t, err, "the default branch is defined as protected but no initial commit branch name provided")
+	assert.ErrorContains(t, err, "Cannot commit to protected branches. Please create a new branch before committing.")
 	assert.Nil(t, project)
 }
