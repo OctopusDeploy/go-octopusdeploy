@@ -19,6 +19,7 @@ type Runbook struct {
 	RunRetentionPolicy         *RunbookRetentionPeriod     `json:"RunRetentionPolicy,omitempty"`
 	RunbookProcessID           string                      `json:"RunbookProcessId,omitempty"`
 	SpaceID                    string                      `json:"SpaceId,omitempty"`
+	ForcePackageDownload       bool                        `json:"ForcePackageDownload"`
 
 	resources.Resource
 }
