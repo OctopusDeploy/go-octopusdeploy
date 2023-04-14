@@ -37,3 +37,22 @@ func (s *RunbookProcessService) GetByID(id string) (*RunbookProcess, error) {
 
 	return resp.(*RunbookProcess), nil
 }
+
+// Update modifies a runbook process based on the one provided as input.
+func (s *RunbookProcessService) Update(runbook *RunbookProcess) (*RunbookProcess, error) {
+	if runbook == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterRunbook)
+	}
+
+	path, err := services.GetUpdatePath(s, runbook)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := services.ApiUpdate(s.GetClient(), runbook, new(RunbookProcess), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*RunbookProcess), nil
+}
