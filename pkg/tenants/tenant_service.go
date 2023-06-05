@@ -74,7 +74,9 @@ func (s *TenantService) Clone(sourceTenant *Tenant, request TenantCloneRequest) 
 	}
 
 	resp, err := services.ApiPost(s.GetClient(), request, new(Tenant), path)
-
+	if err != nil {
+		return nil, err
+	}
 	return resp.(*Tenant), nil
 }
 

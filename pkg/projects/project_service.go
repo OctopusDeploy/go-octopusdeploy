@@ -64,6 +64,20 @@ func (s *ProjectService) Add(project *Project) (*Project, error) {
 	return resp.(*Project), nil
 }
 
+func (s *ProjectService) Clone(sourceProject *Project, request ProjectCloneRequest) (*Project, error) {
+	path, err := s.GetURITemplate().Expand(&ProjectCloneQuery{CloneProjectID: sourceProject.GetID()})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := services.ApiPost(s.GetClient(), request, new(Project), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.(*Project), nil
+}
+
 // ConvertToVcs converts an input project to use a version-control system (VCS) for its persistence. initialCommitBranch is ignored unless
 // the default branch in the gitPersistenceSettings appears in the protected branch patterns, and will default to "octopus-vcs-conversion"
 // if not explicitly specified.
