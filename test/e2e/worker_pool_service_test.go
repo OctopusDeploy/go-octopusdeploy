@@ -34,7 +34,7 @@ func CreateTestDynamicWorkerPool(t *testing.T, client *client.Client) workerpool
 	require.NotNil(t, client)
 
 	name := internal.GetRandomName()
-	workerType := "Ubuntu1804"
+	workerType := "Ubuntu2204"
 
 	dynamicWorkerPool := workerpools.NewDynamicWorkerPool(name, workerType)
 	require.NotNil(t, dynamicWorkerPool)

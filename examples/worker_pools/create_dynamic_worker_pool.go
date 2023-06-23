@@ -18,7 +18,7 @@ func CreateDynamicWorkerPoolExample() {
 
 		// worker pool values
 		name       = "worker-pool-name"
-		workerType = "Ubuntu1804"
+		workerType = "Ubuntu2204"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
