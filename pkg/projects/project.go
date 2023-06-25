@@ -62,6 +62,9 @@ func NewProject(name string, lifecycleID string, projectGroupID string) *Project
 		Name:              name,
 		ProjectGroupID:    projectGroupID,
 		Resource:          *resources.NewResource(),
+		ConnectivityPolicy: &core.ConnectivityPolicy{
+			AllowDeploymentsToNoTargets: false,
+		},
 	}
 }
 

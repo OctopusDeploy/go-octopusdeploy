@@ -75,7 +75,7 @@ func (s *RunbookService) GetByID(id string) (*Runbook, error) {
 
 	resp, err := api.ApiGet(s.GetClient(), new(Runbook), path)
 	if err != nil {
-		return nil, internal.CreateResourceNotFoundError("runbook", "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Runbook), nil
