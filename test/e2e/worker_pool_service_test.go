@@ -27,33 +27,6 @@ func AssertEqualWorkerPools(t *testing.T, expected workerpools.IWorkerPool, actu
 	// TODO: add more validation
 }
 
-func CreateTestDynamicWorkerPool(t *testing.T, client *client.Client) workerpools.IWorkerPool {
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	name := internal.GetRandomName()
-	workerType := "Ubuntu1804"
-
-	dynamicWorkerPool := workerpools.NewDynamicWorkerPool(name, workerType)
-	require.NotNil(t, dynamicWorkerPool)
-	require.NoError(t, dynamicWorkerPool.Validate())
-
-	createdDynamicWorkerPool, err := client.WorkerPools.Add(dynamicWorkerPool)
-	require.NoError(t, err)
-	require.NotNil(t, createdDynamicWorkerPool)
-	require.NotEmpty(t, createdDynamicWorkerPool.GetID())
-
-	// verify the add operation was successful
-	dynamicWorkerPoolToCompare, err := client.WorkerPools.GetByID(createdDynamicWorkerPool.GetID())
-	require.NoError(t, err)
-	require.NotNil(t, dynamicWorkerPoolToCompare)
-	AssertEqualWorkerPools(t, createdDynamicWorkerPool, dynamicWorkerPoolToCompare)
-
-	return createdDynamicWorkerPool
-}
-
 func CreateTestStaticWorkerPool(t *testing.T, client *client.Client) workerpools.IWorkerPool {
 	if client == nil {
 		client = getOctopusClient()
@@ -119,10 +92,6 @@ func TestWorkerPoolServiceAdd(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	dynamicWorkerPool := CreateTestDynamicWorkerPool(t, client)
-	require.NotNil(t, dynamicWorkerPool)
-	defer DeleteTestWorkerPool(t, client, dynamicWorkerPool.GetID())
-
 	staticWorkerPool := CreateTestStaticWorkerPool(t, client)
 	require.NotNil(t, staticWorkerPool)
 	defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
@@ -165,15 +134,6 @@ func TestWorkerPoolServiceCRUD(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	dynamicWorkerPool := CreateTestDynamicWorkerPool(t, client)
-	require.NotNil(t, dynamicWorkerPool)
-	defer DeleteTestWorkerPool(t, client, dynamicWorkerPool.GetID())
-
-	dynamicWorkerPoolToCompare, err := client.WorkerPools.GetByID(dynamicWorkerPool.GetID())
-	require.NoError(t, err)
-	require.NotNil(t, dynamicWorkerPoolToCompare)
-	AssertEqualWorkerPools(t, dynamicWorkerPool, dynamicWorkerPoolToCompare)
-
 	staticWorkerPool := CreateTestStaticWorkerPool(t, client)
 	require.NotNil(t, staticWorkerPool)
 	defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
@@ -210,23 +170,6 @@ func TestWorkerPoolServiceGetAll(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	// create 10 test dynamic worker pools (to be deleted)
-	for i := 0; i < 10; i++ {
-		dynamicWorkerPool := CreateTestDynamicWorkerPool(t, client)
-		require.NotNil(t, dynamicWorkerPool)
-		defer DeleteTestWorkerPool(t, client, dynamicWorkerPool.GetID())
-	}
-
-	workerPools, err := client.WorkerPools.GetAll()
-	require.NoError(t, err)
-	require.NotNil(t, workerPools)
-	require.True(t, len(workerPools) > 10)
-
-	for _, workerPool := range workerPools {
-		require.NotNil(t, workerPool)
-		require.NotEmpty(t, workerPool.ID)
-	}
-
 	// create 10 test static worker pools (to be deleted)
 	for i := 0; i < 10; i++ {
 		staticWorkerPool := CreateTestStaticWorkerPool(t, client)
@@ -234,7 +177,7 @@ func TestWorkerPoolServiceGetAll(t *testing.T) {
 		defer DeleteTestWorkerPool(t, client, staticWorkerPool.GetID())
 	}
 
-	workerPools, err = client.WorkerPools.GetAll()
+	workerPools, err := client.WorkerPools.GetAll()
 	require.NoError(t, err)
 	require.NotNil(t, workerPools)
 	require.True(t, len(workerPools) > 10)

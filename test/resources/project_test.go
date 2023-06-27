@@ -39,7 +39,8 @@ func TestProjectMarshalJSON(t *testing.T) {
 		"DefaultToSkipIfAlreadyInstalled": false,
 		"IsDisabled": false,
 		"DiscreteChannelRelease": false,
-		"IsVersionControlled": false
+		"IsVersionControlled": false,
+		"ProjectConnectivityPolicy":{"AllowDeploymentsToNoTargets":false,"ExcludeUnhealthyTargets":false}
 	}`, lifecycleID, name, projectGroupID)
 
 	project := projects.NewProject(name, lifecycleID, projectGroupID)
