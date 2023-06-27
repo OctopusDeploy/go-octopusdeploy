@@ -3,7 +3,7 @@ package machines
 type KubernetesAzureAuthentication struct {
 	ClusterName          string `json:"ClusterName,omitempty"`
 	ClusterResourceGroup string `json:"ClusterResourceGroup,omitempty"`
-	AdminLogin           bool   `json:"AdminLogin"`
+	AdminLogin           string `json:"AdminLogin,omitempty"`
 
 	KubernetesStandardAuthentication
 }
