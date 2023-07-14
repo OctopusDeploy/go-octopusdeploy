@@ -2,6 +2,8 @@ package client
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectbranches"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -120,6 +122,8 @@ type Client struct {
 	Permissions                    *permissions.PermissionService
 	ProjectGroups                  *projectgroups.ProjectGroupService
 	Projects                       *projects.ProjectService
+	ProjectBranches                *projectbranches.ProjectBranchesService
+	ProjectVariables               *projectvariables.ProjectVariableService
 	ProjectTriggers                *triggers.ProjectTriggerService
 	Proxies                        *proxies.ProxyService
 	Releases                       *releases.ReleaseService
@@ -423,6 +427,8 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 		Permissions:                    permissions.NewPermissionService(base, permissionsPath),
 		ProjectGroups:                  projectgroups.NewProjectGroupService(base, projectGroupsPath),
 		Projects:                       projects.NewProjectService(base, projectsPath, projectPulsePath, projectsExperimentalSummariesPath, projectsImportProjectsPath, projectsExportProjectsPath),
+		ProjectBranches:                projectbranches.NewProjectBranchesService(base, projectsPath),
+		ProjectVariables:               projectvariables.NewProjectVariableService(base, projectsPath),
 		ProjectTriggers:                triggers.NewProjectTriggerService(base, projectTriggersPath),
 		Proxies:                        proxies.NewProxyService(base, proxiesPath),
 		Releases:                       releases.NewReleaseService(base, releasesPath),
