@@ -45,7 +45,7 @@ func (s *ProjectVariableService) GetAllByGitRef(spaceId string, projectID string
 	return resp.(*variables.VariableSet), nil
 }
 
-// AddSingle adds a single variable to a owner ID. This automates the act of fetching
+// AddSingle adds a single variable to an owner ID. This automates the act of fetching
 // the variable set, adding a new item to it, and posting back to Octopus
 func (s *ProjectVariableService) AddSingleByGitRef(spaceID string, projectID string, gitRef string, variable *variables.Variable) (*variables.VariableSet, error) {
 	if err := services.ValidateInternalState(s); err != nil {
