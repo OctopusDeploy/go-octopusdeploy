@@ -2,15 +2,15 @@ package variables
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -37,7 +37,7 @@ func NewVariableService(sling *sling.Sling, uriTemplate string, namesPath string
 	}
 }
 
-// GetAll fetches a collection of variables for a owner ID.
+// GetAll fetches a collection of variables for an owner ID.
 func (s *VariableService) GetAll(ownerID string) (VariableSet, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return VariableSet{}, err
