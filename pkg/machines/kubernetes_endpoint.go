@@ -190,6 +190,12 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		k.Authentication = kubernetesStandardAuthentication
+	case "KubernetesPodService":
+		var kubernetesPodAuthentication *KubernetesPodAuthentication
+		if err := json.Unmarshal(*authentication, &kubernetesPodAuthentication); err != nil {
+			return err
+		}
+		k.Authentication = kubernetesPodAuthentication
 	}
 
 	return nil
