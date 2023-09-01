@@ -1,13 +1,15 @@
 package client
 
 import (
+	"errors"
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectbranches"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectbranches"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
@@ -170,24 +172,41 @@ func IsAPIKey(apiKey string) bool {
 	return expression.MatchString(apiKey)
 }
 
+type ApiCredentials struct {
+	ApiKey      *string
+	AccessToken *string
+}
+
 // NewClient returns a new Octopus API client. If a nil client is provided, a
 // new http.Client will be used.
 func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string) (*Client, error) {
-	return NewClientForTool(httpClient, apiURL, apiKey, spaceID, "")
+	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: &apiKey}, spaceID, "")
+}
+
+// NewClientWithAccessToken returns a new Octopus API client using an access token instead of an api key. If a nil client is provided, a
+// new http.Client will be used.
+func NewClientWithAccessToken(httpClient *http.Client, apiURL *url.URL, accessToken string, spaceID string) (*Client, error) {
+	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{AccessToken: &accessToken}, spaceID, "")
 }
 
 // NewClientForTool returns a new Octopus API client with a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
 func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
+	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: &apiKey}, spaceID, "")
+}
+
+// NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
+// If a nil client is provided, a new http.Client will be used.
+func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCredentials ApiCredentials, spaceID string, requestingTool string) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
 
-	if internal.IsEmpty(apiKey) {
-		return nil, internal.CreateInvalidParameterError("NewClient", "apiKey")
+	if internal.IsEmpty(*apiCredentials.ApiKey) && internal.IsEmpty(*apiCredentials.AccessToken) {
+		return nil, errors.New("one of ApiKey or AccessToken must be provided")
 	}
 
-	if !IsAPIKey(apiKey) {
+	if !internal.IsEmpty(*apiCredentials.ApiKey) && !IsAPIKey(*apiCredentials.AccessToken) {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiKey")
 	}
 
@@ -199,7 +218,7 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 	}
 
 	// fetch root resource and process paths
-	base, root, err := getRoot(httpClient, baseURLWithAPI, apiKey, requestingTool)
+	base, root, err := getRoot(httpClient, baseURLWithAPI, apiCredentials, requestingTool)
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +227,7 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 	sroot := NewRootResource()
 	if !internal.IsEmpty(spaceID) {
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
-		base, sroot, err = getRoot(httpClient, baseURLWithAPI, apiKey, requestingTool)
+		base, sroot, err = getRoot(httpClient, baseURLWithAPI, apiCredentials, requestingTool)
 
 		if err != nil {
 			if err == services.ErrItemNotFound {
@@ -223,13 +242,22 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 		panic("failure parsing baseURL " + fatalErr.Error())
 	}
 
+	defaultHeaders := map[string]string{
+		"User-Agent": api.GetUserAgentString(requestingTool),
+	}
+
+	if !internal.IsEmpty(*apiCredentials.ApiKey) {
+		defaultHeaders[constants.ClientAPIKeyHTTPHeader] = *apiCredentials.ApiKey
+	}
+
+	if !internal.IsEmpty(*apiCredentials.AccessToken) {
+		defaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", *apiCredentials.AccessToken)
+	}
+
 	httpSession := &newclient.HttpSession{
-		HttpClient: httpClient,
-		BaseURL:    baseURLWithAPIParsed,
-		DefaultHeaders: map[string]string{
-			constants.ClientAPIKeyHTTPHeader: apiKey,
-			"User-Agent":                     api.GetUserAgentString(requestingTool),
-		},
+		HttpClient:     httpClient,
+		BaseURL:        baseURLWithAPIParsed,
+		DefaultHeaders: defaultHeaders,
 	}
 
 	rootPath := root.GetLinkPath(sroot, constants.LinkSelf)
@@ -466,14 +494,22 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 	}, nil
 }
 
-func getRoot(httpClient *http.Client, baseURLWithAPI string, apiKey string, requestingTool string) (*sling.Sling, *RootResource, error) {
+func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ApiCredentials, requestingTool string) (*sling.Sling, *RootResource, error) {
 	base := sling.
 		New().
 		Client(httpClient).
 		Base(baseURLWithAPI).
-		Set(constants.ClientAPIKeyHTTPHeader, apiKey).
 		Set("User-Agent", api.GetUserAgentString(requestingTool)).
 		Set("Accept", `application/json`)
+
+	if !internal.IsEmpty(*credentials.ApiKey) {
+		base.Set(constants.ClientAPIKeyHTTPHeader, *credentials.ApiKey)
+	}
+
+	if !internal.IsEmpty(*credentials.AccessToken) {
+		base.Set("Authorization", fmt.Sprintf("Bearer %s", *credentials.AccessToken))
+	}
+
 	rootService := NewRootService(base, baseURLWithAPI)
 
 	root, err := rootService.Get()
