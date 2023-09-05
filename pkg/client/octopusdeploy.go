@@ -173,26 +173,26 @@ func IsAPIKey(apiKey string) bool {
 }
 
 type ApiCredentials struct {
-	ApiKey      *string
-	AccessToken *string
+	ApiKey      string
+	AccessToken string
 }
 
 // NewClient returns a new Octopus API client. If a nil client is provided, a
 // new http.Client will be used.
 func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string) (*Client, error) {
-	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: &apiKey}, spaceID, "")
+	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: apiKey}, spaceID, "")
 }
 
 // NewClientWithAccessToken returns a new Octopus API client using an access token instead of an api key. If a nil client is provided, a
 // new http.Client will be used.
 func NewClientWithAccessToken(httpClient *http.Client, apiURL *url.URL, accessToken string, spaceID string) (*Client, error) {
-	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{AccessToken: &accessToken}, spaceID, "")
+	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{AccessToken: accessToken}, spaceID, "")
 }
 
 // NewClientForTool returns a new Octopus API client with a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
 func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
-	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: &apiKey}, spaceID, "")
+	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: apiKey}, spaceID, "")
 }
 
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
@@ -202,11 +202,11 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
 
-	if internal.IsEmpty(*apiCredentials.ApiKey) && internal.IsEmpty(*apiCredentials.AccessToken) {
+	if internal.IsEmpty(apiCredentials.ApiKey) && internal.IsEmpty(apiCredentials.AccessToken) {
 		return nil, errors.New("one of ApiKey or AccessToken must be provided")
 	}
 
-	if !internal.IsEmpty(*apiCredentials.ApiKey) && !IsAPIKey(*apiCredentials.AccessToken) {
+	if !internal.IsEmpty(apiCredentials.ApiKey) && !IsAPIKey(apiCredentials.AccessToken) {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiKey")
 	}
 
@@ -243,18 +243,6 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	}
 
 	defaultHeaders := getHeaders(apiCredentials, requestingTool)
-
-	// defaultHeaders := map[string]string{
-	// 	"User-Agent": api.GetUserAgentString(requestingTool),
-	// }
-
-	// if !internal.IsEmpty(*apiCredentials.ApiKey) {
-	// 	defaultHeaders[constants.ClientAPIKeyHTTPHeader] = *apiCredentials.ApiKey
-	// }
-
-	// if !internal.IsEmpty(*apiCredentials.AccessToken) {
-	// 	defaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", *apiCredentials.AccessToken)
-	// }
 
 	httpSession := &newclient.HttpSession{
 		HttpClient:     httpClient,
@@ -509,14 +497,6 @@ func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ApiCred
 		base.Set(key, value)
 	}
 
-	// if !internal.IsEmpty(*credentials.ApiKey) {
-	// 	base.Set(constants.ClientAPIKeyHTTPHeader, *credentials.ApiKey)
-	// }
-
-	// if !internal.IsEmpty(*credentials.AccessToken) {
-	// 	base.Set("Authorization", fmt.Sprintf("Bearer %s", *credentials.AccessToken))
-	// }
-
 	rootService := NewRootService(base, baseURLWithAPI)
 
 	root, err := rootService.Get()
@@ -541,12 +521,12 @@ func getHeaders(apiCredentials ApiCredentials, requestingTool string) map[string
 		"User-Agent": api.GetUserAgentString(requestingTool),
 	}
 
-	if !internal.IsEmpty(*apiCredentials.ApiKey) {
-		headers[constants.ClientAPIKeyHTTPHeader] = *apiCredentials.ApiKey
+	if !internal.IsEmpty(apiCredentials.ApiKey) {
+		headers[constants.ClientAPIKeyHTTPHeader] = apiCredentials.ApiKey
 	}
 
-	if !internal.IsEmpty(*apiCredentials.AccessToken) {
-		headers["Authorization"] = fmt.Sprintf("Bearer %s", *apiCredentials.AccessToken)
+	if !internal.IsEmpty(apiCredentials.AccessToken) {
+		headers["Authorization"] = fmt.Sprintf("Bearer %s", apiCredentials.AccessToken)
 	}
 
 	return headers
