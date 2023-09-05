@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
@@ -43,6 +44,75 @@ func TestNewClient(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			client, err := NewClientForTool(tc.client, tc.url, tc.apiKey, tc.spaceID, "test")
+
+			if !tc.isValid {
+				require.Error(t, err)
+				require.Nil(t, client)
+				return
+			}
+
+			require.NoError(t, err)
+			require.NotNil(t, client)
+			assert.NotNil(t, client.Accounts)
+		})
+	}
+}
+
+func TestGetHeadersWithApiKeySetsCorrectHeader(t *testing.T) {
+	apiKey := "API-API1234"
+	headers := getHeaders(ApiCredentials{
+		ApiKey: &apiKey,
+	}, "test")
+
+	require.Equal(t, headers[constants.ClientAPIKeyHTTPHeader], apiKey)
+}
+
+func TestGetHeadersWithAccessTokenSetsCorrectHeader(t *testing.T) {
+	accessToken := "token"
+	headers := getHeaders(ApiCredentials{
+		AccessToken: &accessToken,
+	}, "test")
+
+	require.Equal(t, headers["Authorization"], fmt.Sprintf("Bearer %s", accessToken))
+}
+
+func TestGetHeadersSetsCorrectUserAgent(t *testing.T) {
+	expectedUserAgent := api.GetUserAgentString("test")
+	accessToken := "token"
+	headers := getHeaders(ApiCredentials{
+		AccessToken: &accessToken,
+	}, "test")
+
+	require.Equal(t, headers["User-Agent"], expectedUserAgent)
+}
+
+func TestNewClientWithAccessToken(t *testing.T) {
+	client := &http.Client{}
+	octopusURL := os.Getenv("OCTOPUS_HOST")
+	accessToken := os.Getenv("OCTOPUS_ACCESS_TOKEN")
+	spaceID := os.Getenv("OCTOPUS_SPACE")
+
+	apiURL, err := url.Parse(octopusURL)
+	if err != nil {
+		_ = fmt.Errorf("error parsing URL for Octopus API: %v", err)
+		return
+	}
+
+	testCases := []struct {
+		name        string
+		isValid     bool
+		client      *http.Client
+		url         *url.URL
+		accessToken string
+		spaceID     string
+	}{
+		{"NilURL", false, client, nil, accessToken, spaceID},
+		{"EmptyAccessToken", false, client, apiURL, "", ""},
+		{"ValidAccessToken", true, client, apiURL, accessToken, spaceID},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			client, err := NewClientWithCredentials(tc.client, tc.url, ApiCredentials{AccessToken: &tc.accessToken}, tc.spaceID, "test")
 
 			if !tc.isValid {
 				require.Error(t, err)

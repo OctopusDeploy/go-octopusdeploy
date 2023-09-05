@@ -242,17 +242,19 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		panic("failure parsing baseURL " + fatalErr.Error())
 	}
 
-	defaultHeaders := map[string]string{
-		"User-Agent": api.GetUserAgentString(requestingTool),
-	}
+	defaultHeaders := getHeaders(apiCredentials, requestingTool)
 
-	if !internal.IsEmpty(*apiCredentials.ApiKey) {
-		defaultHeaders[constants.ClientAPIKeyHTTPHeader] = *apiCredentials.ApiKey
-	}
+	// defaultHeaders := map[string]string{
+	// 	"User-Agent": api.GetUserAgentString(requestingTool),
+	// }
 
-	if !internal.IsEmpty(*apiCredentials.AccessToken) {
-		defaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", *apiCredentials.AccessToken)
-	}
+	// if !internal.IsEmpty(*apiCredentials.ApiKey) {
+	// 	defaultHeaders[constants.ClientAPIKeyHTTPHeader] = *apiCredentials.ApiKey
+	// }
+
+	// if !internal.IsEmpty(*apiCredentials.AccessToken) {
+	// 	defaultHeaders["Authorization"] = fmt.Sprintf("Bearer %s", *apiCredentials.AccessToken)
+	// }
 
 	httpSession := &newclient.HttpSession{
 		HttpClient:     httpClient,
@@ -499,16 +501,21 @@ func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ApiCred
 		New().
 		Client(httpClient).
 		Base(baseURLWithAPI).
-		Set("User-Agent", api.GetUserAgentString(requestingTool)).
 		Set("Accept", `application/json`)
 
-	if !internal.IsEmpty(*credentials.ApiKey) {
-		base.Set(constants.ClientAPIKeyHTTPHeader, *credentials.ApiKey)
+	headers := getHeaders(credentials, requestingTool)
+
+	for key, value := range headers {
+		base.Set(key, value)
 	}
 
-	if !internal.IsEmpty(*credentials.AccessToken) {
-		base.Set("Authorization", fmt.Sprintf("Bearer %s", *credentials.AccessToken))
-	}
+	// if !internal.IsEmpty(*credentials.ApiKey) {
+	// 	base.Set(constants.ClientAPIKeyHTTPHeader, *credentials.ApiKey)
+	// }
+
+	// if !internal.IsEmpty(*credentials.AccessToken) {
+	// 	base.Set("Authorization", fmt.Sprintf("Bearer %s", *credentials.AccessToken))
+	// }
 
 	rootService := NewRootService(base, baseURLWithAPI)
 
@@ -527,4 +534,20 @@ func (n *Client) Sling() *sling.Sling {
 
 func (n *Client) URITemplateCache() *uritemplates.URITemplateCache {
 	return n.uriTemplateCache
+}
+
+func getHeaders(apiCredentials ApiCredentials, requestingTool string) map[string]string {
+	headers := map[string]string{
+		"User-Agent": api.GetUserAgentString(requestingTool),
+	}
+
+	if !internal.IsEmpty(*apiCredentials.ApiKey) {
+		headers[constants.ClientAPIKeyHTTPHeader] = *apiCredentials.ApiKey
+	}
+
+	if !internal.IsEmpty(*apiCredentials.AccessToken) {
+		headers["Authorization"] = fmt.Sprintf("Bearer %s", *apiCredentials.AccessToken)
+	}
+
+	return headers
 }
