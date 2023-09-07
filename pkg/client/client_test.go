@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
@@ -55,6 +56,34 @@ func TestNewClient(t *testing.T) {
 			assert.NotNil(t, client.Accounts)
 		})
 	}
+}
+
+func TestGetHeadersWithApiKeySetsCorrectHeader(t *testing.T) {
+	apiKey := "API-API1234"
+	headers := getHeaders(ApiCredentials{
+		ApiKey: apiKey,
+	}, "test")
+
+	require.Equal(t, headers[constants.ClientAPIKeyHTTPHeader], apiKey)
+}
+
+func TestGetHeadersWithAccessTokenSetsCorrectHeader(t *testing.T) {
+	accessToken := "token"
+	headers := getHeaders(ApiCredentials{
+		AccessToken: accessToken,
+	}, "test")
+
+	require.Equal(t, headers["Authorization"], fmt.Sprintf("Bearer %s", accessToken))
+}
+
+func TestGetHeadersSetsCorrectUserAgent(t *testing.T) {
+	expectedUserAgent := api.GetUserAgentString("test")
+	accessToken := "token"
+	headers := getHeaders(ApiCredentials{
+		AccessToken: accessToken,
+	}, "test")
+
+	require.Equal(t, headers["User-Agent"], expectedUserAgent)
 }
 
 func TestGetUserAgentString(t *testing.T) {
