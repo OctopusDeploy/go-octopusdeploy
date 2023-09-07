@@ -206,7 +206,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		return nil, errors.New("one of ApiKey or AccessToken must be provided")
 	}
 
-	if !internal.IsEmpty(apiCredentials.ApiKey) && !IsAPIKey(apiCredentials.AccessToken) {
+	if !internal.IsEmpty(apiCredentials.ApiKey) && !IsAPIKey(apiCredentials.ApiKey) {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiKey")
 	}
 
