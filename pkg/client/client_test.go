@@ -58,30 +58,55 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
-func TestGetHeadersWithApiKeySetsCorrectHeader(t *testing.T) {
-	apiKey := "API-API1234"
-	headers := getHeaders(ApiCredentials{
-		ApiKey: apiKey,
-	}, "test")
+func TestNewApiKey_WhenEmpty_ReturnsError(t *testing.T) {
+	_, err := NewApiKey("")
+	require.Error(t, err)
+}
 
-	require.Equal(t, headers[constants.ClientAPIKeyHTTPHeader], apiKey)
+func TestNewApiKey_WhenInvalid_ReturnsError(t *testing.T) {
+	_, err := NewApiKey("something-invalid")
+	require.Error(t, err)
+}
+
+func TestNewApiKey_WhenValid_ReturnsApiKeyCredential(t *testing.T) {
+	apiKey := "API-API1234"
+	apiKeyCredential, err := NewApiKey(apiKey)
+	require.NoError(t, err)
+	require.NotNil(t, apiKey)
+	require.Equal(t, apiKeyCredential.Value, apiKey)
+}
+
+func TestNewAccessToken_WhenEmpty_ReturnsError(t *testing.T) {
+	_, err := NewAccessToken("")
+	require.Error(t, err)
+}
+
+func TestNewAccessToken_WhenValid_ReturnsAccessTokenCredential(t *testing.T) {
+	accessToken := "token"
+	accessTokenCredential, err := NewAccessToken(accessToken)
+	require.NoError(t, err)
+	require.NotNil(t, accessTokenCredential)
+	require.Equal(t, accessTokenCredential.Value, accessToken)
+}
+
+func TestGetHeadersWithApiKeySetsCorrectHeader(t *testing.T) {
+	apiKey, _ := NewApiKey("API-API1234")
+	headers := getHeaders(apiKey, "test")
+
+	require.Equal(t, headers[constants.ClientAPIKeyHTTPHeader], apiKey.Value)
 }
 
 func TestGetHeadersWithAccessTokenSetsCorrectHeader(t *testing.T) {
-	accessToken := "token"
-	headers := getHeaders(ApiCredentials{
-		AccessToken: accessToken,
-	}, "test")
+	accessToken, _ := NewAccessToken("token")
+	headers := getHeaders(accessToken, "test")
 
-	require.Equal(t, headers["Authorization"], fmt.Sprintf("Bearer %s", accessToken))
+	require.Equal(t, headers["Authorization"], fmt.Sprintf("Bearer %s", accessToken.Value))
 }
 
 func TestGetHeadersSetsCorrectUserAgent(t *testing.T) {
 	expectedUserAgent := api.GetUserAgentString("test")
-	accessToken := "token"
-	headers := getHeaders(ApiCredentials{
-		AccessToken: accessToken,
-	}, "test")
+	accessToken, _ := NewAccessToken("token")
+	headers := getHeaders(accessToken, "test")
 
 	require.Equal(t, headers["User-Agent"], expectedUserAgent)
 }
