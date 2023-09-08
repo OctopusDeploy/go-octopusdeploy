@@ -1,7 +1,6 @@
 package client
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -172,42 +171,45 @@ func IsAPIKey(apiKey string) bool {
 	return expression.MatchString(apiKey)
 }
 
-type ApiCredentials struct {
-	ApiKey      string
-	AccessToken string
-}
-
 // NewClient returns a new Octopus API client. If a nil client is provided, a
 // new http.Client will be used.
 func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string) (*Client, error) {
-	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: apiKey}, spaceID, "")
+	apiKeyCredential, err := NewApiKey(apiKey)
+	if err != nil {
+		return nil, err
+	}
+	return NewClientWithCredentials(httpClient, apiURL, apiKeyCredential, spaceID, "")
 }
 
 // NewClientWithAccessToken returns a new Octopus API client using an access token instead of an api key. If a nil client is provided, a
 // new http.Client will be used.
 func NewClientWithAccessToken(httpClient *http.Client, apiURL *url.URL, accessToken string, spaceID string) (*Client, error) {
-	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{AccessToken: accessToken}, spaceID, "")
+	accessTokenCredential, err := NewAccessToken(accessToken)
+	if err != nil {
+		return nil, err
+	}
+	return NewClientWithCredentials(httpClient, apiURL, accessTokenCredential, spaceID, "")
 }
 
 // NewClientForTool returns a new Octopus API client with a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
 func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
-	return NewClientWithCredentials(httpClient, apiURL, ApiCredentials{ApiKey: apiKey}, spaceID, "")
+	apiKeyCredential, err := NewApiKey(apiKey)
+	if err != nil {
+		return nil, err
+	}
+	return NewClientWithCredentials(httpClient, apiURL, apiKeyCredential, spaceID, "")
 }
 
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
-func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCredentials ApiCredentials, spaceID string, requestingTool string) (*Client, error) {
+func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
 
-	if internal.IsEmpty(apiCredentials.ApiKey) && internal.IsEmpty(apiCredentials.AccessToken) {
-		return nil, errors.New("one of ApiKey or AccessToken must be provided")
-	}
-
-	if !internal.IsEmpty(apiCredentials.ApiKey) && !IsAPIKey(apiCredentials.ApiKey) {
-		return nil, internal.CreateInvalidParameterError("NewClient", "apiKey")
+	if apiCredentials == nil {
+		return nil, internal.CreateInvalidParameterError("NewClient", "apiCredentials")
 	}
 
 	baseURLWithAPI := strings.TrimRight(apiURL.String(), "/")
@@ -484,7 +486,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	}, nil
 }
 
-func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ApiCredentials, requestingTool string) (*sling.Sling, *RootResource, error) {
+func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
 	base := sling.
 		New().
 		Client(httpClient).
@@ -516,18 +518,55 @@ func (n *Client) URITemplateCache() *uritemplates.URITemplateCache {
 	return n.uriTemplateCache
 }
 
-func getHeaders(apiCredentials ApiCredentials, requestingTool string) map[string]string {
+type ICredential interface {
+	GetHeaderValue() (string, string)
+}
+
+type ApiKey struct {
+	Value string
+	ICredential
+}
+
+func (apikey *ApiKey) GetHeaderValue() (string, string) {
+	return constants.ClientAPIKeyHTTPHeader, apikey.Value
+}
+
+func NewApiKey(apiKey string) (*ApiKey, error) {
+	if internal.IsEmpty(apiKey) || !IsAPIKey(apiKey) {
+		return nil, internal.CreateInvalidParameterError("NewApiKey", "apiKey")
+	}
+
+	return &ApiKey{
+		Value: apiKey,
+	}, nil
+}
+
+type AccessToken struct {
+	Value string
+	ICredential
+}
+
+func (accessToken *AccessToken) GetHeaderValue() (string, string) {
+	return "Authorization", fmt.Sprintf("Bearer %s", accessToken.Value)
+}
+
+func NewAccessToken(accessToken string) (*AccessToken, error) {
+	if internal.IsEmpty(accessToken) {
+		return nil, internal.CreateInvalidParameterError("NewAccessToken", "accessToken")
+	}
+
+	return &AccessToken{
+		Value: accessToken,
+	}, nil
+}
+
+func getHeaders(apiCredentials ICredential, requestingTool string) map[string]string {
 	headers := map[string]string{
 		"User-Agent": api.GetUserAgentString(requestingTool),
 	}
 
-	if !internal.IsEmpty(apiCredentials.ApiKey) {
-		headers[constants.ClientAPIKeyHTTPHeader] = apiCredentials.ApiKey
-	}
-
-	if !internal.IsEmpty(apiCredentials.AccessToken) {
-		headers["Authorization"] = fmt.Sprintf("Bearer %s", apiCredentials.AccessToken)
-	}
+	headerKey, headerValue := apiCredentials.GetHeaderValue()
+	headers[headerKey] = headerValue
 
 	return headers
 }
