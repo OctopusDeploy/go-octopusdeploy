@@ -82,7 +82,7 @@ func (h *HttpSession) DoRawJsonRequest(req *http.Request, requestBody any, outpu
 	if resp.StatusCode == http.StatusNoContent || resp.ContentLength == 0 {
 		// TODO the ContentLength check is copied from Sling, but it's valid for servers to stream responses
 		// without a known content length. This won't handle such responses, which would be a bug. The octopus server tends not
-		// to do this, so we can defer a fix until it becomes neccessary
+		// to do this, so we can defer a fix until it becomes necessary
 		return resp, nil
 	}
 
