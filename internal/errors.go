@@ -2,6 +2,10 @@ package internal
 
 import "fmt"
 
+func MissingSpaceIDError() error {
+	return fmt.Errorf("SpaceID is not found")
+}
+
 func CreateBuiltInTeamsCannotDeleteError() error {
 	return fmt.Errorf("the built-in teams cannot be deleted")
 }

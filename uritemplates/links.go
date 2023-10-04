@@ -13,6 +13,7 @@ const (
 	CreateRunRunbookCommand             = "/api/{spaceId}/runbook-runs/create/v1"                                                                                                         // POST
 	DeploymentProcesses                 = "/api/{spaceId}/deploymentprocesses{/id}{?skip,take,ids}"                                                                                       // GET
 	FeedSearchPackageVersions           = "/api/{spaceId}/feeds/{feedId}/packages/versions{?packageId,take,skip,includePreRelease,versionRange,preReleaseTag,filter,includeReleaseNotes}" // GET
+	LibraryVariableSets                 = "/api/{spaceId}/libraryvariablesets"                                                                                                            // POST
 	Packages                            = "/api/{spaceId}/packages{/id}{?nuGetPackageId,filter,latest,skip,take,includeNotes}"                                                            // GET
 	PackageUpload                       = "/api/{spaceId}/packages/raw{?replace,overwriteMode}"                                                                                           // POST multipart form
 	ReleaseDeploymentPreview            = "/api/{spaceId}/releases/{releaseId}/deployments/preview/{environmentId}{?includeDisabledSteps}"                                                // GET

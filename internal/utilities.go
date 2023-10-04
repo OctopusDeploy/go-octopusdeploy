@@ -47,6 +47,18 @@ func GetDefaultClient() *sling.Sling {
 	return sling.New().Client(nil).Base(host).Set(constants.ClientAPIKeyHTTPHeader, apiKey)
 }
 
+func GetSpaceID(spaceID string, clientSpaceID string) (string, error) {
+	if spaceID != "" {
+		return spaceID, nil
+	}
+
+	if clientSpaceID != "" {
+		return clientSpaceID, nil
+	}
+
+	return "", MissingSpaceIDError()
+}
+
 func TrimTemplate(uri string) string {
 	return strings.TrimRight(strings.Split(uri, "{")[0], "/")
 }
