@@ -7,8 +7,8 @@ import (
 type Client interface {
 	HttpSession() *HttpSession
 	URITemplateCache() *uritemplates.URITemplateCache
-	// capabilities info could go here if the server supported capability-discovery
 	GetSpaceID() string
+	// capabilities info could go here if the server supported capability-discovery
 }
 
 type client struct {

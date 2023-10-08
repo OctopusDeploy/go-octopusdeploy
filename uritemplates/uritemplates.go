@@ -211,7 +211,7 @@ func (self *UriTemplate) Names() []string {
 func (self *UriTemplate) Expand(value interface{}) (string, error) {
 	values, ismap := value.(map[string]interface{})
 	if !ismap {
-		if m, ismap := struct2map(value); !ismap {
+		if m, ismap := Struct2map(value); !ismap {
 			return "", errors.New("expected map[string]interface{}, struct, or pointer to struct.")
 		} else {
 			return self.Expand(m)
@@ -256,7 +256,7 @@ func (self *templatePart) expand(buf *bytes.Buffer, values map[string]interface{
 			}
 			self.expandMap(buf, term, v)
 		default:
-			if m, ismap := struct2map(value); ismap {
+			if m, ismap := Struct2map(value); ismap {
 				if term.truncate > 0 {
 					return errors.New("cannot truncate a map expansion")
 				}
@@ -358,11 +358,11 @@ func (self *templatePart) expandMap(buf *bytes.Buffer, t templateTerm, m map[str
 	}
 }
 
-func struct2map(v interface{}) (map[string]interface{}, bool) {
+func Struct2map(v interface{}) (map[string]interface{}, bool) {
 	value := reflect.ValueOf(v)
 	switch value.Type().Kind() {
 	case reflect.Ptr:
-		return struct2map(value.Elem().Interface())
+		return Struct2map(value.Elem().Interface())
 	case reflect.Struct:
 		m := make(map[string]interface{})
 		for i := 0; i < value.NumField(); i++ {
