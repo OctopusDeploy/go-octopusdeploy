@@ -62,7 +62,10 @@ func Update(client newclient.Client, libraryVariableSet *variables.LibraryVariab
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.LibraryVariableSets, map[string]any{"spaceId": spaceID})
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.LibraryVariableSets, map[string]any{
+		"spaceId": spaceID,
+		"id":      libraryVariableSet.ID,
+	})
 	if err != nil {
 		return nil, err
 	}

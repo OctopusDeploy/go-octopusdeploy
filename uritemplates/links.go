@@ -14,7 +14,7 @@ const (
 	DeploymentProcesses                 = "/api/{spaceId}/deploymentprocesses{/id}{?skip,take,ids}"                                                                                       // GET
 	FeedSearchPackageVersions           = "/api/{spaceId}/feeds/{feedId}/packages/versions{?packageId,take,skip,includePreRelease,versionRange,preReleaseTag,filter,includeReleaseNotes}" // GET
 	Packages                            = "/api/{spaceId}/packages{/id}{?nuGetPackageId,filter,latest,skip,take,includeNotes}"                                                            // GET
-	LibraryVariableSets                 = "/api/{spaceId}/libraryvariablesets{/id}"
+	LibraryVariableSets                 = "/api/{spaceId}/libraryvariablesets{/id}{?skip,contentType,take,ids,partialName}"
 	PackageUpload                       = "/api/{spaceId}/packages/raw{?replace,overwriteMode}"                                                               // POST multipart form
 	ReleaseDeploymentPreview            = "/api/{spaceId}/releases/{releaseId}/deployments/preview/{environmentId}{?includeDisabledSteps}"                    // GET
 	Releases                            = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"                                                   // GET
