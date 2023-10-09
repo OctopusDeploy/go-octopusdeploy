@@ -11,6 +11,7 @@ type Variable struct {
 	Scope       VariableScope          `json:"Scope"`
 	Type        string                 `json:"Type"`
 	Value       string                 `json:"Value"`
+	SpaceID     string                 `json:"SpaceId,omitempty"`
 
 	resources.Resource
 }
