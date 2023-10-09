@@ -50,6 +50,8 @@ func (s *SpaceService) Add(space *Space) (*Space, error) {
 // Get returns a collection of spaces based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: Use spaces.Get
 func (s *SpaceService) Get(spacesQuery SpacesQuery) (*resources.Resources[*Space], error) {
 	path, err := s.GetURITemplate().Expand(spacesQuery)
 	if err != nil {
@@ -66,6 +68,8 @@ func (s *SpaceService) Get(spacesQuery SpacesQuery) (*resources.Resources[*Space
 
 // GetByID returns the space that matches the input ID. If one cannot be found,
 // it returns nil and an error.
+//
+// Deprecated: Use spaces.GetByID
 func (s *SpaceService) GetByID(id string) (*Space, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -123,6 +127,8 @@ func (s *SpaceService) GetByIDOrName(idOrName string) (*Space, error) {
 
 // GetAll returns all spaces. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: Use spaces.GetAll
 func (s *SpaceService) GetAll() ([]*Space, error) {
 	items := []*Space{}
 	path, err := services.GetAllPath(s)
@@ -135,6 +141,8 @@ func (s *SpaceService) GetAll() ([]*Space, error) {
 }
 
 // Update modifies a space based on the one provided as input.
+//
+// Deprecated: Use spaces.Update
 func (s *SpaceService) Update(space *Space) (*Space, error) {
 	if space == nil {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("space")
@@ -156,28 +164,99 @@ func (s *SpaceService) Update(space *Space) (*Space, error) {
 // --- new ---
 
 const (
-	spacesUri = "/api/spaces{/id}{?skip,ids,take,partialName}"
+	spacesTemplate = "/api/spaces{/id}{?skip,ids,take,partialName}"
 )
+
+// Get returns a collection of spaces based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func Get(client newclient.Client, spacesQuery SpacesQuery) (*resources.Resources[*Space], error) {
+	path, err := client.URITemplateCache().Expand(spacesTemplate, spacesQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[resources.Resources[*Space]](client.HttpSession(), path)
+	if err != nil {
+		return &resources.Resources[*Space]{}, err
+	}
+
+	return res, nil
+}
 
 // GetAll returns all spaces. If none can be found or an error occurs, it
 // returns an empty collection.
 func GetAll(client newclient.Client) ([]*Space, error) {
-	path, err := client.URITemplateCache().Expand(spacesUri, map[string]any{
-		"skip": 0,
-		"take": 2147483647,
-	})
+	path, err := client.URITemplateCache().Expand(spacesTemplate, nil)
 	if err != nil {
 		return nil, err
 	}
+	spaces := make([]*Space, 0)
 	res, err := newclient.Get[resources.Resources[*Space]](client.HttpSession(), path)
 	if err != nil {
 		return nil, err
 	}
-	return res.Items, err
+	spaces = append(spaces, res.Items...)
+	for res.Links.PageNext != "" {
+		nextPagePath, err := client.URITemplateCache().Expand(res.Links.PageNext, nil)
+		if err != nil {
+			return nil, err
+		}
+		res, err = newclient.Get[resources.Resources[*Space]](client.HttpSession(), nextPagePath)
+		if err != nil {
+			return nil, err
+		}
+		spaces = append(spaces, res.Items...)
+	}
+	return spaces, err
+}
+
+// GetByID returns the space that matches the input ID. If one cannot be found,
+// it returns nil and an error.
+func GetByID(client newclient.Client, id string) (*Space, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
+	}
+
+	path, err := client.URITemplateCache().Expand(spacesTemplate, map[string]any{
+		"id": id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[Space](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// Update modifies a space based on the one provided as input.
+func Update(client newclient.Client, space *Space) (*Space, error) {
+	if space == nil {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("space")
+	}
+
+	path, err := client.URITemplateCache().Expand(spacesTemplate, map[string]any{
+		"id": space.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Put[Space](client.HttpSession(), path, space)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // GetDefaultSpace tries to find default space. Returns nil if a default space can not be found.
 func GetDefaultSpace(client newclient.Client) (*Space, error) {
+	// TODO: this should change to return a custom error (can't find default space)
 	spaces, err := GetAll(client)
 	if err != nil {
 		return nil, err
