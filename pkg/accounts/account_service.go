@@ -3,9 +3,11 @@ package accounts
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -128,4 +130,37 @@ func (s *AccountService) Update(account IAccount) (IAccount, error) {
 	}
 
 	return ToAccount(resp.(*AccountResource))
+}
+
+// ----- new -----
+
+const (
+	template = "/api/{spaceId}/accounts{/id}{?skip,take,ids,partialName,accountType}"
+)
+
+func Get(client newclient.Client, spaceID string, accountsQuery *AccountsQuery) (*Accounts, error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	var params map[string]any
+	if accountsQuery != nil {
+		uritemplates.Struct2map(accountsQuery)
+	} else {
+		params = map[string]any{}
+	}
+	params["spaceId"] = spaceID
+
+	expandedUri, err := client.URITemplateCache().Expand(template, params)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := newclient.Get[resources.Resources[*AccountResource]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToAccounts(response), nil
 }

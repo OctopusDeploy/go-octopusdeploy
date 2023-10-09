@@ -34,6 +34,10 @@ func CreateRequiredParameterIsEmptyOrNilError(parameter string) error {
 	return fmt.Errorf("the required parameter, %s is nil or empty", parameter)
 }
 
+func CreateRequiredParameterIsEmptyError(parameter string) error {
+	return fmt.Errorf("the required parameter, %s is empty", parameter)
+}
+
 func CreateResourceNotFoundError(name string, identifier string, value string) error {
 	return fmt.Errorf("the service, %s could not find the %s (%s)", name, identifier, value)
 }

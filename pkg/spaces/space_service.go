@@ -1,14 +1,16 @@
 package spaces
 
 import (
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
-	"strings"
 )
 
 type SpaceService struct {
@@ -149,4 +151,42 @@ func (s *SpaceService) Update(space *Space) (*Space, error) {
 	}
 
 	return resp.(*Space), nil
+}
+
+// --- new ---
+
+const (
+	spacesUri = "/api/spaces{/id}{?skip,ids,take,partialName}"
+)
+
+// GetAll returns all spaces. If none can be found or an error occurs, it
+// returns an empty collection.
+func GetAll(client newclient.Client) ([]*Space, error) {
+	path, err := client.URITemplateCache().Expand(spacesUri, map[string]any{
+		"skip": 0,
+		"take": 2147483647,
+	})
+	if err != nil {
+		return nil, err
+	}
+	res, err := newclient.Get[resources.Resources[*Space]](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+	return res.Items, err
+}
+
+// GetDefaultSpace tries to find default space. Returns nil if a default space can not be found.
+func GetDefaultSpace(client newclient.Client) (*Space, error) {
+	spaces, err := GetAll(client)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, space := range spaces {
+		if space.IsDefault {
+			return space, nil
+		}
+	}
+	return nil, nil
 }

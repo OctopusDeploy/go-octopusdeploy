@@ -254,6 +254,17 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		DefaultHeaders: defaultHeaders,
 	}
 
+	if spaceID == "" {
+		client := newclient.NewClient(httpSession)
+		defaultSpace, err := spaces.GetDefaultSpace(client)
+		if err != nil {
+			return nil, err
+		}
+		if defaultSpace != nil {
+			spaceID = defaultSpace.ID
+		}
+	}
+
 	rootPath := root.GetLinkPath(sroot, constants.LinkSelf)
 	apiKeysPath := "/api/users"
 	dynamicExtensionsPath := "/api/dynamic-extensions"
