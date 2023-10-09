@@ -64,6 +64,8 @@ func Add(client newclient.Client, scriptModule *variables.ScriptModule) (*variab
 	return scriptModuleResponse, nil
 }
 
+// GetByID returns the script module that matches the space ID and input ID. If one
+// cannot be found, it returns nil and an error.
 func GetByID(client newclient.Client, spaceID string, id string) (*variables.ScriptModule, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -107,6 +109,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*variables.Scr
 	return scriptModuleResponse, nil
 }
 
+// Update modifies a script module based on the one provided as input.
 func Update(client newclient.Client, scriptModule *variables.ScriptModule) (*variables.ScriptModule, error) {
 	if scriptModule == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "scriptModule")
@@ -170,6 +173,7 @@ func Update(client newclient.Client, scriptModule *variables.ScriptModule) (*var
 	return scriptModuleResponse, nil
 }
 
+// DeleteByID deletes the resource that matches the space ID and input ID.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	if internal.IsEmpty(id) {
 		return internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)

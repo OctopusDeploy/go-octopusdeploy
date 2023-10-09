@@ -8,6 +8,8 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
+// GetByID returns the library variable set that matches the space ID and input ID. If one
+// cannot be found, it returns nil and an error.
 func GetByID(client newclient.Client, spaceID string, id string) (*variables.LibraryVariableSet, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -34,6 +36,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*variables.Lib
 	return newclient.Get[variables.LibraryVariableSet](client.HttpSession(), expandedUri)
 }
 
+// Add creates a new library variable set.
 func Add(client newclient.Client, libraryVariableSet *variables.LibraryVariableSet) (*variables.LibraryVariableSet, error) {
 	if libraryVariableSet == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterLibraryVariableSet)
@@ -52,6 +55,7 @@ func Add(client newclient.Client, libraryVariableSet *variables.LibraryVariableS
 	return newclient.Post[variables.LibraryVariableSet](client.HttpSession(), expandedUri, libraryVariableSet)
 }
 
+// Update modifies a library variable set based on the one provided as input.
 func Update(client newclient.Client, libraryVariableSet *variables.LibraryVariableSet) (*variables.LibraryVariableSet, error) {
 	if libraryVariableSet == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterLibraryVariableSet)
@@ -73,6 +77,7 @@ func Update(client newclient.Client, libraryVariableSet *variables.LibraryVariab
 	return newclient.Put[variables.LibraryVariableSet](client.HttpSession(), expandedUri, libraryVariableSet)
 }
 
+// DeleteByID deletes the resource that matches the space ID and input ID.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	if internal.IsEmpty(id) {
 		return internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)

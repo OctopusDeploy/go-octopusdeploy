@@ -319,7 +319,7 @@ var _ services.IService = &VariableService{}
 
 // ----- new -------
 
-// GetVariableSet returns the variable set with matching ID.
+// GetVariableSet returns the variable set with matching ID for a given space ID.
 // This might be a project level variable set (ID might be 'variableset-Projects-314')
 // or it might be a release snapshot variable set (ID might be 'variableset-Projects-314-s-2-XM74V')
 func GetVariableSet(client newclient.Client, spaceID string, ID string) (*VariableSet, error) {
@@ -345,6 +345,7 @@ func GetVariableSet(client newclient.Client, spaceID string, ID string) (*Variab
 
 // These methods below will be replacing the old defined in th service in this file. Soon.
 
+// GetByID fetches a single variable, located by its ID, from Octopus Deploy for a given space ID and owner ID.
 func GetByID(client newclient.Client, spaceID string, ownerID string, variableID string) (*Variable, error) {
 	if internal.IsEmpty(ownerID) {
 		return nil, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
@@ -376,6 +377,9 @@ func GetByID(client newclient.Client, spaceID string, ownerID string, variableID
 	}
 }
 
+// GetByName fetches variables, located by their name, from Octopus Deploy for a given owner ID. As variable
+// names can appear more than once under different scopes, a VariableScope must also be provided, which will
+// be used to locate the appropriate variables.
 func GetByName(client newclient.Client, spaceID string, ownerID string, name string, scope *VariableScope) ([]*Variable, error) {
 	if internal.IsEmpty(ownerID) {
 		return nil, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
@@ -412,6 +416,7 @@ func GetByName(client newclient.Client, spaceID string, ownerID string, name str
 	return matchedVariables, nil
 }
 
+// GetAll fetches a collection of variables for an owner ID.
 func GetAll(client newclient.Client, spaceID string, ownerID string) (VariableSet, error) {
 	if internal.IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
@@ -440,6 +445,8 @@ func GetAll(client newclient.Client, spaceID string, ownerID string) (VariableSe
 	return *response, nil
 }
 
+// AddSingle adds a single variable to an owner ID. This automates the act of fetching
+// the variable set, adding a new item to it, and posting back to Octopus
 func AddSingle(client newclient.Client, spaceID string, ownerID string, variable *Variable) (VariableSet, error) {
 	if internal.IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
@@ -459,6 +466,8 @@ func AddSingle(client newclient.Client, spaceID string, ownerID string, variable
 	return Update(client, spaceID, ownerID, variables)
 }
 
+// UpdateSingle adds a single variable to an owner ID. This automates the act of fetching
+// the variable set, updating the existing item, and posting back to Octopus
 func UpdateSingle(client newclient.Client, spaceID string, ownerID string, variable *Variable) (VariableSet, error) {
 	if internal.IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
@@ -479,6 +488,8 @@ func UpdateSingle(client newclient.Client, spaceID string, ownerID string, varia
 	return VariableSet{}, services.ErrItemNotFound
 }
 
+// Update takes an entire variable set and posts the entire set back to Octopus Deploy. There are individual
+// functions like AddSingle and UpdateSingle that can make this process more of a "typical" CRUD Octopus command.
 func Update(client newclient.Client, spaceID string, ownerID string, variableSet VariableSet) (VariableSet, error) {
 	if internal.IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
@@ -510,6 +521,10 @@ func Update(client newclient.Client, spaceID string, ownerID string, variableSet
 	return GetAll(client, spaceID, ownerID)
 }
 
+// MatchesScope compares two different scopes to see if they match. Generally used for comparing the scope of
+// an existing variable against a desired state. Only supports Environment, Role, Machine, Action and Channel
+// for scope options. Returns true if definedScope is nil or all elements are empty. Also returns a VariableScope
+// of all the scopes that were matched
 func MatchesScope(variableScope VariableScope, definedScope *VariableScope) (bool, *VariableScope, error) {
 	if definedScope == nil {
 		return true, &VariableScope{}, nil
@@ -579,6 +594,8 @@ func MatchesScope(variableScope VariableScope, definedScope *VariableScope) (boo
 	return matched, &matchedScopes, nil
 }
 
+// DeleteSingle removes a single variable from an owner ID. This automates the act of fetching
+// the variable set, removing the existing item, and posting back to Octopus
 func DeleteSingle(client newclient.Client, spaceID string, ownerID string, variableID string) (VariableSet, error) {
 	if internal.IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
