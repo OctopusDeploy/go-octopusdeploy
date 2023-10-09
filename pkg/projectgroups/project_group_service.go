@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -16,6 +17,10 @@ import (
 type ProjectGroupService struct {
 	services.CanDeleteService
 }
+
+const (
+	projectGroupUri = "/api/{spaceId}/projectgroups{/id}{?skip,take,ids,partialName}"
+)
 
 // NewProjectGroupService returns a projectGroupService with a preconfigured client.
 func NewProjectGroupService(sling *sling.Sling, uriTemplate string) *ProjectGroupService {
@@ -184,4 +189,84 @@ func (s *ProjectGroupService) Update(resource ProjectGroup) (*ProjectGroup, erro
 	}
 
 	return resp.(*ProjectGroup), nil
+}
+
+// ----- new -----
+
+// Add creates a new project group.
+func Add(client newclient.Client, projectGroup *ProjectGroup) (*ProjectGroup, error) {
+	if IsNil(projectGroup) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterProjectGroup)
+	}
+
+	spaceID, err := internal.GetSpaceID(projectGroup.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{"spaceId": spaceID})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Post[ProjectGroup](client.HttpSession(), expandedUri, projectGroup)
+}
+
+// / GetByID returns the project group that matches the input ID. If one cannot
+// be found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, id string) (*ProjectGroup, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{
+		"spaceId": spaceID,
+		"id":      id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Get[ProjectGroup](client.HttpSession(), expandedUri)
+}
+
+// Update modifies a project group based on the one provided as input.
+func Update(client newclient.Client, resource ProjectGroup) (*ProjectGroup, error) {
+	spaceID, err := internal.GetSpaceID(resource.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{
+		"spaceId": spaceID,
+		"id":      resource.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Put[ProjectGroup](client.HttpSession(), expandedUri, resource)
+}
+
+// DeleteByID deletes the resource that matches the space ID and input ID.
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	if internal.IsEmpty(id) {
+		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{
+		"spaceId": spaceID,
+		"id":      id,
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = newclient.Delete[ProjectGroup](client.HttpSession(), expandedUri)
+	return err
 }
