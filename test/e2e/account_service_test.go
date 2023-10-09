@@ -436,6 +436,26 @@ func TestAccountServiceGetByIDs(t *testing.T) {
 	require.GreaterOrEqual(t, len(accountsToTest), len(accountsByIDs.Items))
 }
 
+func TestAccountServiceGetByIDs_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	accountsToTest, err := client.Accounts.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, accountsToTest)
+
+	ids := []string{}
+	for _, account := range accountsToTest {
+		ids = append(ids, account.GetID())
+	}
+
+	query := accounts.AccountsQuery{IDs: ids}
+
+	accountsByIDs, err := accounts.Get(client, client.GetSpaceID(), &query)
+	require.NoError(t, err)
+	require.GreaterOrEqual(t, len(accountsToTest), len(accountsByIDs.Items))
+}
+
 func TestAccountServiceTokenAccounts(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
