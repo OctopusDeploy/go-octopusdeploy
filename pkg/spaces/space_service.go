@@ -187,7 +187,7 @@ func Get(client newclient.Client, spacesQuery SpacesQuery) (*resources.Resources
 // GetAll returns all spaces. If none can be found or an error occurs, it
 // returns an empty collection.
 func GetAll(client newclient.Client) ([]*Space, error) {
-	path, err := client.URITemplateCache().Expand(spacesTemplate, nil)
+	path, err := client.URITemplateCache().Expand(spacesTemplate, map[string]any{})
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func GetAll(client newclient.Client) ([]*Space, error) {
 	}
 	spaces = append(spaces, res.Items...)
 	for res.Links.PageNext != "" {
-		nextPagePath, err := client.URITemplateCache().Expand(res.Links.PageNext, nil)
+		nextPagePath, err := client.URITemplateCache().Expand(res.Links.PageNext, map[string]any{})
 		if err != nil {
 			return nil, err
 		}
