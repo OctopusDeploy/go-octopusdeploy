@@ -80,7 +80,7 @@ func Update(client newclient.Client, libraryVariableSet *variables.LibraryVariab
 // DeleteByID deletes the resource that matches the space ID and input ID.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	if internal.IsEmpty(id) {
-		return internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
 	}
 
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.LibraryVariableSets, map[string]any{

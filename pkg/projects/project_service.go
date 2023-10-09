@@ -2,6 +2,7 @@ package projects
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"net/http"
 	"net/url"
 	"strings"
@@ -27,6 +28,11 @@ type ProjectService struct {
 
 	services.CanDeleteService
 }
+
+const (
+	projectUri      = "/api/{spaceId}/projects{/id}{?name,skip,ids,clone,take,partialName,clonedFromProjectId}"
+	convertToVcsUri = "/api/{spaceId}/projects/{id}/git/convert"
+)
 
 func NewProjectService(sling *sling.Sling, uriTemplate string, pulsePath string, experimentalSummariesPath string, importProjectsPath string, exportProjectsPath string) *ProjectService {
 	return &ProjectService{
@@ -370,5 +376,147 @@ func (s *ProjectService) GetProgression(project *Project) (*Progression, error) 
 	}
 
 	return resp.(*Progression), nil
+}
 
+// ----- new -----
+
+// Add creates a new project.
+func Add(client newclient.Client, project *Project) (*Project, error) {
+	if IsNil(project) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterProject)
+	}
+
+	// Remove persistence settings if specified; this will generate an error from
+	// the endpoint if specified. Persistence settings are available AFTER the project
+	// has been created or converted.
+	project.PersistenceSettings = nil
+
+	spaceID, err := internal.GetSpaceID(project.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{"spaceId": spaceID})
+	if err != nil {
+		return nil, err
+	}
+
+	projectResponse, err := newclient.Post[Project](client.HttpSession(), expandedUri, project)
+	if err != nil {
+		return nil, err
+	}
+
+	return projectResponse, nil
+}
+
+// GetByID returns the project that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, id string) (*Project, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{
+		"spaceId": spaceID,
+		"id":      id,
+	})
+
+	resp, err := newclient.Get[Project](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// ConvertProjectToVcs converts an input project to use a version-control system (VCS) for its persistence. initialCommitBranch is ignored unless
+// the default branch in the gitPersistenceSettings appears in the protected branch patterns, and will default to "octopus-vcs-conversion"
+// if not explicitly specified.
+func ConvertProjectToVcs(client newclient.Client, project *Project, commitMessage string, initialCommitBranch string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
+	if project == nil {
+		return nil, internal.CreateInvalidParameterError("ConvertToVcs", "project")
+	}
+
+	if gitPersistenceSettings == nil {
+		return nil, fmt.Errorf("input parameter (versionControlSettings) is nil")
+	}
+
+	if project.Links == nil {
+		return nil, fmt.Errorf("the state of the input project is not valid; links collection is empty")
+	}
+
+	if len(project.Links["ConvertToVcs"]) == 0 {
+		return nil, fmt.Errorf("the state of the input project is not valid; cannot resolve ConvertToVcs link")
+	}
+
+	spaceID, err := internal.GetSpaceID(project.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	convertToVcs := NewConvertToVcs(commitMessage, initialCommitBranch, gitPersistenceSettings)
+
+	expandedUri, err := client.URITemplateCache().Expand(convertToVcsUri, map[string]any{
+		"spaceId": spaceID,
+		"id":      project.ID,
+	})
+
+	_, err = newclient.Post[ConvertToVcsResponse](client.HttpSession(), expandedUri, convertToVcs)
+	if err != nil {
+		return nil, err
+	}
+
+	return GetByID(client, spaceID, project.GetID())
+}
+
+// Update modifies a project based on the one provided as input.
+func Update(client newclient.Client, project *Project) (*Project, error) {
+	if project == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterProject)
+	}
+
+	spaceID, err := internal.GetSpaceID(project.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{
+		"spaceId": spaceID,
+		"id":      project.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	project.Links = nil
+
+	resp, err := newclient.Put[Project](client.HttpSession(), expandedUri, project)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// DeleteByID deletes the resource that matches the space ID and input ID.
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	if internal.IsEmpty(id) {
+		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{
+		"spaceId": spaceID,
+		"id":      id,
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = newclient.Delete[Project](client.HttpSession(), expandedUri)
+	return err
 }
