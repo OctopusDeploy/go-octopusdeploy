@@ -1,7 +1,7 @@
 package e2e
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/libraryvariableset"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/libraryvariablesets"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
@@ -186,7 +186,7 @@ func CreateLibraryVariableSet_NewClient(t *testing.T, client *client.Client) *va
 	actionTemplateParameter.Name = "Name " + getShortRandomName()
 	libraryVariableSet.Templates = append(libraryVariableSet.Templates, *actionTemplateParameter)
 
-	createdLibraryVariableSet, err := libraryvariableset.Add(client, libraryVariableSet)
+	createdLibraryVariableSet, err := libraryvariablesets.Add(client, libraryVariableSet)
 	require.NoError(t, err)
 	require.NotNil(t, createdLibraryVariableSet)
 
@@ -221,11 +221,11 @@ func DeleteLibraryVariableSet_NewClient(t *testing.T, client *client.Client, lib
 	}
 	require.NotNil(t, client)
 
-	err := libraryvariableset.DeleteByID(client, libraryVariableSet.SpaceID, libraryVariableSet.GetID())
+	err := libraryvariablesets.DeleteByID(client, libraryVariableSet.SpaceID, libraryVariableSet.GetID())
 	assert.NoError(t, err)
 
 	// verify the delete operation was successful
-	deletedLibraryVariableSet, err := libraryvariableset.GetByID(client, libraryVariableSet.SpaceID, libraryVariableSet.GetID())
+	deletedLibraryVariableSet, err := libraryvariablesets.GetByID(client, libraryVariableSet.SpaceID, libraryVariableSet.GetID())
 	assert.Error(t, err)
 	assert.Nil(t, deletedLibraryVariableSet)
 }
@@ -270,7 +270,7 @@ func TestLibraryVariableSetUpdate_NewClient(t *testing.T) {
 	expectedContentType := libraryVariableSet.ContentType
 	expectedDescription := libraryVariableSet.Description
 
-	updatedLibraryVariableSet, err := libraryvariableset.Update(client, libraryVariableSet)
+	updatedLibraryVariableSet, err := libraryvariablesets.Update(client, libraryVariableSet)
 
 	require.NoError(t, err)
 	require.Equal(t, expectedProjectName, updatedLibraryVariableSet.Name, "libraryvariableset name was not updated")

@@ -23,7 +23,7 @@ func NewLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *Libra
 
 // Add creates a new library variable set.
 //
-// Deprecated: Use libraryvariableset.Add
+// Deprecated: Use libraryvariablesets.Add
 func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) (*LibraryVariableSet, error) {
 	if IsNil(libraryVariableSet) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterLibraryVariableSet)
@@ -46,7 +46,7 @@ func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) 
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
 //
-// Deprecated: Use libraryvariableset.Get
+// Deprecated: Use libraryvariablesets.Get
 func (s *LibraryVariableSetService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[*LibraryVariableSet], error) {
 	path, err := s.GetURITemplate().Expand(libraryVariablesQuery)
 	if err != nil {
@@ -77,7 +77,7 @@ func (s *LibraryVariableSetService) GetAll() ([]*LibraryVariableSet, error) {
 // GetByID returns the library variable set that matches the input ID. If one
 // cannot be found, it returns nil and an error.
 //
-// Deprecated: Use libraryvariableset.GetByID
+// Deprecated: Use libraryvariablesets.GetByID
 func (s *LibraryVariableSetService) GetByID(id string) (*LibraryVariableSet, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -112,7 +112,7 @@ func (s *LibraryVariableSetService) GetByPartialName(partialName string) ([]*Lib
 
 // Update modifies a library variable set based on the one provided as input.
 //
-// Deprecated: Use libraryvariableset.Update
+// Deprecated: Use libraryvariablesets.Update
 func (s *LibraryVariableSetService) Update(libraryVariableSet *LibraryVariableSet) (*LibraryVariableSet, error) {
 	if libraryVariableSet == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterLibraryVariableSet)

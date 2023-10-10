@@ -1,4 +1,4 @@
-package libraryvariableset
+package libraryvariablesets
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
