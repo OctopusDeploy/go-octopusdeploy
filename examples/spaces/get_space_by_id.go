@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -31,7 +32,7 @@ func GetSpaceByIDExample() {
 	}
 
 	// get space by its ID
-	space, err := client.Spaces.GetByID(spaceID)
+	space, err := spaces.GetByID(client, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error getting space: %v", err)
 		return

@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -32,7 +33,7 @@ func DeleteProjectExample() {
 	}
 
 	// delete project
-	err = client.Projects.DeleteByID(projectID)
+	err = projects.DeleteByID(client, spaceID, projectID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting project: %v", err)
 		return

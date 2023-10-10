@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -30,7 +31,7 @@ func UpdateProjectExample() {
 	}
 
 	// get project by its ID
-	project, err := client.Projects.GetByID(projectID)
+	project, err := projects.GetByID(client, spaceID, projectID)
 	if err != nil {
 		_ = fmt.Errorf("error getting project: %v", err)
 		return
@@ -40,7 +41,7 @@ func UpdateProjectExample() {
 	project.Description = "new-description"
 
 	// update project
-	updatedProject, err := client.Projects.Update(project)
+	updatedProject, err := projects.Update(client, project)
 	if err != nil {
 		_ = fmt.Errorf("error updating project: %v", err)
 		return

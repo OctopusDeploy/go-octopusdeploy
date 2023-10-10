@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -30,7 +31,7 @@ func DeleteSpaceExample() {
 		return
 	}
 
-	space, err := client.Spaces.GetByID(spaceID)
+	space, err := spaces.GetByID(client, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error getting space: %v", err)
 		return
@@ -43,7 +44,7 @@ func DeleteSpaceExample() {
 
 	if !space.TaskQueueStopped {
 		space.TaskQueueStopped = true
-		_, err := client.Spaces.Update(space)
+		_, err := spaces.Update(client, space)
 		if err != nil {
 			_ = fmt.Errorf("error attempting to stop task queue: %v", err)
 			return

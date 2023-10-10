@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/libraryvariableset"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -30,7 +31,7 @@ func GetLibraryVariableSetByIDExample() {
 	}
 
 	// get library variable set by its ID
-	libraryVariableSet, err := client.LibraryVariableSets.GetByID(libraryVariableSetID)
+	libraryVariableSet, err := libraryvariableset.GetByID(client, spaceID, libraryVariableSetID)
 	if err != nil {
 		_ = fmt.Errorf("error getting library variable set: %v", err)
 		return
