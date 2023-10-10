@@ -59,6 +59,8 @@ func (s *VariableService) GetAll(ownerID string) (VariableSet, error) {
 }
 
 // GetByID fetches a single variable, located by its ID, from Octopus Deploy for a given owner ID.
+//
+// Deprecated: Use variables.GetByID
 func (s *VariableService) GetByID(ownerID string, variableID string) (*Variable, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err
@@ -114,7 +116,7 @@ func (s *VariableService) GetByName(ownerID string, name string, scope *Variable
 
 	for _, variable := range variables.Variables {
 		if strings.EqualFold(variable.Name, name) {
-			matchScope, _, err := s.MatchesScope(variable.Scope, scope)
+			matchScope, _, err := MatchesScope(variable.Scope, scope)
 			if err != nil {
 				return nil, err
 			}
@@ -129,6 +131,8 @@ func (s *VariableService) GetByName(ownerID string, name string, scope *Variable
 
 // AddSingle adds a single variable to a owner ID. This automates the act of fetching
 // the variable set, adding a new item to it, and posting back to Octopus
+//
+// Deprecated: Use variables.AddSingle
 func (s *VariableService) AddSingle(ownerID string, variable *Variable) (VariableSet, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return VariableSet{}, err
@@ -149,6 +153,8 @@ func (s *VariableService) AddSingle(ownerID string, variable *Variable) (Variabl
 
 // UpdateSingle adds a single variable to a owner ID. This automates the act of fetching
 // the variable set, updating the existing item, and posting back to Octopus
+//
+// Deprecated: Use variables.UpdateSingle
 func (s *VariableService) UpdateSingle(ownerID string, variable *Variable) (VariableSet, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return VariableSet{}, err
@@ -175,6 +181,8 @@ func (s *VariableService) UpdateSingle(ownerID string, variable *Variable) (Vari
 
 // DeleteSingle removes a single variable from a owner ID. This automates the act of fetching
 // the variable set, removing the existing item, and posting back to Octopus
+//
+// Deprecated: Use variables.DeleteSingle
 func (s *VariableService) DeleteSingle(ownerID string, variableID string) (VariableSet, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return VariableSet{}, err
@@ -213,6 +221,8 @@ func (s *VariableService) DeleteSingle(ownerID string, variableID string) (Varia
 
 // Update takes an entire variable set and posts the entire set back to Octopus Deploy. There are individual
 // functions like AddSingle and UpdateSingle that can make this process more of a "typical" CRUD Octopus command.
+//
+// Deprecated: Use variables.Update
 func (s *VariableService) Update(ownerID string, variableSet VariableSet) (VariableSet, error) {
 	err := services.ValidateInternalState(s)
 	if err != nil {
@@ -241,6 +251,8 @@ func (s *VariableService) Update(ownerID string, variableSet VariableSet) (Varia
 // an existing variable against a desired state. Only supports Environment, Role, Machine, Action and Channel
 // for scope options. Returns true if definedScope is nil or all elements are empty. Also returns a VariableScope
 // of all the scopes that were matched
+//
+// Deprecated: Use variables.MatchesScope
 func (s *VariableService) MatchesScope(variableScope VariableScope, definedScope *VariableScope) (bool, *VariableScope, error) {
 	err := services.ValidateInternalState(s)
 	if err != nil {
@@ -342,8 +354,6 @@ func GetVariableSet(client newclient.Client, spaceID string, ID string) (*Variab
 	}
 	return newclient.Get[VariableSet](client.HttpSession(), expandedUri)
 }
-
-// These methods below will be replacing the old defined in th service in this file. Soon.
 
 // GetByID fetches a single variable, located by its ID, from Octopus Deploy for a given space ID and owner ID.
 func GetByID(client newclient.Client, spaceID string, ownerID string, variableID string) (*Variable, error) {

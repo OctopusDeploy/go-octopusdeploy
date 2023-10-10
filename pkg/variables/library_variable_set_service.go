@@ -22,6 +22,8 @@ func NewLibraryVariableSetService(sling *sling.Sling, uriTemplate string) *Libra
 }
 
 // Add creates a new library variable set.
+//
+// Deprecated: Use libraryvariableset.Add
 func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) (*LibraryVariableSet, error) {
 	if IsNil(libraryVariableSet) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterLibraryVariableSet)
@@ -72,6 +74,8 @@ func (s *LibraryVariableSetService) GetAll() ([]*LibraryVariableSet, error) {
 
 // GetByID returns the library variable set that matches the input ID. If one
 // cannot be found, it returns nil and an error.
+//
+// Deprecated: Use libraryvariableset.GetByID
 func (s *LibraryVariableSetService) GetByID(id string) (*LibraryVariableSet, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -105,6 +109,8 @@ func (s *LibraryVariableSetService) GetByPartialName(partialName string) ([]*Lib
 }
 
 // Update modifies a library variable set based on the one provided as input.
+//
+// Deprecated: Use libraryvariableset.Update
 func (s *LibraryVariableSetService) Update(libraryVariableSet *LibraryVariableSet) (*LibraryVariableSet, error) {
 	if libraryVariableSet == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterLibraryVariableSet)

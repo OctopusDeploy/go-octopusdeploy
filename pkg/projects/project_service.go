@@ -47,6 +47,8 @@ func NewProjectService(sling *sling.Sling, uriTemplate string, pulsePath string,
 }
 
 // Add creates a new project.
+//
+// Deprecated: Use projects.Add
 func (s *ProjectService) Add(project *Project) (*Project, error) {
 	if IsNil(project) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterProject)
@@ -87,6 +89,8 @@ func (s *ProjectService) Clone(sourceProject *Project, request ProjectCloneReque
 // ConvertToVcs converts an input project to use a version-control system (VCS) for its persistence. initialCommitBranch is ignored unless
 // the default branch in the gitPersistenceSettings appears in the protected branch patterns, and will default to "octopus-vcs-conversion"
 // if not explicitly specified.
+//
+// Deprecated: Use projects.ConvertToVCS
 func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, initialCommitBranch string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError("ConvertToVcs", "project")
@@ -148,6 +152,8 @@ func (s *ProjectService) GetAll() ([]*Project, error) {
 
 // GetByID returns the project that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: Use projects.GetByID
 func (s *ProjectService) GetByID(id string) (*Project, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -305,6 +311,8 @@ func (s *ProjectService) GetReleases(project *Project) ([]*releases.Release, err
 }
 
 // Update modifies a project based on the one provided as input.
+//
+// Deprecated: Use projects.Update
 func (s *ProjectService) Update(project *Project) (*Project, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterProject)
@@ -437,7 +445,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*Project, erro
 // ConvertProjectToVcs converts an input project to use a version-control system (VCS) for its persistence. initialCommitBranch is ignored unless
 // the default branch in the gitPersistenceSettings appears in the protected branch patterns, and will default to "octopus-vcs-conversion"
 // if not explicitly specified.
-func ConvertProjectToVcs(client newclient.Client, project *Project, commitMessage string, initialCommitBranch string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
+func ConvertToVCS(client newclient.Client, project *Project, commitMessage string, initialCommitBranch string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError("ConvertToVcs", "project")
 	}

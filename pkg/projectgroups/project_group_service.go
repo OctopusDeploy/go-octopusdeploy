@@ -32,6 +32,8 @@ func NewProjectGroupService(sling *sling.Sling, uriTemplate string) *ProjectGrou
 }
 
 // Add creates a new project group.
+//
+// Deprecated: Use projectgroups.Add
 func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {
 	if IsNil(projectGroup) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterProjectGroup)
@@ -82,6 +84,8 @@ func (s *ProjectGroupService) GetAll() ([]*ProjectGroup, error) {
 
 // GetByID returns the project group that matches the input ID. If one cannot
 // be found, it returns nil and an error.
+//
+// Deprecated: Use projectgroups.GetByID
 func (s *ProjectGroupService) GetByID(id string) (*ProjectGroup, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -177,6 +181,8 @@ func (s *ProjectGroupService) GetProjects(projectGroup *ProjectGroup) ([]*projec
 }
 
 // Update modifies a project group based on the one provided as input.
+//
+// Deprecated: Use projectgroups.Update
 func (s *ProjectGroupService) Update(resource ProjectGroup) (*ProjectGroup, error) {
 	path, err := services.GetUpdatePath(s, &resource)
 	if err != nil {
@@ -212,7 +218,7 @@ func Add(client newclient.Client, projectGroup *ProjectGroup) (*ProjectGroup, er
 	return newclient.Post[ProjectGroup](client.HttpSession(), expandedUri, projectGroup)
 }
 
-// / GetByID returns the project group that matches the input ID. If one cannot
+// GetByID returns the project group that matches the input ID. If one cannot
 // be found, it returns nil and an error.
 func GetByID(client newclient.Client, spaceID string, id string) (*ProjectGroup, error) {
 	if internal.IsEmpty(id) {

@@ -26,6 +26,8 @@ func NewScriptModuleService(sling *sling.Sling, uriTemplate string) *ScriptModul
 }
 
 // Add creates a new script module.
+//
+// Deprecated: Use scriptmodules.Add
 func (s *ScriptModuleService) Add(scriptModule *ScriptModule) (*ScriptModule, error) {
 	if IsNil(scriptModule) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterScriptModule)
@@ -108,6 +110,8 @@ func (s *ScriptModuleService) GetAll() (*resources.Resources[*ScriptModule], err
 
 // GetByID returns the script module that matches the input ID. If one
 // cannot be found, it returns nil and an error.
+//
+// Deprecated: Use scriptmodules.GetByID
 func (s *ScriptModuleService) GetByID(id string) (*ScriptModule, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -161,6 +165,8 @@ func (s *ScriptModuleService) GetByPartialName(partialName string) ([]*ScriptMod
 }
 
 // Update modifies a script module based on the one provided as input.
+//
+// Deprecated: Use scriptmodules.Update
 func (s *ScriptModuleService) Update(scriptModule *ScriptModule) (*ScriptModule, error) {
 	if scriptModule == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "scriptModule")
