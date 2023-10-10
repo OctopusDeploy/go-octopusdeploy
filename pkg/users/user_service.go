@@ -3,6 +3,7 @@ package users
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/permissions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -25,6 +26,10 @@ type UserService struct {
 
 	services.CanDeleteService
 }
+
+const (
+	usersTemplate = "/api/users{/id}{?skip,take,ids,filter}"
+)
 
 func NewUserService(
 	sling *sling.Sling,
@@ -56,6 +61,8 @@ func NewUserService(
 }
 
 // Add creates a new user.
+//
+// Deprecated: Use users.Add
 func (s *UserService) Add(user *User) (*User, error) {
 	if IsNil(user) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterUser)
@@ -180,6 +187,8 @@ func (s *UserService) Get(usersQuery UsersQuery) (*resources.Resources[*User], e
 
 // GetByID returns the user that matches the input ID. If one cannot be found,
 // it returns nil and an error.
+//
+// Deprecated: Use users.GetByID
 func (s *UserService) GetByID(id string) (*User, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -281,6 +290,8 @@ func (s *UserService) GetTeams(user *User, userQuery ...UserQuery) (*[]permissio
 }
 
 // Update modifies a user based on the one provided as input.
+//
+// Deprecated: Use users.Update
 func (s *UserService) Update(user *User) (*User, error) {
 	if user == nil {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterUser)
@@ -297,4 +308,86 @@ func (s *UserService) Update(user *User) (*User, error) {
 	}
 
 	return resp.(*User), nil
+}
+
+// ----- new -----
+
+// Add creates a new user.
+func Add(client newclient.Client, user *User) (*User, error) {
+	if IsNil(user) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterUser)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(usersTemplate, map[string]any{
+		"id": user.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Post[User](client.HttpSession(), expandedUri, user)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetByID returns the user that matches the input ID. If one cannot be found,
+// it returns nil and an error.
+func GetByID(client newclient.Client, id string) (*User, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(usersTemplate, map[string]any{
+		"id": id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Get[User](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// Update modifies a user based on the one provided as input.
+func Update(client newclient.Client, user *User) (*User, error) {
+	if user == nil {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterUser)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(usersTemplate, map[string]any{
+		"id": user.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Put[User](client.HttpSession(), expandedUri, user)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// DeleteByID deletes the resource that matches the space ID and input ID.
+func DeleteByID(client newclient.Client, id string) error {
+	if internal.IsEmpty(id) {
+		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(usersTemplate, map[string]any{
+		"id": id,
+	})
+	if err != nil {
+		return err
+	}
+
+	return newclient.Delete(client.HttpSession(), expandedUri)
 }

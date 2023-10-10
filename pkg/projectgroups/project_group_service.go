@@ -19,7 +19,7 @@ type ProjectGroupService struct {
 }
 
 const (
-	projectGroupUri = "/api/{spaceId}/projectgroups{/id}{?skip,take,ids,partialName}"
+	projectGroupsTemplate = "/api/{spaceId}/projectgroups{/id}{?skip,take,ids,partialName}"
 )
 
 // NewProjectGroupService returns a projectGroupService with a preconfigured client.
@@ -210,7 +210,7 @@ func Add(client newclient.Client, projectGroup *ProjectGroup) (*ProjectGroup, er
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{"spaceId": spaceID})
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{"spaceId": spaceID})
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +230,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*ProjectGroup,
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      id,
 	})
@@ -248,7 +248,7 @@ func Update(client newclient.Client, resource ProjectGroup) (*ProjectGroup, erro
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      resource.ID,
 	})
@@ -265,7 +265,7 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectGroupUri, map[string]any{
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      id,
 	})

@@ -3,6 +3,7 @@ package userroles
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -13,6 +14,10 @@ type UserRoleService struct {
 	services.CanDeleteService
 }
 
+const (
+	userRolesTemplate = "/api/userroles{/id}{?skip,take,ids,partialName}"
+)
+
 func NewUserRoleService(sling *sling.Sling, uriTemplate string) *UserRoleService {
 	return &UserRoleService{
 		CanDeleteService: services.CanDeleteService{
@@ -22,6 +27,8 @@ func NewUserRoleService(sling *sling.Sling, uriTemplate string) *UserRoleService
 }
 
 // Add creates a new user role.
+//
+// Deprecated: Use userroles.Add
 func (s *UserRoleService) Add(userRole *UserRole) (*UserRole, error) {
 	if IsNil(userRole) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterUserRole)
@@ -72,6 +79,8 @@ func (s *UserRoleService) GetAll() ([]*UserRole, error) {
 
 // GetByID returns the user role that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: Use userroles.GetByID
 func (s *UserRoleService) GetByID(id string) (*UserRole, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -91,6 +100,8 @@ func (s *UserRoleService) GetByID(id string) (*UserRole, error) {
 }
 
 // Update modifies a user role based on the one provided as input.
+//
+// Deprecated: Use userroles.Update
 func (s *UserRoleService) Update(userRole *UserRole) (*UserRole, error) {
 	if userRole == nil {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterUserRole)
@@ -107,4 +118,86 @@ func (s *UserRoleService) Update(userRole *UserRole) (*UserRole, error) {
 	}
 
 	return resp.(*UserRole), nil
+}
+
+// ----- new -----
+
+// Add creates a new user role.
+func Add(client newclient.Client, userRole *UserRole) (*UserRole, error) {
+	if IsNil(userRole) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterUserRole)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(userRolesTemplate, map[string]any{
+		"id": userRole.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Post[UserRole](client.HttpSession(), expandedUri, userRole)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetByID returns the user role that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, id string) (*UserRole, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(userRolesTemplate, map[string]any{
+		"id": id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Get[UserRole](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// Update modifies a user role based on the one provided as input.
+func Update(client newclient.Client, userRole *UserRole) (*UserRole, error) {
+	if userRole == nil {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterUserRole)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(userRolesTemplate, map[string]any{
+		"id": userRole.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Put[UserRole](client.HttpSession(), expandedUri, userRole)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// DeleteByID deletes the resource that matches the space ID and input ID.
+func DeleteByID(client newclient.Client, id string) error {
+	if internal.IsEmpty(id) {
+		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(userRolesTemplate, map[string]any{
+		"id": id,
+	})
+	if err != nil {
+		return err
+	}
+
+	return newclient.Delete(client.HttpSession(), expandedUri)
 }

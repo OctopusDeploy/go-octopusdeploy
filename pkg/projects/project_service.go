@@ -30,8 +30,8 @@ type ProjectService struct {
 }
 
 const (
-	projectUri      = "/api/{spaceId}/projects{/id}{?name,skip,ids,clone,take,partialName,clonedFromProjectId}"
-	convertToVcsUri = "/api/{spaceId}/projects/{id}/git/convert"
+	projectsTemplate     = "/api/{spaceId}/projects{/id}{?name,skip,ids,clone,take,partialName,clonedFromProjectId}"
+	convertToVcsTemplate = "/api/{spaceId}/projects/{id}/git/convert"
 )
 
 func NewProjectService(sling *sling.Sling, uriTemplate string, pulsePath string, experimentalSummariesPath string, importProjectsPath string, exportProjectsPath string) *ProjectService {
@@ -404,7 +404,7 @@ func Add(client newclient.Client, project *Project) (*Project, error) {
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{"spaceId": spaceID})
+	expandedUri, err := client.URITemplateCache().Expand(projectsTemplate, map[string]any{"spaceId": spaceID})
 	if err != nil {
 		return nil, err
 	}
@@ -429,7 +429,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*Project, erro
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{
+	expandedUri, err := client.URITemplateCache().Expand(projectsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      id,
 	})
@@ -442,7 +442,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*Project, erro
 	return resp, nil
 }
 
-// ConvertProjectToVcs converts an input project to use a version-control system (VCS) for its persistence. initialCommitBranch is ignored unless
+// ConvertToVCS converts an input project to use a version-control system (VCS) for its persistence. initialCommitBranch is ignored unless
 // the default branch in the gitPersistenceSettings appears in the protected branch patterns, and will default to "octopus-vcs-conversion"
 // if not explicitly specified.
 func ConvertToVCS(client newclient.Client, project *Project, commitMessage string, initialCommitBranch string, gitPersistenceSettings GitPersistenceSettings) (*Project, error) {
@@ -469,7 +469,7 @@ func ConvertToVCS(client newclient.Client, project *Project, commitMessage strin
 
 	convertToVcs := NewConvertToVcs(commitMessage, initialCommitBranch, gitPersistenceSettings)
 
-	expandedUri, err := client.URITemplateCache().Expand(convertToVcsUri, map[string]any{
+	expandedUri, err := client.URITemplateCache().Expand(convertToVcsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      project.ID,
 	})
@@ -493,7 +493,7 @@ func Update(client newclient.Client, project *Project) (*Project, error) {
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{
+	expandedUri, err := client.URITemplateCache().Expand(projectsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      project.ID,
 	})
@@ -517,7 +517,7 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectUri, map[string]any{
+	expandedUri, err := client.URITemplateCache().Expand(projectsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      id,
 	})
