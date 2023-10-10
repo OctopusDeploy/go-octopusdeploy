@@ -273,6 +273,5 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 		return err
 	}
 
-	_, err = newclient.Delete[ProjectGroup](client.HttpSession(), expandedUri)
-	return err
+	return newclient.Delete(client.HttpSession(), expandedUri)
 }

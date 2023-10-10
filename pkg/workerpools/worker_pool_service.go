@@ -2,17 +2,19 @@ package workerpools
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
-	"strings"
 )
 
 type WorkerPoolService struct {
@@ -37,6 +39,8 @@ func NewWorkerPoolService(sling *sling.Sling, uriTemplate string, dynamicWorkerT
 }
 
 // Add creates a new worker pool.
+//
+// Deprecated: Use workerpools.Add
 func (s *WorkerPoolService) Add(workerPool IWorkerPool) (IWorkerPool, error) {
 	if IsNil(workerPool) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterWorkerPool)
@@ -58,6 +62,8 @@ func (s *WorkerPoolService) Add(workerPool IWorkerPool) (IWorkerPool, error) {
 // Get returns a collection of worker pools based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
+//
+// Deprecated: Use workerpools.Get
 func (s *WorkerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools, error) {
 	v, _ := query.Values(workerPoolsQuery)
 	path := s.BasePath
@@ -210,4 +216,88 @@ func (s *WorkerPoolService) GetDynamicWorkerTypes() ([]*DynamicWorkerPoolType, e
 		return nil, err
 	}
 	return retValue.WorkerTypes, nil
+}
+
+// --- new ---
+
+const (
+	workerPoolTemplate = "/api/{spaceId}/workerpools{/id}{?skip,ids,take,partialName}"
+)
+
+// Add creates a new worker pool.
+func Add(client newclient.Client, spaceID string, workerPool IWorkerPool) (IWorkerPool, error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+	if IsNil(workerPool) {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterWorkerPool)
+	}
+
+	workerPoolResource, err := ToWorkerPoolResource(workerPool)
+	if err != nil {
+		return nil, err
+	}
+
+	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
+		"spaceId": spaceID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Post[WorkerPoolResource](client.HttpSession(), path, workerPoolResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToWorkerPool(res)
+}
+
+// Get returns a collection of worker pools based on the criteria defined by
+// its input query parameter.
+func Get(client newclient.Client, spaceID string, workerPoolsQuery WorkerPoolsQuery) (*WorkerPools, error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+	values, _ := uritemplates.Struct2map(workerPoolsQuery)
+	if values == nil {
+		values = map[string]any{}
+	}
+	values["spaceId"] = spaceID
+	path, err := client.URITemplateCache().Expand(workerPoolTemplate, values)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[resources.Resources[*WorkerPoolResource]](client.HttpSession(), path)
+	if err != nil {
+		return &WorkerPools{}, err
+	}
+
+	return ToWorkerPools(res), nil
+}
+
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return err
+	}
+	if internal.IsEmpty(id) {
+		return internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
+	}
+
+	values := make(map[string]interface{})
+	values["id"] = id
+
+	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
+		"id":      id,
+		"spaceId": spaceID,
+	})
+	if err != nil {
+		return err
+	}
+
+	return newclient.Delete(client.HttpSession(), path)
 }
