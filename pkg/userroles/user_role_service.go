@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -50,6 +51,8 @@ func (s *UserRoleService) Add(userRole *UserRole) (*UserRole, error) {
 // Get returns a collection of user roles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: Use userroles.Get
 func (s *UserRoleService) Get(userRolesQuery UserRolesQuery) (*resources.Resources[*UserRole], error) {
 	path, err := s.GetURITemplate().Expand(userRolesQuery)
 	if err != nil {
@@ -138,6 +141,34 @@ func Add(client newclient.Client, userRole *UserRole) (*UserRole, error) {
 	resp, err := newclient.Post[UserRole](client.HttpSession(), expandedUri, userRole)
 	if err != nil {
 		return nil, err
+	}
+
+	return resp, nil
+}
+
+// Get returns a collection of user roles based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func Get(client newclient.Client, spaceID string, userRolesQuery UserRolesQuery) (*resources.Resources[*UserRole], error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	values, _ := uritemplates.Struct2map(userRolesQuery)
+	if values == nil {
+		values = map[string]any{}
+	}
+	values["spaceId"] = spaceID
+
+	expandedUri, err := client.URITemplateCache().Expand(userRolesTemplate, values)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Get[resources.Resources[*UserRole]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return &resources.Resources[*UserRole]{}, err
 	}
 
 	return resp, nil

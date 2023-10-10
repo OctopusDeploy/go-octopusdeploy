@@ -45,6 +45,8 @@ func (s *LibraryVariableSetService) Add(libraryVariableSet *LibraryVariableSet) 
 // Get returns a collection of library variable sets based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
+//
+// Deprecated: Use libraryvariableset.Get
 func (s *LibraryVariableSetService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[*LibraryVariableSet], error) {
 	path, err := s.GetURITemplate().Expand(libraryVariablesQuery)
 	if err != nil {

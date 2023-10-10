@@ -9,6 +9,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
 )
@@ -171,6 +172,8 @@ func (s *UserService) GetAuthenticationByUser(user *User) (*UserAuthentication, 
 // Get returns a collection of users based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
+//
+// Deprecated: Use users.Get
 func (s *UserService) Get(usersQuery UsersQuery) (*resources.Resources[*User], error) {
 	path, err := s.GetURITemplate().Expand(usersQuery)
 	if err != nil {
@@ -328,6 +331,34 @@ func Add(client newclient.Client, user *User) (*User, error) {
 	resp, err := newclient.Post[User](client.HttpSession(), expandedUri, user)
 	if err != nil {
 		return nil, err
+	}
+
+	return resp, nil
+}
+
+// Get returns a collection of users based on the criteria defined by its input
+// query parameter. If an error occurs, an empty collection is returned along
+// with the associated error.
+func Get(client newclient.Client, spaceID string, usersQuery UsersQuery) (*resources.Resources[*User], error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	values, _ := uritemplates.Struct2map(usersQuery)
+	if values == nil {
+		values = map[string]any{}
+	}
+	values["spaceId"] = spaceID
+
+	expandedUri, err := client.URITemplateCache().Expand(usersTemplate, values)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Get[resources.Resources[*User]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return &resources.Resources[*User]{}, err
 	}
 
 	return resp, nil

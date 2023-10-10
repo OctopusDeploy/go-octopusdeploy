@@ -121,6 +121,8 @@ func (s *ProjectService) ConvertToVcs(project *Project, commitMessage string, in
 // Get returns a collection of projects based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: Use projects.Get
 func (s *ProjectService) Get(projectsQuery ProjectsQuery) (*resources.Resources[*Project], error) {
 	v, _ := query.Values(projectsQuery)
 	path := s.BasePath
@@ -415,6 +417,34 @@ func Add(client newclient.Client, project *Project) (*Project, error) {
 	}
 
 	return projectResponse, nil
+}
+
+// Get returns a collection of projects based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func Get(client newclient.Client, spaceID string, projectsQuery ProjectsQuery) (*resources.Resources[*Project], error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	values, _ := uritemplates.Struct2map(projectsQuery)
+	if values == nil {
+		values = map[string]any{}
+	}
+	values["spaceId"] = spaceID
+
+	expandedUri, err := client.URITemplateCache().Expand(projectsTemplate, values)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Get[resources.Resources[*Project]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return &resources.Resources[*Project]{}, err
+	}
+
+	return resp, nil
 }
 
 // GetByID returns the project that matches the input ID. If one cannot be

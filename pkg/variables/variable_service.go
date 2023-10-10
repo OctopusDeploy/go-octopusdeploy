@@ -94,6 +94,8 @@ func (s *VariableService) GetByID(ownerID string, variableID string) (*Variable,
 // GetByName fetches variables, located by their name, from Octopus Deploy for a given owner ID. As variable
 // names can appear more than once under different scopes, a VariableScope must also be provided, which will
 // be used to locate the appropriate variables.
+//
+// Deprecated: Use variables.GetByName
 func (s *VariableService) GetByName(ownerID string, name string, scope *VariableScope) ([]*Variable, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err

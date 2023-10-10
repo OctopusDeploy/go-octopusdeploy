@@ -9,6 +9,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"strings"
 )
@@ -55,6 +56,8 @@ func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, er
 // Get returns a collection of project groups based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
+//
+// Deprecated: Use projects.Get
 func (s *ProjectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*resources.Resources[*ProjectGroup], error) {
 	path, err := s.GetURITemplate().Expand(projectGroupsQuery)
 	if err != nil {
@@ -216,6 +219,34 @@ func Add(client newclient.Client, projectGroup *ProjectGroup) (*ProjectGroup, er
 	}
 
 	return newclient.Post[ProjectGroup](client.HttpSession(), expandedUri, projectGroup)
+}
+
+// Get returns a collection of project groups based on the criteria defined by
+// its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func Get(client newclient.Client, spaceID string, projectGroupsQuery ProjectGroupsQuery) (*resources.Resources[*ProjectGroup], error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	values, _ := uritemplates.Struct2map(projectGroupsQuery)
+	if values == nil {
+		values = map[string]any{}
+	}
+	values["spaceId"] = spaceID
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, values)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Get[resources.Resources[*ProjectGroup]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return &resources.Resources[*ProjectGroup]{}, err
+	}
+
+	return resp, nil
 }
 
 // GetByID returns the project group that matches the input ID. If one cannot

@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
@@ -25,6 +26,34 @@ func Add(client newclient.Client, libraryVariableSet *variables.LibraryVariableS
 	}
 
 	return newclient.Post[variables.LibraryVariableSet](client.HttpSession(), expandedUri, libraryVariableSet)
+}
+
+// Get returns a collection of library variable sets based on the criteria
+// defined by its input query parameter. If an error occurs, an empty
+// collection is returned along with the associated error.
+func Get(client newclient.Client, spaceID string, libraryVariablesQuery variables.LibraryVariablesQuery) (*resources.Resources[*variables.LibraryVariableSet], error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	values, _ := uritemplates.Struct2map(libraryVariablesQuery)
+	if values == nil {
+		values = map[string]any{}
+	}
+	values["spaceId"] = spaceID
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.LibraryVariableSets, values)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[resources.Resources[*variables.LibraryVariableSet]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return &resources.Resources[*variables.LibraryVariableSet]{}, err
+	}
+
+	return res, nil
 }
 
 // GetByID returns the library variable set that matches the space ID and input ID. If one

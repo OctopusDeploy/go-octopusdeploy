@@ -75,6 +75,8 @@ func (s *ScriptModuleService) Add(scriptModule *ScriptModule) (*ScriptModule, er
 // Get returns a collection of script modules based on the criteria
 // defined by its input query parameter. If an error occurs, an empty
 // collection is returned along with the associated error.
+//
+// Deprecated: Use scriptmodules.Get
 func (s *ScriptModuleService) Get(libraryVariablesQuery LibraryVariablesQuery) (*resources.Resources[*ScriptModule], error) {
 	path, err := s.GetURITemplate().Expand(libraryVariablesQuery)
 	if err != nil {
