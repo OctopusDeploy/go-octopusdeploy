@@ -42,6 +42,8 @@ func (s *AccountService) Add(account IAccount) (IAccount, error) {
 // Get returns a collection of accounts based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: Use accounts.Get
 func (s *AccountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) {
 	values := make(map[string]interface{})
 	path, err := s.GetURITemplate().Expand(values)
@@ -138,6 +140,8 @@ const (
 	template = "/api/{spaceId}/accounts{/id}{?skip,take,ids,partialName,accountType}"
 )
 
+// Get returns a collection of accounts based on the criteria defined by its
+// input query parameter.
 func Get(client newclient.Client, spaceID string, accountsQuery *AccountsQuery) (*Accounts, error) {
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
 	if err != nil {
