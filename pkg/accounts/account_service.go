@@ -146,7 +146,7 @@ func Get(client newclient.Client, spaceID string, accountsQuery *AccountsQuery) 
 
 	var params map[string]any
 	if accountsQuery != nil {
-		uritemplates.Struct2map(accountsQuery)
+		params, _ = uritemplates.Struct2map(accountsQuery)
 	} else {
 		params = map[string]any{}
 	}
