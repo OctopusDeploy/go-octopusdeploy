@@ -95,6 +95,8 @@ func (s *WorkerPoolService) GetAll() ([]*WorkerPoolListResult, error) {
 
 // GetByID returns the worker pool that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: Use workerpools.GetByID
 func (s *WorkerPoolService) GetByID(id string) (IWorkerPool, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -167,6 +169,8 @@ func (s *WorkerPoolService) GetByIdentifier(identifier string) (IWorkerPool, err
 }
 
 // Update modifies a worker pool based on the one provided as input.
+//
+// Deprecated: Use workerpools.Update
 func (s *WorkerPoolService) Update(workerPool IWorkerPool) (IWorkerPool, error) {
 	if workerPool == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterWorkerPool)
@@ -279,6 +283,34 @@ func Get(client newclient.Client, spaceID string, workerPoolsQuery WorkerPoolsQu
 	return ToWorkerPools(res), nil
 }
 
+// GetByID returns the worker pool that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, id string) (IWorkerPool, error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
+	}
+
+	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
+		"id":      id,
+		"spaceId": spaceID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[WorkerPoolResource](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToWorkerPool(res)
+}
+
+// DeleteByID will delete a workerpool with the provided id.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
 	if err != nil {
@@ -288,16 +320,44 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 		return internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
 	}
 
-	values := make(map[string]interface{})
-	values["id"] = id
-
 	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
-		"id":      id,
 		"spaceId": spaceID,
+		"id":      id,
 	})
 	if err != nil {
 		return err
 	}
 
 	return newclient.Delete(client.HttpSession(), path)
+}
+
+// Update modifies a worker pool based on the one provided as input.
+func Update(client newclient.Client, spaceID string, workerPool IWorkerPool) (IWorkerPool, error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+	if workerPool == nil {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterWorkerPool)
+	}
+
+	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
+		"spaceId": spaceID,
+		"id":      workerPool.GetID(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	workerPoolResource, err := ToWorkerPoolResource(workerPool)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Put[WorkerPoolResource](client.HttpSession(), path, workerPoolResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToWorkerPool(res)
 }
