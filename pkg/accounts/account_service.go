@@ -114,6 +114,8 @@ func (s *AccountService) GetUsages(account IAccount) (*AccountUsage, error) {
 }
 
 // Update modifies an account based on the one provided as input.
+//
+// Deprecated: Use accounts.Update
 func (s *AccountService) Update(account IAccount) (IAccount, error) {
 	if account == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterAccount)
