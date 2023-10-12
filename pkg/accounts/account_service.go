@@ -156,13 +156,31 @@ func Get(client newclient.Client, spaceID string, accountsQuery *AccountsQuery) 
 // Add creates a new account.
 func Add(client newclient.Client, account IAccount) (IAccount, error) {
 	res, err := newclient.Add[AccountResource](client, template, account.GetSpaceID(), account)
-	return res, err
+	if err != nil {
+		return nil, err
+	}
+	return ToAccount(res)
 }
 
 // GetByID returns the account that matches the input ID.
 func GetByID(client newclient.Client, spaceID string, ID string) (IAccount, error) {
 
 	res, err := newclient.GetByID[AccountResource](client, template, spaceID, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToAccount(res)
+}
+
+// Update modifies an account based on the one provided as input.
+func Update(client newclient.Client, account IAccount) (IAccount, error) {
+	accountResource, err := ToAccountResource(account)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Add[AccountResource](client, template, account.GetSpaceID(), accountResource)
 	if err != nil {
 		return nil, err
 	}
