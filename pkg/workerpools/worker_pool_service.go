@@ -250,24 +250,8 @@ func Get(client newclient.Client, spaceID string, workerPoolsQuery WorkerPoolsQu
 
 // GetByID returns the worker pool that matches the input ID. If one cannot be
 // found, it returns nil and an error.
-func GetByID(client newclient.Client, spaceID string, id string) (IWorkerPool, error) {
-	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
-	if err != nil {
-		return nil, err
-	}
-	if internal.IsEmpty(id) {
-		return nil, internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
-	}
-
-	path, err := client.URITemplateCache().Expand(template, map[string]any{
-		"id":      id,
-		"spaceId": spaceID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := newclient.Get[WorkerPoolResource](client.HttpSession(), path)
+func GetByID(client newclient.Client, spaceID string, ID string) (IWorkerPool, error) {
+	res, err := newclient.GetByID[WorkerPoolResource](client, template, spaceID, ID)
 	if err != nil {
 		return nil, err
 	}

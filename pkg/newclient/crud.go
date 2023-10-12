@@ -104,3 +104,29 @@ func GetByQuery[TResource any](client Client, template string, spaceID string, q
 
 	return res, nil
 }
+
+// GetByID returns the resource that matches the input ID.
+func GetByID[TResource any](client Client, template string, spaceID string, ID string) (*TResource, error) {
+	if ID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
+	}
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	path, err := client.URITemplateCache().Expand(template, map[string]any{
+		"spaceId": spaceID,
+		"id":      ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := Get[TResource](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

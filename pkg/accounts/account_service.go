@@ -7,7 +7,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -83,6 +82,8 @@ func (s *AccountService) GetAll() ([]IAccount, error) {
 
 // GetByID returns the account that matches the input ID. If one is not found,
 // it returns nil and an error.
+//
+// Deprecated: Use accounts.Get
 func (s *AccountService) GetByID(id string) (IAccount, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -145,36 +146,28 @@ const (
 // Get returns a collection of accounts based on the criteria defined by its
 // input query parameter.
 func Get(client newclient.Client, spaceID string, accountsQuery *AccountsQuery) (*Accounts, error) {
-	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	res, err := newclient.GetByQuery[AccountResource](client, template, spaceID, accountsQuery)
 	if err != nil {
 		return nil, err
 	}
-
-	var params map[string]any
-	if accountsQuery != nil {
-		params, _ = uritemplates.Struct2map(accountsQuery)
-	} else {
-		params = map[string]any{}
-	}
-	params["spaceId"] = spaceID
-
-	expandedUri, err := client.URITemplateCache().Expand(template, params)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := newclient.Get[resources.Resources[*AccountResource]](client.HttpSession(), expandedUri)
-	if err != nil {
-		return nil, err
-	}
-
-	return ToAccounts(response), nil
+	return ToAccounts(res), nil
 }
 
 // Add creates a new account.
 func Add(client newclient.Client, account IAccount) (IAccount, error) {
 	res, err := newclient.Add[AccountResource](client, template, account.GetSpaceID(), account)
 	return res, err
+}
+
+// GetByID returns the account that matches the input ID.
+func GetByID(client newclient.Client, spaceID string, ID string) (IAccount, error) {
+
+	res, err := newclient.GetByID[AccountResource](client, template, spaceID, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToAccount(res)
 }
 
 // DeleteByID will delete a account with the provided id.
