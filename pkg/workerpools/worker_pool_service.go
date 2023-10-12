@@ -225,59 +225,24 @@ func (s *WorkerPoolService) GetDynamicWorkerTypes() ([]*DynamicWorkerPoolType, e
 // --- new ---
 
 const (
-	workerPoolTemplate = "/api/{spaceId}/workerpools{/id}{?skip,ids,take,partialName}"
+	template = "/api/{spaceId}/workerpools{/id}{?skip,ids,take,partialName}"
 )
 
 // Add creates a new worker pool.
-func Add(client newclient.Client, spaceID string, workerPool IWorkerPool) (IWorkerPool, error) {
-	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+func Add(client newclient.Client, workerPool IWorkerPool) (IWorkerPool, error) {
+	res, err := newclient.Add[WorkerPoolResource](client, template, workerPool.GetSpaceID(), workerPool)
 	if err != nil {
 		return nil, err
 	}
-	if IsNil(workerPool) {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterWorkerPool)
-	}
-
-	workerPoolResource, err := ToWorkerPoolResource(workerPool)
-	if err != nil {
-		return nil, err
-	}
-
-	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
-		"spaceId": spaceID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := newclient.Post[WorkerPoolResource](client.HttpSession(), path, workerPoolResource)
-	if err != nil {
-		return nil, err
-	}
-
 	return ToWorkerPool(res)
 }
 
 // Get returns a collection of worker pools based on the criteria defined by
 // its input query parameter.
 func Get(client newclient.Client, spaceID string, workerPoolsQuery WorkerPoolsQuery) (*WorkerPools, error) {
-	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	res, err := newclient.GetByQuery[WorkerPoolResource](client, template, spaceID, workerPoolsQuery)
 	if err != nil {
 		return nil, err
-	}
-	values, _ := uritemplates.Struct2map(workerPoolsQuery)
-	if values == nil {
-		values = map[string]any{}
-	}
-	values["spaceId"] = spaceID
-	path, err := client.URITemplateCache().Expand(workerPoolTemplate, values)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := newclient.Get[resources.Resources[*WorkerPoolResource]](client.HttpSession(), path)
-	if err != nil {
-		return &WorkerPools{}, err
 	}
 
 	return ToWorkerPools(res), nil
@@ -294,7 +259,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (IWorkerPool, e
 		return nil, internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
 	}
 
-	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
+	path, err := client.URITemplateCache().Expand(template, map[string]any{
 		"id":      id,
 		"spaceId": spaceID,
 	})
@@ -312,52 +277,21 @@ func GetByID(client newclient.Client, spaceID string, id string) (IWorkerPool, e
 
 // DeleteByID will delete a workerpool with the provided id.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
-	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
-	if err != nil {
-		return err
-	}
-	if internal.IsEmpty(id) {
-		return internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
-	}
-
-	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
-		"spaceId": spaceID,
-		"id":      id,
-	})
-	if err != nil {
-		return err
-	}
-
-	return newclient.Delete(client.HttpSession(), path)
+	return newclient.DeleteByID(client, template, spaceID, id)
 }
 
 // Update modifies a worker pool based on the one provided as input.
-func Update(client newclient.Client, spaceID string, workerPool IWorkerPool) (IWorkerPool, error) {
-	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
-	if err != nil {
-		return nil, err
-	}
+func Update(client newclient.Client, workerPool IWorkerPool) (IWorkerPool, error) {
 	if workerPool == nil {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterWorkerPool)
 	}
-
-	path, err := client.URITemplateCache().Expand(workerPoolTemplate, map[string]any{
-		"spaceId": spaceID,
-		"id":      workerPool.GetID(),
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	workerPoolResource, err := ToWorkerPoolResource(workerPool)
 	if err != nil {
 		return nil, err
 	}
-
-	res, err := newclient.Put[WorkerPoolResource](client.HttpSession(), path, workerPoolResource)
+	res, err := newclient.Update[WorkerPoolResource](client, template, workerPoolResource.SpaceID, workerPoolResource.ID, workerPoolResource)
 	if err != nil {
 		return nil, err
 	}
-
 	return ToWorkerPool(res)
 }

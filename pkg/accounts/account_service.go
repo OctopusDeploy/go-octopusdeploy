@@ -26,6 +26,8 @@ func NewAccountService(sling *sling.Sling, uriTemplate string) *AccountService {
 }
 
 // Add creates a new account.
+//
+// Deprecated: Use accounts.Add
 func (s *AccountService) Add(account IAccount) (IAccount, error) {
 	if IsNil(account) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterAccount)
@@ -167,4 +169,15 @@ func Get(client newclient.Client, spaceID string, accountsQuery *AccountsQuery) 
 	}
 
 	return ToAccounts(response), nil
+}
+
+// Add creates a new account.
+func Add(client newclient.Client, account IAccount) (IAccount, error) {
+	res, err := newclient.Add[AccountResource](client, template, account.GetSpaceID(), account)
+	return res, err
+}
+
+// DeleteByID will delete a account with the provided id.
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	return newclient.DeleteByID(client, template, spaceID, id)
 }
