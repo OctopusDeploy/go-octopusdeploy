@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -26,6 +27,8 @@ func NewLifecycleService(sling *sling.Sling, uriTemplate string) *LifecycleServi
 }
 
 // Add creates a new lifecycle.
+//
+// Deprecated: use lifecycles.Add
 func (s *LifecycleService) Add(lifecycle *Lifecycle) (*Lifecycle, error) {
 	if IsNil(lifecycle) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, "lifecycle")
@@ -47,6 +50,8 @@ func (s *LifecycleService) Add(lifecycle *Lifecycle) (*Lifecycle, error) {
 // Get returns a collection of lifecycles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: use lifecycles.Get
 func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[*Lifecycle], error) {
 	path, err := s.GetURITemplate().Expand(lifecyclesQuery)
 	if err != nil {
@@ -182,3 +187,23 @@ func (s *LifecycleService) Update(lifecycle *Lifecycle) (*Lifecycle, error) {
 }
 
 var _ services.IService = &LifecycleService{}
+
+// --- new ---
+
+const template = "/api/{spaceId}/lifecycles{/id}{?skip,take,ids,partialName}"
+
+// Get returns a collection of lifecycles based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func Get(client newclient.Client, spaceID string, lifecyclesQuery Query) (*resources.Resources[*Lifecycle], error) {
+	return newclient.GetByQuery[Lifecycle](client, template, spaceID, lifecyclesQuery)
+}
+
+// Add creates a new lifecycle.
+func Add(client newclient.Client, lifecycle *Lifecycle) (*Lifecycle, error) {
+	return newclient.Add[Lifecycle](client, template, lifecycle.SpaceID, lifecycle)
+}
+
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
