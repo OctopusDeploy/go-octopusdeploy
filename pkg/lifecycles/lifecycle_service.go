@@ -85,6 +85,8 @@ func (s *LifecycleService) GetAll() ([]*Lifecycle, error) {
 
 // GetByID returns the lifecycle that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use lifecycles.GetByID
 func (s *LifecycleService) GetByID(id string) (*Lifecycle, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -172,6 +174,8 @@ func (s *LifecycleService) GetProjects(lifecycle *Lifecycle) ([]*projects.Projec
 }
 
 // Update modifies a lifecycle based on the one provided as input.
+//
+// Deprecated: use lifecycles.Update
 func (s *LifecycleService) Update(lifecycle *Lifecycle) (*Lifecycle, error) {
 	path, err := services.GetUpdatePath(s, lifecycle)
 	if err != nil {
@@ -206,4 +210,15 @@ func Add(client newclient.Client, lifecycle *Lifecycle) (*Lifecycle, error) {
 
 func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// Update modifies a lifecycle based on the one provided as input.
+func Update(client newclient.Client, lifecycle *Lifecycle) (*Lifecycle, error) {
+	return newclient.Update[Lifecycle](client, template, lifecycle.SpaceID, lifecycle.ID, lifecycle)
+}
+
+// GetByID returns the lifecycle that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*Lifecycle, error) {
+	return newclient.GetByID[Lifecycle](client, template, spaceID, ID)
 }
