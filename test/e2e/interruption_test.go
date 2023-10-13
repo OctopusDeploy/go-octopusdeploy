@@ -102,7 +102,7 @@ package e2e
 // 	submitRequest := interruptions.InterruptionSubmitRequest{
 // 		Instructions: "Approve The Deployment",
 // 		Notes:        "",
-// 		Result:       interruptions.ManualInterverventionApprove,
+// 		Result:       interruptions.ManualInterventionApprove,
 // 	}
 
 // 	i, err := client.Interruptions.Submit(interruption, &submitRequest)
