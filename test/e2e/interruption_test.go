@@ -58,7 +58,7 @@ package e2e
 // 	require.NoError(t, err)
 // 	require.NotNil(t, client)
 
-// 	interruption, err := getInterruptonFromJSON(interruptionJSON)
+// 	interruption, err := getInterruptionFromJSON(interruptionJSON)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, interruption)
 
@@ -76,7 +76,7 @@ package e2e
 // 	require.NoError(t, err)
 // 	require.NotNil(t, client)
 
-// 	interruption, err := getInterruptonFromJSON(interruptionJSON)
+// 	interruption, err := getInterruptionFromJSON(interruptionJSON)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, interruption)
 
@@ -95,7 +95,7 @@ package e2e
 // 	require.NoError(t, err)
 // 	require.NotNil(t, client)
 
-// 	interruption, err := getInterruptonFromJSON(interruptionJSON)
+// 	interruption, err := getInterruptionFromJSON(interruptionJSON)
 // 	require.NoError(t, err)
 // 	require.NotNil(t, interruption)
 
@@ -298,7 +298,7 @@ package e2e
 // 	}
 // 	`
 
-// func getInterruptonFromJSON(interruptionJSON string) (*interruptions.Interruption, error) {
+// func getInterruptionFromJSON(interruptionJSON string) (*interruptions.Interruption, error) {
 // 	var interruption interruptions.Interruption
 // 	err := json.Unmarshal([]byte(interruptionJSON), &interruption)
 // 	return &interruption, err
