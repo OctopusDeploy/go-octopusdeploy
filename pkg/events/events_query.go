@@ -12,7 +12,7 @@ type EventsQuery struct {
 	FromAutoID        string   `uri:"fromAutoId,omitempty" url:"fromAutoId,omitempty"`
 	IDs               []string `uri:"ids,omitempty" url:"ids,omitempty"`
 	IncludeSystem     bool     `uri:"includeSystem,omitempty" url:"includeSystem,omitempty"`
-	Internal          string   `uri:"interal,omitempty" url:"interal,omitempty"`
+	Internal          string   `uri:"internal,omitempty" url:"internal,omitempty"`
 	Name              string   `uri:"name,omitempty" url:"name,omitempty"`
 	PartialName       string   `uri:"partialName,omitempty" url:"partialName,omitempty"`
 	ProjectGroups     []string `uri:"projectGroups,omitempty" url:"projectGroups,omitempty"`
