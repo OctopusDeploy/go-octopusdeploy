@@ -3,6 +3,7 @@ package channels
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -25,6 +26,8 @@ func NewChannelService(sling *sling.Sling, uriTemplate string, versionRuleTestPa
 }
 
 // Add creates a new channel.
+//
+// Deprecated: use channels.Add
 func (s *ChannelService) Add(channel *Channel) (*Channel, error) {
 	if IsNil(channel) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterChannel)
@@ -50,6 +53,8 @@ func (s *ChannelService) Add(channel *Channel) (*Channel, error) {
 // Get returns a collection of channels based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: use channels.Get
 func (s *ChannelService) Get(channelsQuery Query) (*resources.Resources[*Channel], error) {
 	path, err := s.GetURITemplate().Expand(channelsQuery)
 	if err != nil {
@@ -79,6 +84,8 @@ func (s *ChannelService) GetAll() ([]*Channel, error) {
 
 // GetByID returns the channel that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use channels.GetByID
 func (s *ChannelService) GetByID(id string) (*Channel, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, "id")
@@ -94,6 +101,8 @@ func (s *ChannelService) GetByID(id string) (*Channel, error) {
 }
 
 // Update modifies a channel based on the one provided as input.
+//
+// Deprecated: use channels.Update
 func (s *ChannelService) Update(channel *Channel) (*Channel, error) {
 	path, err := services.GetUpdatePath(s, channel)
 	if err != nil {
@@ -106,4 +115,35 @@ func (s *ChannelService) Update(channel *Channel) (*Channel, error) {
 	}
 
 	return resp.(*Channel), nil
+}
+
+// --- new ---
+
+const template = "/api/{spaceId}/channels{/id}{?skip,take,ids,partialName}"
+
+// Add creates a new channel.
+func Add(client newclient.Client, channel *Channel) (*Channel, error) {
+	return newclient.Add[Channel](client, template, channel.SpaceID, channel)
+}
+
+// Get returns a collection of channels based on the criteria defined by its
+// input query parameter.
+func Get(client newclient.Client, spaceID string, channelsQuery Query) (*resources.Resources[*Channel], error) {
+	return newclient.GetByQuery[Channel](client, template, spaceID, channelsQuery)
+}
+
+// GetByID returns the channel that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*Channel, error) {
+	return newclient.GetByID[Channel](client, template, spaceID, ID)
+}
+
+// Update modifies a channel based on the one provided as input.
+func Update(client newclient.Client, channel *Channel) (*Channel, error) {
+	return newclient.Update[Channel](client, template, channel.SpaceID, channel.ID, channel)
+}
+
+// DeleteById deletes the channel based on the ID provided as input.
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
 }
