@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -26,6 +27,8 @@ func NewCertificateService(sling *sling.Sling, uriTemplate string) *CertificateS
 }
 
 // Add creates a new certificate.
+//
+// Deprecated: use certificates.Add
 func (s *CertificateService) Add(certificate *CertificateResource) (*CertificateResource, error) {
 	if IsNil(certificate) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterCertificate)
@@ -63,6 +66,8 @@ func (s *CertificateService) Archive(resource *CertificateResource) (*Certificat
 // Get returns a collection of certificates based on the criteria defined by its input
 // query parameter. If an error occurs, an empty collection is returned along
 // with the associated error.
+//
+// Deprecated: use certificates.Get
 func (s *CertificateService) Get(certificatesQuery CertificatesQuery) (*resources.Resources[*CertificateResource], error) {
 	path, err := s.GetURITemplate().Expand(certificatesQuery)
 	if err != nil {
@@ -92,6 +97,8 @@ func (s *CertificateService) GetAll() ([]*CertificateResource, error) {
 
 // GetByID returns the certificate that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use certificates.GetByID
 func (s *CertificateService) GetByID(id string) (*CertificateResource, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -111,6 +118,8 @@ func (s *CertificateService) GetByID(id string) (*CertificateResource, error) {
 }
 
 // Update modifies a Certificate based on the one provided as input.
+//
+// Deprecated: use certificates.Update
 func (s *CertificateService) Update(resource CertificateResource) (*CertificateResource, error) {
 	path, err := services.GetUpdatePath(s, &resource)
 	if err != nil {
@@ -160,4 +169,36 @@ func (s *CertificateService) Unarchive(resource *CertificateResource) (*Certific
 	}
 
 	return s.GetByID(resource.GetID())
+}
+
+// --- new ---
+
+const template = "/api/{spaceId}/certificates{/id}{?skip,take,search,archived,tenant,firstResult,orderBy,ids,partialName}"
+
+// Get returns a collection of certificates based on the criteria defined by its input
+// query parameter. If an error occurs, a nil is returned along
+// with the associated error.
+func Get(client newclient.Client, spaceID string, certificatesQuery CertificatesQuery) (*resources.Resources[*CertificateResource], error) {
+	return newclient.GetByQuery[CertificateResource](client, template, spaceID, certificatesQuery)
+}
+
+// Add creates a new certificate.
+func Add(client newclient.Client, certificate *CertificateResource) (*CertificateResource, error) {
+	return newclient.Add[CertificateResource](client, template, certificate.SpaceID, certificate)
+}
+
+// DeleteByID deletes a certificate based on the provided ID.
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetByID returns the certificate that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*CertificateResource, error) {
+	return newclient.GetByID[CertificateResource](client, template, spaceID, ID)
+}
+
+// Update modifies a Certificate based on the one provided as input.
+func Update(client newclient.Client, resource *CertificateResource) (*CertificateResource, error) {
+	return newclient.Update[CertificateResource](client, template, resource.SpaceID, resource.ID, resource)
 }
