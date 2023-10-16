@@ -2,14 +2,16 @@ package machines
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
-	"strings"
 )
 
 type MachineService struct {
@@ -32,6 +34,8 @@ func NewMachineService(sling *sling.Sling, uriTemplate string, discoverMachinePa
 }
 
 // Add creates a new machine.
+//
+// Deprecated: use machines.Add
 func (s *MachineService) Add(deploymentTarget *DeploymentTarget) (*DeploymentTarget, error) {
 	if IsNil(deploymentTarget) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterDeploymentTarget)
@@ -53,6 +57,8 @@ func (s *MachineService) Add(deploymentTarget *DeploymentTarget) (*DeploymentTar
 // Get returns a collection of machines based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: use machines.Get
 func (s *MachineService) Get(machinesQuery MachinesQuery) (*resources.Resources[*DeploymentTarget], error) {
 	path, err := s.GetURITemplate().Expand(machinesQuery)
 	if err != nil {
@@ -69,6 +75,8 @@ func (s *MachineService) Get(machinesQuery MachinesQuery) (*resources.Resources[
 
 // GetByID returns the machine that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use machines.GetByID
 func (s *MachineService) GetByID(id string) (*DeploymentTarget, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -158,6 +166,8 @@ func (s *MachineService) GetByPartialName(partialName string) ([]*DeploymentTarg
 }
 
 // Update updates an existing machine in Octopus Deploy
+//
+// Deprecated: use machines.Update
 func (s *MachineService) Update(resource *DeploymentTarget) (*DeploymentTarget, error) {
 	path, err := services.GetUpdatePath(s, resource)
 	if err != nil {
@@ -173,3 +183,35 @@ func (s *MachineService) Update(resource *DeploymentTarget) (*DeploymentTarget, 
 }
 
 var _ services.IService = &MachineService{}
+
+// --- NEW ---
+
+const template = "/api/{spaceId}/machines{/id}{?skip,take,name,ids,partialName,roles,isDisabled,healthStatuses,commStyles,tenantIds,tenantTags,environmentIds,thumbprint,deploymentId,shellNames}"
+
+// Add creates a new machine.
+func Add(client newclient.Client, deploymentTarget *DeploymentTarget) (*DeploymentTarget, error) {
+	return newclient.Add[DeploymentTarget](client, template, deploymentTarget.SpaceID, deploymentTarget)
+}
+
+// Get returns a collection of machines based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func Get(client newclient.Client, spaceID string, machinesQuery MachinesQuery) (*resources.Resources[*DeploymentTarget], error) {
+	return newclient.GetByQuery[DeploymentTarget](client, template, spaceID, machinesQuery)
+}
+
+// GetByID returns the machine that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*DeploymentTarget, error) {
+	return newclient.GetByID[DeploymentTarget](client, template, spaceID, ID)
+}
+
+// Update updates an existing machine in Octopus Deploy
+func Update(client newclient.Client, spaceID string, deploymentTarget *DeploymentTarget) (*DeploymentTarget, error) {
+	return newclient.Update[DeploymentTarget](client, template, spaceID, deploymentTarget.ID, deploymentTarget)
+}
+
+// DeleteById deletes the machine based on the ID provided.
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
