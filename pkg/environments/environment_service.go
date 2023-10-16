@@ -3,6 +3,7 @@ package environments
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -29,6 +30,8 @@ func NewEnvironmentService(sling *sling.Sling, uriTemplate string, sortOrderPath
 }
 
 // Add creates a new environment.
+//
+// Deprecated: use environments.Add
 func (s *EnvironmentService) Add(environment *Environment) (*Environment, error) {
 	if IsNil(environment) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterEnvironment)
@@ -50,6 +53,8 @@ func (s *EnvironmentService) Add(environment *Environment) (*Environment, error)
 // Get returns a collection of environments based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
+//
+// Deprecated: use environments.Get
 func (s *EnvironmentService) Get(environmentsQuery EnvironmentsQuery) (*resources.Resources[*Environment], error) {
 	path, err := s.GetURITemplate().Expand(environmentsQuery)
 	if err != nil {
@@ -79,6 +84,8 @@ func (s *EnvironmentService) GetAll() ([]*Environment, error) {
 
 // GetByID returns the environment that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use environments.GetByID
 func (s *EnvironmentService) GetByID(id string) (*Environment, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -141,6 +148,8 @@ func (s *EnvironmentService) GetByPartialName(partialName string) ([]*Environmen
 }
 
 // Update modifies an environment based on the one provided as input.
+//
+// Deprecated: use environments.Update
 func (s *EnvironmentService) Update(environment *Environment) (*Environment, error) {
 	if environment == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterEnvironment)
@@ -157,4 +166,36 @@ func (s *EnvironmentService) Update(environment *Environment) (*Environment, err
 	}
 
 	return resp.(*Environment), nil
+}
+
+// --- new ---
+
+const template = "/api/{spaceId}/environments{/id}{?name,skip,ids,take,partialName}"
+
+// Get returns a collection of environments based on the criteria defined by
+// its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func Get(client newclient.Client, spaceID string, environmentsQuery EnvironmentsQuery) (*resources.Resources[*Environment], error) {
+	return newclient.GetByQuery[Environment](client, template, spaceID, environmentsQuery)
+}
+
+// Add creates a new environment.
+func Add(client newclient.Client, environment *Environment) (*Environment, error) {
+	return newclient.Add[Environment](client, template, environment.SpaceID, environment)
+}
+
+// DeleteById deletes the environment based on the ID provided as input.
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetByID returns the environment that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*Environment, error) {
+	return newclient.GetByID[Environment](client, template, spaceID, ID)
+}
+
+// Update modifies an environment based on the one provided as input.
+func Update(client newclient.Client, spaceID string, environment *Environment) (*Environment, error) {
+	return newclient.Update[Environment](client, template, spaceID, environment.ID, environment)
 }
