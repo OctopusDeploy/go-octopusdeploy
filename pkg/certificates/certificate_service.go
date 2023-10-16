@@ -176,7 +176,7 @@ func (s *CertificateService) Unarchive(resource *CertificateResource) (*Certific
 const template = "/api/{spaceId}/certificates{/id}{?skip,take,search,archived,tenant,firstResult,orderBy,ids,partialName}"
 
 // Get returns a collection of certificates based on the criteria defined by its input
-// query parameter. If an error occurs, an empty collection is returned along
+// query parameter. If an error occurs, a nil is returned along
 // with the associated error.
 func Get(client newclient.Client, spaceID string, certificatesQuery CertificatesQuery) (*resources.Resources[*CertificateResource], error) {
 	return newclient.GetByQuery[CertificateResource](client, template, spaceID, certificatesQuery)
