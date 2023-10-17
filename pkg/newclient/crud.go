@@ -130,3 +130,26 @@ func GetByID[TResource any](client Client, template string, spaceID string, ID s
 
 	return res, nil
 }
+
+// GetAll returns all machine policies. If none can be found or an error
+// occurs, it returns nil.
+func GetAll[TResource any](client Client, template string, spaceID string) (*[]TResource, error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	path, err := client.URITemplateCache().Expand(template, map[string]any{
+		"spaceId": spaceID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := Get[[]TResource](client.HttpSession(), path+"/all")
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
