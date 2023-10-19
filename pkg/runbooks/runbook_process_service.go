@@ -20,6 +20,8 @@ func NewRunbookProcessService(sling *sling.Sling, uriTemplate string) *RunbookPr
 
 // GetByID returns the runbook process that matches the input ID. If one cannot
 // be found, it returns nil and an error.
+//
+// Deprecated: use runbookprocess.GetByID
 func (s *RunbookProcessService) GetByID(id string) (*RunbookProcess, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -39,6 +41,8 @@ func (s *RunbookProcessService) GetByID(id string) (*RunbookProcess, error) {
 }
 
 // Update modifies a runbook process based on the one provided as input.
+//
+// Deprecated: use runbookprocess.Update
 func (s *RunbookProcessService) Update(runbook *RunbookProcess) (*RunbookProcess, error) {
 	if runbook == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterRunbook)

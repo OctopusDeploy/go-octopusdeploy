@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 )
 
 func GetEnvironmentByIDExample() {
@@ -30,7 +31,7 @@ func GetEnvironmentByIDExample() {
 	}
 
 	// get environment by its ID
-	environment, err := client.Environments.GetByID(environmentID)
+	environment, err := environments.GetByID(client, spaceID, environmentID)
 	if err != nil {
 		_ = fmt.Errorf("error getting environment: %v", err)
 		return

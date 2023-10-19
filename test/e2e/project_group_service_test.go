@@ -178,3 +178,91 @@ func TestProjectGroupUpdate(t *testing.T) {
 	require.Equal(t, newProjectGroupName, updatedProjectGroup.Name, "projectgroup name was not updated")
 	require.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")
 }
+
+// ----- new -----
+// todo: There are a few client calls that use the old client as they have not been migrated over yet;
+// 		 revisit and update these to use the new client calls once migrated.
+
+func CreateTestProjectGroup_NewClient(t *testing.T, client *client.Client) *projectgroups.ProjectGroup {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	projectGroup := projectgroups.NewProjectGroup(name)
+	require.NotNil(t, projectGroup)
+
+	createdProjectGroup, err := projectgroups.Add(client, projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, createdProjectGroup)
+	require.NotEmpty(t, createdProjectGroup.GetID())
+
+	// verify the add operation was successful
+	projectGroupToCompare, err := projectgroups.GetByID(client, client.GetSpaceID(), createdProjectGroup.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, projectGroupToCompare)
+	AssertEqualProjectGroups(t, createdProjectGroup, projectGroupToCompare)
+
+	return createdProjectGroup
+}
+
+func DeleteTestProjectGroup_NewClient(t *testing.T, client *client.Client, projectGroup *projectgroups.ProjectGroup) {
+	require.NotNil(t, projectGroup)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	projectGroup, err := projectgroups.GetByID(client, client.GetSpaceID(), projectGroup.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, projectGroup)
+
+	projects, err := client.ProjectGroups.GetProjects(projectGroup)
+	require.NoError(t, err)
+	require.NotNil(t, projects)
+
+	// cannot delete project groups that contain projects
+	if len(projects) > 0 {
+		return
+	}
+
+	err = projectgroups.DeleteByID(client, projectGroup.SpaceID, projectGroup.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedProjectGroup, err := projectgroups.GetByID(client, projectGroup.SpaceID, projectGroup.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedProjectGroup)
+}
+
+func TestProjectGroupAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	projectGroup := CreateTestProjectGroup_NewClient(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup_NewClient(t, client, projectGroup)
+}
+
+func TestProjectGroupUpdate_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	newProjectGroupName := internal.GetRandomName()
+	const newDescription = "this should be updated"
+
+	projectGroup.Name = newProjectGroupName
+	projectGroup.Description = newDescription
+
+	updatedProjectGroup, err := client.ProjectGroups.Update(*projectGroup)
+	require.NoError(t, err, "error when updating projectgroup")
+	require.Equal(t, newProjectGroupName, updatedProjectGroup.Name, "projectgroup name was not updated")
+	require.Equal(t, newDescription, updatedProjectGroup.Description, "projectgroup description was not updated")
+}

@@ -32,6 +32,8 @@ func NewFeedService(sling *sling.Sling, uriTemplate string, builtInFeedStats str
 }
 
 // Add creates a new feed.
+//
+// Deprecated: use feeds.Add
 func (s *FeedService) Add(feed IFeed) (IFeed, error) {
 	if IsNil(feed) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterFeed)
@@ -48,6 +50,8 @@ func (s *FeedService) Add(feed IFeed) (IFeed, error) {
 // Get returns a collection of feeds based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: use feeds.Get
 func (s *FeedService) Get(feedsQuery FeedsQuery) (*Feeds, error) {
 	// TODO this method is wired for /api/Spaces-1/feeds?ids=feeds-builtin
 	// but the server also supports a simpler single-value at /api/Spaces-1/feeds/feeds-builtin
@@ -83,6 +87,8 @@ func (s *FeedService) GetAll() ([]IFeed, error) {
 
 // GetByID returns the feed that matches the input ID. If one cannot be found,
 // it returns nil and an error.
+//
+// Deprecated: use feeds.GetByID
 func (s *FeedService) GetByID(id string) (IFeed, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, "id")
@@ -180,6 +186,8 @@ func (s *FeedService) SearchPackages(feed IFeed, searchPackagesQuery SearchPacka
 }
 
 // Update modifies a feed based on the one provided as input.
+//
+// Deprecated: use feeds.Update
 func (s *FeedService) Update(feed IFeed) (IFeed, error) {
 	if feed == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "feed")
@@ -198,7 +206,9 @@ func (s *FeedService) Update(feed IFeed) (IFeed, error) {
 	return resp.(IFeed), nil
 }
 
-// --------------------
+// --- new ---
+
+const template = "/api/{spaceId}/feeds{/id}{?skip,take,ids,partialName,feedType,name}"
 
 // note, the FeedID here has to be a real ID. You can't supply "feeds-builtin", you need to lookup the ID as "Feeds-101" etc, and use that instead
 func SearchPackageVersions(client newclient.Client, spaceID string, feedID string, packageID string, filter string, limit int) (*resources.Resources[*packages.PackageVersion], error) {
@@ -227,4 +237,56 @@ func SearchPackageVersions(client newclient.Client, spaceID string, feedID strin
 		return nil, err
 	}
 	return newclient.Get[resources.Resources[*packages.PackageVersion]](client.HttpSession(), expandedUri)
+}
+
+// Add creates a new feed.
+func Add(client newclient.Client, feed IFeed) (IFeed, error) {
+	res, err := newclient.Add[FeedResource](client, template, feed.GetSpaceID(), feed)
+	if err != nil {
+		return nil, err
+	}
+	return ToFeed(res)
+}
+
+// Get returns a collection of feeds based on the criteria defined by its
+// input query parameter.
+func Get(client newclient.Client, spaceID string, feedsQuery FeedsQuery) (*Feeds, error) {
+	// TODO this method is wired for /api/Spaces-1/feeds?ids=feeds-builtin
+	// but the server also supports a simpler single-value at /api/Spaces-1/feeds/feeds-builtin
+	// we should support that too.
+	res, err := newclient.GetByQuery[FeedResource](client, template, spaceID, feedsQuery)
+	if err != nil {
+		return nil, err
+	}
+	return ToFeeds(res), nil
+}
+
+// GetByID returns the feed that matches the input ID. If one cannot be found,
+// it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, id string) (IFeed, error) {
+	res, err := newclient.GetByID[FeedResource](client, template, spaceID, id)
+	if err != nil {
+		return nil, err
+	}
+	return ToFeed(res)
+}
+
+// Update modifies a feed based on the one provided as input.
+func Update(client newclient.Client, feed IFeed) (IFeed, error) {
+	feedResource, err := ToFeedResource(feed)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Update[FeedResource](client, template, feed.GetSpaceID(), feedResource.ID, feedResource)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToFeed(res)
+}
+
+// DeleteByID will delete a account with the provided id.
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	return newclient.DeleteByID(client, template, spaceID, id)
 }

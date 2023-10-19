@@ -3,7 +3,7 @@ package examples
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/url"
 	"os"
 
@@ -41,7 +41,7 @@ func ReplaceCertificateExample() {
 	}
 
 	// find the certificate with a specific name
-	certificateResources, err := client.Certificates.Get(query)
+	certificateResources, err := certificates.Get(client, spaceID, query)
 	if err != nil {
 		_ = fmt.Errorf("error matching certificate(s): %v", err)
 		return
@@ -56,7 +56,7 @@ func ReplaceCertificateExample() {
 		return
 	}
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		_ = fmt.Errorf("error reading file: %v", err)
 		return

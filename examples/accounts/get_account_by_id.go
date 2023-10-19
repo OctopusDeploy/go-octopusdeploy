@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
@@ -23,14 +24,14 @@ func GetAccountByIDExample() {
 		return
 	}
 
-	client, err := client.NewClient(nil, apiURL, apiKey, spaceID)
+	client, err := client.NewClient(nil, apiURL, apiKey, "")
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return
 	}
 
 	// get account by its ID
-	account, err := client.Accounts.GetByID(accountID)
+	account, err := accounts.GetByID(client, spaceID, accountID)
 	if err != nil {
 		_ = fmt.Errorf("error getting account: %v", err)
 		return

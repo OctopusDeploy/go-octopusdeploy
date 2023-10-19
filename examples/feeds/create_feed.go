@@ -48,7 +48,7 @@ func CreateFeedExample() {
 		nuGetFeed.Password = core.NewSensitiveValue(feedPassword)
 	}
 
-	_, err = client.Feeds.Add(nuGetFeed)
+	_, err = feeds.Add(client, nuGetFeed)
 	if err != nil {
 		_ = fmt.Errorf("error creating feed: %v", err)
 		return

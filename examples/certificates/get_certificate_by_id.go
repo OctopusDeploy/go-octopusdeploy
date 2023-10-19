@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/certificates"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
@@ -30,7 +31,7 @@ func GetCertificateByIDExample() {
 	}
 
 	// get certificate by its ID
-	certificate, err := client.Certificates.GetByID(certificateID)
+	certificate, err := certificates.GetByID(client, spaceID, certificateID)
 	if err != nil {
 		_ = fmt.Errorf("error getting certificate: %v", err)
 		return

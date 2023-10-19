@@ -76,6 +76,7 @@ import (
 type Client struct {
 	httpSession *newclient.HttpSession
 	sling       *sling.Sling // note sling will be removed in v3. The sling instance is wired up to use the same underlying http.Client as the httpSession
+	spaceID     string
 
 	Accounts                       *accounts.AccountService
 	ActionTemplates                *actiontemplates.ActionTemplateService
@@ -178,6 +179,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 	if err != nil {
 		return nil, err
 	}
+
 	return NewClientWithCredentials(httpClient, apiURL, apiKeyCredential, spaceID, "")
 }
 
@@ -250,6 +252,17 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		HttpClient:     httpClient,
 		BaseURL:        baseURLWithAPIParsed,
 		DefaultHeaders: defaultHeaders,
+	}
+
+	if spaceID == "" {
+		client := newclient.NewClient(httpSession)
+		defaultSpace, err := spaces.GetDefaultSpace(client)
+		if err != nil {
+			return nil, err
+		}
+		if defaultSpace != nil {
+			spaceID = defaultSpace.ID
+		}
 	}
 
 	rootPath := root.GetLinkPath(sroot, constants.LinkSelf)
@@ -402,6 +415,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	return &Client{
 		httpSession:                    httpSession,
 		sling:                          base,
+		spaceID:                        spaceID,
 		Accounts:                       accounts.NewAccountService(base, accountsPath),
 		ActionTemplates:                actiontemplates.NewActionTemplateService(base, actionTemplatesPath, actionTemplatesCategories, actionTemplatesLogo, actionTemplatesSearch, actionTemplateVersionedLogo),
 		APIKeys:                        users.NewAPIKeyService(base, apiKeysPath),
@@ -512,6 +526,10 @@ func (n *Client) HttpSession() *newclient.HttpSession {
 
 func (n *Client) Sling() *sling.Sling {
 	return n.sling
+}
+
+func (n *Client) GetSpaceID() string {
+	return n.spaceID
 }
 
 func (n *Client) URITemplateCache() *uritemplates.URITemplateCache {

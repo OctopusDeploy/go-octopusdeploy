@@ -55,7 +55,7 @@ func CreateProjectExample() {
 	// update any additional project fields here...
 
 	// create project through Add(); returns error if fails
-	createdProject, err := client.Projects.Add(project)
+	createdProject, err := projects.Add(client, project)
 	if err != nil {
 		_ = fmt.Errorf("error creating project: %v", err)
 		return

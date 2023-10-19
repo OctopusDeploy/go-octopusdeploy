@@ -46,7 +46,7 @@ func CreateAmazonWebServicesAccountExample() {
 	awsAccount.Description = accountDescription
 
 	// create account
-	createdAccount, err := client.Accounts.Add(awsAccount)
+	createdAccount, err := accounts.Add(client, awsAccount)
 	if err != nil {
 		_ = fmt.Errorf("error adding account: %v", err)
 	}

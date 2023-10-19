@@ -33,21 +33,21 @@ func ChangeFeedExample() {
 		PartialName: feedName,
 	}
 
-	// get feeds that match the name provided
-	feeds, err := client.Feeds.Get(query)
+	// get feedList that match the name provided
+	feedList, err := feeds.Get(client, "", query)
 	if err != nil {
 		_ = fmt.Errorf("error getting feed: %v", err)
 		return
 	}
 
 	// select a specific feed
-	feed := feeds.Items[0]
+	feed := feedList.Items[0]
 
 	// change feed name
 	feed.SetName(newFeedName)
 
 	// update feed
-	_, err = client.Feeds.Update(feed)
+	_, err = feeds.Update(client, feed)
 	if err != nil {
 		_ = fmt.Errorf("error updating feed: %v", err)
 		return
