@@ -206,3 +206,8 @@ func Update(client newclient.Client, environment *Environment) (*Environment, er
 func GetAll(client newclient.Client, spaceID string) ([]*Environment, error) {
 	return newclient.GetAll[Environment](client, template, spaceID)
 }
+
+// GetAll returns all environments. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Environment, error) {
+	return newclient.GetAll[Environment](client, template, spaceID)
+}
