@@ -207,8 +207,8 @@ func GetByID(client newclient.Client, spaceID string, ID string) (*DeploymentTar
 }
 
 // Update updates an existing machine in Octopus Deploy
-func Update(client newclient.Client, spaceID string, deploymentTarget *DeploymentTarget) (*DeploymentTarget, error) {
-	return newclient.Update[DeploymentTarget](client, template, spaceID, deploymentTarget.ID, deploymentTarget)
+func Update(client newclient.Client, deploymentTarget *DeploymentTarget) (*DeploymentTarget, error) {
+	return newclient.Update[DeploymentTarget](client, template, deploymentTarget.SpaceID, deploymentTarget.ID, deploymentTarget)
 }
 
 // DeleteById deletes the machine based on the ID provided.
