@@ -2,16 +2,20 @@ package uritemplates
 
 import (
 	"errors"
+	"sync"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type URITemplateCache struct {
 	cache map[string]*UriTemplate
+	mutex *sync.Mutex
 }
 
 func NewUriTemplateCache() *URITemplateCache {
 	return &URITemplateCache{
 		cache: map[string]*UriTemplate{},
+		mutex: &sync.Mutex{},
 	}
 }
 
@@ -20,6 +24,9 @@ func (c *URITemplateCache) Intern(uriTemplate string) (*UriTemplate, error) {
 	if ok {
 		return cachedTemplate, nil
 	}
+
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
 	template, err := Parse(uriTemplate)
 	if err != nil {
