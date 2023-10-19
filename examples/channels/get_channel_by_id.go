@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
@@ -30,7 +31,7 @@ func GetChannelByIDExample() {
 	}
 
 	// get channel by its ID
-	channel, err := client.Channels.GetByID(channelID)
+	channel, err := channels.GetByID(client, spaceID, channelID)
 	if err != nil {
 		_ = fmt.Errorf("error getting channel: %v", err)
 		return

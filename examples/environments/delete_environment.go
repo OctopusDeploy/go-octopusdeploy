@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 )
 
 func DeleteEnvironmentExample() {
@@ -30,7 +31,7 @@ func DeleteEnvironmentExample() {
 	}
 
 	// delete environment
-	err = client.Environments.DeleteByID(environmentID)
+	err = environments.DeleteByID(client, spaceID, environmentID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting environment: %v", err)
 		return

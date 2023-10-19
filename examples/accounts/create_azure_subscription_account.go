@@ -49,7 +49,7 @@ func CreateAzureSubscriptionAccountExample() {
 	azureAccount.StorageEndpointSuffix = azureStorageEndpointSuffix
 
 	// create account
-	createdAccount, err := client.Accounts.Add(azureAccount)
+	createdAccount, err := accounts.Add(client, azureAccount)
 	if err != nil {
 		_ = fmt.Errorf("error adding account: %v", err)
 	}

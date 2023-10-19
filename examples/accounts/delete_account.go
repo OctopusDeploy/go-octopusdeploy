@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
@@ -31,8 +32,8 @@ func DeleteAccountExample() {
 		return
 	}
 
-	// delete the account
-	err = client.Accounts.DeleteByID(accountID)
+	// delete the account, empty spaceID will revert to using the spaceID provided on the client
+	err = accounts.DeleteByID(client, "", accountID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting account: %v", err)
 		return

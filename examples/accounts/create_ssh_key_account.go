@@ -40,7 +40,7 @@ func CreateSSHKeyAccountExample() {
 	}
 
 	// create account
-	createdAccount, err := client.Accounts.Add(sshKeyAccount)
+	createdAccount, err := accounts.Add(client, sshKeyAccount)
 	if err != nil {
 		_ = fmt.Errorf("error adding account: %v", err)
 	}

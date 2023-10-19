@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/feeds"
 )
 
 func GetFeedByIDExample() {
@@ -30,7 +31,7 @@ func GetFeedByIDExample() {
 	}
 
 	// get feed by its ID
-	feed, err := client.Feeds.GetByID(feedID)
+	feed, err := feeds.GetByID(client, spaceID, feedID)
 	if err != nil {
 		_ = fmt.Errorf("error getting feed: %v", err)
 		return
