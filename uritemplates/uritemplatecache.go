@@ -20,13 +20,13 @@ func NewUriTemplateCache() *URITemplateCache {
 }
 
 func (c *URITemplateCache) Intern(uriTemplate string) (*UriTemplate, error) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
 	cachedTemplate, ok := c.cache[uriTemplate]
 	if ok {
 		return cachedTemplate, nil
 	}
-
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
 
 	template, err := Parse(uriTemplate)
 	if err != nil {

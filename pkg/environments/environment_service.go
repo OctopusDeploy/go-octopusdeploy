@@ -196,6 +196,6 @@ func GetByID(client newclient.Client, spaceID string, ID string) (*Environment, 
 }
 
 // Update modifies an environment based on the one provided as input.
-func Update(client newclient.Client, spaceID string, environment *Environment) (*Environment, error) {
-	return newclient.Update[Environment](client, template, spaceID, environment.ID, environment)
+func Update(client newclient.Client, environment *Environment) (*Environment, error) {
+	return newclient.Update[Environment](client, template, environment.SpaceID, environment.ID, environment)
 }
