@@ -278,7 +278,7 @@ func Update(client newclient.Client, feed IFeed) (IFeed, error) {
 		return nil, err
 	}
 
-	res, err := newclient.Add[FeedResource](client, template, feed.GetSpaceID(), feedResource)
+	res, err := newclient.Update[FeedResource](client, template, feed.GetSpaceID(), feedResource.ID, feedResource)
 	if err != nil {
 		return nil, err
 	}
