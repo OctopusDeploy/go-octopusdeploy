@@ -84,6 +84,8 @@ func (s *CertificateService) Get(certificatesQuery CertificatesQuery) (*resource
 
 // GetAll returns all certificates. If none are found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use certificates.GetAll
 func (s *CertificateService) GetAll() ([]*CertificateResource, error) {
 	items := []*CertificateResource{}
 	path, err := services.GetAllPath(s)
@@ -201,4 +203,9 @@ func GetByID(client newclient.Client, spaceID string, ID string) (*CertificateRe
 // Update modifies a Certificate based on the one provided as input.
 func Update(client newclient.Client, resource *CertificateResource) (*CertificateResource, error) {
 	return newclient.Update[CertificateResource](client, template, resource.SpaceID, resource.ID, resource)
+}
+
+// GetAll returns all certificates. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*CertificateResource, error) {
+	return newclient.GetAll[CertificateResource](client, template, spaceID)
 }

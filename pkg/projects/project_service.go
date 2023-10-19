@@ -2,10 +2,11 @@ package projects
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
@@ -141,6 +142,8 @@ func (s *ProjectService) Get(projectsQuery ProjectsQuery) (*resources.Resources[
 
 // GetAll returns all projects. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecates: use projects.GetAll
 func (s *ProjectService) GetAll() ([]*Project, error) {
 	items := []*Project{}
 	path, err := services.GetAllPath(s)
@@ -556,4 +559,9 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	}
 
 	return newclient.Delete(client.HttpSession(), expandedUri)
+}
+
+// GetAll returns all projects. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Project, error) {
+	return newclient.GetAll[Project](client, projectsTemplate, spaceID)
 }

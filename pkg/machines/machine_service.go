@@ -97,6 +97,8 @@ func (s *MachineService) GetByID(id string) (*DeploymentTarget, error) {
 
 // GetAll returns all machines. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use machines.GetAll
 func (s *MachineService) GetAll() ([]*DeploymentTarget, error) {
 	items := []*DeploymentTarget{}
 	path, err := services.GetAllPath(s)
@@ -214,4 +216,9 @@ func Update(client newclient.Client, spaceID string, deploymentTarget *Deploymen
 // DeleteById deletes the machine based on the ID provided.
 func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetAll returns all machines. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*DeploymentTarget, error) {
+	return newclient.GetAll[DeploymentTarget](client, template, spaceID)
 }

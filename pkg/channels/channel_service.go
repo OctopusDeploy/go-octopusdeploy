@@ -71,6 +71,8 @@ func (s *ChannelService) Get(channelsQuery Query) (*resources.Resources[*Channel
 
 // GetAll returns all channels. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Depreacted: use channels.GetAll
 func (s *ChannelService) GetAll() ([]*Channel, error) {
 	items := []*Channel{}
 	path, err := services.GetAllPath(s)
@@ -146,4 +148,9 @@ func Update(client newclient.Client, channel *Channel) (*Channel, error) {
 // DeleteById deletes the channel based on the ID provided as input.
 func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetAll returns all channels. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Channel, error) {
+	return newclient.GetAll[Channel](client, template, spaceID)
 }

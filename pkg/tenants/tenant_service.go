@@ -114,6 +114,8 @@ func (s *TenantService) Get(tenantsQuery TenantsQuery) (*resources.Resources[*Te
 
 // GetAll returns all tenants. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use tenants.GetAll
 func (s *TenantService) GetAll() ([]*Tenant, error) {
 	items := []*Tenant{}
 	path, err := services.GetAllPath(s)
@@ -306,4 +308,9 @@ func GetByID(client newclient.Client, spaceID string, ID string) (*Tenant, error
 // DeleteByID deletes the tenant that matches the input ID.
 func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetAll returns all tenants. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
+	return newclient.GetAll[Tenant](client, template, spaceID)
 }

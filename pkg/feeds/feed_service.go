@@ -290,3 +290,9 @@ func Update(client newclient.Client, feed IFeed) (IFeed, error) {
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	return newclient.DeleteByID(client, template, spaceID, id)
 }
+
+// GetAll returns all feeds. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]IFeed, error) {
+	items, err := newclient.GetAll[FeedResource](client, template, spaceID)
+	return ToFeedArray(items), err
+}

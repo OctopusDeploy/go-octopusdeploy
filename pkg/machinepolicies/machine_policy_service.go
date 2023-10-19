@@ -37,6 +37,6 @@ func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 
 // GetAll returns all machine policies. If none can be found or an error
 // occurs, it returns an empty collection.
-func GetAll(client newclient.Client, spaceID string) (*[]MachinePolicy, error) {
+func GetAll(client newclient.Client, spaceID string) ([]*MachinePolicy, error) {
 	return newclient.GetAll[MachinePolicy](client, template, spaceID)
 }

@@ -91,6 +91,8 @@ func (s *TagSetService) GetByID(id string) (*TagSet, error) {
 
 // GetAll returns all tag sets. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecates: use tagsets.GetAll
 func (s *TagSetService) GetAll() ([]*TagSet, error) {
 	items := []*TagSet{}
 	path, err := services.GetAllPath(s)
@@ -176,4 +178,9 @@ func Update(client newclient.Client, tagSet *TagSet) (*TagSet, error) {
 // DeleteByID deletes the tag set that matches the provided ID.
 func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetAll returns all tag sets. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*TagSet, error) {
+	return newclient.GetAll[TagSet](client, template, spaceID)
 }
