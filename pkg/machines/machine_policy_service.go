@@ -25,6 +25,8 @@ func NewMachinePolicyService(sling *sling.Sling, uriTemplate string, templatePat
 }
 
 // Add creates a new machine policy.
+//
+// Deprecated: use machinepolicies.Add
 func (s *MachinePolicyService) Add(machinePolicy *MachinePolicy) (*MachinePolicy, error) {
 	if IsNil(machinePolicy) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterMachinePolicy)
@@ -46,6 +48,8 @@ func (s *MachinePolicyService) Add(machinePolicy *MachinePolicy) (*MachinePolicy
 // Get returns a collection of machine policies based on the criteria defined
 // by its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
+//
+// Deprecated: use machinepolicies.Get
 func (s *MachinePolicyService) Get(machinePoliciesQuery MachinePoliciesQuery) (*resources.Resources[*MachinePolicy], error) {
 	path, err := s.GetURITemplate().Expand(machinePoliciesQuery)
 	if err != nil {
@@ -62,6 +66,8 @@ func (s *MachinePolicyService) Get(machinePoliciesQuery MachinePoliciesQuery) (*
 
 // GetAll returns all machine policies. If none can be found or an error
 // occurs, it returns an empty collection.
+//
+// Deprecated: use machinepolicies.GetAll
 func (s *MachinePolicyService) GetAll() ([]*MachinePolicy, error) {
 	items := []*MachinePolicy{}
 	path, err := services.GetAllPath(s)
@@ -75,6 +81,8 @@ func (s *MachinePolicyService) GetAll() ([]*MachinePolicy, error) {
 
 // GetByID returns the machine policy that matches the input ID. If one cannot
 // be found, it returns nil and an error.
+//
+// Deprecated: use machinepolicies.GetByID
 func (s *MachinePolicyService) GetByID(id string) (*MachinePolicy, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -118,6 +126,8 @@ func (s *MachinePolicyService) GetTemplate() (*MachinePolicy, error) {
 }
 
 // Update modifies a machine policy based on the one provided as input.
+//
+// Deprecated: use machinepolicies.Update
 func (s *MachinePolicyService) Update(machinePolicy *MachinePolicy) (*MachinePolicy, error) {
 	path, err := services.GetUpdatePath(s, machinePolicy)
 	if err != nil {
