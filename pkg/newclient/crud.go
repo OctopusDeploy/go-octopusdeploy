@@ -31,7 +31,7 @@ func DeleteByID(client Client, template string, spaceID string, id string) error
 // Add creates a new resource.
 func Add[TResource any](client Client, template string, spaceID string, resource any) (*TResource, error) {
 	if resource == nil {
-		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterAccount)
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterResource)
 	}
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
 	if err != nil {
@@ -56,7 +56,7 @@ func Add[TResource any](client Client, template string, spaceID string, resource
 // Update modifies a resource based on the one provided as input.
 func Update[TResource any](client Client, template string, spaceID string, ID string, resource any) (*TResource, error) {
 	if resource == nil {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterWorkerPool)
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterResource)
 	}
 
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())

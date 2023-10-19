@@ -83,7 +83,7 @@ func (s *AccountService) GetAll() ([]IAccount, error) {
 // GetByID returns the account that matches the input ID. If one is not found,
 // it returns nil and an error.
 //
-// Deprecated: Use accounts.Get
+// Deprecated: Use accounts.GetByID
 func (s *AccountService) GetByID(id string) (IAccount, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -182,7 +182,7 @@ func Update(client newclient.Client, account IAccount) (IAccount, error) {
 		return nil, err
 	}
 
-	res, err := newclient.Add[AccountResource](client, template, account.GetSpaceID(), accountResource)
+	res, err := newclient.Update[AccountResource](client, template, account.GetSpaceID(), accountResource.ID, accountResource)
 	if err != nil {
 		return nil, err
 	}

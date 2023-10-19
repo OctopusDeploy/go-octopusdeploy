@@ -57,7 +57,7 @@ func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, er
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
 //
-// Deprecated: Use projects.Get
+// Deprecated: Use projectgroups.Get
 func (s *ProjectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*resources.Resources[*ProjectGroup], error) {
 	path, err := s.GetURITemplate().Expand(projectGroupsQuery)
 	if err != nil {
