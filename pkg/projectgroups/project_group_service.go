@@ -1,6 +1,8 @@
 package projectgroups
 
 import (
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -11,7 +13,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
-	"strings"
 )
 
 // ProjectGroupService handles communication with ProjectGroup-related methods of the Octopus API.
@@ -74,6 +75,8 @@ func (s *ProjectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*resou
 
 // GetAll returns all project groups. If none can be found or an error occurs,
 // it returns an empty collection.
+//
+// Deprecates: use projectgroups.GetAll
 func (s *ProjectGroupService) GetAll() ([]*ProjectGroup, error) {
 	items := []*ProjectGroup{}
 	path, err := services.GetAllPath(s)
@@ -305,4 +308,9 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	}
 
 	return newclient.Delete(client.HttpSession(), expandedUri)
+}
+
+// GetAll returns all project groups. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*ProjectGroup, error) {
+	return newclient.GetAll[ProjectGroup](client, projectGroupsTemplate, spaceID)
 }

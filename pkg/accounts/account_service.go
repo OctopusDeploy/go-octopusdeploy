@@ -69,6 +69,8 @@ func (s *AccountService) Get(accountsQuery ...AccountsQuery) (*Accounts, error) 
 
 // GetAll returns all accounts. If none are found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use accounts.GetAll
 func (s *AccountService) GetAll() ([]IAccount, error) {
 	items := []*AccountResource{}
 	path, err := services.GetAllPath(s)
@@ -193,4 +195,10 @@ func Update(client newclient.Client, account IAccount) (IAccount, error) {
 // DeleteByID will delete a account with the provided id.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	return newclient.DeleteByID(client, template, spaceID, id)
+}
+
+// GetAll returns all accounts. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]IAccount, error) {
+	items, err := newclient.GetAll[AccountResource](client, template, spaceID)
+	return ToAccountArray(items), err
 }

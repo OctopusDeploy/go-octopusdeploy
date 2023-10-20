@@ -71,6 +71,8 @@ func (s *EnvironmentService) Get(environmentsQuery EnvironmentsQuery) (*resource
 
 // GetAll returns all environments. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use environments.GetAll
 func (s *EnvironmentService) GetAll() ([]*Environment, error) {
 	items := []*Environment{}
 	path, err := services.GetAllPath(s)
@@ -198,4 +200,9 @@ func GetByID(client newclient.Client, spaceID string, ID string) (*Environment, 
 // Update modifies an environment based on the one provided as input.
 func Update(client newclient.Client, environment *Environment) (*Environment, error) {
 	return newclient.Update[Environment](client, template, environment.SpaceID, environment.ID, environment)
+}
+
+// GetAll returns all environments. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Environment, error) {
+	return newclient.GetAll[Environment](client, template, spaceID)
 }
