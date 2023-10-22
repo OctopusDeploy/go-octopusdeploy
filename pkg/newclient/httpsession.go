@@ -99,6 +99,10 @@ func (h *HttpSession) DoRawJsonRequest(req *http.Request, requestBody any, outpu
 		if err != nil {
 			return nil, err
 		}
+		if outputRes, ok := outputResponseError.(*core.APIError); ok {
+			outputRes.StatusCode = resp.StatusCode
+			return nil, outputRes
+		}
 		return nil, outputResponseError
 	}
 }
