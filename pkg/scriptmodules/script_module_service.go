@@ -80,7 +80,7 @@ func Get(client newclient.Client, spaceID string, libraryVariablesQuery variable
 	}
 	values["spaceId"] = spaceID
 
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.Variables, values)
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.LibraryVariableSets, values)
 	if err != nil {
 		return nil, err
 	}
