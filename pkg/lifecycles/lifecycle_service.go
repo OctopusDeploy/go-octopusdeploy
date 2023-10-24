@@ -68,6 +68,8 @@ func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[*Lif
 
 // GetAll returns all lifecycles. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use lifecycles.GetAll
 func (s *LifecycleService) GetAll() ([]*Lifecycle, error) {
 	path, err := services.GetAllPath(s)
 	if err != nil {
@@ -221,4 +223,9 @@ func Update(client newclient.Client, lifecycle *Lifecycle) (*Lifecycle, error) {
 // found, it returns nil and an error.
 func GetByID(client newclient.Client, spaceID string, ID string) (*Lifecycle, error) {
 	return newclient.GetByID[Lifecycle](client, template, spaceID, ID)
+}
+
+// GetAll returns all lifecycles. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Lifecycle, error) {
+	return newclient.GetAll[Lifecycle](client, template, spaceID)
 }

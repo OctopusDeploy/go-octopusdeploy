@@ -130,3 +130,31 @@ func GetByID[TResource any](client Client, template string, spaceID string, ID s
 
 	return res, nil
 }
+
+// GetAll returns all resources. If an error occurs, it returns nil.
+func GetAll[TResource any](client Client, template string, spaceID string) ([]*TResource, error) {
+	path, err := client.URITemplateCache().Expand(template, map[string]any{
+		"spaceId": spaceID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	spaces := make([]*TResource, 0)
+	res, err := Get[resources.Resources[*TResource]](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+	spaces = append(spaces, res.Items...)
+	for res.Links.PageNext != "" {
+		nextPagePath, err := client.URITemplateCache().Expand(res.Links.PageNext, map[string]any{})
+		if err != nil {
+			return nil, err
+		}
+		res, err = Get[resources.Resources[*TResource]](client.HttpSession(), nextPagePath)
+		if err != nil {
+			return nil, err
+		}
+		spaces = append(spaces, res.Items...)
+	}
+	return spaces, err
+}
