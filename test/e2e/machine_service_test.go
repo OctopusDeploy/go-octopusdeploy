@@ -248,3 +248,90 @@ func TestMachineServiceUpdate(t *testing.T) {
 	require.NotNil(t, updatedDeploymentTarget)
 	IsEqualDeploymentTargets(t, deploymentTarget, updatedDeploymentTarget)
 }
+
+// === NEW ===
+
+func TestMachineServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	id := internal.GetRandomName()
+	err := machines.DeleteByID(client, client.GetSpaceID(), id)
+	require.Error(t, err)
+
+	environment := CreateTestEnvironment_NewClient(t, client)
+	require.NotNil(t, environment)
+	defer DeleteTestEnvironment_NewClient(t, client, environment)
+
+	createdDeploymentTarget := CreateTestDeploymentTarget_NewClient(t, client, environment)
+	require.NotNil(t, createdDeploymentTarget)
+	defer DeleteTestDeploymentTarget_NewClient(t, client, createdDeploymentTarget)
+
+	deploymentTarget, err := machines.GetByID(client, createdDeploymentTarget.SpaceID, createdDeploymentTarget.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, deploymentTarget)
+	IsEqualDeploymentTargets(t, createdDeploymentTarget, deploymentTarget)
+}
+
+func CreateTestDeploymentTarget_NewClient(t *testing.T, client *client.Client, environment *environments.Environment) *machines.DeploymentTarget {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	// thumbprints must be unique, therefore accept a testName string so we can
+	// pass through a fixed ID with the name machine that will be consistent
+	// through the same test, but different for different tests
+	h := md5.New()
+
+	_, err := io.WriteString(h, name)
+	require.NoError(t, err)
+
+	_, err = io.WriteString(h, environment.GetID())
+	require.NoError(t, err)
+
+	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
+	environmentIDs := []string{environment.GetID()}
+	roles := []string{"Prod"}
+
+	endpoint := machines.NewOfflinePackageDropEndpoint()
+	require.NotNil(t, endpoint)
+
+	endpoint.ApplicationsDirectory = "C:\\Applications"
+	endpoint.WorkingDirectory = "C:\\Octopus"
+
+	deploymentTarget := machines.NewDeploymentTarget(name, endpoint, environmentIDs, roles)
+	deploymentTarget.IsDisabled = true
+	deploymentTarget.MachinePolicyID = "MachinePolicies-1"
+	deploymentTarget.Status = "Disabled"
+	deploymentTarget.Thumbprint = strings.ToUpper(thumbprint[:16])
+	deploymentTarget.URI = "https://example.com/"
+
+	require.NoError(t, deploymentTarget.Validate())
+
+	createdDeploymentTarget, err := machines.Add(client, deploymentTarget)
+	require.NoError(t, err)
+	require.NotNil(t, createdDeploymentTarget)
+	require.NotEmpty(t, createdDeploymentTarget.GetID())
+
+	return createdDeploymentTarget
+}
+
+func DeleteTestDeploymentTarget_NewClient(t *testing.T, client *client.Client, deploymentTarget *machines.DeploymentTarget) {
+	require.NotNil(t, deploymentTarget)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := machines.DeleteByID(client, deploymentTarget.SpaceID, deploymentTarget.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedDeploymentTarget, err := machines.GetByID(client, deploymentTarget.SpaceID, deploymentTarget.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedDeploymentTarget)
+}

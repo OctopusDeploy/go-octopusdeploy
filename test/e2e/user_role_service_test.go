@@ -138,11 +138,11 @@ func CreateTestUserRole_NewClient(t *testing.T, client *client.Client) *userrole
 	userRole := userroles.NewUserRole(name)
 	require.NoError(t, userRole.Validate())
 
-	createdUserRole, err := client.UserRoles.Add(userRole)
+	createdUserRole, err := userroles.Add(client, userRole)
 	require.NotNil(t, createdUserRole)
 	require.NoError(t, err)
 
-	userRoleToCompare, err := client.UserRoles.GetByID(createdUserRole.GetID())
+	userRoleToCompare, err := userroles.GetByID(client, createdUserRole.GetID())
 	require.NotNil(t, userRoleToCompare)
 	require.NoError(t, err)
 
@@ -174,7 +174,7 @@ func TestUserRoleServiceAddGetDelete_NewClient(t *testing.T) {
 
 	userRole := CreateTestUserRole_NewClient(t, client)
 	require.NotNil(t, userRole)
-	defer DeleteTestUserRole(t, client, userRole)
+	defer DeleteTestUserRole_NewClient(t, client, userRole)
 
 	userRoles, err := client.UserRoles.GetAll()
 	require.NoError(t, err)
@@ -184,7 +184,7 @@ func TestUserRoleServiceAddGetDelete_NewClient(t *testing.T) {
 		query := userroles.UserRolesQuery{
 			IDs: []string{userRole.GetID()},
 		}
-		userRolesToCompare, err := client.UserRoles.Get(query)
+		userRolesToCompare, err := userroles.Get(client, client.GetSpaceID(), query)
 		require.NoError(t, err)
 		require.NotNil(t, userRolesToCompare)
 		for _, userRoleToCompare := range userRolesToCompare.Items {
