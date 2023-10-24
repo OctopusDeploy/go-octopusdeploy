@@ -256,3 +256,80 @@ func TestChannelServiceGetByPartialName(t *testing.T) {
 		require.True(t, len(channelsToCompare.Items) > 0)
 	}
 }
+
+// === NEW CLIENT ===
+func TestChannelServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle_NewClient(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle_NewClient(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup_NewClient(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup_NewClient(t, client, projectGroup)
+
+	project := CreateTestProject_NewClient(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject_NewClient(t, client, project)
+
+	channel := CreateTestChannel_NewClient(t, client, project)
+	require.NotNil(t, channel)
+	defer DeleteTestChannel_NewClient(t, client, channel)
+
+	channelToCompare, err := channels.GetByID(client, channel.SpaceID, channel.GetID())
+	require.NotNil(t, channelToCompare)
+	require.NoError(t, err)
+	AssertEqualChannels(t, channel, channelToCompare)
+}
+
+func CreateTestChannel_NewClient(t *testing.T, client *client.Client, project *projects.Project) *channels.Channel {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	channel := channels.NewChannel(name, project.GetID())
+	require.NotNil(t, channel)
+	require.NoError(t, channel.Validate())
+
+	createdChannel, err := channels.Add(client, channel)
+	require.NoError(t, err)
+	require.NotNil(t, createdChannel)
+	require.NotEmpty(t, createdChannel.GetID())
+
+	// verify the add operation was successful
+	channelToCompare, err := channels.GetByID(client, createdChannel.SpaceID, createdChannel.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, channelToCompare)
+	AssertEqualChannels(t, createdChannel, channelToCompare)
+
+	return createdChannel
+}
+
+func DeleteTestChannel_NewClient(t *testing.T, client *client.Client, channel *channels.Channel) {
+	require.NotNil(t, channel)
+
+	if channel.IsDefault {
+		return
+	}
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := channels.DeleteByID(client, channel.SpaceID, channel.GetID())
+	require.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedChannel, err := channels.GetByID(client, channel.SpaceID, channel.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedChannel)
+}

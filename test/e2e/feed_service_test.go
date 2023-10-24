@@ -326,3 +326,153 @@ func TestFeedServiceSearchPackageVersions(t *testing.T) {
 		require.NoError(t, err)
 	}
 }
+
+// === NEW ===
+
+func TestFeedServiceCRUD_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	gitHubRepositoryFeed := CreateTestGitHubRepositoryFeed_NewClient(t, client).(*feeds.GitHubRepositoryFeed)
+	require.NotNil(t, gitHubRepositoryFeed)
+	defer DeleteTestFeed_NewClient(t, client, gitHubRepositoryFeed)
+
+	actual, err := feeds.GetByID(client, gitHubRepositoryFeed.SpaceID, gitHubRepositoryFeed.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, gitHubRepositoryFeed, actual)
+
+	name := internal.GetRandomName()
+	gitHubRepositoryFeed.SetName(name)
+
+	actual, err = feeds.Update(client, gitHubRepositoryFeed)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, gitHubRepositoryFeed, actual)
+
+	gitHubRepositoryFeed = actual.(*feeds.GitHubRepositoryFeed)
+	require.NotNil(t, gitHubRepositoryFeed)
+
+	expected := CreateTestHelmFeed_NewClient(t, client)
+	require.NotNil(t, expected)
+	defer DeleteTestFeed_NewClient(t, client, expected)
+
+	actual, err = feeds.GetByID(client, expected.GetSpaceID(), expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name = internal.GetRandomName()
+	expected.SetName(name)
+
+	actual, err = feeds.Update(client, expected)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	expected = CreateTestMavenFeed_NewClient(t, client)
+	require.NotNil(t, expected)
+	defer DeleteTestFeed_NewClient(t, client, expected)
+
+	actual, err = feeds.GetByID(client, expected.GetSpaceID(), expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name = internal.GetRandomName()
+	expected.SetName(name)
+
+	actual, err = feeds.Update(client, expected)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	expected = CreateTestNuGetFeed_NewClient(t, client)
+	require.NotNil(t, expected)
+	defer DeleteTestFeed_NewClient(t, client, expected)
+
+	actual, err = feeds.GetByID(client, expected.GetSpaceID(), expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name = internal.GetRandomName()
+	expected.SetName(name)
+
+	actual, err = feeds.Update(client, expected)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+}
+
+func CreateTestGitHubRepositoryFeed_NewClient(t *testing.T, client *client.Client) feeds.IFeed {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	feed, err := feeds.NewGitHubRepositoryFeed(internal.GetRandomName())
+	require.NoError(t, err)
+
+	resource, err := feeds.Add(client, feed)
+	require.NoError(t, err)
+
+	return resource
+}
+
+func CreateTestHelmFeed_NewClient(t *testing.T, client *client.Client) feeds.IFeed {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	feed, err := feeds.NewHelmFeed(internal.GetRandomName())
+	require.NoError(t, err)
+
+	resource, err := feeds.Add(client, feed)
+	require.NoError(t, err)
+
+	return resource
+}
+
+func CreateTestMavenFeed_NewClient(t *testing.T, client *client.Client) feeds.IFeed {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	feed, err := feeds.NewMavenFeed(internal.GetRandomName())
+	require.NoError(t, err)
+
+	resource, err := feeds.Add(client, feed)
+	require.NoError(t, err)
+
+	return resource
+}
+
+func CreateTestNuGetFeed_NewClient(t *testing.T, client *client.Client) feeds.IFeed {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	feed, err := feeds.NewNuGetFeed(internal.GetRandomName(), "https://api.nuget.org/v3/index.json")
+	require.NoError(t, err)
+
+	resource, err := feeds.Add(client, feed)
+	require.NoError(t, err)
+
+	return resource
+}
+
+func DeleteTestFeed_NewClient(t *testing.T, client *client.Client, feed feeds.IFeed) {
+	require.NotNil(t, feed)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	// built-in feeds cannot be deleted
+	if feed.GetFeedType() != feeds.FeedTypeBuiltIn && feed.GetFeedType() != feeds.FeedTypeOctopusProject {
+		err := client.Feeds.DeleteByID(feed.GetID())
+		require.NoError(t, err)
+
+		// verify the delete operation was successful
+		deletedFeed, err := feeds.GetByID(client, feed.GetSpaceID(), feed.GetID())
+		require.Error(t, err)
+		require.Nil(t, deletedFeed)
+	}
+}

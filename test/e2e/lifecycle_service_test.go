@@ -239,3 +239,94 @@ func cleanLifecycle(t *testing.T, octopusClient *client.Client, lifecycleID stri
 	err := octopusClient.Lifecycles.DeleteByID(lifecycleID)
 	assert.NoError(t, err)
 }
+
+// === NEW ===
+
+func TestLifecycleAddGetAndDelete_NewClient(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	lifecycle := createTestLifecycle_NewClient(t, octopusClient, internal.GetRandomName())
+	defer cleanLifecycle_NewClient(t, octopusClient, lifecycle)
+
+	getLifecycle, err := lifecycles.GetByID(octopusClient, lifecycle.SpaceID, lifecycle.GetID())
+	assert.NoError(t, err, "there was an error raised getting lifecycle when there should not be")
+	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
+}
+
+func createTestLifecycle_NewClient(t *testing.T, client *client.Client, lifecycleName string) *lifecycles.Lifecycle {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	p := getTestLifecycle(lifecycleName)
+	require.NotNil(t, p)
+
+	createdLifecycle, err := lifecycles.Add(client, p)
+	require.NoError(t, err)
+
+	return createdLifecycle
+}
+
+func cleanLifecycle_NewClient(t *testing.T, client *client.Client, lifecycle *lifecycles.Lifecycle) {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := lifecycles.DeleteByID(client, lifecycle.SpaceID, lifecycle.GetID())
+	assert.NoError(t, err)
+}
+
+func CreateTestLifecycle_NewClient(t *testing.T, client *client.Client) *lifecycles.Lifecycle {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	lifecycle := lifecycles.NewLifecycle(name)
+	require.NotNil(t, lifecycle)
+
+	createdLifecycle, err := lifecycles.Add(client, lifecycle)
+	require.NoError(t, err)
+	require.NotNil(t, createdLifecycle)
+	require.NotEmpty(t, createdLifecycle.GetID())
+
+	// verify the add operation was successful
+	lifecycleToCompare, err := lifecycles.GetByID(client, createdLifecycle.SpaceID, createdLifecycle.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, lifecycleToCompare)
+	AssertEqualLifecycles(t, createdLifecycle, lifecycleToCompare)
+
+	return createdLifecycle
+}
+
+func DeleteTestLifecycle_NewClient(t *testing.T, client *client.Client, lifecycle *lifecycles.Lifecycle) {
+	require.NotNil(t, lifecycle)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	// TODO: update GetProjects function to new client
+	projects, err := client.Lifecycles.GetProjects(lifecycle)
+	require.NoError(t, err)
+	require.NotNil(t, projects)
+
+	if len(projects) > 0 {
+		// a lifecycle cannot be deleted if it is being used by a project(s)
+		return
+	}
+
+	err = client.Lifecycles.DeleteByID(lifecycle.GetID())
+	require.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedLifecycle, err := lifecycles.GetByID(client, lifecycle.SpaceID, lifecycle.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedLifecycle)
+}

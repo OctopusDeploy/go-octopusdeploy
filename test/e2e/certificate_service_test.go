@@ -204,3 +204,78 @@ func TestCertificateServiceDeleteAll(t *testing.T) {
 		defer DeleteTestCertificateResource(t, client, certificate)
 	}
 }
+
+// === NEW ===
+
+func TestCertificateServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	certificate := CreateTestCertificateResource_NewClient(t, client)
+	require.NotNil(t, certificate)
+	defer DeleteTestCertificateResource_NewClient(t, client, certificate)
+
+	certificateToCompare, err := certificates.GetByID(client, certificate.SpaceID, certificate.GetID())
+	require.NotNil(t, certificateToCompare)
+	require.NoError(t, err)
+	AssertEqualCertificateResources(t, certificate, certificateToCompare)
+}
+
+func CreateTestCertificateResource_NewClient(t *testing.T, client *client.Client) *certificates.CertificateResource {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	rand.Seed(time.Now().UnixNano())
+	i := rand.Intn(2)
+
+	certificateData := core.NewSensitiveValue(testCertificates[i].Data)
+	require.NotNil(t, certificateData)
+
+	password := core.NewSensitiveValue(testCertificates[i].Password)
+	require.NotNil(t, password)
+
+	certificate := certificates.NewCertificateResource(name, certificateData, password)
+	require.NotNil(t, certificate)
+	require.NoError(t, certificate.Validate())
+
+	createdCertificate, err := certificates.Add(client, certificate)
+	require.NoError(t, err)
+	require.NotNil(t, createdCertificate)
+	require.NotEmpty(t, createdCertificate.GetID())
+
+	// verify the add operation was successful
+	certificateToCompare, err := certificates.GetByID(client, createdCertificate.SpaceID, createdCertificate.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, certificateToCompare)
+	AssertEqualCertificateResources(t, createdCertificate, certificateToCompare)
+
+	return createdCertificate
+}
+
+func DeleteTestCertificateResource_NewClient(t *testing.T, client *client.Client, certificate *certificates.CertificateResource) {
+	require.NotNil(t, certificate)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	// TODO: migrate archive
+	if len(certificate.Archived) <= 0 {
+		archivedCertificate, err := client.Certificates.Archive(certificate)
+		require.NoError(t, err)
+		require.NotNil(t, archivedCertificate)
+	}
+
+	err := certificates.DeleteByID(client, certificate.SpaceID, certificate.GetID())
+	require.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedCertificate, err := certificates.GetByID(client, certificate.SpaceID, certificate.GetID())
+	require.Error(t, err)
+	require.Nil(t, deletedCertificate)
+}

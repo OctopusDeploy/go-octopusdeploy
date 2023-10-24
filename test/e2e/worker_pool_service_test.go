@@ -196,3 +196,68 @@ func TestWorkerPoolServiceGetDynamicWorkerTypes(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, types)
 }
+
+// === NEW ===
+
+func TestWorkerPoolServiceCRUD_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	staticWorkerPool := CreateTestStaticWorkerPool_NewClient(t, client)
+	require.NotNil(t, staticWorkerPool)
+	defer DeleteTestWorkerPool_NewClient(t, client, staticWorkerPool)
+
+	updatedName := internal.GetRandomName()
+
+	staticWorkerPool.SetName(updatedName)
+
+	updatedStaticWorkerPool := UpdateWorkerPool(t, client, staticWorkerPool)
+	require.NotNil(t, updatedStaticWorkerPool)
+
+	staticWorkerPoolToCompare, err := workerpools.GetByID(client, updatedStaticWorkerPool.GetSpaceID(), updatedStaticWorkerPool.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, staticWorkerPoolToCompare)
+	AssertEqualWorkerPools(t, updatedStaticWorkerPool, staticWorkerPoolToCompare)
+}
+
+func CreateTestStaticWorkerPool_NewClient(t *testing.T, client *client.Client) workerpools.IWorkerPool {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	staticWorkerPool := workerpools.NewStaticWorkerPool(name)
+	require.NotNil(t, staticWorkerPool)
+	require.NoError(t, staticWorkerPool.Validate())
+
+	createdStaticWorkerPool, err := workerpools.Add(client, staticWorkerPool)
+	require.NoError(t, err)
+	require.NotNil(t, createdStaticWorkerPool)
+	require.NotEmpty(t, createdStaticWorkerPool.GetID())
+
+	// verify the add operation was successful
+	staticWorkerPoolToCompare, err := workerpools.GetByID(client, createdStaticWorkerPool.GetSpaceID(), createdStaticWorkerPool.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, staticWorkerPoolToCompare)
+	AssertEqualWorkerPools(t, createdStaticWorkerPool, staticWorkerPoolToCompare)
+
+	return createdStaticWorkerPool
+}
+
+func DeleteTestWorkerPool_NewClient(t *testing.T, client *client.Client, workerPool workerpools.IWorkerPool) {
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := workerpools.DeleteByID(client, workerPool.GetSpaceID(), workerPool.GetID())
+	require.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedWorkerPool, err := workerpools.GetByID(client, workerPool.GetSpaceID(), workerPool.GetID())
+	require.Error(t, err)
+	require.Nil(t, deletedWorkerPool)
+}

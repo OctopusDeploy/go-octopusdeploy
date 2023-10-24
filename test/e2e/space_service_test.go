@@ -225,3 +225,77 @@ func TestSpaceGetByName(t *testing.T) {
 // 	IsEqualSpaces(t, expected, actual)
 // 	defer DeleteTestSpace(t, client, expected)
 // }
+
+// === NEW ===
+
+func TestSpaceSetAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := CreateTestSpace_NewClient(t, client)
+	require.NotNil(t, space)
+	defer DeleteTestSpace_NewClient(t, client, space)
+
+	spaceToCompare, err := spaces.GetByID(client, space.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, spaceToCompare)
+	IsEqualSpaces(t, space, spaceToCompare)
+}
+
+func CreateTestSpace_NewClient(t *testing.T, client *client.Client) *spaces.Space {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	user := CreateTestUser_NewClient(t, client)
+
+	name := getShortRandomName()
+
+	space := spaces.NewSpace(name)
+	require.NoError(t, space.Validate())
+
+	space.SpaceManagersTeamMembers = []string{user.GetID()}
+
+	// TODO: newclient space Add function
+	createdSpace, err := client.Spaces.Add(space)
+	require.NoError(t, err)
+	require.NotNil(t, createdSpace)
+	require.NotEmpty(t, createdSpace.GetID())
+	require.Equal(t, name, createdSpace.Name)
+
+	return createdSpace
+}
+
+func DeleteTestSpace_NewClient(t *testing.T, client *client.Client, space *spaces.Space) {
+	require.NotNil(t, space)
+
+	// if space.IsDefault {
+	// 	return
+	// }
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	spaceID := space.GetID()
+	assert.NotEmpty(t, spaceID)
+
+	if !space.TaskQueueStopped {
+		space.TaskQueueStopped = true
+		updatedSpace, err := spaces.Update(client, space)
+		assert.NoError(t, err)
+
+		spaceID = updatedSpace.GetID()
+		assert.NotEmpty(t, spaceID)
+	}
+
+	err := client.Spaces.DeleteByID(spaceID)
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedAccount, err := spaces.GetByID(client, spaceID)
+	assert.Error(t, err)
+	assert.Nil(t, deletedAccount)
+}
