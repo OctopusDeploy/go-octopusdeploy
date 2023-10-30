@@ -26,7 +26,7 @@ func CreateTestAPIKey(t *testing.T, client *client.Client, user *users.User) *us
 	apiKey := users.NewAPIKey(internal.GetRandomName(), user.ID)
 	require.NotNil(t, apiKey)
 
-	expiry := time.Now().Add(time.Hour).UTC()
+	expiry := time.Now().Add(time.Hour).Round(time.Millisecond)
 	apiKey.Expires = &expiry
 
 	createdAPIKey, err := client.APIKeys.Create(apiKey)
