@@ -1,86 +1,96 @@
 package e2e
 
-// import (
-// 	"testing"
+import (
+	"testing"
+	"time"
 
-// // 	"github.com/stretchr/testify/assert"
-// 	"github.com/stretchr/testify/require"
-// )
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
-// func TestAPIKeysCreate(t *testing.T) {
-// 	octopusClient := getOctopusClient()
-// 	require.NotNil(t, octopusClient)
+func CreateSimpleTestUser(t *testing.T, client *client.Client) *users.User {
+	user := users.NewUser(internal.GetRandomName(), internal.GetRandomName())
+	user.IsService = true
 
-// 	user := NewUser(internal.GetRandomName(), internal.GetRandomName())
-// 	user.IsService = true
+	user, err := users.Add(client, user)
+	require.NoError(t, err)
+	require.NotNil(t, user)
 
-// 	user, err := octopusClient.Users.Add(user)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, user)
+	return user
+}
 
-// 	apiKey := NewAPIKey(internal.GetRandomName(), user.id)
-// 	require.NotNil(t, apiKey)
+func CreateTestAPIKey(t *testing.T, client *client.Client, user *users.User) *users.CreateAPIKey {
+	apiKey := users.NewAPIKey(internal.GetRandomName(), user.ID)
+	require.NotNil(t, apiKey)
 
-// 	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, createdAPIKey)
+	expiry := time.Now().Add(time.Hour)
+	apiKey.Expires = &expiry
 
-// 	err = octopusClient.Users.DeleteByID(user.id)
-// 	assert.NoError(t, err)
-// }
+	createdAPIKey, err := client.APIKeys.Create(apiKey)
+	require.NoError(t, err)
+	require.NotNil(t, createdAPIKey)
 
-// func TestAPIKeysGetByID(t *testing.T) {
-// 	octopusClient := getOctopusClient()
-// 	require.NotNil(t, octopusClient)
+	return createdAPIKey
+}
 
-// 	user := NewUser(internal.GetRandomName(), internal.GetRandomName())
-// 	user.IsService = true
+func CleanupTestUser(t *testing.T, client *client.Client, user *users.User) {
+	err := users.DeleteByID(client, user.ID)
+	assert.NoError(t, err)
+}
 
-// 	user, err := octopusClient.Users.Add(user)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, user)
+func TestAPIKeysCreate(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.id)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, apiKeys)
+	user := CreateSimpleTestUser(t, client)
+	CreateTestAPIKey(t, client, user)
 
-// 	for _, apiKey := range *apiKeys {
-// 		key, _ := octopusClient.APIKeys.GetByID(user.id, apiKey.id)
-// 		assert.NotNil(t, key)
-// 	}
+	apiKeys, err := client.APIKeys.GetByUserID(user.ID)
+	require.NotNil(t, apiKeys)
+	require.NoError(t, err)
 
-// 	err = octopusClient.Users.DeleteByID(user.id)
-// 	assert.NoError(t, err)
-// }
+	CleanupTestUser(t, client, user)
+}
 
-// func TestAPIKeysGetByUserID(t *testing.T) {
-// 	octopusClient := getOctopusClient()
-// 	require.NotNil(t, octopusClient)
+func TestAPIKeysGetByID(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	user := NewUser(internal.GetRandomName(), internal.GetRandomName())
-// 	user.IsService = true
-// 	assert.NotNil(t, user)
+	user := CreateSimpleTestUser(t, client)
+	CreateTestAPIKey(t, client, user)
+	CreateTestAPIKey(t, client, user)
 
-// 	user, err := octopusClient.Users.Add(user)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, user)
+	apiKeys, err := client.APIKeys.GetByUserID(user.ID)
+	require.NoError(t, err)
+	require.NotNil(t, apiKeys)
 
-// 	apiKey := NewAPIKey(internal.GetRandomName(), user.id)
-// 	require.NotNil(t, apiKey)
+	for _, apiKey := range apiKeys {
+		key, _ := client.APIKeys.GetByID(user.ID, apiKey.ID)
+		assert.NotNil(t, key)
+	}
 
-// 	createdAPIKey, err := octopusClient.APIKeys.Create(apiKey)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, createdAPIKey)
+	CleanupTestUser(t, client, user)
+}
 
-// 	apiKeys, err := octopusClient.APIKeys.GetByUserID(user.id)
-// 	require.NoError(t, err)
-// 	require.NotNil(t, apiKeys)
+func TestAPIKeysGetByUserID(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
 
-// 	for _, apiKey := range *apiKeys {
-// 		assert.NotNil(t, apiKey)
-// 		assert.NotNil(t, apiKey.id)
-// 	}
+	user := CreateSimpleTestUser(t, client)
+	CreateTestAPIKey(t, client, user)
+	CreateTestAPIKey(t, client, user)
 
-// 	err = octopusClient.Users.DeleteByID(user.id)
-// 	assert.NoError(t, err)
-// }
+	apiKeys, err := client.APIKeys.GetByUserID(user.ID)
+	require.NoError(t, err)
+	require.NotNil(t, apiKeys)
+
+	for _, apiKey := range apiKeys {
+		assert.NotNil(t, apiKey)
+		assert.NotNil(t, apiKey.ID)
+	}
+
+	CleanupTestUser(t, client, user)
+}
