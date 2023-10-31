@@ -6,7 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-// CreateAPIKey represents an API key when returned from creating a new API key (POST)
+// CreateAPIKey represents an API key when creating a new API key (POST)
 type CreateAPIKey struct {
 	APIKey  string     `json:"ApiKey,omitempty"`
 	Created *time.Time `json:"Created,omitempty"`

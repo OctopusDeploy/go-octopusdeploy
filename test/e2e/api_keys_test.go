@@ -52,7 +52,7 @@ func TestAPIKeysCreate(t *testing.T) {
 	require.NotNil(t, apiKeys)
 	require.NoError(t, err)
 
-	CleanupTestUser(t, client, user)
+	t.Cleanup(func() { CleanupTestUser(t, client, user) })
 }
 
 func TestAPIKeysGetByID(t *testing.T) {
@@ -72,7 +72,7 @@ func TestAPIKeysGetByID(t *testing.T) {
 		assert.NotNil(t, key)
 	}
 
-	CleanupTestUser(t, client, user)
+	t.Cleanup(func() { CleanupTestUser(t, client, user) })
 }
 
 func TestAPIKeysGetByUserID(t *testing.T) {
@@ -92,5 +92,5 @@ func TestAPIKeysGetByUserID(t *testing.T) {
 		assert.NotNil(t, apiKey.ID)
 	}
 
-	CleanupTestUser(t, client, user)
+	t.Cleanup(func() { CleanupTestUser(t, client, user) })
 }
