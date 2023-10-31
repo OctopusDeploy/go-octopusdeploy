@@ -82,7 +82,7 @@ func (s *ApiKeyService) GetByID(userID string, apiKeyID string) (*APIKey, error)
 // Create generates a new API key for the specified user ID. The API key
 // returned in the result must be saved by the caller, as it cannot be
 // retrieved subsequently from the Octopus server.
-func (s *ApiKeyService) Create(apiKey *APIKey) (*APIKey, error) {
+func (s *ApiKeyService) Create(apiKey *CreateAPIKey) (*CreateAPIKey, error) {
 	if err := services.ValidateInternalState(s); err != nil {
 		return nil, err
 	}
@@ -94,10 +94,10 @@ func (s *ApiKeyService) Create(apiKey *APIKey) (*APIKey, error) {
 	path := internal.TrimTemplate(s.GetPath())
 	path = fmt.Sprintf("%s/%s/apikeys", path, apiKey.UserID)
 
-	resp, err := services.ApiPost(s.GetClient(), apiKey, new(APIKey), path)
+	resp, err := services.ApiPost(s.GetClient(), apiKey, new(CreateAPIKey), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*APIKey), nil
+	return resp.(*CreateAPIKey), nil
 }
