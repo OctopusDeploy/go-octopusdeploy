@@ -6,7 +6,9 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/scopeduserroles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/teams"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/userroles"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -236,6 +238,44 @@ func TestTeamServiceUpdate_NewClient(t *testing.T) {
 	updatedTeam := UpdateTeam_NewClient(t, client, createdTeam)
 	IsEqualTeams(t, createdTeam, updatedTeam)
 	defer DeleteTestTeam_NewClient(t, client, updatedTeam)
+}
+
+func TestTeamGetScopedUserRole_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	// Create user role with at least 1 space permission
+	name := internal.GetRandomName()
+	userrole := userroles.NewUserRole(name)
+	userrole.GrantedSpacePermissions = []string{"ProjectView"}
+	require.NoError(t, userrole.Validate())
+
+	createdUserRole, err := userroles.Add(client, userrole)
+	require.NotNil(t, createdUserRole)
+	require.NoError(t, err)
+
+	team := CreateTestTeam_NewClient(t, client)
+	require.NotNil(t, team)
+
+	scopedUserRole := scopeduserroles.NewScopedUserRole(createdUserRole.ID, team.ID)
+	scopedUserRole.SpaceID = client.GetSpaceID()
+	require.NoError(t, scopedUserRole.Validate())
+
+	createdRole, err := scopeduserroles.Add(client, scopedUserRole)
+	require.NotNil(t, createdRole)
+	require.NoError(t, err)
+
+	teamScopedRoles, err := teams.GetScopedUserRoles(client, team, core.SkipTakeQuery{Take: 1})
+	require.NoError(t, err)
+	require.NotNil(t, teamScopedRoles)
+
+	AssertEqualScopedUserRoles(t, teamScopedRoles.Items[0], createdRole)
+
+	t.Cleanup(func() {
+		DeleteScopedUserRole(t, client, createdRole)
+		DeleteTestUserRole_NewClient(t, client, createdUserRole)
+		DeleteTestTeam_NewClient(t, client, team)
+	})
 }
 
 func CreateTestTeam_NewClient(t *testing.T, client *client.Client) *teams.Team {

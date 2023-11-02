@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/scopeduserroles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/userroles"
@@ -152,6 +153,9 @@ func (s *TeamService) Update(team *Team) (*Team, error) {
 	return resp.(*Team), nil
 }
 
+// GetScopedUserRoles returns user scoped roles scoped to the team provided
+//
+// Deprecated: use teams.GetScopedUserRoles()
 func (s *TeamService) GetScopedUserRoles(team Team, query core.SkipTakeQuery) (*resources.Resources[*userroles.ScopedUserRole], error) {
 	template, _ := uritemplates.Parse(team.Links["ScopedUserRoles"])
 	path, _ := template.Expand(query)
@@ -167,7 +171,7 @@ func (s *TeamService) GetScopedUserRoles(team Team, query core.SkipTakeQuery) (*
 // --- new ---
 
 const template = "/api/{spaceId}/teams{/id}{?skip,take,ids,partialName}"
-const scopedUserRolesTemplate = "/api/teams{/id}/scopeduserroles"
+const scopedUserRolesTemplate = "/api/teams{/id}/scopeduserroles{?skip,take}"
 
 // Add creates a new team.
 func Add(client newclient.Client, team *Team) (*Team, error) {
@@ -210,22 +214,23 @@ func Delete(client newclient.Client, team *Team) error {
 	return newclient.DeleteByID(client, template, team.SpaceID, team.ID)
 }
 
-// func GetScopedUserRoles(client newclient.Client, team *Team, query core.SkipTakeQuery) (*[]*userroles.ScopedUserRole, error) {
-// 	values, _ := uritemplates.Struct2map(query)
-// 	if values == nil {
-// 		values = map[string]any{}
-// 	}
+// GetScopedUserRoles returns scoped user roles scoped to the team provided
+func GetScopedUserRoles(client newclient.Client, team *Team, query core.SkipTakeQuery) (*resources.Resources[*scopeduserroles.ScopedUserRole], error) {
+	values, _ := uritemplates.Struct2map(query)
+	if values == nil {
+		values = map[string]any{}
+	}
 
-// 	values["id"] = team.ID
-// 	path, err := client.URITemplateCache().Expand(scopedUserRolesTemplate, values)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	values["id"] = team.ID
+	path, err := client.URITemplateCache().Expand(scopedUserRolesTemplate, values)
+	if err != nil {
+		return nil, err
+	}
 
-// 	res, err := newclient.Get[[]*userroles.ScopedUserRole](client.HttpSession(), path)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	res, err := newclient.Get[resources.Resources[*scopeduserroles.ScopedUserRole]](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return res, nil
-// }
+	return res, nil
+}
