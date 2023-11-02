@@ -6,7 +6,7 @@ import (
 )
 
 // --- new ---
-const template = "/api/{spaceId}/scopeduserroles{/id}{?skip,take,ids,partialName,spaces,includeSystem}"
+const template = "/api/scopeduserroles{/id}{?skip,take,ids,partialName,spaces,includeSystem}"
 
 // Add creates a new scoped user role.
 func Add(client newclient.Client, scopedUserRole *ScopedUserRole) (*ScopedUserRole, error) {
