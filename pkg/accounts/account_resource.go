@@ -12,7 +12,7 @@ import (
 // username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type AccountResource struct {
 	AccessKey               string                      `json:"AccessKey,omitempty"`
-	AccountType             AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
+	AccountType             AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AzureOIDC AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
 	ApplicationID           *uuid.UUID                  `json:"ClientId,omitempty"`
 	ApplicationPassword     *core.SensitiveValue        `json:"Password,omitempty"`
 	AuthenticationEndpoint  string                      `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
