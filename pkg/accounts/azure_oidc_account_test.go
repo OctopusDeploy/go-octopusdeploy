@@ -24,7 +24,9 @@ func TestAzureOIDCAccount(t *testing.T) {
 	deploymentSubjectKeys := []string{"space", "project", "tenant", "environment"}
 	healthCheckSubjectKeys := []string{"space", "target"}
 	accountTestSubjectKeys := []string{"space", "account"}
-	invalidAccountTestSubjectKeys := []string{"space", "account", "project"}
+	invalidDeploymentSubjectKeys := []string{"space", "target"}
+	invalidHealthCheckSubjectKeys := []string{"space", "project"}
+	invalidAccountTestSubjectKeys := []string{"space", "project"}
 
 	testCases := []struct {
 		TestName                string
@@ -54,7 +56,9 @@ func TestAzureOIDCAccount(t *testing.T) {
 		{"InvalidAuthenticationEndpoint", true, &applicationID, invalidURI, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
 		{"InvalidResourceManagerEndpoint", true, &applicationID, authenticationEndpoint, azureEnvironment, name, invalidURI, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
 		{"NilSubjectKeys", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", nil, nil, nil},
-		{"InvalidSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys},
+		{"InvalidDeploymentSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
+		{"InvalidHealthCheckSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys},
+		{"InvalidAccountTestSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
