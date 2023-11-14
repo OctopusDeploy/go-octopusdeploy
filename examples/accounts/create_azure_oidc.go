@@ -72,7 +72,6 @@ func CreateAzureOIDCExample() {
 		_ = fmt.Errorf("error adding account: %v", err)
 	}
 
-	// type conversion required to access Username/Password-specific fields
 	azureAccount = createdAccount.(*accounts.AzureOIDCAccount)
 
 	// work with created account

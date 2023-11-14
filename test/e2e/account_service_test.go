@@ -110,7 +110,7 @@ func CreateTestAzureOIDCAccount(t *testing.T, client *client.Client) accounts.IA
 	require.NoError(t, err)
 	require.NotNil(t, createdAccount)
 	require.NotEmpty(t, createdAccount.GetID())
-	require.Equal(t, accounts.AccountTypeAzureServicePrincipal, createdAccount.GetAccountType())
+	require.Equal(t, accounts.AccountTypeAzureOIDC, createdAccount.GetAccountType())
 	require.Equal(t, name, createdAccount.GetName())
 
 	return createdAccount
