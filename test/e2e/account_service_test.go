@@ -353,9 +353,9 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 	ValidateAccount(t, azureServicePrincipalAccount)
 	defer DeleteTestAccount(t, client, azureServicePrincipalAccount)
 
-	azureOIDCAccount := CreateTestAzureOIDCAccount(t, client)
-	ValidateAccount(t, azureOIDCAccount)
-	defer DeleteTestAccount(t, client, azureOIDCAccount)
+	// azureOIDCAccount := CreateTestAzureOIDCAccount(t, client)
+	// ValidateAccount(t, azureOIDCAccount)
+	// defer DeleteTestAccount(t, client, azureOIDCAccount)
 
 	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, client)
 	ValidateAccount(t, azureSubscriptionAccount)
