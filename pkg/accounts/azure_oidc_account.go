@@ -34,7 +34,7 @@ func NewAzureOIDCAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UU
 		ApplicationID:  &applicationID,
 		SubscriptionID: &subscriptionID,
 		TenantID:       &tenantID,
-		account:        *newAccount(name, AccountTypeAzureOIDC),
+		account:        *newAccount(name, AccountType("AzureOidc")),
 	}
 
 	// validate to ensure that all expectations are met
