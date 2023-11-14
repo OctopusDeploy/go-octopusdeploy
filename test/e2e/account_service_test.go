@@ -88,14 +88,15 @@ func CreateTestAzureOIDCAccount(t *testing.T, client *client.Client) accounts.IA
 	tenantID := uuid.New()
 
 	account, err := accounts.NewAzureOIDCAccount(name, subscriptionID, tenantID, applicationID)
-	account.Audience = "audience"
-	account.DeploymentSubjectKeys = []string{"space", "environment", "project"}
-	account.HealthCheckSubjectKeys = []string{"space", "type"}
-	account.AccountTestSubjectKeys = []string{"space", "type"}
 
 	require.NotNil(t, account)
 	require.NoError(t, err)
 	require.NoError(t, account.Validate())
+
+	account.Audience = "audience"
+	account.DeploymentSubjectKeys = []string{"space", "environment", "project"}
+	account.HealthCheckSubjectKeys = []string{"space", "type"}
+	account.AccountTestSubjectKeys = []string{"space", "type"}
 
 	// set Azure environment fields
 	if !internal.IsEmpty(azureEnvironment.Name) {
