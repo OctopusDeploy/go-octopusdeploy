@@ -74,7 +74,7 @@ func TestAzureOIDCAccount(t *testing.T) {
 				HealthCheckSubjectKeys:  tc.HealthCheckSubjectKeys,
 				AccountTestSubjectKeys:  tc.AccountTestSubjectKeys,
 			}
-			azureOIDCAccount.AccountType = AccountType("AzureOIDC")
+			azureOIDCAccount.AccountType = AccountTypeAzureOIDC
 			azureOIDCAccount.Name = tc.Name
 			azureOIDCAccount.SpaceID = tc.SpaceID
 			azureOIDCAccount.TenantedDeploymentMode = tc.TenantedDeploymentMode
@@ -83,7 +83,7 @@ func TestAzureOIDCAccount(t *testing.T) {
 			} else {
 				require.NoError(t, azureOIDCAccount.Validate())
 
-				require.Equal(t, AccountType("AzureOIDC"), azureOIDCAccount.GetAccountType())
+				require.Equal(t, AccountTypeAzureOIDC, azureOIDCAccount.GetAccountType())
 				require.Equal(t, tc.Name, azureOIDCAccount.GetName())
 			}
 			azureOIDCAccount.SetName(tc.Name)
