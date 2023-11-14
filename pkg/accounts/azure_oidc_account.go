@@ -17,9 +17,9 @@ type AzureOIDCAccount struct {
 	SubscriptionID          *uuid.UUID `json:"SubscriptionNumber" validate:"required"`
 	TenantID                *uuid.UUID `json:"TenantId" validate:"required"`
 	Audience                string     `json:"Audience,omitempty"`
-	DeploymentSubjectKeys   []string   `json:"DeploymentSubjectKeys,omitempty"`
-	HealthCheckSubjectKeys  []string   `json:"HealthCheckSubjectKeys,omitempty"`
-	AccountTestSubjectKeys  []string   `json:"AccountTestSubjectKeys,omitempty"`
+	DeploymentSubjectKeys   []string   `json:"DeploymentSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space environment project tenant runbook account type'"`
+	HealthCheckSubjectKeys  []string   `json:"HealthCheckSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account target type'"`
+	AccountTestSubjectKeys  []string   `json:"AccountTestSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account type'"`
 
 	account
 }
