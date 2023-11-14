@@ -36,6 +36,7 @@ jobs:
           ADMIN_API_KEY: ${{ env.ADMIN_API_KEY }}
           ENABLE_USAGE: N
           OCTOPUS_SERVER_BASE64_LICENSE: ${{ secrets.OCTOPUS_SERVER_BASE64_LICENSE }}
+          OCTOPUS__FeatureToggles__OidcAccountsFeatureToggle: True
         ports:
           - 8080:8080
     # https://github.com/dorny/test-reporter/issues/168
