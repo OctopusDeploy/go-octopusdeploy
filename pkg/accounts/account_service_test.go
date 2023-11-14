@@ -121,6 +121,10 @@ func TestAccountServiceUpdateWithEmptyAccount(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, account)
 
+	account, err = service.Update(&AzureOIDCAccount{})
+	require.Error(t, err)
+	require.Nil(t, account)
+
 	account, err = service.Update(&AzureSubscriptionAccount{})
 	require.Error(t, err)
 	require.Nil(t, account)

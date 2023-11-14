@@ -2,11 +2,12 @@ package azure
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"strings"
 )
 
 type AzureWebApp struct {
@@ -22,7 +23,7 @@ type AzureWebAppSlot struct {
 	ResourceGroup string `json:"ResourceGroup,omitempty"`
 }
 
-func GetWebSites(client client.Client, account *accounts.AzureServicePrincipalAccount) ([]*AzureWebApp, error) {
+func GetWebSites(client client.Client, account accounts.IAccount) ([]*AzureWebApp, error) {
 	path := account.GetLinks()[constants.LinkWebSites]
 	if path == "" {
 		return nil, fmt.Errorf("cannot get websites for account '%s' (%s)", account.GetName(), account.GetID())
@@ -38,7 +39,7 @@ func GetWebSites(client client.Client, account *accounts.AzureServicePrincipalAc
 	return items, nil
 }
 
-func GetWebSiteSlots(client client.Client, spAccount *accounts.AzureServicePrincipalAccount, app *AzureWebApp) ([]*AzureWebAppSlot, error) {
+func GetWebSiteSlots(client client.Client, spAccount accounts.IAccount, app *AzureWebApp) ([]*AzureWebAppSlot, error) {
 	path := spAccount.GetLinks()[constants.LinkWebSiteSlots]
 	if path == "" {
 		return nil, fmt.Errorf("cannot get websites for account '%s' (%s)", spAccount.GetName(), spAccount.GetID())

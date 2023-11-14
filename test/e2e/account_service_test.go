@@ -75,6 +75,43 @@ func CreateTestAzureServicePrincipalAccount(t *testing.T, client *client.Client)
 	return createdAccount
 }
 
+func CreateTestAzureOIDCAccount(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	applicationID := uuid.New()
+	azureEnvironment := getRandomAzureEnvironment()
+	name := internal.GetRandomName()
+	subscriptionID := uuid.New()
+	tenantID := uuid.New()
+
+	account, err := accounts.NewAzureOIDCAccount(name, subscriptionID, tenantID, applicationID)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	// set Azure environment fields
+	if !internal.IsEmpty(azureEnvironment.Name) {
+		account.AzureEnvironment = azureEnvironment.Name
+		account.AuthenticationEndpoint = azureEnvironment.AuthenticationEndpoint
+		account.ResourceManagerEndpoint = azureEnvironment.ResourceManagerEndpoint
+	}
+
+	require.NoError(t, account.Validate())
+
+	createdAccount, err := client.Accounts.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, createdAccount)
+	require.NotEmpty(t, createdAccount.GetID())
+	require.Equal(t, accounts.AccountTypeAzureServicePrincipal, createdAccount.GetAccountType())
+	require.Equal(t, name, createdAccount.GetName())
+
+	return createdAccount
+}
+
 func CreateTestAzureSubscriptionAccount(t *testing.T, client *client.Client) accounts.IAccount {
 	if client == nil {
 		client = getOctopusClient()
@@ -315,6 +352,10 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, client)
 	ValidateAccount(t, azureServicePrincipalAccount)
 	defer DeleteTestAccount(t, client, azureServicePrincipalAccount)
+
+	azureOIDCAccount := CreateTestAzureOIDCAccount(t, client)
+	ValidateAccount(t, azureOIDCAccount)
+	defer DeleteTestAccount(t, client, azureOIDCAccount)
 
 	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount(t, client)
 	ValidateAccount(t, azureSubscriptionAccount)

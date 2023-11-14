@@ -8,6 +8,8 @@ func IsNil(i interface{}) bool {
 		return v == nil
 	case *AzureServicePrincipalAccount:
 		return v == nil
+	case *AzureOIDCAccount:
+		return v == nil
 	case *AzureSubscriptionAccount:
 		return v == nil
 	case *GoogleCloudPlatformAccount:

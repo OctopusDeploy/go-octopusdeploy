@@ -24,7 +24,7 @@ type AzureOIDCAccount struct {
 	account
 }
 
-// NewAzureOIDCAccount creates and initializes an Azure service principal account.
+// NewAzureOIDCAccount creates and initializes an Azure OIDC account.
 func NewAzureOIDCAccount(name string, subscriptionID uuid.UUID, tenantID uuid.UUID, applicationID uuid.UUID) (*AzureOIDCAccount, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")

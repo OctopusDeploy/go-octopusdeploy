@@ -85,13 +85,6 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 					return err
 				}
 				a.Items = append(a.Items, azureServicePrincipalAccount)
-			case AccountTypeAzureSubscription:
-				var azureSubscriptionAccount *AzureSubscriptionAccount
-				err := json.Unmarshal(*account, &azureSubscriptionAccount)
-				if err != nil {
-					return err
-				}
-				a.Items = append(a.Items, azureSubscriptionAccount)
 			case AccountTypeAzureOIDC:
 				var azureOIDCAccount *AzureOIDCAccount
 				err := json.Unmarshal(*account, &azureOIDCAccount)
@@ -99,6 +92,13 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 					return err
 				}
 				a.Items = append(a.Items, azureOIDCAccount)
+			case AccountTypeAzureSubscription:
+				var azureSubscriptionAccount *AzureSubscriptionAccount
+				err := json.Unmarshal(*account, &azureSubscriptionAccount)
+				if err != nil {
+					return err
+				}
+				a.Items = append(a.Items, azureSubscriptionAccount)
 			case AccountTypeGoogleCloudPlatformAccount:
 				var googleCloudAccount *GoogleCloudPlatformAccount
 				err := json.Unmarshal(*account, &googleCloudAccount)

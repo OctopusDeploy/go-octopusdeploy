@@ -38,6 +38,10 @@ type AccountResource struct {
 	TenantTags              []string                    `json:"TenantTags,omitempty"`
 	Token                   *core.SensitiveValue        `json:"Token,omitempty"`
 	Username                string                      `json:"Username,omitempty"`
+	Audience                string                      `json:"Audience,omitempty"`
+	DeploymentSubjectKeys   []string                    `json:"DeploymentSubjectKeys,omitempty"`
+	HealthCheckSubjectKeys  []string                    `json:"HealthCheckSubjectKeys,omitempty"`
+	AccountTestSubjectKeys  []string                    `json:"AccountTestSubjectKeys,omitempty"`
 
 	resources.Resource
 }
