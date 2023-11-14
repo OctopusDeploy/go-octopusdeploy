@@ -89,8 +89,8 @@ func CreateTestAzureOIDCAccount(t *testing.T, client *client.Client) accounts.IA
 
 	account, err := accounts.NewAzureOIDCAccount(name, subscriptionID, tenantID, applicationID)
 
-	require.NotNil(t, account)
 	require.NoError(t, err)
+	require.NotNil(t, account)
 	require.NoError(t, account.Validate())
 
 	account.Audience = "audience"
