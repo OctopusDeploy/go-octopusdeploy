@@ -93,11 +93,6 @@ func CreateTestAzureOIDCAccount(t *testing.T, client *client.Client) accounts.IA
 	require.NotNil(t, account)
 	require.NoError(t, account.Validate())
 
-	account.Audience = "audience"
-	account.DeploymentSubjectKeys = []string{"space", "environment", "project"}
-	account.HealthCheckSubjectKeys = []string{"space", "type"}
-	account.AccountTestSubjectKeys = []string{"space", "type"}
-
 	// set Azure environment fields
 	if !internal.IsEmpty(azureEnvironment.Name) {
 		account.AzureEnvironment = azureEnvironment.Name
@@ -422,6 +417,7 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 		accounts.AccountTypeSSHKeyPair,
 		accounts.AccountTypeAzureSubscription,
 		accounts.AccountTypeAzureServicePrincipal,
+		accounts.AccountTypeAzureOIDC,
 		accounts.AccountTypeAmazonWebServicesAccount,
 		accounts.AccountTypeToken,
 	}
