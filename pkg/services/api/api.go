@@ -35,9 +35,9 @@ func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface
 
 	octopusDeployError := new(core.APIError)
 	resp, err := client.Receive(inputStruct, &octopusDeployError)
-	if err != nil {
-		return nil, err
-	}
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	// core.APIErrorChecker doesn't give us useful handling for auth errors; do this specifically
 	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
