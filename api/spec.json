@@ -8,6 +8,7 @@
           "enum": [
             "AmazonWebServicesAccount",
             "AzureServicePrincipal",
+            "AzureOIDC",
             "AzureSubscription",
             "None",
             "SshKeyPair",
