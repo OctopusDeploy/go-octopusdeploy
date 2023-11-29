@@ -26,7 +26,7 @@ type FeedResource struct {
 	SpaceID                           string               `json:"SpaceId,omitempty"`
 	Username                          string               `json:"Username,omitempty"`
 	LayoutRegex                       string               `json:"LayoutRegex,omitempty"`
-	Repository                        string               `json:"Repository""`
+	Repository                        string               `json:"Repository"`
 
 	resources.Resource
 }
