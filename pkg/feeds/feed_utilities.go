@@ -88,8 +88,6 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		artifactoryGenericFeed.LayoutRegex = feedResource.LayoutRegex
 		artifactoryGenericFeed.Repository = feedResource.Repository
 		artifactoryGenericFeed.FeedURI = feedResource.FeedURI
-		artifactoryGenericFeed.Username = feedResource.Username
-		artifactoryGenericFeed.Password = feedResource.Password
 		if err != nil {
 			return nil, err
 		}
