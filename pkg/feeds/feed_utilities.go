@@ -83,6 +83,15 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		feed = octopusProjectFeed
+	case FeedTypeArtifactoryGeneric:
+		artifactoryGenericFeed, err := NewArtifactoryGenericFeed(feedResource.GetName())
+		artifactoryGenericFeed.LayoutRegex = feedResource.LayoutRegex
+		artifactoryGenericFeed.Repository = feedResource.Repository
+		artifactoryGenericFeed.FeedURI = feedResource.FeedURI
+		if err != nil {
+			return nil, err
+		}
+		feed = artifactoryGenericFeed
 	}
 
 	feed.SetID(feedResource.GetID())
@@ -152,6 +161,11 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.DownloadRetryBackoffSeconds = nuGetFeed.DownloadRetryBackoffSeconds
 		feedResource.EnhancedMode = nuGetFeed.EnhancedMode
 		feedResource.FeedURI = nuGetFeed.FeedURI
+	case FeedTypeArtifactoryGeneric:
+		artifactoryGenericFeed := feed.(*ArtifactoryGenericFeed)
+		feedResource.Repository = artifactoryGenericFeed.Repository
+		feedResource.LayoutRegex = artifactoryGenericFeed.LayoutRegex
+		feedResource.FeedURI = artifactoryGenericFeed.FeedURI
 	case FeedTypeOctopusProject:
 		// nothing to copy
 	}

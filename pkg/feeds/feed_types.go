@@ -11,4 +11,5 @@ const (
 	FeedTypeMaven                       = FeedType("Maven")
 	FeedTypeNuGet                       = FeedType("NuGet")
 	FeedTypeOctopusProject              = FeedType("OctopusProject")
+	FeedTypeArtifactoryGeneric          = FeedType("ArtifactoryGeneric")
 )
