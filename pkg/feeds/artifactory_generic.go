@@ -16,13 +16,11 @@ type ArtifactoryGenericFeed struct {
 
 func NewArtifactoryGenericFeed(name string) (*ArtifactoryGenericFeed, error) {
 	if internal.IsEmpty(name) {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
+		return nil, internal.CreateRequiredParameterIsEmptyError("name")
 	}
 
 	feed := ArtifactoryGenericFeed{
-		feed:        *newFeed(name, FeedTypeArtifactoryGeneric),
-		FeedURI:     "https://example.jfrog.io",
-		LayoutRegex: "",
+		feed: *newFeed(name, FeedTypeArtifactoryGeneric),
 	}
 
 	// validate to ensure that all expectations are met
