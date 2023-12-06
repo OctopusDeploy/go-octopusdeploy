@@ -42,6 +42,8 @@ type AccountResource struct {
 	DeploymentSubjectKeys   []string                    `json:"DeploymentSubjectKeys,omitempty"`
 	HealthCheckSubjectKeys  []string                    `json:"HealthCheckSubjectKeys,omitempty"`
 	AccountTestSubjectKeys  []string                    `json:"AccountTestSubjectKeys,omitempty"`
+	RoleArn                 string                      `json:"RoleArn,omitempty"`
+	SessionDuration         string                      `json:"SessionDuration,omitempty"`
 
 	resources.Resource
 }
