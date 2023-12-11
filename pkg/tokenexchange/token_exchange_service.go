@@ -56,7 +56,7 @@ func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(host s
 	}
 
 	base := s.Sling.Base(host)
-	resp, err := api.ApiGet(base, new(OpenIdConfigurationResponse), "/.well-known/openid-configuration")
+	resp, err := api.ApiGet(base, new(OpenIdConfigurationResponse), ".well-known/openid-configuration")
 
 	if err != nil {
 		return nil, err
