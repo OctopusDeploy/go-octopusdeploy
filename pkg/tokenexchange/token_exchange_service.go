@@ -1,8 +1,6 @@
 package tokenexchange
 
 import (
-	"fmt"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -57,9 +55,8 @@ func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(host s
 		return nil, err
 	}
 
-	openIdConfigurationPath := fmt.Sprintf("%s/.well-known/openid-configuration", host)
-
-	resp, err := api.ApiGet(s.GetClient(), new(OpenIdConfigurationResponse), openIdConfigurationPath)
+	base := s.Sling.Base(host)
+	resp, err := api.ApiGet(base, new(OpenIdConfigurationResponse), "/.well-known/openid-configuration")
 
 	if err != nil {
 		return nil, err
@@ -74,7 +71,7 @@ func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(host s
 		SubjectToken:     idToken,
 	}
 
-	resp, err = services.ApiPost(s.GetClient(), tokenExchangeData, new(TokenExchangeResponse), openIdConfigurationResponse.TokenEndpoint)
+	resp, err = services.ApiPost(base, tokenExchangeData, new(TokenExchangeResponse), openIdConfigurationResponse.TokenEndpoint)
 
 	if err != nil {
 		return nil, err
