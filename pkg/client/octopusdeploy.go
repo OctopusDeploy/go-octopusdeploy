@@ -595,7 +595,10 @@ func getHeaders(apiCredentials ICredential, requestingTool string) map[string]st
 	}
 
 	headerKey, headerValue := apiCredentials.GetHeaderValue()
-	headers[headerKey] = headerValue
+
+	if headerKey != "" {
+		headers[headerKey] = headerValue
+	}
 
 	return headers
 }
