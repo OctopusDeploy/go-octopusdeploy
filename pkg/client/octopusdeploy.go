@@ -9,6 +9,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectbranches"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/tokenexchange"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
@@ -150,6 +151,7 @@ type Client struct {
 	Teams                          *teams.TeamService
 	Tenants                        *tenants.TenantService
 	TenantVariables                *variables.TenantVariableService
+	TokenExchange                  *tokenexchange.TokenExchangeService
 	UpgradeConfiguration           *configuration.UpgradeConfigurationService
 	UserOnboarding                 *useronboarding.UserOnboardingService
 	UserRoles                      *userroles.UserRoleService
@@ -487,6 +489,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		Teams:                          teams.NewTeamService(base, teamsPath),
 		Tenants:                        tenants.NewTenantService(base, tenantsPath, tenantsMissingVariablesPath, tenantsStatusPath, tenantTagTestPath),
 		TenantVariables:                variables.NewTenantVariableService(base, tenantVariablesPath),
+		TokenExchange:                  tokenexchange.NewTokenExchangeService(base),
 		UpgradeConfiguration:           configuration.NewUpgradeConfigurationService(base, upgradeConfigurationPath),
 		UserOnboarding:                 useronboarding.NewUserOnboardingService(base, userOnboardingPath),
 		UserRoles:                      userroles.NewUserRoleService(base, userRolesPath),
@@ -576,6 +579,14 @@ func NewAccessToken(accessToken string) (*AccessToken, error) {
 	return &AccessToken{
 		Value: accessToken,
 	}, nil
+}
+
+type AnonymousCredential struct {
+	ICredential
+}
+
+func (anonymousCredential *AnonymousCredential) GetHeaderValue() (string, string) {
+	return "", ""
 }
 
 func getHeaders(apiCredentials ICredential, requestingTool string) map[string]string {
