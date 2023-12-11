@@ -44,7 +44,7 @@ func NewTokenExchangeService(sling *sling.Sling) *TokenExchangeService {
 }
 
 // ExchangeOpenIdConnectIdTokenForAccessToken exchanges an OpenID Connect ID token for an Octopus access token
-func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(serviceAccountId string, idToken string) (*TokenExchangeResponse, error) {
+func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(host string, serviceAccountId string, idToken string) (*TokenExchangeResponse, error) {
 	if internal.IsEmpty(serviceAccountId) {
 		return nil, internal.CreateInvalidParameterError("ExchangeOpenIdConnectIdTokenForAccessToken", "serviceAccountId")
 	}
@@ -57,8 +57,7 @@ func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(servic
 		return nil, err
 	}
 
-	basePath := s.BasePath
-	openIdConfigurationPath := fmt.Sprintf("%s/.well-known/openid-configuration", basePath)
+	openIdConfigurationPath := fmt.Sprintf("%s/.well-known/openid-configuration", host)
 
 	resp, err := api.ApiGet(s.GetClient(), new(OpenIdConfigurationResponse), openIdConfigurationPath)
 
