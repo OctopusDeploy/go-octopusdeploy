@@ -510,15 +510,23 @@ func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ICreden
 		Base(baseURLWithAPI).
 		Set("Accept", `application/json`)
 
+	fmt.Println("Created base")
+
 	headers := getHeaders(credentials, requestingTool)
 
 	for key, value := range headers {
 		base.Set(key, value)
 	}
 
+	fmt.Println("Set headers")
+
 	rootService := NewRootService(base, baseURLWithAPI)
 
+	fmt.Println("Constructed root service")
+
 	root, err := rootService.Get()
+
+	fmt.Println("Get root document")
 	return base, root, err
 }
 
