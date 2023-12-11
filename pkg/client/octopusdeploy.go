@@ -229,9 +229,14 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		return nil, err
 	}
 
+	fmt.Println("Got root document details")
+
 	// Root with specified Space ID, if it's defined
 	sroot := NewRootResource()
+
+	fmt.Println("Constructed root resource")
 	if !internal.IsEmpty(spaceID) {
+		fmt.Println("Get the space root document")
 		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
 		base, sroot, err = getRoot(httpClient, baseURLWithAPI, apiCredentials, requestingTool)
 
@@ -248,7 +253,11 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		panic("failure parsing baseURL " + fatalErr.Error())
 	}
 
+	fmt.Println("Getting default headers")
+
 	defaultHeaders := getHeaders(apiCredentials, requestingTool)
+
+	fmt.Println("Constructing http session")
 
 	httpSession := &newclient.HttpSession{
 		HttpClient:     httpClient,
@@ -257,6 +266,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	}
 
 	if spaceID == "" {
+		fmt.Println("Getting default space")
 		client := newclient.NewClient(httpSession)
 		defaultSpace, err := spaces.GetDefaultSpace(client)
 		if err != nil {
