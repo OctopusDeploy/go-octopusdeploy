@@ -1,6 +1,8 @@
 package tokenexchange
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -56,6 +58,7 @@ func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(host s
 	}
 
 	base := s.Sling.Base(host)
+	fmt.Printf("base: %v\n", base)
 	resp, err := api.ApiGet(base, new(OpenIdConfigurationResponse), ".well-known/openid-configuration")
 
 	if err != nil {
