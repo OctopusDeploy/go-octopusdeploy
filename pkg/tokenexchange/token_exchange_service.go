@@ -57,7 +57,7 @@ func (s *TokenExchangeService) ExchangeOpenIdConnectIdTokenForAccessToken(servic
 		return nil, err
 	}
 
-	basePath := internal.TrimTemplate(s.GetPath())
+	basePath := s.BasePath
 	openIdConfigurationPath := fmt.Sprintf("%s/.well-known/openid-configuration", basePath)
 
 	resp, err := api.ApiGet(s.GetClient(), new(OpenIdConfigurationResponse), openIdConfigurationPath)
