@@ -23,6 +23,8 @@ func NewDeploymentProcessService(sling *sling.Sling, uriTemplate string) *Deploy
 
 // Get returns the deployment process that matches the input project and
 // a git reference. If one cannot be found, it returns nil and an error.
+//
+// Deprecated: use GetProcessByGitRef
 func (s *DeploymentProcessService) Get(project *projects.Project, gitRef string) (*DeploymentProcess, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError("Get", "project")
@@ -92,6 +94,8 @@ func (s *DeploymentProcessService) GetAll() ([]*DeploymentProcess, error) {
 
 // GetByID returns the deployment process that matches the input ID. If one
 // cannot be found, it returns nil and an error.
+//
+// Deprecated: GetProcessByID
 func (s *DeploymentProcessService) GetByID(id string) (*DeploymentProcess, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -126,6 +130,8 @@ func (s *DeploymentProcessService) Update(deploymentProcess *DeploymentProcess) 
 
 // ----- Experimental --------
 
+const template = ""
+
 // GetDeploymentProcess fetches a deployment process. This may either be the project level process (template),
 // or a process snapshot from a Release, depending on the value of ID
 func GetDeploymentProcess(client newclient.Client, spaceID string, ID string) (*DeploymentProcess, error) {
@@ -147,4 +153,39 @@ func GetDeploymentProcess(client newclient.Client, spaceID string, ID string) (*
 		return nil, err
 	}
 	return newclient.Get[DeploymentProcess](client.HttpSession(), expandedUri)
+}
+
+// Get returns the deployment process that matches the input project and
+// a git reference.
+func GetProcessByGitRef(client newclient.Client, spaceID string, project *projects.Project, gitRef string) (*DeploymentProcess, error) {
+	if project == nil {
+		return nil, internal.CreateInvalidParameterError("GetByGitRef", "project")
+	}
+
+	if project.PersistenceSettings == nil || project.PersistenceSettings.Type() != projects.PersistenceSettingsTypeVersionControlled {
+		return GetProcessByID(client, spaceID, project.DeploymentProcessID)
+	}
+
+	gitPersistenceSettings := project.PersistenceSettings.(projects.GitPersistenceSettings)
+
+	if len(gitRef) <= 0 {
+		gitRef = gitPersistenceSettings.DefaultBranch()
+	}
+
+	// TODO: remove use of links
+	template, _ := uritemplates.Parse(project.Links["DeploymentProcess"])
+	path, _ := template.Expand(map[string]interface{}{"gitRef": gitRef})
+
+	deploymentProcess, err := newclient.Get[DeploymentProcess](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+
+	deploymentProcess.Branch = gitRef
+
+	return deploymentProcess, err
+}
+
+func GetProcessByID(client newclient.Client, spaceID string, ID string) (*DeploymentProcess, error) {
+	return newclient.GetByID[DeploymentProcess](client, template, spaceID, ID)
 }
