@@ -12,7 +12,6 @@ func TestAwsOIDCAccount(t *testing.T) {
 	name := internal.GetRandomName()
 	spaceID := "space-id"
 	tenantedDeploymentMode := core.TenantedDeploymentMode("Untenanted")
-	audience := "some default audience"
 	roleArn := "role arn::with:two:colons:for:some:reason"
 	sessionDuration := "3600"
 	deploymentSubjectKeys := []string{"space", "project", "tenant", "environment"}
@@ -28,29 +27,27 @@ func TestAwsOIDCAccount(t *testing.T) {
 		Name                   string
 		SpaceID                string
 		TenantedDeploymentMode core.TenantedDeploymentMode
-		Audience               string
 		RoleArn                string
 		SessionDuration        string
 		DeploymentSubjectKeys  []string
 		HealthCheckSubjectKeys []string
 		AccountTestSubjectKeys []string
 	}{
-		{"Valid", false, name, spaceID, tenantedDeploymentMode, audience, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"EmptyName", true, "", spaceID, tenantedDeploymentMode, audience, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"WhitespaceName", true, " ", spaceID, tenantedDeploymentMode, audience, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"EmptySpaceID", false, name, "", tenantedDeploymentMode, audience, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"WhitespaceSpaceID", false, name, " ", tenantedDeploymentMode, audience, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"NilSubjectKeys", false, name, spaceID, tenantedDeploymentMode, audience, roleArn, sessionDuration, nil, nil, nil},
-		{"InvalidDeploymentSubjectKeys", true, name, spaceID, tenantedDeploymentMode, audience, roleArn, sessionDuration, invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"InvalidHealthCheckSubjectKeys", true, name, spaceID, tenantedDeploymentMode, audience, roleArn, sessionDuration, deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys},
-		{"InvalidAccountTestSubjectKeys", true, name, spaceID, tenantedDeploymentMode, audience, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys},
+		{"Valid", false, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
+		{"EmptyName", true, "", spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
+		{"WhitespaceName", true, " ", spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
+		{"EmptySpaceID", false, name, "", tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
+		{"WhitespaceSpaceID", false, name, " ", tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
+		{"NilSubjectKeys", false, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, nil, nil, nil},
+		{"InvalidDeploymentSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
+		{"InvalidHealthCheckSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys},
+		{"InvalidAccountTestSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
 			awsOIDCAccount := &AwsOIDCAccount{
 				RoleArn:                tc.RoleArn,
 				SessionDuration:        tc.SessionDuration,
-				Audience:               tc.Audience,
 				DeploymentSubjectKeys:  tc.DeploymentSubjectKeys,
 				HealthCheckSubjectKeys: tc.HealthCheckSubjectKeys,
 				AccountTestSubjectKeys: tc.AccountTestSubjectKeys,
