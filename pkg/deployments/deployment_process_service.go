@@ -142,24 +142,7 @@ const (
 // GetDeploymentProcessByID fetches a deployment process. This may either be the project level process (template),
 // or a process snapshot from a Release, depending on the value of ID
 func GetDeploymentProcessByID(client newclient.Client, spaceID string, ID string) (*DeploymentProcess, error) {
-	if client == nil {
-		return nil, internal.CreateInvalidParameterError("GetDeploymentProcess", "client")
-	}
-	if spaceID == "" {
-		return nil, internal.CreateInvalidParameterError("GetDeploymentProcess", "spaceID")
-	}
-	if ID == "" {
-		return nil, internal.CreateInvalidParameterError("GetDeploymentProcess", "ID")
-	}
-
-	expandedUri, err := client.URITemplateCache().Expand(deploymentProcessesTemplate, map[string]any{
-		"spaceId": spaceID,
-		"id":      ID,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return newclient.Get[DeploymentProcess](client.HttpSession(), expandedUri)
+	return newclient.GetByID[DeploymentProcess](client, deploymentProcessesTemplate, spaceID, ID)
 }
 
 // GetDeploymentProcessByGitRef returns the deployment process that matches the input project and
