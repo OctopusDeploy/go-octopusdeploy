@@ -264,7 +264,7 @@ func TestReleaseServiceAddGetDelete_New(t *testing.T) {
 
 	release := CreateTestRelease(t, client, channel, project)
 	require.NotNil(t, release)
-	defer DeleteTestRelease(t, client, release)
+	defer DeleteTestRelease_New(t, client, release)
 
 	releaseToCompare, err := releases.GetByID(client, client.GetSpaceID(), release.GetID())
 	require.NoError(t, err)
@@ -285,7 +285,7 @@ func TestReleaseServiceDeleteAll_new(t *testing.T) {
 	require.NotNil(t, releases)
 
 	for _, release := range releases.Items {
-		defer DeleteTestRelease(t, client, release)
+		defer DeleteTestRelease_New(t, client, release)
 	}
 }
 

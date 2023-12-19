@@ -105,6 +105,8 @@ func (s *AccountService) GetByID(id string) (IAccount, error) {
 }
 
 // GetUsages lists the projects and deployments which are using an account.
+//
+// Deprecated: Use accounts.GetUsages
 func (s *AccountService) GetUsages(account IAccount) (*AccountUsage, error) {
 	path := account.GetLinks()[constants.LinkUsages]
 	resp, err := api.ApiGet(s.GetClient(), new(AccountUsage), path)
@@ -195,6 +197,17 @@ func Update(client newclient.Client, account IAccount) (IAccount, error) {
 // DeleteByID will delete a account with the provided id.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	return newclient.DeleteByID(client, template, spaceID, id)
+}
+
+// GetUsages lists the projects and deployments which are using an account.
+func GetUsages(client newclient.Client, account IAccount) (*AccountUsage, error) {
+	path := account.GetLinks()[constants.LinkUsages]
+	res, err := newclient.Get[AccountUsage](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // GetAll returns all accounts. If an error occurs, it returns nil.
