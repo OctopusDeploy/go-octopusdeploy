@@ -192,3 +192,123 @@ func TestReleaseServiceGetByID(t *testing.T) {
 		AssertEqualReleases(t, release, releaseToCompare)
 	}
 }
+
+// --- new ---
+
+func CreateTestRelease_New(t *testing.T, client *client.Client, channel *channels.Channel, project *projects.Project) *releases.Release {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	version := "0.0.1"
+
+	release := releases.NewRelease(channel.GetID(), project.GetID(), version)
+
+	require.NotNil(t, release)
+	require.NoError(t, release.Validate())
+
+	createdRelease, err := releases.Add(client, release)
+	require.NoError(t, err)
+	require.NotNil(t, createdRelease)
+	require.NotEmpty(t, createdRelease.GetID())
+
+	// verify the add operation was successful
+	releaseToCompare, err := releases.GetByID(client, client.GetSpaceID(), createdRelease.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, releaseToCompare)
+	AssertEqualReleases(t, createdRelease, releaseToCompare)
+
+	return createdRelease
+}
+
+func DeleteTestRelease_New(t *testing.T, client *client.Client, release *releases.Release) {
+	require.NotNil(t, release)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := client.Releases.DeleteByID(release.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedRelease, err := releases.GetByID(client, client.GetSpaceID(), release.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedRelease)
+}
+
+func TestReleaseServiceAddGetDelete_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	channel := CreateTestChannel(t, client, project)
+	require.NotNil(t, channel)
+	defer DeleteTestChannel(t, client, channel)
+
+	release := CreateTestRelease(t, client, channel, project)
+	require.NotNil(t, release)
+	defer DeleteTestRelease(t, client, release)
+
+	releaseToCompare, err := releases.GetByID(client, client.GetSpaceID(), release.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, releaseToCompare)
+	AssertEqualReleases(t, release, releaseToCompare)
+}
+
+func TestReleaseServiceDeleteAll_new(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	query := releases.ReleasesQuery{
+		Take: 50,
+	}
+
+	releases, err := releases.Get(client, client.GetSpaceID(), query)
+	require.NoError(t, err)
+	require.NotNil(t, releases)
+
+	for _, release := range releases.Items {
+		defer DeleteTestRelease(t, client, release)
+	}
+}
+
+func TestReleaseServiceGetByID_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	id := internal.GetRandomName()
+	release, err := releases.GetByID(client, client.GetSpaceID(), id)
+	require.Error(t, err)
+	assert.Nil(t, release)
+
+	query := releases.ReleasesQuery{
+		Take: 50,
+	}
+
+	releaseResource, err := releases.Get(client, client.GetSpaceID(), query)
+	assert.NoError(t, err)
+	assert.NotNil(t, releaseResource)
+
+	for _, release := range releaseResource.Items {
+		releaseToCompare, err := releases.GetByID(client, client.GetSpaceID(), release.GetID())
+		assert.NoError(t, err)
+		AssertEqualReleases(t, release, releaseToCompare)
+	}
+}
