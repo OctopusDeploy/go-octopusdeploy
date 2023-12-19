@@ -122,7 +122,7 @@ func (s *ArtifactService) Update(artifact Artifact) (*Artifact, error) {
 
 // ----- new -----
 
-const template = "/api/{spaceId}/artifacts/{id}"
+const template = "/api/{spaceId}/artifacts{/id}"
 
 // Add creates a new artifact.
 func Add(client newclient.Client, artifact *Artifact) (*Artifact, error) {

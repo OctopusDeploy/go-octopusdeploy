@@ -1,6 +1,7 @@
 package actiontemplates
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -39,6 +40,8 @@ func NewActionTemplateService(sling *sling.Sling, uriTemplate string, categories
 }
 
 // Add creates a new action template.
+//
+// Deprecated: Use actiontemplates.Add
 func (s *ActionTemplateService) Add(actionTemplate *ActionTemplate) (*ActionTemplate, error) {
 	if IsNil(actionTemplate) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterActionTemplate)
@@ -64,6 +67,8 @@ func (s *ActionTemplateService) Add(actionTemplate *ActionTemplate) (*ActionTemp
 // Get returns a collection of action templates based on the criteria defined
 // by its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
+//
+// Deprecated: Use actiontemplates.Get
 func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*resources.Resources[*ActionTemplate], error) {
 	v, _ := query.Values(actionTemplatesQuery)
 	path := s.BasePath
@@ -82,6 +87,8 @@ func (s *ActionTemplateService) Get(actionTemplatesQuery Query) (*resources.Reso
 
 // GetAll returns all action templates. If none can be found or an error
 // occurs, it returns an empty collection.
+//
+// Deprecated: Use actiontemplates.GetAll
 func (s *ActionTemplateService) GetAll() ([]*ActionTemplate, error) {
 	items := []*ActionTemplate{}
 	path, err := services.GetAllPath(s)
@@ -94,6 +101,8 @@ func (s *ActionTemplateService) GetAll() ([]*ActionTemplate, error) {
 }
 
 // GetCategories returns all action template categories.
+//
+// Deprecated: Use actiontemplates.GetCategories
 func (s *ActionTemplateService) GetCategories() ([]ActionTemplateCategory, error) {
 	items := new([]ActionTemplateCategory)
 	if err := services.ValidateInternalState(s); err != nil {
@@ -109,6 +118,8 @@ func (s *ActionTemplateService) GetCategories() ([]ActionTemplateCategory, error
 
 // GetByID returns the action template that matches the input ID. If one cannot
 // be found, it returns nil and an error.
+//
+// Deprecated: Use actiontemplates.GetByID
 func (s *ActionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -129,6 +140,8 @@ func (s *ActionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 
 // Search lists all available action templates including built-in, custom, and
 // community-contributed step templates.
+//
+// Deprecated: Use actiontemplates.Search
 func (s *ActionTemplateService) Search(searchQuery string) ([]ActionTemplateSearch, error) {
 	searchResults := []ActionTemplateSearch{}
 	if err := services.ValidateInternalState(s); err != nil {
@@ -155,6 +168,8 @@ func (s *ActionTemplateService) Search(searchQuery string) ([]ActionTemplateSear
 }
 
 // Update modifies an ActionTemplate based on the one provided as input.
+//
+// Deprecated: Use actiontemplates.Update
 func (s *ActionTemplateService) Update(actionTemplate *ActionTemplate) (*ActionTemplate, error) {
 	if actionTemplate == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "actionTemplate")
@@ -171,4 +186,83 @@ func (s *ActionTemplateService) Update(actionTemplate *ActionTemplate) (*ActionT
 	}
 
 	return resp.(*ActionTemplate), nil
+}
+
+// ----- new -----
+const (
+	template           = "/api/{spaceId}/actiontemplates{/id}"
+	categoriesTemplate = "/api/{spaceId}/actiontemplates/categories"
+	searchTemplate     = "/api/{spaceId}/actiontemplates/search"
+)
+
+// Add creates a new action template.
+func Add(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTemplate, error) {
+	if IsNil(actionTemplate) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterActionTemplate)
+	}
+
+	if err := actionTemplate.Validate(); err != nil {
+		return nil, internal.CreateValidationFailureError(constants.OperationAdd, err)
+	}
+
+	return newclient.Add[ActionTemplate](client, template, actionTemplate.SpaceID, actionTemplate)
+}
+
+// Get returns a collection of action templates based on the criteria defined
+// by its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func Get(client newclient.Client, spaceID string, actionTemplatesQuery Query) (*resources.Resources[*ActionTemplate], error) {
+	return newclient.GetByQuery[ActionTemplate](client, template, spaceID, actionTemplatesQuery)
+}
+
+// GetAll returns all action templates. If none can be found or an error
+// occurs, it returns an empty collection.
+func GetAll(client newclient.Client, spaceID string) ([]*ActionTemplate, error) {
+	return newclient.GetAll[ActionTemplate](client, template, spaceID)
+}
+
+// GetCategories returns all action template categories.
+func GetCategories(client newclient.Client, spaceID string) ([]*ActionTemplateCategory, error) {
+	return newclient.GetAll[ActionTemplateCategory](client, categoriesTemplate, spaceID)
+}
+
+// GetByID returns the action template that matches the input ID. If one cannot
+// be found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, id string) (*ActionTemplate, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	return newclient.GetByID[ActionTemplate](client, template, spaceID, id)
+}
+
+// Search lists all available action templates including built-in, custom, and
+// community-contributed step templates.
+func Search(client newclient.Client, spaceID string, searchQuery string) (*[]ActionTemplateSearch, error) {
+	path, err := client.URITemplateCache().Expand(searchTemplate, map[string]any{
+		"spaceId": spaceID,
+		"type":    searchQuery,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(searchQuery) <= 0 {
+		path = strings.Split(path, "?")[0]
+	}
+
+	return newclient.Get[[]ActionTemplateSearch](client.HttpSession(), path)
+}
+
+// Update modifies an ActionTemplate based on the one provided as input.
+func Update(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTemplate, error) {
+	if actionTemplate == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "actionTemplate")
+	}
+
+	return newclient.Update[ActionTemplate](client, template, actionTemplate.SpaceID, actionTemplate.ID, actionTemplate)
+}
+
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	return newclient.DeleteByID(client, template, spaceID, id)
 }
