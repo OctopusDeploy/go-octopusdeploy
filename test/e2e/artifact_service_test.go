@@ -113,3 +113,109 @@ func TestArtifactServiceGetByID(t *testing.T) {
 		AssertEqualArtifacts(t, resources[0], resourceToCompare)
 	}
 }
+
+// ----- new -----
+
+func CreateTestArtifact_New(t *testing.T, client *client.Client) *artifacts.Artifact {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	filename := "output.log"
+
+	artifact := artifacts.NewArtifact(filename)
+	require.NotNil(t, artifact)
+
+	createdArtifact, err := artifacts.Add(client, artifact)
+	require.NoError(t, err)
+	require.NotNil(t, createdArtifact)
+	require.NotEmpty(t, createdArtifact.GetID())
+
+	return createdArtifact
+}
+
+func DeleteTestArtifact_New(t *testing.T, client *client.Client, artifact *artifacts.Artifact) {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := client.Artifacts.DeleteByID(artifact.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedArtifact, err := artifacts.GetByID(client, client.GetSpaceID(), artifact.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedArtifact)
+
+}
+
+func AssertEqualArtifacts_New(t *testing.T, expected *artifacts.Artifact, actual *artifacts.Artifact) {
+	// equality cannot be determined through a direct comparison (below)
+	// because APIs like GetByPartialName do not include the fields,
+	// LastModifiedBy and LastModifiedOn
+	//
+	// assert.EqualValues(expected, actual)
+	//
+	// this statement (above) is expected to succeed, but it fails due to these
+	// missing fields
+
+	// IResource
+	assert.Equal(t, expected.GetID(), actual.GetID())
+	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
+
+	// Artifact
+	assert.Equal(t, expected.Created, actual.Created)
+	assert.Equal(t, expected.Filename, actual.Filename)
+	assert.Equal(t, expected.LogCorrelationID, actual.LogCorrelationID)
+	assert.Equal(t, expected.ServerTaskID, actual.ServerTaskID)
+	assert.Equal(t, expected.Source, actual.Source)
+	assert.Equal(t, expected.SpaceID, actual.SpaceID)
+}
+
+func TestArtifactServiceDeleteAll_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	accounts, err := artifacts.GetAll(client, client.GetSpaceID())
+	require.NoError(t, err)
+	require.NotNil(t, accounts)
+
+	for _, account := range accounts {
+		defer DeleteTestArtifact(t, client, account)
+	}
+}
+
+// TODO: fix test
+// func TestArtifactServiceGetAll_New(t *testing.T) {
+// 	client := getOctopusClient()
+// 	require.NotNil(t, client)
+
+// 	// create 30 test artifacts (to be deleted)
+// 	for i := 0; i < 30; i++ {
+// 		artifact := CreateTestArtifact(t, client)
+// 		require.NotNil(t, artifact)
+// 		defer DeleteTestArtifact(t, client, artifact)
+// 	}
+
+// 	allArtifacts, err := client.Artifacts.GetAll()
+// 	require.NoError(t, err)
+// 	require.NotNil(t, allArtifacts)
+// 	require.True(t, len(allArtifacts) >= 30)
+// }
+
+func TestArtifactServiceGetByID_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	resources, err := artifacts.GetAll(client, client.GetSpaceID())
+	require.NoError(t, err)
+	require.NotNil(t, resources)
+
+	if len(resources) > 0 {
+		resourceToCompare, err := artifacts.GetByID(client, client.GetSpaceID(), resources[0].GetID())
+		require.NoError(t, err)
+		AssertEqualArtifacts(t, resources[0], resourceToCompare)
+	}
+}
