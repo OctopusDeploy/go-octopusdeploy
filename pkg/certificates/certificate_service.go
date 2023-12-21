@@ -2,7 +2,6 @@ package certificates
 
 import (
 	"fmt"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -52,6 +51,8 @@ func (s *CertificateService) Add(certificate *CertificateResource) (*Certificate
 }
 
 // Archive sets the status of a certificate to an archived state.
+//
+// Deprecated: use certificates.Archive
 func (s *CertificateService) Archive(resource *CertificateResource) (*CertificateResource, error) {
 	path := resource.Links["Archive"]
 
@@ -136,6 +137,7 @@ func (s *CertificateService) Update(resource CertificateResource) (*CertificateR
 	return resp.(*CertificateResource), nil
 }
 
+// Deprecated: use certificates.Replace
 func (s *CertificateService) Replace(certificateID string, replacementCertificate *ReplacementCertificate) (*CertificateResource, error) {
 	if internal.IsEmpty(certificateID) {
 		return nil, internal.CreateInvalidParameterError("Replace", "certificateID")
@@ -162,6 +164,8 @@ func (s *CertificateService) Replace(certificateID string, replacementCertificat
 }
 
 // Unarchive resets the status of an archived certificate.
+//
+// Deprecated: use certificates.Unarchive
 func (s *CertificateService) Unarchive(resource *CertificateResource) (*CertificateResource, error) {
 	path := resource.Links["Unarchive"]
 
@@ -175,7 +179,10 @@ func (s *CertificateService) Unarchive(resource *CertificateResource) (*Certific
 
 // --- new ---
 
-const template = "/api/{spaceId}/certificates{/id}{?skip,take,search,archived,tenant,firstResult,orderBy,ids,partialName}"
+const (
+	template                   = "/api/{spaceId}/certificates{/id}{?skip,take,search,archived,tenant,firstResult,orderBy,ids,partialName}"
+	certificateReplaceTemplate = "/api/{spaceID}/certificates/{id}/replace"
+)
 
 // Get returns a collection of certificates based on the criteria defined by its input
 // query parameter. If an error occurs, a nil is returned along
@@ -208,4 +215,52 @@ func Update(client newclient.Client, resource *CertificateResource) (*Certificat
 // GetAll returns all certificates. If an error occurs, it returns nil.
 func GetAll(client newclient.Client, spaceID string) ([]*CertificateResource, error) {
 	return newclient.GetAll[CertificateResource](client, template, spaceID)
+}
+
+// Archive sets the status of a certificate to an archived state.
+func Archive(client newclient.Client, spaceID string, resource *CertificateResource) (*CertificateResource, error) {
+	path := resource.Links["Archive"]
+
+	_, err := newclient.Post[CertificateResource](client.HttpSession(), path, resource)
+	if err != nil {
+		return resource, err
+	}
+
+	return newclient.GetByID[CertificateResource](client, template, spaceID, resource.GetID())
+}
+
+func Replace(client newclient.Client, spaceID string, certificateID string, replacementCertificate *ReplacementCertificate) (*CertificateResource, error) {
+	if internal.IsEmpty(certificateID) {
+		return nil, internal.CreateInvalidParameterError("Replace", "certificateID")
+	}
+
+	if replacementCertificate == nil {
+		return nil, internal.CreateInvalidParameterError("Replace", "replacementCertificate")
+	}
+
+	templateParams := map[string]any{"spaceId": spaceID, "id": certificateID}
+	expandedUri, err := client.URITemplateCache().Expand(certificateReplaceTemplate, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := newclient.Post[CertificateResource](client.HttpSession(), expandedUri, replacementCertificate); err != nil {
+		return nil, err
+	}
+
+	// The API endpoint /certificates/id/replace returns the old cert, we need
+	// to re-query to get the updated one
+	return newclient.GetByID[CertificateResource](client, template, spaceID, certificateID)
+}
+
+// Unarchive resets the status of an archived certificate.
+func Unarchive(client newclient.Client, spaceID string, resource *CertificateResource) (*CertificateResource, error) {
+	path := resource.Links["Unarchive"]
+
+	_, err := newclient.Post[CertificateResource](client.HttpSession(), path, resource)
+	if err != nil {
+		return resource, err
+	}
+
+	return newclient.GetByID[CertificateResource](client, template, spaceID, resource.GetID())
 }
