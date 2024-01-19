@@ -53,15 +53,15 @@ type DeploymentPreview struct {
 	UseGuidedFailureModeByDefault bool                      `json:"UseGuidedFailureModeByDefault"`
 }
 
-type DeploymentPreviewRequestBody struct {
+type DeploymentPreviewRequest struct {
 	EnvironmentId string `json:"EnvironmentId"`
 	TenantId      string `json:"TenantId"`
 }
 
 // For review time - Should DeploymentPreviewRequestBody be an array of pointers to an object?
 type DeploymentPreviewsBody struct {
-	DeploymentPreviews   []DeploymentPreviewRequestBody `json:"DeploymentPreviews"`
-	IncludeDisabledSteps bool                           `json:"IncludeDisabledSteps"`
-	ReleaseId            string                         `json:"ReleaseId"`
-	SpaceId              string                         `json:"SpaceId"`
+	DeploymentPreviews   []DeploymentPreviewRequest `json:"DeploymentPreviews"`
+	IncludeDisabledSteps bool                       `json:"IncludeDisabledSteps"`
+	ReleaseId            string                     `json:"ReleaseId"`
+	SpaceId              string                     `json:"SpaceId"`
 }
