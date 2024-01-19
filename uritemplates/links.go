@@ -17,6 +17,7 @@ const (
 	LibraryVariableSets                 = "/api/{spaceId}/libraryvariablesets{/id}{?skip,contentType,take,ids,partialName}"
 	PackageUpload                       = "/api/{spaceId}/packages/raw{?replace,overwriteMode}"                                                               // POST multipart form
 	ReleaseDeploymentPreview            = "/api/{spaceId}/releases/{releaseId}/deployments/preview/{environmentId}{?includeDisabledSteps}"                    // GET
+	ReleaseDeploymentPreviews           = "/api/{spaceId}/releases/{releaseId}/deployments/previews"                                                          // POST multipart form
 	Releases                            = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"                                                   // GET
 	ReleasesByProject                   = "/api/{spaceId}/projects/{projectId}/releases{/version}{?skip,take,searchByVersion}"                                // GET
 	ReleasesByProjectAndChannel         = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"                     // GET
