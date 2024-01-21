@@ -65,3 +65,11 @@ type DeploymentPreviewsBody struct {
 	ReleaseId            string                     `json:"ReleaseId"`
 	SpaceId              string                     `json:"SpaceId"`
 }
+
+func NewEmptyDeploymentPreview() *DeploymentPreview {
+	return &DeploymentPreview{
+		Form:                          &Form{Values: map[string]string{}, Elements: []*Element{}},
+		StepsToExecute:                []*DeploymentTemplateStep{},
+		UseGuidedFailureModeByDefault: false,
+	}
+}
