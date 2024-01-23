@@ -73,3 +73,29 @@ func NewEmptyDeploymentPreview() *DeploymentPreview {
 		UseGuidedFailureModeByDefault: false,
 	}
 }
+
+func NewFormWithValuesAndElements(values map[string]string, elements []*Element) *Form {
+	return &Form{
+		Values:   values,
+		Elements: elements,
+	}
+}
+
+func NewElement(name string, control *Control, isValueRequired bool) *Element {
+	return &Element{
+		Name:            name,
+		Control:         control,
+		IsValueRequired: isValueRequired,
+	}
+}
+
+func NewControl(controlType, name, label, description string, required bool, displaySettings *resources.DisplaySettings) *Control {
+	return &Control{
+		Type:            controlType,
+		Name:            name,
+		Label:           label,
+		Description:     description,
+		Required:        required,
+		DisplaySettings: displaySettings,
+	}
+}
