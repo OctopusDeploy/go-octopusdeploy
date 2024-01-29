@@ -92,6 +92,12 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		feed = artifactoryGenericFeed
+        case FeedTypeAwsS3Bucket:
+                s3Feed, err := NewAwsS3Bucket(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey)
+                if err != nil {
+                        return nil, err
+                }
+                feed = s3Feed
 	}
 
 	feed.SetID(feedResource.GetID())
