@@ -92,12 +92,12 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		feed = artifactoryGenericFeed
-        case FeedTypeAwsS3Bucket:
-                s3Feed, err := NewAwsS3Bucket(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey)
-                if err != nil {
-                        return nil, err
-                }
-                feed = s3Feed
+    case FeedTypeS3:
+        s3Feed, err := NewS3Feed(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.UseMachineCredentials)
+        if err != nil {
+            return nil, err
+        }
+        feed = s3Feed
 	}
 
 	feed.SetID(feedResource.GetID())
@@ -172,6 +172,11 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.Repository = artifactoryGenericFeed.Repository
 		feedResource.LayoutRegex = artifactoryGenericFeed.LayoutRegex
 		feedResource.FeedURI = artifactoryGenericFeed.FeedURI
+	case FeedTypeS3:
+		s3Feed := feed.(*S3Feed)
+		feedResource.AccessKey = s3Feed.AccessKey
+		feedResource.SecretKey = s3Feed.SecretKey
+		feedResource.UseMachineCredentials = s3Feed.UseMachineCredentials
 	case FeedTypeOctopusProject:
 		// nothing to copy
 	}

@@ -7,32 +7,33 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// AwsS3Bucket represents an Amazon Web Services (AWS) S3 Bucket
-type AwsS3Bucket struct {
-	AccessKey string               `json:"AccessKey" validate:"required"`
-	SecretKey *core.SensitiveValue `json:"SecretKey" validate:"required"`
-
+// S3Feed represents an Amazon Web Services (AWS) S3 Bucket Feed
+type S3Feed struct {
+	AccessKey string               `json:"AccessKey,omitempty"`
+	SecretKey *core.SensitiveValue `json:"SecretKey,omitempty"`
+    UseMachineCredentials bool  `json:"UseMachineCredentials" validate:"required"`
 	feed
 }
 
-// NewAwsS3Bucket creates and initializes an Amazon S3 Bucket Feed
-func NewAwsS3Bucket(name string, accessKey string, secretKey *core.SensitiveValue) (*AwsS3Bucket, error) {
+// NewS3Feed creates and initializes an Amazon S3 Bucket Feed
+func NewS3Feed(name string, accessKey string, secretKey *core.SensitiveValue, useMachineCredentials bool) (*S3Feed, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
 	}
+	if !useMachineCredentials {
+		if internal.IsEmpty(accessKey) {
+			return nil, internal.CreateRequiredParameterIsEmptyOrNilError("accessKey")
+		}
 
-	if internal.IsEmpty(accessKey) {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("accessKey")
+		if secretKey == nil {
+			return nil, internal.CreateRequiredParameterIsEmptyOrNilError("secretKey")
+		}
 	}
-
-	if secretKey == nil {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("secretKey")
-	}
-
-	feed := AwsS3Bucket{
+	feed := S3Feed{
 		AccessKey: accessKey,
 		SecretKey: secretKey,
-		feed:      *newFeed(name, FeedTypeAwsS3Bucket),
+		UseMachineCredentials: useMachineCredentials,
+		feed:      *newFeed(name, FeedTypeS3),
 	}
 
 	// validate to ensure that all expectations are met
@@ -43,8 +44,8 @@ func NewAwsS3Bucket(name string, accessKey string, secretKey *core.SensitiveValu
 	return &feed, nil
 }
 
-// Validate checks the state of this Amazon Web Services (AWS) S3 Bucket
-func (a *AwsS3Bucket,) Validate() error {
+// Validate checks the state of this Amazon Web Services (AWS) S3 Bucket Feed
+func (a *S3Feed,) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
