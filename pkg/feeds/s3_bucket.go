@@ -9,9 +9,9 @@ import (
 
 // S3Feed represents an Amazon Web Services (AWS) S3 Bucket Feed
 type S3Feed struct {
-	AccessKey string               `json:"AccessKey,omitempty"`
-	SecretKey *core.SensitiveValue `json:"SecretKey,omitempty"`
-    UseMachineCredentials bool  `json:"UseMachineCredentials" validate:"required"`
+	AccessKey             string               `json:"AccessKey,omitempty"`
+	SecretKey             *core.SensitiveValue `json:"SecretKey,omitempty"`
+	UseMachineCredentials bool                 `json:"UseMachineCredentials"`
 	feed
 }
 
@@ -30,10 +30,10 @@ func NewS3Feed(name string, accessKey string, secretKey *core.SensitiveValue, us
 		}
 	}
 	feed := S3Feed{
-		AccessKey: accessKey,
-		SecretKey: secretKey,
+		AccessKey:             accessKey,
+		SecretKey:             secretKey,
 		UseMachineCredentials: useMachineCredentials,
-		feed:      *newFeed(name, FeedTypeS3),
+		feed:                  *newFeed(name, FeedTypeS3),
 	}
 
 	// validate to ensure that all expectations are met
@@ -45,7 +45,7 @@ func NewS3Feed(name string, accessKey string, secretKey *core.SensitiveValue, us
 }
 
 // Validate checks the state of this Amazon Web Services (AWS) S3 Bucket Feed
-func (a *S3Feed,) Validate() error {
+func (a *S3Feed) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {
