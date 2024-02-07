@@ -11,7 +11,7 @@ import (
 type S3Feed struct {
 	AccessKey string               `json:"AccessKey,omitempty"`
 	SecretKey *core.SensitiveValue `json:"SecretKey,omitempty"`
-    UseMachineCredentials bool  `json:"UseMachineCredentials" validate:"required"`
+	UseMachineCredentials bool     `json:"UseMachineCredentials"`
 	feed
 }
 
@@ -30,10 +30,10 @@ func NewS3Feed(name string, accessKey string, secretKey *core.SensitiveValue, us
 		}
 	}
 	feed := S3Feed{
-		AccessKey: accessKey,
-		SecretKey: secretKey,
+		AccessKey:             accessKey,
+		SecretKey:             secretKey,
 		UseMachineCredentials: useMachineCredentials,
-		feed:      *newFeed(name, FeedTypeS3),
+		feed:                  *newFeed(name, FeedTypeS3),
 	}
 
 	// validate to ensure that all expectations are met
