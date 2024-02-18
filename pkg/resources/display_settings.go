@@ -1,4 +1,4 @@
-package variables
+package resources
 
 import (
 	"encoding/json"
