@@ -215,7 +215,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	}
 
 	baseURLWithAPI := strings.TrimRight(apiURL.String(), "/")
-	baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
+	//baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
 
 	if httpClient == nil {
 		httpClient = &http.Client{}
@@ -500,11 +500,11 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	}, nil
 }
 
-func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
+func getRoot(httpClient *http.Client, baseUrl string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
 	base := sling.
 		New().
 		Client(httpClient).
-		Base(baseURLWithAPI).
+		Base(baseUrl).
 		Set("Accept", `application/json`)
 
 	headers := getHeaders(credentials, requestingTool)
@@ -513,7 +513,11 @@ func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ICreden
 		base.Set(key, value)
 	}
 
-	rootService := NewRootService(base, baseURLWithAPI)
+	if !strings.HasSuffix(baseUrl, "/api") {
+		baseUrl = fmt.Sprintf("%s/api", baseUrl)
+	}
+
+	rootService := NewRootService(base, baseUrl)
 
 	root, err := rootService.Get()
 	return base, root, err
