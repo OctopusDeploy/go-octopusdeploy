@@ -52,7 +52,7 @@ func CreateTestAwsOIDCAccount(t *testing.T, client *client.Client) accounts.IAcc
 	require.NotNil(t, account)
 	require.NoError(t, account.Validate())
 
-	createdAccount, err := accounts.Add(client, account)
+	createdAccount, err := client.Accounts.Add(account)
 	require.NoError(t, err)
 	require.NotNil(t, createdAccount)
 	require.NotEmpty(t, createdAccount.GetID())
