@@ -119,6 +119,26 @@ func CreateTestNuGetFeed(t *testing.T, client *client.Client) feeds.IFeed {
 	return resource
 }
 
+func CreateTestS3Feed(t *testing.T, client *client.Client) feeds.IFeed {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := "S3_FeedName"
+	accessKey := "access-key"
+	secretKey := core.NewSensitiveValue("secret-key")
+
+	feed, err := feeds.NewS3Feed(name, accessKey, secretKey, false)
+	require.NoError(t, err)
+
+	resource, err := client.Feeds.Add(feed)
+	require.NoError(t, err)
+
+	return resource
+
+}
+
 func DeleteTestFeed(t *testing.T, client *client.Client, feed feeds.IFeed) {
 	require.NotNil(t, feed)
 
@@ -163,6 +183,10 @@ func TestFeedServiceAdd(t *testing.T) {
 	defer DeleteTestFeed(t, client, feed)
 
 	feed = CreateTestNuGetFeed(t, client)
+	require.NotNil(t, feed)
+	defer DeleteTestFeed(t, client, feed)
+
+	feed = CreateTestS3Feed(t, client)
 	require.NotNil(t, feed)
 	defer DeleteTestFeed(t, client, feed)
 }
@@ -233,6 +257,22 @@ func TestFeedServiceCRUD(t *testing.T) {
 	actual, err = client.Feeds.Update(expected)
 	require.NoError(t, err)
 	AssertEqualFeeds(t, expected, actual)
+
+	expected = CreateTestS3Feed(t, client)
+	require.NotNil(t, expected)
+	defer DeleteTestFeed(t, client, expected)
+
+	actual, err = client.Feeds.GetByID(expected.GetID())
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
+	name = internal.GetRandomName()
+	expected.SetName(name)
+
+	actual, err = client.Feeds.Update(expected)
+	require.NoError(t, err)
+	AssertEqualFeeds(t, expected, actual)
+
 }
 
 // TODO: fix test
