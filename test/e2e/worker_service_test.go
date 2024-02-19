@@ -19,7 +19,7 @@ func CreateTestWorker(t *testing.T, client *client.Client, workerPool workerpool
 	require.NotNil(t, client)
 
 	name := internal.GetRandomName()
-	thumbprint := internal.GetRandomName()
+	thumbprint := internal.GetRandomThumbprint()
 
 	url, err := url.Parse("https://example.com/")
 	require.NoError(t, err)
