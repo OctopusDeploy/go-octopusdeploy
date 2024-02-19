@@ -16,6 +16,11 @@ func GetRandomName() string {
 	return fullName
 }
 
+func GetRandomThumbprint() string {
+	thumbprint := strings.ToUpper(strings.ReplaceAll(fmt.Sprintf("%s%s", uuid.New(), uuid.New()), "-", ""))
+	return thumbprint[0:40]
+}
+
 func IsEmpty(s string) bool {
 	return len(strings.TrimSpace(s)) == 0
 }
