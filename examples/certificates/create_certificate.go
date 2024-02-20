@@ -3,7 +3,7 @@ package examples
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/url"
 	"os"
 
@@ -41,7 +41,7 @@ func CreateCertificateExample() {
 		return
 	}
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		_ = fmt.Errorf("error reading file: %v", err)
 		return
@@ -56,7 +56,7 @@ func CreateCertificateExample() {
 	certificate := certificates.NewCertificateResource(certificateName, certificateData, password)
 
 	// create certificate through Add(); returns error if fails
-	createdCertificate, err := client.Certificates.Add(certificate)
+	createdCertificate, err := certificates.Add(client, certificate)
 	if err != nil {
 		_ = fmt.Errorf("error adding certificate: %v", err)
 	}

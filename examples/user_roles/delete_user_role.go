@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/userroles"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -32,7 +33,7 @@ func DeleteUserRoleExample() {
 	}
 
 	// delete user role
-	err = client.UserRoles.DeleteByID(userRoleID)
+	err = userroles.DeleteByID(client, userRoleID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting user role: %v", err)
 		return

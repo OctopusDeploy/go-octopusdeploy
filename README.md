@@ -52,15 +52,15 @@ Once the client has been initialized, APIs can be targeted through the model and
 usernamePasswordAccount := accounts.NewUsernamePasswordAccount(name)
 usernamePasswordAccount.Username = username
 
-createdAccount, err := octopusClient.Accounts.Add(usernamePasswordAccount)
+createdAccount, err := accounts.Add(octopusClient, usernamePasswordAccount)
 if err != nil {
     _ = fmt.Errorf("error adding account: %v", err)
 }
 ```
 
-Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by most services that are exposed through the client. These operations are configured at runtime since the Octopus REST API is hypermedia-driven.
+Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by most services that are exposed through the client if not exposed in the package. These operations are configured at runtime since the Octopus REST API is hypermedia-driven.
 
-Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory. There are also many [integration](/integration) and unit tests available to examine that demonstrate the capabilities of this API client.
+Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory. There are also many [integration](/test) and unit tests available to examine that demonstrate the capabilities of this API client.
 
 ## 🤝 Contributions
 

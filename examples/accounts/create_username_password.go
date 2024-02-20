@@ -54,7 +54,7 @@ func CreateUsernamePasswordExample() {
 	}
 
 	// create account
-	createdAccount, err := client.Accounts.Add(usernamePasswordAccount)
+	createdAccount, err := accounts.Add(client, usernamePasswordAccount)
 	if err != nil {
 		_ = fmt.Errorf("error adding account: %v", err)
 	}

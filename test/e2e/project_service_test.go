@@ -304,3 +304,107 @@ func TestProjectGetByName(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, projects)
 }
+
+// ----- new -----
+// todo: There are a few client calls that use the old client as they have not been migrated over yet;
+// 		 revisit and update these to use the new client calls once migrated.
+
+func CreateTestProject_NewClient(t *testing.T, client *client.Client, space *spaces.Space, lifecycle *lifecycles.Lifecycle, projectGroup *projectgroups.ProjectGroup) *projects.Project {
+	require.NotNil(t, space)
+	require.NotNil(t, lifecycle)
+	require.NotNil(t, projectGroup)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	project := projects.NewProject(name, lifecycle.GetID(), projectGroup.GetID())
+	require.NotNil(t, project)
+
+	createdProject, err := projects.Add(client, project)
+	require.NoError(t, err)
+	require.NotNil(t, createdProject)
+	require.NotEmpty(t, createdProject.GetID())
+
+	// verify the add operation was successful
+	projectToCompare, err := projects.GetByID(client, project.SpaceID, createdProject.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, projectToCompare)
+	AssertEqualProjects(t, createdProject, projectToCompare)
+
+	return createdProject
+}
+
+func DeleteTestProject_NewClient(t *testing.T, client *client.Client, project *projects.Project) {
+	require.NotNil(t, project)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := projects.DeleteByID(client, project.SpaceID, project.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedProject, err := projects.GetByID(client, project.SpaceID, project.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedProject)
+}
+
+func TestProjectAddGetDelete_NewClient(t *testing.T) {
+	octopus := getOctopusClient()
+	require.NotNil(t, octopus)
+
+	space := GetDefaultSpace(t, octopus)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, octopus)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, octopus, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, octopus)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, octopus, projectGroup)
+
+	project := CreateTestProject_NewClient(t, octopus, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject_NewClient(t, octopus, project)
+}
+
+func TestProjectUpdate_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject_NewClient(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	newProjectName := internal.GetRandomName()
+	newDescription := internal.GetRandomName()
+	newSkipMachineBehavior := core.SkipMachineBehaviorNone
+
+	project.Name = newProjectName
+	project.ConnectivityPolicy.SkipMachineBehavior = newSkipMachineBehavior
+	project.Description = newDescription
+
+	updatedProject, err := projects.Update(client, project)
+	require.NoError(t, err)
+	require.Equal(t, newProjectName, updatedProject.Name, "project name was not updated")
+	require.Equal(t, newDescription, updatedProject.Description, "project description was not updated")
+	require.Equal(t, newSkipMachineBehavior, project.ConnectivityPolicy.SkipMachineBehavior, "project connectivity policy name was not updated")
+}

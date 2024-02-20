@@ -6,6 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -26,6 +27,8 @@ func NewLifecycleService(sling *sling.Sling, uriTemplate string) *LifecycleServi
 }
 
 // Add creates a new lifecycle.
+//
+// Deprecated: use lifecycles.Add
 func (s *LifecycleService) Add(lifecycle *Lifecycle) (*Lifecycle, error) {
 	if IsNil(lifecycle) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, "lifecycle")
@@ -47,6 +50,8 @@ func (s *LifecycleService) Add(lifecycle *Lifecycle) (*Lifecycle, error) {
 // Get returns a collection of lifecycles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: use lifecycles.Get
 func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[*Lifecycle], error) {
 	path, err := s.GetURITemplate().Expand(lifecyclesQuery)
 	if err != nil {
@@ -63,6 +68,8 @@ func (s *LifecycleService) Get(lifecyclesQuery Query) (*resources.Resources[*Lif
 
 // GetAll returns all lifecycles. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use lifecycles.GetAll
 func (s *LifecycleService) GetAll() ([]*Lifecycle, error) {
 	path, err := services.GetAllPath(s)
 	if err != nil {
@@ -80,6 +87,8 @@ func (s *LifecycleService) GetAll() ([]*Lifecycle, error) {
 
 // GetByID returns the lifecycle that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use lifecycles.GetByID
 func (s *LifecycleService) GetByID(id string) (*Lifecycle, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -167,6 +176,8 @@ func (s *LifecycleService) GetProjects(lifecycle *Lifecycle) ([]*projects.Projec
 }
 
 // Update modifies a lifecycle based on the one provided as input.
+//
+// Deprecated: use lifecycles.Update
 func (s *LifecycleService) Update(lifecycle *Lifecycle) (*Lifecycle, error) {
 	path, err := services.GetUpdatePath(s, lifecycle)
 	if err != nil {
@@ -182,3 +193,39 @@ func (s *LifecycleService) Update(lifecycle *Lifecycle) (*Lifecycle, error) {
 }
 
 var _ services.IService = &LifecycleService{}
+
+// --- new ---
+
+const template = "/api/{spaceId}/lifecycles{/id}{?skip,take,ids,partialName}"
+
+// Get returns a collection of lifecycles based on the criteria defined by its
+// input query parameter. If an error occurs, an empty collection is returned
+// along with the associated error.
+func Get(client newclient.Client, spaceID string, lifecyclesQuery Query) (*resources.Resources[*Lifecycle], error) {
+	return newclient.GetByQuery[Lifecycle](client, template, spaceID, lifecyclesQuery)
+}
+
+// Add creates a new lifecycle.
+func Add(client newclient.Client, lifecycle *Lifecycle) (*Lifecycle, error) {
+	return newclient.Add[Lifecycle](client, template, lifecycle.SpaceID, lifecycle)
+}
+
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// Update modifies a lifecycle based on the one provided as input.
+func Update(client newclient.Client, lifecycle *Lifecycle) (*Lifecycle, error) {
+	return newclient.Update[Lifecycle](client, template, lifecycle.SpaceID, lifecycle.ID, lifecycle)
+}
+
+// GetByID returns the lifecycle that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*Lifecycle, error) {
+	return newclient.GetByID[Lifecycle](client, template, spaceID, ID)
+}
+
+// GetAll returns all lifecycles. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Lifecycle, error) {
+	return newclient.GetAll[Lifecycle](client, template, spaceID)
+}

@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -30,7 +31,7 @@ func GetProjectByIDExample() {
 	}
 
 	// get project by its ID
-	project, err := client.Projects.GetByID(projectID)
+	project, err := projects.GetByID(client, spaceID, projectID)
 	if err != nil {
 		_ = fmt.Errorf("error getting project: %v", err)
 		return

@@ -1,21 +1,28 @@
 package projectgroups
 
 import (
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
-	"strings"
 )
 
 // ProjectGroupService handles communication with ProjectGroup-related methods of the Octopus API.
 type ProjectGroupService struct {
 	services.CanDeleteService
 }
+
+const (
+	projectGroupsTemplate = "/api/{spaceId}/projectgroups{/id}{?skip,take,ids,partialName}"
+)
 
 // NewProjectGroupService returns a projectGroupService with a preconfigured client.
 func NewProjectGroupService(sling *sling.Sling, uriTemplate string) *ProjectGroupService {
@@ -27,6 +34,8 @@ func NewProjectGroupService(sling *sling.Sling, uriTemplate string) *ProjectGrou
 }
 
 // Add creates a new project group.
+//
+// Deprecated: Use projectgroups.Add
 func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, error) {
 	if IsNil(projectGroup) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterProjectGroup)
@@ -48,6 +57,8 @@ func (s *ProjectGroupService) Add(projectGroup *ProjectGroup) (*ProjectGroup, er
 // Get returns a collection of project groups based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
+//
+// Deprecated: Use projectgroups.Get
 func (s *ProjectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*resources.Resources[*ProjectGroup], error) {
 	path, err := s.GetURITemplate().Expand(projectGroupsQuery)
 	if err != nil {
@@ -64,6 +75,8 @@ func (s *ProjectGroupService) Get(projectGroupsQuery ProjectGroupsQuery) (*resou
 
 // GetAll returns all project groups. If none can be found or an error occurs,
 // it returns an empty collection.
+//
+// Deprecates: use projectgroups.GetAll
 func (s *ProjectGroupService) GetAll() ([]*ProjectGroup, error) {
 	items := []*ProjectGroup{}
 	path, err := services.GetAllPath(s)
@@ -77,6 +90,8 @@ func (s *ProjectGroupService) GetAll() ([]*ProjectGroup, error) {
 
 // GetByID returns the project group that matches the input ID. If one cannot
 // be found, it returns nil and an error.
+//
+// Deprecated: Use projectgroups.GetByID
 func (s *ProjectGroupService) GetByID(id string) (*ProjectGroup, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -172,6 +187,8 @@ func (s *ProjectGroupService) GetProjects(projectGroup *ProjectGroup) ([]*projec
 }
 
 // Update modifies a project group based on the one provided as input.
+//
+// Deprecated: Use projectgroups.Update
 func (s *ProjectGroupService) Update(resource ProjectGroup) (*ProjectGroup, error) {
 	path, err := services.GetUpdatePath(s, &resource)
 	if err != nil {
@@ -184,4 +201,116 @@ func (s *ProjectGroupService) Update(resource ProjectGroup) (*ProjectGroup, erro
 	}
 
 	return resp.(*ProjectGroup), nil
+}
+
+// ----- new -----
+
+// Add creates a new project group.
+func Add(client newclient.Client, projectGroup *ProjectGroup) (*ProjectGroup, error) {
+	if IsNil(projectGroup) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterProjectGroup)
+	}
+
+	spaceID, err := internal.GetSpaceID(projectGroup.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{"spaceId": spaceID})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Post[ProjectGroup](client.HttpSession(), expandedUri, projectGroup)
+}
+
+// Get returns a collection of project groups based on the criteria defined by
+// its input query parameter. If an error occurs, an empty collection is
+// returned along with the associated error.
+func Get(client newclient.Client, spaceID string, projectGroupsQuery ProjectGroupsQuery) (*resources.Resources[*ProjectGroup], error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	values, _ := uritemplates.Struct2map(projectGroupsQuery)
+	if values == nil {
+		values = map[string]any{}
+	}
+	values["spaceId"] = spaceID
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, values)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := newclient.Get[resources.Resources[*ProjectGroup]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return &resources.Resources[*ProjectGroup]{}, err
+	}
+
+	return resp, nil
+}
+
+// GetByID returns the project group that matches the input ID. If one cannot
+// be found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, id string) (*ProjectGroup, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{
+		"spaceId": spaceID,
+		"id":      id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Get[ProjectGroup](client.HttpSession(), expandedUri)
+}
+
+// Update modifies a project group based on the one provided as input.
+func Update(client newclient.Client, resource ProjectGroup) (*ProjectGroup, error) {
+	spaceID, err := internal.GetSpaceID(resource.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{
+		"spaceId": spaceID,
+		"id":      resource.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Put[ProjectGroup](client.HttpSession(), expandedUri, resource)
+}
+
+// DeleteByID deletes the resource that matches the space ID and input ID.
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	if internal.IsEmpty(id) {
+		return internal.CreateInvalidParameterError(constants.OperationDeleteByID, constants.ParameterID)
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(projectGroupsTemplate, map[string]any{
+		"spaceId": spaceID,
+		"id":      id,
+	})
+	if err != nil {
+		return err
+	}
+
+	return newclient.Delete(client.HttpSession(), expandedUri)
+}
+
+// GetAll returns all project groups. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*ProjectGroup, error) {
+	return newclient.GetAll[ProjectGroup](client, projectGroupsTemplate, spaceID)
 }

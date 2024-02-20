@@ -156,3 +156,65 @@ func TestCredentialServiceUpdate(t *testing.T) {
 	require.Equal(t, newDescription, updatedCredential.Description)
 	require.Equal(t, newName, updatedCredential.Name)
 }
+
+func TestCredentialServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	createdResource := CreateTestGitCredentialResource_NewClient(t, client)
+	defer DeleteTestGitCredentialResource_NewClient(t, client, createdResource)
+
+	resource, err := credentials.GetByID(client, createdResource.SpaceID, createdResource.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	credentials, err := credentials.Get(client, resource.SpaceID, credentials.Query{Name: resource.GetName()})
+	require.NoError(t, err)
+	require.NotNil(t, credentials)
+
+	resourceToCompare := credentials.Items[0]
+	IsEqualCredentials(t, resource, resourceToCompare)
+}
+
+func CreateTestGitCredentialResource_NewClient(t *testing.T, client *client.Client) *credentials.Resource {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+	description := "Description for " + name + " (OK to Delete)"
+
+	username := internal.GetRandomName()
+	password := core.NewSensitiveValue(internal.GetRandomName())
+	usernamePassword := credentials.NewUsernamePassword(username, password)
+
+	resource := credentials.NewResource(name, usernamePassword)
+	resource.Description = description
+
+	require.NoError(t, resource.Validate())
+
+	createdResource, err := credentials.Add(client, resource)
+	require.NoError(t, err)
+	require.NotNil(t, createdResource)
+	require.NotEmpty(t, createdResource.GetID())
+
+	return createdResource
+}
+
+func DeleteTestGitCredentialResource_NewClient(t *testing.T, client *client.Client, resource *credentials.Resource) {
+	require.NotNil(t, resource)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := credentials.DeleteByID(client, resource.SpaceID, resource.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedResource, err := credentials.GetByID(client, resource.SpaceID, resource.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedResource)
+}

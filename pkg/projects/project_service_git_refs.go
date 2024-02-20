@@ -39,7 +39,8 @@ const (
 type GitReference struct {
 	Type          GitRefType        `json:"-"`                       // added by the client library in case you need to disambiguate branches/tags in a single collection
 	Name          string            `json:"Name,omitempty"`          // display name of the git item e.g. "main"
-	CanonicalName string            `json:"CanonicalName,omitempty"` // underlying git reference e.g. "/refs/heads/main"
+	CanonicalName string            `json:"CanonicalName,omitempty"` // underlying git reference e.g. "refs/heads/main"
+	IsProtected   bool              `json:"IsProtected"`
 	Links         map[string]string `json:"Links,omitempty"`
 }
 

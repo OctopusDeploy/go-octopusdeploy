@@ -33,6 +33,19 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		azureServicePrincipalAccount.AzureEnvironment = accountResource.AzureEnvironment
 		azureServicePrincipalAccount.ResourceManagerEndpoint = accountResource.ResourceManagerEndpoint
 		account = azureServicePrincipalAccount
+	case AccountTypeAzureOIDC:
+		azureOIDCAccount, err := NewAzureOIDCAccount(accountResource.GetName(), *accountResource.SubscriptionID, *accountResource.TenantID, *accountResource.ApplicationID)
+		if err != nil {
+			return nil, err
+		}
+		azureOIDCAccount.AuthenticationEndpoint = accountResource.AuthenticationEndpoint
+		azureOIDCAccount.AzureEnvironment = accountResource.AzureEnvironment
+		azureOIDCAccount.ResourceManagerEndpoint = accountResource.ResourceManagerEndpoint
+		azureOIDCAccount.Audience = accountResource.Audience
+		azureOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
+		azureOIDCAccount.AccountTestSubjectKeys = accountResource.AccountTestSubjectKeys
+		azureOIDCAccount.HealthCheckSubjectKeys = accountResource.HealthCheckSubjectKeys
+		account = azureOIDCAccount
 	case AccountTypeAzureSubscription:
 		azureSubscriptionAccount, err := NewAzureSubscriptionAccount(accountResource.GetName(), *accountResource.SubscriptionID)
 		if err != nil {
@@ -122,6 +135,18 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		accountResource.ResourceManagerEndpoint = azureServicePrincipalAccount.ResourceManagerEndpoint
 		accountResource.SubscriptionID = azureServicePrincipalAccount.SubscriptionID
 		accountResource.TenantID = azureServicePrincipalAccount.TenantID
+	case AccountTypeAzureOIDC:
+		azureOIDCAccount := account.(*AzureOIDCAccount)
+		accountResource.ApplicationID = azureOIDCAccount.ApplicationID
+		accountResource.AuthenticationEndpoint = azureOIDCAccount.AuthenticationEndpoint
+		accountResource.AzureEnvironment = azureOIDCAccount.AzureEnvironment
+		accountResource.ResourceManagerEndpoint = azureOIDCAccount.ResourceManagerEndpoint
+		accountResource.SubscriptionID = azureOIDCAccount.SubscriptionID
+		accountResource.TenantID = azureOIDCAccount.TenantID
+		accountResource.Audience = azureOIDCAccount.Audience
+		accountResource.DeploymentSubjectKeys = azureOIDCAccount.DeploymentSubjectKeys
+		accountResource.AccountTestSubjectKeys = azureOIDCAccount.AccountTestSubjectKeys
+		accountResource.HealthCheckSubjectKeys = azureOIDCAccount.HealthCheckSubjectKeys
 	case AccountTypeAzureSubscription:
 		azureSubscriptionAccount := account.(*AzureSubscriptionAccount)
 		accountResource.AzureEnvironment = azureSubscriptionAccount.AzureEnvironment

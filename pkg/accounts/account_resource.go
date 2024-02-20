@@ -12,7 +12,7 @@ import (
 // username/password, tokens, Azure and AWS credentials, and SSH key pairs.
 type AccountResource struct {
 	AccessKey               string                      `json:"AccessKey,omitempty"`
-	AccountType             AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
+	AccountType             AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AzureOidc AmazonWebServicesAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
 	ApplicationID           *uuid.UUID                  `json:"ClientId,omitempty"`
 	ApplicationPassword     *core.SensitiveValue        `json:"Password,omitempty"`
 	AuthenticationEndpoint  string                      `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
@@ -38,6 +38,10 @@ type AccountResource struct {
 	TenantTags              []string                    `json:"TenantTags,omitempty"`
 	Token                   *core.SensitiveValue        `json:"Token,omitempty"`
 	Username                string                      `json:"Username,omitempty"`
+	Audience                string                      `json:"Audience,omitempty"`
+	DeploymentSubjectKeys   []string                    `json:"DeploymentSubjectKeys,omitempty"`
+	HealthCheckSubjectKeys  []string                    `json:"HealthCheckSubjectKeys,omitempty"`
+	AccountTestSubjectKeys  []string                    `json:"AccountTestSubjectKeys,omitempty"`
 
 	resources.Resource
 }

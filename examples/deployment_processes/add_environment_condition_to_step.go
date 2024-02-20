@@ -43,7 +43,7 @@ func AddEnvironmentConditionToStepExample() {
 		environmentIDs = append(environmentIDs, environments[0].GetID())
 	}
 
-	projects, err := client.Projects.Get(projects.ProjectsQuery{
+	projects, err := projects.Get(client, spaceID, projects.ProjectsQuery{
 		Name: projectName,
 	})
 	if err != nil {

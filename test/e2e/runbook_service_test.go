@@ -160,3 +160,76 @@ func TestRunbookServiceGetByID(t *testing.T) {
 		AssertEqualRunbooks(t, runbook, runbookToCompare)
 	}
 }
+
+// === NEW ===
+
+func TestRunbookServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle_NewClient(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle_NewClient(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup_NewClient(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup_NewClient(t, client, projectGroup)
+
+	project := CreateTestProject_NewClient(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject_NewClient(t, client, project)
+
+	runbook := CreateTestRunbook_NewClient(t, client, lifecycle, projectGroup, project)
+	require.NotNil(t, runbook)
+	defer DeleteTestRunbook_NewClient(t, client, runbook)
+}
+
+func CreateTestRunbook_NewClient(t *testing.T, client *client.Client, lifecycle *lifecycles.Lifecycle, projectGroup *projectgroups.ProjectGroup, project *projects.Project) *runbooks.Runbook {
+	require.NotNil(t, lifecycle)
+	require.NotNil(t, projectGroup)
+	require.NotNil(t, project)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	runbook := runbooks.NewRunbook(name, project.GetID())
+	require.NotNil(t, runbook)
+	require.NoError(t, runbook.Validate())
+
+	createdRunbook, err := runbooks.Add(client, runbook)
+	require.NoError(t, err)
+	require.NotNil(t, createdRunbook)
+	require.NotEmpty(t, createdRunbook.GetID())
+
+	// verify the add operation was successful
+	runbookToCompare, err := runbooks.GetByID(client, createdRunbook.SpaceID, createdRunbook.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, runbookToCompare)
+	AssertEqualRunbooks(t, createdRunbook, runbookToCompare)
+
+	return createdRunbook
+}
+
+func DeleteTestRunbook_NewClient(t *testing.T, client *client.Client, runbook *runbooks.Runbook) {
+	require.NotNil(t, runbook)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := runbooks.DeleteByID(client, runbook.SpaceID, runbook.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedRunbook, err := projects.GetByID(client, runbook.SpaceID, runbook.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedRunbook)
+}

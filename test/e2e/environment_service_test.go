@@ -177,3 +177,67 @@ func TestEnvironmentServiceUpdate(t *testing.T) {
 	require.Equal(t, newSortOrder, updatedEnvironment.SortOrder)
 	require.Equal(t, newUseGuidedFailure, updatedEnvironment.UseGuidedFailure)
 }
+
+// === NEW ===
+
+func CreateTestEnvironment_NewClient(t *testing.T, client *client.Client) *environments.Environment {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	allowDynamicInfrastructure := createRandomBoolean()
+	name := internal.GetRandomName()
+	description := "Description for " + name + " (OK to Delete)"
+	useGuidedFailure := createRandomBoolean()
+
+	environment := environments.NewEnvironment(name)
+	environment.AllowDynamicInfrastructure = allowDynamicInfrastructure
+	environment.Description = description
+	environment.UseGuidedFailure = useGuidedFailure
+
+	require.NoError(t, environment.Validate())
+
+	createdEnvironment, err := environments.Add(client, environment)
+	require.NoError(t, err)
+	require.NotNil(t, createdEnvironment)
+	require.NotEmpty(t, createdEnvironment.GetID())
+
+	return createdEnvironment
+}
+
+func DeleteTestEnvironment_NewClient(t *testing.T, client *client.Client, environment *environments.Environment) {
+	require.NotNil(t, environment)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := environments.DeleteByID(client, environment.SpaceID, environment.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedEnvironment, err := environments.GetByID(client, environment.SpaceID, environment.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedEnvironment)
+}
+
+func TestEnvironmentServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	createdEnvironment := CreateTestEnvironment_NewClient(t, client)
+	defer DeleteTestEnvironment_NewClient(t, client, createdEnvironment)
+
+	environment, err := environments.GetByID(client, createdEnvironment.SpaceID, createdEnvironment.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, environment)
+
+	environments, err := environments.Get(client, createdEnvironment.SpaceID, environments.EnvironmentsQuery{IDs: []string{createdEnvironment.GetID()}})
+	require.NoError(t, err)
+	require.NotNil(t, environments)
+
+	environmentToCompare := environments.Items[0]
+	IsEqualEnvironments(t, environment, environmentToCompare)
+}

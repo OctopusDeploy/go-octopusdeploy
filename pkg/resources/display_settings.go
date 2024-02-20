@@ -1,4 +1,4 @@
-package variables
+package resources
 
 import (
 	"encoding/json"
@@ -9,14 +9,17 @@ import (
 type ControlType string
 
 const (
-	ControlTypeSingleLineText = ControlType("SingleLineText")
-	ControlTypeMultiLineText  = ControlType("MultiLineText")
-	ControlTypeSelect         = ControlType("Select")
-	ControlTypeCheckbox       = ControlType("Checkbox")
-	ControlTypeSensitive      = ControlType("Sensitive")
-	ControlTypeStepName       = ControlType("StepName")
-	ControlTypeCertificate    = ControlType("Certificate")
-	ControlTypeWorkerPool     = ControlType("WorkerPool")
+	ControlTypeSingleLineText     = ControlType("SingleLineText")
+	ControlTypeMultiLineText      = ControlType("MultiLineText")
+	ControlTypeSelect             = ControlType("Select")
+	ControlTypeCheckbox           = ControlType("Checkbox")
+	ControlTypeSensitive          = ControlType("Sensitive")
+	ControlTypeStepName           = ControlType("StepName")
+	ControlTypeCertificate        = ControlType("Certificate")
+	ControlTypeWorkerPool         = ControlType("WorkerPool")
+	ControlTypeAzureAccount       = ControlType("AzureAccount")
+	ControlTypeGoogleCloudAccount = ControlType("GoogleCloudAccount")
+	ControlTypeAwsAccount         = ControlType("AmazonWebServicesAccount")
 )
 
 type SelectOption struct {

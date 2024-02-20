@@ -99,6 +99,10 @@ func (h *HttpSession) DoRawJsonRequest(req *http.Request, requestBody any, outpu
 		if err != nil {
 			return nil, err
 		}
+		if outputRes, ok := outputResponseError.(*core.APIError); ok {
+			outputRes.StatusCode = resp.StatusCode
+			return nil, outputRes
+		}
 		return nil, outputResponseError
 	}
 }
@@ -129,6 +133,31 @@ func DoRequest[TResponse any](httpSession *HttpSession, method string, path stri
 	return responsePayload, nil
 }
 
+func DoDelete(httpSession *HttpSession, method string, path string) error {
+	pathUrl, err := url.Parse(path)
+	if err != nil {
+		return err
+	}
+
+	req := &http.Request{
+		Method: method,
+		URL:    pathUrl,
+	}
+
+	var responsePayload = new(any)
+	var errorPayload = new(core.APIError)
+	_, err = httpSession.DoRawJsonRequest(req, nil, responsePayload, errorPayload)
+	if err != nil {
+		return err
+	}
+
+	// errorPayload is never nil because we allocated it just above
+	if errorPayload.StatusCode != 0 {
+		return errorPayload
+	}
+	return nil
+}
+
 func Get[TResponse any](httpSession *HttpSession, url string) (*TResponse, error) {
 	return DoRequest[TResponse](httpSession, http.MethodGet, url, nil)
 }
@@ -141,8 +170,8 @@ func Put[TResponse any](httpSession *HttpSession, url string, body any) (*TRespo
 	return DoRequest[TResponse](httpSession, http.MethodPut, url, body)
 }
 
-func Delete[TResponse any](httpSession *HttpSession, url string) (*TResponse, error) {
-	return DoRequest[TResponse](httpSession, http.MethodDelete, url, nil)
+func Delete(httpSession *HttpSession, url string) error {
+	return DoDelete(httpSession, http.MethodDelete, url)
 }
 
 // CloseResponse closes a response body; If you use DoRequest, and not one of the higher level helpers like Get or Post,

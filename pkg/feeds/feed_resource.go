@@ -25,7 +25,9 @@ type FeedResource struct {
 	SecretKey                         *core.SensitiveValue `json:"SecretKey,omitempty"`
 	SpaceID                           string               `json:"SpaceId,omitempty"`
 	Username                          string               `json:"Username,omitempty"`
-
+	LayoutRegex                       string               `json:"LayoutRegex,omitempty"`
+	Repository                        string               `json:"Repository,omitempty"`
+	UseMachineCredentials             bool                 `json:"UseMachineCredentials,omitempty"`
 	resources.Resource
 }
 

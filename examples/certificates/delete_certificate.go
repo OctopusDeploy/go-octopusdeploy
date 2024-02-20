@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/certificates"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
@@ -32,7 +33,7 @@ func DeleteCertificateExample() {
 	}
 
 	// delete certificate
-	err = client.Certificates.DeleteByID(certificateID)
+	err = certificates.DeleteByID(client, spaceID, certificateID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting certificate: %v", err)
 		return

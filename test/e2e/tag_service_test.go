@@ -49,3 +49,37 @@ func TestTagServiceAddGetDelete(t *testing.T) {
 	require.NoError(t, err)
 	IsEqualTags(t, updatedTagSet.Tags[0], tagSetToCompare.Tags[0])
 }
+
+// === NEW ===
+
+func CreateTestTag_NewClient(t *testing.T) *tagsets.Tag {
+	name := internal.GetRandomName()
+
+	// TODO: randomize color
+	createdTag := tagsets.NewTag(name, "#000fff")
+	require.NotNil(t, createdTag)
+
+	return createdTag
+}
+
+func TestTagServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	tagSet := CreateTestTagSet_NewClient(t, client)
+	require.NotNil(t, tagSet)
+	defer DeleteTestTagSet_NewClient(t, client, tagSet)
+
+	tag := CreateTestTag_NewClient(t)
+	require.NotNil(t, tag)
+
+	tagSet.Tags = append(tagSet.Tags, tag)
+	updatedTagSet, err := tagsets.Update(client, tagSet)
+	require.NotNil(t, updatedTagSet)
+	require.NoError(t, err)
+
+	tagSetToCompare, err := tagsets.GetByID(client, updatedTagSet.SpaceID, updatedTagSet.GetID())
+	require.NotNil(t, tagSetToCompare)
+	require.NoError(t, err)
+	IsEqualTags(t, updatedTagSet.Tags[0], tagSetToCompare.Tags[0])
+}

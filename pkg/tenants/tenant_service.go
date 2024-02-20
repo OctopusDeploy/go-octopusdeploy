@@ -1,16 +1,18 @@
 package tenants
 
 import (
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
-	"strings"
 )
 
 type TenantService struct {
@@ -49,6 +51,8 @@ func (s *TenantService) getByProjectIDPath(id string) (string, error) {
 }
 
 // Add creates a new Tenant.
+//
+// Deprecated: use tenants.Add
 func (s *TenantService) Add(tenant *Tenant) (*Tenant, error) {
 	if IsNil(tenant) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterTenant)
@@ -74,7 +78,9 @@ func (s *TenantService) Clone(sourceTenant *Tenant, request TenantCloneRequest) 
 	}
 
 	resp, err := services.ApiPost(s.GetClient(), request, new(Tenant), path)
-
+	if err != nil {
+		return nil, err
+	}
 	return resp.(*Tenant), nil
 }
 
@@ -90,6 +96,8 @@ func (s *TenantService) CreateVariables(tenant *Tenant, tenantVariable *variable
 // Get returns a collection of tenants based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: use tenants.Get
 func (s *TenantService) Get(tenantsQuery TenantsQuery) (*resources.Resources[*Tenant], error) {
 	path, err := s.GetURITemplate().Expand(tenantsQuery)
 	if err != nil {
@@ -106,6 +114,8 @@ func (s *TenantService) Get(tenantsQuery TenantsQuery) (*resources.Resources[*Te
 
 // GetAll returns all tenants. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use tenants.GetAll
 func (s *TenantService) GetAll() ([]*Tenant, error) {
 	items := []*Tenant{}
 	path, err := services.GetAllPath(s)
@@ -119,6 +129,8 @@ func (s *TenantService) GetAll() ([]*Tenant, error) {
 
 // GetByID returns the tenant that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use tenants.GetByID
 func (s *TenantService) GetByID(id string) (*Tenant, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -243,6 +255,8 @@ func (s *TenantService) GetVariables(tenant *Tenant) (*variables.TenantVariables
 }
 
 // Update modifies a tenant based on the one provided as input.
+//
+// Deprecated: use tenant.Update
 func (s *TenantService) Update(resource *Tenant) (*Tenant, error) {
 	path, err := services.GetUpdatePath(s, resource)
 	if err != nil {
@@ -264,4 +278,39 @@ func (s *TenantService) UpdateVariables(tenant *Tenant, tenantVariables *variabl
 	}
 
 	return resp.(*variables.TenantVariables), nil
+}
+
+// --- new ---
+
+const template = "/api/{spaceId}/tenants{/id}{?skip,projectId,name,tags,take,ids,clone,partialName,clonedFromTenantId}"
+
+// Get returns a collection of tenants based on the criteria defined by its
+// input query parameter.
+func Get(client newclient.Client, spaceID string, tenantsQuery TenantsQuery) (*resources.Resources[*Tenant], error) {
+	return newclient.GetByQuery[Tenant](client, template, spaceID, tenantsQuery)
+}
+
+// Update modifies a tenant based on the one provided as input.
+func Update(client newclient.Client, resource *Tenant) (*Tenant, error) {
+	return newclient.Update[Tenant](client, template, resource.SpaceID, resource.ID, resource)
+}
+
+// Add creates a new Tenant.
+func Add(client newclient.Client, tenant *Tenant) (*Tenant, error) {
+	return newclient.Add[Tenant](client, template, tenant.SpaceID, tenant)
+}
+
+// GetByID returns the tenant that matches the input ID.
+func GetByID(client newclient.Client, spaceID string, ID string) (*Tenant, error) {
+	return newclient.GetByID[Tenant](client, template, spaceID, ID)
+}
+
+// DeleteByID deletes the tenant that matches the input ID.
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetAll returns all tenants. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
+	return newclient.GetAll[Tenant](client, template, spaceID)
 }

@@ -33,7 +33,7 @@ func DeleteFeedExample() {
 	}
 
 	// get feeds that match the name provided
-	feeds, err := client.Feeds.Get(query)
+	feeds, err := feeds.Get(client, client.GetSpaceID(), query)
 	if err != nil {
 		_ = fmt.Errorf("error getting feed: %v", err)
 		return

@@ -142,3 +142,56 @@ func TestTagSetServiceUpdate(t *testing.T) {
 	IsEqualTagSets(t, createdTagSet, updatedTagSet)
 	defer DeleteTestTagSet(t, client, updatedTagSet)
 }
+
+// === NEW ===
+
+func TestTagSetServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	tagSet := CreateTestTagSet_NewClient(t, client)
+	require.NotNil(t, tagSet)
+	defer DeleteTestTagSet_NewClient(t, client, tagSet)
+
+	tagSetToCompare, err := tagsets.GetByID(client, tagSet.SpaceID, tagSet.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, tagSetToCompare)
+	IsEqualTagSets(t, tagSet, tagSetToCompare)
+}
+
+func CreateTestTagSet_NewClient(t *testing.T, client *client.Client) *tagsets.TagSet {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	tagSet := tagsets.NewTagSet(name)
+	require.NoError(t, tagSet.Validate())
+
+	createdTagSet, err := tagsets.Add(client, tagSet)
+	require.NoError(t, err)
+	require.NotNil(t, createdTagSet)
+	require.NotEmpty(t, createdTagSet.GetID())
+	require.Equal(t, name, createdTagSet.Name)
+
+	return createdTagSet
+}
+
+func DeleteTestTagSet_NewClient(t *testing.T, client *client.Client, tagSet *tagsets.TagSet) {
+	require.NotNil(t, tagSet)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := tagsets.DeleteByID(client, tagSet.SpaceID, tagSet.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedTagSet, err := tagsets.GetByID(client, tagSet.SpaceID, tagSet.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedTagSet)
+}

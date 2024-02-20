@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -45,7 +46,7 @@ func DeleteUserExample() {
 	}
 
 	// delete user
-	err = client.Users.DeleteByID(userID)
+	err = users.DeleteByID(client, userID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting user: %v", err)
 		return

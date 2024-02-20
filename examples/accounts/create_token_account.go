@@ -40,7 +40,7 @@ func CreateTokenExample() {
 	account.Description = "This is the description."
 
 	// create account
-	createdAccount, err := client.Accounts.Add(account)
+	createdAccount, err := accounts.Add(client, account)
 	if err != nil {
 		_ = fmt.Errorf("error adding account: %v", err)
 	}

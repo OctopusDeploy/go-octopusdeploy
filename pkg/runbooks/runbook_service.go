@@ -26,6 +26,8 @@ func NewRunbookService(sling *sling.Sling, uriTemplate string) *RunbookService {
 }
 
 // Add returns the runbook that matches the input ID.
+//
+// Deprecated: use runbooks.Add
 func (s *RunbookService) Add(runbook *Runbook) (*Runbook, error) {
 	if IsNil(runbook) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterRunbook)
@@ -63,6 +65,8 @@ func (s *RunbookService) GetAll() ([]*Runbook, error) {
 
 // GetByID returns the runbook that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use runbooks.GetByID
 func (s *RunbookService) GetByID(id string) (*Runbook, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -75,7 +79,7 @@ func (s *RunbookService) GetByID(id string) (*Runbook, error) {
 
 	resp, err := api.ApiGet(s.GetClient(), new(Runbook), path)
 	if err != nil {
-		return nil, internal.CreateResourceNotFoundError("runbook", "ID", id)
+		return nil, err
 	}
 
 	return resp.(*Runbook), nil
@@ -91,6 +95,8 @@ func (s *RunbookService) GetRunbookSnapshotTemplate(runbook *Runbook) (*RunbookS
 }
 
 // Update modifies a runbook based on the one provided as input.
+//
+// Deprecated: use runbooks.Update
 func (s *RunbookService) Update(runbook *Runbook) (*Runbook, error) {
 	if runbook == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterRunbook)
@@ -110,6 +116,28 @@ func (s *RunbookService) Update(runbook *Runbook) (*Runbook, error) {
 }
 
 // ---------------------------
+
+const template = "/api/{spaceId}/runbooks{/id}{?skip,take,ids,partialName,clone,projectIds}"
+
+// Add returns the runbook that matches the input ID.
+func Add(client newclient.Client, runbook *Runbook) (*Runbook, error) {
+	return newclient.Add[Runbook](client, template, runbook.SpaceID, runbook)
+}
+
+// GetByID returns the runbook that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*Runbook, error) {
+	return newclient.GetByID[Runbook](client, template, spaceID, ID)
+}
+
+// Update modifies a runbook based on the one provided as input.
+func Update(client newclient.Client, runbook *Runbook) (*Runbook, error) {
+	return newclient.Update[Runbook](client, template, runbook.SpaceID, runbook.ID, runbook)
+}
+
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
 
 // List returns a list of runbooks from the server, in a standard Octopus paginated result structure.
 // If you don't specify --limit the server will use a default limit (typically 30)

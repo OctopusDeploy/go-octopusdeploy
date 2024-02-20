@@ -124,3 +124,91 @@ func TestUserRoleServiceGetByID(t *testing.T) {
 		require.NotNil(t, userRole)
 	}
 }
+
+// ----- new -----
+
+func CreateTestUserRole_NewClient(t *testing.T, client *client.Client) *userroles.UserRole {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	userRole := userroles.NewUserRole(name)
+	require.NoError(t, userRole.Validate())
+
+	createdUserRole, err := userroles.Add(client, userRole)
+	require.NotNil(t, createdUserRole)
+	require.NoError(t, err)
+
+	userRoleToCompare, err := userroles.GetByID(client, createdUserRole.GetID())
+	require.NotNil(t, userRoleToCompare)
+	require.NoError(t, err)
+
+	AssertEqualUserRoles(t, createdUserRole, userRoleToCompare)
+
+	return createdUserRole
+}
+
+func DeleteTestUserRole_NewClient(t *testing.T, client *client.Client, userRole *userroles.UserRole) {
+	require.NotNil(t, userRole)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := userroles.DeleteByID(client, userRole.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedUserRole, err := userroles.GetByID(client, userRole.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedUserRole)
+}
+
+func TestUserRoleServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	userRole := CreateTestUserRole_NewClient(t, client)
+	require.NotNil(t, userRole)
+	defer DeleteTestUserRole_NewClient(t, client, userRole)
+
+	userRoles, err := client.UserRoles.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, userRoles)
+
+	for _, userRole := range userRoles {
+		query := userroles.UserRolesQuery{
+			IDs: []string{userRole.GetID()},
+		}
+		userRolesToCompare, err := userroles.Get(client, client.GetSpaceID(), query)
+		require.NoError(t, err)
+		require.NotNil(t, userRolesToCompare)
+		for _, userRoleToCompare := range userRolesToCompare.Items {
+			AssertEqualUserRoles(t, userRole, userRoleToCompare)
+		}
+
+		userRoleToCompare, err := userroles.GetByID(client, userRole.GetID())
+		require.NoError(t, err)
+		require.NotNil(t, userRoleToCompare)
+		AssertEqualUserRoles(t, userRole, userRoleToCompare)
+	}
+}
+
+func TestUserRoleServiceGetByID_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	userRoles, err := client.UserRoles.GetAll()
+	require.NotNil(t, userRoles)
+	require.NoError(t, err)
+
+	for _, userRole := range userRoles {
+		userRole, err := userroles.GetByID(client, userRole.GetID())
+		require.NoError(t, err)
+		require.NotNil(t, userRole)
+	}
+}

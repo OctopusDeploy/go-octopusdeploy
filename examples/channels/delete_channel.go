@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
@@ -32,7 +33,7 @@ func DeleteChannelExample() {
 	}
 
 	// delete channel
-	err = client.Channels.DeleteByID(channelID)
+	err = channels.DeleteByID(client, spaceID, channelID)
 	if err != nil {
 		_ = fmt.Errorf("error deleting channel: %v", err)
 		return

@@ -14,6 +14,7 @@ import (
 func getOctopusClient() *client.Client {
 	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
 	apiKey := os.Getenv(constants.EnvironmentVariableOctopusApiKey)
+	spaceId := os.Getenv(constants.EnvironmentVariableOctopusSpace)
 
 	if len(host) == 0 {
 		host = os.Getenv(constants.ClientURLEnvironmentVariable)
@@ -48,7 +49,7 @@ func getOctopusClient() *client.Client {
 	// }
 	// httpClient := http.Client{Transport: tr}
 
-	octopusClient, err := client.NewClient(nil, apiURL, apiKey, "")
+	octopusClient, err := client.NewClient(nil, apiURL, apiKey, spaceId)
 	if err != nil {
 		log.Fatal(err)
 	}

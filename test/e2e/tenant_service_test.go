@@ -198,3 +198,121 @@ func TestTenantUpdate(t *testing.T) {
 
 	AssertEqualTenants(t, expected, actual)
 }
+
+// === NEW ===
+
+func CreateTestTenant_NewClient(t *testing.T, client *client.Client, project *projects.Project, environment *environments.Environment) *tenants.Tenant {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	tenant := tenants.NewTenant(name)
+	tenant.Description = internal.GetRandomName()
+
+	if project != nil {
+		tenant.ProjectEnvironments[project.ID] = []string{environment.ID}
+	}
+
+	createdTenant, err := tenants.Add(client, tenant)
+	require.NoError(t, err)
+	require.NotNil(t, createdTenant)
+	require.NotEmpty(t, createdTenant.GetID())
+
+	return createdTenant
+}
+
+func DeleteTestTenant_NewClient(t *testing.T, client *client.Client, tenant *tenants.Tenant) {
+	require.NotNil(t, tenant)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := tenants.DeleteByID(client, tenant.SpaceID, tenant.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedTenant, err := tenants.GetByID(client, tenant.SpaceID, tenant.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedTenant)
+}
+
+// TODO: still some calls to old client
+func TestTenantAddGetAndDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle_NewClient(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle_NewClient(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup_NewClient(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup_NewClient(t, client, projectGroup)
+
+	project := CreateTestProject_NewClient(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject_NewClient(t, client, project)
+
+	variable := CreateTestVariable_NewClient(t, project.GetID(), internal.GetRandomName())
+	require.NotNil(t, variable)
+
+	actionTemplateParameter := CreateActionTemplateParameter()
+	require.NotNil(t, actionTemplateParameter)
+	project.Templates = append(project.Templates, actionTemplateParameter)
+	project, err := projects.Update(client, project)
+	require.NotNil(t, project)
+	require.NoError(t, err)
+
+	libraryVariableSet := CreateLibraryVariableSet_NewClient(t, client)
+	require.NotNil(t, libraryVariableSet)
+	defer DeleteLibraryVariableSet_NewClient(t, client, libraryVariableSet)
+
+	environment := CreateTestEnvironment_NewClient(t, client)
+	defer DeleteTestEnvironment_NewClient(t, client, environment)
+
+	tenant := CreateTestTenant_NewClient(t, client, project, environment)
+	defer DeleteTestTenant_NewClient(t, client, tenant)
+
+	missingVariablesQuery := variables.MissingVariablesQuery{}
+
+	missingVariables, err := client.Tenants.GetMissingVariables(missingVariablesQuery)
+	require.NoError(t, err)
+	require.NotNil(t, missingVariables)
+
+	tenantVariables := variables.NewTenantVariables(tenant.GetID())
+	require.NotNil(t, tenantVariables)
+
+	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	tenantVariables, err = client.Tenants.GetVariables(tenant)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	propertyValue := core.NewPropertyValue("#{binding}", false)
+
+	tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()] = propertyValue
+	tenantVariables, err = client.Tenants.UpdateVariables(tenant, tenantVariables)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	tenantVariables, err = client.Tenants.GetVariables(tenant)
+	require.Equal(t, propertyValue.Value, tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()].Value)
+
+	tenantVariables, err = client.Tenants.GetVariables(tenant)
+	require.NoError(t, err)
+	require.NotNil(t, tenantVariables)
+
+	actual, err := tenants.GetByID(client, tenant.SpaceID, tenant.GetID())
+	assert.NoError(t, err)
+	AssertEqualTenants(t, tenant, actual)
+}

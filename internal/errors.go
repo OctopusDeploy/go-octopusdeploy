@@ -2,6 +2,10 @@ package internal
 
 import "fmt"
 
+func MissingSpaceIDError() error {
+	return fmt.Errorf("SpaceID is not found")
+}
+
 func CreateBuiltInTeamsCannotDeleteError() error {
 	return fmt.Errorf("the built-in teams cannot be deleted")
 }
@@ -28,6 +32,10 @@ func CreateClientInitializationError(methodName string) error {
 
 func CreateRequiredParameterIsEmptyOrNilError(parameter string) error {
 	return fmt.Errorf("the required parameter, %s is nil or empty", parameter)
+}
+
+func CreateRequiredParameterIsEmptyError(parameter string) error {
+	return fmt.Errorf("the required parameter, %s is empty", parameter)
 }
 
 func CreateResourceNotFoundError(name string, identifier string, value string) error {

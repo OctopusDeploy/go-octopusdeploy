@@ -2,17 +2,19 @@ package workerpools
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 	"github.com/google/go-querystring/query"
-	"strings"
 )
 
 type WorkerPoolService struct {
@@ -37,6 +39,8 @@ func NewWorkerPoolService(sling *sling.Sling, uriTemplate string, dynamicWorkerT
 }
 
 // Add creates a new worker pool.
+//
+// Deprecated: Use workerpools.Add
 func (s *WorkerPoolService) Add(workerPool IWorkerPool) (IWorkerPool, error) {
 	if IsNil(workerPool) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterWorkerPool)
@@ -58,6 +62,8 @@ func (s *WorkerPoolService) Add(workerPool IWorkerPool) (IWorkerPool, error) {
 // Get returns a collection of worker pools based on the criteria defined by
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
+//
+// Deprecated: Use workerpools.Get
 func (s *WorkerPoolService) Get(workerPoolsQuery WorkerPoolsQuery) (*WorkerPools, error) {
 	v, _ := query.Values(workerPoolsQuery)
 	path := s.BasePath
@@ -89,6 +95,8 @@ func (s *WorkerPoolService) GetAll() ([]*WorkerPoolListResult, error) {
 
 // GetByID returns the worker pool that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: Use workerpools.GetByID
 func (s *WorkerPoolService) GetByID(id string) (IWorkerPool, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -161,6 +169,8 @@ func (s *WorkerPoolService) GetByIdentifier(identifier string) (IWorkerPool, err
 }
 
 // Update modifies a worker pool based on the one provided as input.
+//
+// Deprecated: Use workerpools.Update
 func (s *WorkerPoolService) Update(workerPool IWorkerPool) (IWorkerPool, error) {
 	if workerPool == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterWorkerPool)
@@ -210,4 +220,62 @@ func (s *WorkerPoolService) GetDynamicWorkerTypes() ([]*DynamicWorkerPoolType, e
 		return nil, err
 	}
 	return retValue.WorkerTypes, nil
+}
+
+// --- new ---
+
+const (
+	template = "/api/{spaceId}/workerpools{/id}{?skip,ids,take,partialName}"
+)
+
+// Add creates a new worker pool.
+func Add(client newclient.Client, workerPool IWorkerPool) (IWorkerPool, error) {
+	res, err := newclient.Add[WorkerPoolResource](client, template, workerPool.GetSpaceID(), workerPool)
+	if err != nil {
+		return nil, err
+	}
+	return ToWorkerPool(res)
+}
+
+// Get returns a collection of worker pools based on the criteria defined by
+// its input query parameter.
+func Get(client newclient.Client, spaceID string, workerPoolsQuery WorkerPoolsQuery) (*WorkerPools, error) {
+	res, err := newclient.GetByQuery[WorkerPoolResource](client, template, spaceID, workerPoolsQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToWorkerPools(res), nil
+}
+
+// GetByID returns the worker pool that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (IWorkerPool, error) {
+	res, err := newclient.GetByID[WorkerPoolResource](client, template, spaceID, ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToWorkerPool(res)
+}
+
+// DeleteByID will delete a workerpool with the provided id.
+func DeleteByID(client newclient.Client, spaceID string, id string) error {
+	return newclient.DeleteByID(client, template, spaceID, id)
+}
+
+// Update modifies a worker pool based on the one provided as input.
+func Update(client newclient.Client, workerPool IWorkerPool) (IWorkerPool, error) {
+	if workerPool == nil {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterWorkerPool)
+	}
+	workerPoolResource, err := ToWorkerPoolResource(workerPool)
+	if err != nil {
+		return nil, err
+	}
+	res, err := newclient.Update[WorkerPoolResource](client, template, workerPoolResource.SpaceID, workerPoolResource.ID, workerPoolResource)
+	if err != nil {
+		return nil, err
+	}
+	return ToWorkerPool(res)
 }

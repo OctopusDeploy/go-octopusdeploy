@@ -260,3 +260,88 @@ func TestUserServiceGetTeams(t *testing.T) {
 	require.NotNil(t, teams)
 	require.NoError(t, err)
 }
+
+// === NEW ===
+
+func TestUserServiceAddGetDelete_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	user := CreateTestUser(t, client)
+	require.NotNil(t, user)
+	defer DeleteTestUser(t, client, user)
+
+	usersToTest, err := client.Users.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, usersToTest)
+
+	for _, user := range usersToTest {
+		query := users.UsersQuery{
+			IDs: []string{user.GetID()},
+		}
+
+		usersToCompare, err := users.Get(client, client.GetSpaceID(), query)
+		require.NoError(t, err)
+		require.NotNil(t, usersToCompare)
+
+		for _, userToCompare := range usersToCompare.Items {
+			if user.GetID() == userToCompare.GetID() {
+				AssertEqualUsers(t, user, userToCompare)
+			}
+		}
+
+		userToCompare, err := users.GetByID(client, user.GetID())
+		require.NoError(t, err)
+		require.NotNil(t, userToCompare)
+		AssertEqualUsers(t, user, userToCompare)
+	}
+}
+
+func CreateTestUser_NewClient(t *testing.T, client *client.Client) *users.User {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	username := internal.GetRandomName()
+	displayName := internal.GetRandomName()
+	password := internal.GetRandomName()
+
+	user := users.NewUser(username, displayName)
+	user.Password = password
+	require.NoError(t, user.Validate())
+
+	createdUser, err := users.Add(client, user)
+	require.NotNil(t, createdUser)
+	require.NoError(t, err)
+
+	userToCompare, err := users.GetByID(client, createdUser.GetID())
+	require.NotNil(t, userToCompare)
+	require.NoError(t, err)
+
+	AssertEqualUsers(t, createdUser, userToCompare)
+
+	return createdUser
+}
+
+func DeleteTestUser_NewClient(t *testing.T, client *client.Client, user *users.User) {
+	require.NotNil(t, user)
+
+	// you cannot delete your own account
+	if user.IsRequestor {
+		return
+	}
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := users.DeleteByID(client, user.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedUser, err := users.GetByID(client, user.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedUser)
+}

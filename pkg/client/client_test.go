@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
@@ -55,6 +56,59 @@ func TestNewClient(t *testing.T) {
 			assert.NotNil(t, client.Accounts)
 		})
 	}
+}
+
+func TestNewApiKey_WhenEmpty_ReturnsError(t *testing.T) {
+	_, err := NewApiKey("")
+	require.Error(t, err)
+}
+
+func TestNewApiKey_WhenInvalid_ReturnsError(t *testing.T) {
+	_, err := NewApiKey("something-invalid")
+	require.Error(t, err)
+}
+
+func TestNewApiKey_WhenValid_ReturnsApiKeyCredential(t *testing.T) {
+	apiKey := "API-API1234"
+	apiKeyCredential, err := NewApiKey(apiKey)
+	require.NoError(t, err)
+	require.NotNil(t, apiKey)
+	require.Equal(t, apiKeyCredential.Value, apiKey)
+}
+
+func TestNewAccessToken_WhenEmpty_ReturnsError(t *testing.T) {
+	_, err := NewAccessToken("")
+	require.Error(t, err)
+}
+
+func TestNewAccessToken_WhenValid_ReturnsAccessTokenCredential(t *testing.T) {
+	accessToken := "token"
+	accessTokenCredential, err := NewAccessToken(accessToken)
+	require.NoError(t, err)
+	require.NotNil(t, accessTokenCredential)
+	require.Equal(t, accessTokenCredential.Value, accessToken)
+}
+
+func TestGetHeadersWithApiKeySetsCorrectHeader(t *testing.T) {
+	apiKey, _ := NewApiKey("API-API1234")
+	headers := getHeaders(apiKey, "test")
+
+	require.Equal(t, headers[constants.ClientAPIKeyHTTPHeader], apiKey.Value)
+}
+
+func TestGetHeadersWithAccessTokenSetsCorrectHeader(t *testing.T) {
+	accessToken, _ := NewAccessToken("token")
+	headers := getHeaders(accessToken, "test")
+
+	require.Equal(t, headers["Authorization"], fmt.Sprintf("Bearer %s", accessToken.Value))
+}
+
+func TestGetHeadersSetsCorrectUserAgent(t *testing.T) {
+	expectedUserAgent := api.GetUserAgentString("test")
+	accessToken, _ := NewAccessToken("token")
+	headers := getHeaders(accessToken, "test")
+
+	require.Equal(t, headers["User-Agent"], expectedUserAgent)
 }
 
 func TestGetUserAgentString(t *testing.T) {

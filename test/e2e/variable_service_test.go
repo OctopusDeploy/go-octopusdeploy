@@ -174,3 +174,27 @@ func TestVariableServiceDeleteSingle(t *testing.T) {
 	require.NotNil(t, variableSet)
 	require.Equal(t, expectedVariableSet.ScopeValues, variableSet.ScopeValues)
 }
+
+// === NEW ===
+
+func CreateTestVariable_NewClient(t *testing.T, ownerID string, name string) *variables.Variable {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	variable := getTestVariable(name)
+	variableSet, err := variables.AddSingle(client, variable.SpaceID, ownerID, variable)
+	require.NoError(t, err)
+	require.Len(t, variableSet.Variables, 1)
+
+	for _, v := range variableSet.Variables {
+		if strings.EqualFold(v.Name, name) {
+			createdVariable, err := variables.GetByID(client, v.SpaceID, ownerID, v.GetID())
+			require.NoError(t, err)
+			require.NotNil(t, createdVariable)
+
+			return createdVariable
+		}
+	}
+
+	return nil
+}
