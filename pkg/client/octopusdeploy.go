@@ -7,9 +7,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectbranches"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
@@ -44,8 +41,10 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/octopusservernodes"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/permissions"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectbranches"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectgroups"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/proxies"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/reporting"
@@ -214,15 +213,22 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiCredentials")
 	}
 
-	baseURLWithAPI := strings.TrimRight(apiURL.String(), "/")
-	baseURLWithAPI = fmt.Sprintf("%s/api", baseURLWithAPI)
+	var baseURL string
+	if apiURL.Path == "" {
+		baseURL = strings.TrimRight(apiURL.String(), "/")
+	} else {
+		baseURL = apiURL.String()
+		if !strings.HasSuffix(baseURL, "/") {
+			baseURL = fmt.Sprintf("%s/", apiURL)
+		}
+	}
 
 	if httpClient == nil {
 		httpClient = &http.Client{}
 	}
 
 	// fetch root resource and process paths
-	base, root, err := getRoot(httpClient, baseURLWithAPI, apiCredentials, requestingTool)
+	base, root, err := getRoot(httpClient, baseURL, apiCredentials, requestingTool)
 	if err != nil {
 		return nil, err
 	}
@@ -230,8 +236,8 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	// Root with specified Space ID, if it's defined
 	sroot := NewRootResource()
 	if !internal.IsEmpty(spaceID) {
-		baseURLWithAPI = fmt.Sprintf("%s/%s", baseURLWithAPI, spaceID)
-		base, sroot, err = getRoot(httpClient, baseURLWithAPI, apiCredentials, requestingTool)
+		baseURL = fmt.Sprintf("%s/%s", baseURL, spaceID)
+		base, sroot, err = getRoot(httpClient, baseURL, apiCredentials, requestingTool)
 
 		if err != nil {
 			if err == services.ErrItemNotFound {
@@ -241,7 +247,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		}
 	}
 
-	baseURLWithAPIParsed, fatalErr := url.Parse(baseURLWithAPI)
+	baseURLWithAPIParsed, fatalErr := url.Parse(baseURL)
 	if fatalErr != nil { // should never fail because baseURLWithAPI is entirely constructed out of things that are known to be parseable
 		panic("failure parsing baseURL " + fatalErr.Error())
 	}
@@ -500,11 +506,14 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	}, nil
 }
 
-func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
+func getRoot(httpClient *http.Client, baseURL string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
+	apiUrl := strings.TrimRight(baseURL, "/")
+	apiUrl = fmt.Sprintf("%s/api", apiUrl)
+
 	base := sling.
 		New().
 		Client(httpClient).
-		Base(baseURLWithAPI).
+		Base(apiUrl).
 		Set("Accept", `application/json`)
 
 	headers := getHeaders(credentials, requestingTool)
@@ -513,7 +522,7 @@ func getRoot(httpClient *http.Client, baseURLWithAPI string, credentials ICreden
 		base.Set(key, value)
 	}
 
-	rootService := NewRootService(base, baseURLWithAPI)
+	rootService := NewRootService(base, apiUrl)
 
 	root, err := rootService.Get()
 	return base, root, err
