@@ -213,22 +213,19 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiCredentials")
 	}
 
-	var baseURL string
-	if apiURL.Path == "" {
-		baseURL = strings.TrimRight(apiURL.String(), "/")
-	} else {
-		baseURL = apiURL.String()
-		if !strings.HasSuffix(baseURL, "/") {
-			baseURL = fmt.Sprintf("%s/", apiURL)
-		}
+	// this is to ensure during url.ResolveReference the subpath is not dropped
+	if apiURL.Path != "" && !strings.HasSuffix(apiURL.Path, "/") {
+		apiURL.Path = fmt.Sprintf("%s/", apiURL.Path)
 	}
+
+	baseURLWithAPI, _ := url.JoinPath(apiURL.String(), "/api/")
 
 	if httpClient == nil {
 		httpClient = &http.Client{}
 	}
 
 	// fetch root resource and process paths
-	base, root, err := getRoot(httpClient, baseURL, apiCredentials, requestingTool)
+	base, root, err := getRoot(httpClient, baseURLWithAPI, apiCredentials, requestingTool)
 	if err != nil {
 		return nil, err
 	}
@@ -236,8 +233,8 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	// Root with specified Space ID, if it's defined
 	sroot := NewRootResource()
 	if !internal.IsEmpty(spaceID) {
-		baseURL = fmt.Sprintf("%s/%s", baseURL, spaceID)
-		base, sroot, err = getRoot(httpClient, baseURL, apiCredentials, requestingTool)
+		spaceUrl, _ := url.JoinPath(baseURLWithAPI, spaceID)
+		base, sroot, err = getRoot(httpClient, spaceUrl, apiCredentials, requestingTool)
 
 		if err != nil {
 			if err == services.ErrItemNotFound {
@@ -247,16 +244,11 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		}
 	}
 
-	baseURLWithAPIParsed, fatalErr := url.Parse(baseURL)
-	if fatalErr != nil { // should never fail because baseURLWithAPI is entirely constructed out of things that are known to be parseable
-		panic("failure parsing baseURL " + fatalErr.Error())
-	}
-
 	defaultHeaders := getHeaders(apiCredentials, requestingTool)
 
 	httpSession := &newclient.HttpSession{
 		HttpClient:     httpClient,
-		BaseURL:        baseURLWithAPIParsed,
+		BaseURL:        apiURL,
 		DefaultHeaders: defaultHeaders,
 	}
 
@@ -507,13 +499,10 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 }
 
 func getRoot(httpClient *http.Client, baseURL string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
-	apiUrl := strings.TrimRight(baseURL, "/")
-	apiUrl = fmt.Sprintf("%s/api", apiUrl)
-
 	base := sling.
 		New().
 		Client(httpClient).
-		Base(apiUrl).
+		Base(baseURL).
 		Set("Accept", `application/json`)
 
 	headers := getHeaders(credentials, requestingTool)
@@ -522,7 +511,7 @@ func getRoot(httpClient *http.Client, baseURL string, credentials ICredential, r
 		base.Set(key, value)
 	}
 
-	rootService := NewRootService(base, apiUrl)
+	rootService := NewRootService(base, baseURL)
 
 	root, err := rootService.Get()
 	return base, root, err
