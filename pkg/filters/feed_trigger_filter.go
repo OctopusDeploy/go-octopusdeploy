@@ -3,15 +3,13 @@ package filters
 import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 
 type FeedTriggerFilter struct {
-	FeedCategory string                             `json:"FeedCategory,omitempty"`
-	Packages     []packages.DeploymentActionPackage `json:"Packages,omitempty"`
+	Packages []packages.DeploymentActionPackage `json:"Packages,omitempty"`
 
 	triggerFilter
 }
 
-func NewFeedTriggerFilter(feedCategory string, packages []packages.DeploymentActionPackage) *FeedTriggerFilter {
+func NewFeedTriggerFilter(packages []packages.DeploymentActionPackage) *FeedTriggerFilter {
 	return &FeedTriggerFilter{
-		FeedCategory:  feedCategory,
 		Packages:      packages,
 		triggerFilter: *newTriggerFilter(FeedFilter),
 	}
