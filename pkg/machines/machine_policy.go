@@ -10,55 +10,58 @@ import (
 )
 
 type MachinePolicy struct {
-	ConnectionConnectTimeout     time.Duration              `json:"ConnectionConnectTimeout" validate:"required,min=10s"`
-	ConnectionRetryCountLimit    int32                      `json:"ConnectionRetryCountLimit" validate:"required,gte=2"`
-	ConnectionRetrySleepInterval time.Duration              `json:"ConnectionRetrySleepInterval" validate:"required"`
-	ConnectionRetryTimeLimit     time.Duration              `json:"ConnectionRetryTimeLimit" validate:"required,min=10s"`
-	Description                  string                     `json:"Description,omitempty"`
-	IsDefault                    bool                       `json:"IsDefault"`
-	MachineCleanupPolicy         *MachineCleanupPolicy      `json:"MachineCleanupPolicy"`
-	MachineConnectivityPolicy    *MachineConnectivityPolicy `json:"MachineConnectivityPolicy"`
-	MachineHealthCheckPolicy     *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
-	MachineUpdatePolicy          *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
-	Name                         string                     `json:"Name" validate:"required,notblank"`
-	PollingRequestQueueTimeout   time.Duration              `json:"PollingRequestQueueTimeout" validate:"required"`
-	SpaceID                      string                     `json:"SpaceId,omitempty"`
+	ConnectionConnectTimeout                      time.Duration              `json:"ConnectionConnectTimeout" validate:"required,min=10s"`
+	ConnectionRetryCountLimit                     int32                      `json:"ConnectionRetryCountLimit" validate:"required,gte=2"`
+	ConnectionRetrySleepInterval                  time.Duration              `json:"ConnectionRetrySleepInterval" validate:"required"`
+	ConnectionRetryTimeLimit                      time.Duration              `json:"ConnectionRetryTimeLimit" validate:"required,min=10s"`
+	Description                                   string                     `json:"Description,omitempty"`
+	IsDefault                                     bool                       `json:"IsDefault"`
+	MachineCleanupPolicy                          *MachineCleanupPolicy      `json:"MachineCleanupPolicy"`
+	MachineConnectivityPolicy                     *MachineConnectivityPolicy `json:"MachineConnectivityPolicy"`
+	MachineHealthCheckPolicy                      *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
+	MachineUpdatePolicy                           *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
+	Name                                          string                     `json:"Name" validate:"required,notblank"`
+	PollingRequestMaximumMessageProcessingTimeout time.Duration              `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
+	PollingRequestQueueTimeout                    time.Duration              `json:"PollingRequestQueueTimeout" validate:"required"`
+	SpaceID                                       string                     `json:"SpaceId,omitempty"`
 
 	resources.Resource
 }
 
 func NewMachinePolicy(name string) *MachinePolicy {
 	return &MachinePolicy{
-		ConnectionConnectTimeout:     time.Minute,
-		ConnectionRetryCountLimit:    5,
-		ConnectionRetrySleepInterval: time.Second,
-		ConnectionRetryTimeLimit:     5 * time.Minute,
-		MachineCleanupPolicy:         NewMachineCleanupPolicy(),
-		MachineConnectivityPolicy:    NewMachineConnectivityPolicy(),
-		MachineHealthCheckPolicy:     NewMachineHealthCheckPolicy(),
-		MachineUpdatePolicy:          NewMachineUpdatePolicy(),
-		Name:                         name,
-		PollingRequestQueueTimeout:   2 * time.Minute,
-		Resource:                     *resources.NewResource(),
+		ConnectionConnectTimeout:                      time.Minute,
+		ConnectionRetryCountLimit:                     5,
+		ConnectionRetrySleepInterval:                  time.Second,
+		ConnectionRetryTimeLimit:                      5 * time.Minute,
+		MachineCleanupPolicy:                          NewMachineCleanupPolicy(),
+		MachineConnectivityPolicy:                     NewMachineConnectivityPolicy(),
+		MachineHealthCheckPolicy:                      NewMachineHealthCheckPolicy(),
+		MachineUpdatePolicy:                           NewMachineUpdatePolicy(),
+		Name:                                          name,
+		PollingRequestMaximumMessageProcessingTimeout: 10 * time.Minute,
+		PollingRequestQueueTimeout:                    2 * time.Minute,
+		Resource:                                      *resources.NewResource(),
 	}
 }
 
 // MarshalJSON returns a machine policy as its JSON encoding.
 func (m *MachinePolicy) MarshalJSON() ([]byte, error) {
 	machinePolicy := struct {
-		ConnectionConnectTimeout     string                     `json:"ConnectionConnectTimeout" validate:"required"`
-		ConnectionRetryCountLimit    int32                      `json:"ConnectionRetryCountLimit" validate:"required"`
-		ConnectionRetrySleepInterval string                     `json:"ConnectionRetrySleepInterval" validate:"required"`
-		ConnectionRetryTimeLimit     string                     `json:"ConnectionRetryTimeLimit" validate:"required"`
-		Description                  string                     `json:"Description,omitempty"`
-		IsDefault                    bool                       `json:"IsDefault"`
-		MachineCleanupPolicy         *MachineCleanupPolicy      `json:"MachineCleanupPolicy"`
-		MachineConnectivityPolicy    *MachineConnectivityPolicy `json:"MachineConnectivityPolicy"`
-		MachineHealthCheckPolicy     *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
-		MachineUpdatePolicy          *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
-		Name                         string                     `json:"Name" validate:"required,notblank"`
-		PollingRequestQueueTimeout   string                     `json:"PollingRequestQueueTimeout" validate:"required"`
-		SpaceID                      string                     `json:"SpaceId,omitempty"`
+		ConnectionConnectTimeout                      string                     `json:"ConnectionConnectTimeout" validate:"required"`
+		ConnectionRetryCountLimit                     int32                      `json:"ConnectionRetryCountLimit" validate:"required"`
+		ConnectionRetrySleepInterval                  string                     `json:"ConnectionRetrySleepInterval" validate:"required"`
+		ConnectionRetryTimeLimit                      string                     `json:"ConnectionRetryTimeLimit" validate:"required"`
+		Description                                   string                     `json:"Description,omitempty"`
+		IsDefault                                     bool                       `json:"IsDefault"`
+		MachineCleanupPolicy                          *MachineCleanupPolicy      `json:"MachineCleanupPolicy"`
+		MachineConnectivityPolicy                     *MachineConnectivityPolicy `json:"MachineConnectivityPolicy"`
+		MachineHealthCheckPolicy                      *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
+		MachineUpdatePolicy                           *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
+		Name                                          string                     `json:"Name" validate:"required,notblank"`
+		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
+		PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout" validate:"required"`
+		SpaceID                                       string                     `json:"SpaceId,omitempty"`
 		resources.Resource
 	}{
 		ConnectionConnectTimeout:     ToTimeSpan(m.ConnectionConnectTimeout),
@@ -72,9 +75,10 @@ func (m *MachinePolicy) MarshalJSON() ([]byte, error) {
 		MachineHealthCheckPolicy:     m.MachineHealthCheckPolicy,
 		MachineUpdatePolicy:          m.MachineUpdatePolicy,
 		Name:                         m.Name,
-		PollingRequestQueueTimeout:   ToTimeSpan(m.PollingRequestQueueTimeout),
-		SpaceID:                      m.SpaceID,
-		Resource:                     m.Resource,
+		PollingRequestMaximumMessageProcessingTimeout: ToTimeSpan(m.PollingRequestMaximumMessageProcessingTimeout),
+		PollingRequestQueueTimeout:                    ToTimeSpan(m.PollingRequestQueueTimeout),
+		SpaceID:                                       m.SpaceID,
+		Resource:                                      m.Resource,
 	}
 
 	return json.Marshal(machinePolicy)
@@ -83,19 +87,20 @@ func (m *MachinePolicy) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON sets this Kubernetes endpoint to its representation in JSON.
 func (m *MachinePolicy) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		ConnectionConnectTimeout     string                     `json:"ConnectionConnectTimeout" validate:"required"`
-		ConnectionRetryCountLimit    int32                      `json:"ConnectionRetryCountLimit" validate:"required"`
-		ConnectionRetrySleepInterval string                     `json:"ConnectionRetrySleepInterval" validate:"required"`
-		ConnectionRetryTimeLimit     string                     `json:"ConnectionRetryTimeLimit" validate:"required"`
-		Description                  string                     `json:"Description,omitempty"`
-		IsDefault                    bool                       `json:"IsDefault"`
-		MachineCleanupPolicy         *MachineCleanupPolicy      `json:"MachineCleanupPolicy"`
-		MachineConnectivityPolicy    *MachineConnectivityPolicy `json:"MachineConnectivityPolicy"`
-		MachineHealthCheckPolicy     *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
-		MachineUpdatePolicy          *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
-		Name                         string                     `json:"Name"`
-		PollingRequestQueueTimeout   string                     `json:"PollingRequestQueueTimeout" validate:"required"`
-		SpaceID                      string                     `json:"SpaceId,omitempty"`
+		ConnectionConnectTimeout                      string                     `json:"ConnectionConnectTimeout" validate:"required"`
+		ConnectionRetryCountLimit                     int32                      `json:"ConnectionRetryCountLimit" validate:"required"`
+		ConnectionRetrySleepInterval                  string                     `json:"ConnectionRetrySleepInterval" validate:"required"`
+		ConnectionRetryTimeLimit                      string                     `json:"ConnectionRetryTimeLimit" validate:"required"`
+		Description                                   string                     `json:"Description,omitempty"`
+		IsDefault                                     bool                       `json:"IsDefault"`
+		MachineCleanupPolicy                          *MachineCleanupPolicy      `json:"MachineCleanupPolicy"`
+		MachineConnectivityPolicy                     *MachineConnectivityPolicy `json:"MachineConnectivityPolicy"`
+		MachineHealthCheckPolicy                      *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
+		MachineUpdatePolicy                           *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
+		Name                                          string                     `json:"Name"`
+		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
+		PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout" validate:"required"`
+		SpaceID                                       string                     `json:"SpaceId,omitempty"`
 		resources.Resource
 	}
 	err := json.Unmarshal(data, &fields)
@@ -124,6 +129,10 @@ func (m *MachinePolicy) UnmarshalJSON(data []byte) error {
 
 	if len(fields.ConnectionRetryTimeLimit) > 0 {
 		m.ConnectionRetryTimeLimit = FromTimeSpan(fields.ConnectionRetryTimeLimit)
+	}
+
+	if len(fields.PollingRequestMaximumMessageProcessingTimeout) > 0 {
+		m.PollingRequestMaximumMessageProcessingTimeout = FromTimeSpan(fields.PollingRequestMaximumMessageProcessingTimeout)
 	}
 
 	if len(fields.PollingRequestQueueTimeout) > 0 {

@@ -27,6 +27,7 @@ func CreateTestMachinePolicy(t *testing.T, service *MachinePolicyService) *Machi
 	connectionConnectTimeout := getRandomDuration(10)
 	connectionRetrySleepInterval := getRandomDuration(1)
 	connectionRetryTimeLimit := getRandomDuration(10)
+	pollingRequestMaximumMessageProcessingTimeout := getRandomDuration(20)
 	pollingRequestQueueTimeout := getRandomDuration(10)
 
 	machineCleanupPolicy := NewMachineCleanupPolicy()
@@ -41,6 +42,7 @@ func CreateTestMachinePolicy(t *testing.T, service *MachinePolicyService) *Machi
 	machinePolicy.ConnectionRetryTimeLimit = connectionRetryTimeLimit
 	machinePolicy.MachineCleanupPolicy = machineCleanupPolicy
 	machinePolicy.MachineHealthCheckPolicy = machineHealthCheckPolicy
+	machinePolicy.PollingRequestMaximumMessageProcessingTimeout = pollingRequestMaximumMessageProcessingTimeout
 	machinePolicy.PollingRequestQueueTimeout = pollingRequestQueueTimeout
 	require.NoError(t, machinePolicy.Validate())
 
@@ -96,6 +98,7 @@ func IsEqualMachinePolicies(t *testing.T, expected *MachinePolicy, actual *Machi
 	assert.Equal(t, expected.MachineHealthCheckPolicy, actual.MachineHealthCheckPolicy)
 	assert.Equal(t, expected.MachineUpdatePolicy, actual.MachineUpdatePolicy)
 	assert.Equal(t, expected.Name, actual.Name)
+	assert.Equal(t, expected.PollingRequestMaximumMessageProcessingTimeout, actual.PollingRequestMaximumMessageProcessingTimeout)
 	assert.Equal(t, expected.PollingRequestQueueTimeout, actual.PollingRequestQueueTimeout)
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }

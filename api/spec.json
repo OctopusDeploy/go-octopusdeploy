@@ -4964,6 +4964,10 @@
         "Name": {
           "type": "string"
         },
+        "PollingRequestMaximumMessageProcessingTimeout": {
+          "format": "date-span",
+          "type": "string"
+        },
         "PollingRequestQueueTimeout": {
           "format": "date-span",
           "type": "string"
