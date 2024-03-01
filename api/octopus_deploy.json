@@ -33297,9 +33297,6 @@
         "Name": {
           "type": "string"
         },
-        "PollingRequestMaximumMessageProcessingTimeout": {
-          "type": "string"
-        },
         "PollingRequestQueueTimeout": {
           "type": "string"
         },
