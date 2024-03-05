@@ -26,6 +26,8 @@ func NewReleaseService(sling *sling.Sling, uriTemplate string) *ReleaseService {
 }
 
 // Add creates a new release.
+//
+// Deprecated: Use releases.Add
 func (s *ReleaseService) Add(release *Release) (*Release, error) {
 	if IsNil(release) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterRelease)
@@ -47,6 +49,8 @@ func (s *ReleaseService) Add(release *Release) (*Release, error) {
 // Get returns a collection of releases based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
+//
+// Deprecated: Use releases.Get
 func (s *ReleaseService) Get(releasesQuery ...ReleasesQuery) (*resources.Resources[*Release], error) {
 	v, _ := query.Values(releasesQuery[0])
 	path := s.BasePath
@@ -65,6 +69,8 @@ func (s *ReleaseService) Get(releasesQuery ...ReleasesQuery) (*resources.Resourc
 
 // GetByID returns the release that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: Use releases.GetByID
 func (s *ReleaseService) GetByID(id string) (*Release, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -83,6 +89,7 @@ func (s *ReleaseService) GetByID(id string) (*Release, error) {
 	return resp.(*Release), nil
 }
 
+// Deprecated
 func (s *ReleaseService) GetReleases(channel *channels.Channel, releaseQuery ...*ReleaseQuery) (*resources.Resources[*Release], error) {
 	if channel == nil {
 		return nil, internal.CreateInvalidParameterError("GetReleases", "channel")
@@ -115,6 +122,25 @@ func (s *ReleaseService) GetReleases(channel *channels.Channel, releaseQuery ...
 }
 
 // ----- Experimental ---------------------------------------------------------
+
+const template = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"
+
+// Add creates a new release.
+func Add(client newclient.Client, release *Release) (*Release, error) {
+	return newclient.Add[Release](client, template, release.SpaceID, release)
+}
+
+// Get returns a collection of releases based on the criteria defined by its
+// input query parameter.
+func Get(client newclient.Client, spaceID string, releasesQuery ReleasesQuery) (*resources.Resources[*Release], error) {
+	return newclient.GetByQuery[Release](client, template, spaceID, releasesQuery)
+}
+
+// GetByID returns the release that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*Release, error) {
+	return newclient.GetByID[Release](client, template, spaceID, ID)
+}
 
 // GetReleasesInProjectChannel is EXPERIMENTAL
 func GetReleasesInProjectChannel(client newclient.Client, spaceID string, projectID string, channelID string) ([]*Release, error) {

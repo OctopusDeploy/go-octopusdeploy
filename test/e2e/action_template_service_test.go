@@ -110,3 +110,69 @@ func TestActionTemplateServiceSearch(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, resource)
 }
+
+// ----- new -----
+
+func TestActionTemplateServiceAdd_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	invalidResource := &actiontemplates.ActionTemplate{}
+	resource, err := client.ActionTemplates.Add(invalidResource)
+	assert.NotNil(t, err)
+	assert.Nil(t, resource)
+
+	resource = createActionTemplate(t)
+	require.NotNil(t, resource)
+
+	resource, err = actiontemplates.Add(client, resource)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+	defer actiontemplates.DeleteByID(client, client.GetSpaceID(), resource.GetID())
+}
+
+func TestActionTemplateServiceGetCategories_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	resource, err := client.ActionTemplates.GetCategories()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resource)
+}
+
+func TestActionTemplateServiceGetByID_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	id := internal.GetRandomName()
+	resource, err := actiontemplates.GetByID(client, client.GetSpaceID(), id)
+	assert.NotNil(t, err)
+	assert.Nil(t, resource)
+
+	resources, err := actiontemplates.GetAll(client, client.GetSpaceID())
+	require.NoError(t, err)
+	require.NotNil(t, resources)
+
+	for _, resource := range resources {
+		resourceToCompare, err := client.ActionTemplates.GetByID(resource.GetID())
+		require.NoError(t, err)
+		IsEqualActionTemplates(t, resource, resourceToCompare)
+	}
+}
+
+func TestActionTemplateServiceSearch_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	search := ""
+
+	resource, err := actiontemplates.Search(client, client.GetSpaceID(), search)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resource)
+
+	search = "Octopus.Script"
+
+	resource, err = actiontemplates.Search(client, client.GetSpaceID(), search)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resource)
+}
