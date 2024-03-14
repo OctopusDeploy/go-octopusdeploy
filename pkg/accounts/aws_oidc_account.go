@@ -24,6 +24,9 @@ func NewAwsOIDCAccount(name string, roleArn string) (*AwsOIDCAccount, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
 	}
+	if internal.IsEmpty(roleArn) {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("roleArn")
+	}
 
 	account := AwsOIDCAccount{
 		RoleArn: roleArn,
