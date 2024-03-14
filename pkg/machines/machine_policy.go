@@ -21,7 +21,7 @@ type MachinePolicy struct {
 	MachineHealthCheckPolicy                      *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
 	MachineUpdatePolicy                           *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
 	Name                                          string                     `json:"Name" validate:"required,notblank"`
-	PollingRequestMaximumMessageProcessingTimeout time.Duration              `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
+	PollingRequestMaximumMessageProcessingTimeout time.Duration              `json:"PollingRequestMaximumMessageProcessingTimeout,omitempty"`
 	PollingRequestQueueTimeout                    time.Duration              `json:"PollingRequestQueueTimeout" validate:"required"`
 	SpaceID                                       string                     `json:"SpaceId,omitempty"`
 
@@ -59,7 +59,7 @@ func (m *MachinePolicy) MarshalJSON() ([]byte, error) {
 		MachineHealthCheckPolicy                      *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
 		MachineUpdatePolicy                           *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
 		Name                                          string                     `json:"Name" validate:"required,notblank"`
-		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
+		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout,omitempty"`
 		PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout" validate:"required"`
 		SpaceID                                       string                     `json:"SpaceId,omitempty"`
 		resources.Resource
@@ -98,7 +98,7 @@ func (m *MachinePolicy) UnmarshalJSON(data []byte) error {
 		MachineHealthCheckPolicy                      *MachineHealthCheckPolicy  `json:"MachineHealthCheckPolicy"`
 		MachineUpdatePolicy                           *MachineUpdatePolicy       `json:"MachineUpdatePolicy"`
 		Name                                          string                     `json:"Name"`
-		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout" validate:"required"`
+		PollingRequestMaximumMessageProcessingTimeout string                     `json:"PollingRequestMaximumMessageProcessingTimeout,omitempty"`
 		PollingRequestQueueTimeout                    string                     `json:"PollingRequestQueueTimeout" validate:"required"`
 		SpaceID                                       string                     `json:"SpaceId,omitempty"`
 		resources.Resource
