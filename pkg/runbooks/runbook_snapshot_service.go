@@ -1,6 +1,7 @@
 package runbooks
 
 import (
+	"fmt"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -34,6 +35,31 @@ func (s *RunbookSnapshotService) Add(runbookSnapshot *RunbookSnapshot) (*Runbook
 	if err != nil {
 		return nil, err
 	}
+
+	response, err := services.ApiAdd(s.GetClient(), runbookSnapshot, new(RunbookSnapshot), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.(*RunbookSnapshot), nil
+}
+
+// Publishes a runbook snapshot
+func (s *RunbookSnapshotService) Publish(runbookSnapshot *RunbookSnapshot) (*RunbookSnapshot, error) {
+	if IsNil(runbookSnapshot) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterRunbookSnapshot)
+	}
+
+	if err := runbookSnapshot.Validate(); err != nil {
+		return nil, internal.CreateValidationFailureError(constants.OperationAdd, err)
+	}
+
+	path, err := services.GetAddPath(s, runbookSnapshot)
+	if err != nil {
+		return nil, err
+	}
+
+	path = fmt.Sprintf("%s?publish=true", path)
 
 	response, err := services.ApiAdd(s.GetClient(), runbookSnapshot, new(RunbookSnapshot), path)
 	if err != nil {
