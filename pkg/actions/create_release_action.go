@@ -6,9 +6,9 @@ type CreateReleaseAction struct {
 	triggerAction
 }
 
-func NewCreateReleaseAction(channel string) *CreateReleaseAction {
+func NewCreateReleaseAction(channelId string) *CreateReleaseAction {
 	return &CreateReleaseAction{
-		ChannelID:     channel,
+		ChannelID:     channelId,
 		triggerAction: *newTriggerAction(CreateRelease),
 	}
 }
