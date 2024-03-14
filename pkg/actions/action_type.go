@@ -7,4 +7,5 @@ const (
 	DeployLatestRelease
 	DeployNewRelease
 	RunRunbook
+	CreateRelease
 )
