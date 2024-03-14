@@ -23,29 +23,15 @@ func NewRunbookSnapshotService(sling *sling.Sling, uriTemplate string) *RunbookS
 
 // Add creates a new runbook snapshot.
 func (s *RunbookSnapshotService) Add(runbookSnapshot *RunbookSnapshot) (*RunbookSnapshot, error) {
-	if IsNil(runbookSnapshot) {
-		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterRunbookSnapshot)
-	}
-
-	if err := runbookSnapshot.Validate(); err != nil {
-		return nil, internal.CreateValidationFailureError(constants.OperationAdd, err)
-	}
-
-	path, err := services.GetAddPath(s, runbookSnapshot)
-	if err != nil {
-		return nil, err
-	}
-
-	response, err := services.ApiAdd(s.GetClient(), runbookSnapshot, new(RunbookSnapshot), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.(*RunbookSnapshot), nil
+	return s.addOrPublish(runbookSnapshot, false)
 }
 
-// Publishes a runbook snapshot
+// Publish a new runbook snapshot
 func (s *RunbookSnapshotService) Publish(runbookSnapshot *RunbookSnapshot) (*RunbookSnapshot, error) {
+	return s.addOrPublish(runbookSnapshot, true)
+}
+
+func (s *RunbookSnapshotService) addOrPublish(runbookSnapshot *RunbookSnapshot, publish bool) (*RunbookSnapshot, error) {
 	if IsNil(runbookSnapshot) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterRunbookSnapshot)
 	}
@@ -59,7 +45,9 @@ func (s *RunbookSnapshotService) Publish(runbookSnapshot *RunbookSnapshot) (*Run
 		return nil, err
 	}
 
-	path = fmt.Sprintf("%s?publish=true", path)
+	if publish {
+		path = fmt.Sprintf("%s?publish=true", path)
+	}
 
 	response, err := services.ApiAdd(s.GetClient(), runbookSnapshot, new(RunbookSnapshot), path)
 	if err != nil {
