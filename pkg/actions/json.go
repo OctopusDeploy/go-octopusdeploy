@@ -34,6 +34,10 @@ func FromJson(rawMessage *json.RawMessage) (ITriggerAction, error) {
 		var action *RunRunbookAction
 		err := json.Unmarshal(*rawMessage, &action)
 		return action, err
+	case CreateRelease:
+		var action *CreateReleaseAction
+		err := json.Unmarshal(*rawMessage, &action)
+		return action, err
 	}
 
 	return nil, fmt.Errorf("unable to unmarshal action from JSON")

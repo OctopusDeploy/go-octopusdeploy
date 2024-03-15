@@ -29,14 +29,13 @@ jobs:
           --health-retries 10
           --health-start-period 10s
       octopusserver:
-        image: docker.packages.octopushq.com/octopusdeploy/octopusdeploy:2024.1.11430
+        image: octopusdeploy/octopusdeploy
         env:
           ACCEPT_EULA: Y
           DB_CONNECTION_STRING: 'Server=sqlserver;Database=OctopusDeploy;User Id=sa;Password=${{ env.SA_PASSWORD }};'
           ADMIN_API_KEY: ${{ env.ADMIN_API_KEY }}
           ENABLE_USAGE: N
           OCTOPUS_SERVER_BASE64_LICENSE: ${{ secrets.OCTOPUS_SERVER_BASE64_LICENSE }}
-          OCTOPUS__FeatureToggles__AwsOidcAccountsFeatureToggle: true
         ports:
           - 8080:8080
     # https://github.com/dorny/test-reporter/issues/168
