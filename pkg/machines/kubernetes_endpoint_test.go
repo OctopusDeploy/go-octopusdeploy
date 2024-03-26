@@ -70,6 +70,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 	resource.Authentication = kubernetesCertificateAuthentication
 	resource.ClusterCertificate = "cluster-certificate"
 	resource.Container = deployments.NewDeploymentActionContainer(&feedID, nil)
+	resource.ContainerOptions = "foobar"
 	resource.DefaultWorkerPoolID = "default-worker-pool-id"
 	resource.ID = id
 	resource.ModifiedBy = "john.smith@example.com"
@@ -98,6 +99,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 		"Container": {
 			"FeedId": "feed-id"
 		},
+		"ContainerOptions": "foobar",
 		"DefaultWorkerPoolId": "default-worker-pool-id",
 		"Namespace": "namespace-test",
 		"ProxyId": "proxy-id",
@@ -139,6 +141,7 @@ func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {
 	// Container field
 	assert.Equal(t, "image", resource.Container.Image)
 	assert.Equal(t, "feed-id", resource.Container.FeedID)
+	assert.Equal(t, "foobar", resource.ContainerOptions)
 
 	// basic fields
 	assert.Equal(t, "Certificates-22-r-BY2FT", resource.ClusterCertificate)
@@ -168,6 +171,7 @@ const kubernetesEndpointAsJSON string = `{
 		"Image": "image",
 		"FeedId": "feed-id"
 	},
+	"ContainerOptions": "foobar",
 	"DefaultWorkerPoolId": "default-worker-pool-id",
 	"Namespace": "default",
 	"ProxyId": "proxy-id",

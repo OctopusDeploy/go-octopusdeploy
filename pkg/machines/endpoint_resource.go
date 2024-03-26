@@ -28,6 +28,7 @@ type EndpointResource struct {
 	CommunicationStyle                   string                                 `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
 	ConnectionEndpoint                   string                                 `json:"ConnectionEndpoint,omitempty"`
 	Container                            *deployments.DeploymentActionContainer `json:"Container,omitempty"`
+	ContainerOptions                     string                                 `json:"ContainerOptions,omitempty"`
 	DefaultWorkerPoolID                  string                                 `json:"DefaultWorkerPoolId"`
 	Destination                          *OfflinePackageDropDestination         `json:"Destination"`
 	DotNetCorePlatform                   string                                 `json:"DotNetCorePlatform,omitempty"`

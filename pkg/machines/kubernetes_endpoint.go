@@ -18,6 +18,7 @@ type KubernetesEndpoint struct {
 	ClusterCertificatePath string                                 `json:"ClusterCertificatePath,omitempty"`
 	ClusterURL             *url.URL                               `json:"ClusterUrl" validate:"required,url"`
 	Container              *deployments.DeploymentActionContainer `json:"Container,omitempty"`
+	ContainerOptions       string                                 `json:"ContainerOptions,omitempty"`
 	DefaultWorkerPoolID    string                                 `json:"DefaultWorkerPoolId,omitempty"`
 	Namespace              string                                 `json:"Namespace,omitempty"`
 	ProxyID                string                                 `json:"ProxyId,omitempty"`
@@ -65,6 +66,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 		ClusterCertificatePath string                                 `json:"ClusterCertificatePath,omitempty"`
 		ClusterURL             string                                 `json:"ClusterUrl"`
 		Container              *deployments.DeploymentActionContainer `json:"Container,omitempty"`
+		ContainerOptions       string                                 `json:"ContainerOptions,omitempty"`
 		DefaultWorkerPoolID    string                                 `json:"DefaultWorkerPoolId"`
 		Namespace              string                                 `json:"Namespace,omitempty"`
 		ProxyID                string                                 `json:"ProxyId,omitempty"`
@@ -77,6 +79,7 @@ func (k *KubernetesEndpoint) MarshalJSON() ([]byte, error) {
 		ClusterCertificatePath: k.ClusterCertificatePath,
 		ClusterURL:             k.ClusterURL.String(),
 		Container:              k.Container,
+		ContainerOptions:       k.ContainerOptions,
 		DefaultWorkerPoolID:    k.DefaultWorkerPoolID,
 		Namespace:              k.Namespace,
 		ProxyID:                k.ProxyID,
@@ -95,6 +98,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 		ClusterCertificatePath string                                 `json:"ClusterCertificatePath,omitempty"`
 		ClusterURL             string                                 `json:"ClusterUrl"`
 		Container              *deployments.DeploymentActionContainer `json:"Container,omitempty"`
+		ContainerOptions       string                                 `json:"ContainerOptions,omitempty"`
 		DefaultWorkerPoolID    string                                 `json:"DefaultWorkerPoolId"`
 		Namespace              string                                 `json:"Namespace,omitempty"`
 		ProxyID                string                                 `json:"ProxyId,omitempty"`
@@ -131,6 +135,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 	k.ClusterCertificatePath = fields.ClusterCertificatePath
 	k.ClusterURL = u
 	k.Container = fields.Container
+	k.ContainerOptions = fields.ContainerOptions
 	k.DefaultWorkerPoolID = fields.DefaultWorkerPoolID
 	k.Namespace = fields.Namespace
 	k.ProxyID = fields.ProxyID
