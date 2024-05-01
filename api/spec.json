@@ -9804,7 +9804,8 @@
         "AutoDeploy",
         "DeployLatestRelease",
         "DeployNewRelease",
-        "RunRunbook"
+        "RunRunbook",
+        "CreateRelease"
       ],
       "type": "string"
     },
@@ -9840,7 +9841,8 @@
         "DaysPerMonthSchedule",
         "CronExpressionSchedule",
         "OnceDailySchedule",
-        "ContinuousDailySchedule"
+        "ContinuousDailySchedule",
+        "FeedFilter"
       ],
       "type": "string"
     },
