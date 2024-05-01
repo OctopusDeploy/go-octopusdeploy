@@ -38987,7 +38987,8 @@
             "AutoDeploy",
             "DeployLatestRelease",
             "DeployNewRelease",
-            "RunRunbook"
+            "RunRunbook",
+            "CreateRelease"
           ],
           "type": "string",
           "readOnly": true
@@ -39021,7 +39022,8 @@
             "DaysPerMonthSchedule",
             "DaysPerWeekSchedule",
             "MachineFilter",
-            "OnceDailySchedule"
+            "OnceDailySchedule",
+            "FeedFilter"
           ],
           "type": "string",
           "readOnly": true
