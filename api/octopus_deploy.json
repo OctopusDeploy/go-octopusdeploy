@@ -31225,6 +31225,10 @@
           },
           "readOnly": true
         },
+        "Slug": {
+          "type": "string",
+          "readOnly": true
+        },
         "TenantTags": {
           "type": "array",
           "items": {

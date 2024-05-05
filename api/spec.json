@@ -2390,6 +2390,10 @@
           },
           "readOnly": true
         },
+        "Slug": {
+          "type": "string",
+          "readOnly": true
+        },
         "TenantTags": {
           "uniqueItems": true,
           "type": "array",
