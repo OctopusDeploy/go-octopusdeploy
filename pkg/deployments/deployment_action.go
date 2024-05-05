@@ -11,6 +11,7 @@ import (
 
 type DeploymentAction struct {
 	ActionType                    string                           `json:"ActionType" validate:"required,notblank"`
+	Slug                          string                           `json:"Slug,omitempty"`
 	CanBeUsedForProjectVersioning bool                             `json:"CanBeUsedForProjectVersioning"`
 	Channels                      []string                         `json:"Channels,omitempty"`
 	Condition                     string                           `json:"Condition,omitempty"`
