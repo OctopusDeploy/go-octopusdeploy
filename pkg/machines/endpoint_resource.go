@@ -25,7 +25,7 @@ type EndpointResource struct {
 	ClusterCertificate                   string                                 `json:"ClusterCertificate,omitempty"`
 	ClusterCertificatePath               string                                 `json:"ClusterCertificatePath,omitempty"`
 	ClusterURL                           *url.URL                               `json:"ClusterUrl" validate:"required,url"`
-	CommunicationStyle                   string                                 `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
+	CommunicationStyle                   string                                 `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive KubernetesTentacle"`
 	ConnectionEndpoint                   string                                 `json:"ConnectionEndpoint,omitempty"`
 	Container                            *deployments.DeploymentActionContainer `json:"Container,omitempty"`
 	ContainerOptions                     string                                 `json:"ContainerOptions,omitempty"`
