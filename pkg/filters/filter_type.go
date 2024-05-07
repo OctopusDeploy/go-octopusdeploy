@@ -10,4 +10,5 @@ const (
 	DaysPerWeekSchedule
 	MachineFilter
 	OnceDailySchedule
+	FeedFilter
 )

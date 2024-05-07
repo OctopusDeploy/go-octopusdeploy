@@ -12,4 +12,5 @@ const (
 	FeedTypeNuGet                       = FeedType("NuGet")
 	FeedTypeOctopusProject              = FeedType("OctopusProject")
 	FeedTypeArtifactoryGeneric          = FeedType("ArtifactoryGeneric")
+	FeedTypeS3                          = FeedType("S3")
 )

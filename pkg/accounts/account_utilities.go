@@ -24,6 +24,18 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 			return nil, err
 		}
 		account = amazonWebServicesAccount
+	case AccountTypeAwsOIDC:
+		awsOIDCAccount, err := NewAwsOIDCAccount(accountResource.GetName(), accountResource.RoleArn)
+		if err != nil {
+			return nil, err
+		}
+		awsOIDCAccount.RoleArn = accountResource.RoleArn
+		awsOIDCAccount.SessionDuration = accountResource.SessionDuration
+		awsOIDCAccount.Audience = accountResource.Audience
+		awsOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
+		awsOIDCAccount.AccountTestSubjectKeys = accountResource.AccountTestSubjectKeys
+		awsOIDCAccount.HealthCheckSubjectKeys = accountResource.HealthCheckSubjectKeys
+		account = awsOIDCAccount
 	case AccountTypeAzureServicePrincipal:
 		azureServicePrincipalAccount, err := NewAzureServicePrincipalAccount(accountResource.GetName(), *accountResource.SubscriptionID, *accountResource.TenantID, *accountResource.ApplicationID, accountResource.ApplicationPassword)
 		if err != nil {
@@ -126,6 +138,14 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		amazonWebServicesAccount := account.(*AmazonWebServicesAccount)
 		accountResource.AccessKey = amazonWebServicesAccount.AccessKey
 		accountResource.SecretKey = amazonWebServicesAccount.SecretKey
+	case AccountTypeAwsOIDC:
+		awsOIDCAccount := account.(*AwsOIDCAccount)
+		accountResource.RoleArn = awsOIDCAccount.RoleArn
+		accountResource.SessionDuration = awsOIDCAccount.SessionDuration
+		accountResource.Audience = awsOIDCAccount.Audience
+		accountResource.DeploymentSubjectKeys = awsOIDCAccount.DeploymentSubjectKeys
+		accountResource.AccountTestSubjectKeys = awsOIDCAccount.AccountTestSubjectKeys
+		accountResource.HealthCheckSubjectKeys = awsOIDCAccount.HealthCheckSubjectKeys
 	case AccountTypeAzureServicePrincipal:
 		azureServicePrincipalAccount := account.(*AzureServicePrincipalAccount)
 		accountResource.ApplicationID = azureServicePrincipalAccount.ApplicationID

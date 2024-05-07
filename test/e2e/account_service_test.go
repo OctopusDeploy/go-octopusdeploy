@@ -37,6 +37,31 @@ func CreateTestAmazonWebServicesAccount(t *testing.T, client *client.Client) acc
 	return createdAccount
 }
 
+func CreateTestAwsOIDCAccount(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+	roleArn := internal.GetRandomName()
+
+	account, err := accounts.NewAwsOIDCAccount(name, roleArn)
+
+	require.NoError(t, err)
+	require.NotNil(t, account)
+	require.NoError(t, account.Validate())
+
+	createdAccount, err := client.Accounts.Add(account)
+	require.NoError(t, err)
+	require.NotNil(t, createdAccount)
+	require.NotEmpty(t, createdAccount.GetID())
+	require.Equal(t, accounts.AccountTypeAwsOIDC, createdAccount.GetAccountType())
+	require.Equal(t, name, createdAccount.GetName())
+
+	return createdAccount
+}
+
 func CreateTestAzureServicePrincipalAccount(t *testing.T, client *client.Client) accounts.IAccount {
 	if client == nil {
 		client = getOctopusClient()
@@ -349,6 +374,10 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 	ValidateAccount(t, amazonWebServicesAccount)
 	defer DeleteTestAccount(t, client, amazonWebServicesAccount)
 
+	awsOIDCAccount := CreateTestAwsOIDCAccount(t, client)
+	ValidateAccount(t, awsOIDCAccount)
+	defer DeleteTestAccount(t, client, awsOIDCAccount)
+
 	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount(t, client)
 	ValidateAccount(t, azureServicePrincipalAccount)
 	defer DeleteTestAccount(t, client, azureServicePrincipalAccount)
@@ -419,6 +448,7 @@ func TestAccountServiceAddGetDelete(t *testing.T) {
 		accounts.AccountTypeAzureServicePrincipal,
 		accounts.AccountTypeAzureOIDC,
 		accounts.AccountTypeAmazonWebServicesAccount,
+		accounts.AccountTypeAwsOIDC,
 		accounts.AccountTypeToken,
 	}
 

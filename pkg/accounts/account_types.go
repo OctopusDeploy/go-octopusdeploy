@@ -7,6 +7,7 @@ const (
 	AccountTypeAmazonWebServicesAccount   = AccountType("AmazonWebServicesAccount")
 	AccountTypeAzureServicePrincipal      = AccountType("AzureServicePrincipal")
 	AccountTypeAzureOIDC                  = AccountType("AzureOidc")
+	AccountTypeAwsOIDC                    = AccountType("AmazonWebServicesOidcAccount")
 	AccountTypeAzureSubscription          = AccountType("AzureSubscription")
 	AccountTypeGoogleCloudPlatformAccount = AccountType("GoogleCloudAccount")
 	AccountTypeSSHKeyPair                 = AccountType("SshKeyPair")

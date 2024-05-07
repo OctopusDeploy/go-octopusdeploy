@@ -29,7 +29,12 @@ func (s *ProjectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
 	}
 
-	path := fmt.Sprintf("/api/projecttriggers/%s", id)
+	path, err := services.GetByIDPath(s, id)
+
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := api.ApiGet(s.GetClient(), new(ProjectTrigger), path)
 	if err != nil {
 		return nil, err

@@ -603,6 +603,15 @@ func MatchesScope(variableScope VariableScope, definedScope *VariableScope) (boo
 		}
 	}
 
+	for _, p1 := range definedScope.ProcessOwners {
+		for _, p2 := range variableScope.ProcessOwners {
+			if p1 == p2 {
+				matched = true
+				matchedScopes.ProcessOwners = append(matchedScopes.ProcessOwners, p1)
+			}
+		}
+	}
+
 	return matched, &matchedScopes, nil
 }
 

@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"crypto/md5"
-	"fmt"
 	"io"
 	"strings"
 	"testing"
@@ -34,7 +33,7 @@ func CreateTestDeploymentTarget(t *testing.T, client *client.Client, environment
 	_, err = io.WriteString(h, environment.GetID())
 	require.NoError(t, err)
 
-	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
+	thumbprint := internal.GetRandomThumbprint()
 	environmentIDs := []string{environment.GetID()}
 	roles := []string{"Prod"}
 
@@ -292,7 +291,7 @@ func CreateTestDeploymentTarget_NewClient(t *testing.T, client *client.Client, e
 	_, err = io.WriteString(h, environment.GetID())
 	require.NoError(t, err)
 
-	thumbprint := fmt.Sprintf("%x", h.Sum(nil))
+	thumbprint := internal.GetRandomThumbprint()
 	environmentIDs := []string{environment.GetID()}
 	roles := []string{"Prod"}
 

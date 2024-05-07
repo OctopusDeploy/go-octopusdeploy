@@ -50,6 +50,7 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 		kubernetesEndpoint.ClusterCertificate = endpointResource.ClusterCertificate
 		kubernetesEndpoint.ClusterCertificatePath = endpointResource.ClusterCertificatePath
 		kubernetesEndpoint.Container = endpointResource.Container
+		kubernetesEndpoint.ContainerOptions = endpointResource.ContainerOptions
 		kubernetesEndpoint.DefaultWorkerPoolID = endpointResource.DefaultWorkerPoolID
 		kubernetesEndpoint.Namespace = endpointResource.Namespace
 		kubernetesEndpoint.ProxyID = endpointResource.ProxyID
@@ -133,6 +134,7 @@ func ToEndpointResource(endpoint IEndpoint) (*EndpointResource, error) {
 		endpointResource.ClusterCertificatePath = kubernetesEndpoint.ClusterCertificatePath
 		endpointResource.ClusterURL = kubernetesEndpoint.ClusterURL
 		endpointResource.Container = kubernetesEndpoint.Container
+		endpointResource.ContainerOptions = kubernetesEndpoint.ContainerOptions
 		endpointResource.DefaultWorkerPoolID = kubernetesEndpoint.DefaultWorkerPoolID
 		endpointResource.Namespace = kubernetesEndpoint.Namespace
 		endpointResource.ProxyID = kubernetesEndpoint.ProxyID

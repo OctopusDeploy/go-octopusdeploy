@@ -382,3 +382,41 @@ func GetReleaseDeploymentPreview(client newclient.Client, spaceID string, releas
 	}
 	return newclient.Get[DeploymentPreview](client.HttpSession(), expandedUri)
 }
+
+// GetReleaseDeploymentPreviews gets a preview of a release for a multiple given environments.
+// This is used by the portal to show which machines, prompted variables and other information about the deployment,
+// before proceeding with it. The CLI uses it to build the prompted variables list for a deployment to a given set of environments
+func GetReleaseDeploymentPreviews(client newclient.Client, spaceID string, releaseID string, deploymentPreviewRequests []DeploymentPreviewRequest, includeDisabledSteps bool) ([]*DeploymentPreview, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreviews", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreviews", "spaceID")
+	}
+	if releaseID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreviews", "releaseID")
+	}
+	if len(deploymentPreviewRequests) == 0 {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentPreviews", "deploymentPreviewRequests")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseDeploymentPreviews, map[string]any{
+		"spaceId":   spaceID,
+		"releaseId": releaseID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Create an instance of DeploymentPreviewsBody
+	body := DeploymentPreviewsBody{
+		DeploymentPreviews:   deploymentPreviewRequests,
+		IncludeDisabledSteps: includeDisabledSteps,
+		ReleaseId:            releaseID,
+		SpaceId:              spaceID,
+	}
+
+	test, err := newclient.Post[[]*DeploymentPreview](client.HttpSession(), expandedUri, body)
+
+	return *test, err
+}

@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // HttpSession is a layer over http.Client, and provides the following additional functionality:
@@ -40,6 +41,10 @@ func (h *HttpSession) DoRawRequest(req *http.Request) (*http.Response, error) {
 	}
 
 	if h.BaseURL != nil {
+		// a HTTP URL with a path needs to retain that path during ResolveReference by removing any leading / from the request URL
+		if h.BaseURL.Path != "" && strings.HasSuffix(h.BaseURL.Path, "/") {
+			req.URL, _ = url.Parse(strings.TrimLeft(req.URL.String(), "/"))
+		}
 		req.URL = h.BaseURL.ResolveReference(req.URL)
 	}
 
