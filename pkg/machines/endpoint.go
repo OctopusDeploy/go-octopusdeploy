@@ -15,7 +15,7 @@ type IEndpoint interface {
 // endpoint is the base definition of an endpoint and describes its
 // communication style (SSH, Kubernetes, etc.)
 type endpoint struct {
-	CommunicationStyle string `json:"CommunicationStyle,omitempty" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster AzureWebApp Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive"`
+	CommunicationStyle string `json:"CommunicationStyle,omitempty" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster AzureWebApp Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive KubernetesTentacle"`
 
 	resources.Resource
 }

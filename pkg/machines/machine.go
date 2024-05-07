@@ -199,6 +199,12 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		m.Endpoint = listeningTentacleEndpoint
+	case "KubernetesTentacle":
+		var kubernetesTentacleEndpoint *KubernetesTentacleEndpoint
+		if err := json.Unmarshal(*endpoint, &kubernetesTentacleEndpoint); err != nil {
+			return err
+		}
+		m.Endpoint = kubernetesTentacleEndpoint
 	}
 
 	return nil
