@@ -39,6 +39,8 @@ func (l KubernetesTentacleEndpoint) MarshalJSON() ([]byte, error) {
 	}{
 		TentacleEndpointConfiguration: l.TentacleEndpointConfiguration,
 		KubernetesAgentDetails:        l.KubernetesAgentDetails,
+		UpgradeLocked:                 l.UpgradeLocked,
+		DefaultNamespace:              l.DefaultNamespace,
 		endpoint:                      l.endpoint,
 	}
 
