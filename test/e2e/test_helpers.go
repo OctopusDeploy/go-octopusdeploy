@@ -12,9 +12,12 @@ import (
 )
 
 func getOctopusClient() *client.Client {
-	host := os.Getenv(constants.EnvironmentVariableOctopusHost)
-	apiKey := os.Getenv(constants.EnvironmentVariableOctopusApiKey)
+	// host := os.Getenv(constants.EnvironmentVariableOctopusHost)
+	// apiKey := os.Getenv(constants.EnvironmentVariableOctopusApiKey)
 	spaceId := os.Getenv(constants.EnvironmentVariableOctopusSpace)
+
+	host := "http://localhost:8066"
+	apiKey := "API-4KM7F0OLXQBRBYLYHTWQSJYWVSFVB"
 
 	if len(host) == 0 {
 		host = os.Getenv(constants.ClientURLEnvironmentVariable)
