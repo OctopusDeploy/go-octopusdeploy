@@ -27,6 +27,7 @@ type Deployment struct {
 	FormValues               map[string]string          `json:"FormValues,omitempty"`
 	ManifestVariableSetID    string                     `json:"ManifestVariableSetId,omitempty"`
 	Name                     string                     `json:"Name,omitempty"`
+	Priority                 string                     `json:"Priority" binding:"oneof=On Off LifecycleDefault"`
 	ProjectID                string                     `json:"ProjectId,omitempty"`
 	QueueTime                *time.Time                 `json:"QueueTime,omitempty"`
 	QueueTimeExpiry          *time.Time                 `json:"QueueTimeExpiry,omitempty"`
