@@ -27,7 +27,7 @@ type Deployment struct {
 	FormValues               map[string]string          `json:"FormValues,omitempty"`
 	ManifestVariableSetID    string                     `json:"ManifestVariableSetId,omitempty"`
 	Name                     string                     `json:"Name,omitempty"`
-	Priority                 string                     `json:"Priority" binding:"oneof=On Off LifecycleDefault"`
+	Priority                 string                     `json:"Priority,omitempty" validate:"oneof=On Off LifecycleDefault"`
 	ProjectID                string                     `json:"ProjectId,omitempty"`
 	QueueTime                *time.Time                 `json:"QueueTime,omitempty"`
 	QueueTimeExpiry          *time.Time                 `json:"QueueTimeExpiry,omitempty"`
@@ -50,6 +50,7 @@ func NewDeployment(environmentID string, releaseID string) *Deployment {
 		EnvironmentID: environmentID,
 		ReleaseID:     releaseID,
 		Resource:      *resources.NewResource(),
+		Priority:      "LifecycleDefault",
 	}
 }
 
