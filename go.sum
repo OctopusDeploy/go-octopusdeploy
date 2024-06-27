@@ -1,7 +1,7 @@
 github.com/MakeNowJust/heredoc/v2 v2.0.1 h1:rlCHh70XXXv7toz95ajQWOWQnN4WNLt0TdpZYIR/J6A=
 github.com/MakeNowJust/heredoc/v2 v2.0.1/go.mod h1:6/2Abh5s+hc3g9nbWLe9ObDIOhaRrqsyY9MWy+4JdRM=
-github.com/OctopusDeploy/go-octodiff v0.0.0-20230329014306-3184489c58de h1:kO1rMAxqDERQKgN4kB8gkr6Lux+sP5oGNyleylipD/8=
-github.com/OctopusDeploy/go-octodiff v0.0.0-20230329014306-3184489c58de/go.mod h1:Mze0+EkOWTgTmi8++fyUc6r0aLZT7qD9gX+31t8MmIU=
+github.com/OctopusDeploy/go-octodiff v1.0.0 h1:U+ORg6azniwwYo+O44giOw6TiD5USk8S4VDhOQ0Ven0=
+github.com/OctopusDeploy/go-octodiff v1.0.0/go.mod h1:Mze0+EkOWTgTmi8++fyUc6r0aLZT7qD9gX+31t8MmIU=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
-	github.com/OctopusDeploy/go-octodiff v0.0.0-20230329014306-3184489c58de
+	github.com/OctopusDeploy/go-octodiff v1.0.0
 	github.com/dghubble/sling v1.4.1
 	github.com/go-playground/assert/v2 v2.2.0
 	github.com/go-playground/validator/v10 v10.11.2
