@@ -31,6 +31,7 @@ func AssertEqualProjects(t *testing.T, expected *projects.Project, actual *proje
 	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
 
 	// Project
+	assert.Equal(t, expected.AllowIgnoreChannelRules, actual.AllowIgnoreChannelRules)
 	assert.Equal(t, expected.AutoCreateRelease, actual.AutoCreateRelease)
 	assert.Equal(t, expected.AutoDeployReleaseOverrides, actual.AutoDeployReleaseOverrides)
 	assert.Equal(t, expected.ClonedFromProjectID, actual.ClonedFromProjectID)
