@@ -6,6 +6,8 @@ func IsNil(i interface{}) bool {
 		return v == nil
 	case *AmazonWebServicesAccount:
 		return v == nil
+	case *AwsOIDCAccount:
+		return v == nil
 	case *AzureServicePrincipalAccount:
 		return v == nil
 	case *AzureOIDCAccount:

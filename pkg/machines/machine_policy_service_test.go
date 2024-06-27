@@ -36,12 +36,15 @@ func CreateTestMachinePolicy(t *testing.T, service *MachinePolicyService) *Machi
 	machineHealthCheckPolicy := NewMachineHealthCheckPolicy()
 	machineHealthCheckPolicy.HealthCheckInterval = getRandomDuration(1)
 
+	machineUpdatePolicy := NewMachineUpdatePolicy()
+
 	machinePolicy := NewMachinePolicy(name)
 	machinePolicy.ConnectionConnectTimeout = connectionConnectTimeout
 	machinePolicy.ConnectionRetrySleepInterval = connectionRetrySleepInterval
 	machinePolicy.ConnectionRetryTimeLimit = connectionRetryTimeLimit
 	machinePolicy.MachineCleanupPolicy = machineCleanupPolicy
 	machinePolicy.MachineHealthCheckPolicy = machineHealthCheckPolicy
+	machinePolicy.MachineUpdatePolicy = machineUpdatePolicy
 	machinePolicy.PollingRequestMaximumMessageProcessingTimeout = pollingRequestMaximumMessageProcessingTimeout
 	machinePolicy.PollingRequestQueueTimeout = pollingRequestQueueTimeout
 	require.NoError(t, machinePolicy.Validate())
