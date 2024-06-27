@@ -1,6 +1,9 @@
 package e2e
 
 import (
+	"archive/zip"
+	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -27,34 +30,45 @@ func AssertEqualPackages(t *testing.T, expected *packages.Package, actual *packa
 	// TODO: add package comparisons
 }
 
-func CreateTestPackage(t *testing.T, client *client.Client) *packages.Package {
+func UploadRandomTestPackage(t *testing.T, client *client.Client) (*packages.PackageUploadResponse, bool) {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	octopusPackage := packages.NewPackage()
-	require.NotNil(t, octopusPackage)
-	require.NoError(t, octopusPackage.Validate())
+	var fileName = fmt.Sprintf("%s.1.0.0.zip", internal.GetRandomString(8))
 
-	// resource, err := client.Packages.Upload(packageBytes)
-	// require.NoError(t, err)
-	// require.NotNil(t, resource)
+	// octopus expects packages to be zip files, best we make a zip
+	var zipBuffer bytes.Buffer
+	zipWriter := zip.NewWriter(&zipBuffer)
+	fileWriter, err := zipWriter.Create("content.txt")
+	require.NoError(t, err)
 
-	return octopusPackage
+	_, err = fileWriter.Write([]byte("This is a text file inside a test zip package"))
+	require.NoError(t, err)
+
+	err = zipWriter.Close()
+	require.NoError(t, err)
+
+	resource, createdNewFile, err := packages.Upload(client, client.GetSpaceID(), fileName, bytes.NewReader(zipBuffer.Bytes()), packages.OverwriteModeOverwriteExisting)
+
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource, createdNewFile
 }
 
-func DeleteTestPackage(t *testing.T, client *client.Client, octopusPackage *packages.Package) {
+func DeleteTestPackage(t *testing.T, client *client.Client, packageID string) {
 	if client == nil {
 		client = getOctopusClient()
 	}
 	require.NotNil(t, client)
 
-	err := client.Packages.DeleteByID(octopusPackage.GetID())
+	err := client.Packages.DeleteByID(packageID)
 	assert.NoError(t, err)
 
 	// verify the delete operation was successful
-	deletedPackage, err := client.Packages.GetByID(octopusPackage.GetID())
+	deletedPackage, err := client.Packages.GetByID(packageID)
 	assert.Error(t, err)
 	assert.Nil(t, deletedPackage)
 }
@@ -72,74 +86,58 @@ func UpdatePackage(t *testing.T, client *client.Client, octopusPackage *packages
 	return updatedPackage
 }
 
-// TODO: fix test
-// func TestPackageServiceAdd(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+func TestPackageServiceAddGetAndDelete(t *testing.T) {
+	octopus := getOctopusClient()
+	require.NotNil(t, octopus)
 
-// 	octopusPackage := CreateTestPackage(t, client)
-// 	require.NotNil(t, octopusPackage)
-// 	defer DeleteTestPackage(t, client, octopusPackage)
-// }
+	uploaded, createdNewPackage := UploadRandomTestPackage(t, octopus)
+	assert.True(t, createdNewPackage)
+	require.NotNil(t, uploaded)
+	packageID := uploaded.GetID()
 
-// TODO: fix test
-// func TestPackageServiceDeleteAll(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+	defer DeleteTestPackage(t, octopus, packageID)
 
-// 	packages, err := client.Packages.GetAll()
-// 	require.NoError(t, err)
-// 	require.NotNil(t, packages)
+	fetched, err := octopus.Packages.GetByID(packageID)
+	require.NoError(t, err)
+	require.NotNil(t, fetched)
 
-// 	for _, octopusPackage := range packages {
-// 		defer DeleteTestPackage(t, client, octopusPackage)
-// 	}
-// }
+	assert.Equal(t, uploaded.NuGetFeedId, "feeds-builtin") // possible future brittle test if the space changes, this will be Feeds-NNN
 
-// TODO: fix test
-// func TestPackageServiceGetAll(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+	assert.Equal(t, uploaded.NuGetPackageId, fetched.NuGetPackageID)
+	assert.Equal(t, uploaded.Description, fetched.Description)
+}
 
-// 	resources, err := client.Packages.GetAll()
-// 	require.NoError(t, err)
-// 	require.NotNil(t, resources)
+func TestPackageServiceGetAll(t *testing.T) {
+	octopus := getOctopusClient()
+	require.NotNil(t, octopus)
 
-// 	for _, resource := range resources {
-// 		require.NotNil(t, resource)
-// 		assert.NotEmpty(t, resource.GetID())
-// 	}
-// }
+	uploaded1, _ := UploadRandomTestPackage(t, octopus)
+	defer DeleteTestPackage(t, octopus, uploaded1.GetID())
+	uploaded2, _ := UploadRandomTestPackage(t, octopus)
+	defer DeleteTestPackage(t, octopus, uploaded2.GetID())
 
-// TODO: fix test
-// func TestPackageServiceGetByID(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
+	resources, err := octopus.Packages.GetAll()
+	require.NoError(t, err)
+	require.NotNil(t, resources)
 
-// 	id := getRandomName()
-// 	resource, err := client.Packages.GetByID(id)
-// 	require.Error(t, err)
-// 	require.Nil(t, resource)
+	allPackageIds := make([]string, 0)
+	for _, resource := range resources {
+		require.NotNil(t, resource)
+		assert.NotEmpty(t, resource.GetID())
+		allPackageIds = append(allPackageIds, resource.GetID())
+	}
 
-// 	resources, err := client.Packages.GetAll()
-// 	require.NoError(t, err)
-// 	require.NotNil(t, resources)
+	assert.Containsf(t, allPackageIds, uploaded1.GetID(), "resources does not contain uploaded1")
+	assert.Containsf(t, allPackageIds, uploaded2.GetID(), "resources does not contain uploaded2")
+}
 
-// 	for _, resource := range resources {
-// 		resourceToCompare, err := client.Packages.GetByID(resource.GetID())
-// 		require.NoError(t, err)
-// 		AssertEqualPackages(t, resource, resourceToCompare)
-// 	}
-// }
+func TestPackageServiceUpdate(t *testing.T) {
+	octopus := getOctopusClient()
+	require.NotNil(t, octopus)
 
-// TODO: fix test
-// func TestPackageServiceUpdate(t *testing.T) {
-// 	client := getOctopusClient()
-// 	require.NotNil(t, client)
-
-// 	expected := CreateTestPackage(t, client)
-// 	expected.Title = getRandomName()
-// 	actual := UpdatePackage(t, client, expected)
-// 	AssertEqualPackages(t, expected, actual)
-// 	defer DeleteTestPackage(t, client, expected)
-// }
+	//expected, _ := UploadNewTestPackage(t, octopus)
+	//expected.Title = internal.GetRandomName()
+	//actual := UpdatePackage(t, octopus, expected)
+	//AssertEqualPackages(t, expected, actual)
+	//defer DeleteTestPackage(t, octopus, expected)
+}

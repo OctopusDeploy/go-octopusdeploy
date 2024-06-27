@@ -46,14 +46,24 @@ func NewPackageService(sling *sling.Sling, uriTemplate string, deltaSignaturePat
 // GetAll returns all packages. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s *PackageService) GetAll() ([]*Package, error) {
-	items := []*Package{}
-	path, err := services.GetAllPath(s)
-	if err != nil {
-		return items, err
+	path := s.GetBasePath() // to get all packages we just hit /api/Spaces-NN/packages
+
+	var packages []*Package
+
+	loadNextPage := true
+	for loadNextPage {
+		resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Package]), path)
+
+		if err != nil {
+			return packages, err
+		}
+
+		r := resp.(*resources.Resources[*Package])
+		packages = append(packages, r.Items...)
+		path, loadNextPage = services.LoadNextPage(r.PagedResults)
 	}
 
-	_, err = api.ApiGet(s.GetClient(), &items, path)
-	return items, err
+	return packages, nil
 }
 
 // GetByID returns the package that matches the input ID. If one cannot be
@@ -104,6 +114,11 @@ func (s *PackageService) Update(octopusPackage *Package) (*Package, error) {
 // - fileName: The string which we tell the server to use for the file name (may not necessarily be an actual filename on disk)
 // - reader: io.Reader which provides the binary file data to upload
 // - overwriteMode: Instructs the server what to do in the case that the package already exists.
+//
+// Return values:
+// - PackageUploadResponse: The server's response to the upload request
+// - bool: True if the server created a new file, false if it ignored an existing file
+// - error: Any error that occurred during the upload process
 func Upload(client newclient.Client, spaceID string, fileName string, reader io.Reader, overwriteMode OverwriteMode) (*PackageUploadResponse, bool, error) {
 	// directly uploading a file only requires a forward-moving `io.Reader`.
 	//

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"strings"
 
@@ -9,6 +10,17 @@ import (
 	"github.com/dghubble/sling"
 	"github.com/google/uuid"
 )
+
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+func GetRandomString(length int) string {
+	result := make([]byte, length)
+	for i := range result {
+		randomInt := rand.Intn(len(charset))
+		result[i] = charset[randomInt]
+	}
+	return string(result)
+}
 
 func GetRandomName() string {
 	fullName := fmt.Sprintf("test-id %s", uuid.New())
