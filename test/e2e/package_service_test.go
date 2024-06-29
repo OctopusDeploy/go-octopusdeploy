@@ -3,6 +3,7 @@ package e2e
 import (
 	"archive/zip"
 	"bytes"
+	cryptoRand "crypto/rand"
 	"fmt"
 	"testing"
 
@@ -13,23 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func AssertEqualPackages(t *testing.T, expected *packages.Package, actual *packages.Package) {
-	// equality cannot be determined through a direct comparison (below)
-	// because APIs like GetByPartialName do not include the fields,
-	// LastModifiedBy and LastModifiedOn
-	//
-	// assert.EqualValues(expected, actual)
-	//
-	// this statement (above) is expected to succeed, but it fails due to these
-	// missing fields
-
-	// IResource
-	assert.Equal(t, expected.GetID(), actual.GetID())
-	assert.True(t, internal.IsLinksEqual(expected.GetLinks(), actual.GetLinks()))
-
-	// TODO: add package comparisons
-}
-
+// UploadRandomTestPackage uses the V1 Upload method in go-octopusdeploy. It does not support delta compression
 func UploadRandomTestPackage(t *testing.T, client *client.Client) (*packages.PackageUploadResponse, bool) {
 	if client == nil {
 		client = getOctopusClient()
@@ -39,18 +24,12 @@ func UploadRandomTestPackage(t *testing.T, client *client.Client) (*packages.Pac
 	var fileName = fmt.Sprintf("%s.1.0.0.zip", internal.GetRandomString(8))
 
 	// octopus expects packages to be zip files, best we make a zip
-	var zipBuffer bytes.Buffer
-	zipWriter := zip.NewWriter(&zipBuffer)
-	fileWriter, err := zipWriter.Create("content.txt")
-	require.NoError(t, err)
+	zipFileBytes := createZip(t, zippedFile{
+		name:    "content.txt",
+		content: []byte("This is a text file inside a test zip package"),
+	})
 
-	_, err = fileWriter.Write([]byte("This is a text file inside a test zip package"))
-	require.NoError(t, err)
-
-	err = zipWriter.Close()
-	require.NoError(t, err)
-
-	resource, createdNewFile, err := packages.Upload(client, client.GetSpaceID(), fileName, bytes.NewReader(zipBuffer.Bytes()), packages.OverwriteModeOverwriteExisting)
+	resource, createdNewFile, err := packages.Upload(client, client.GetSpaceID(), fileName, bytes.NewReader(zipFileBytes), packages.OverwriteModeOverwriteExisting)
 
 	require.NoError(t, err)
 	require.NotNil(t, resource)
@@ -131,13 +110,151 @@ func TestPackageServiceGetAll(t *testing.T) {
 	assert.Containsf(t, allPackageIds, uploaded2.GetID(), "resources does not contain uploaded2")
 }
 
-func TestPackageServiceUpdate(t *testing.T) {
+func TestPackageServiceUploadDelta_NotEfficient(t *testing.T) {
 	octopus := getOctopusClient()
 	require.NotNil(t, octopus)
 
-	//expected, _ := UploadNewTestPackage(t, octopus)
-	//expected.Title = internal.GetRandomName()
-	//actual := UpdatePackage(t, octopus, expected)
-	//AssertEqualPackages(t, expected, actual)
-	//defer DeleteTestPackage(t, octopus, expected)
+	pkgName := "delta_" + internal.GetRandomString(8)
+	var fileName = fmt.Sprintf("%s.1.0.0.zip", pkgName)
+
+	zipFileBytes1 := createZip(t, zippedFile{
+		name:    "content.txt",
+		content: []byte("This is a text file inside a test zip package"),
+	})
+
+	initialResponse, err := packages.UploadV2(
+		octopus,
+		octopus.GetSpaceID(),
+		fileName,
+		bytes.NewReader(zipFileBytes1),
+		packages.OverwriteModeOverwriteExisting,
+		true)
+
+	require.NoError(t, err)
+	require.NotNil(t, initialResponse)
+	defer DeleteTestPackage(t, octopus, initialResponse.GetID())
+
+	assert.Equal(t, packages.DeltaBehaviourNoPreviousFile, initialResponse.UploadInfo.DeltaBehaviour)
+
+	var fileName2 = fmt.Sprintf("%s.2.0.0.zip", pkgName)
+
+	// because the zip files are tiny here, the delta ends up larger than the zip so should produce the "not efficient"
+	// outcome. We need bigger files for Delta to work
+	zipFileBytes2 := createZip(t, zippedFile{
+		name:    "content.txt",
+		content: []byte("This is a text file inside a test zip package"),
+	}, zippedFile{
+		name:    "content2.txt",
+		content: []byte("This is a second text file inside a test zip package"),
+	})
+
+	deltaResponse, err := packages.UploadV2(
+		octopus,
+		octopus.GetSpaceID(),
+		fileName2,
+		bytes.NewReader(zipFileBytes2),
+		packages.OverwriteModeOverwriteExisting,
+		true)
+
+	require.NoError(t, err)
+	require.NotNil(t, deltaResponse)
+	defer DeleteTestPackage(t, octopus, deltaResponse.GetID())
+
+	// it tells us if it did delta via response.UploadInfo
+	assert.Equal(t, packages.DeltaBehaviourNotEfficient, deltaResponse.UploadInfo.DeltaBehaviour)
+
+	// Orion: Note These are the values when run on my machine, but because the data is random, and
+	// due to platform differences they may not always be the same; commented out and left for
+	// explanatory purposes only.
+	// assert.Equal(t, int64(355), deltaResponse.UploadInfo.FileSize)
+	// assert.Equal(t, int64(406), deltaResponse.UploadInfo.DeltaSize)
+}
+
+func TestPackageServiceUploadDelta_UploadedDelta(t *testing.T) {
+	octopus := getOctopusClient()
+	require.NotNil(t, octopus)
+
+	pkgName := "delta_" + internal.GetRandomString(8)
+	var fileName = fmt.Sprintf("%s.1.0.0.zip", pkgName)
+
+	// we need a bigger file to make the delta worthwhile. Random so it shouldn't compress too much
+	randomContent1 := make([]byte, 512*1024)
+	_, err := cryptoRand.Read(randomContent1)
+	require.NoError(t, err)
+
+	zipFileBytes1 := createZip(t, zippedFile{
+		name:    "content.txt",
+		content: randomContent1,
+	})
+
+	initialResponse, err := packages.UploadV2(
+		octopus,
+		octopus.GetSpaceID(),
+		fileName,
+		bytes.NewReader(zipFileBytes1),
+		packages.OverwriteModeOverwriteExisting,
+		true)
+
+	require.NoError(t, err)
+	require.NotNil(t, initialResponse)
+	defer DeleteTestPackage(t, octopus, initialResponse.GetID())
+
+	assert.Equal(t, packages.DeltaBehaviourNoPreviousFile, initialResponse.UploadInfo.DeltaBehaviour)
+
+	var fileName2 = fmt.Sprintf("%s.2.0.0.zip", pkgName)
+
+	randomContent2 := make([]byte, 512*1024)
+	_, err = cryptoRand.Read(randomContent2)
+	require.NoError(t, err)
+
+	zipFileBytes2 := createZip(t, zippedFile{
+		name:    "content.txt",
+		content: randomContent1,
+	}, zippedFile{
+		name:    "content2.txt",
+		content: randomContent2,
+	})
+
+	deltaResponse, err := packages.UploadV2(
+		octopus,
+		octopus.GetSpaceID(),
+		fileName2,
+		bytes.NewReader(zipFileBytes2),
+		packages.OverwriteModeOverwriteExisting,
+		true)
+
+	require.NoError(t, err)
+	require.NotNil(t, deltaResponse)
+	defer DeleteTestPackage(t, octopus, deltaResponse.GetID())
+
+	// it tells us if it did delta via response.UploadInfo
+	// Orion: Note These are the values when run on my machine, but because the data is random, and
+	// due to platform differences they may not always be the same; commented out and left for
+	// explanatory purposes only.
+	assert.Equal(t, int64(1049158), deltaResponse.UploadInfo.FileSize)
+	assert.Equal(t, int64(524938), deltaResponse.UploadInfo.DeltaSize)
+	assert.Equal(t, packages.DeltaBehaviourUploadedDeltaFile, deltaResponse.UploadInfo.DeltaBehaviour)
+}
+
+type zippedFile struct {
+	name    string
+	content []byte
+}
+
+func createZip(t *testing.T, files ...zippedFile) []byte {
+	var zipBuffer bytes.Buffer
+	zipWriter := zip.NewWriter(&zipBuffer)
+
+	for _, file := range files {
+		fileWriter, err := zipWriter.Create(file.name)
+		require.NoError(t, err)
+
+		_, err = fileWriter.Write(file.content)
+		require.NoError(t, err)
+	}
+
+	err := zipWriter.Close()
+	require.NoError(t, err)
+
+	return zipBuffer.Bytes()
 }

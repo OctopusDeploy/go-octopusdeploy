@@ -244,9 +244,6 @@ func List(client newclient.Client, spaceID string, filter string, limit int) (*r
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
 	return newclient.Get[resources.Resources[*Package]](client.HttpSession(), expandedUri)
 }
 
