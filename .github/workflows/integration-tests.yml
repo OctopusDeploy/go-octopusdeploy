@@ -48,7 +48,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v3
         with:
-          go-version: '>=1.18.0'
+          go-version: '>=1.19.0'
       - name: Build
         run: go build -a -race -v ./...
       - name: Vet
