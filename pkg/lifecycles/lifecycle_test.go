@@ -30,6 +30,7 @@ func TestLifecycleAsJSON(t *testing.T) {
 	lifecycle.Phases[1].ID = "test-phase-id-2"
 	lifecycle.Phases[1].ReleaseRetentionPolicy = nil
 	lifecycle.Phases[1].TentacleRetentionPolicy = nil
+	lifecycle.Phases[1].IsPriorityPhase = true
 	lifecycle.TentacleRetentionPolicy.Unit = "Items"
 
 	lifecycle.ReleaseRetentionPolicy.QuantityToKeep = 3
@@ -44,6 +45,7 @@ func TestLifecycleAsJSON(t *testing.T) {
 				"AutomaticDeploymentTargets": ["test-AutomaticDeploymentTargets-1"],
 				"Id": "test-phase-id-1",
 				"IsOptionalPhase": true,
+				"IsPriorityPhase": false,
 				"MinimumEnvironmentsBeforePromotion": 123,
 				"Name": "test-phase-name-1",
 				"OptionalDeploymentTargets": ["Environments-1"],
@@ -65,6 +67,7 @@ func TestLifecycleAsJSON(t *testing.T) {
 				"OptionalDeploymentTargets": [],
 				"MinimumEnvironmentsBeforePromotion": 0,
 				"IsOptionalPhase": false,
+				"IsPriorityPhase": true,
 				"ReleaseRetentionPolicy": null,
 				"TentacleRetentionPolicy": null
 			}
@@ -206,6 +209,7 @@ func TestLifecycleFromJson(t *testing.T) {
       ],
       "MinimumEnvironmentsBeforePromotion": 1,
       "IsOptionalPhase": true,
+      "IsPriorityPhase": false,
       "ReleaseRetentionPolicy": {
         "Unit": "Days",
         "QuantityToKeep": 1,
@@ -256,6 +260,7 @@ func TestLifecycleFromJson(t *testing.T) {
 	require.Equal(t, "A", phase0.Name)
 	require.Equal(t, int32(1), phase0.MinimumEnvironmentsBeforePromotion)
 	require.Equal(t, true, phase0.IsOptionalPhase)
+	require.Equal(t, false, phase0.IsPriorityPhase)
 	require.Equal(t, 1, len(phase0.AutomaticDeploymentTargets))
 	require.Equal(t, "Environments-2", phase0.AutomaticDeploymentTargets[0])
 	require.Equal(t, 1, len(phase0.OptionalDeploymentTargets))
