@@ -13,7 +13,8 @@ import (
 	"github.com/dghubble/sling"
 )
 
-// DeploymentService handles communication for any operations in the Octopus
+//	handles communication for any operations in the Octopus
+//
 // API that pertain to deployments.
 type DeploymentService struct {
 	services.CanDeleteService
@@ -30,6 +31,8 @@ func NewDeploymentService(sling *sling.Sling, uriTemplate string) *DeploymentSer
 }
 
 // Add creates a new deployment.
+//
+// Deprecated: Use deployments.Add
 func (s *DeploymentService) Add(deployment *Deployment) (*Deployment, error) {
 	if IsNil(deployment) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, "deployment")
@@ -50,6 +53,8 @@ func (s *DeploymentService) Add(deployment *Deployment) (*Deployment, error) {
 
 // GetByID gets a deployment that matches the input ID. If one cannot be found,
 // it returns nil and an error.
+//
+// Deprecated: Use deployments.GetByID
 func (s *DeploymentService) GetByID(id string) (*Deployment, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -69,6 +74,8 @@ func (s *DeploymentService) GetByID(id string) (*Deployment, error) {
 }
 
 // GetByIDs gets a list of deployments that match the input IDs.
+//
+// Deprecated: Use deployments.GetByIDs
 func (s *DeploymentService) GetByIDs(ids []string) ([]*Deployment, error) {
 	if len(ids) == 0 {
 		return []*Deployment{}, nil
@@ -83,6 +90,8 @@ func (s *DeploymentService) GetByIDs(ids []string) ([]*Deployment, error) {
 }
 
 // GetByName performs a lookup and returns instances of a Deployment with a matching partial name.
+//
+// Deprecated: Use deployments.GetByName
 func (s *DeploymentService) GetByName(name string) ([]*Deployment, error) {
 	if internal.IsEmpty(name) {
 		return []*Deployment{}, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
@@ -97,6 +106,8 @@ func (s *DeploymentService) GetByName(name string) ([]*Deployment, error) {
 }
 
 // Update modifies a Deployment based on the one provided as input.
+//
+// Deprecated: Use deployments.Update
 func (s *DeploymentService) Update(resource Deployment) (*Deployment, error) {
 	path, err := services.GetUpdatePath(s, &resource)
 	if err != nil {
@@ -111,6 +122,7 @@ func (s *DeploymentService) Update(resource Deployment) (*Deployment, error) {
 	return resp.(*Deployment), nil
 }
 
+// Deprecated: Use deployments.GetDeployments
 func (s *DeploymentService) GetDeployments(release *releases.Release, deploymentQuery ...*DeploymentQuery) (*resources.Resources[*Deployment], error) {
 	if release == nil {
 		return nil, internal.CreateInvalidParameterError("GetDeployments", "release")
@@ -142,6 +154,7 @@ func (s *DeploymentService) GetDeployments(release *releases.Release, deployment
 	return resp.(*resources.Resources[*Deployment]), nil
 }
 
+// Deprecated: Use deployments.GetProgression
 func (s *DeploymentService) GetProgression(release *releases.Release) (*releases.LifecycleProgression, error) {
 	if release == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetDeployments, constants.ParameterRelease)
@@ -158,6 +171,8 @@ func (s *DeploymentService) GetProgression(release *releases.Release) (*releases
 
 // GetDeploymentSettings loads the deployment settings for a project.
 // If the project is version controlled you'll need to specify a gitRef such as 'main'
+//
+// Deprecated: Use deployments.GetDeploymentSettings
 func (s *DeploymentService) GetDeploymentSettings(project *projects.Project, gitRef string) (*DeploymentSettings, error) {
 	if project == nil {
 		return nil, internal.CreateInvalidParameterError("GetDeploymentSettings", constants.ParameterProject)
@@ -187,6 +202,156 @@ func (s *DeploymentService) GetDeploymentSettings(project *projects.Project, git
 		return nil, err
 	}
 	return resp.(*DeploymentSettings), nil
+}
+
+// ----- new -----
+
+const deploymentsTemplate = "/api/{spaceId}/deployments{/id}{?skip,take,ids,projects,environments,tenants,channels,taskState,partialName}"
+
+// Add creates a new deployment.
+func Add(client newclient.Client, deployment *Deployment) (*Deployment, error) {
+	if IsNil(deployment) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, "deployment")
+	}
+
+	resp, err := newclient.Add[Deployment](client, deploymentsTemplate, deployment.SpaceID, deployment)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetByID gets a deployment that matches the input ID. If one cannot be found,
+// it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, id string) (*Deployment, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	resp, err := newclient.GetByID[Deployment](client, deploymentsTemplate, spaceID, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetByIDs gets a list of deployments that match the input IDs.
+func GetByIDs(client newclient.Client, spaceID string, ids []string) ([]*Deployment, error) {
+	if len(ids) == 0 {
+		return []*Deployment{}, nil
+	}
+
+	templateParams := map[string]any{"spaceId": spaceID, "ids": ids}
+	expandedUri, err := client.URITemplateCache().Expand(deploymentsTemplate, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	searchResults, err := newclient.Get[resources.Resources[*Deployment]](client.HttpSession(), expandedUri)
+	return searchResults.Items, nil
+}
+
+// GetByName performs a lookup and returns instances of a Deployment with a matching partial name.
+func GetByName(client newclient.Client, spaceID string, name string) ([]*Deployment, error) {
+	if internal.IsEmpty(name) {
+		return []*Deployment{}, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	templateParams := map[string]any{"spaceId": spaceID, "partialName": name}
+	expandedUri, err := client.URITemplateCache().Expand(deploymentsTemplate, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	searchResults, err := newclient.Get[resources.Resources[*Deployment]](client.HttpSession(), expandedUri)
+	return searchResults.Items, nil
+}
+
+// Update modifies a Deployment based on the one provided as input.
+func Update(client newclient.Client, resource Deployment) (*Deployment, error) {
+	resp, err := newclient.Update[Deployment](client, deploymentsTemplate, resource.SpaceID, resource.ID, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+func GetDeployments(client newclient.Client, release *releases.Release, deploymentQuery ...*DeploymentQuery) (*resources.Resources[*Deployment], error) {
+	if release == nil {
+		return nil, internal.CreateInvalidParameterError("GetDeployments", "release")
+	}
+
+	uriTemplate, err := uritemplates.Parse(release.GetLinks()[constants.LinkDeployments])
+	if err != nil {
+		return &resources.Resources[*Deployment]{}, err
+	}
+
+	values := make(map[string]interface{})
+	path, err := uriTemplate.Expand(values)
+	if err != nil {
+		return &resources.Resources[*Deployment]{}, err
+	}
+
+	if deploymentQuery != nil {
+		path, err = uriTemplate.Expand(deploymentQuery[0])
+		if err != nil {
+			return &resources.Resources[*Deployment]{}, err
+		}
+	}
+
+	resp, err := newclient.Get[resources.Resources[*Deployment]](client.HttpSession(), path)
+	if err != nil {
+		return &resources.Resources[*Deployment]{}, err
+	}
+
+	return resp, nil
+}
+
+func GetProgression(client newclient.Client, release *releases.Release) (*releases.LifecycleProgression, error) {
+	if release == nil {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetDeployments, constants.ParameterRelease)
+	}
+
+	path := release.GetLinks()[constants.LinkProgression]
+	resp, err := newclient.Get[releases.LifecycleProgression](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// GetDeploymentSettings loads the deployment settings for a project.
+// If the project is version controlled you'll need to specify a gitRef such as 'main'
+func GetDeploymentSettings(client newclient.Client, project *projects.Project, gitRef string) (*DeploymentSettings, error) {
+	if project == nil {
+		return nil, internal.CreateInvalidParameterError("GetDeploymentSettings", constants.ParameterProject)
+	}
+
+	template, err := uritemplates.Parse(project.Links[constants.LinkDeploymentSettings])
+	if err != nil {
+		return nil, err
+	}
+
+	var templateParameters map[string]interface{}
+	if gitRef != "" {
+		templateParameters = map[string]interface{}{"gitRef": gitRef}
+	} else { // non-CaC project links don't have templates so this is a no-op, but it would safely remove any {?extra}{junk} that might be on the query string
+		templateParameters = map[string]interface{}{}
+	}
+
+	path, err := template.Expand(templateParameters)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := newclient.Get[DeploymentSettings](client.HttpSession(), path)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // GetReleaseDeploymentPreview gets a preview of a release for a given environment.

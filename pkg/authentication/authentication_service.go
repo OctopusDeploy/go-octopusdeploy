@@ -2,6 +2,7 @@ package authentication
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
@@ -22,6 +23,7 @@ func NewAuthenticationService(sling *sling.Sling, uriTemplate string, loginIniti
 	}
 }
 
+// Deprecated: Use authentication.Get
 func (s *AuthenticationService) Get() (*Authentication, error) {
 	path, err := services.GetPath(s)
 	if err != nil {
@@ -34,4 +36,11 @@ func (s *AuthenticationService) Get() (*Authentication, error) {
 	}
 
 	return resp.(*Authentication), nil
+}
+
+// ----- new -----
+const template = "/api/authentication"
+
+func Get(client newclient.Client) (*Authentication, error) {
+	return newclient.Get[Authentication](client.HttpSession(), template)
 }

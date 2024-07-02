@@ -570,11 +570,11 @@ func TestAccountServiceUpdate(t *testing.T) {
 
 // === NEW ===
 
-func TestAccountServiceGetByIDs_NewClient(t *testing.T) {
+func TestAccountServiceGetByIDs_New(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
-	accountsToTest, err := client.Accounts.GetAll()
+	accountsToTest, err := accounts.GetAll(client, client.GetSpaceID())
 	require.NoError(t, err)
 	require.NotNil(t, accountsToTest)
 
@@ -588,4 +588,367 @@ func TestAccountServiceGetByIDs_NewClient(t *testing.T) {
 	accountsByIDs, err := accounts.Get(client, client.GetSpaceID(), &query)
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, len(accountsToTest), len(accountsByIDs.Items))
+}
+
+func CreateTestAmazonWebServicesAccount_New(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	accessKey := internal.GetRandomName()
+	name := internal.GetRandomName()
+	secretKey := core.NewSensitiveValue(internal.GetRandomName())
+
+	account, err := accounts.NewAmazonWebServicesAccount(name, accessKey, secretKey)
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	createdAccount, err := accounts.Add(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, createdAccount)
+	require.NotEmpty(t, createdAccount.GetID())
+	require.Equal(t, accounts.AccountTypeAmazonWebServicesAccount, createdAccount.GetAccountType())
+	require.Equal(t, name, createdAccount.GetName())
+
+	return createdAccount
+}
+
+func CreateTestAzureServicePrincipalAccount_New(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	applicationID := uuid.New()
+	applicationPassword := core.NewSensitiveValue(internal.GetRandomName())
+	azureEnvironment := getRandomAzureEnvironment()
+	name := internal.GetRandomName()
+	subscriptionID := uuid.New()
+	tenantID := uuid.New()
+
+	account, err := accounts.NewAzureServicePrincipalAccount(name, subscriptionID, tenantID, applicationID, applicationPassword)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	// set Azure environment fields
+	if !internal.IsEmpty(azureEnvironment.Name) {
+		account.AzureEnvironment = azureEnvironment.Name
+		account.AuthenticationEndpoint = azureEnvironment.AuthenticationEndpoint
+		account.ResourceManagerEndpoint = azureEnvironment.ResourceManagerEndpoint
+	}
+
+	require.NoError(t, account.Validate())
+
+	createdAccount, err := accounts.Add(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, createdAccount)
+	require.NotEmpty(t, createdAccount.GetID())
+	require.Equal(t, accounts.AccountTypeAzureServicePrincipal, createdAccount.GetAccountType())
+	require.Equal(t, name, createdAccount.GetName())
+
+	return createdAccount
+}
+
+func CreateTestAzureOIDCAccount_New(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	applicationID := uuid.New()
+	azureEnvironment := getRandomAzureEnvironment()
+	name := internal.GetRandomName()
+	subscriptionID := uuid.New()
+	tenantID := uuid.New()
+
+	account, err := accounts.NewAzureOIDCAccount(name, subscriptionID, tenantID, applicationID)
+
+	require.NoError(t, err)
+	require.NotNil(t, account)
+	require.NoError(t, account.Validate())
+
+	// set Azure environment fields
+	if !internal.IsEmpty(azureEnvironment.Name) {
+		account.AzureEnvironment = azureEnvironment.Name
+		account.AuthenticationEndpoint = azureEnvironment.AuthenticationEndpoint
+		account.ResourceManagerEndpoint = azureEnvironment.ResourceManagerEndpoint
+	}
+
+	require.NoError(t, account.Validate())
+
+	createdAccount, err := accounts.Add(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, createdAccount)
+	require.NotEmpty(t, createdAccount.GetID())
+	require.Equal(t, accounts.AccountTypeAzureOIDC, createdAccount.GetAccountType())
+	require.Equal(t, name, createdAccount.GetName())
+
+	return createdAccount
+}
+
+func CreateTestAzureSubscriptionAccount_New(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	azureEnvironment := getRandomAzureEnvironment()
+	name := internal.GetRandomName()
+	subscriptionID := uuid.New()
+
+	account, err := accounts.NewAzureSubscriptionAccount(name, subscriptionID)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	// set Azure environment fields
+	if !internal.IsEmpty(azureEnvironment.Name) {
+		account.AzureEnvironment = azureEnvironment.Name
+		account.ManagementEndpoint = azureEnvironment.ManagementEndpoint
+		account.StorageEndpointSuffix = azureEnvironment.StorageEndpointSuffix
+	}
+
+	require.NoError(t, account.Validate())
+
+	resource, err := accounts.Add(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
+}
+
+func CreateTestSSHKeyAccount_New(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+	username := internal.GetRandomName()
+	privateKeyFile := core.NewSensitiveValue(internal.GetRandomName())
+
+	account, err := accounts.NewSSHKeyAccount(name, username, privateKeyFile)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	resource, err := accounts.Add(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
+}
+
+func CreateTestTokenAccount_New(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+	token := core.NewSensitiveValue(internal.GetRandomName())
+
+	account, err := accounts.NewTokenAccount(name, token)
+
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	resource, err := accounts.Add(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
+}
+
+func CreateTestUsernamePasswordAccount_New(t *testing.T, client *client.Client) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	account, err := accounts.NewUsernamePasswordAccount(name)
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.NoError(t, account.Validate())
+
+	resource, err := accounts.Add(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, resource)
+
+	return resource
+}
+
+func DeleteTestAccount_New(t *testing.T, client *client.Client, account accounts.IAccount) {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := client.Accounts.DeleteByID(account.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedAccount, err := accounts.GetByID(client, client.GetSpaceID(), account.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedAccount)
+}
+
+func UpdateAccount_New(t *testing.T, client *client.Client, account accounts.IAccount) accounts.IAccount {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	updatedAccount, err := accounts.Update(client, account)
+	require.NoError(t, err)
+	require.NotNil(t, updatedAccount)
+
+	return updatedAccount
+}
+
+func TestAccountServiceAddGetDelete_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	amazonWebServicesAccount := CreateTestAmazonWebServicesAccount_New(t, client)
+	ValidateAccount(t, amazonWebServicesAccount)
+	defer DeleteTestAccount_New(t, client, amazonWebServicesAccount)
+
+	azureServicePrincipalAccount := CreateTestAzureServicePrincipalAccount_New(t, client)
+	ValidateAccount(t, azureServicePrincipalAccount)
+	defer DeleteTestAccount_New(t, client, azureServicePrincipalAccount)
+
+	azureOIDCAccount := CreateTestAzureOIDCAccount_New(t, client)
+	ValidateAccount(t, azureOIDCAccount)
+	defer DeleteTestAccount_New(t, client, azureOIDCAccount)
+
+	azureSubscriptionAccount := CreateTestAzureSubscriptionAccount_New(t, client)
+	ValidateAccount(t, azureSubscriptionAccount)
+	defer DeleteTestAccount_New(t, client, azureSubscriptionAccount)
+
+	sshKeyAccount := CreateTestSSHKeyAccount_New(t, client)
+	ValidateAccount(t, sshKeyAccount)
+	defer DeleteTestAccount_New(t, client, sshKeyAccount)
+
+	tokenAccount := CreateTestTokenAccount_New(t, client)
+	ValidateAccount(t, tokenAccount)
+	defer DeleteTestAccount_New(t, client, tokenAccount)
+
+	usernamePasswordAccount := CreateTestUsernamePasswordAccount_New(t, client)
+	ValidateAccount(t, usernamePasswordAccount)
+	defer DeleteTestAccount_New(t, client, usernamePasswordAccount)
+
+	allAccounts, err := accounts.GetAll(client, client.GetSpaceID())
+	require.NoError(t, err)
+	require.NotNil(t, allAccounts)
+
+	for _, account := range allAccounts {
+		name := account.GetName()
+		query := accounts.AccountsQuery{
+			PartialName: name,
+			Take:        1,
+		}
+
+		namedAccounts, err := accounts.Get(client, client.GetSpaceID(), &query)
+		require.NoError(t, err)
+		require.NotNil(t, namedAccounts)
+
+		for _, namedAccount := range namedAccounts.Items {
+			accountToCompare, err := accounts.GetByID(client, client.GetSpaceID(), namedAccount.GetID())
+			require.NoError(t, err)
+			require.NotNil(t, accountToCompare)
+			CompareAccounts(t, namedAccount, accountToCompare)
+		}
+
+		accountToCompare, err := accounts.GetByID(client, client.GetSpaceID(), account.GetID())
+		require.NoError(t, err)
+		require.NotNil(t, accountToCompare)
+
+		for _, namedAccount := range namedAccounts.Items {
+			accountToCompare, err := accounts.GetByID(client, client.GetSpaceID(), namedAccount.GetID())
+			require.NoError(t, err)
+			require.NotNil(t, accountToCompare)
+			CompareAccounts(t, namedAccount, accountToCompare)
+		}
+
+		accountUsages, err := accounts.GetUsages(client, account)
+		require.NoError(t, err)
+		require.NotNil(t, accountUsages)
+	}
+
+	accountTypes := []accounts.AccountType{
+		accounts.AccountTypeNone,
+		accounts.AccountTypeUsernamePassword,
+		accounts.AccountTypeSSHKeyPair,
+		accounts.AccountTypeAzureSubscription,
+		accounts.AccountTypeAzureServicePrincipal,
+		accounts.AccountTypeAzureOIDC,
+		accounts.AccountTypeAmazonWebServicesAccount,
+		accounts.AccountTypeToken,
+	}
+
+	for _, accountType := range accountTypes {
+		query := accounts.AccountsQuery{AccountType: accountType}
+		accountResource, err := accounts.Get(client, client.GetSpaceID(), &query)
+		require.NoError(t, err)
+
+		for _, account := range accountResource.Items {
+			accountToCompare, err := accounts.GetByID(client, client.GetSpaceID(), account.GetID())
+			require.NoError(t, err)
+			CompareAccounts(t, account, accountToCompare)
+		}
+	}
+}
+
+func TestAccountServiceGetByID_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	id := internal.GetRandomName()
+	resource, err := accounts.GetByID(client, client.GetSpaceID(), id)
+	require.Error(t, err)
+	require.Nil(t, resource)
+
+	apiError := err.(*core.APIError)
+	assert.Equal(t, 404, apiError.StatusCode)
+
+	accountResource, err := accounts.GetAll(client, client.GetSpaceID())
+	require.NoError(t, err)
+	require.NotNil(t, accountResource)
+
+	for _, account := range accountResource {
+		accountToCompare, err := accounts.GetByID(client, client.GetSpaceID(), account.GetID())
+		require.NoError(t, err)
+		CompareAccounts(t, account, accountToCompare)
+	}
+}
+
+func TestAccountServiceTokenAccounts_New(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	for i := 0; i < 10; i++ {
+		tokenAccount := CreateTestTokenAccount(t, client)
+		ValidateAccount(t, tokenAccount)
+		defer DeleteTestAccount(t, client, tokenAccount)
+	}
+
+	accountResource, err := accounts.GetAll(client, client.GetSpaceID())
+	require.NoError(t, err)
+	require.NotNil(t, accountResource)
+
+	for _, account := range accountResource {
+		accountToCompare, err := accounts.GetByID(client, client.GetSpaceID(), account.GetID())
+		require.NoError(t, err)
+		CompareAccounts(t, account, accountToCompare)
+	}
 }
