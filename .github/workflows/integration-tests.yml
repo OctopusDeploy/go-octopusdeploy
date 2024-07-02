@@ -29,7 +29,7 @@ jobs:
           --health-retries 10
           --health-start-period 10s
       octopusserver:
-        image: octopusdeploy/octopusdeploy
+        image: docker.packages.octopushq.com/octopusdeploy/octopusdeploy
         env:
           ACCEPT_EULA: Y
           DB_CONNECTION_STRING: 'Server=sqlserver;Database=OctopusDeploy;User Id=sa;Password=${{ env.SA_PASSWORD }};'
@@ -48,7 +48,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v3
         with:
-          go-version: '>=1.18.0'
+          go-version: '>=1.19.0'
       - name: Build
         run: go build -a -race -v ./...
       - name: Vet
