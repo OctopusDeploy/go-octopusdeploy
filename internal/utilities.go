@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/dghubble/sling"
@@ -31,6 +32,11 @@ func GetRandomName() string {
 func GetRandomThumbprint() string {
 	thumbprint := strings.ToUpper(strings.ReplaceAll(fmt.Sprintf("%s%s", uuid.New(), uuid.New()), "-", ""))
 	return thumbprint[0:40]
+}
+
+func GetRandomVersion() string {
+	now := time.Now()
+	return fmt.Sprintf("%d.%d.%d.%d", now.Year(), now.Month(), now.Day(), now.Hour()*10000+now.Minute()*100+now.Second())
 }
 
 func IsEmpty(s string) bool {
