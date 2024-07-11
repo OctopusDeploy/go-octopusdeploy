@@ -177,6 +177,7 @@ func (s *ProjectService) GetByID(id string) (*Project, error) {
 	return resp.(*Project), nil
 }
 
+// Deprecated: Use projects.GetByName
 func (p *ProjectService) GetByName(name string) (*Project, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
@@ -198,6 +199,7 @@ func (p *ProjectService) GetByName(name string) (*Project, error) {
 	return nil, services.ErrItemNotFound
 }
 
+// Deprecated: Use project.GetByIdentifier
 func (p *ProjectService) GetByIdentifier(identifier string) (*Project, error) {
 	project, err := p.GetByID(identifier)
 	if err != nil {
@@ -564,4 +566,41 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 // GetAll returns all projects. If an error occurs, it returns nil.
 func GetAll(client newclient.Client, spaceID string) ([]*Project, error) {
 	return newclient.GetAll[Project](client, projectsTemplate, spaceID)
+}
+
+func GetByName(client newclient.Client, spaceId string, name string) (*Project, error) {
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
+	}
+
+	projects, err := Get(client, client.GetSpaceID(), ProjectsQuery{
+		PartialName: name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, project := range projects.Items {
+		if strings.EqualFold(project.Name, name) {
+			return project, nil
+		}
+	}
+
+	return nil, services.ErrItemNotFound
+}
+
+func GetByIdentifier(client newclient.Client, spaceId string, identifier string) (*Project, error) {
+	project, err := GetByID(client, client.GetSpaceID(), identifier)
+	if err != nil {
+		apiError, ok := err.(*core.APIError)
+		if ok && apiError.StatusCode != 404 {
+			return nil, err
+		}
+	} else {
+		if project != nil {
+			return project, nil
+		}
+	}
+
+	return GetByName(client, client.GetSpaceID(), identifier)
 }
