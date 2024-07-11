@@ -177,6 +177,7 @@ func (s *ProjectService) GetByID(id string) (*Project, error) {
 	return resp.(*Project), nil
 }
 
+// Deprecated: Use projects.GetByName
 func (p *ProjectService) GetByName(name string) (*Project, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByName, constants.ParameterName)
@@ -198,6 +199,7 @@ func (p *ProjectService) GetByName(name string) (*Project, error) {
 	return nil, services.ErrItemNotFound
 }
 
+// Deprecated: Use project.GetByIdentifier
 func (p *ProjectService) GetByIdentifier(identifier string) (*Project, error) {
 	project, err := p.GetByID(identifier)
 	if err != nil {
