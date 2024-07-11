@@ -601,5 +601,4 @@ func GetByIdentifier(client newclient.Client, spaceId string, identifier string)
 	}
 
 	return GetByName(client, client.GetSpaceID(), identifier)
-
 }
