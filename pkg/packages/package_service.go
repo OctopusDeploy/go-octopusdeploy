@@ -3,6 +3,13 @@ package packages
 import (
 	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -12,12 +19,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 type PackageService struct {
@@ -45,6 +46,7 @@ func NewPackageService(sling *sling.Sling, uriTemplate string, deltaSignaturePat
 
 // GetAll returns all packages. If none can be found or an error occurs, it
 // returns an empty collection.
+// Deprecated: use packages.GetAll
 func (s *PackageService) GetAll() ([]*Package, error) {
 	path := s.GetBasePath() // to get all packages we just hit /api/Spaces-NN/packages
 
@@ -68,6 +70,7 @@ func (s *PackageService) GetAll() ([]*Package, error) {
 
 // GetByID returns the package that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+// Deprecated: use projects.GetByID
 func (s *PackageService) GetByID(id string) (*Package, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -106,6 +109,26 @@ func (s *PackageService) Update(octopusPackage *Package) (*Package, error) {
 }
 
 // ----------------------
+
+const (
+	template = "/api/{spaceId}/packages{/id}{?nuGetPackageId,filter,latest,skip,take,includeNotes}"
+)
+
+func Get(client newclient.Client, spaceID string, query PackagesQuery) (*resources.Resources[*Package], error) {
+	return newclient.GetByQuery[Package](client, template, spaceID, query)
+}
+
+func GetByID(client newclient.Client, spaceID, ID string) (*Package, error) {
+	return newclient.GetByID[Package](client, template, spaceID, ID)
+}
+
+func GetAll(client newclient.Client, spaceID string) ([]*Package, error) {
+	return newclient.GetAll[Package](client, template, spaceID)
+}
+
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
 
 // Upload uploads a package to the octopus server's builtin package feed.
 // Parameters:
