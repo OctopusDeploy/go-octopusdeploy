@@ -70,7 +70,7 @@ func (s *PackageService) GetAll() ([]*Package, error) {
 
 // GetByID returns the package that matches the input ID. If one cannot be
 // found, it returns nil and an error.
-// Deprecated: use projects.GetByID
+// Deprecated: use packages.GetByID
 func (s *PackageService) GetByID(id string) (*Package, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
