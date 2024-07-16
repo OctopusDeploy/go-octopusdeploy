@@ -12,7 +12,7 @@ import (
 )
 
 type Project struct {
-	AllowIgnoreChannelRules         bool                                      `json:"AllowIgnoreChannelRules"`
+	AllowIgnoreChannelRules         bool                                      `json:"AllowIgnoreChannelRules,omitempty"`
 	AutoCreateRelease               bool                                      `json:"AutoCreateRelease"`
 	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
 	ClonedFromProjectID             string                                    `json:"ClonedFromProjectId,omitempty"`
@@ -72,7 +72,7 @@ func NewProject(name string, lifecycleID string, projectGroupID string) *Project
 // UnmarshalJSON sets this project to its representation in JSON.
 func (p *Project) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		AllowIgnoreChannelRules         bool                                      `json:"AllowIgnoreChannelRules"`
+		AllowIgnoreChannelRules         bool                                      `json:"AllowIgnoreChannelRules,omitempty"`
 		AutoCreateRelease               bool                                      `json:"AutoCreateRelease"`
 		AutoDeployReleaseOverrides      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
 		ClonedFromProjectID             string                                    `json:"ClonedFromProjectId,omitempty"`
