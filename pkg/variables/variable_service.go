@@ -3,6 +3,7 @@ package variables
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -256,7 +257,7 @@ func (s *VariableService) Update(ownerID string, variableSet VariableSet) (Varia
 	}
 
 	if updatedVariableSet.(*VariableSet).Version != currentVariableSet.Version {
-		return VariableSet{}, errors.New("variable set was altered between update and get")
+		return VariableSet{}, errors.New("variable set was altered between update (" + strconv.FormatInt(int64(updatedVariableSet.(*VariableSet).Version), 10) + ") and get (" + strconv.FormatInt(int64(currentVariableSet.Version), 10) + ")")
 	}
 
 	return currentVariableSet, nil
