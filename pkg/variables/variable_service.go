@@ -1,6 +1,7 @@
 package variables
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -238,7 +239,9 @@ func (s *VariableService) Update(ownerID string, variableSet VariableSet) (Varia
 	path := internal.TrimTemplate(s.GetPath())
 	path = fmt.Sprintf(path+"/variableset-%s", ownerID)
 
-	if _, err := services.ApiUpdate(s.GetClient(), variableSet, new(VariableSet), path); err != nil {
+	updatedVariableSet, err := services.ApiUpdate(s.GetClient(), variableSet, new(VariableSet), path)
+
+	if err != nil {
 		return VariableSet{}, err
 	}
 
@@ -246,7 +249,17 @@ func (s *VariableService) Update(ownerID string, variableSet VariableSet) (Varia
 	// via HTTP GET (below) due to a bug for HTTP POST and HTTP PUT which will
 	// provide a null scope value set in their responses
 
-	return s.GetAll(ownerID)
+	currentVariableSet, err := s.GetAll(ownerID)
+
+	if err != nil {
+		return VariableSet{}, err
+	}
+
+	if updatedVariableSet.(*VariableSet).Version != currentVariableSet.Version {
+		return VariableSet{}, errors.New("variable set was altered between update and get")
+	}
+
+	return currentVariableSet, nil
 }
 
 // MatchesScope compares two different scopes to see if they match. Generally used for comparing the scope of
