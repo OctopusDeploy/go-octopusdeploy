@@ -254,6 +254,29 @@ func TestLifecycleAddGetAndDelete_NewClient(t *testing.T) {
 	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
 }
 
+func TestLifecycleAddGetUpdateAndDeleteWithPhases_NewClient(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	lifecycle := createTestLifecycle_NewClient(t, octopusClient, internal.GetRandomName())
+	defer cleanLifecycle_NewClient(t, octopusClient, lifecycle)
+
+	priorityPhase := lifecycles.NewPhase(internal.GetRandomName())
+	priorityPhase.IsPriorityPhase = true
+
+	lifecycle.Phases = append(lifecycle.Phases, priorityPhase)
+	updatedLifecycle, err := lifecycles.Update(octopusClient, lifecycle)
+
+	assert.NoError(t, err, "there was an error when updating the lifecycle")
+	require.NotNil(t, updatedLifecycle)
+
+	getLifecycle, err := lifecycles.GetByID(octopusClient, lifecycle.SpaceID, lifecycle.GetID())
+	assert.NoError(t, err, "there was an error raised getting lifecycle when there should not be")
+	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
+
+	assert.True(t, getLifecycle.Phases[0].IsPriorityPhase)
+}
+
 func createTestLifecycle_NewClient(t *testing.T, client *client.Client, lifecycleName string) *lifecycles.Lifecycle {
 	if client == nil {
 		client = getOctopusClient()
