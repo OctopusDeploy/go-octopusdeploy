@@ -9,7 +9,7 @@ import (
 // DeploymentSettings are loaded by the ProjectService because deployment settings are a subresource of Projects
 type DeploymentSettings struct {
 	ChangeDescription               string                       `json:"ChangeDescription,omitempty"`
-	ConnectivityPolicy              *core.ConnectivityPolicy     `json:"ProjectConnectivityPolicy,omitempty"`
+	ConnectivityPolicy              *core.ConnectivityPolicy     `json:"ConnectivityPolicy,omitempty"`
 	DefaultGuidedFailureMode        core.GuidedFailureMode       `json:"DefaultGuidedFailureMode,omitempty"`
 	DefaultToSkipIfAlreadyInstalled bool                         `json:"DefaultToSkipIfAlreadyInstalled"`
 	DeploymentChangesTemplate       string                       `json:"DeploymentChangesTemplate,omitempty"`
