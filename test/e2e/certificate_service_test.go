@@ -279,3 +279,24 @@ func DeleteTestCertificateResource_NewClient(t *testing.T, client *client.Client
 	require.Error(t, err)
 	require.Nil(t, deletedCertificate)
 }
+
+func TestCertificateServiceArchiveUnarchive_NewClient(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	certificate := CreateTestCertificateResource(t, client)
+	require.NotNil(t, certificate)
+
+	archivedCertificate, err := certificates.Archive(client, client.GetSpaceID(), certificate)
+	require.NoError(t, err)
+	require.NotNil(t, archivedCertificate)
+
+	unarchivedCertificate, err := certificates.Unarchive(client, client.GetSpaceID(), certificate)
+	require.NoError(t, err)
+	require.NotNil(t, archivedCertificate)
+
+	archivedCertificate, err = certificates.Archive(client, client.GetSpaceID(), unarchivedCertificate)
+	require.NoError(t, err)
+	require.NotNil(t, archivedCertificate)
+	defer DeleteTestCertificateResource(t, client, archivedCertificate)
+}
