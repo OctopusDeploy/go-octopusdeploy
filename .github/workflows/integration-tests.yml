@@ -20,10 +20,10 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           ACCEPT_EULA: Y
-          SA_PASSWORD: SomeTest01!PassThingy
+          SA_PASSWORD: ${{ env.SA_PASSWORD }}
           MSSQL_PID: Developer
         options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"
           --health-interval 10s
           --health-timeout 3s
           --health-retries 10
