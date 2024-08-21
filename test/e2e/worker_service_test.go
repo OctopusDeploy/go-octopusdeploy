@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workers"
 	"net/url"
 	"testing"
 
@@ -306,3 +307,75 @@ func TestWorkerServiceGetWorkerShells(t *testing.T) {
 // 	require.Equal(t, updatedWorker.GetID(), updatedWorker.GetID())
 // 	require.Equal(t, newName, updatedWorker.Name)
 // }
+
+// === NEW ===
+
+func TestWorkerServiceAddGetDelete_NewClient(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	staticWorkerPool := CreateTestStaticWorkerPool_NewClient(t, octopusClient)
+	require.NotNil(t, staticWorkerPool)
+	defer DeleteTestWorkerPool_NewClient(t, octopusClient, staticWorkerPool)
+
+	worker, err := CreateTestWorker_NewClient(t, octopusClient, staticWorkerPool)
+	require.NoError(t, err)
+	require.NotNil(t, worker)
+	defer DeleteTestWorker_NewClient(t, octopusClient, worker)
+
+	for _, id := range worker.WorkerPoolIDs {
+		workerPool, err := workerpools.GetByID(octopusClient, worker.SpaceID, id)
+		require.NoError(t, err)
+		require.NotNil(t, workerPool)
+	}
+}
+
+func CreateTestWorker_NewClient(t *testing.T, client *client.Client, workerPool workerpools.IWorkerPool) (*machines.Worker, error) {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+	thumbprint := internal.GetRandomThumbprint()
+
+	url, err := url.Parse("https://example.com/")
+	require.NoError(t, err)
+	require.NotNil(t, url)
+
+	listeningTentacleEndpoint := machines.NewListeningTentacleEndpoint(url, thumbprint)
+	require.NotNil(t, listeningTentacleEndpoint)
+
+	worker := machines.NewWorker(name, listeningTentacleEndpoint)
+	worker.WorkerPoolIDs = append(worker.WorkerPoolIDs, workerPool.GetID())
+	require.NotNil(t, worker)
+	require.NoError(t, worker.Validate())
+
+	createdWorker, err := workers.Add(client, worker)
+	require.NoError(t, err)
+	require.NotNil(t, createdWorker)
+	require.NotEmpty(t, createdWorker.GetID())
+
+	// verify the add operation was successful
+	workerToCompare, err := workers.GetByID(client, createdWorker.SpaceID, createdWorker.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, workerToCompare)
+	IsEqualWorkers(t, createdWorker, workerToCompare)
+
+	return createdWorker, nil
+}
+
+func DeleteTestWorker_NewClient(t *testing.T, client *client.Client, worker *machines.Worker) {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := workers.DeleteByID(client, worker.SpaceID, worker.GetID())
+	require.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedWorker, err := workers.GetByID(client, worker.SpaceID, worker.GetID())
+	require.Error(t, err)
+	require.Nil(t, deletedWorker)
+}
