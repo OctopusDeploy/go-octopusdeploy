@@ -67,18 +67,6 @@ func (s *WorkerService) Add(worker *Worker) (*Worker, error) {
 	return resp.(*Worker), nil
 }
 
-// TODO: validation implementation
-
-// func (s workerService) DiscoverWorker() ([]string, error) {
-// 	resp, err := api.ApiGet(s.GetClient(), new([]string), s.discoverWorkerPath)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	response := resp.(*[]string)
-// 	return *response, nil
-// }
-
 // GetAll returns all workers. If none can be found or an error occurs, it
 // returns an empty collection.
 func (s *WorkerService) GetAll() ([]*Worker, error) {
