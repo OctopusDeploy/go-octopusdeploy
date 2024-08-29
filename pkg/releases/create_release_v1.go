@@ -20,6 +20,7 @@ type CreateReleaseCommandV1 struct {
 	ReleaseVersion        string   `json:"releaseVersion,omitempty"`
 	ChannelIDOrName       string   `json:"channelName,omitempty"`
 	Packages              []string `json:"packages,omitempty"`
+	GitResources          []string `json:"gitResources,omitempty"`
 	ReleaseNotes          string   `json:"releaseNotes,omitempty"`
 	IgnoreIfAlreadyExists bool     `json:"ignoreIfAlreadyExists"`
 	IgnoreChannelRules    bool     `json:"ignoreChannelRules"`
