@@ -6,12 +6,13 @@ import (
 )
 
 type DeploymentProcessTemplate struct {
-	DeploymentProcessId            string                            `json:"DeploymentProcessId,omitempty"`
-	LastReleaseVersion             string                            `json:"LastReleaseVersion,omitempty"`
-	NextVersionIncrement           string                            `json:"NextVersionIncrement,omitempty"`
-	VersioningPackageStepName      *string                           `json:"VersioningPackageStepName,omitempty"`
-	VersioningPackageReferenceName *string                           `json:"VersioningPackageReferenceName,omitempty"`
-	Packages                       []releases.ReleaseTemplatePackage `json:"Packages,omitempty"`
+	DeploymentProcessId            string                                `json:"DeploymentProcessId,omitempty"`
+	LastReleaseVersion             string                                `json:"LastReleaseVersion,omitempty"`
+	NextVersionIncrement           string                                `json:"NextVersionIncrement,omitempty"`
+	VersioningPackageStepName      *string                               `json:"VersioningPackageStepName,omitempty"`
+	VersioningPackageReferenceName *string                               `json:"VersioningPackageReferenceName,omitempty"`
+	Packages                       []releases.ReleaseTemplatePackage     `json:"Packages,omitempty"`
+	GitResources                   []releases.ReleaseTemplateGitResource `json:"GitResources,omitempty"`
 
 	resources.Resource
 }
