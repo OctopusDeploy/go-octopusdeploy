@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -39,6 +40,8 @@ func NewActionTemplateService(sling *sling.Sling, uriTemplate string, categories
 }
 
 // Add creates a new action template.
+//
+// Deprecated: use actiontemplates.Update
 func (s *ActionTemplateService) Add(actionTemplate *ActionTemplate) (*ActionTemplate, error) {
 	if IsNil(actionTemplate) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterActionTemplate)
@@ -109,6 +112,8 @@ func (s *ActionTemplateService) GetCategories() ([]ActionTemplateCategory, error
 
 // GetByID returns the action template that matches the input ID. If one cannot
 // be found, it returns nil and an error.
+//
+// Deprecated: use actiontemplates.GetByID
 func (s *ActionTemplateService) GetByID(id string) (*ActionTemplate, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -155,6 +160,8 @@ func (s *ActionTemplateService) Search(searchQuery string) ([]ActionTemplateSear
 }
 
 // Update modifies an ActionTemplate based on the one provided as input.
+//
+// Deprecated: use actiontemplates.Update
 func (s *ActionTemplateService) Update(actionTemplate *ActionTemplate) (*ActionTemplate, error) {
 	if actionTemplate == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, "actionTemplate")
@@ -171,4 +178,29 @@ func (s *ActionTemplateService) Update(actionTemplate *ActionTemplate) (*ActionT
 	}
 
 	return resp.(*ActionTemplate), nil
+}
+
+// --- new ---
+
+const template = "/api/{spaceId}/actiontemplates{/id}{?skip,take,ids,partialName}"
+
+// Add creates a new action template.
+func Add(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTemplate, error) {
+	return newclient.Add[ActionTemplate](client, template, actionTemplate.SpaceID, actionTemplate)
+}
+
+// DeleteById deletes the action template based on the ID provided as input.
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// GetByID returns the action template that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, actionTemplateID string) (*ActionTemplate, error) {
+	return newclient.GetByID[ActionTemplate](client, template, spaceID, actionTemplateID)
+}
+
+// Update modifies an action template based on the one provided as input.
+func Update(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTemplate, error) {
+	return newclient.Update[ActionTemplate](client, template, actionTemplate.SpaceID, actionTemplate.ID, actionTemplate)
 }
