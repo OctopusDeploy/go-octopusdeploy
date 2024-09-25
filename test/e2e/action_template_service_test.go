@@ -5,7 +5,6 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/stretchr/testify/assert"
@@ -53,14 +52,15 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	require.NotNil(t, client)
 
 	invalidResource := &actiontemplates.ActionTemplate{}
-	resource, err := client.ActionTemplates.Add(invalidResource)
+
+	resource, err := actiontemplates.Add(client, invalidResource)
 	assert.NotNil(t, err)
 	assert.Nil(t, resource)
 
 	resource = createActionTemplate(t)
 	require.NotNil(t, resource)
 
-	resource, err = client.ActionTemplates.Add(resource)
+	resource, err = actiontemplates.Add(client, resource)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
 	defer client.ActionTemplates.DeleteByID(resource.GetID())
@@ -80,7 +80,7 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	require.NotNil(t, client)
 
 	id := internal.GetRandomName()
-	resource, err := client.ActionTemplates.GetByID(id)
+	resource, err := actiontemplates.GetByID(client, client.GetSpaceID(), id)
 	assert.NotNil(t, err)
 	assert.Nil(t, resource)
 
@@ -89,7 +89,7 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		resourceToCompare, err := client.ActionTemplates.GetByID(resource.GetID())
+		resourceToCompare, err := actiontemplates.GetByID(client, client.GetSpaceID(), resource.GetID())
 		require.NoError(t, err)
 		IsEqualActionTemplates(t, resource, resourceToCompare)
 	}
@@ -110,70 +110,4 @@ func TestActionTemplateServiceSearch(t *testing.T) {
 	resource, err = client.ActionTemplates.Search(search)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, resource)
-}
-
-func AddActionTemplateTest(t *testing.T, client *client.Client) *actiontemplates.ActionTemplate {
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	name := internal.GetRandomName()
-	description := "Description for " + name + " (OK to Delete)"
-	actiontemplate := actiontemplates.NewActionTemplate(name, "Octopus.Script")
-	actiontemplate.Description = description
-	actiontemplate.Properties = map[string]core.PropertyValue{
-		"Octopus.Action.Script.ScriptBody":   core.NewPropertyValue("echo \"test\"", false),
-		"Octopus.Action.Script.ScriptSource": core.NewPropertyValue("Inline", false),
-		"Octopus.Action.Script.Syntax":       core.NewPropertyValue("PowerShell", false),
-	}
-	defaultValue := core.NewPropertyValue("Testing", false)
-	actiontemplate.Parameters = []actiontemplates.ActionTemplateParameter{
-		{
-			DefaultValue: &defaultValue,
-			DisplaySettings: map[string]string{
-				"Octopus.ControlType": "SingleLineText",
-			},
-			HelpText: description,
-			Label:    name,
-		},
-	}
-
-	require.NoError(t, actiontemplate.Validate())
-
-	createdActionTemplate, err := actiontemplates.Add(client, actiontemplate)
-	require.NoError(t, err)
-	require.NotNil(t, createdActionTemplate)
-	require.NotEmpty(t, createdActionTemplate.GetID())
-
-	return createdActionTemplate
-}
-
-func DeleteActionTemplateTest(t *testing.T, client *client.Client, actionTemplate *actiontemplates.ActionTemplate) {
-	require.NotNil(t, actionTemplate)
-
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	err := actiontemplates.DeleteByID(client, actionTemplate.SpaceID, actionTemplate.GetID())
-	assert.NoError(t, err)
-
-	// verify the delete operation was successful
-	deletedEnvironment, err := actiontemplates.GetByID(client, actionTemplate.SpaceID, actionTemplate.GetID())
-	assert.Error(t, err)
-	assert.Nil(t, deletedEnvironment)
-}
-
-func TestActionTemplateServiceAddGetDelete(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
-
-	createdActionTemplate := AddActionTemplateTest(t, client)
-	defer DeleteActionTemplateTest(t, client, createdActionTemplate)
-
-	actionTemplate, err := actiontemplates.GetByID(client, createdActionTemplate.SpaceID, createdActionTemplate.GetID())
-	require.NoError(t, err)
-	require.NotNil(t, actionTemplate)
 }
