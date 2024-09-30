@@ -41,7 +41,7 @@ func NewActionTemplateService(sling *sling.Sling, uriTemplate string, categories
 
 // Add creates a new action template.
 //
-// Deprecated: use actiontemplates.Update
+// Deprecated: use actiontemplates.Add
 func (s *ActionTemplateService) Add(actionTemplate *ActionTemplate) (*ActionTemplate, error) {
 	if IsNil(actionTemplate) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterActionTemplate)
