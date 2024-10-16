@@ -44,6 +44,7 @@ func TestLifecycleAsJSON(t *testing.T) {
 				"AutomaticDeploymentTargets": ["test-AutomaticDeploymentTargets-1"],
 				"Id": "test-phase-id-1",
 				"IsOptionalPhase": true,
+				"IsPriorityPhase": false,
 				"MinimumEnvironmentsBeforePromotion": 123,
 				"Name": "test-phase-name-1",
 				"OptionalDeploymentTargets": ["Environments-1"],
@@ -65,6 +66,7 @@ func TestLifecycleAsJSON(t *testing.T) {
 				"OptionalDeploymentTargets": [],
 				"MinimumEnvironmentsBeforePromotion": 0,
 				"IsOptionalPhase": false,
+				"IsPriorityPhase": false,
 				"ReleaseRetentionPolicy": null,
 				"TentacleRetentionPolicy": null
 			}
@@ -206,6 +208,7 @@ func TestLifecycleFromJson(t *testing.T) {
       ],
       "MinimumEnvironmentsBeforePromotion": 1,
       "IsOptionalPhase": true,
+      "IsPriorityPhase": false,
       "ReleaseRetentionPolicy": {
         "Unit": "Days",
         "QuantityToKeep": 1,
@@ -224,6 +227,7 @@ func TestLifecycleFromJson(t *testing.T) {
       "OptionalDeploymentTargets": [],
       "MinimumEnvironmentsBeforePromotion": 0,
       "IsOptionalPhase": false,
+      "IsPriorityPhase": false,
       "ReleaseRetentionPolicy": null,
       "TentacleRetentionPolicy": null
     }
