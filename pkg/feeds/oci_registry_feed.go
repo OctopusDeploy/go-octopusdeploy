@@ -21,7 +21,7 @@ func NewOCIRegistryFeed(name string) (*OCIRegistryFeed, error) {
 
 	feed := OCIRegistryFeed{
 		FeedURI: "oci://registry-1.docker.io",
-		feed:    *newFeed(name, FeedTypeMaven),
+		feed:    *newFeed(name, FeedTypeOCIRegistry),
 	}
 
 	if err := feed.Validate(); err != nil {
