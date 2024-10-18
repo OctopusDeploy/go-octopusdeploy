@@ -588,3 +588,28 @@ func TestOCIRegistry(t *testing.T) {
 		t.Fatalf("Username does not match")
 	}
 }
+
+func TestOCIRegistryToResource(t *testing.T) {
+	feed := OCIRegistryFeed{
+		FeedURI: "oci://registry-2.docker.io",
+		feed:    *newFeed("Test Registry 2", FeedTypeOCIRegistry),
+	}
+
+	feedResource, err := ToFeedResource(&feed)
+
+	if err != nil {
+		t.Fatalf("Error should not have been returned. %s", err)
+	}
+
+	if feedResource.FeedType != FeedTypeOCIRegistry {
+		t.Fatalf("FeedType does not match")
+	}
+
+	if feedResource.Name != "Test Registry 2" {
+		t.Fatalf("Name does not match")
+	}
+
+	if feedResource.FeedURI != "oci://registry-2.docker.io" {
+		t.Fatalf("FeedURI does not match")
+	}
+}

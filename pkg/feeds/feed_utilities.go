@@ -188,6 +188,9 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.AccessKey = s3Feed.AccessKey
 		feedResource.SecretKey = s3Feed.SecretKey
 		feedResource.UseMachineCredentials = s3Feed.UseMachineCredentials
+	case FeedTypeOCIRegistry:
+		mavenFeed := feed.(*OCIRegistryFeed)
+		feedResource.FeedURI = mavenFeed.FeedURI
 	case FeedTypeOctopusProject:
 		// nothing to copy
 	}
