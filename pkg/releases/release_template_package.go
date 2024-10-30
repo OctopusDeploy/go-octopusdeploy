@@ -13,4 +13,5 @@ type ReleaseTemplatePackage struct {
 	ProjectName                string `json:"ProjectName,omitempty"`
 	StepName                   string `json:"StepName,omitempty"`
 	VersionSelectedLastRelease string `json:"VersionSelectedLastRelease,omitempty"`
+	FixedVersion               string `json:"FixedVersion,omitempty"`
 }
