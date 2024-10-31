@@ -43,6 +43,7 @@ const (
 	RunbookRunTenantPreview             = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                                                 // POST
 
 	GitRunbooksByProject                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                                                 // GET
+	GitRunbookEnvironments              = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/environments"                                                                // GET
 
 	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"                                                                                                           // GET
 	ProjectVariablesByGitRef            = "/api/{spaceId}/projects/{projectId}/{gitRef}/variables"

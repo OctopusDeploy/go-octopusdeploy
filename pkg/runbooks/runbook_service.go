@@ -325,6 +325,34 @@ func ListEnvironments(client newclient.Client, spaceID string, projectID string,
 	return *tmp, nil
 }
 
+// ListEnvironments returns the list of valid environments for a given runbook
+func ListEnvironmentsGit(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) ([]*environments.Environment, error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if runbookID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("runbookID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "runbookId": runbookID, "gitRef": gitRef}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookEnvironments, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	// our generic Get method must return pointers, so we need to dereference the pointer-to-slice before returning it
+	tmp, err := newclient.Get[[]*environments.Environment](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	return *tmp, nil
+}
+
 // GetProcess fetches a runbook process. This may either be the project level process (template),
 // or a snapshot, depending on the value of ID
 func GetProcess(client newclient.Client, spaceID string, projectID string, ID string) (*RunbookProcess, error) {
