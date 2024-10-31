@@ -14,6 +14,7 @@ const (
 	CreateDeploymentUntenantedCommandV1 = "/api/{spaceId}/deployments/create/untenanted/v1" // POST
 
 	CreateRunRunbookCommand = "/api/{spaceId}/runbook-runs/create/v1" // POST
+	CreateRunGitRunbookCommand = "/api/{spaceId}/runbook-runs/git/create/v1" // POST
 
 	DeploymentProcesses = "/api/{spaceId}/deploymentprocesses{/id}{?skip,take,ids}" // GET
 
