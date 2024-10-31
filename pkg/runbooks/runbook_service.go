@@ -1,6 +1,8 @@
 package runbooks
 
 import (
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
@@ -10,7 +12,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
-	"strings"
 )
 
 type RunbookService struct {
@@ -163,6 +164,33 @@ func List(client newclient.Client, spaceID string, projectID string, filter stri
 	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
 }
 
+// List returns a list of runbooks from the server, in a standard Octopus paginated result structure.
+// If you don't specify --limit the server will use a default limit (typically 30)
+func ListGit(client newclient.Client, spaceID string, projectID string, gitRef string, filter string, limit int) (*resources.Resources[*Runbook], error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef}
+	if filter != "" {
+		templateParams["partialName"] = filter
+	}
+	if limit > 0 {
+		templateParams["take"] = limit
+	}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooksByProject, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
+}
+
 // GetByName searches for a single runbook with name of 'name'.
 // If no such runbook can be found, will return nil, nil
 func GetByName(client newclient.Client, spaceID string, projectID string, name string) (*Runbook, error) {
@@ -177,6 +205,39 @@ func GetByName(client newclient.Client, spaceID string, projectID string, name s
 	}
 	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "partialName": name}
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbooksByProject, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	searchResults, err := newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range searchResults.Items {
+		if strings.EqualFold(name, item.Name) {
+			return item, nil
+		}
+	}
+	return nil, nil
+}
+
+// GetByName searches for a single runbook with name of 'name'.
+// If no such runbook can be found, will return nil, nil
+func GetByNameGit(client newclient.Client, spaceID string, projectID string, gitRef string, name string) (*Runbook, error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	if name == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef, "partialName": name}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooksByProject, templateParams)
 	if err != nil {
 		return nil, err
 	}

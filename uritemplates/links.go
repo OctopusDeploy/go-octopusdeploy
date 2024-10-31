@@ -42,6 +42,8 @@ const (
 	RunbookSnapshotRunPreview           = "/api/{spaceId}/runbookSnapshots/{snapshotId}/runbookRuns/preview/{environmentId}{?includeDisabledSteps}"                                       // GET
 	RunbookRunTenantPreview             = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                                                 // POST
 
+	GitRunbooksByProject                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                                                 // GET
+
 	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"                                                                                                           // GET
 	ProjectVariablesByGitRef            = "/api/{spaceId}/projects/{projectId}/{gitRef}/variables"
 	ProjectBranchesV2                   = "/api/{spaceId}/projects/{projectId}/git/branches/v2"
