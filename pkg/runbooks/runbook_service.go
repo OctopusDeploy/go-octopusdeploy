@@ -380,6 +380,35 @@ func GetProcess(client newclient.Client, spaceID string, projectID string, ID st
 	return newclient.Get[RunbookProcess](client.HttpSession(), expandedUri)
 }
 
+func GetProcessGit(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) (*RunbookProcess, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetProcess", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetProcess", "spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateInvalidParameterError("GetProcess", "projectID")
+	}
+	if runbookID == "" {
+		return nil, internal.CreateInvalidParameterError("GetProcess", "runbookID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateInvalidParameterError("GetProcess", "gitRef")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookProcess, map[string]any{
+		"spaceId":   spaceID,
+		"projectId": projectID,
+		"gitRef":    gitRef,
+		"id":        runbookID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Get[RunbookProcess](client.HttpSession(), expandedUri)
+}
+
 // GetRunbookSnapshotRunPreview gets a preview of a snapshot run for a given environment.
 // This is used by the portal to show which machines would be deployed to, and other information about the deployment,
 // before proceeding with it. The CLI uses it to build the selector for picking specific machines to deploy to
@@ -407,6 +436,72 @@ func GetRunbookSnapshotRunPreview(client newclient.Client, spaceID string, snaps
 		return nil, err
 	}
 	return newclient.Get[RunPreview](client.HttpSession(), expandedUri)
+}
+
+// GetGitRunbookRunPreview gets a preview of a run for a given environment.
+// This is used by the portal to show which machines would be deployed to, and other information about the deployment,
+// before proceeding with it. The CLI uses it to build the selector for picking specific machines to deploy to
+func GetGitRunbookRunPreview(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string, environmentID string, includeDisabledSteps bool) (*RunPreview, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "projectID")
+	}
+	if runbookID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "runbookID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "gitRef")
+	}
+	if environmentID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "environmentID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookRunPreview, map[string]any{
+		"spaceId":              spaceID,
+		"projectId":            projectID,
+		"runbookId":            runbookID,
+		"gitRef":               gitRef,
+		"environment":          environmentID,
+		"includeDisabledSteps": includeDisabledSteps,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Get[RunPreview](client.HttpSession(), expandedUri)
+}
+
+func GetGitRunbookSnapshotTemplate(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) (*RunbookSnapshotTemplate, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "projectID")
+	}
+	if runbookID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "runbookID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookRunPreview", "gitRef")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookSnapshotTemplate, map[string]any{
+		"spaceId":   spaceID,
+		"projectId": projectID,
+		"runbookId": runbookID,
+		"gitRef":    gitRef,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Get[RunbookSnapshotTemplate](client.HttpSession(), expandedUri)
 }
 
 // TODO there is also a tenanted preview, request/response below.

@@ -25,6 +25,10 @@ type GitPersistenceSettings interface {
 	Credential() credentials.GitCredential
 	SetCredential(credential credentials.GitCredential)
 
+	RunbooksAreInGit() bool
+
+	ConversionState() gitPersistenceSettingsConversionState
+
 	PersistenceSettings
 }
 
@@ -35,8 +39,14 @@ type gitPersistenceSettings struct {
 	defaultBranch               string
 	protectedBranchNamePatterns []string
 	url                         *url.URL
+	conversionState             gitPersistenceSettingsConversionState
 
 	persistenceSettings
+}
+
+type gitPersistenceSettingsConversionState struct {
+	variablesAreInGit bool
+	runbooksAreInGit  bool
 }
 
 // NewGitPersistenceSettings creates an instance of persistence settings.
@@ -52,6 +62,7 @@ func NewGitPersistenceSettings(
 		defaultBranch:               defaultBranch,
 		protectedBranchNamePatterns: protectedBranchNamePatterns,
 		url:                         url,
+		conversionState:             gitPersistenceSettingsConversionState{variablesAreInGit: false, runbooksAreInGit: false},
 		persistenceSettings:         persistenceSettings{SettingsType: PersistenceSettingsTypeVersionControlled},
 	}
 }
@@ -99,6 +110,14 @@ func (g *gitPersistenceSettings) Credential() credentials.GitCredential {
 
 func (g *gitPersistenceSettings) SetCredential(credential credentials.GitCredential) {
 	g.credential = credential
+}
+
+func (g *gitPersistenceSettings) ConversionState() gitPersistenceSettingsConversionState {
+	return g.conversionState
+}
+
+func (g *gitPersistenceSettings) RunbooksAreInGit() bool {
+	return g.conversionState.runbooksAreInGit
 }
 
 // MarshalJSON returns persistence settings as its JSON encoding.
@@ -226,6 +245,31 @@ func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		p.credential = usernamePasswordGitCredential
+	}
+
+	var conversionState *json.RawMessage
+	var conversionStateFields struct {
+		VariablesAreInGit bool `json:"VariablesAreInGit,omitempty"`
+		RunbooksAreInGit  bool `json:"RunbooksAreInGit,omitempty"`
+	}
+
+	if persistenceSettings["ConversionState"] != nil {
+		conversionStateValue := persistenceSettings["ConversionState"]
+
+		err = json.Unmarshal(*conversionStateValue, &conversionState)
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(*conversionState, &conversionStateFields)
+		if err != nil {
+			return err
+		}
+
+		p.conversionState = gitPersistenceSettingsConversionState{
+			variablesAreInGit: conversionStateFields.VariablesAreInGit,
+			runbooksAreInGit:  conversionStateFields.RunbooksAreInGit,
+		}
 	}
 
 	return nil
