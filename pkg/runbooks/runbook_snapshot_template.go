@@ -6,10 +6,11 @@ import (
 )
 
 type RunbookSnapshotTemplate struct {
-	NextNameIncrement string                             `json:"NextNameIncrement,omitempty"`
-	Packages          []*releases.ReleaseTemplatePackage `json:"Packages"`
-	RunbookID         string                             `json:"RunbookId,omitempty"`
-	RunbookProcessID  string                             `json:"RunbookProcessId,omitempty"`
+	NextNameIncrement string                                `json:"NextNameIncrement,omitempty"`
+	Packages          []*releases.ReleaseTemplatePackage    `json:"Packages"`
+	GitResources      []releases.ReleaseTemplateGitResource `json:"GitResources,omitempty"`
+	RunbookID         string                                `json:"RunbookId,omitempty"`
+	RunbookProcessID  string                                `json:"RunbookProcessId,omitempty"`
 
 	resources.Resource
 }
