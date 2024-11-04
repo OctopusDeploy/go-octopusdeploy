@@ -46,7 +46,7 @@ const (
 	GitRunbookEnvironments              = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/environments"                                                                // GET
 	GitRunbookProcess                   = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbookProcesses/{id}"                                                                            // GET
 	GitRunbookRunPreview                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookRuns/preview/{environment}{?includeDisabledSteps}"                    // GET
-	GitRunbookSnapshotTemplate          = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookSnapshotTemplate"								                      // GET
+	GitRunbookSnapshotTemplate          = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookSnapshotTemplate"                                                     // GET
 
 	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"                                                                                                           // GET
 	ProjectVariablesByGitRef            = "/api/{spaceId}/projects/{projectId}/{gitRef}/variables"
