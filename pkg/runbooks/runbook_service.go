@@ -164,33 +164,6 @@ func List(client newclient.Client, spaceID string, projectID string, filter stri
 	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
 }
 
-// List returns a list of runbooks from the server, in a standard Octopus paginated result structure.
-// If you don't specify --limit the server will use a default limit (typically 30)
-func ListGit(client newclient.Client, spaceID string, projectID string, gitRef string, filter string, limit int) (*resources.Resources[*Runbook], error) {
-	if spaceID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
-	}
-	if projectID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
-	}
-	if gitRef == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
-	}
-	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef}
-	if filter != "" {
-		templateParams["partialName"] = filter
-	}
-	if limit > 0 {
-		templateParams["take"] = limit
-	}
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooksByProject, templateParams)
-	if err != nil {
-		return nil, err
-	}
-
-	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
-}
-
 // GetByName searches for a single runbook with name of 'name'.
 // If no such runbook can be found, will return nil, nil
 func GetByName(client newclient.Client, spaceID string, projectID string, name string) (*Runbook, error) {
@@ -205,39 +178,6 @@ func GetByName(client newclient.Client, spaceID string, projectID string, name s
 	}
 	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "partialName": name}
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbooksByProject, templateParams)
-	if err != nil {
-		return nil, err
-	}
-
-	searchResults, err := newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
-	if err != nil {
-		return nil, err
-	}
-	for _, item := range searchResults.Items {
-		if strings.EqualFold(name, item.Name) {
-			return item, nil
-		}
-	}
-	return nil, nil
-}
-
-// GetByName searches for a single runbook with name of 'name'.
-// If no such runbook can be found, will return nil, nil
-func GetByNameGit(client newclient.Client, spaceID string, projectID string, gitRef string, name string) (*Runbook, error) {
-	if spaceID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
-	}
-	if projectID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
-	}
-	if gitRef == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
-	}
-	if name == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
-	}
-	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef, "partialName": name}
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooksByProject, templateParams)
 	if err != nil {
 		return nil, err
 	}
@@ -325,34 +265,6 @@ func ListEnvironments(client newclient.Client, spaceID string, projectID string,
 	return *tmp, nil
 }
 
-// ListEnvironments returns the list of valid environments for a given runbook
-func ListEnvironmentsGit(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) ([]*environments.Environment, error) {
-	if spaceID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
-	}
-	if projectID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
-	}
-	if runbookID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("runbookID")
-	}
-	if gitRef == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
-	}
-	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "runbookId": runbookID, "gitRef": gitRef}
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookEnvironments, templateParams)
-	if err != nil {
-		return nil, err
-	}
-
-	// our generic Get method must return pointers, so we need to dereference the pointer-to-slice before returning it
-	tmp, err := newclient.Get[[]*environments.Environment](client.HttpSession(), expandedUri)
-	if err != nil {
-		return nil, err
-	}
-	return *tmp, nil
-}
-
 // GetProcess fetches a runbook process. This may either be the project level process (template),
 // or a snapshot, depending on the value of ID
 func GetProcess(client newclient.Client, spaceID string, projectID string, ID string) (*RunbookProcess, error) {
@@ -373,35 +285,6 @@ func GetProcess(client newclient.Client, spaceID string, projectID string, ID st
 		"spaceId":   spaceID,
 		"projectId": projectID,
 		"id":        ID,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return newclient.Get[RunbookProcess](client.HttpSession(), expandedUri)
-}
-
-func GetProcessGit(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) (*RunbookProcess, error) {
-	if client == nil {
-		return nil, internal.CreateInvalidParameterError("GetProcess", "client")
-	}
-	if spaceID == "" {
-		return nil, internal.CreateInvalidParameterError("GetProcess", "spaceID")
-	}
-	if projectID == "" {
-		return nil, internal.CreateInvalidParameterError("GetProcess", "projectID")
-	}
-	if runbookID == "" {
-		return nil, internal.CreateInvalidParameterError("GetProcess", "runbookID")
-	}
-	if gitRef == "" {
-		return nil, internal.CreateInvalidParameterError("GetProcess", "gitRef")
-	}
-
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookProcess, map[string]any{
-		"spaceId":   spaceID,
-		"projectId": projectID,
-		"gitRef":    gitRef,
-		"id":        runbookID,
 	})
 	if err != nil {
 		return nil, err
@@ -438,7 +321,151 @@ func GetRunbookSnapshotRunPreview(client newclient.Client, spaceID string, snaps
 	return newclient.Get[RunPreview](client.HttpSession(), expandedUri)
 }
 
-// GetGitRunbookRunPreview gets a preview of a run for a given environment.
+// TODO there is also a tenanted preview, request/response below.
+// There's one preview per selected tenant, and the web portal resolves tenant tags down into specific tenants before
+// calling the preview endpoint (you can't preview by tag).
+// This is how it figures out what the deployment targets are.
+
+// Unresolved: How do we want to resolve this in the CLI?
+// Note: like deploy, the executions API doesn't support target machines per-tenant, only a single list.
+//
+// We could
+// - A: resolve all the tags down into tenants, call the multi-preview endpoint, and union all the target envs together?
+// - B: always use the untenanted preview endpoint (which is easier, but maybe not perfectly correct)
+// [I've gone with B at the moment in the CLI]
+//
+// POST http://localhost:8050/api/Spaces-1/projects/Projects-561/runbooks/Runbooks-82/runbookRuns/previews
+// {"DeploymentPreviews":[{"TenantId":"Tenants-41","EnvironmentId":"Environments-101"},{"TenantId":"Tenants-42","EnvironmentId":"Environments-101"}]}
+// Response shape is like this:
+/*
+[
+  {
+    // preview for the first tenant/environment combo
+  },
+  {
+     // preview for the second tenant/environment combo
+  },
+]
+*/
+
+// List returns a list of Git runbooks from the server, in a standard Octopus paginated result structure.
+// If you don't specify --limit the server will use a default limit (typically 30)
+func ListGitRunbooks(client newclient.Client, spaceID string, projectID string, gitRef string, filter string, limit int) (*resources.Resources[*Runbook], error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef}
+	if filter != "" {
+		templateParams["partialName"] = filter
+	}
+	if limit > 0 {
+		templateParams["take"] = limit
+	}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooksByProject, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
+}
+
+// GetByName searches for a single runbook with name of 'name'.
+// If no such runbook can be found, will return nil, nil
+func GetGitRunbookByName(client newclient.Client, spaceID string, projectID string, gitRef string, name string) (*Runbook, error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	if name == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef, "partialName": name}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooksByProject, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	searchResults, err := newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range searchResults.Items {
+		if strings.EqualFold(name, item.Name) {
+			return item, nil
+		}
+	}
+	return nil, nil
+}
+
+// ListEnvironments returns the list of valid environments for a given runbook stored in Git
+func ListEnvironmentsForGitRunbook(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) ([]*environments.Environment, error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if runbookID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("runbookID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "runbookId": runbookID, "gitRef": gitRef}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookEnvironments, templateParams)
+	if err != nil {
+		return nil, err
+	}
+
+	// our generic Get method must return pointers, so we need to dereference the pointer-to-slice before returning it
+	tmp, err := newclient.Get[[]*environments.Environment](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+	return *tmp, nil
+}
+
+func GetGitRunbookProcess(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) (*RunbookProcess, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookProcess", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookProcess", "spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookProcess", "projectID")
+	}
+	if runbookID == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookProcess", "runbookID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateInvalidParameterError("GetGitRunbookProcess", "gitRef")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookProcess, map[string]any{
+		"spaceId":   spaceID,
+		"projectId": projectID,
+		"gitRef":    gitRef,
+		"id":        runbookID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Get[RunbookProcess](client.HttpSession(), expandedUri)
+}
+
+// GetRunbookRunPreview gets a preview of a run for a given environment for a runbook stored in Git.
 // This is used by the portal to show which machines would be deployed to, and other information about the deployment,
 // before proceeding with it. The CLI uses it to build the selector for picking specific machines to deploy to
 func GetGitRunbookRunPreview(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string, environmentID string, includeDisabledSteps bool) (*RunPreview, error) {
@@ -503,30 +530,3 @@ func GetGitRunbookSnapshotTemplate(client newclient.Client, spaceID string, proj
 	}
 	return newclient.Get[RunbookSnapshotTemplate](client.HttpSession(), expandedUri)
 }
-
-// TODO there is also a tenanted preview, request/response below.
-// There's one preview per selected tenant, and the web portal resolves tenant tags down into specific tenants before
-// calling the preview endpoint (you can't preview by tag).
-// This is how it figures out what the deployment targets are.
-
-// Unresolved: How do we want to resolve this in the CLI?
-// Note: like deploy, the executions API doesn't support target machines per-tenant, only a single list.
-//
-// We could
-// - A: resolve all the tags down into tenants, call the multi-preview endpoint, and union all the target envs together?
-// - B: always use the untenanted preview endpoint (which is easier, but maybe not perfectly correct)
-// [I've gone with B at the moment in the CLI]
-//
-// POST http://localhost:8050/api/Spaces-1/projects/Projects-561/runbooks/Runbooks-82/runbookRuns/previews
-// {"DeploymentPreviews":[{"TenantId":"Tenants-41","EnvironmentId":"Environments-101"},{"TenantId":"Tenants-42","EnvironmentId":"Environments-101"}]}
-// Response shape is like this:
-/*
-[
-  {
-    // preview for the first tenant/environment combo
-  },
-  {
-     // preview for the second tenant/environment combo
-  },
-]
-*/

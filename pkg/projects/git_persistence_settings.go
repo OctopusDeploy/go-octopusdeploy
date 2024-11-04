@@ -27,8 +27,6 @@ type GitPersistenceSettings interface {
 
 	RunbooksAreInGit() bool
 
-	ConversionState() gitPersistenceSettingsConversionState
-
 	PersistenceSettings
 }
 
@@ -110,10 +108,6 @@ func (g *gitPersistenceSettings) Credential() credentials.GitCredential {
 
 func (g *gitPersistenceSettings) SetCredential(credential credentials.GitCredential) {
 	g.credential = credential
-}
-
-func (g *gitPersistenceSettings) ConversionState() gitPersistenceSettingsConversionState {
-	return g.conversionState
 }
 
 func (g *gitPersistenceSettings) RunbooksAreInGit() bool {
