@@ -375,7 +375,7 @@ func ListGitRunbooks(client newclient.Client, spaceID string, projectID string, 
 	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
 }
 
-// GetByName searches for a single runbook with name of 'name'.
+// GetGitRunbookByName searches for a single runbook with name of 'name'.
 // If no such runbook can be found, will return nil, nil
 func GetGitRunbookByName(client newclient.Client, spaceID string, projectID string, gitRef string, name string) (*Runbook, error) {
 	if spaceID == "" {
@@ -408,7 +408,7 @@ func GetGitRunbookByName(client newclient.Client, spaceID string, projectID stri
 	return nil, nil
 }
 
-// ListEnvironments returns the list of valid environments for a given runbook stored in Git
+// ListEnvironmentsForGitRunbook returns the list of valid environments for a given runbook stored in Git
 func ListEnvironmentsForGitRunbook(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string) ([]*environments.Environment, error) {
 	if spaceID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
@@ -465,7 +465,7 @@ func GetGitRunbookProcess(client newclient.Client, spaceID string, projectID str
 	return newclient.Get[RunbookProcess](client.HttpSession(), expandedUri)
 }
 
-// GetRunbookRunPreview gets a preview of a run for a given environment for a runbook stored in Git.
+// GetGitRunbookRunPreview gets a preview of a run for a given environment for a runbook stored in Git.
 // This is used by the portal to show which machines would be deployed to, and other information about the deployment,
 // before proceeding with it. The CLI uses it to build the selector for picking specific machines to deploy to
 func GetGitRunbookRunPreview(client newclient.Client, spaceID string, projectID string, runbookID string, gitRef string, environmentID string, includeDisabledSteps bool) (*RunPreview, error) {
