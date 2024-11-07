@@ -199,7 +199,7 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 	if err != nil {
 		return nil, err
 	}
-	return NewClientWithCredentials(httpClient, apiURL, apiKeyCredential, spaceID, "")
+	return NewClientWithCredentials(httpClient, apiURL, apiKeyCredential, spaceID, requestingTool)
 }
 
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
