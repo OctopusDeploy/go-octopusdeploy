@@ -48,6 +48,10 @@ func FromJson(rawMessage *json.RawMessage) (ITriggerFilter, error) {
 		var filter *FeedTriggerFilter
 		err := json.Unmarshal(*rawMessage, &filter)
 		return filter, err
+	case GitFilter:
+		var filter *GitTriggerFilter
+		err := json.Unmarshal(*rawMessage, &filter)
+		return filter, err
 	}
 
 	return nil, fmt.Errorf("unable to unmarshal filter from JSON")
