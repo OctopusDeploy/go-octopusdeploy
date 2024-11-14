@@ -53,10 +53,10 @@ func (r *GitRunbookRunCommandV1) MarshalJSON() ([]byte, error) {
 
 func GitRunbookRunV1(client newclient.Client, command *GitRunbookRunCommandV1) (*GitRunbookRunResponseV1, error) {
 	if command == nil {
-		return nil, internal.CreateInvalidParameterError("RunbookRunV1", "command")
+		return nil, internal.CreateInvalidParameterError("GitRunbookRunV1", "command")
 	}
 	if command.SpaceID == "" {
-		return nil, internal.CreateInvalidParameterError("RunbookRunV1", "command.SpaceID")
+		return nil, internal.CreateInvalidParameterError("GitRunbookRunV1", "command.SpaceID")
 	}
 
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.CreateRunGitRunbookCommand, map[string]any{"spaceId": command.SpaceID})
