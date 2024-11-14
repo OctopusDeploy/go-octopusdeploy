@@ -29,3 +29,26 @@ This project employs [branch protection](https://docs.github.com/en/repositories
 Congratulations! :tada: And thank you very much for your contribution to this project!
 
 Once your pull request is merged, our build and test workflow will execute once again to validate changes. Afterward, your changes will be committed to the `main` branch.
+
+### Releasing a New Version
+
+To release a new version, create a tag at the commit that you want to release and push it to the repository. You will require appropriate permissions to push tags to the repository. 
+
+The tag should be in the format `v[major].[minor].[patch]` (e.g. `v1.0.0`). Once the tag is created, the release will be automatically created by the GitHub workflow.
+
+#### What version number do I use?
+
+The version number should be determined by the type of changes that are being released.
+- **Major**: Breaking changes. Ideally these should be avoided, if you feel they are necessary please discuss them with the maintainers as part of your pull request.
+- **Minor**: New features that are backwards compatible.
+- **Patch**: Bug fixes.
+
+## Development Guides
+
+### Enums
+
+There are fields in some types that are represented by enums, for example `FilterType`. If you add a new enum value you need to use `enumer` to update the string representation that gets used in API calls.
+
+- To install enumer run: `go install github.com/dmarkham/enumer@latest`
+- Then add it to your path
+- To update the string representations, run enumer from the folder where the enum file is located, for example `enumer -type=FilterType -json -output filter_type_string.go`
