@@ -11,4 +11,5 @@ const (
 	MachineFilter
 	OnceDailySchedule
 	FeedFilter
+	GitFilter
 )
