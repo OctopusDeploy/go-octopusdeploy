@@ -23,6 +23,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/dashboard"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deploymentfreezes"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/events"
@@ -94,6 +95,7 @@ type Client struct {
 	GitCredentials                 *credentials.Service
 	DashboardConfigurations        *dashboard.DashboardConfigurationService
 	Dashboards                     *dashboard.DashboardService
+	DeploymentFreezes              *deploymentfreezes.DeploymentFreezeService
 	DeploymentProcesses            *deployments.DeploymentProcessService
 	Deployments                    *deployments.DeploymentService
 	DynamicExtensions              *extensions.DynamicExtensionService
@@ -430,6 +432,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		Configuration:                  configuration.NewConfigurationService(base, configurationPath, versionControlClearCachePath),
 		DashboardConfigurations:        dashboard.NewDashboardConfigurationService(base, dashboardConfigurationPath),
 		Dashboards:                     dashboard.NewDashboardService(base, dashboardPath, dashboardDynamicPath),
+		DeploymentFreezes:              deploymentfreezes.NewDeploymentFreezeService(),
 		DeploymentProcesses:            deployments.NewDeploymentProcessService(base, deploymentProcessesPath),
 		Deployments:                    deployments.NewDeploymentService(base, deploymentsPath),
 		DynamicExtensions:              extensions.NewDynamicExtensionService(base, dynamicExtensionsPath, dynamicExtensionsFeaturesMetadataPath, dynamicExtensionsFeaturesValuesPath, dynamicExtensionsScriptsPath),
