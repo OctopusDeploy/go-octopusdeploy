@@ -1,15 +1,17 @@
 package deploymentfreezes
 
 import (
-	client2 "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
-func createService(t *testing.T) *DeploymentFreezeService {
-
+func createClient() newclient.Client {
+	return newclient.NewClient(&newclient.HttpSession{})
 }
 
-func TestFreezeAddGetDelete(t *testing.T) {
-	service := createService(t)
-	client := client2.Client{}
+func TestAddParameterValidation(t *testing.T) {
+	client := createClient()
+	_, err := Add(client, nil)
+	require.Error(t, err)
 }
