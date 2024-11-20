@@ -38,8 +38,8 @@ const (
 	serviceAccountOIDC                = "api/serviceaccounts{/serviceAccountId}/oidcidentities{/id}/v1"
 )
 
-// Add creates a new OIDC Identity for the service account
-func Add(client newclient.Client, identity *OIDCIdentity) (*OIDCIdentity, error) {
+// AddOIDCIdentity creates a new OIDC Identity for the service account
+func AddOIDCIdentity(client newclient.Client, identity *OIDCIdentity) (*OIDCIdentity, error) {
 	if identity == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterResource)
 	}
@@ -58,8 +58,8 @@ func Add(client newclient.Client, identity *OIDCIdentity) (*OIDCIdentity, error)
 	return res, nil
 }
 
-// Get queries all OIDC identities for the provided service account ID
-func Get(client newclient.Client, query OIDCIdentityQuery) (*resources.Resources[*OIDCIdentity], error) {
+// GetOIDCIdentities queries all OIDC identities for the provided service account ID
+func GetOIDCIdentities(client newclient.Client, query OIDCIdentityQuery) (*resources.Resources[*OIDCIdentity], error) {
 	values, _ := uritemplates.Struct2map(query)
 	if values == nil {
 		values = map[string]any{}
@@ -77,8 +77,8 @@ func Get(client newclient.Client, query OIDCIdentityQuery) (*resources.Resources
 	return res, nil
 }
 
-// GetByID queries OIDC identities by ID for the provided service account ID
-func GetByID(client newclient.Client, serviceAccountID string, ID string) (*OIDCIdentity, error) {
+// GetOIDCIdentityByID queries OIDC identities by ID for the provided service account ID
+func GetOIDCIdentityByID(client newclient.Client, serviceAccountID string, ID string) (*OIDCIdentity, error) {
 	path, err := client.URITemplateCache().Expand(serviceAccountOIDC, map[string]any{
 		"serviceAccountId": serviceAccountID,
 		"id":               ID,
@@ -95,8 +95,8 @@ func GetByID(client newclient.Client, serviceAccountID string, ID string) (*OIDC
 	return res, nil
 }
 
-// Update will update the OIDC identity, update does not return the updated OIDC identity
-func Update(client newclient.Client, identity *OIDCIdentity) error {
+// UpdateOIDCIdentity will update the OIDC identity, update does not return the updated OIDC identity
+func UpdateOIDCIdentity(client newclient.Client, identity *OIDCIdentity) error {
 	// update returns nothing
 	path, err := client.URITemplateCache().Expand(serviceAccountOIDC, map[string]any{
 		"serviceAccountId": identity.ServiceAccountID,
@@ -114,8 +114,8 @@ func Update(client newclient.Client, identity *OIDCIdentity) error {
 	return nil
 }
 
-// DeleteByID remove an OIDC identity by ID for the provided service account ID
-func DeleteByID(client newclient.Client, serviceAccountID string, ID string) error {
+// DeleteOIDCIdentityByID remove an OIDC identity by ID for the provided service account ID
+func DeleteOIDCIdentityByID(client newclient.Client, serviceAccountID string, ID string) error {
 	path, err := client.URITemplateCache().Expand(serviceAccountOIDC, map[string]any{
 		"serviceAccountId": serviceAccountID,
 		"id":               ID,
