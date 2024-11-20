@@ -13,7 +13,7 @@ const (
 	CreateDeploymentTenantedCommandV1   = "/api/{spaceId}/deployments/create/tenanted/v1"   // POST
 	CreateDeploymentUntenantedCommandV1 = "/api/{spaceId}/deployments/create/untenanted/v1" // POST
 
-	CreateRunRunbookCommand = "/api/{spaceId}/runbook-runs/create/v1" // POST
+	CreateRunRunbookCommand    = "/api/{spaceId}/runbook-runs/create/v1"     // POST
 	CreateRunGitRunbookCommand = "/api/{spaceId}/runbook-runs/git/create/v1" // POST
 
 	DeploymentProcesses = "/api/{spaceId}/deploymentprocesses{/id}{?skip,take,ids}" // GET
@@ -22,35 +22,35 @@ const (
 
 	PackageDeltaSignature = "/api/{spaceId}/packages/{packageId}/{version}/delta-signature"                      // GET
 	PackageDeltaUpload    = "/api/{spaceId}/packages/{packageId}/{baseVersion}/delta{?replace,overwriteMode}"    // POST
-	Packages                            = "/api/{spaceId}/packages{/id}{?nuGetPackageId,filter,latest,skip,take,includeNotes}"                                                            // GET
-	LibraryVariableSets                 = "/api/{spaceId}/libraryvariablesets{/id}{?skip,contentType,take,ids,partialName}"
-	PackageUpload                       = "/api/{spaceId}/packages/raw{?replace,overwriteMode}"                                                                                           // POST multipart form
+	Packages              = "/api/{spaceId}/packages{/id}{?nuGetPackageId,filter,latest,skip,take,includeNotes}" // GET
+	LibraryVariableSets   = "/api/{spaceId}/libraryvariablesets{/id}{?skip,contentType,take,ids,partialName}"
+	PackageUpload         = "/api/{spaceId}/packages/raw{?replace,overwriteMode}" // POST multipart form
 
-	ReleaseDeploymentPreview            = "/api/{spaceId}/releases/{releaseId}/deployments/preview/{environmentId}{?includeDisabledSteps}"                                                // GET
-	ReleaseDeploymentPreviews           = "/api/{spaceId}/releases/{releaseId}/deployments/previews"                                                          // POST multipart form
-	Releases                            = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"                                                                               // GET
-	ReleasesByProject                   = "/api/{spaceId}/projects/{projectId}/releases{/version}{?skip,take,searchByVersion}"                                                            // GET
-	ReleasesByProjectAndChannel         = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"                                                 // GET
+	ReleaseDeploymentPreview    = "/api/{spaceId}/releases/{releaseId}/deployments/preview/{environmentId}{?includeDisabledSteps}" // GET
+	ReleaseDeploymentPreviews   = "/api/{spaceId}/releases/{releaseId}/deployments/previews"                                       // POST multipart form
+	Releases                    = "/api/{spaceId}/releases{/id}{?skip,ignoreChannelRules,take,ids}"                                // GET
+	ReleasesByProject           = "/api/{spaceId}/projects/{projectId}/releases{/version}{?skip,take,searchByVersion}"             // GET
+	ReleasesByProjectAndChannel = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"  // GET
 
-	Runbooks                            = "/api/{spaceId}/runbooks{/id}{?skip,take,ids,partialName,clone,projectIds}"                                                                     // GET
-	RunbooksByProject                   = "/api/{spaceId}/projects/{projectId}/runbooks{?skip,take,partialName}"                                                                          // GET
-	RunbookEnvironments                 = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/environments"                                                                         // GET
-	RunbookProcess                      = "/api/{spaceId}/projects/{projectId}/runbookProcesses/{id}"                                                                                     // GET
-	RunbookRunPreview                   = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/preview/{environment}{?includeDisabledSteps}"                             // GET
-	RunbookSnapshotsByRunbook           = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookSnapshots{/name}{?skip,take,searchByName}"                                     // GET
-	RunbookSnapshotsByProject           = "/api/{spaceId}/projects/{projectId}/runbookSnapshots{/name}{?skip,take,searchByName}"                                                          // GET
-	RunbookSnapshotRunPreview           = "/api/{spaceId}/runbookSnapshots/{snapshotId}/runbookRuns/preview/{environmentId}{?includeDisabledSteps}"                                       // GET
-	RunbookRunTenantPreview             = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                                                 // POST
+	Runbooks                  = "/api/{spaceId}/runbooks{/id}{?skip,take,ids,partialName,clone,projectIds}"                                         // GET
+	RunbooksByProject         = "/api/{spaceId}/projects/{projectId}/runbooks{?skip,take,partialName}"                                              // GET
+	RunbookEnvironments       = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/environments"                                             // GET
+	RunbookProcess            = "/api/{spaceId}/projects/{projectId}/runbookProcesses/{id}"                                                         // GET
+	RunbookRunPreview         = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/preview/{environment}{?includeDisabledSteps}" // GET
+	RunbookSnapshotsByRunbook = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookSnapshots{/name}{?skip,take,searchByName}"         // GET
+	RunbookSnapshotsByProject = "/api/{spaceId}/projects/{projectId}/runbookSnapshots{/name}{?skip,take,searchByName}"                              // GET
+	RunbookSnapshotRunPreview = "/api/{spaceId}/runbookSnapshots/{snapshotId}/runbookRuns/preview/{environmentId}{?includeDisabledSteps}"           // GET
+	RunbookRunTenantPreview   = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                     // POST
 
-	GitRunbookById                      = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}"                                                                                    // GET, DELETE
-	GitRunbooksByProject                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                                                 // GET
-	GitRunbookEnvironments              = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/environments"                                                                // GET
-	GitRunbookProcess                   = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbookProcesses/{id}"                                                                            // GET
-	GitRunbookRunPreview                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookRuns/preview/{environment}{?includeDisabledSteps}"                    // GET
-	GitRunbookSnapshotTemplate          = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookSnapshotTemplate"                                                     // GET
+	GitRunbookById             = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}"                                                                 // GET, DELETE
+	GitRunbooksByProject       = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                              // GET
+	GitRunbookEnvironments     = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/environments"                                             // GET
+	GitRunbookProcess          = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbookProcesses/{id}"                                                         // GET
+	GitRunbookRunPreview       = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookRuns/preview/{environment}{?includeDisabledSteps}" // GET
+	GitRunbookSnapshotTemplate = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookSnapshotTemplate"                                  // GET
 
-	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"                                                                                                           // GET
-	ProjectVariablesByGitRef            = "/api/{spaceId}/projects/{projectId}/{gitRef}/variables"
-	ProjectBranchesV2                   = "/api/{spaceId}/projects/{projectId}/git/branches/v2"
-	ProjectBranches                     = "/api/{spaceId}/projects/{projectId}/git/branches"
+	Variables                = "/api/{spaceId}/variables{/id}{?ids}" // GET
+	ProjectVariablesByGitRef = "/api/{spaceId}/projects/{projectId}/{gitRef}/variables"
+	ProjectBranchesV2        = "/api/{spaceId}/projects/{projectId}/git/branches/v2"
+	ProjectBranches          = "/api/{spaceId}/projects/{projectId}/git/branches"
 )
