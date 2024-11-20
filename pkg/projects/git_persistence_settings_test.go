@@ -88,7 +88,11 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranch(t *testing.
 		"ProtectedBranchNamePatterns": [],
 		"ProtectedDefaultBranch": true,
 		"Type": "%s",
-		"Url": "%s"
+		"Url": "%s",
+		"ConversionState": {
+			"VariablesAreInGit": false,
+			"RunbooksAreInGit": false
+		}
 	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
@@ -121,7 +125,11 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranchAsLastItem(t
 		"ProtectedBranchNamePatterns": ["foo"],
 		"ProtectedDefaultBranch": true,
 		"Type": "%s",
-		"Url": "%s"
+		"Url": "%s",
+		"ConversionState": {
+			"VariablesAreInGit": false,
+			"RunbooksAreInGit": false
+		}
 	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
@@ -155,7 +163,11 @@ func TestGitPersistenceSettingsMarshalJSONWithoutProtectedDefaultBranch(t *testi
 		"ProtectedBranchNamePatterns": ["%s"],
 		"ProtectedDefaultBranch": false,
 		"Type": "%s",
-		"Url": "%s"
+		"Url": "%s",
+		"ConversionState": {
+			"VariablesAreInGit": false,
+			"RunbooksAreInGit": false
+		}
 	}`, basePath, gitCredentialsAsJSON, defaultBranch, protectedBranchName, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
@@ -340,4 +352,40 @@ func TestGitPersistenceSettingsUnmarshalJSONWithProtectedBranchIsDefault(t *test
 	require.Equal(t, defaultBranch, gitPersistenceSettings.DefaultBranch())
 	require.Equal(t, url, gitPersistenceSettings.URL())
 	require.Equal(t, []string{defaultBranch}, gitPersistenceSettings.ProtectedBranchNamePatterns())
+}
+
+func TestGitPersistenceSettingsUnmarshalJSON_ConversionState(t *testing.T) {
+	password := core.NewSensitiveValue(internal.GetRandomName())
+	username := internal.GetRandomName()
+
+	basePath := internal.GetRandomName()
+	defaultBranch := internal.GetRandomName()
+	url, err := url.Parse("https://example.com/")
+	usernamePasswordGitCredential := credentials.NewUsernamePassword(username, password)
+	require.NoError(t, err)
+
+	gitCredentialsAsJSON, err := json.Marshal(usernamePasswordGitCredential)
+	require.NoError(t, err)
+	require.NotNil(t, gitCredentialsAsJSON)
+
+	inputJSON := fmt.Sprintf(`{
+		"BasePath": "%s",
+		"Credentials": %s,
+		"DefaultBranch": "%s",
+		"ProtectedBranchNamePatterns": [],
+		"ProtectedDefaultBranch": false,
+		"Type": "%s",
+		"Url": "%s",
+		"ConversionState": {
+			"VariablesAreInGit": true,
+			"RunbooksAreInGit": true
+		}
+	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
+
+	gitPersistenceSettings := projects.NewGitPersistenceSettings("", nil, "", []string{}, nil)
+	err = json.Unmarshal([]byte(inputJSON), &gitPersistenceSettings)
+	require.NoError(t, err)
+	require.NotNil(t, gitPersistenceSettings)
+	require.Equal(t, true, gitPersistenceSettings.VariablesAreInGit())
+	require.Equal(t, true, gitPersistenceSettings.RunbooksAreInGit())
 }
