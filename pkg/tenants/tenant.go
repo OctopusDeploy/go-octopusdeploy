@@ -12,6 +12,7 @@ type Tenant struct {
 	ProjectEnvironments map[string][]string `json:"ProjectEnvironments,omitempty"`
 	SpaceID             string              `json:"SpaceId"`
 	TenantTags          []string            `json:"TenantTags,omitempty"`
+	IsDisabled          bool                `json:"IsDisabled"`
 
 	resources.Resource
 }
@@ -28,4 +29,8 @@ func NewTenant(name string) *Tenant {
 // Validate checks the state of the tenant and returns an error if invalid.
 func (t Tenant) Validate() error {
 	return validator.New().Struct(t)
+}
+
+func (t *Tenant) GetName() string {
+	return t.Name
 }

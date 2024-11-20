@@ -4,6 +4,7 @@ type TenantsQuery struct {
 	ClonedFromTenantID string   `uri:"clonedFromTenantId,omitempty" url:"clonedFromTenantId,omitempty"`
 	IDs                []string `uri:"ids,omitempty" url:"ids,omitempty"`
 	IsClone            bool     `uri:"clone,omitempty" url:"clone,omitempty"`
+	IsDisabled         bool     `uri:"isDisabled,omitempty" url:"isDisabled,omitempty"`
 	Name               string   `uri:"name,omitempty" url:"name,omitempty"`
 	PartialName        string   `uri:"partialName,omitempty" url:"partialName,omitempty"`
 	ProjectID          string   `uri:"projectId,omitempty" url:"projectId,omitempty"`

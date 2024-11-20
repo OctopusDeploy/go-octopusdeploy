@@ -32,6 +32,7 @@ func AssertEqualTenants(t *testing.T, expected *tenants.Tenant, actual *tenants.
 	assert.Equal(t, expected.ProjectEnvironments, actual.ProjectEnvironments)
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 	assert.Equal(t, expected.TenantTags, actual.TenantTags)
+	assert.Equal(t, expected.IsDisabled, actual.IsDisabled)
 }
 
 func CreateTestTenant(t *testing.T, octopusClient *client.Client, project *projects.Project, environment *environments.Environment) *tenants.Tenant {
@@ -191,6 +192,7 @@ func TestTenantUpdate(t *testing.T) {
 
 	expected.Name = internal.GetRandomName()
 	expected.Description = internal.GetRandomName()
+	expected.IsDisabled = true
 
 	actual, err := octopusClient.Tenants.Update(expected)
 	assert.NoError(t, err)
