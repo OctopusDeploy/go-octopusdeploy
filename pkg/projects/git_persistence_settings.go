@@ -28,8 +28,7 @@ type GitPersistenceSettings interface {
 	ConversionState() gitPersistenceSettingsConversionState
 	RunbooksAreInGit() bool
 
-	// This is not settable against a real Octopus project,
-	// it is only used for testing purposes.
+	// Deprecated: This is not settable against a real Octopus project it is only used for testing purposes.
 	SetRunbooksAreInGit()
 
 	PersistenceSettings
