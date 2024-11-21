@@ -23,6 +23,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/dashboard"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deploymentfreezes"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/events"
@@ -94,6 +95,7 @@ type Client struct {
 	GitCredentials                 *credentials.Service
 	DashboardConfigurations        *dashboard.DashboardConfigurationService
 	Dashboards                     *dashboard.DashboardService
+	DeploymentFreezes              *deploymentfreezes.DeploymentFreezeService
 	DeploymentProcesses            *deployments.DeploymentProcessService
 	Deployments                    *deployments.DeploymentService
 	DynamicExtensions              *extensions.DynamicExtensionService
