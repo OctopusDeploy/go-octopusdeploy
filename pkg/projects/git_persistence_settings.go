@@ -25,6 +25,12 @@ type GitPersistenceSettings interface {
 	Credential() credentials.GitCredential
 	SetCredential(credential credentials.GitCredential)
 
+	VariablesAreInGit() bool
+	RunbooksAreInGit() bool
+
+	// Deprecated: This is not settable against a real Octopus project it is only used for testing purposes.
+	SetRunbooksAreInGit()
+
 	PersistenceSettings
 }
 
@@ -35,8 +41,14 @@ type gitPersistenceSettings struct {
 	defaultBranch               string
 	protectedBranchNamePatterns []string
 	url                         *url.URL
+	conversionState             gitPersistenceSettingsConversionState
 
 	persistenceSettings
+}
+
+type gitPersistenceSettingsConversionState struct {
+	VariablesAreInGit bool `json:"VariablesAreInGit,omitempty"`
+	RunbooksAreInGit  bool `json:"RunbooksAreInGit,omitempty"`
 }
 
 // NewGitPersistenceSettings creates an instance of persistence settings.
@@ -52,6 +64,7 @@ func NewGitPersistenceSettings(
 		defaultBranch:               defaultBranch,
 		protectedBranchNamePatterns: protectedBranchNamePatterns,
 		url:                         url,
+		conversionState:             gitPersistenceSettingsConversionState{VariablesAreInGit: false, RunbooksAreInGit: false},
 		persistenceSettings:         persistenceSettings{SettingsType: PersistenceSettingsTypeVersionControlled},
 	}
 }
@@ -101,6 +114,18 @@ func (g *gitPersistenceSettings) SetCredential(credential credentials.GitCredent
 	g.credential = credential
 }
 
+func (g *gitPersistenceSettings) VariablesAreInGit() bool {
+	return g.conversionState.VariablesAreInGit
+}
+
+func (g *gitPersistenceSettings) RunbooksAreInGit() bool {
+	return g.conversionState.RunbooksAreInGit
+}
+
+func (g *gitPersistenceSettings) SetRunbooksAreInGit() {
+	g.conversionState.RunbooksAreInGit = true
+}
+
 // MarshalJSON returns persistence settings as its JSON encoding.
 func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 	defaultBranch := p.DefaultBranch()
@@ -120,6 +145,7 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 		ProtectedBranchNamePatterns []string                  `json:"ProtectedBranchNamePatterns"`
 		URL                         string                    `json:"Url,omitempty"`
 		Type                        PersistenceSettingsType   `json:"Type,omitempty"`
+		ConversionState             map[string]interface{}    `json:"ConversionState,omitempty"`
 	}{
 		BasePath:                    p.BasePath(),
 		Credentials:                 p.Credential(),
@@ -128,6 +154,10 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 		ProtectedBranchNamePatterns: protectedBranches,
 		URL:                         p.URL().String(),
 		Type:                        p.Type(),
+		ConversionState: map[string]interface{}{
+			"VariablesAreInGit": p.conversionState.VariablesAreInGit,
+			"RunbooksAreInGit":  p.conversionState.RunbooksAreInGit,
+		},
 	}
 
 	return json.Marshal(persistenceSettings)
@@ -226,6 +256,25 @@ func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		p.credential = usernamePasswordGitCredential
+	}
+
+	var conversionState *json.RawMessage
+	var conversionStateFields gitPersistenceSettingsConversionState
+
+	if persistenceSettings["ConversionState"] != nil {
+		conversionStateValue := persistenceSettings["ConversionState"]
+
+		err = json.Unmarshal(*conversionStateValue, &conversionState)
+		if err != nil {
+			return err
+		}
+
+		err = json.Unmarshal(*conversionState, &conversionStateFields)
+		if err != nil {
+			return err
+		}
+
+		p.conversionState = conversionStateFields
 	}
 
 	return nil

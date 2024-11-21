@@ -282,7 +282,7 @@ func (s *TenantService) UpdateVariables(tenant *Tenant, tenantVariables *variabl
 
 // --- new ---
 
-const template = "/api/{spaceId}/tenants{/id}{?skip,projectId,name,tags,take,ids,clone,partialName,clonedFromTenantId}"
+const template = "/api/{spaceId}/tenants{/id}{?skip,projectId,name,tags,take,ids,clone,partialName,isDisabled,clonedFromTenantId}"
 
 // Get returns a collection of tenants based on the criteria defined by its
 // input query parameter.
