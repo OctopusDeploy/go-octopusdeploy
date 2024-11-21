@@ -26,6 +26,23 @@ func Get(client newclient.Client, deploymentFreezesQuery *DeploymentFreezeQuery)
 	return res, nil
 }
 
+func GetById(client newclient.Client, id string) (*DeploymentFreeze, error) {
+	path, err := client.URITemplateCache().Expand(template, map[string]any{
+		"id": id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[DeploymentFreeze](client.HttpSession(), path)
+	if err != nil {
+		return &DeploymentFreeze{}, err
+	}
+
+	return res, nil
+
+}
+
 func GetAll(client newclient.Client) ([]*DeploymentFreeze, error) {
 	path, err := client.URITemplateCache().Expand(template, &DeploymentFreezeQuery{Skip: 0, Take: math.MaxInt32})
 	if err != nil {
@@ -64,7 +81,7 @@ func Update(client newclient.Client, deploymentFreeze *DeploymentFreeze) (*Deplo
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("deploymentFreeze")
 	}
 
-	path, err := client.URITemplateCache().Expand(template, deploymentFreeze)
+	path, err := client.URITemplateCache().Expand(template, map[string]any{"id": deploymentFreeze.ID})
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +98,7 @@ func Delete(client newclient.Client, deploymentFreeze *DeploymentFreeze) error {
 		return internal.CreateRequiredParameterIsEmptyOrNilError("deploymentFreeze")
 	}
 
-	path, err := client.URITemplateCache().Expand(template, deploymentFreeze)
+	path, err := client.URITemplateCache().Expand(template, map[string]any{"id": deploymentFreeze.ID})
 	if err != nil {
 		return err
 	}

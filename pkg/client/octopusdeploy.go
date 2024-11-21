@@ -432,7 +432,6 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		Configuration:                  configuration.NewConfigurationService(base, configurationPath, versionControlClearCachePath),
 		DashboardConfigurations:        dashboard.NewDashboardConfigurationService(base, dashboardConfigurationPath),
 		Dashboards:                     dashboard.NewDashboardService(base, dashboardPath, dashboardDynamicPath),
-		DeploymentFreezes:              deploymentfreezes.NewDeploymentFreezeService(),
 		DeploymentProcesses:            deployments.NewDeploymentProcessService(base, deploymentProcessesPath),
 		Deployments:                    deployments.NewDeploymentService(base, deploymentsPath),
 		DynamicExtensions:              extensions.NewDynamicExtensionService(base, dynamicExtensionsPath, dynamicExtensionsFeaturesMetadataPath, dynamicExtensionsFeaturesValuesPath, dynamicExtensionsScriptsPath),
