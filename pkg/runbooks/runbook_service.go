@@ -375,6 +375,34 @@ func ListGitRunbooks(client newclient.Client, spaceID string, projectID string, 
 	return newclient.Get[resources.Resources[*Runbook]](client.HttpSession(), expandedUri)
 }
 
+// GetGitRunbookByID returns the runbook that matches the input ID and GitRef. If one cannot be
+// found, it returns nil and an error.
+func GetGitRunbookByID(client newclient.Client, spaceID string, projectID string, gitRef string, ID string) (*Runbook, error) {
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	if ID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("ID")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef, "id": ID}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookById, templateParams)
+	if err != nil {
+		return nil, err
+	}
+	runbook, err := newclient.Get[Runbook](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+
+	return runbook, nil
+}
+
 // GetGitRunbookByName searches for a single runbook with name of 'name'.
 // If no such runbook can be found, will return nil, nil
 func GetGitRunbookByName(client newclient.Client, spaceID string, projectID string, gitRef string, name string) (*Runbook, error) {
@@ -406,6 +434,33 @@ func GetGitRunbookByName(client newclient.Client, spaceID string, projectID stri
 		}
 	}
 	return nil, nil
+}
+
+// DeleteGitRunbook deletes the runbook that matches the input ID and GitRef.
+func DeleteGitRunbook(client newclient.Client, spaceID string, projectID string, gitRef string, ID string) error {
+	if spaceID == "" {
+		return internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if projectID == "" {
+		return internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+	if gitRef == "" {
+		return internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	if ID == "" {
+		return internal.CreateRequiredParameterIsEmptyOrNilError("ID")
+	}
+	templateParams := map[string]any{"spaceId": spaceID, "projectId": projectID, "gitRef": gitRef, "id": ID}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookById, templateParams)
+	if err != nil {
+		return err
+	}
+	err = newclient.Delete(client.HttpSession(), expandedUri)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // ListEnvironmentsForGitRunbook returns the list of valid environments for a given runbook stored in Git
