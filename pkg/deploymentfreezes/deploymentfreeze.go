@@ -5,7 +5,10 @@ import (
 	"time"
 )
 
-type DeploymentFreezes resources.Resources[DeploymentFreeze]
+type DeploymentFreezes struct {
+	DeploymentFreezes []DeploymentFreeze `json:"DeploymentFreezes"`
+	Count             int                `json:"Count"`
+}
 
 type DeploymentFreeze struct {
 	Name                    string              `json:"Name" validate:"required"`

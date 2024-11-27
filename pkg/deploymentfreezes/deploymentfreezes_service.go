@@ -43,20 +43,18 @@ func GetById(client newclient.Client, id string) (*DeploymentFreeze, error) {
 
 }
 
-func GetAll(client newclient.Client) ([]*DeploymentFreeze, error) {
+func GetAll(client newclient.Client) (*DeploymentFreezes, error) {
 	path, err := client.URITemplateCache().Expand(template, &DeploymentFreezeQuery{Skip: 0, Take: math.MaxInt32})
 	if err != nil {
 		return nil, err
 	}
 
 	res, err := newclient.Get[DeploymentFreezes](client.HttpSession(), path)
-
-	freezes := make([]*DeploymentFreeze, 0)
-	for _, freeze := range res.Items {
-		freezes = append(freezes, &freeze)
+	if err != nil {
+		return &DeploymentFreezes{}, err
 	}
 
-	return freezes, nil
+	return res, nil
 }
 
 func Add(client newclient.Client, deploymentFreeze *DeploymentFreeze) (*DeploymentFreeze, error) {
