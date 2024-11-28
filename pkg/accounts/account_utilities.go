@@ -69,6 +69,16 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		azureSubscriptionAccount.ManagementEndpoint = accountResource.ManagementEndpoint
 		azureSubscriptionAccount.StorageEndpointSuffix = accountResource.StorageEndpointSuffix
 		account = azureSubscriptionAccount
+	case AccountTypeGenericOIDCAccount:
+		genericOIDCAccount, err := NewGenericOIDCAccount(accountResource.GetName())
+		if err != nil {
+			return nil, err
+		}
+		genericOIDCAccount.Audience = accountResource.Audience
+		genericOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
+		genericOIDCAccount.AccountTestSubjectKeys = accountResource.AccountTestSubjectKeys
+		genericOIDCAccount.HealthCheckSubjectKeys = accountResource.HealthCheckSubjectKeys
+		account = genericOIDCAccount
 	case AccountTypeGoogleCloudPlatformAccount:
 		googleCloudPlatformAccount, err := NewGoogleCloudPlatformAccount(accountResource.GetName(), accountResource.JsonKey)
 		if err != nil {
