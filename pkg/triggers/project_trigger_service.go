@@ -2,6 +2,7 @@ package triggers
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -24,6 +25,8 @@ func NewProjectTriggerService(sling *sling.Sling, uriTemplate string) *ProjectTr
 
 // GetByID returns the project trigger that matches the input ID. If one cannot
 // be found, it returns nil and an error.
+//
+// Deprecated: use triggers.GetProjectTriggerByID
 func (s *ProjectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -110,4 +113,19 @@ func (s *ProjectTriggerService) Update(projectTrigger *ProjectTrigger) (*Project
 	}
 
 	return resp.(*ProjectTrigger), nil
+}
+
+// ----- Experimental --------
+
+const (
+	projectTriggersTemplate = "/api/{spaceId}/projecttriggers/{id}"
+)
+
+// GetProjectTriggerByID returns the project trigger that matches the input ID.
+func (s *ProjectTriggerService) GetProjectTriggerByID(client newclient.Client, spaceId string, id string) (*ProjectTrigger, error) {
+	if internal.IsEmpty(id) {
+		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
+	}
+
+	return newclient.GetByID[ProjectTrigger](client, projectTriggersTemplate, spaceId, id)
 }
