@@ -9,10 +9,8 @@ import (
 
 // GenericOIDCAccount represents a Generic OIDC account.
 type GenericOIDCAccount struct {
-	Audience               string   `json:"Audience,omitempty"`
-	DeploymentSubjectKeys  []string `json:"DeploymentSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space environment project tenant runbook account type'"`
-	HealthCheckSubjectKeys []string `json:"HealthCheckSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account target type'"`
-	AccountTestSubjectKeys []string `json:"AccountTestSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account type'"`
+	Audience              string   `json:"Audience,omitempty"`
+	DeploymentSubjectKeys []string `json:"DeploymentSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space environment project tenant runbook account type'"`
 
 	account
 }

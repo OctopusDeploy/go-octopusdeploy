@@ -76,8 +76,6 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		}
 		genericOIDCAccount.Audience = accountResource.Audience
 		genericOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
-		genericOIDCAccount.AccountTestSubjectKeys = accountResource.AccountTestSubjectKeys
-		genericOIDCAccount.HealthCheckSubjectKeys = accountResource.HealthCheckSubjectKeys
 		account = genericOIDCAccount
 	case AccountTypeGoogleCloudPlatformAccount:
 		googleCloudPlatformAccount, err := NewGoogleCloudPlatformAccount(accountResource.GetName(), accountResource.JsonKey)

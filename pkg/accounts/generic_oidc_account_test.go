@@ -10,36 +10,26 @@ func TestGenericOIDCAccount(t *testing.T) {
 	name := internal.GetRandomName()
 	audience := "api://default"
 	deploymentSubjectKeys := []string{"space", "project", "tenant", "environment"}
-	healthCheckSubjectKeys := []string{"space", "target"}
-	accountTestSubjectKeys := []string{"space", "account"}
 	invalidDeploymentSubjectKeys := []string{"space", "target"}
-	invalidHealthCheckSubjectKeys := []string{"space", "project"}
-	invalidAccountTestSubjectKeys := []string{"space", "project"}
 
 	testCases := []struct {
-		TestName               string
-		IsError                bool
-		Name                   string
-		Audience               string
-		DeploymentSubjectKeys  []string
-		HealthCheckSubjectKeys []string
-		AccountTestSubjectKeys []string
+		TestName              string
+		IsError               bool
+		Name                  string
+		Audience              string
+		DeploymentSubjectKeys []string
 	}{
-		{"Valid", false, name, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"EmptyName", true, "", audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"NilSubjectKeys", false, name, "", nil, nil, nil},
-		{"InvalidDeploymentSubjectKeys", true, name, "", invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"InvalidHealthCheckSubjectKeys", true, name, "", deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys},
-		{"InvalidAccountTestSubjectKeys", true, name, "", deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys},
+		{"Valid", false, name, audience, deploymentSubjectKeys},
+		{"EmptyName", true, "", audience, deploymentSubjectKeys},
+		{"NilSubjectKeys", false, name, "", nil},
+		{"InvalidDeploymentSubjectKeys", true, name, "", invalidDeploymentSubjectKeys},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
 			genericOIDCAccount := &GenericOIDCAccount{
-				Audience:               tc.Audience,
-				DeploymentSubjectKeys:  tc.DeploymentSubjectKeys,
-				HealthCheckSubjectKeys: tc.HealthCheckSubjectKeys,
-				AccountTestSubjectKeys: tc.AccountTestSubjectKeys,
+				Audience:              tc.Audience,
+				DeploymentSubjectKeys: tc.DeploymentSubjectKeys,
 			}
 			genericOIDCAccount.AccountType = AccountTypeGenericOIDCAccount
 			genericOIDCAccount.Name = tc.Name
