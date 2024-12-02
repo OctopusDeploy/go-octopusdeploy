@@ -7,12 +7,12 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
 
-const template = "/api/deploymentfreezes{/id}{?skip,take,ids,projectIds,tenantIds,environmentIds,includeComplete,status}"
+const template = "/api/deploymentfreezes{/id}{?skip,take,ids,partialName,projectIds,tenantIds,environmentIds,includeComplete,status}"
 
 type DeploymentFreezeService struct {
 }
 
-func Get(client newclient.Client, deploymentFreezesQuery *DeploymentFreezeQuery) (*DeploymentFreezes, error) {
+func Get(client newclient.Client, deploymentFreezesQuery DeploymentFreezeQuery) (*DeploymentFreezes, error) {
 	path, err := client.URITemplateCache().Expand(template, deploymentFreezesQuery)
 	if err != nil {
 		return nil, err
