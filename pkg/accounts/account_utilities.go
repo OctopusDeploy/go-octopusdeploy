@@ -183,6 +183,10 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		accountResource.ManagementEndpoint = azureSubscriptionAccount.ManagementEndpoint
 		accountResource.StorageEndpointSuffix = azureSubscriptionAccount.StorageEndpointSuffix
 		accountResource.SubscriptionID = azureSubscriptionAccount.SubscriptionID
+	case AccountTypeGenericOIDCAccount:
+		genericOidcAccount := account.(*GenericOIDCAccount)
+		accountResource.DeploymentSubjectKeys = genericOidcAccount.DeploymentSubjectKeys
+		accountResource.Audience = genericOidcAccount.Audience
 	case AccountTypeGoogleCloudPlatformAccount:
 		googleCloudPlatformAccount := account.(*GoogleCloudPlatformAccount)
 		accountResource.JsonKey = googleCloudPlatformAccount.JsonKey
