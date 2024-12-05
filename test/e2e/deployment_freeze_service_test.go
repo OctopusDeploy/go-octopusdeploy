@@ -57,8 +57,8 @@ func createTestResources(t *testing.T, client *client.Client) *testResources {
 
 func getTestDeploymentFreeze() *deploymentfreezes.DeploymentFreeze {
 	name := internal.GetRandomName()
-	startTime := time.Now().Add(time.Hour)
-	endTime := startTime.Add(time.Hour * 24)
+	startTime := time.Now().Add(time.Hour).UTC().Truncate(time.Second)
+	endTime := startTime.Add(time.Hour * 24).UTC().Truncate(time.Second)
 
 	return &deploymentfreezes.DeploymentFreeze{
 		Name:                          name,
@@ -206,7 +206,7 @@ func TestDeploymentFreezeRecurringSchedules(t *testing.T) {
 				Type:      deploymentfreezes.Annually,
 				Unit:      1,
 				EndType:   deploymentfreezes.OnDate,
-				EndOnDate: ptr(time.Now().AddDate(1, 0, 0)),
+				EndOnDate: ptr(time.Now().AddDate(1, 0, 0).UTC().Truncate(time.Second)),
 			},
 			validate: func(t *testing.T, freeze *deploymentfreezes.DeploymentFreeze) {
 				require.Equal(t, deploymentfreezes.Annually, freeze.RecurringSchedule.Type)
