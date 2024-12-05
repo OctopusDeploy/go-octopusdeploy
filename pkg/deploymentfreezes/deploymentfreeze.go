@@ -31,8 +31,8 @@ const (
 type MonthlyScheduleType string
 
 const (
-	DayOfMonth MonthlyScheduleType = "DayOfMonth"
-	DayOfWeek  MonthlyScheduleType = "DayOfWeek"
+	DayOfMonth  MonthlyScheduleType = "DayOfMonth"
+	DateOfMonth MonthlyScheduleType = "DateOfMonth"
 )
 
 type RecurringSchedule struct {
@@ -41,10 +41,10 @@ type RecurringSchedule struct {
 	EndType             RecurringScheduleEndType `json:"EndType"`
 	EndOnDate           *time.Time               `json:"EndOnDate,omitempty"`
 	EndAfterOccurrences *int                     `json:"EndAfterOccurrences,omitempty"`
-	DaysOfWeek          []string                 `json:"DaysOfWeek,omitempty"`
 	MonthlyScheduleType string                   `json:"MonthlyScheduleType,omitempty"`
 	DateOfMonth         *string                  `json:"DateOfMonth,omitempty"`
 	DayNumberOfMonth    *string                  `json:"DayNumberOfMonth,omitempty"`
+	DaysOfWeek          []string                 `json:"DaysOfWeek,omitempty"`
 	DayOfWeek           *string                  `json:"DayOfWeek,omitempty"`
 }
 

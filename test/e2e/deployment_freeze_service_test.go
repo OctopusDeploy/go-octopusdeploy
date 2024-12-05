@@ -190,14 +190,13 @@ func TestDeploymentFreezeRecurringSchedules(t *testing.T) {
 				Unit:                24,
 				EndType:             deploymentfreezes.Never,
 				MonthlyScheduleType: "DayOfMonth",
-				DateOfMonth:         ptr("15"),
-				DayOfWeek:           ptr("Monday"),
-				DayNumberOfMonth:    ptr("First"),
+				DayOfWeek:           ptr("Thursday"),
+				DayNumberOfMonth:    ptr("1"),
 			},
 			validate: func(t *testing.T, freeze *deploymentfreezes.DeploymentFreeze) {
 				require.Equal(t, deploymentfreezes.DaysPerMonth, freeze.RecurringSchedule.Type)
 				require.Equal(t, "DayOfMonth", freeze.RecurringSchedule.MonthlyScheduleType)
-				require.Equal(t, "15", *freeze.RecurringSchedule.DateOfMonth)
+				require.Equal(t, "Thursday", *freeze.RecurringSchedule.DayOfWeek)
 			},
 		},
 		{
