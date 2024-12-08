@@ -26,7 +26,7 @@ func NewProjectTriggerService(sling *sling.Sling, uriTemplate string) *ProjectTr
 // GetByID returns the project trigger that matches the input ID. If one cannot
 // be found, it returns nil and an error.
 //
-// Deprecated: use triggers.GetProjectTriggerByID
+// Deprecated: use triggers.GetByID
 func (s *ProjectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -62,6 +62,8 @@ func (s *ProjectTriggerService) GetByProjectID(id string) ([]*ProjectTrigger, er
 
 // GetAll returns all project triggers. If none can be found or an error
 // occurs, it returns an empty collection.
+//
+// Deprecated: use triggers.GetAll
 func (s *ProjectTriggerService) GetAll() ([]*ProjectTrigger, error) {
 	path, err := services.GetPath(s)
 	if err != nil {
@@ -72,6 +74,8 @@ func (s *ProjectTriggerService) GetAll() ([]*ProjectTrigger, error) {
 }
 
 // Add creates a new project trigger.
+//
+// Deprecated: use triggers.Add
 func (s *ProjectTriggerService) Add(projectTrigger *ProjectTrigger) (*ProjectTrigger, error) {
 	if projectTrigger == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationDelete, constants.ParameterProjectTrigger)
@@ -91,6 +95,8 @@ func (s *ProjectTriggerService) Add(projectTrigger *ProjectTrigger) (*ProjectTri
 }
 
 // Delete will delete a project trigger.
+//
+// Deprecated: use triggers.Delete
 func (s *ProjectTriggerService) Delete(projectTrigger *ProjectTrigger) error {
 	if projectTrigger == nil {
 		return internal.CreateInvalidParameterError(constants.OperationDelete, constants.ParameterProjectTrigger)
@@ -115,17 +121,34 @@ func (s *ProjectTriggerService) Update(projectTrigger *ProjectTrigger) (*Project
 	return resp.(*ProjectTrigger), nil
 }
 
-// ----- Experimental --------
+// ----- New --------
 
 const (
-	projectTriggersTemplate = "/api/{spaceId}/projecttriggers/{id}"
+	template = "/api/{spaceId}/projecttriggers/{id}"
 )
 
-// GetProjectTriggerByID returns the project trigger that matches the input ID.
-func (s *ProjectTriggerService) GetProjectTriggerByID(client newclient.Client, spaceId string, id string) (*ProjectTrigger, error) {
-	if internal.IsEmpty(id) {
-		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
-	}
+// GetById returns the project trigger that matches the input ID. If one cannot be
+// found, it returns nil and an error.
+func GetById(client newclient.Client, spaceID string, ID string) (*ProjectTrigger, error) {
+	return newclient.GetByID[ProjectTrigger](client, template, spaceID, ID)
+}
 
-	return newclient.GetByID[ProjectTrigger](client, projectTriggersTemplate, spaceId, id)
+// GetAll returns all project triggers. If an error occurs, it returns nil.
+func GetAll(client newclient.Client, spaceID string) ([]*ProjectTrigger, error) {
+	return newclient.GetAll[ProjectTrigger](client, template, spaceID)
+}
+
+// Add creates a new project trigger.
+func Add(client newclient.Client, projectTrigger *ProjectTrigger) (*ProjectTrigger, error) {
+	return newclient.Add[ProjectTrigger](client, template, projectTrigger.SpaceID, projectTrigger)
+}
+
+// DeleteById deletes a specified project trigger by ID
+func DeleteById(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
+}
+
+// Update modifies a project trigger based on the one provided as input.
+func Update(client newclient.Client, projectTrigger *ProjectTrigger) (*ProjectTrigger, error) {
+	return newclient.Update[ProjectTrigger](client, template, projectTrigger.SpaceID, projectTrigger.ID, projectTrigger)
 }
