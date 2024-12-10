@@ -166,3 +166,134 @@ func TestProjectTriggerGetAll(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, projectTriggers)
 }
+
+// ----- new -----
+
+func New_CreateTestProjectTrigger(t *testing.T, client *client.Client, project *projects.Project) *triggers.ProjectTrigger {
+	require.NotNil(t, project)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	now := time.Now()
+	start := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
+
+	action := actions.NewAutoDeployAction(createRandomBoolean())
+	filter := filters.NewOnceDailyScheduledTriggerFilter([]filters.Weekday{filters.Tuesday}, start)
+
+	projectTrigger := triggers.NewProjectTrigger(internal.GetRandomName(), internal.GetRandomName(), createRandomBoolean(), project, action, filter)
+	require.NotNil(t, projectTrigger)
+	require.NoError(t, projectTrigger.Validate())
+
+	createdProjectTrigger, err := client.ProjectTriggers.Add(projectTrigger)
+	require.NoError(t, err)
+	require.NotNil(t, createdProjectTrigger)
+	require.NotEmpty(t, createdProjectTrigger.GetID())
+
+	// verify the add operation was successful
+	projectTriggerToCompare, err := triggers.GetById(client, space.ID, createdProjectTrigger.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, projectTriggerToCompare)
+	AssertEqualProjectTriggers(t, createdProjectTrigger, projectTriggerToCompare)
+
+	return createdProjectTrigger
+}
+
+func New_DeleteTestProjectTrigger(t *testing.T, client *client.Client, projectTrigger *triggers.ProjectTrigger) {
+	require.NotNil(t, projectTrigger)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	err := triggers.DeleteById(client, space.ID, projectTrigger.ID)
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedProjectTrigger, err := triggers.GetById(client, space.ID, projectTrigger.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedProjectTrigger)
+}
+
+func New_UpdateTestProjectTrigger(t *testing.T, client *client.Client, projectTrigger *triggers.ProjectTrigger) *triggers.ProjectTrigger {
+	require.NotNil(t, projectTrigger)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	projectTrigger, err := triggers.Update(client, projectTrigger)
+	assert.NoError(t, err)
+	assert.NotNil(t, projectTrigger)
+
+	return projectTrigger
+}
+
+func New_TestProjectTriggerAddGetUpdateDelete(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	environment := CreateTestEnvironment(t, client)
+	require.NotNil(t, environment)
+	defer DeleteTestEnvironment(t, client, environment)
+
+	projectTrigger := New_CreateTestProjectTrigger(t, client, project)
+	require.NotNil(t, lifecycle)
+	defer New_DeleteTestProjectTrigger(t, client, projectTrigger)
+
+	projectTrigger.Name = GetRandomName()
+	updatedProjectTrigger := New_UpdateTestProjectTrigger(t, client, projectTrigger)
+	require.NotNil(t, updatedProjectTrigger)
+}
+
+func New_TestProjectTriggerGetAll(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	projectTriggers, err := triggers.GetAll(client, space.ID)
+	require.NoError(t, err)
+	require.NotNil(t, projectTriggers)
+}
