@@ -202,7 +202,7 @@ func TestDeploymentFreezeRecurringSchedules(t *testing.T) {
 			name: "Monthly Schedule",
 			schedule: &deploymentfreezes.RecurringSchedule{
 				Type:                deploymentfreezes.Monthly,
-				Unit:                24,
+				Unit:                1,
 				EndType:             deploymentfreezes.Never,
 				MonthlyScheduleType: "DayOfMonth",
 				DayOfWeek:           "Thursday",
