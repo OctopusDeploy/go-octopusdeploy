@@ -170,33 +170,48 @@ func TestDeploymentFreezeRecurringSchedules(t *testing.T) {
 		validate func(*testing.T, *deploymentfreezes.DeploymentFreeze)
 	}{
 		{
+			name: "Daily Schedule",
+			schedule: &deploymentfreezes.RecurringSchedule{
+				Type:                deploymentfreezes.Daily,
+				Unit:                2,
+				EndType:             deploymentfreezes.AfterOccurrences,
+				EndAfterOccurrences: 5,
+			},
+			validate: func(t *testing.T, freeze *deploymentfreezes.DeploymentFreeze) {
+				require.Equal(t, deploymentfreezes.Daily, freeze.RecurringSchedule.Type)
+				require.Equal(t, deploymentfreezes.AfterOccurrences, freeze.RecurringSchedule.EndType)
+				require.Equal(t, 5, freeze.RecurringSchedule.EndAfterOccurrences)
+				require.Equal(t, 2, freeze.RecurringSchedule.Unit)
+			},
+		},
+		{
 			name: "Weekly Schedule",
 			schedule: &deploymentfreezes.RecurringSchedule{
-				Type:                deploymentfreezes.DaysPerWeek,
+				Type:                deploymentfreezes.Weekly,
 				Unit:                24,
 				EndType:             deploymentfreezes.AfterOccurrences,
-				EndAfterOccurrences: ptr(5),
+				EndAfterOccurrences: 5,
 				DaysOfWeek:          []string{"Monday", "Wednesday", "Friday"},
 			},
 			validate: func(t *testing.T, freeze *deploymentfreezes.DeploymentFreeze) {
-				require.Equal(t, deploymentfreezes.DaysPerWeek, freeze.RecurringSchedule.Type)
+				require.Equal(t, deploymentfreezes.Weekly, freeze.RecurringSchedule.Type)
 				require.Equal(t, []string{"Monday", "Wednesday", "Friday"}, freeze.RecurringSchedule.DaysOfWeek)
 			},
 		},
 		{
 			name: "Monthly Schedule",
 			schedule: &deploymentfreezes.RecurringSchedule{
-				Type:                deploymentfreezes.DaysPerMonth,
-				Unit:                24,
+				Type:                deploymentfreezes.Monthly,
+				Unit:                1,
 				EndType:             deploymentfreezes.Never,
 				MonthlyScheduleType: "DayOfMonth",
-				DayOfWeek:           ptr("Thursday"),
-				DayNumberOfMonth:    ptr("1"),
+				DayOfWeek:           "Thursday",
+				DayNumberOfMonth:    "1",
 			},
 			validate: func(t *testing.T, freeze *deploymentfreezes.DeploymentFreeze) {
-				require.Equal(t, deploymentfreezes.DaysPerMonth, freeze.RecurringSchedule.Type)
+				require.Equal(t, deploymentfreezes.Monthly, freeze.RecurringSchedule.Type)
 				require.Equal(t, "DayOfMonth", freeze.RecurringSchedule.MonthlyScheduleType)
-				require.Equal(t, "Thursday", *freeze.RecurringSchedule.DayOfWeek)
+				require.Equal(t, "Thursday", freeze.RecurringSchedule.DayOfWeek)
 			},
 		},
 		{

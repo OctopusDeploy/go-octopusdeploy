@@ -14,10 +14,10 @@ type TenantProjectEnvironment struct {
 type RecurringScheduleType string
 
 const (
-	OnceDaily    RecurringScheduleType = "OnceDaily"
-	DaysPerWeek  RecurringScheduleType = "DaysPerWeek"
-	DaysPerMonth RecurringScheduleType = "DaysPerMonth"
-	Annually     RecurringScheduleType = "Annually"
+	Daily    RecurringScheduleType = "Daily"
+	Weekly   RecurringScheduleType = "Weekly"
+	Monthly  RecurringScheduleType = "Monthly"
+	Annually RecurringScheduleType = "Annually"
 )
 
 type RecurringScheduleEndType string
@@ -40,12 +40,12 @@ type RecurringSchedule struct {
 	Unit                int                      `json:"Unit"`
 	EndType             RecurringScheduleEndType `json:"EndType"`
 	EndOnDate           *time.Time               `json:"EndOnDate,omitempty"`
-	EndAfterOccurrences *int                     `json:"EndAfterOccurrences,omitempty"`
+	EndAfterOccurrences int                      `json:"EndAfterOccurrences,omitempty"`
 	MonthlyScheduleType string                   `json:"MonthlyScheduleType,omitempty"`
-	DateOfMonth         *string                  `json:"DateOfMonth,omitempty"`
-	DayNumberOfMonth    *string                  `json:"DayNumberOfMonth,omitempty"`
+	DateOfMonth         string                   `json:"DateOfMonth,omitempty"`
+	DayNumberOfMonth    string                   `json:"DayNumberOfMonth,omitempty"`
 	DaysOfWeek          []string                 `json:"DaysOfWeek,omitempty"`
-	DayOfWeek           *string                  `json:"DayOfWeek,omitempty"`
+	DayOfWeek           string                   `json:"DayOfWeek,omitempty"`
 }
 
 type DeploymentFreezes struct {
