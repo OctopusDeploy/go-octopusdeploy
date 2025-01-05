@@ -31,7 +31,7 @@ type IAccount interface {
 
 // account is the embedded struct used for all accounts.
 type account struct {
-	AccountType            AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AzureOidc AmazonWebServicesAccount AmazonWebServicesOidcAccount AmazonWebServicesRoleAccount GoogleCloudAccount Token"`
+	AccountType            AccountType                 `json:"AccountType" validate:"required,oneof=None UsernamePassword SshKeyPair AzureSubscription AzureServicePrincipal AzureOidc AmazonWebServicesAccount AmazonWebServicesOidcAccount AmazonWebServicesRoleAccount GoogleCloudAccount GenericOidcAccount Token"`
 	Description            string                      `json:"Description,omitempty"`
 	EnvironmentIDs         []string                    `json:"EnvironmentIds,omitempty"`
 	Name                   string                      `json:"Name" validate:"required,notblank,notall"`

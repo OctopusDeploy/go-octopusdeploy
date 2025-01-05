@@ -22,7 +22,6 @@ func TestProjectExtensionSettingsAsJSON(t *testing.T) {
 	standardChangeTemplateName := internal.GetRandomName()
 
 	expectedJSON := fmt.Sprintf(`{
-		"AllowIgnoreChannelRules": false,
 		"AutoCreateRelease": false,
  		"DefaultToSkipIfAlreadyInstalled": false,
 		"ExtensionSettings": [

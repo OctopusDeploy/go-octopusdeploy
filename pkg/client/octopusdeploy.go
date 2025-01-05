@@ -23,6 +23,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/dashboard"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deploymentfreezes"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/events"
@@ -94,6 +95,7 @@ type Client struct {
 	GitCredentials                 *credentials.Service
 	DashboardConfigurations        *dashboard.DashboardConfigurationService
 	Dashboards                     *dashboard.DashboardService
+	DeploymentFreezes              *deploymentfreezes.DeploymentFreezeService
 	DeploymentProcesses            *deployments.DeploymentProcessService
 	Deployments                    *deployments.DeploymentService
 	DynamicExtensions              *extensions.DynamicExtensionService
@@ -199,7 +201,7 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 	if err != nil {
 		return nil, err
 	}
-	return NewClientWithCredentials(httpClient, apiURL, apiKeyCredential, spaceID, "")
+	return NewClientWithCredentials(httpClient, apiURL, apiKeyCredential, spaceID, requestingTool)
 }
 
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.

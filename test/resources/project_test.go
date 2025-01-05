@@ -40,8 +40,7 @@ func TestProjectMarshalJSON(t *testing.T) {
 		"IsDisabled": false,
 		"DiscreteChannelRelease": false,
 		"IsVersionControlled": false,
-		"ProjectConnectivityPolicy":{"AllowDeploymentsToNoTargets":false,"ExcludeUnhealthyTargets":false},
-		"AllowIgnoreChannelRules": false
+		"ProjectConnectivityPolicy":{"AllowDeploymentsToNoTargets":false,"ExcludeUnhealthyTargets":false}
 	}`, lifecycleID, name, projectGroupID)
 
 	project := projects.NewProject(name, lifecycleID, projectGroupID)
@@ -69,8 +68,7 @@ func TestProjectMarshalJSON(t *testing.T) {
 		"DefaultToSkipIfAlreadyInstalled": false,
 		"IsDisabled": false,
 		"DiscreteChannelRelease": false,
-		"IsVersionControlled": false,
-		"AllowIgnoreChannelRules": false
+		"IsVersionControlled": false
 	}`, lifecycleID, name, connectivityPolicyAsJSON, projectGroupID)
 
 	jsonassert.New(t).Assertf(string(projectAsJSON), expectedJson)

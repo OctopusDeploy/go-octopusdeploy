@@ -52,14 +52,15 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	require.NotNil(t, client)
 
 	invalidResource := &actiontemplates.ActionTemplate{}
-	resource, err := client.ActionTemplates.Add(invalidResource)
+
+	resource, err := actiontemplates.Add(client, invalidResource)
 	assert.NotNil(t, err)
 	assert.Nil(t, resource)
 
 	resource = createActionTemplate(t)
 	require.NotNil(t, resource)
 
-	resource, err = client.ActionTemplates.Add(resource)
+	resource, err = actiontemplates.Add(client, resource)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
 	defer client.ActionTemplates.DeleteByID(resource.GetID())
@@ -79,7 +80,7 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	require.NotNil(t, client)
 
 	id := internal.GetRandomName()
-	resource, err := client.ActionTemplates.GetByID(id)
+	resource, err := actiontemplates.GetByID(client, client.GetSpaceID(), id)
 	assert.NotNil(t, err)
 	assert.Nil(t, resource)
 
@@ -88,7 +89,7 @@ func TestActionTemplateServiceGetByID(t *testing.T) {
 	require.NotNil(t, resources)
 
 	for _, resource := range resources {
-		resourceToCompare, err := client.ActionTemplates.GetByID(resource.GetID())
+		resourceToCompare, err := actiontemplates.GetByID(client, client.GetSpaceID(), resource.GetID())
 		require.NoError(t, err)
 		IsEqualActionTemplates(t, resource, resourceToCompare)
 	}

@@ -6,6 +6,7 @@ type Phase struct {
 	AutomaticDeploymentTargets         []string              `json:"AutomaticDeploymentTargets"`
 	ID                                 string                `json:"Id,omitempty"`
 	IsOptionalPhase                    bool                  `json:"IsOptionalPhase"`
+	IsPriorityPhase                    bool                  `json:"IsPriorityPhase"`
 	MinimumEnvironmentsBeforePromotion int32                 `json:"MinimumEnvironmentsBeforePromotion"`
 	Name                               string                `json:"Name" validate:"required"`
 	OptionalDeploymentTargets          []string              `json:"OptionalDeploymentTargets"`

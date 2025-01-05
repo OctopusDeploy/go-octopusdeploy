@@ -340,7 +340,6 @@ func TestMaven(t *testing.T) {
 	if typedFeed.FeedURI != "http://example.com" {
 		t.Fatalf("FeedURI does not match")
 	}
-
 }
 
 func TestNuget(t *testing.T) {
@@ -541,5 +540,76 @@ func TestS3(t *testing.T) {
 
 	if !typedFeed.UseMachineCredentials {
 		t.Fatalf("UseMachineCredentials does not match")
+	}
+}
+
+func TestOCIRegistry(t *testing.T) {
+	feedResource := FeedResource{
+		AccessKey:                         "",
+		APIVersion:                        "test",
+		DeleteUnreleasedPackagesAfterDays: 10,
+		DownloadAttempts:                  5,
+		DownloadRetryBackoffSeconds:       3,
+		EnhancedMode:                      false,
+		FeedType:                          FeedTypeOCIRegistry,
+		FeedURI:                           "oci://test-registry.docker.io",
+		IsBuiltInRepoSyncEnabled:          true,
+		Name:                              "Test Registry",
+		Password:                          core.NewSensitiveValue("test-password"),
+		PackageAcquisitionLocationOptions: nil,
+		Region:                            "",
+		RegistryPath:                      "",
+		SecretKey:                         nil,
+		SpaceID:                           "",
+		Username:                          "test-username",
+		LayoutRegex:                       "",
+		Repository:                        "",
+		UseMachineCredentials:             false,
+		Resource:                          resources.Resource{},
+	}
+
+	feed, err := ToFeed(&feedResource)
+
+	if err != nil {
+		t.Fatalf("Error should not have been returned. %s", err)
+	}
+
+	typedFeed := feed.(*OCIRegistryFeed)
+
+	if typedFeed.Name != "Test Registry" {
+		t.Fatalf("Name does not match")
+	}
+
+	if typedFeed.FeedURI != "oci://test-registry.docker.io" {
+		t.Fatalf("FeedURI does not match")
+	}
+
+	if typedFeed.Username != "test-username" {
+		t.Fatalf("Username does not match")
+	}
+}
+
+func TestOCIRegistryToResource(t *testing.T) {
+	feed := OCIRegistryFeed{
+		FeedURI: "oci://registry-2.docker.io",
+		feed:    *newFeed("Test Registry 2", FeedTypeOCIRegistry),
+	}
+
+	feedResource, err := ToFeedResource(&feed)
+
+	if err != nil {
+		t.Fatalf("Error should not have been returned. %s", err)
+	}
+
+	if feedResource.FeedType != FeedTypeOCIRegistry {
+		t.Fatalf("FeedType does not match")
+	}
+
+	if feedResource.Name != "Test Registry 2" {
+		t.Fatalf("Name does not match")
+	}
+
+	if feedResource.FeedURI != "oci://registry-2.docker.io" {
+		t.Fatalf("FeedURI does not match")
 	}
 }

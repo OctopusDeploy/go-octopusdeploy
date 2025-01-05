@@ -24,13 +24,14 @@ type ProjectTrigger struct {
 
 func NewProjectTrigger(name string, description string, isDisabled bool, project *projects.Project, action actions.ITriggerAction, filter filters.ITriggerFilter) *ProjectTrigger {
 	return &ProjectTrigger{
-		Action:     action,
-		Filter:     filter,
-		IsDisabled: isDisabled,
-		Name:       name,
-		ProjectID:  project.GetID(),
-		SpaceID:    project.SpaceID,
-		Resource:   *resources.NewResource(),
+		Action:      action,
+		Filter:      filter,
+		IsDisabled:  isDisabled,
+		Name:        name,
+		Description: description,
+		ProjectID:   project.GetID(),
+		SpaceID:     project.SpaceID,
+		Resource:    *resources.NewResource(),
 	}
 }
 

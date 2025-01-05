@@ -14,6 +14,7 @@ const (
 	CreateDeploymentUntenantedCommandV1 = "/api/{spaceId}/deployments/create/untenanted/v1" // POST
 
 	CreateRunRunbookCommand = "/api/{spaceId}/runbook-runs/create/v1" // POST
+	CreateRunGitRunbookCommand = "/api/{spaceId}/runbook-runs/git/create/v1" // POST
 
 	DeploymentProcesses = "/api/{spaceId}/deploymentprocesses{/id}{?skip,take,ids}" // GET
 
@@ -40,6 +41,13 @@ const (
 	RunbookSnapshotsByProject           = "/api/{spaceId}/projects/{projectId}/runbookSnapshots{/name}{?skip,take,searchByName}"                                                          // GET
 	RunbookSnapshotRunPreview           = "/api/{spaceId}/runbookSnapshots/{snapshotId}/runbookRuns/preview/{environmentId}{?includeDisabledSteps}"                                       // GET
 	RunbookRunTenantPreview             = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                                                 // POST
+
+	GitRunbookById                      = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}"                                                                                    // GET, DELETE
+	GitRunbooksByProject                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                                                 // GET
+	GitRunbookEnvironments              = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/environments"                                                                // GET
+	GitRunbookProcess                   = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbookProcesses/{id}"                                                                            // GET
+	GitRunbookRunPreview                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookRuns/preview/{environment}{?includeDisabledSteps}"                    // GET
+	GitRunbookSnapshotTemplate          = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/runbookSnapshotTemplate"                                                     // GET
 
 	Variables                           = "/api/{spaceId}/variables{/id}{?ids}"                                                                                                           // GET
 	ProjectVariablesByGitRef            = "/api/{spaceId}/projects/{projectId}/{gitRef}/variables"

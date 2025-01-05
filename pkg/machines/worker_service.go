@@ -49,6 +49,8 @@ func (s *WorkerService) Get(workersQuery WorkersQuery) (*resources.Resources[*Wo
 }
 
 // Add creates a new worker.
+//
+// Deprecated: use workers.Add
 func (s *WorkerService) Add(worker *Worker) (*Worker, error) {
 	if IsNil(worker) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterWorker)
@@ -67,20 +69,10 @@ func (s *WorkerService) Add(worker *Worker) (*Worker, error) {
 	return resp.(*Worker), nil
 }
 
-// TODO: validation implementation
-
-// func (s workerService) DiscoverWorker() ([]string, error) {
-// 	resp, err := api.ApiGet(s.GetClient(), new([]string), s.discoverWorkerPath)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	response := resp.(*[]string)
-// 	return *response, nil
-// }
-
 // GetAll returns all workers. If none can be found or an error occurs, it
 // returns an empty collection.
+//
+// Deprecated: use workers.GetAll
 func (s *WorkerService) GetAll() ([]*Worker, error) {
 	items := []*Worker{}
 	path, err := services.GetAllPath(s)
@@ -94,6 +86,8 @@ func (s *WorkerService) GetAll() ([]*Worker, error) {
 
 // GetByID returns the worker that matches the input ID. If one cannot be
 // found, it returns nil and an error.
+//
+// Deprecated: use workers.GetByID
 func (s *WorkerService) GetByID(id string) (*Worker, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -184,6 +178,8 @@ func (s *WorkerService) GetByPartialName(partialName string) ([]*Worker, error) 
 }
 
 // Update modifies a worker based on the one provided as input.
+//
+// Deprecated: use workers.Update
 func (s *WorkerService) Update(worker *Worker) (*Worker, error) {
 	if worker == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterWorker)
