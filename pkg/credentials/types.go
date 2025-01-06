@@ -6,4 +6,5 @@ const (
 	GitCredentialTypeAnonymous        = Type("Anonymous")
 	GitCredentialTypeReference        = Type("Reference")
 	GitCredentialTypeUsernamePassword = Type("UsernamePassword")
+	GitCredentialTypeGitHub           = Type("GitHub")
 )
