@@ -24,6 +24,7 @@ func CreateTestSSHEndpoint(t *testing.T) *SSHEndpoint {
 	}
 	proxyID := "proxy-id"
 	port := 22
+	keyalgo := "ssh-rsa"
 
 	sshEndpoint := NewSSHEndpoint(host, port, fingerprint)
 	require.NoError(t, sshEndpoint.Validate())
@@ -35,6 +36,7 @@ func CreateTestSSHEndpoint(t *testing.T) *SSHEndpoint {
 	sshEndpoint.ModifiedOn = &lastModifiedOn
 	sshEndpoint.Links = links
 	sshEndpoint.ProxyID = proxyID
+	sshEndpoint.KeyAlgo = keyalgo
 
 	require.NoError(t, sshEndpoint.Validate())
 
@@ -73,6 +75,7 @@ const sshEndpointAsJSON string = `{
 	"Host": "example.com",
 	"Port": 22,
 	"Fingerprint": "22:22:22:22:22:22:22:22:22:22:22:22:22:22:22",
+	"KeyAlgo": "ssh-rsa",
 	"Uri": "ssh://example.com:22/",
 	"ProxyId": "proxy-id",
 	"DotNetCorePlatform": "linux-x64",
