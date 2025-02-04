@@ -314,3 +314,41 @@ func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
 	return newclient.GetAll[Tenant](client, template, spaceID)
 }
+
+// GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
+func GetProjectVariables(client newclient.Client, tenant *Tenant) (*variables.TenantProjectVariablesResource, error) {
+	body := variables.GetTenantProjectVariablesQuery{
+		TenantID: tenant.ID,
+		SpaceID:  tenant.SpaceID,
+	}
+	return newclient.GetByRequest[variables.TenantProjectVariablesResource](client.HttpSession(), tenant.Links["ProjectVariables"], body)
+}
+
+// GetCommonVariables returns all tenant common variables. If an error occurs, it returns nil.
+func GetCommonVariables(client newclient.Client, tenant *Tenant) (*variables.TenantCommonVariablesResource, error) {
+	body := variables.GetTenantCommonVariablesQuery{
+		TenantID: tenant.ID,
+		SpaceID:  tenant.SpaceID,
+	}
+	return newclient.GetByRequest[variables.TenantCommonVariablesResource](client.HttpSession(), tenant.Links["CommonVariables"], body)
+}
+
+// UpdateProjectVariables modifies tenant project variables based on the ones provided as input.
+func UpdateProjectVariables(client newclient.Client, tenant *Tenant, projectVariables *variables.TenantProjectVariablesResource) (*variables.TenantProjectVariablesResource, error) {
+	return newclient.Update[variables.TenantProjectVariablesResource](client, tenant.Links["ProjectVariables"], tenant.SpaceID, tenant.ID, projectVariables)
+}
+
+// UpdateCommonVariables modifies tenant common variables based on the ones provided as input.
+func UpdateCommonVariables(client newclient.Client, tenant *Tenant, commonVariables *variables.TenantCommonVariablesResource) (*variables.TenantCommonVariablesResource, error) {
+	return newclient.Update[variables.TenantCommonVariablesResource](client, tenant.Links["CommonVariables"], tenant.SpaceID, tenant.ID, commonVariables)
+}
+
+// AddProjectVariables creates new tenant project variables.
+func AddProjectVariables(client newclient.Client, tenant *Tenant, projectVariables *variables.TenantProjectVariablesResource) (*variables.TenantProjectVariablesResource, error) {
+	return newclient.Add[variables.TenantProjectVariablesResource](client, tenant.Links["ProjectVariables"], tenant.SpaceID, projectVariables)
+}
+
+// AddCommonVariables creates new tenant common variables.
+func AddCommonVariables(client newclient.Client, tenant *Tenant, commonVariables *variables.TenantCommonVariablesResource) (*variables.TenantCommonVariablesResource, error) {
+	return newclient.Add[variables.TenantCommonVariablesResource](client, tenant.Links["CommonVariables"], tenant.SpaceID, commonVariables)
+}
