@@ -319,13 +319,13 @@ const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariab
 const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables"
 
 // GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
-func GetProjectVariables(client newclient.Client, spaceID string, ID string) (*variables.TenantProjectVariablesResource, error) {
-	return newclient.GetByID[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, ID)
+func GetProjectVariables(client newclient.Client, spaceID string, tenantID string) (*variables.TenantProjectVariablesResource, error) {
+	return newclient.GetByID[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, tenantID)
 }
 
 // GetCommonVariables returns all tenant common variables. If an error occurs, it returns nil.
-func GetCommonVariables(client newclient.Client, spaceID string, ID string) (*variables.TenantCommonVariablesResource, error) {
-	return newclient.GetByID[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, ID)
+func GetCommonVariables(client newclient.Client, spaceID string, tenantID string) (*variables.TenantCommonVariablesResource, error) {
+	return newclient.GetByID[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, tenantID)
 }
 
 // UpdateProjectVariables modifies tenant project variables based on the ones provided as input.
