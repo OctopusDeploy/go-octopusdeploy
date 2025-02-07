@@ -167,10 +167,6 @@ func Get[TResponse any](httpSession *HttpSession, url string) (*TResponse, error
 	return DoRequest[TResponse](httpSession, http.MethodGet, url, nil)
 }
 
-func GetByRequest[TResponse any](httpSession *HttpSession, url string, body any) (*TResponse, error) {
-	return DoRequest[TResponse](httpSession, http.MethodGet, url, body)
-}
-
 func Post[TResponse any](httpSession *HttpSession, url string, body any) (*TResponse, error) {
 	return DoRequest[TResponse](httpSession, http.MethodPost, url, body)
 }
