@@ -315,40 +315,35 @@ func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
 	return newclient.GetAll[Tenant](client, template, spaceID)
 }
 
+const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables"
+const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables"
+
 // GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
-func GetProjectVariables(client newclient.Client, tenant *Tenant) (*variables.TenantProjectVariablesResource, error) {
-	body := variables.GetTenantProjectVariablesQuery{
-		TenantID: tenant.ID,
-		SpaceID:  tenant.SpaceID,
-	}
-	return newclient.GetByRequest[variables.TenantProjectVariablesResource](client.HttpSession(), tenant.Links["ProjectVariables"], body)
+func GetProjectVariables(client newclient.Client, spaceID string, ID string) (*variables.TenantProjectVariablesResource, error) {
+	return newclient.GetByID[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, ID)
 }
 
 // GetCommonVariables returns all tenant common variables. If an error occurs, it returns nil.
-func GetCommonVariables(client newclient.Client, tenant *Tenant) (*variables.TenantCommonVariablesResource, error) {
-	body := variables.GetTenantCommonVariablesQuery{
-		TenantID: tenant.ID,
-		SpaceID:  tenant.SpaceID,
-	}
-	return newclient.GetByRequest[variables.TenantCommonVariablesResource](client.HttpSession(), tenant.Links["CommonVariables"], body)
+func GetCommonVariables(client newclient.Client, spaceID string, ID string) (*variables.TenantCommonVariablesResource, error) {
+	return newclient.GetByID[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, ID)
 }
 
 // UpdateProjectVariables modifies tenant project variables based on the ones provided as input.
-func UpdateProjectVariables(client newclient.Client, tenant *Tenant, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResource, error) {
-	return newclient.Update[variables.TenantProjectVariablesResource](client, tenant.Links["ProjectVariables"], tenant.SpaceID, tenant.ID, projectVariables)
+func UpdateProjectVariables(client newclient.Client, spaceID string, ID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResource, error) {
+	return newclient.Update[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, ID, projectVariables)
 }
 
 // UpdateCommonVariables modifies tenant common variables based on the ones provided as input.
-func UpdateCommonVariables(client newclient.Client, tenant *Tenant, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
-	return newclient.Update[variables.TenantCommonVariablesResource](client, tenant.Links["CommonVariables"], tenant.SpaceID, tenant.ID, commonVariables)
+func UpdateCommonVariables(client newclient.Client, spaceID string, ID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
+	return newclient.Update[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, ID, commonVariables)
 }
 
 // AddProjectVariables creates new tenant project variables.
-func AddProjectVariables(client newclient.Client, tenant *Tenant, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResource, error) {
-	return newclient.Add[variables.TenantProjectVariablesResource](client, tenant.Links["ProjectVariables"], tenant.SpaceID, projectVariables)
+func AddProjectVariables(client newclient.Client, spaceID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResource, error) {
+	return newclient.Add[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, projectVariables)
 }
 
 // AddCommonVariables creates new tenant common variables.
-func AddCommonVariables(client newclient.Client, tenant *Tenant, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
-	return newclient.Add[variables.TenantCommonVariablesResource](client, tenant.Links["CommonVariables"], tenant.SpaceID, commonVariables)
+func AddCommonVariables(client newclient.Client, spaceID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
+	return newclient.Add[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, commonVariables)
 }
