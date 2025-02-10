@@ -26,7 +26,7 @@ type TenantCommonVariable struct {
 }
 
 type ModifyTenantCommonVariablesCommand struct {
-	Variables []TenantCommonVariableCommand `json:"Variables,omitempty"`
+	Variables []TenantCommonVariableCommand `json:"Variables"`
 }
 
 type TenantCommonVariableCommand struct {

@@ -27,7 +27,7 @@ type TenantProjectVariable struct {
 }
 
 type ModifyTenantProjectVariablesCommand struct {
-	Variables []TenantProjectVariableCommand `json:"Variables,omitempty"`
+	Variables []TenantProjectVariableCommand `json:"Variables"`
 }
 
 type TenantProjectVariableCommand struct {
