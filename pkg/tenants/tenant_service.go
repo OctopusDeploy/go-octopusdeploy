@@ -329,11 +329,11 @@ func GetCommonVariables(client newclient.Client, spaceID string, tenantID string
 }
 
 // UpdateProjectVariables modifies tenant project variables based on the ones provided as input.
-func UpdateProjectVariables(client newclient.Client, spaceID string, ID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResource, error) {
-	return newclient.Update[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, ID, projectVariables)
+func UpdateProjectVariables(client newclient.Client, spaceID string, tenantID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResource, error) {
+	return newclient.Update[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, tenantID, projectVariables)
 }
 
 // UpdateCommonVariables modifies tenant common variables based on the ones provided as input.
-func UpdateCommonVariables(client newclient.Client, spaceID string, ID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
-	return newclient.Update[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, ID, commonVariables)
+func UpdateCommonVariables(client newclient.Client, spaceID string, tenantID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
+	return newclient.Update[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, tenantID, commonVariables)
 }
