@@ -337,13 +337,3 @@ func UpdateProjectVariables(client newclient.Client, spaceID string, ID string, 
 func UpdateCommonVariables(client newclient.Client, spaceID string, ID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
 	return newclient.Update[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, ID, commonVariables)
 }
-
-// AddProjectVariables creates new tenant project variables.
-func AddProjectVariables(client newclient.Client, spaceID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResource, error) {
-	return newclient.Add[variables.TenantProjectVariablesResource](client, tenantProjectVariableTemplate, spaceID, projectVariables)
-}
-
-// AddCommonVariables creates new tenant common variables.
-func AddCommonVariables(client newclient.Client, spaceID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResource, error) {
-	return newclient.Add[variables.TenantCommonVariablesResource](client, tenantCommonVariableTemplate, spaceID, commonVariables)
-}

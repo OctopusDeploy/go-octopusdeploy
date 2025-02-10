@@ -32,16 +32,16 @@ type TenantProjectVariable struct {
 }
 
 type ModifyTenantProjectVariablesCommand struct {
-	TenantID        string                         `json:"TenantId,omitempty"`
-	CommonVariables []TenantProjectVariableCommand `json:"CommonVariables,omitempty"`
+	TenantID  string                         `json:"TenantId,omitempty"`
+	Variables []TenantProjectVariableCommand `json:"Variables,omitempty"`
 }
 
 type TenantProjectVariableCommand struct {
-	Id                   string              `json:"Id,omitempty"`
-	LibraryVariableSetId string              `json:"LibraryVariableSetId"`
-	TemplateID           string              `json:"TemplateId"`
-	Value                core.PropertyValue  `json:"Value"`
-	Scope                TenantVariableScope `json:"Scope"`
+	Id         string              `json:"Id,omitempty"`
+	ProjectID  string              `json:"ProjectId"`
+	TemplateID string              `json:"TemplateId"`
+	Value      core.PropertyValue  `json:"Value"`
+	Scope      TenantVariableScope `json:"Scope"`
 
 	resources.Resource
 }

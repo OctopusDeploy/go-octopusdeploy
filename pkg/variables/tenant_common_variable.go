@@ -31,8 +31,8 @@ type TenantCommonVariable struct {
 }
 
 type ModifyTenantCommonVariablesCommand struct {
-	TenantID        string                        `json:"TenantId,omitempty"`
-	CommonVariables []TenantCommonVariableCommand `json:"CommonVariables,omitempty"`
+	TenantID  string                        `json:"TenantId,omitempty"`
+	Variables []TenantCommonVariableCommand `json:"Variables,omitempty"`
 }
 
 type TenantCommonVariableCommand struct {
