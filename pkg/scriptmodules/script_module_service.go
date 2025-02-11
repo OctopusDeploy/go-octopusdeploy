@@ -2,13 +2,14 @@ package scriptmodules
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"strings"
 )
 
 const contentType = "ScriptModule"
@@ -85,12 +86,21 @@ func Get(client newclient.Client, spaceID string, libraryVariablesQuery variable
 		return nil, err
 	}
 
-	resp, err := newclient.Get[resources.Resources[*variables.ScriptModule]](client.HttpSession(), expandedUri)
+	scriptModulesResponse, err := newclient.Get[resources.Resources[*variables.ScriptModule]](client.HttpSession(), expandedUri)
 	if err != nil {
 		return &resources.Resources[*variables.ScriptModule]{}, err
 	}
 
-	return resp, nil
+	for i, scriptModule := range scriptModulesResponse.Items {
+		scriptModuleWithSyntaxAndBody, err := getScriptModuleWithSyntaxAndBody(client, spaceID, scriptModule)
+		if err != nil {
+			return nil, err
+		}
+
+		scriptModulesResponse.Items[i] = scriptModuleWithSyntaxAndBody
+	}
+
+	return scriptModulesResponse, nil
 }
 
 // GetByID returns the script module that matches the space ID and input ID. If one
@@ -112,27 +122,13 @@ func GetByID(client newclient.Client, spaceID string, id string) (*variables.Scr
 	})
 
 	scriptModuleResponse, err := newclient.Get[variables.ScriptModule](client.HttpSession(), expandedUri)
-
-	// get associated variable set
-	variablesPath, err := client.URITemplateCache().Expand(uritemplates.Variables, map[string]any{
-		"spaceId": spaceID,
-		"id":      scriptModuleResponse.VariableSetID,
-	})
-
-	variablesResponse, err := newclient.Get[variables.VariableSet](client.HttpSession(), variablesPath)
 	if err != nil {
 		return nil, err
 	}
 
-	variableSet := *variablesResponse
-	for _, variable := range variableSet.Variables {
-		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
-			scriptModuleResponse.ScriptBody = variable.Value
-		}
-
-		if strings.HasPrefix(variable.Name, "Octopus.Script.Module.Language[") {
-			scriptModuleResponse.Syntax = variable.Value
-		}
+	scriptModuleResponse, err = getScriptModuleWithSyntaxAndBody(client, spaceID, scriptModuleResponse)
+	if err != nil {
+		return nil, err
 	}
 
 	return scriptModuleResponse, nil
@@ -217,4 +213,30 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	}
 
 	return newclient.Delete(client.HttpSession(), expandedUri)
+}
+
+func getScriptModuleWithSyntaxAndBody(client newclient.Client, spaceID string, scriptModuleResponse *variables.ScriptModule) (*variables.ScriptModule, error) {
+	// get associated variable set
+	variablesPath, err := client.URITemplateCache().Expand(uritemplates.Variables, map[string]any{
+		"spaceId": spaceID,
+		"id":      scriptModuleResponse.VariableSetID,
+	})
+
+	variablesResponse, err := newclient.Get[variables.VariableSet](client.HttpSession(), variablesPath)
+	if err != nil {
+		return nil, err
+	}
+
+	variableSet := *variablesResponse
+	for _, variable := range variableSet.Variables {
+		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
+			scriptModuleResponse.ScriptBody = variable.Value
+		}
+
+		if strings.HasPrefix(variable.Name, "Octopus.Script.Module.Language[") {
+			scriptModuleResponse.Syntax = variable.Value
+		}
+	}
+
+	return scriptModuleResponse, nil
 }
