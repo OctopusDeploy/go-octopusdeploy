@@ -91,13 +91,13 @@ func Get(client newclient.Client, spaceID string, libraryVariablesQuery variable
 		return &resources.Resources[*variables.ScriptModule]{}, err
 	}
 
-	for i, scriptModule := range scriptModulesResponse.Items {
-		scriptModuleWithSyntaxAndBody, err := getScriptModuleWithSyntaxAndBody(client, spaceID, scriptModule)
+	for _, scriptModule := range scriptModulesResponse.Items {
+		err := populateScriptModuleSyntaxAndBody(client, spaceID, scriptModule)
 		if err != nil {
 			return nil, err
 		}
 
-		scriptModulesResponse.Items[i] = scriptModuleWithSyntaxAndBody
+		//scriptModulesResponse.Items[i] = scriptModuleWithSyntaxAndBody
 	}
 
 	return scriptModulesResponse, nil
@@ -126,7 +126,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*variables.Scr
 		return nil, err
 	}
 
-	scriptModuleResponse, err = getScriptModuleWithSyntaxAndBody(client, spaceID, scriptModuleResponse)
+	err = populateScriptModuleSyntaxAndBody(client, spaceID, scriptModuleResponse)
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +215,7 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	return newclient.Delete(client.HttpSession(), expandedUri)
 }
 
-func getScriptModuleWithSyntaxAndBody(client newclient.Client, spaceID string, scriptModuleResponse *variables.ScriptModule) (*variables.ScriptModule, error) {
+func populateScriptModuleSyntaxAndBody(client newclient.Client, spaceID string, scriptModuleResponse *variables.ScriptModule) error {
 	// get associated variable set
 	variablesPath, err := client.URITemplateCache().Expand(uritemplates.Variables, map[string]any{
 		"spaceId": spaceID,
@@ -224,7 +224,7 @@ func getScriptModuleWithSyntaxAndBody(client newclient.Client, spaceID string, s
 
 	variablesResponse, err := newclient.Get[variables.VariableSet](client.HttpSession(), variablesPath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	variableSet := *variablesResponse
@@ -238,5 +238,5 @@ func getScriptModuleWithSyntaxAndBody(client newclient.Client, spaceID string, s
 		}
 	}
 
-	return scriptModuleResponse, nil
+	return nil
 }
