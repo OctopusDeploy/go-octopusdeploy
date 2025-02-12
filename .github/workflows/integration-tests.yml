@@ -43,6 +43,9 @@ jobs:
       statuses: write
       checks: write
     steps:
+      - name: Set up debugger if there's a failure
+        if: ${{ failure() }}
+        uses: csexton/debugger-action@master
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
