@@ -6,7 +6,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-type TenantProjectVariablesResource struct {
+type TenantProjectVariablesResponse struct {
 	TenantID         string                  `json:"TenantId,omitempty"`
 	ProjectVariables []TenantProjectVariable `json:"ProjectVariables,omitempty"`
 
@@ -14,7 +14,6 @@ type TenantProjectVariablesResource struct {
 }
 
 type TenantProjectVariable struct {
-	Id          string                                  `json:"Id,omitempty"`
 	ProjectID   string                                  `json:"ProjectId"`
 	ProjectName string                                  `json:"ProjectName,omitempty"`
 	TemplateID  string                                  `json:"TemplateId"`
@@ -31,11 +30,9 @@ type ModifyTenantProjectVariablesCommand struct {
 }
 
 type TenantProjectVariableCommand struct {
-	Id         string              `json:"Id,omitempty"`
+	ID         string              `json:"Id,omitempty"`
 	ProjectID  string              `json:"ProjectId"`
 	TemplateID string              `json:"TemplateId"`
 	Value      core.PropertyValue  `json:"Value"`
 	Scope      TenantVariableScope `json:"Scope"`
-
-	resources.Resource
 }
