@@ -1,6 +1,8 @@
 package tasks
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
@@ -56,4 +58,20 @@ func (s *TaskService) Get(tasksQuery TasksQuery) (*resources.Resources[*Task], e
 	}
 
 	return response.(*resources.Resources[*Task]), nil
+}
+
+func (s *TaskService) GetDetails(taskID string) (*TaskDetailsResource, error) {
+	path, err := services.GetByIDPath(s, taskID)
+	if err != nil {
+		return nil, err
+	}
+
+	path = fmt.Sprintf("%s/details", path)
+
+	response, err := api.ApiGet(s.GetClient(), new(TaskDetailsResource), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.(*TaskDetailsResource), nil
 }
