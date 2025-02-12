@@ -29,7 +29,7 @@ jobs:
           --health-retries 10
           --health-start-period 10s
       octopusserver:
-        image: docker.packages.octopushq.com/octopusdeploy/octopusdeploy
+        image: docker.packages.octopushq.com/octopusdeploy/octopusdeploy:2025.1.9477-lm-add-healthcheck-startup-time-linux
         env:
           ACCEPT_EULA: Y
           DB_CONNECTION_STRING: 'Server=sqlserver;Database=OctopusDeploy;User Id=sa;Password=${{ env.SA_PASSWORD }};'
