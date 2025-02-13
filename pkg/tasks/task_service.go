@@ -1,10 +1,9 @@
 package tasks
 
 import (
-	"fmt"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -60,18 +59,8 @@ func (s *TaskService) Get(tasksQuery TasksQuery) (*resources.Resources[*Task], e
 	return response.(*resources.Resources[*Task]), nil
 }
 
-func (s *TaskService) GetDetails(taskID string) (*TaskDetailsResource, error) {
-	path, err := services.GetByIDPath(s, taskID)
-	if err != nil {
-		return nil, err
-	}
-
-	path = fmt.Sprintf("%s/details", path)
-
-	response, err := api.ApiGet(s.GetClient(), new(TaskDetailsResource), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.(*TaskDetailsResource), nil
+// Get task detals by Id
+func GetDetails(client newclient.Client, spaceID string, taskID string) (*TaskDetailsResource, error) {
+	const detailTemplate = "/api/tasks{/id}/details"
+	return newclient.GetByID[TaskDetailsResource](client, detailTemplate, spaceID, taskID)
 }

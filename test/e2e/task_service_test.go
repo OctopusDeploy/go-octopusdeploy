@@ -53,7 +53,7 @@ func TestTaskServiceGetDetails(t *testing.T) {
 
 	// Test with non-existent ID
 	randomID := internal.GetRandomName()
-	taskDetails, err := client.Tasks.GetDetails(randomID)
+	taskDetails, err := tasks.GetDetails(client, client.GetSpaceID(), randomID)
 	assert.Error(t, err)
 	assert.Nil(t, taskDetails)
 
@@ -65,7 +65,7 @@ func TestTaskServiceGetDetails(t *testing.T) {
 	require.NotEmpty(t, tasksToTest.Items)
 
 	for _, task := range tasksToTest.Items {
-		taskDetails, err := client.Tasks.GetDetails(task.GetID())
+		taskDetails, err := tasks.GetDetails(client, client.GetSpaceID(), task.GetID())
 		assert.NoError(t, err)
 		require.NotNil(t, taskDetails)
 
