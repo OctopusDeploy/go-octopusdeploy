@@ -46,3 +46,32 @@ func TestTaskServiceGetQuery(t *testing.T) {
 		AssertEqualTasks(t, task, *taskToCompare.Items[0])
 	}
 }
+
+func TestTaskServiceGetDetails(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	// Test with non-existent ID
+	randomID := internal.GetRandomName()
+	taskDetails, err := tasks.GetDetails(client, client.GetSpaceID(), randomID)
+	assert.Error(t, err)
+	assert.Nil(t, taskDetails)
+
+	// Get tasks using TasksQuery
+	query := tasks.TasksQuery{}
+	tasksToTest, err := client.Tasks.Get(query)
+	require.NoError(t, err)
+	require.NotNil(t, tasksToTest)
+	require.NotEmpty(t, tasksToTest.Items)
+
+	task := tasksToTest.Items[0]
+	taskDetails, err = tasks.GetDetails(client, client.GetSpaceID(), task.GetID())
+	assert.NoError(t, err)
+	require.NotNil(t, taskDetails)
+
+	// Verify the details
+	assert.Equal(t, task.GetID(), taskDetails.Task.GetID())
+	assert.NotNil(t, taskDetails.ActivityLogs)
+	assert.NotNil(t, taskDetails.Progress)
+	assert.GreaterOrEqual(t, taskDetails.PhysicalLogSize, int64(0))
+}

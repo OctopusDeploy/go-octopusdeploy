@@ -3,6 +3,7 @@ package tasks
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -56,4 +57,10 @@ func (s *TaskService) Get(tasksQuery TasksQuery) (*resources.Resources[*Task], e
 	}
 
 	return response.(*resources.Resources[*Task]), nil
+}
+
+// Get task detals by Id
+func GetDetails(client newclient.Client, spaceID string, taskID string) (*TaskDetailsResource, error) {
+	const detailTemplate = "/api/tasks{/id}/details"
+	return newclient.GetByID[TaskDetailsResource](client, detailTemplate, spaceID, taskID)
 }
