@@ -96,8 +96,6 @@ func Get(client newclient.Client, spaceID string, libraryVariablesQuery variable
 		if err != nil {
 			return nil, err
 		}
-
-		//scriptModulesResponse.Items[i] = scriptModuleWithSyntaxAndBody
 	}
 
 	return scriptModulesResponse, nil
