@@ -26,10 +26,10 @@ type TenantProjectVariable struct {
 }
 
 type ModifyTenantProjectVariablesCommand struct {
-	Variables []TenantProjectVariableCommand `json:"Variables"`
+	Variables []TenantProjectVariablePayload `json:"Variables"`
 }
 
-type TenantProjectVariableCommand struct {
+type TenantProjectVariablePayload struct {
 	ID         string              `json:"Id,omitempty"`
 	ProjectID  string              `json:"ProjectId"`
 	TemplateID string              `json:"TemplateId"`

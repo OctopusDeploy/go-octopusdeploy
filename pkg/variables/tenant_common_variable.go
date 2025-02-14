@@ -6,7 +6,21 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-type TenantCommonVariablesResponse struct {
+type GetTenantCommonVariablesQuery struct {
+	TenantID                      string `uri:"id" url:"id"`
+	SpaceID                       string `uri:"spaceId" url:"spaceId"`
+	IncludeMissingCommonVariables bool   `uri:"includeMissingCommonVariables" url:"includeMissingCommonVariables"`
+}
+
+type GetTenantCommonVariablesResponse struct {
+	TenantID               string                 `json:"TenantId,omitempty"`
+	CommonVariables        []TenantCommonVariable `json:"CommonVariables,omitempty"`
+	MissingCommonVariables []TenantCommonVariable `json:"MissingCommonVariables,omitempty"`
+
+	resources.Resource
+}
+
+type ModifyTenantCommonVariablesResponse struct {
 	TenantID        string                 `json:"TenantId,omitempty"`
 	CommonVariables []TenantCommonVariable `json:"CommonVariables,omitempty"`
 
@@ -25,10 +39,10 @@ type TenantCommonVariable struct {
 }
 
 type ModifyTenantCommonVariablesCommand struct {
-	Variables []TenantCommonVariableCommand `json:"Variables"`
+	Variables []TenantCommonVariablePayload `json:"Variables"`
 }
 
-type TenantCommonVariableCommand struct {
+type TenantCommonVariablePayload struct {
 	ID                   string              `json:"Id,omitempty"`
 	LibraryVariableSetId string              `json:"LibraryVariableSetId"`
 	TemplateID           string              `json:"TemplateId"`

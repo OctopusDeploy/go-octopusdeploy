@@ -316,7 +316,7 @@ func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
 }
 
 const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables"
-const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables"
+const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables?IncludeMissingCommonVariables={includeMissingCommonVariables}"
 
 // GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
 func GetProjectVariables(client newclient.Client, spaceID string, tenantID string) (*variables.TenantProjectVariablesResponse, error) {
@@ -324,8 +324,8 @@ func GetProjectVariables(client newclient.Client, spaceID string, tenantID strin
 }
 
 // GetCommonVariables returns all tenant common variables. If an error occurs, it returns nil.
-func GetCommonVariables(client newclient.Client, spaceID string, tenantID string) (*variables.TenantCommonVariablesResponse, error) {
-	return newclient.GetByID[variables.TenantCommonVariablesResponse](client, tenantCommonVariableTemplate, spaceID, tenantID)
+func GetCommonVariables(client newclient.Client, query variables.GetTenantCommonVariablesQuery) (*variables.GetTenantCommonVariablesResponse, error) {
+	return newclient.GetResourceByQuery[variables.GetTenantCommonVariablesResponse](client, tenantCommonVariableTemplate, query)
 }
 
 // UpdateProjectVariables modifies tenant project variables based on the ones provided as input.
@@ -334,6 +334,6 @@ func UpdateProjectVariables(client newclient.Client, spaceID string, tenantID st
 }
 
 // UpdateCommonVariables modifies tenant common variables based on the ones provided as input.
-func UpdateCommonVariables(client newclient.Client, spaceID string, tenantID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResponse, error) {
-	return newclient.Update[variables.TenantCommonVariablesResponse](client, tenantCommonVariableTemplate, spaceID, tenantID, commonVariables)
+func UpdateCommonVariables(client newclient.Client, spaceID string, tenantID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.ModifyTenantCommonVariablesResponse, error) {
+	return newclient.Update[variables.ModifyTenantCommonVariablesResponse](client, tenantCommonVariableTemplate, spaceID, tenantID, commonVariables)
 }
