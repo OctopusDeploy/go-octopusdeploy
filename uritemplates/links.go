@@ -42,7 +42,8 @@ const (
 	RunbookSnapshotRunPreview           = "/api/{spaceId}/runbookSnapshots/{snapshotId}/runbookRuns/preview/{environmentId}{?includeDisabledSteps}"                                       // GET
 	RunbookRunTenantPreview             = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                                                 // POST
 
-	GitRunbookById                      = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}"                                                                                    // GET, DELETE
+	GitRunbooks                         = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks"                                                                                         // POST
+	GitRunbookById                      = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}"                                                                                    // GET, PUT, DELETE
 	GitRunbooksByProject                = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                                                 // GET
 	GitRunbookEnvironments              = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{runbookId}/environments"                                                                // GET
 	GitRunbookProcess                   = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbookProcesses/{id}"                                                                            // GET

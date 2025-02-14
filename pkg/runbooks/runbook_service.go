@@ -436,6 +436,32 @@ func GetGitRunbookByName(client newclient.Client, spaceID string, projectID stri
 	return nil, nil
 }
 
+// AddGitRunbook updates the runbook that matches the input ID and GitRef.
+func AddGitRunbook(client newclient.Client, runbook *Runbook, gitRef string) (*Runbook, error) {
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	templateParams := map[string]any{"spaceId": runbook.SpaceID, "projectId": runbook.ProjectID, "gitRef": gitRef, "id": runbook.ID}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooks, templateParams)
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Add[Runbook](client, expandedUri, runbook.SpaceID, runbook)
+}
+
+// UpdateGitRunbook updates the runbook that matches the input ID and GitRef.
+func UpdateGitRunbook(client newclient.Client, runbook *Runbook, gitRef string) (*Runbook, error) {
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
+	}
+	templateParams := map[string]any{"spaceId": runbook.SpaceID, "projectId": runbook.ProjectID, "gitRef": gitRef, "id": runbook.ID}
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookById, templateParams)
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Update[Runbook](client, expandedUri, runbook.SpaceID, runbook.ID, runbook)
+}
+
 // DeleteGitRunbook deletes the runbook that matches the input ID and GitRef.
 func DeleteGitRunbook(client newclient.Client, spaceID string, projectID string, gitRef string, ID string) error {
 	if spaceID == "" {
