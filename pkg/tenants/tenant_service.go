@@ -314,3 +314,26 @@ func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
 	return newclient.GetAll[Tenant](client, template, spaceID)
 }
+
+const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables"
+const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables"
+
+// GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
+func GetProjectVariables(client newclient.Client, spaceID string, tenantID string) (*variables.TenantProjectVariablesResponse, error) {
+	return newclient.GetByID[variables.TenantProjectVariablesResponse](client, tenantProjectVariableTemplate, spaceID, tenantID)
+}
+
+// GetCommonVariables returns all tenant common variables. If an error occurs, it returns nil.
+func GetCommonVariables(client newclient.Client, spaceID string, tenantID string) (*variables.TenantCommonVariablesResponse, error) {
+	return newclient.GetByID[variables.TenantCommonVariablesResponse](client, tenantCommonVariableTemplate, spaceID, tenantID)
+}
+
+// UpdateProjectVariables modifies tenant project variables based on the ones provided as input.
+func UpdateProjectVariables(client newclient.Client, spaceID string, tenantID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResponse, error) {
+	return newclient.Update[variables.TenantProjectVariablesResponse](client, tenantProjectVariableTemplate, spaceID, tenantID, projectVariables)
+}
+
+// UpdateCommonVariables modifies tenant common variables based on the ones provided as input.
+func UpdateCommonVariables(client newclient.Client, spaceID string, tenantID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.TenantCommonVariablesResponse, error) {
+	return newclient.Update[variables.TenantCommonVariablesResponse](client, tenantCommonVariableTemplate, spaceID, tenantID, commonVariables)
+}
