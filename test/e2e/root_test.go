@@ -3,6 +3,8 @@ package e2e
 import (
 	"testing"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,4 +27,19 @@ func TestGetRoot(t *testing.T) {
 	assert.NotEmpty(t, root.APIVersion)
 	assert.NotEqual(t, root.InstallationID, uuid.Nil)
 	assert.NotEmpty(t, root.Links)
+}
+
+func TestGetSpaceRoot(t *testing.T) {
+	octopusClient := getOctopusClient()
+
+	resource, err := client.GetSpaceRoot(octopusClient, octopusClient.GetSpaceID())
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, resource)
+
+	if resource == nil {
+		return
+	}
+
+	assert.NotEmpty(t, resource.Links)
 }
