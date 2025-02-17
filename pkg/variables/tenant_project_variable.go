@@ -6,7 +6,21 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-type TenantProjectVariablesResponse struct {
+type GetTenantProjectVariablesQuery struct {
+	TenantID                       string `uri:"id" url:"id"`
+	SpaceID                        string `uri:"spaceId" url:"spaceId"`
+	IncludeMissingProjectVariables bool   `uri:"includeMissingProjectVariables" url:"includeMissingProjectVariables"`
+}
+
+type GetTenantProjectVariablesResponse struct {
+	TenantID                string                  `json:"TenantId,omitempty"`
+	ProjectVariables        []TenantProjectVariable `json:"ProjectVariables,omitempty"`
+	MissingProjectVariables []TenantProjectVariable `json:"MissingProjectVariables,omitempty"`
+
+	resources.Resource
+}
+
+type ModifyTenantProjectVariablesResponse struct {
 	TenantID         string                  `json:"TenantId,omitempty"`
 	ProjectVariables []TenantProjectVariable `json:"ProjectVariables,omitempty"`
 
@@ -20,7 +34,6 @@ type TenantProjectVariable struct {
 	Template    actiontemplates.ActionTemplateParameter `json:"Template"`
 	Value       core.PropertyValue                      `json:"Value"`
 	Scope       TenantVariableScope                     `json:"Scope"`
-	Links       map[string]string                       `json:"Links,omitempty"`
 
 	resources.Resource
 }

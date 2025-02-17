@@ -315,12 +315,12 @@ func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
 	return newclient.GetAll[Tenant](client, template, spaceID)
 }
 
-const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables"
+const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables?IncludeMissingProjectVariables={includeMissingProjectVariables}"
 const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables?IncludeMissingCommonVariables={includeMissingCommonVariables}"
 
 // GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
-func GetProjectVariables(client newclient.Client, spaceID string, tenantID string) (*variables.TenantProjectVariablesResponse, error) {
-	return newclient.GetByID[variables.TenantProjectVariablesResponse](client, tenantProjectVariableTemplate, spaceID, tenantID)
+func GetProjectVariables(client newclient.Client, query variables.GetTenantProjectVariablesQuery) (*variables.GetTenantProjectVariablesResponse, error) {
+	return newclient.GetResourceByQuery[variables.GetTenantProjectVariablesResponse](client, tenantProjectVariableTemplate, query)
 }
 
 // GetCommonVariables returns all tenant common variables. If an error occurs, it returns nil.
@@ -329,8 +329,8 @@ func GetCommonVariables(client newclient.Client, query variables.GetTenantCommon
 }
 
 // UpdateProjectVariables modifies tenant project variables based on the ones provided as input.
-func UpdateProjectVariables(client newclient.Client, spaceID string, tenantID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.TenantProjectVariablesResponse, error) {
-	return newclient.Update[variables.TenantProjectVariablesResponse](client, tenantProjectVariableTemplate, spaceID, tenantID, projectVariables)
+func UpdateProjectVariables(client newclient.Client, spaceID string, tenantID string, projectVariables *variables.ModifyTenantProjectVariablesCommand) (*variables.ModifyTenantProjectVariablesResponse, error) {
+	return newclient.Update[variables.ModifyTenantProjectVariablesResponse](client, tenantProjectVariableTemplate, spaceID, tenantID, projectVariables)
 }
 
 // UpdateCommonVariables modifies tenant common variables based on the ones provided as input.
