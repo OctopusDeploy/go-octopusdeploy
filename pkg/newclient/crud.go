@@ -105,9 +105,9 @@ func GetByQuery[TResource any](client Client, template string, spaceID string, q
 	return res, nil
 }
 
-// GetByQueryWithoutSpace returns a resource based on the criteria defined by
+// GetResourceByQuery returns a resource based on the criteria defined by
 // its input query parameter.
-func GetByQueryWithoutSpace[TResource any](client Client, template string, query any) (*TResource, error) {
+func GetResourceByQuery[TResource any](client Client, template string, query any) (*TResource, error) {
 	values, _ := uritemplates.Struct2map(query)
 	if values == nil {
 		values = map[string]any{}
