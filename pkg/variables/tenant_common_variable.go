@@ -7,9 +7,9 @@ import (
 )
 
 type GetTenantCommonVariablesQuery struct {
-	TenantID                      string `uri:"id" url:"id"`
-	SpaceID                       string `uri:"spaceId" url:"spaceId"`
-	IncludeMissingCommonVariables bool   `uri:"includeMissingCommonVariables" url:"includeMissingCommonVariables"`
+	TenantID                string `uri:"id" url:"id"`
+	SpaceID                 string `uri:"spaceId" url:"spaceId"`
+	IncludeMissingVariables bool   `uri:"includeMissingVariables" url:"includeMissingVariables"`
 }
 
 type GetTenantCommonVariablesResponse struct {

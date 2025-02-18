@@ -7,9 +7,9 @@ import (
 )
 
 type GetTenantProjectVariablesQuery struct {
-	TenantID                       string `uri:"id" url:"id"`
-	SpaceID                        string `uri:"spaceId" url:"spaceId"`
-	IncludeMissingProjectVariables bool   `uri:"includeMissingProjectVariables" url:"includeMissingProjectVariables"`
+	TenantID                string `uri:"id" url:"id"`
+	SpaceID                 string `uri:"spaceId" url:"spaceId"`
+	IncludeMissingVariables bool   `uri:"includeMissingVariables" url:"includeMissingVariables"`
 }
 
 type GetTenantProjectVariablesResponse struct {

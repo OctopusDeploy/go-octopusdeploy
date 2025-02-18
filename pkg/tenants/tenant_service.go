@@ -315,8 +315,8 @@ func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
 	return newclient.GetAll[Tenant](client, template, spaceID)
 }
 
-const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables?IncludeMissingProjectVariables={includeMissingProjectVariables}"
-const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables?IncludeMissingCommonVariables={includeMissingCommonVariables}"
+const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables?IncludeMissingVariables={includeMissingVariables}"
+const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables?IncludeMissingVariables={includeMissingVariables}"
 
 // GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
 func GetProjectVariables(client newclient.Client, query variables.GetTenantProjectVariablesQuery) (*variables.GetTenantProjectVariablesResponse, error) {
