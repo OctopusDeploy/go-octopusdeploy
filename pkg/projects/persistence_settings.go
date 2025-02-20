@@ -7,6 +7,5 @@ type PersistenceSettings interface {
 
 // persistenceSettings represents persistence settings associated with a project.
 type persistenceSettings struct {
-	SettingsType  PersistenceSettingsType `json:"Type"`
-	DefaultBranch string                  `json:"DefaultBranch"`
+	SettingsType PersistenceSettingsType `json:"Type"`
 }
