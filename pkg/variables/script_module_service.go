@@ -54,11 +54,11 @@ func (s *ScriptModuleService) Add(scriptModule *ScriptModule) (*ScriptModule, er
 
 	variableSet := variablesResponse.(*VariableSet)
 	scriptBodyVariable := NewVariable(fmt.Sprintf("Octopus.Script.Module[%s]", scriptModule.Name))
-	scriptBodyVariable.Value = scriptModule.ScriptBody
+	scriptBodyVariable.Value = &scriptModule.ScriptBody
 	variableSet.Variables = append(variableSet.Variables, scriptBodyVariable)
 
 	syntaxVariable := NewVariable(fmt.Sprintf("Octopus.Script.Module.Language[%s]", scriptModule.Name))
-	syntaxVariable.Value = scriptModule.Syntax
+	syntaxVariable.Value = &scriptModule.Syntax
 	variableSet.Variables = append(variableSet.Variables, syntaxVariable)
 
 	_, err = services.ApiUpdate(s.GetClient(), variableSet, new(VariableSet), variablesPath)
@@ -140,12 +140,17 @@ func (s *ScriptModuleService) GetByID(id string) (*ScriptModule, error) {
 
 	variableSet := variablesResponse.(*VariableSet)
 	for _, variable := range variableSet.Variables {
+		value := ""
+		if variable.Value != nil {
+			value = *variable.Value
+		}
+
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
-			scriptModuleResponse.ScriptBody = variable.Value
+			scriptModuleResponse.ScriptBody = value
 		}
 
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module.Language[") {
-			scriptModuleResponse.Syntax = variable.Value
+			scriptModuleResponse.Syntax = value
 		}
 	}
 
@@ -197,11 +202,11 @@ func (s *ScriptModuleService) Update(scriptModule *ScriptModule) (*ScriptModule,
 	variableSet := variablesResponse.(*VariableSet)
 	for _, variable := range variableSet.Variables {
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
-			variable.Value = scriptModule.ScriptBody
+			variable.Value = &scriptModule.ScriptBody
 		}
 
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module.Language[") {
-			variable.Value = scriptModule.Syntax
+			variable.Value = &scriptModule.Syntax
 		}
 	}
 
@@ -212,12 +217,17 @@ func (s *ScriptModuleService) Update(scriptModule *ScriptModule) (*ScriptModule,
 
 	updatedVriableSet := updatedVariablesResponse.(*VariableSet)
 	for _, variable := range updatedVriableSet.Variables {
+		value := ""
+		if variable.Value != nil {
+			value = *variable.Value
+		}
+
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
-			scriptModuleResponse.ScriptBody = variable.Value
+			scriptModuleResponse.ScriptBody = value
 		}
 
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module.Language[") {
-			scriptModuleResponse.Syntax = variable.Value
+			scriptModuleResponse.Syntax = value
 		}
 	}
 
