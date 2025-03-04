@@ -13,16 +13,16 @@ type GetTenantProjectVariablesQuery struct {
 }
 
 type GetTenantProjectVariablesResponse struct {
-	TenantID                string                  `json:"TenantId,omitempty"`
-	ProjectVariables        []TenantProjectVariable `json:"ProjectVariables,omitempty"`
-	MissingProjectVariables []TenantProjectVariable `json:"MissingProjectVariables,omitempty"`
+	TenantID         string                  `json:"TenantId,omitempty"`
+	Variables        []TenantProjectVariable `json:"Variables,omitempty"`
+	MissingVariables []TenantProjectVariable `json:"MissingVariables,omitempty"`
 
 	resources.Resource
 }
 
 type ModifyTenantProjectVariablesResponse struct {
-	TenantID         string                  `json:"TenantId,omitempty"`
-	ProjectVariables []TenantProjectVariable `json:"ProjectVariables,omitempty"`
+	TenantID  string                  `json:"TenantId,omitempty"`
+	Variables []TenantProjectVariable `json:"ProjectVariables,omitempty"`
 
 	resources.Resource
 }

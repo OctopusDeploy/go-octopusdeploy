@@ -13,16 +13,16 @@ type GetTenantCommonVariablesQuery struct {
 }
 
 type GetTenantCommonVariablesResponse struct {
-	TenantID               string                 `json:"TenantId,omitempty"`
-	CommonVariables        []TenantCommonVariable `json:"CommonVariables,omitempty"`
-	MissingCommonVariables []TenantCommonVariable `json:"MissingCommonVariables,omitempty"`
+	TenantID         string                 `json:"TenantId,omitempty"`
+	Variables        []TenantCommonVariable `json:"Variables,omitempty"`
+	MissingVariables []TenantCommonVariable `json:"MissingCommonVariables,omitempty"`
 
 	resources.Resource
 }
 
 type ModifyTenantCommonVariablesResponse struct {
-	TenantID        string                 `json:"TenantId,omitempty"`
-	CommonVariables []TenantCommonVariable `json:"CommonVariables,omitempty"`
+	TenantID  string                 `json:"TenantId,omitempty"`
+	Variables []TenantCommonVariable `json:"CommonVariables,omitempty"`
 
 	resources.Resource
 }
