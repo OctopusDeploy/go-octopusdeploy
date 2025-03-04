@@ -446,7 +446,13 @@ func AddGitRunbook(client newclient.Client, runbook *Runbook, gitRef string) (*R
 	if err != nil {
 		return nil, err
 	}
-	return newclient.Add[Runbook](client, expandedUri, runbook.SpaceID, runbook)
+	partialRun, creationError := newclient.Add[CreatedRunbook](client, expandedUri, runbook.SpaceID, runbook)
+
+	if creationError != nil {
+		return nil, creationError
+	}
+
+	return GetGitRunbookByID(client, runbook.SpaceID, partialRun.ProjectID, partialRun.GitRef, partialRun.Slug)
 }
 
 // UpdateGitRunbook updates the runbook that matches the input ID and GitRef.
