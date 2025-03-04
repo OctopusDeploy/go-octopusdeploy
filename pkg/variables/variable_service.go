@@ -533,10 +533,10 @@ func Update(client newclient.Client, spaceID string, ownerID string, variableSet
 	return GetAll(client, spaceID, ownerID)
 }
 
-// MatchesScope compares two different scopes to see if they match. Generally used for comparing the scope of
+// MatchesScope compares two different scopes to see if there is any matches. Generally used for comparing the scope of
 // an existing variable against a desired state. Only supports Environment, Role, Machine, Action and Channel
 // for scope options. Returns true if definedScope is nil or all elements are empty. Also returns a VariableScope
-// of all the scopes that were matched
+// of all the scopes that were matched. For Strict scope matching use MatchesScopeStrict
 func MatchesScope(variableScope VariableScope, definedScope *VariableScope) (bool, *VariableScope, error) {
 	if definedScope == nil {
 		return true, &VariableScope{}, nil
@@ -613,6 +613,119 @@ func MatchesScope(variableScope VariableScope, definedScope *VariableScope) (boo
 	}
 
 	return matched, &matchedScopes, nil
+}
+
+// MatchesScopeStrict compares two different scopes to see if they match exactly. Only supports Environment, Role, Machine, Action and Channel
+// for scope options.
+func MatchesScopeStrict(variableScope *VariableScope, definedScope *VariableScope) (bool, error) {
+	if definedScope == nil && variableScope == nil {
+		return true, nil
+	}
+
+	if definedScope == nil || variableScope == nil {
+		return false, nil
+	}
+
+	if definedScope.IsEmpty() && variableScope.IsEmpty() {
+		return true, nil
+	}
+
+	if definedScope.IsEmpty() || variableScope.IsEmpty() {
+		return false, nil
+	}
+
+	matches := 0
+	for _, e1 := range definedScope.Environments {
+		for _, e2 := range variableScope.Environments {
+			if e1 == e2 {
+				matches++
+				break
+			}
+		}
+	}
+	if matches != len(definedScope.Environments) {
+		return false, nil
+	}
+
+	matches = 0
+	for _, r1 := range definedScope.Roles {
+		for _, r2 := range variableScope.Roles {
+			if r1 == r2 {
+				matches++
+				break
+			}
+		}
+	}
+	if matches != len(definedScope.Roles) {
+		return false, nil
+	}
+
+	matches = 0
+	for _, m1 := range definedScope.Machines {
+		for _, m2 := range variableScope.Machines {
+			if m1 == m2 {
+				matches++
+				break
+			}
+		}
+	}
+	if matches != len(definedScope.Machines) {
+		return false, nil
+	}
+
+	matches = 0
+	for _, a1 := range definedScope.Actions {
+		for _, a2 := range variableScope.Actions {
+			if a1 == a2 {
+				matches++
+				break
+			}
+		}
+	}
+	if matches != len(definedScope.Actions) {
+		return false, nil
+	}
+
+	matches = 0
+	for _, c1 := range definedScope.Channels {
+		for _, c2 := range variableScope.Channels {
+			if c1 == c2 {
+				matches++
+				break
+			}
+		}
+	}
+	if matches != len(definedScope.Channels) {
+		return false, nil
+	}
+
+	matches = 0
+	for _, c1 := range definedScope.TenantTags {
+		for _, c2 := range variableScope.TenantTags {
+			if c1 == c2 {
+				matches++
+				break
+			}
+		}
+	}
+	if matches != len(definedScope.TenantTags) {
+		return false, nil
+	}
+
+	matches = 0
+	for _, p1 := range definedScope.ProcessOwners {
+		for _, p2 := range variableScope.ProcessOwners {
+			if p1 == p2 {
+				matches++
+				break
+			}
+		}
+	}
+	if matches != len(definedScope.ProcessOwners) {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 // DeleteSingle removes a single variable from an owner ID. This automates the act of fetching
