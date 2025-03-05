@@ -16,7 +16,7 @@ type KubernetesEndpoint struct {
 	Authentication         IKubernetesAuthentication              `json:"Authentication,omitempty"`
 	ClusterCertificate     string                                 `json:"ClusterCertificate,omitempty"`
 	ClusterCertificatePath string                                 `json:"ClusterCertificatePath,omitempty"`
-	ClusterURL             *url.URL                               `json:"ClusterUrl" validate:"required,url"`
+	ClusterURL             *url.URL                               `json:"ClusterUrl" validate:"required"`
 	Container              *deployments.DeploymentActionContainer `json:"Container,omitempty"`
 	ContainerOptions       string                                 `json:"ContainerOptions,omitempty"`
 	DefaultWorkerPoolID    string                                 `json:"DefaultWorkerPoolId,omitempty"`

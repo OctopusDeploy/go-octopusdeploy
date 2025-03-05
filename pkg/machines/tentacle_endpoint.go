@@ -10,7 +10,7 @@ type tentacleEndpoint struct {
 	CertificateSignatureAlgorithm string                  `json:"CertificateSignatureAlgorithm,omitempty"`
 	TentacleVersionDetails        *TentacleVersionDetails `json:"TentacleVersionDetails,omitempty"`
 	Thumbprint                    string                  `json:"Thumbprint" validate:"required"`
-	URI                           *url.URL                `json:"Uri" validate:"required,uri"`
+	URI                           *url.URL                `json:"Uri" validate:"required"`
 
 	endpoint
 }
