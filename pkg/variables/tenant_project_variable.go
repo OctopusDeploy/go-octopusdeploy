@@ -22,7 +22,7 @@ type GetTenantProjectVariablesResponse struct {
 
 type ModifyTenantProjectVariablesResponse struct {
 	TenantID  string                  `json:"TenantId,omitempty"`
-	Variables []TenantProjectVariable `json:"ProjectVariables,omitempty"`
+	Variables []TenantProjectVariable `json:"Variables,omitempty"`
 
 	resources.Resource
 }
