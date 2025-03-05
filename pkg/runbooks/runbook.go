@@ -24,6 +24,14 @@ type Runbook struct {
 	resources.Resource
 }
 
+type CreatedRunbook struct {
+	ID        string `json:"Id,omitempty"`
+	ProjectID string `json:"ProjectId,omitempty"`
+	Name      string `json:"Name,omitempty"`
+	Slug      string `json:"Slug,omitempty"`
+	GitRef    string `json:"GitRef,omitempty"`
+}
+
 // NewRunbook creates and initializes a runbook.
 func NewRunbook(name string, projectID string) *Runbook {
 	return &Runbook{
