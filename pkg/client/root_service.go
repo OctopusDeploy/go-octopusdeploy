@@ -20,7 +20,7 @@ func NewRootService(sling *sling.Sling, uriTemplate string) *RootService {
 }
 
 func (s *RootService) GetPath() string {
-	return "/api"
+	return "/api/"
 }
 
 func (s *RootService) Get() (*RootResource, error) {
