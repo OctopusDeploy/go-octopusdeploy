@@ -7,6 +7,7 @@ import (
 
 type RunbookProcess struct {
 	LastSnapshotID string                        `json:"LastSnapshotId,omitempty"`
+	Branch         string                        `json:"Branch,omitempty"`
 	ProjectID      string                        `json:"ProjectId,omitempty"`
 	RunbookID      string                        `json:"RunbookId,omitempty"`
 	SpaceID        string                        `json:"SpaceId,omitempty"`

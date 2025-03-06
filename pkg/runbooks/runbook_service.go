@@ -441,6 +441,11 @@ func AddGitRunbook(client newclient.Client, runbook *Runbook, gitRef string) (*R
 	if gitRef == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
 	}
+
+	if runbook.SpaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+
 	templateParams := map[string]any{"spaceId": runbook.SpaceID, "projectId": runbook.ProjectID, "gitRef": gitRef, "id": runbook.ID}
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooks, templateParams)
 	if err != nil {
