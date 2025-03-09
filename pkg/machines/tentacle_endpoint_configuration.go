@@ -8,7 +8,7 @@ import (
 type TentacleEndpointConfiguration struct {
 	CertificateSignatureAlgorithm string   `json:"CertificateSignatureAlgorithm,omitempty"`
 	Thumbprint                    string   `json:"Thumbprint" validate:"required"`
-	URI                           *url.URL `json:"Uri" validate:"required,uri"`
+	URI                           *url.URL `json:"Uri" validate:"required"`
 	CommunicationMode             string   `json:"CommunicationMode" validate:"required,oneof=Polling Listening"`
 }
 
