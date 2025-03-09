@@ -9,16 +9,18 @@ import (
 
 type CreateExecutionAbstractCommandV1 struct {
 	// also has awkward SpaceIDOrName; see CreateReleaseV1 for explanation
-	SpaceID              string            `json:"spaceId"`
-	ProjectIDOrName      string            `json:"projectName"`
-	ForcePackageDownload bool              `json:"forcePackageDownload"`
-	SpecificMachineNames []string          `json:"specificMachineNames,omitempty"`
-	ExcludedMachineNames []string          `json:"excludedMachineNames,omitempty"`
-	SkipStepNames        []string          `json:"skipStepNames,omitempty"`
-	UseGuidedFailure     *bool             `json:"useGuidedFailure"`     // note: nil is valid, meaning 'use default'
-	RunAt                string            `json:"runAt,omitempty"`      // contains a datetimeOffset-parseable value
-	NoRunAfter           string            `json:"noRunAfter,omitempty"` // contains a datetimeOffset-parseable value
-	Variables            map[string]string `json:"variables,omitempty"`
+	SpaceID                        string            `json:"spaceId"`
+	ProjectIDOrName                string            `json:"projectName"`
+	ForcePackageDownload           bool              `json:"forcePackageDownload"`
+	SpecificMachineNames           []string          `json:"specificMachineNames,omitempty"`
+	ExcludedMachineNames           []string          `json:"excludedMachineNames,omitempty"`
+	SkipStepNames                  []string          `json:"skipStepNames,omitempty"`
+	UseGuidedFailure               *bool             `json:"useGuidedFailure"`     // note: nil is valid, meaning 'use default'
+	RunAt                          string            `json:"runAt,omitempty"`      // contains a datetimeOffset-parseable value
+	NoRunAfter                     string            `json:"noRunAfter,omitempty"` // contains a datetimeOffset-parseable value
+	Variables                      map[string]string `json:"variables,omitempty"`
+	DeploymentFreezeNames          []string          `json:"deploymentFreezeNames,omitempty"`
+	DeploymentFreezeOverrideReason string            `json:"deploymentFreezeOverrideReason,omitempty"`
 }
 
 type DeploymentServerTask struct {
