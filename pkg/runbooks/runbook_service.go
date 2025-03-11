@@ -442,6 +442,10 @@ func AddGitRunbook(client newclient.Client, runbook *Runbook, gitRef string) (*R
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
 	}
 
+	if runbook.ProjectID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
+	}
+
 	if runbook.SpaceID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
 	}

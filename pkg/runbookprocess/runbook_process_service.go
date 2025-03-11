@@ -3,7 +3,6 @@ package runbookprocess
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
@@ -23,12 +22,9 @@ func GetGitRunbookProcessByID(client newclient.Client, spaceID string, projectID
 	if projectID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
 	}
-
-	gitRef, err := CheckGitRef(client, spaceID, projectID, gitRef)
-	if err != nil {
-		return nil, err
+	if gitRef == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
 	}
-
 	if ID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("ID")
 	}
@@ -56,30 +52,10 @@ func UpdateGitRunbook(client newclient.Client, runbookProcess *RunbookProcess, g
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceId")
 	}
 
-	gitRef, err := CheckGitRef(client, runbookProcess.SpaceID, runbookProcess.ProjectID, gitRef)
-	if err != nil {
-		return nil, err
-	}
-
 	templateParams := map[string]any{"spaceId": runbookProcess.SpaceID, "projectId": runbookProcess.ProjectID, "gitRef": gitRef, "id": runbookProcess.ID}
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookProcess, templateParams)
 	if err != nil {
 		return nil, err
 	}
 	return newclient.Update[RunbookProcess](client, expandedUri, runbookProcess.SpaceID, runbookProcess.ID, runbookProcess)
-}
-
-func CheckGitRef(client newclient.Client, spaceID string, projectID string, gitRef string) (string, error) {
-	if gitRef == "" {
-		project, err := projects.GetByID(client, spaceID, projectID)
-		if err != nil {
-			return "", err
-		}
-
-		if project.PersistenceSettings != nil && project.PersistenceSettings.Type() == projects.PersistenceSettingsTypeVersionControlled && project.PersistenceSettings.(projects.GitPersistenceSettings).RunbooksAreInGit() {
-			gitRef = project.PersistenceSettings.(projects.GitPersistenceSettings).DefaultBranch()
-		}
-	}
-
-	return gitRef, nil
 }
