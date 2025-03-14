@@ -436,47 +436,6 @@ func GetGitRunbookByName(client newclient.Client, spaceID string, projectID stri
 	return nil, nil
 }
 
-// AddGitRunbook updates the runbook that matches the input ID and GitRef.
-func AddGitRunbook(client newclient.Client, runbook *Runbook, gitRef string) (*Runbook, error) {
-	if gitRef == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
-	}
-
-	if runbook.ProjectID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("projectID")
-	}
-
-	if runbook.SpaceID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
-	}
-
-	templateParams := map[string]any{"spaceId": runbook.SpaceID, "projectId": runbook.ProjectID, "gitRef": gitRef, "id": runbook.ID}
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbooks, templateParams)
-	if err != nil {
-		return nil, err
-	}
-	partialRun, creationError := newclient.Add[CreatedRunbook](client, expandedUri, runbook.SpaceID, runbook)
-
-	if creationError != nil {
-		return nil, creationError
-	}
-
-	return GetGitRunbookByID(client, runbook.SpaceID, partialRun.ProjectID, partialRun.GitRef, partialRun.Slug)
-}
-
-// UpdateGitRunbook updates the runbook that matches the input ID and GitRef.
-func UpdateGitRunbook(client newclient.Client, runbook *Runbook, gitRef string) (*Runbook, error) {
-	if gitRef == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("gitRef")
-	}
-	templateParams := map[string]any{"spaceId": runbook.SpaceID, "projectId": runbook.ProjectID, "gitRef": gitRef, "id": runbook.ID}
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.GitRunbookById, templateParams)
-	if err != nil {
-		return nil, err
-	}
-	return newclient.Update[Runbook](client, expandedUri, runbook.SpaceID, runbook.ID, runbook)
-}
-
 // DeleteGitRunbook deletes the runbook that matches the input ID and GitRef.
 func DeleteGitRunbook(client newclient.Client, spaceID string, projectID string, gitRef string, ID string) error {
 	if spaceID == "" {
