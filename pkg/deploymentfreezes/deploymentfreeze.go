@@ -1,8 +1,9 @@
 package deploymentfreezes
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"time"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type TenantProjectEnvironment struct {
@@ -55,11 +56,12 @@ type DeploymentFreezes struct {
 
 type DeploymentFreeze struct {
 	Name                          string                     `json:"Name" validate:"required"`
-	Start                         *time.Time                 `json:"Start,required"`
-	End                           *time.Time                 `json:"End,required"`
+	Start                         *time.Time                 `json:"Start" validate:"required"`
+	End                           *time.Time                 `json:"End" validate:"required"`
 	ProjectEnvironmentScope       map[string][]string        `json:"ProjectEnvironmentScope,omitempty"`
 	TenantProjectEnvironmentScope []TenantProjectEnvironment `json:"TenantProjectEnvironmentScope,omitempty"`
 	RecurringSchedule             *RecurringSchedule         `json:"RecurringSchedule,omitempty"`
+	OwnerId                       string                     `json:"OwnerId,omitempty"`
 
 	resources.Resource
 }
