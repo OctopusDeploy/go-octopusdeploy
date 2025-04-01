@@ -37,16 +37,17 @@ const (
 )
 
 type RecurringSchedule struct {
-	Type                RecurringScheduleType    `json:"Type"`
-	Unit                int                      `json:"Unit"`
-	EndType             RecurringScheduleEndType `json:"EndType"`
-	EndOnDate           *time.Time               `json:"EndOnDate,omitempty"`
-	EndAfterOccurrences int                      `json:"EndAfterOccurrences,omitempty"`
-	MonthlyScheduleType string                   `json:"MonthlyScheduleType,omitempty"`
-	DateOfMonth         string                   `json:"DateOfMonth,omitempty"`
-	DayNumberOfMonth    string                   `json:"DayNumberOfMonth,omitempty"`
-	DaysOfWeek          []string                 `json:"DaysOfWeek,omitempty"`
-	DayOfWeek           string                   `json:"DayOfWeek,omitempty"`
+	Type                   RecurringScheduleType    `json:"Type"`
+	Unit                   int                      `json:"Unit"`
+	UserUtcOffsetInMinutes int                      `json:"UserUtcOffsetInMinutes,omitempty"`
+	EndType                RecurringScheduleEndType `json:"EndType"`
+	EndOnDate              *time.Time               `json:"EndOnDate,omitempty"`
+	EndAfterOccurrences    int                      `json:"EndAfterOccurrences,omitempty"`
+	MonthlyScheduleType    string                   `json:"MonthlyScheduleType,omitempty"`
+	DateOfMonth            string                   `json:"DateOfMonth,omitempty"`
+	DayNumberOfMonth       string                   `json:"DayNumberOfMonth,omitempty"`
+	DaysOfWeek             []string                 `json:"DaysOfWeek,omitempty"`
+	DayOfWeek              string                   `json:"DayOfWeek,omitempty"`
 }
 
 type DeploymentFreezes struct {
