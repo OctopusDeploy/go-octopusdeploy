@@ -8,26 +8,27 @@ import (
 )
 
 type FeedResource struct {
-	AccessKey                         string               `json:"AccessKey,omitempty"`
-	APIVersion                        string               `json:"ApiVersion,omitempty"`
-	DeleteUnreleasedPackagesAfterDays int                  `json:"DeleteUnreleasedPackagesAfterDays"`
-	DownloadAttempts                  int                  `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds       int                  `json:"DownloadRetryBackoffSeconds"`
-	EnhancedMode                      bool                 `json:"EnhancedMode"`
-	FeedType                          FeedType             `json:"FeedType" validate:"required,notblank"`
-	FeedURI                           string               `json:"FeedUri,omitempty"`
-	IsBuiltInRepoSyncEnabled          bool                 `json:"IsBuiltInRepoSyncEnabled"`
-	Name                              string               `json:"Name" validate:"required,notblank"`
-	Password                          *core.SensitiveValue `json:"Password,omitempty"`
-	PackageAcquisitionLocationOptions []string             `json:"PackageAcquisitionLocationOptions,omitempty"`
-	Region                            string               `json:"Region,omitempty"`
-	RegistryPath                      string               `json:"RegistryPath,omitempty"`
-	SecretKey                         *core.SensitiveValue `json:"SecretKey,omitempty"`
-	SpaceID                           string               `json:"SpaceId,omitempty"`
-	Username                          string               `json:"Username,omitempty"`
-	LayoutRegex                       string               `json:"LayoutRegex,omitempty"`
-	Repository                        string               `json:"Repository,omitempty"`
-	UseMachineCredentials             bool                 `json:"UseMachineCredentials,omitempty"`
+	AccessKey                                  string                                         `json:"AccessKey,omitempty"`
+	ElasticContainerRegistryOidcAuthentication *AwsElasticContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
+	APIVersion                                 string                                         `json:"ApiVersion,omitempty"`
+	DeleteUnreleasedPackagesAfterDays          int                                            `json:"DeleteUnreleasedPackagesAfterDays"`
+	DownloadAttempts                           int                                            `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds                int                                            `json:"DownloadRetryBackoffSeconds"`
+	EnhancedMode                               bool                                           `json:"EnhancedMode"`
+	FeedType                                   FeedType                                       `json:"FeedType" validate:"required,notblank"`
+	FeedURI                                    string                                         `json:"FeedUri,omitempty"`
+	IsBuiltInRepoSyncEnabled                   bool                                           `json:"IsBuiltInRepoSyncEnabled"`
+	Name                                       string                                         `json:"Name" validate:"required,notblank"`
+	Password                                   *core.SensitiveValue                           `json:"Password,omitempty"`
+	PackageAcquisitionLocationOptions          []string                                       `json:"PackageAcquisitionLocationOptions,omitempty"`
+	Region                                     string                                         `json:"Region,omitempty"`
+	RegistryPath                               string                                         `json:"RegistryPath,omitempty"`
+	SecretKey                                  *core.SensitiveValue                           `json:"SecretKey,omitempty"`
+	SpaceID                                    string                                         `json:"SpaceId,omitempty"`
+	Username                                   string                                         `json:"Username,omitempty"`
+	LayoutRegex                                string                                         `json:"LayoutRegex,omitempty"`
+	Repository                                 string                                         `json:"Repository,omitempty"`
+	UseMachineCredentials                      bool                                           `json:"UseMachineCredentials,omitempty"`
 	resources.Resource
 }
 

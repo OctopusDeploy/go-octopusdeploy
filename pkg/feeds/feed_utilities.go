@@ -20,7 +20,7 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 
 	switch feedResource.GetFeedType() {
 	case FeedTypeAwsElasticContainerRegistry:
-		awsElasticContainerRegistry, err := NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region)
+		awsElasticContainerRegistry, err := NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region, feedResource.ElasticContainerRegistryOidcAuthentication)
 		if err != nil {
 			return nil, err
 		}
@@ -148,6 +148,14 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.AccessKey = awsElasticContainerRegistry.AccessKey
 		feedResource.Region = awsElasticContainerRegistry.Region
 		feedResource.SecretKey = awsElasticContainerRegistry.SecretKey
+		if awsElasticContainerRegistry.OidcAuthentication != nil {
+			feedResource.ElasticContainerRegistryOidcAuthentication = &AwsElasticContainerRegistryOidcAuthentication{
+				SessionDuration: awsElasticContainerRegistry.OidcAuthentication.SessionDuration,
+				Audience:        awsElasticContainerRegistry.OidcAuthentication.Audience,
+				SubjectKeys:     awsElasticContainerRegistry.OidcAuthentication.SubjectKeys,
+				RoleArn:         awsElasticContainerRegistry.OidcAuthentication.RoleArn,
+			}
+		}
 	case FeedTypeBuiltIn:
 		builtInFeed := feed.(*BuiltInFeed)
 		feedResource.DeleteUnreleasedPackagesAfterDays = builtInFeed.DeleteUnreleasedPackagesAfterDays
