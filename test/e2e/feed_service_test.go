@@ -50,7 +50,7 @@ func CreateTestAwsElasticContainerRegistry(t *testing.T, client *client.Client) 
 	secretKey := core.NewSensitiveValue("secret-key")
 	region := "ap-southeast-2"
 
-	feed, err := feeds.NewAwsElasticContainerRegistry(internal.GetRandomName(), accessKey, secretKey, region)
+	feed, err := feeds.NewAwsElasticContainerRegistry(internal.GetRandomName(), accessKey, secretKey, region, nil)
 	require.NoError(t, err)
 
 	resource, err := client.Feeds.Add(feed)
