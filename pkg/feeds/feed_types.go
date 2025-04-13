@@ -4,6 +4,7 @@ type FeedType string
 
 const (
 	FeedTypeAwsElasticContainerRegistry = FeedType("AwsElasticContainerRegistry")
+	FeedTypeAzureContainerRegistry      = FeedType("AzureContainerRegistry")
 	FeedTypeBuiltIn                     = FeedType("BuiltIn")
 	FeedTypeDocker                      = FeedType("Docker")
 	FeedTypeGitHub                      = FeedType("GitHub")
