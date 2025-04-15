@@ -9,7 +9,7 @@ import (
 
 type FeedResource struct {
 	AccessKey                                  string                                         `json:"AccessKey,omitempty"`
-	AzureContainerRegistryOidcAuthentication   *AzureContainerRegistryOidcAuthentication      `json:"GoogleContainerRegistryOidcAuthentication,omitempty"`
+	AzureContainerRegistryOidcAuthentication   *AzureContainerRegistryOidcAuthentication      `json:"AzureContainerRegistryOidcAuthentication,omitempty"`
 	ElasticContainerRegistryOidcAuthentication *AwsElasticContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
 	APIVersion                                 string                                         `json:"ApiVersion,omitempty"`
 	DeleteUnreleasedPackagesAfterDays          int                                            `json:"DeleteUnreleasedPackagesAfterDays"`
