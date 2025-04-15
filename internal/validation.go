@@ -2,10 +2,10 @@ package internal
 
 import (
 	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/google/uuid"
 	"regexp"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 // ValidateStringInSlice checks if a string is in the given slice
@@ -92,4 +92,16 @@ func ValidateSemanticVersion(propertyName string, version string) error {
 	}
 
 	return fmt.Errorf("%s is must be a semantic version string", propertyName)
+}
+
+func ValidateUsernamePasswordProperties(username string, password *core.SensitiveValue) error {
+	if IsEmpty(username) && password != nil {
+		return CreateRequiredParameterIsEmptyOrNilError("username")
+	}
+
+	if !IsEmpty(username) && password == nil {
+		return CreateRequiredParameterIsEmptyOrNilError("password")
+	}
+
+	return nil
 }

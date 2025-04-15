@@ -1,6 +1,8 @@
 package feeds
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -18,7 +20,14 @@ type GoogleContainerRegistryOidcAuthentication struct {
 }
 
 // NewGoogleContainerRegistry creates and initializes a Google Container Registry (GCR).
-func NewGoogleContainerRegistry(name string, oidcAuthentication *GoogleContainerRegistryOidcAuthentication) (*GoogleContainerRegistry, error) {
+func NewGoogleContainerRegistry(name string, username string, password *core.SensitiveValue, oidcAuthentication *GoogleContainerRegistryOidcAuthentication) (*GoogleContainerRegistry, error) {
+	if oidcAuthentication == nil {
+		err := internal.ValidateUsernamePasswordProperties(username, password)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	dockerContainerRegistry, err := NewDockerContainerRegistryWithFeedType(name, FeedTypeAzureContainerRegistry)
 
 	if err != nil {

@@ -1,6 +1,8 @@
 ﻿package feeds
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -20,7 +22,14 @@ type AzureContainerRegistryOidcAuthentication struct {
 }
 
 // NewAzureContainerRegistry creates and initializes an Azure Container Registry (ACR).
-func NewAzureContainerRegistry(name string, oidcAuthentication *AzureContainerRegistryOidcAuthentication) (*AzureContainerRegistry, error) {
+func NewAzureContainerRegistry(name string, username string, password *core.SensitiveValue, oidcAuthentication *AzureContainerRegistryOidcAuthentication) (*AzureContainerRegistry, error) {
+	if oidcAuthentication == nil {
+		err := internal.ValidateUsernamePasswordProperties(username, password)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	dockerContainerRegistry, err := NewDockerContainerRegistryWithFeedType(name, FeedTypeAzureContainerRegistry)
 
 	if err != nil {

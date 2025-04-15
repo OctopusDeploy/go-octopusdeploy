@@ -26,7 +26,7 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		}
 		feed = awsElasticContainerRegistry
 	case FeedTypeAzureContainerRegistry:
-		AzureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.AzureContainerRegistryOidcAuthentication)
+		AzureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.AzureContainerRegistryOidcAuthentication)
 		if err != nil {
 			return nil, err
 		}
@@ -60,7 +60,7 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		gitHubRepositoryFeed.FeedURI = feedResource.FeedURI
 		feed = gitHubRepositoryFeed
 	case FeedTypeGoogleContainerRegistry:
-		GoogleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GoogleContainerRegistryOidcAuthentication)
+		GoogleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.GoogleContainerRegistryOidcAuthentication)
 		if err != nil {
 			return nil, err
 		}
