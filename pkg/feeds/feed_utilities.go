@@ -25,6 +25,12 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		feed = awsElasticContainerRegistry
+	case FeedTypeAzureContainerRegistry:
+		AzureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.AzureContainerRegistryOidcAuthentication)
+		if err != nil {
+			return nil, err
+		}
+		feed = AzureContainerRegistry
 	case FeedTypeBuiltIn:
 		builtInFeed, err := NewBuiltInFeed(feedResource.GetName())
 		if err != nil {
@@ -154,6 +160,19 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 				Audience:        awsElasticContainerRegistry.OidcAuthentication.Audience,
 				SubjectKeys:     awsElasticContainerRegistry.OidcAuthentication.SubjectKeys,
 				RoleArn:         awsElasticContainerRegistry.OidcAuthentication.RoleArn,
+			}
+		}
+	case FeedTypeAzureContainerRegistry:
+		azureContainerRegistry := feed.(*AzureContainerRegistry)
+		feedResource.APIVersion = azureContainerRegistry.APIVersion
+		feedResource.FeedURI = azureContainerRegistry.FeedURI
+		feedResource.RegistryPath = azureContainerRegistry.RegistryPath
+		if azureContainerRegistry.OidcAuthentication != nil {
+			feedResource.AzureContainerRegistryOidcAuthentication = &AzureContainerRegistryOidcAuthentication{
+				ClientId:    azureContainerRegistry.OidcAuthentication.ClientId,
+				TenantId:    azureContainerRegistry.OidcAuthentication.TenantId,
+				Audience:    azureContainerRegistry.OidcAuthentication.Audience,
+				SubjectKeys: azureContainerRegistry.OidcAuthentication.SubjectKeys,
 			}
 		}
 	case FeedTypeBuiltIn:
