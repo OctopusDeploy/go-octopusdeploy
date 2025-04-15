@@ -9,7 +9,7 @@ import (
 
 type FeedResource struct {
 	AccessKey                                  string                                         `json:"AccessKey,omitempty"`
-	AzureContainerRegistryOidcAuthentication   *AzureContainerRegistryOidcAuthentication      `json:"AzureContainerRegistryOidcAuthentication,omitempty"`
+	AzureContainerRegistryOidcAuthentication   *AzureContainerRegistryOidcAuthentication      `json:"GoogleContainerRegistryOidcAuthentication,omitempty"`
 	ElasticContainerRegistryOidcAuthentication *AwsElasticContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
 	APIVersion                                 string                                         `json:"ApiVersion,omitempty"`
 	DeleteUnreleasedPackagesAfterDays          int                                            `json:"DeleteUnreleasedPackagesAfterDays"`
@@ -18,6 +18,7 @@ type FeedResource struct {
 	EnhancedMode                               bool                                           `json:"EnhancedMode"`
 	FeedType                                   FeedType                                       `json:"FeedType" validate:"required,notblank"`
 	FeedURI                                    string                                         `json:"FeedUri,omitempty"`
+	GoogleContainerRegistryOidcAuthentication  *GoogleContainerRegistryOidcAuthentication     `json:"GoogleContainerRegistryOidcAuthentication,omitempty"`
 	IsBuiltInRepoSyncEnabled                   bool                                           `json:"IsBuiltInRepoSyncEnabled"`
 	Name                                       string                                         `json:"Name" validate:"required,notblank"`
 	Password                                   *core.SensitiveValue                           `json:"Password,omitempty"`
