@@ -17,9 +17,8 @@ func NewSensitiveValue(newValue string) *SensitiveValue {
 func (sensitiveValue SensitiveValue) String() string {
 	if sensitiveValue.HasValue {
 		return *sensitiveValue.NewValue
-	} else {
-		return ""
 	}
+	return ""
 }
 
 type SensitiveValue struct {
