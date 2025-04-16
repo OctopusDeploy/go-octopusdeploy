@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/google/uuid"
 	"regexp"
 	"strings"
@@ -94,12 +93,12 @@ func ValidateSemanticVersion(propertyName string, version string) error {
 	return fmt.Errorf("%s is must be a semantic version string", propertyName)
 }
 
-func ValidateUsernamePasswordProperties(username string, password *core.SensitiveValue) error {
-	if IsEmpty(username) && password != nil {
+func ValidateUsernamePasswordProperties(username string, password string) error {
+	if IsEmpty(username) && !IsEmpty(password) {
 		return CreateRequiredParameterIsEmptyOrNilError("username")
 	}
 
-	if !IsEmpty(username) && password == nil {
+	if !IsEmpty(username) && IsEmpty(password) {
 		return CreateRequiredParameterIsEmptyOrNilError("password")
 	}
 
