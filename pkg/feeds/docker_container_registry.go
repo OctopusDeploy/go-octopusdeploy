@@ -24,7 +24,7 @@ func NewDockerContainerRegistryWithFeedType(name string, feedType FeedType) (*Do
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
 	}
-	
+
 	dockerContainerRegistry := DockerContainerRegistry{
 		FeedURI: "https://index.docker.io",
 		feed:    *newFeed(name, feedType),
