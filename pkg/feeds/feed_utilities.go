@@ -26,7 +26,7 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		}
 		feed = awsElasticContainerRegistry
 	case FeedTypeAzureContainerRegistry:
-		AzureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.AzureContainerRegistryOidcAuthentication)
+		AzureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.AzureContainerRegistryOidcAuthentication)
 		if err != nil {
 			return nil, err
 		}
@@ -59,6 +59,12 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		gitHubRepositoryFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
 		gitHubRepositoryFeed.FeedURI = feedResource.FeedURI
 		feed = gitHubRepositoryFeed
+	case FeedTypeGoogleContainerRegistry:
+		GoogleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.GoogleContainerRegistryOidcAuthentication)
+		if err != nil {
+			return nil, err
+		}
+		feed = GoogleContainerRegistry
 	case FeedTypeHelm:
 		helmFeed, err := NewHelmFeed(feedResource.GetName())
 		if err != nil {
@@ -191,6 +197,17 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.DownloadAttempts = gitHubRepositoryFeed.DownloadAttempts
 		feedResource.DownloadRetryBackoffSeconds = gitHubRepositoryFeed.DownloadRetryBackoffSeconds
 		feedResource.FeedURI = gitHubRepositoryFeed.FeedURI
+	case FeedTypeGoogleContainerRegistry:
+		googleContainerRegistry := feed.(*AzureContainerRegistry)
+		feedResource.APIVersion = googleContainerRegistry.APIVersion
+		feedResource.FeedURI = googleContainerRegistry.FeedURI
+		feedResource.RegistryPath = googleContainerRegistry.RegistryPath
+		if googleContainerRegistry.OidcAuthentication != nil {
+			feedResource.AzureContainerRegistryOidcAuthentication = &AzureContainerRegistryOidcAuthentication{
+				Audience:    googleContainerRegistry.OidcAuthentication.Audience,
+				SubjectKeys: googleContainerRegistry.OidcAuthentication.SubjectKeys,
+			}
+		}
 	case FeedTypeHelm:
 		helmFeed := feed.(*HelmFeed)
 		feedResource.FeedURI = helmFeed.FeedURI

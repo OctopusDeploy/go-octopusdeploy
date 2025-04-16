@@ -2,10 +2,9 @@ package internal
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"regexp"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 // ValidateStringInSlice checks if a string is in the given slice
@@ -92,4 +91,16 @@ func ValidateSemanticVersion(propertyName string, version string) error {
 	}
 
 	return fmt.Errorf("%s is must be a semantic version string", propertyName)
+}
+
+func ValidateUsernamePasswordProperties(username string, password string) error {
+	if IsEmpty(username) && !IsEmpty(password) {
+		return CreateRequiredParameterIsEmptyOrNilError("username")
+	}
+
+	if !IsEmpty(username) && IsEmpty(password) {
+		return CreateRequiredParameterIsEmptyOrNilError("password")
+	}
+
+	return nil
 }

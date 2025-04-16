@@ -7,22 +7,20 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// AzureContainerRegistry represents an Azure Container Registry (ACR).
-type AzureContainerRegistry struct {
-	OidcAuthentication *AzureContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
+// GoogleContainerRegistry represents a Google Container Registry (GCR).
+type GoogleContainerRegistry struct {
+	OidcAuthentication *GoogleContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
 
 	DockerContainerRegistry
 }
 
-type AzureContainerRegistryOidcAuthentication struct {
-	ClientId    string   `json:"ClientId,omitempty"`
-	TenantId    string   `json:"TenantId,omitempty"`
+type GoogleContainerRegistryOidcAuthentication struct {
 	Audience    string   `json:"Audience,omitempty"`
 	SubjectKeys []string `json:"SubjectKeys,omitempty"`
 }
 
-// NewAzureContainerRegistry creates and initializes an Azure Container Registry (ACR).
-func NewAzureContainerRegistry(name string, username string, password *core.SensitiveValue, oidcAuthentication *AzureContainerRegistryOidcAuthentication) (*AzureContainerRegistry, error) {
+// NewGoogleContainerRegistry creates and initializes a Google Container Registry (GCR).
+func NewGoogleContainerRegistry(name string, username string, password *core.SensitiveValue, oidcAuthentication *GoogleContainerRegistryOidcAuthentication) (*GoogleContainerRegistry, error) {
 	if oidcAuthentication == nil {
 		err := internal.ValidateUsernamePasswordProperties(username, password.String())
 		if err != nil {
@@ -36,7 +34,7 @@ func NewAzureContainerRegistry(name string, username string, password *core.Sens
 		return nil, err
 	}
 
-	feed := AzureContainerRegistry{
+	feed := GoogleContainerRegistry{
 		OidcAuthentication:      oidcAuthentication,
 		DockerContainerRegistry: *dockerContainerRegistry,
 	}
@@ -51,7 +49,7 @@ func NewAzureContainerRegistry(name string, username string, password *core.Sens
 
 // Validate checks the state of this Azure Container Registry (ACR)
 // and returns an error if invalid.
-func (a *AzureContainerRegistry) Validate() error {
+func (a *GoogleContainerRegistry) Validate() error {
 	v := validator.New()
 	err := v.RegisterValidation("notblank", validators.NotBlank)
 	if err != nil {

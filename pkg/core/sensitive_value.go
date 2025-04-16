@@ -14,6 +14,13 @@ func NewSensitiveValue(newValue string) *SensitiveValue {
 	}
 }
 
+func (sensitiveValue SensitiveValue) String() string {
+	if sensitiveValue.HasValue {
+		return *sensitiveValue.NewValue
+	}
+	return ""
+}
+
 type SensitiveValue struct {
 	HasValue bool
 	Hint     *string

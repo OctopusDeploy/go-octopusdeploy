@@ -1,7 +1,7 @@
 package feeds
 
 import (
-	"fmt"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -21,8 +21,8 @@ func NewDockerContainerRegistry(name string) (*DockerContainerRegistry, error) {
 
 // NewDockerContainerRegistry creates and initializes a Docker container registry.
 func NewDockerContainerRegistryWithFeedType(name string, feedType FeedType) (*DockerContainerRegistry, error) {
-	if len(name) == 0 {
-		return nil, fmt.Errorf("the required parameter, name is nil or empty")
+	if internal.IsEmpty(name) {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("name")
 	}
 
 	dockerContainerRegistry := DockerContainerRegistry{
