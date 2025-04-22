@@ -26,11 +26,14 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		}
 		feed = awsElasticContainerRegistry
 	case FeedTypeAzureContainerRegistry:
-		AzureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.AzureContainerRegistryOidcAuthentication)
+		azureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.AzureContainerRegistryOidcAuthentication)
 		if err != nil {
 			return nil, err
 		}
-		feed = AzureContainerRegistry
+		azureContainerRegistry.APIVersion = feedResource.APIVersion
+		azureContainerRegistry.FeedURI = feedResource.FeedURI
+		azureContainerRegistry.RegistryPath = feedResource.RegistryPath
+		feed = azureContainerRegistry
 	case FeedTypeBuiltIn:
 		builtInFeed, err := NewBuiltInFeed(feedResource.GetName())
 		if err != nil {
