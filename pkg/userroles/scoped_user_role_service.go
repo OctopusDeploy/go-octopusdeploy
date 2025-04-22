@@ -21,6 +21,7 @@ func NewScopedUserRoleService(sling *sling.Sling, uriTemplate string) *ScopedUse
 	}
 }
 
+// Deprecated: use scopeduserroles.Add()
 func (s *ScopedUserRoleService) Add(scopedUserRole *ScopedUserRole) (*ScopedUserRole, error) {
 	if IsNil(scopedUserRole) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationAdd, constants.ParameterScopedUserRole)
@@ -44,6 +45,8 @@ func (s *ScopedUserRoleService) Add(scopedUserRole *ScopedUserRole) (*ScopedUser
 
 // Currently no known query params, not even take and skip
 // Query params could exist, but are undocumented in the swagger
+//
+// Deprecated: use scopeduserroles.Get()
 func (s *ScopedUserRoleService) Get() (*resources.Resources[*ScopedUserRole], error) {
 	path := s.BasePath
 
@@ -54,6 +57,7 @@ func (s *ScopedUserRoleService) Get() (*resources.Resources[*ScopedUserRole], er
 	return resp.(*resources.Resources[*ScopedUserRole]), nil
 }
 
+// Deprecated: use scopeduserroles.GetById()
 func (s *ScopedUserRoleService) GetByID(id string) (*ScopedUserRole, error) {
 	if internal.IsEmpty(id) {
 		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
@@ -71,6 +75,7 @@ func (s *ScopedUserRoleService) GetByID(id string) (*ScopedUserRole, error) {
 	return resp.(*ScopedUserRole), nil
 }
 
+// Deprecated: use scopeduserroles.Update()
 func (s *ScopedUserRoleService) Update(scopedUserRole *ScopedUserRole) (*ScopedUserRole, error) {
 	if scopedUserRole == nil {
 		return nil, internal.CreateInvalidParameterError(constants.OperationUpdate, constants.ParameterScopedUserRole)
