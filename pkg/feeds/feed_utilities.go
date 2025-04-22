@@ -26,11 +26,14 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		}
 		feed = awsElasticContainerRegistry
 	case FeedTypeAzureContainerRegistry:
-		AzureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.AzureContainerRegistryOidcAuthentication)
+		azureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.AzureContainerRegistryOidcAuthentication)
 		if err != nil {
 			return nil, err
 		}
-		feed = AzureContainerRegistry
+		azureContainerRegistry.APIVersion = feedResource.APIVersion
+		azureContainerRegistry.FeedURI = feedResource.FeedURI
+		azureContainerRegistry.RegistryPath = feedResource.RegistryPath
+		feed = azureContainerRegistry
 	case FeedTypeBuiltIn:
 		builtInFeed, err := NewBuiltInFeed(feedResource.GetName())
 		if err != nil {
@@ -60,11 +63,14 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		gitHubRepositoryFeed.FeedURI = feedResource.FeedURI
 		feed = gitHubRepositoryFeed
 	case FeedTypeGoogleContainerRegistry:
-		GoogleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.GoogleContainerRegistryOidcAuthentication)
+		googleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.GoogleContainerRegistryOidcAuthentication)
 		if err != nil {
 			return nil, err
 		}
-		feed = GoogleContainerRegistry
+		googleContainerRegistry.APIVersion = feedResource.APIVersion
+		googleContainerRegistry.FeedURI = feedResource.FeedURI
+		googleContainerRegistry.RegistryPath = feedResource.RegistryPath
+		feed = googleContainerRegistry
 	case FeedTypeHelm:
 		helmFeed, err := NewHelmFeed(feedResource.GetName())
 		if err != nil {
