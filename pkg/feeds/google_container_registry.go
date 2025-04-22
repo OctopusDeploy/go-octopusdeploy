@@ -22,9 +22,11 @@ type GoogleContainerRegistryOidcAuthentication struct {
 // NewGoogleContainerRegistry creates and initializes a Google Container Registry (GCR).
 func NewGoogleContainerRegistry(name string, username string, password *core.SensitiveValue, oidcAuthentication *GoogleContainerRegistryOidcAuthentication) (*GoogleContainerRegistry, error) {
 	if oidcAuthentication == nil {
-		err := internal.ValidateUsernamePasswordProperties(username, password.String())
-		if err != nil {
-			return nil, err
+		if internal.IsEmpty(username) && password.HasValue {
+			return nil, internal.CreateRequiredParameterIsEmptyOrNilError("username")
+		}
+		if !internal.IsEmpty(username) && !password.HasValue {
+			return nil, internal.CreateRequiredParameterIsEmptyOrNilError("password")
 		}
 	}
 

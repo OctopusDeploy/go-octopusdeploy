@@ -24,9 +24,11 @@ type AzureContainerRegistryOidcAuthentication struct {
 // NewAzureContainerRegistry creates and initializes an Azure Container Registry (ACR).
 func NewAzureContainerRegistry(name string, username string, password *core.SensitiveValue, oidcAuthentication *AzureContainerRegistryOidcAuthentication) (*AzureContainerRegistry, error) {
 	if oidcAuthentication == nil {
-		err := internal.ValidateUsernamePasswordProperties(username, password.String())
-		if err != nil {
-			return nil, err
+		if internal.IsEmpty(username) && password.HasValue {
+			return nil, internal.CreateRequiredParameterIsEmptyOrNilError("username")
+		}
+		if !internal.IsEmpty(username) && !password.HasValue {
+			return nil, internal.CreateRequiredParameterIsEmptyOrNilError("password")
 		}
 	}
 
