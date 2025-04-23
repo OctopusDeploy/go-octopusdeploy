@@ -189,7 +189,7 @@ func Add(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTempla
 	return newclient.Add[ActionTemplate](client, template, actionTemplate.SpaceID, actionTemplate)
 }
 
-// DeleteById deletes the action template based on the ID provided as input.
+// DeleteByID deletes the action template based on the ID provided as input.
 func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
 }
@@ -203,4 +203,21 @@ func GetByID(client newclient.Client, spaceID string, actionTemplateID string) (
 // Update modifies an action template based on the one provided as input.
 func Update(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTemplate, error) {
 	return newclient.Update[ActionTemplate](client, template, actionTemplate.SpaceID, actionTemplate.ID, actionTemplate)
+}
+
+// GetVersionByID returns the action template that matches the input ID and a Version. If one cannot be
+// found, it returns nil and an error.
+func GetVersionByID(client newclient.Client, spaceID string, actionTemplateID string, actionTemplateVersion string) (*ActionTemplate, error) {
+	spaceId, spaceIdError := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if spaceIdError != nil {
+		return nil, spaceIdError
+	}
+
+	params := map[string]any{"spaceId": spaceId, "id": actionTemplateID, "version": actionTemplateVersion}
+	uri, uriError := client.URITemplateCache().Expand("/api/{spaceId}/actiontemplates/{id}/versions/{version}", params)
+	if uriError != nil {
+		return nil, uriError
+	}
+
+	return newclient.Get[ActionTemplate](client.HttpSession(), uri)
 }
