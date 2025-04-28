@@ -9,11 +9,10 @@ import (
 
 func CreateTeamExample() {
 	var (
-		apiKey     string = "API-YOUR_API_KEY"
-		octopusURL string = "https://your_octopus_url"
-		spaceID    string = "space-id"
-
-		name string = "team-name"
+		apiKey     = "API-YOUR_API_KEY"
+		octopusURL = "https://your_octopus_url"
+		spaceID    = "space-id"
+		name       = "team-name"
 	)
 
 	apiURL, err := url.Parse(octopusURL)
