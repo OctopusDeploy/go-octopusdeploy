@@ -207,7 +207,7 @@ func Update(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTem
 
 // GetVersionByID returns the action template that matches the input ID and a Version. If one cannot be
 // found, it returns nil and an error.
-func GetVersionByID(client newclient.Client, spaceID string, actionTemplateID string, actionTemplateVersion string) (*ActionTemplate, error) {
+func GetVersionByID(client newclient.Client, spaceID string, actionTemplateID string, actionTemplateVersion int32) (*ActionTemplate, error) {
 	spaceId, spaceIdError := internal.GetSpaceID(spaceID, client.GetSpaceID())
 	if spaceIdError != nil {
 		return nil, spaceIdError
