@@ -168,3 +168,55 @@ func TestTeamServiceUpdate(t *testing.T) {
 	IsEqualTeams(t, createdTeam, updatedTeam)
 	defer DeleteTestTeam(t, client, updatedTeam)
 }
+
+func CreateTestTeam_NewClient(t *testing.T, client *client.Client) *teams.Team {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	team := teams.NewTeam(name)
+	require.NotNil(t, team)
+
+	createdTeam, err := teams.Add(client, team)
+	require.NoError(t, err)
+	require.NotNil(t, createdTeam)
+	require.NotEmpty(t, createdTeam.GetID())
+
+	// verify the add operation was successful
+	teamToCompare, err := teams.GetByID(client, createdTeam.SpaceID, createdTeam.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, teamToCompare)
+
+	IsEqualTeams(t, createdTeam, teamToCompare)
+
+	return createdTeam
+}
+
+func DeleteTestTeam_NewClient(t *testing.T, client *client.Client, team *teams.Team) {
+	require.NotNil(t, team)
+
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	err := teams.DeleteByID(client, team.SpaceID, team.GetID())
+	assert.NoError(t, err)
+
+	// verify the delete operation was successful
+	deletedTeam, err := teams.GetByID(client, team.SpaceID, team.GetID())
+	assert.Error(t, err)
+	assert.Nil(t, deletedTeam)
+}
+
+func TestTeamAddGetDelete_NewClient(t *testing.T) {
+	octopus := getOctopusClient()
+	require.NotNil(t, octopus)
+
+	team := CreateTestTeam_NewClient(t, octopus)
+	require.NotNil(t, team)
+	defer DeleteTestTeam_NewClient(t, octopus, team)
+}
