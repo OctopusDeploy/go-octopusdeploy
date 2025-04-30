@@ -183,7 +183,7 @@ func (s *ActionTemplateService) Update(actionTemplate *ActionTemplate) (*ActionT
 // --- new ---
 
 const template = "/api/{spaceId}/actiontemplates{/id}{?skip,take,ids,partialName}"
-const versionByIdTemplate = "/api/{spaceId}/actiontemplates/{id}/versions/{version}"
+const templateVersions = "/api/{spaceId}/actiontemplates/{id}/versions/{version}"
 
 // Add creates a new action template.
 func Add(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTemplate, error) {
@@ -215,7 +215,7 @@ func GetVersionByID(client newclient.Client, spaceID string, actionTemplateID st
 	}
 
 	params := map[string]any{"spaceId": spaceId, "id": actionTemplateID, "version": actionTemplateVersion}
-	uri, uriError := client.URITemplateCache().Expand(versionByIdTemplate, params)
+	uri, uriError := client.URITemplateCache().Expand(templateVersions, params)
 	if uriError != nil {
 		return nil, uriError
 	}
