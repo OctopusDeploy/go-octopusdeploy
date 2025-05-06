@@ -75,7 +75,7 @@ func (s *SSHEndpoint) GetProxyID() string {
 func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 	sshEndpoint := struct {
 		AccountID          string `json:"AccountId,omitempty"`
-		ComunicationStyle  string `json:"CommunicationStyle" validate:"required,eq=Ssh"`
+		CommunicationStyle string `json:"CommunicationStyle" validate:"required,eq=Ssh"`
 		DotNetCorePlatform string
 		Fingerprint        string
 		Host               string
@@ -85,7 +85,7 @@ func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 		resources.Resource
 	}{
 		AccountID:          s.AccountID,
-		ComunicationStyle:  s.CommunicationStyle,
+		CommunicationStyle: s.CommunicationStyle,
 		DotNetCorePlatform: s.DotNetCorePlatform,
 		Fingerprint:        s.Fingerprint,
 		Host:               s.Host,
