@@ -18,6 +18,7 @@ func NewRootService(sling *sling.Sling, uriTemplate string) *RootService {
 	}
 }
 
+// Deprecated: use GetSpaceRoot or GetServerRoot
 func (s *RootService) Get() (*RootResource, error) {
 	path, err := services.GetPath(s)
 	if err != nil {
