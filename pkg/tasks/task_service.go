@@ -59,8 +59,19 @@ func (s *TaskService) Get(tasksQuery TasksQuery) (*resources.Resources[*Task], e
 	return response.(*resources.Resources[*Task]), nil
 }
 
-// Get task detals by Id
+// GetDetails returns task details by ID
 func GetDetails(client newclient.Client, spaceID string, taskID string) (*TaskDetailsResource, error) {
 	const detailTemplate = "/api/tasks{/id}/details"
 	return newclient.GetByID[TaskDetailsResource](client, detailTemplate, spaceID, taskID)
+}
+
+// Cancel cancels a task by ID
+func Cancel(client newclient.Client, spaceID string, taskID string) (*Task, error) {
+	const cancelTemplate = "/api/spaces/{spaceId}/tasks/{id}/cancel"
+	templateParams := map[string]any{"spaceId": spaceID, "id": taskID}
+	path, err := client.URITemplateCache().Expand(cancelTemplate, templateParams)
+	if err != nil {
+		return nil, err
+	}
+	return newclient.Post[Task](client.HttpSession(), path, nil)
 }
