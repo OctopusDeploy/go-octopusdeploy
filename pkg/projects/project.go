@@ -12,33 +12,34 @@ import (
 )
 
 type Project struct {
-	AllowIgnoreChannelRules         bool                                      `json:"AllowIgnoreChannelRules,omitempty"`
-	AutoCreateRelease               bool                                      `json:"AutoCreateRelease"`
-	AutoDeployReleaseOverrides      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
-	ClonedFromProjectID             string                                    `json:"ClonedFromProjectId,omitempty"`
-	ConnectivityPolicy              *core.ConnectivityPolicy                  `json:"ProjectConnectivityPolicy,omitempty"`
-	DefaultGuidedFailureMode        string                                    `json:"DefaultGuidedFailureMode,omitempty"`
-	DefaultToSkipIfAlreadyInstalled bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
-	DeploymentChangesTemplate       string                                    `json:"DeploymentChangesTemplate,omitempty"`
-	DeploymentProcessID             string                                    `json:"DeploymentProcessId,omitempty"`
-	Description                     string                                    `json:"Description,omitempty"`
-	ExtensionSettings               []extensions.ExtensionSettings            `json:"ExtensionSettings,omitempty"`
-	IncludedLibraryVariableSets     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
-	IsDisabled                      bool                                      `json:"IsDisabled"`
-	IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease"`
-	IsVersionControlled             bool                                      `json:"IsVersionControlled"`
-	LifecycleID                     string                                    `json:"LifecycleId" validate:"required"`
-	Name                            string                                    `json:"Name" validate:"required"`
-	PersistenceSettings             PersistenceSettings                       `json:"PersistenceSettings,omitempty"`
-	ProjectGroupID                  string                                    `json:"ProjectGroupId" validate:"required"`
-	ReleaseCreationStrategy         *ReleaseCreationStrategy                  `json:"ReleaseCreationStrategy,omitempty"`
-	ReleaseNotesTemplate            string                                    `json:"ReleaseNotesTemplate,omitempty"`
-	Slug                            string                                    `json:"Slug,omitempty"`
-	SpaceID                         string                                    `json:"SpaceId,omitempty"`
-	Templates                       []actiontemplates.ActionTemplateParameter `json:"Templates,omitempty"`
-	TenantedDeploymentMode          core.TenantedDeploymentMode               `json:"TenantedDeploymentMode,omitempty"`
-	VariableSetID                   string                                    `json:"VariableSetId,omitempty"`
-	VersioningStrategy              *VersioningStrategy                       `json:"VersioningStrategy,omitempty"`
+	AllowIgnoreChannelRules                         bool                                      `json:"AllowIgnoreChannelRules,omitempty"`
+	AutoCreateRelease                               bool                                      `json:"AutoCreateRelease"`
+	AutoDeployReleaseOverrides                      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
+	ClonedFromProjectID                             string                                    `json:"ClonedFromProjectId,omitempty"`
+	ConnectivityPolicy                              *core.ConnectivityPolicy                  `json:"ProjectConnectivityPolicy,omitempty"`
+	DefaultGuidedFailureMode                        string                                    `json:"DefaultGuidedFailureMode,omitempty"`
+	DefaultToSkipIfAlreadyInstalled                 bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
+	DeploymentChangesTemplate                       string                                    `json:"DeploymentChangesTemplate,omitempty"`
+	DeploymentProcessID                             string                                    `json:"DeploymentProcessId,omitempty"`
+	Description                                     string                                    `json:"Description,omitempty"`
+	ExtensionSettings                               []extensions.ExtensionSettings            `json:"ExtensionSettings,omitempty"`
+	IncludedLibraryVariableSets                     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
+	IsDisabled                                      bool                                      `json:"IsDisabled"`
+	IsDiscreteChannelRelease                        bool                                      `json:"DiscreteChannelRelease"`
+	IsVersionControlled                             bool                                      `json:"IsVersionControlled"`
+	LifecycleID                                     string                                    `json:"LifecycleId" validate:"required"`
+	Name                                            string                                    `json:"Name" validate:"required"`
+	PersistenceSettings                             PersistenceSettings                       `json:"PersistenceSettings,omitempty"`
+	ProjectGroupID                                  string                                    `json:"ProjectGroupId" validate:"required"`
+	ReleaseCreationStrategy                         *ReleaseCreationStrategy                  `json:"ReleaseCreationStrategy,omitempty"`
+	ReleaseNotesTemplate                            string                                    `json:"ReleaseNotesTemplate,omitempty"`
+	Slug                                            string                                    `json:"Slug,omitempty"`
+	SpaceID                                         string                                    `json:"SpaceId,omitempty"`
+	Templates                                       []actiontemplates.ActionTemplateParameter `json:"Templates,omitempty"`
+	TenantedDeploymentMode                          core.TenantedDeploymentMode               `json:"TenantedDeploymentMode,omitempty"`
+	VariableSetID                                   string                                    `json:"VariableSetId,omitempty"`
+	VersioningStrategy                              *VersioningStrategy                       `json:"VersioningStrategy,omitempty"`
+	CombineHealthAndSyncStatusInDashboardLiveStatus bool                                      `json:"CombineHealthAndSyncStatusInDashboardLiveStatus"`
 
 	resources.Resource
 }
@@ -72,31 +73,32 @@ func NewProject(name string, lifecycleID string, projectGroupID string) *Project
 // UnmarshalJSON sets this project to its representation in JSON.
 func (p *Project) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		AllowIgnoreChannelRules         bool                                      `json:"AllowIgnoreChannelRules,omitempty"`
-		AutoCreateRelease               bool                                      `json:"AutoCreateRelease"`
-		AutoDeployReleaseOverrides      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
-		ClonedFromProjectID             string                                    `json:"ClonedFromProjectId,omitempty"`
-		ConnectivityPolicy              *core.ConnectivityPolicy                  `json:"ProjectConnectivityPolicy,omitempty"`
-		DefaultGuidedFailureMode        string                                    `json:"DefaultGuidedFailureMode,omitempty"`
-		DefaultToSkipIfAlreadyInstalled bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
-		DeploymentChangesTemplate       string                                    `json:"DeploymentChangesTemplate,omitempty"`
-		DeploymentProcessID             string                                    `json:"DeploymentProcessId,omitempty"`
-		Description                     string                                    `json:"Description,omitempty"`
-		IncludedLibraryVariableSets     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
-		IsDisabled                      bool                                      `json:"IsDisabled"`
-		IsDiscreteChannelRelease        bool                                      `json:"DiscreteChannelRelease"`
-		IsVersionControlled             bool                                      `json:"IsVersionControlled"`
-		LifecycleID                     string                                    `json:"LifecycleId" validate:"required"`
-		Name                            string                                    `json:"Name" validate:"required"`
-		ProjectGroupID                  string                                    `json:"ProjectGroupId" validate:"required"`
-		ReleaseCreationStrategy         *ReleaseCreationStrategy                  `json:"ReleaseCreationStrategy,omitempty"`
-		ReleaseNotesTemplate            string                                    `json:"ReleaseNotesTemplate,omitempty"`
-		Slug                            string                                    `json:"Slug,omitempty"`
-		SpaceID                         string                                    `json:"SpaceId,omitempty"`
-		Templates                       []actiontemplates.ActionTemplateParameter `json:"Templates,omitempty"`
-		TenantedDeploymentMode          core.TenantedDeploymentMode               `json:"TenantedDeploymentMode,omitempty"`
-		VariableSetID                   string                                    `json:"VariableSetId,omitempty"`
-		VersioningStrategy              *VersioningStrategy                       `json:"VersioningStrategy,omitempty"`
+		AllowIgnoreChannelRules                         bool                                      `json:"AllowIgnoreChannelRules,omitempty"`
+		AutoCreateRelease                               bool                                      `json:"AutoCreateRelease"`
+		AutoDeployReleaseOverrides                      []AutoDeployReleaseOverride               `json:"AutoDeployReleaseOverrides,omitempty"`
+		ClonedFromProjectID                             string                                    `json:"ClonedFromProjectId,omitempty"`
+		ConnectivityPolicy                              *core.ConnectivityPolicy                  `json:"ProjectConnectivityPolicy,omitempty"`
+		DefaultGuidedFailureMode                        string                                    `json:"DefaultGuidedFailureMode,omitempty"`
+		DefaultToSkipIfAlreadyInstalled                 bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
+		DeploymentChangesTemplate                       string                                    `json:"DeploymentChangesTemplate,omitempty"`
+		DeploymentProcessID                             string                                    `json:"DeploymentProcessId,omitempty"`
+		Description                                     string                                    `json:"Description,omitempty"`
+		IncludedLibraryVariableSets                     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
+		IsDisabled                                      bool                                      `json:"IsDisabled"`
+		IsDiscreteChannelRelease                        bool                                      `json:"DiscreteChannelRelease"`
+		IsVersionControlled                             bool                                      `json:"IsVersionControlled"`
+		LifecycleID                                     string                                    `json:"LifecycleId" validate:"required"`
+		Name                                            string                                    `json:"Name" validate:"required"`
+		ProjectGroupID                                  string                                    `json:"ProjectGroupId" validate:"required"`
+		ReleaseCreationStrategy                         *ReleaseCreationStrategy                  `json:"ReleaseCreationStrategy,omitempty"`
+		ReleaseNotesTemplate                            string                                    `json:"ReleaseNotesTemplate,omitempty"`
+		Slug                                            string                                    `json:"Slug,omitempty"`
+		SpaceID                                         string                                    `json:"SpaceId,omitempty"`
+		Templates                                       []actiontemplates.ActionTemplateParameter `json:"Templates,omitempty"`
+		TenantedDeploymentMode                          core.TenantedDeploymentMode               `json:"TenantedDeploymentMode,omitempty"`
+		VariableSetID                                   string                                    `json:"VariableSetId,omitempty"`
+		VersioningStrategy                              *VersioningStrategy                       `json:"VersioningStrategy,omitempty"`
+		CombineHealthAndSyncStatusInDashboardLiveStatus bool                                      `json:"CombineHealthAndSyncStatusInDashboardLiveStatus"`
 		resources.Resource
 	}
 
@@ -136,6 +138,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	p.VariableSetID = fields.VariableSetID
 	p.VersioningStrategy = fields.VersioningStrategy
 	p.Resource = fields.Resource
+	p.CombineHealthAndSyncStatusInDashboardLiveStatus = fields.CombineHealthAndSyncStatusInDashboardLiveStatus
 
 	var project map[string]*json.RawMessage
 	if err := json.Unmarshal(data, &project); err != nil {
