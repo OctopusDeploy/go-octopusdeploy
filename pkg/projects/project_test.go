@@ -48,7 +48,8 @@ func TestProjectExtensionSettingsAsJSON(t *testing.T) {
 		"IsVersionControlled": false,
 		"LifecycleId": "%s",
 		"Name": "%s",
-		"ProjectGroupId": "%s"
+		"ProjectGroupId": "%s",
+		"CombineHealthAndSyncStatusInDashboardLiveStatus": false
 	}`,
 		extensions.JiraServiceManagementExtensionID,
 		jsmConnectionID,
