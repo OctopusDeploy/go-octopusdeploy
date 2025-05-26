@@ -114,6 +114,30 @@ func (s *ReleaseService) GetReleases(channel *channels.Channel, releaseQuery ...
 	return resp.(*resources.Resources[*Release]), nil
 }
 
+// GetMissingPackages returns missing built-in feed packages associated with the release
+func GetMissingPackages(client newclient.Client, release *Release) ([]MissingPackageInfo, error) {
+	spaceID, err := internal.GetSpaceID(release.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	path, err := client.URITemplateCache().Expand(uritemplates.MissingPackagesForRelease, map[string]any{
+		"spaceId":   spaceID,
+		"releaseId": release.ID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[MissingPackages](client.HttpSession(), path)
+	if err != nil {
+		return []MissingPackageInfo{}, err
+	}
+
+	return res.Packages, nil
+}
+
 // ----- Experimental ---------------------------------------------------------
 
 // GetReleasesInProjectChannel is EXPERIMENTAL
