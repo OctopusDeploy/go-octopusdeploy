@@ -8,6 +8,7 @@ import (
 
 // BuiltInFeed represents a built-in feed.
 type BuiltInFeed struct {
+	DeletePackagesAssociatedWithReleases bool `json:"DeletePackagesAssociatedWithReleases"`
 	DeleteUnreleasedPackagesAfterDays int  `json:"DeleteUnreleasedPackagesAfterDays"`
 	DownloadAttempts                  int  `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds       int  `json:"DownloadRetryBackoffSeconds"`
@@ -23,6 +24,7 @@ func NewBuiltInFeed(name string) (*BuiltInFeed, error) {
 	}
 
 	feed := BuiltInFeed{
+		DeletePackagesAssociatedWithReleases: false,
 		DeleteUnreleasedPackagesAfterDays: 30,
 		DownloadAttempts:                  5,
 		DownloadRetryBackoffSeconds:       10,
