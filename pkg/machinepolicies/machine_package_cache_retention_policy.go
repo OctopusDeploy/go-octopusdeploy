@@ -1,28 +1,15 @@
 package machinepolicies
 
-type MachinePackageCacheRetentionUnit int
-
-const (
-	Item MachinePackageCacheRetentionUnit = iota
-)
-
-type MachinePackageCacheRetentionStrategy int
-
-const (
-	Default MachinePackageCacheRetentionStrategy = iota
-	Quantities
-)
-
 type MachinePackageCacheRetentionPolicy struct {
-	Strategy                 MachinePackageCacheRetentionStrategy `json:"Strategy" validate:"required"`
-	QuantityOfPackagesToKeep *int32                               `json:"QuantityOfPackagesToKeep"`
-	PackageUnit              *MachinePackageCacheRetentionUnit    `json:"PackageUnit"`
-	QuantityOfVersionsToKeep *int32                               `json:"QuantityOfVersionsToKeep"`
-	VersionUnit              *MachinePackageCacheRetentionUnit    `json:"VersionUnit"`
+	Strategy                 string `json:"Strategy" validate:"required,oneof=Default Quantities"`
+	QuantityOfPackagesToKeep int32  `json:"QuantityOfPackagesToKeep,omitempty"`
+	PackageUnit              string `json:"PackageUnit,omitempty" validate:"omitempty,oneof=Items"`
+	QuantityOfVersionsToKeep int32  `json:"QuantityOfVersionsToKeep,omitempty"`
+	VersionUnit              string `json:"VersionUnit,omitempty" validate:"omitempty,oneof=Items"`
 }
 
 func NewMachinePackageCacheRetentionPolicy() *MachinePackageCacheRetentionPolicy {
 	return &MachinePackageCacheRetentionPolicy{
-		Strategy: Default,
+		Strategy: "Default",
 	}
 }
