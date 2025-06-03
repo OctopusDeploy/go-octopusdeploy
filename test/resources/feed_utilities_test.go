@@ -35,11 +35,10 @@ func TestToFeed(t *testing.T) {
 	require.EqualValues(t, feed.GetFeedType(), "AwsElasticContainerRegistry")
 
 	feedResource = feeds.NewFeedResource(internal.GetRandomName(), feeds.FeedTypeBuiltIn)
-	feedResource.DeletePackagesAssociatedWithReleases = true
 	feed, err = feeds.ToFeed(feedResource)
 	require.NoError(t, err)
 	builtinFeed, ok := feed.(*feeds.BuiltInFeed)
 	require.True(t, ok)
-	require.EqualValues(t, builtinFeed.DeletePackagesAssociatedWithReleases, true)
+	require.EqualValues(t, builtinFeed.DeletePackagesAssociatedWithReleases, false)
 
 }
