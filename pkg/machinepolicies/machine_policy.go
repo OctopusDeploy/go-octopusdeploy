@@ -39,7 +39,7 @@ func NewMachinePolicy(name string) *MachinePolicy {
 		MachineConnectivityPolicy:                     NewMachineConnectivityPolicy(),
 		MachineHealthCheckPolicy:                      NewMachineHealthCheckPolicy(),
 		MachineUpdatePolicy:                           NewMachineUpdatePolicy(),
-		MachinePackageCacheRetentionPolicy:            NewMachinePackageCacheRetentionPolicy(),
+		MachinePackageCacheRetentionPolicy:            NewDefaultMachinePackageCacheRetentionPolicy(),
 		Name:                                          name,
 		PollingRequestMaximumMessageProcessingTimeout: 10 * time.Minute,
 		PollingRequestQueueTimeout:                    2 * time.Minute,

@@ -8,8 +8,18 @@ type MachinePackageCacheRetentionPolicy struct {
 	VersionUnit              string `json:"VersionUnit,omitempty" validate:"omitempty,oneof=Items"`
 }
 
-func NewMachinePackageCacheRetentionPolicy() *MachinePackageCacheRetentionPolicy {
+func NewDefaultMachinePackageCacheRetentionPolicy() *MachinePackageCacheRetentionPolicy {
 	return &MachinePackageCacheRetentionPolicy{
 		Strategy: "Default",
+	}
+}
+
+func NewMachinePackageCacheRetentionPolicy(strategy string, quantityOfPackages int32, packageUnit string, quantityOfVersions int32, versionUnit string) *MachinePackageCacheRetentionPolicy {
+	return &MachinePackageCacheRetentionPolicy{
+		Strategy:                 strategy,
+		QuantityOfPackagesToKeep: quantityOfPackages,
+		PackageUnit:              packageUnit,
+		QuantityOfVersionsToKeep: quantityOfVersions,
+		VersionUnit:              versionUnit,
 	}
 }
