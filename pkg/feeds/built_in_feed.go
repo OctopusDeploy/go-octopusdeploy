@@ -9,10 +9,10 @@ import (
 // BuiltInFeed represents a built-in feed.
 type BuiltInFeed struct {
 	DeletePackagesAssociatedWithReleases bool `json:"DeletePackagesAssociatedWithReleases"`
-	DeleteUnreleasedPackagesAfterDays int  `json:"DeleteUnreleasedPackagesAfterDays"`
-	DownloadAttempts                  int  `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds       int  `json:"DownloadRetryBackoffSeconds"`
-	IsBuiltInRepoSyncEnabled          bool `json:"IsBuiltInRepoSyncEnabled"`
+	DeleteUnreleasedPackagesAfterDays 	 int  `json:"DeleteUnreleasedPackagesAfterDays"`
+	DownloadAttempts                  	 int  `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds       	 int  `json:"DownloadRetryBackoffSeconds"`
+	IsBuiltInRepoSyncEnabled          	 bool `json:"IsBuiltInRepoSyncEnabled"`
 
 	feed
 }
