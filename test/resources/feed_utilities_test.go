@@ -40,5 +40,4 @@ func TestToFeed(t *testing.T) {
 	builtinFeed, ok := feed.(*feeds.BuiltInFeed)
 	require.True(t, ok)
 	require.EqualValues(t, builtinFeed.DeletePackagesAssociatedWithReleases, false)
-
 }
