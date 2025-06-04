@@ -12,7 +12,7 @@ type FeedResource struct {
 	AzureContainerRegistryOidcAuthentication   *AzureContainerRegistryOidcAuthentication      `json:"AzureContainerRegistryOidcAuthentication,omitempty"`
 	ElasticContainerRegistryOidcAuthentication *AwsElasticContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
 	APIVersion                                 string                                         `json:"ApiVersion,omitempty"`
-	DeletePackagesAssociatedWithReleases	   bool											  `json:"DeletePackagesAssociatedWithReleases"`
+	DeletePackagesAssociatedWithReleases       bool                                           `json:"DeletePackagesAssociatedWithReleases"`
 	DeleteUnreleasedPackagesAfterDays          int                                            `json:"DeleteUnreleasedPackagesAfterDays"`
 	DownloadAttempts                           int                                            `json:"DownloadAttempts"`
 	DownloadRetryBackoffSeconds                int                                            `json:"DownloadRetryBackoffSeconds"`
