@@ -62,6 +62,28 @@ Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by mo
 
 Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory. There are also many [integration](/test) and unit tests available to examine that demonstrate the capabilities of this API client.
 
+## Testing
+
+### Running Tests Locally using Visual Studio Code
+
+> [!CAUTION]
+> The integration tests will create and delete resources on your instance. Use a dedicated instance to run tests
+
+To run the tests against an instance of Octopus Deploy, create a `.env` file at the root directory of this repository
+
+```
+OCTOPUS_HOST=http://your-octopus-instance-url
+OCTOPUS_API_KEY=API-YOURAPIKEY
+```
+
+and add a Visual Studio Code workspace setting (`.vscode/settings.json`) for the test environment settings
+
+```
+{
+    "go.testEnvFile": "${workspaceFolder}/.env"
+}
+```
+
 ## 🤝 Contributions
 
 Contributions are welcome! :heart: Please read our [Contributing Guide](CONTRIBUTING.md) for information about how to get involved in this project.
