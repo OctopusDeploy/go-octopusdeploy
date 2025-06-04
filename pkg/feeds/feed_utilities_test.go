@@ -1,9 +1,10 @@
 package feeds
 
 import (
+	"testing"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"testing"
 )
 
 func TestUnexpectedFeed(t *testing.T) {
