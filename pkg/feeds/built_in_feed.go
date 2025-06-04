@@ -25,11 +25,11 @@ func NewBuiltInFeed(name string) (*BuiltInFeed, error) {
 
 	feed := BuiltInFeed{
 		DeletePackagesAssociatedWithReleases: false,
-		DeleteUnreleasedPackagesAfterDays: 30,
-		DownloadAttempts:                  5,
-		DownloadRetryBackoffSeconds:       10,
-		IsBuiltInRepoSyncEnabled:          false,
-		feed:                              *newFeed(name, FeedTypeBuiltIn),
+		DeleteUnreleasedPackagesAfterDays:    30,
+		DownloadAttempts:                     5,
+		DownloadRetryBackoffSeconds:          10,
+		IsBuiltInRepoSyncEnabled:             false,
+		feed:                                 *newFeed(name, FeedTypeBuiltIn),
 	}
 
 	// validate to ensure that all expectations are met
