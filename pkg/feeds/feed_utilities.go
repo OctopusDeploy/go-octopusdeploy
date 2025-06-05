@@ -3,6 +3,7 @@ package feeds
 import (
 	"errors"
 	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
@@ -39,6 +40,7 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		if err != nil {
 			return nil, err
 		}
+		builtInFeed.DeletePackagesAssociatedWithReleases = feedResource.DeletePackagesAssociatedWithReleases
 		builtInFeed.DeleteUnreleasedPackagesAfterDays = feedResource.DeleteUnreleasedPackagesAfterDays
 		builtInFeed.DownloadAttempts = feedResource.DownloadAttempts
 		builtInFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
@@ -189,6 +191,7 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		}
 	case FeedTypeBuiltIn:
 		builtInFeed := feed.(*BuiltInFeed)
+		feedResource.DeletePackagesAssociatedWithReleases = builtInFeed.DeletePackagesAssociatedWithReleases
 		feedResource.DeleteUnreleasedPackagesAfterDays = builtInFeed.DeleteUnreleasedPackagesAfterDays
 		feedResource.DownloadAttempts = builtInFeed.DownloadAttempts
 		feedResource.DownloadRetryBackoffSeconds = builtInFeed.DownloadRetryBackoffSeconds

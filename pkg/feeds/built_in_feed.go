@@ -8,10 +8,11 @@ import (
 
 // BuiltInFeed represents a built-in feed.
 type BuiltInFeed struct {
-	DeleteUnreleasedPackagesAfterDays int  `json:"DeleteUnreleasedPackagesAfterDays"`
-	DownloadAttempts                  int  `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds       int  `json:"DownloadRetryBackoffSeconds"`
-	IsBuiltInRepoSyncEnabled          bool `json:"IsBuiltInRepoSyncEnabled"`
+	DeletePackagesAssociatedWithReleases bool `json:"DeletePackagesAssociatedWithReleases"`
+	DeleteUnreleasedPackagesAfterDays    int  `json:"DeleteUnreleasedPackagesAfterDays"`
+	DownloadAttempts                     int  `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds          int  `json:"DownloadRetryBackoffSeconds"`
+	IsBuiltInRepoSyncEnabled             bool `json:"IsBuiltInRepoSyncEnabled"`
 
 	feed
 }
@@ -23,11 +24,12 @@ func NewBuiltInFeed(name string) (*BuiltInFeed, error) {
 	}
 
 	feed := BuiltInFeed{
-		DeleteUnreleasedPackagesAfterDays: 30,
-		DownloadAttempts:                  5,
-		DownloadRetryBackoffSeconds:       10,
-		IsBuiltInRepoSyncEnabled:          false,
-		feed:                              *newFeed(name, FeedTypeBuiltIn),
+		DeletePackagesAssociatedWithReleases: false,
+		DeleteUnreleasedPackagesAfterDays:    30,
+		DownloadAttempts:                     5,
+		DownloadRetryBackoffSeconds:          10,
+		IsBuiltInRepoSyncEnabled:             false,
+		feed:                                 *newFeed(name, FeedTypeBuiltIn),
 	}
 
 	// validate to ensure that all expectations are met
