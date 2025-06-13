@@ -210,8 +210,8 @@ func (s *ScriptModuleService) Update(scriptModule *ScriptModule) (*ScriptModule,
 		return nil, err
 	}
 
-	updatedVriableSet := updatedVariablesResponse.(*VariableSet)
-	for _, variable := range updatedVriableSet.Variables {
+	updatedVariableSet := updatedVariablesResponse.(*VariableSet)
+	for _, variable := range updatedVariableSet.Variables {
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
 			scriptModuleResponse.ScriptBody = variable.Value
 		}

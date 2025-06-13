@@ -9,7 +9,7 @@ func TestToTimeSpan(t *testing.T) {
 	halfSecond, _ := time.ParseDuration("0.5s")
 	second, _ := time.ParseDuration("1111ms")
 	twoHours, _ := time.ParseDuration("120m")
-	fourtySevenHours, _ := time.ParseDuration("47h")
+	fortySevenHours, _ := time.ParseDuration("47h")
 	twoDays, _ := time.ParseDuration("48h")
 	t.Logf("500ms: %s", ToTimeSpan(halfSecond))
 	t.Logf("1000ms: %s", ToTimeSpan(second))
@@ -17,7 +17,7 @@ func TestToTimeSpan(t *testing.T) {
 	t.Logf("1m: %s", ToTimeSpan(time.Minute))
 	t.Logf("1h: %s", ToTimeSpan(time.Hour))
 	t.Logf("120m: %s", ToTimeSpan(twoHours))
-	t.Logf("47h: %s", ToTimeSpan(fourtySevenHours))
+	t.Logf("47h: %s", ToTimeSpan(fortySevenHours))
 	t.Logf("48h: %s", ToTimeSpan(twoDays))
 }
 
