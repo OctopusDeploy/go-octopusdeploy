@@ -151,13 +151,18 @@ func TestCredentialServiceUpdate(t *testing.T) {
 
 	resource.Description = newDescription
 	resource.Name = newName
-
+	allowedRepositories := []string{"https://foo.com/*", "http://bar.com"}
+	resource.RepositoryRestrictions = credentials.RepositoryRestrictions{
+		Enabled:             true,
+		AllowedRepositories: allowedRepositories,
+	}
 	updatedCredential := UpdateTestGitCredentialResource(t, client, resource)
 	require.NotNil(t, updatedCredential)
 	require.NotEmpty(t, updatedCredential.GetID())
 	require.Equal(t, updatedCredential.GetID(), updatedCredential.GetID())
 	require.Equal(t, newDescription, updatedCredential.Description)
 	require.Equal(t, newName, updatedCredential.Name)
+	require.ElementsMatch(t, allowedRepositories, updatedCredential.RepositoryRestrictions.AllowedRepositories)
 }
 
 func TestCredentialServiceAddGetDelete_NewClient(t *testing.T) {
