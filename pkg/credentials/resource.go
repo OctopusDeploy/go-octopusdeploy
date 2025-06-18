@@ -2,17 +2,21 @@ package credentials
 
 import (
 	"encoding/json"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type Resource struct {
-	Description string        `json:"Description,omitempty"`
-	Details     GitCredential `json:"Details"`
-	Name        string        `json:"Name"`
-	SpaceID     string        `json:"SpaceId,omitempty"`
-
+	Description            string                 `json:"Description,omitempty"`
+	Details                GitCredential          `json:"Details"`
+	Name                   string                 `json:"Name"`
+	SpaceID                string                 `json:"SpaceId,omitempty"`
+	RepositoryRestrictions RepositoryRestrictions `json:"RepositoryRestrictions"`
 	resources.Resource
+}
+
+type RepositoryRestrictions struct {
+	Enabled             bool     `json:"Enabled"`
+	AllowedRepositories []string `json:"AllowedRepositories"`
 }
 
 func NewResource(name string, credential GitCredential) *Resource {
@@ -53,6 +57,16 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 	var rawResource map[string]*json.RawMessage
 	if err := json.Unmarshal(b, &rawResource); err != nil {
 		return err
+	}
+
+	var repositoryRestrictions RepositoryRestrictions
+	if rawResource["RepositoryRestrictions"] != nil {
+		restrictionsValue := rawResource["RepositoryRestrictions"]
+
+		if err := json.Unmarshal(*restrictionsValue, &repositoryRestrictions); err != nil {
+			return err
+		}
+		r.RepositoryRestrictions = repositoryRestrictions
 	}
 
 	var gitCredentials *json.RawMessage
