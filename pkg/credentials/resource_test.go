@@ -55,6 +55,11 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 	name := internal.GetRandomName()
 	selfLink := internal.GetRandomName()
 
+	restrictions := credentials.RepositoryRestrictions{
+		Enabled:             false,
+		AllowedRepositories: []string{},
+	}
+
 	anonymousdAsJSON, err := json.Marshal(anonymous)
 	require.NoError(t, err)
 	require.NotNil(t, anonymousdAsJSON)
@@ -67,12 +72,13 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 	expectedJSON := fmt.Sprintf(`{
 		"Description": "%s",
 		"Details": %s,
+        "RepositoryRestrictions": %s,
 		"Id": "%s",
 		"Name": "%s",
 		"Links": {
 			"Self": "%s"
 		}
-	}`, description, anonymousdAsJSON, id, name, selfLink)
+	}`, description, anonymousdAsJSON, restrictions, id, name, selfLink)
 
 	resourceAsJSON, err := json.Marshal(resource)
 	require.NoError(t, err)
