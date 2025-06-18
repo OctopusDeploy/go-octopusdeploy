@@ -20,6 +20,15 @@ func TestResourceWithUsernamePasswordAsJSON(t *testing.T) {
 	selfLink := internal.GetRandomName()
 	username := internal.GetRandomName()
 
+	restrictions := credentials.RepositoryRestrictions{
+		Enabled:             false,
+		AllowedRepositories: []string{},
+	}
+
+	restrictionsAsJSON, err := json.Marshal(restrictions)
+	require.NoError(t, err)
+	require.NotNil(t, restrictionsAsJSON)
+
 	usernamePassword := credentials.NewUsernamePassword(username, password)
 
 	usernamePasswordAsJSON, err := json.Marshal(usernamePassword)
@@ -30,16 +39,18 @@ func TestResourceWithUsernamePasswordAsJSON(t *testing.T) {
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink
+	resource.RepositoryRestrictions = restrictions
 
 	expectedJSON := fmt.Sprintf(`{
 		"Description": "%s",
 		"Details": %s,
-		"Id": "%s",
+		"RepositoryRestrictions": %s,
+        "Id": "%s",
 		"Name": "%s",
 		"Links": {
 			"Self": "%s"
 		}
-	}`, description, usernamePasswordAsJSON, id, name, selfLink)
+	}`, description, usernamePasswordAsJSON, restrictionsAsJSON, id, name, selfLink)
 
 	resourceAsJSON, err := json.Marshal(resource)
 	require.NoError(t, err)
@@ -72,6 +83,7 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink
+	resource.RepositoryRestrictions = restrictions
 
 	expectedJSON := fmt.Sprintf(`{
 		"Description": "%s",
@@ -103,20 +115,31 @@ func TestResourceWithReferenceAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, referenceAsJSON)
 
+	restrictions := credentials.RepositoryRestrictions{
+		Enabled:             false,
+		AllowedRepositories: []string{},
+	}
+
+	restrictionsAsJSON, err := json.Marshal(restrictions)
+	require.NoError(t, err)
+	require.NotNil(t, restrictionsAsJSON)
+
 	resource := credentials.NewResource(name, reference)
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink
+	resource.RepositoryRestrictions = restrictions
 
 	expectedJSON := fmt.Sprintf(`{
 		"Description": "%s",
 		"Details": %s,
+		"RepositoryRestrictions": %s,
 		"Id": "%s",
 		"Name": "%s",
 		"Links": {
 			"Self": "%s"
 		}
-	}`, description, referenceAsJSON, id, name, selfLink)
+	}`, description, referenceAsJSON, restrictionsAsJSON, id, name, selfLink)
 
 	resourceAsJSON, err := json.Marshal(resource)
 	require.NoError(t, err)
