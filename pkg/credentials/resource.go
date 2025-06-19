@@ -6,11 +6,11 @@ import (
 )
 
 type Resource struct {
-	Description            string                 `json:"Description,omitempty"`
-	Details                GitCredential          `json:"Details"`
-	Name                   string                 `json:"Name"`
-	SpaceID                string                 `json:"SpaceId,omitempty"`
-	RepositoryRestrictions RepositoryRestrictions `json:"RepositoryRestrictions"`
+	Description            string                  `json:"Description,omitempty"`
+	Details                GitCredential           `json:"Details"`
+	Name                   string                  `json:"Name"`
+	SpaceID                string                  `json:"SpaceId,omitempty"`
+	RepositoryRestrictions *RepositoryRestrictions `json:"RepositoryRestrictions"`
 	resources.Resource
 }
 
@@ -66,7 +66,7 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 		if err := json.Unmarshal(*restrictionsValue, &repositoryRestrictions); err != nil {
 			return err
 		}
-		r.RepositoryRestrictions = repositoryRestrictions
+		r.RepositoryRestrictions = &repositoryRestrictions
 	}
 
 	var gitCredentials *json.RawMessage

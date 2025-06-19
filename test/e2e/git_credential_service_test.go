@@ -26,7 +26,7 @@ func CreateTestGitCredentialResource(t *testing.T, client *client.Client) *crede
 
 	resource := credentials.NewResource(name, usernamePassword)
 	resource.Description = description
-	resource.RepositoryRestrictions = credentials.RepositoryRestrictions{
+	resource.RepositoryRestrictions = &credentials.RepositoryRestrictions{
 		Enabled:             true,
 		AllowedRepositories: []string{"https://github.com/*", "http://gitlab.com"},
 	}
@@ -152,7 +152,7 @@ func TestCredentialServiceUpdate(t *testing.T) {
 	resource.Description = newDescription
 	resource.Name = newName
 	allowedRepositories := []string{"https://foo.com/*", "http://bar.com"}
-	resource.RepositoryRestrictions = credentials.RepositoryRestrictions{
+	resource.RepositoryRestrictions = &credentials.RepositoryRestrictions{
 		Enabled:             true,
 		AllowedRepositories: allowedRepositories,
 	}

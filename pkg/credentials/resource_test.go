@@ -39,7 +39,7 @@ func TestResourceWithUsernamePasswordAsJSON(t *testing.T) {
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink
-	resource.RepositoryRestrictions = restrictions
+	resource.RepositoryRestrictions = &restrictions
 
 	expectedJSON := fmt.Sprintf(`{
 		"Description": "%s",
@@ -83,7 +83,7 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink
-	resource.RepositoryRestrictions = restrictions
+	resource.RepositoryRestrictions = &restrictions
 
 	expectedJSON := fmt.Sprintf(`{
 		"Description": "%s",
@@ -128,7 +128,7 @@ func TestResourceWithReferenceAsJSON(t *testing.T) {
 	resource.Description = description
 	resource.ID = id
 	resource.Links["Self"] = selfLink
-	resource.RepositoryRestrictions = restrictions
+	resource.RepositoryRestrictions = &restrictions
 
 	expectedJSON := fmt.Sprintf(`{
 		"Description": "%s",
