@@ -165,6 +165,27 @@ func TestCredentialServiceUpdate(t *testing.T) {
 	require.ElementsMatch(t, allowedRepositories, updatedCredential.RepositoryRestrictions.AllowedRepositories)
 }
 
+func TestCredentialServiceUpdateWithNullRepositoryRestrictions(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	resource := CreateTestGitCredentialResource(t, client)
+	defer DeleteTestGitCredentialResource(t, client, resource)
+
+	resource, err := client.GitCredentials.GetByID(resource.GetID())
+	require.NotNil(t, resource)
+	require.NoError(t, err)
+	originalAllowedRepositories := []string{"https://github.com/*", "http://gitlab.com"}
+	require.ElementsMatch(t, originalAllowedRepositories, resource.RepositoryRestrictions.AllowedRepositories)
+
+	resource.RepositoryRestrictions = nil
+
+	updatedCredential := UpdateTestGitCredentialResource(t, client, resource)
+	require.NotNil(t, updatedCredential)
+	require.NotEmpty(t, updatedCredential.GetID())
+	require.ElementsMatch(t, originalAllowedRepositories, updatedCredential.RepositoryRestrictions.AllowedRepositories)
+}
+
 func TestCredentialServiceAddGetDelete_NewClient(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
