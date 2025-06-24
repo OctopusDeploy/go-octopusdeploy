@@ -14,11 +14,11 @@ type OIDCIdentityQuery struct {
 }
 
 type OIDCIdentity struct {
-	Audience         string `json:"Audience"`
-	Issuer           string `json:"Issuer"`
-	Name             string `json:"Name"`
-	ServiceAccountID string `json:"ServiceAccountId"`
-	Subject          string `json:"Subject"`
+	Audience         *string `json:"Audience"`
+	Issuer           string  `json:"Issuer"`
+	Name             string  `json:"Name"`
+	ServiceAccountID string  `json:"ServiceAccountId"`
+	Subject          string  `json:"Subject"`
 	resources.Resource
 }
 
