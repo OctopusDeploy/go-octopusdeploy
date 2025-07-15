@@ -21,13 +21,25 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 
 	switch feedResource.GetFeedType() {
 	case FeedTypeAwsElasticContainerRegistry:
-		awsElasticContainerRegistry, err := NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region, feedResource.ElasticContainerRegistryOidcAuthentication)
+		var awsOidc *AwsElasticContainerRegistryOidcAuthentication
+		if feedResource.OidcAuthentication != nil {
+			if aws, ok := feedResource.OidcAuthentication.GetAWS(); ok {
+				awsOidc = aws
+			}
+		}
+		awsElasticContainerRegistry, err := NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region, awsOidc)
 		if err != nil {
 			return nil, err
 		}
 		feed = awsElasticContainerRegistry
 	case FeedTypeAzureContainerRegistry:
-		azureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.AzureContainerRegistryOidcAuthentication)
+		var azureOidc *AzureContainerRegistryOidcAuthentication
+		if feedResource.OidcAuthentication != nil {
+			if azure, ok := feedResource.OidcAuthentication.GetAzure(); ok {
+				azureOidc = azure
+			}
+		}
+		azureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), azureOidc)
 		if err != nil {
 			return nil, err
 		}
@@ -65,7 +77,13 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		gitHubRepositoryFeed.FeedURI = feedResource.FeedURI
 		feed = gitHubRepositoryFeed
 	case FeedTypeGoogleContainerRegistry:
-		googleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), feedResource.GoogleContainerRegistryOidcAuthentication)
+		var googleOidc *GoogleContainerRegistryOidcAuthentication
+		if feedResource.OidcAuthentication != nil {
+			if google, ok := feedResource.OidcAuthentication.GetGoogle(); ok {
+				googleOidc = google
+			}
+		}
+		googleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), googleOidc)
 		if err != nil {
 			return nil, err
 		}
@@ -169,12 +187,12 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.Region = awsElasticContainerRegistry.Region
 		feedResource.SecretKey = awsElasticContainerRegistry.SecretKey
 		if awsElasticContainerRegistry.OidcAuthentication != nil {
-			feedResource.ElasticContainerRegistryOidcAuthentication = &AwsElasticContainerRegistryOidcAuthentication{
-				SessionDuration: awsElasticContainerRegistry.OidcAuthentication.SessionDuration,
-				Audience:        awsElasticContainerRegistry.OidcAuthentication.Audience,
-				SubjectKeys:     awsElasticContainerRegistry.OidcAuthentication.SubjectKeys,
-				RoleArn:         awsElasticContainerRegistry.OidcAuthentication.RoleArn,
-			}
+			feedResource.OidcAuthentication = NewAwsOidcAuthentication(
+				awsElasticContainerRegistry.OidcAuthentication.SessionDuration,
+				awsElasticContainerRegistry.OidcAuthentication.Audience,
+				awsElasticContainerRegistry.OidcAuthentication.RoleArn,
+				awsElasticContainerRegistry.OidcAuthentication.SubjectKeys,
+			)
 		}
 	case FeedTypeAzureContainerRegistry:
 		azureContainerRegistry := feed.(*AzureContainerRegistry)
@@ -182,12 +200,12 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.FeedURI = azureContainerRegistry.FeedURI
 		feedResource.RegistryPath = azureContainerRegistry.RegistryPath
 		if azureContainerRegistry.OidcAuthentication != nil {
-			feedResource.AzureContainerRegistryOidcAuthentication = &AzureContainerRegistryOidcAuthentication{
-				ClientId:    azureContainerRegistry.OidcAuthentication.ClientId,
-				TenantId:    azureContainerRegistry.OidcAuthentication.TenantId,
-				Audience:    azureContainerRegistry.OidcAuthentication.Audience,
-				SubjectKeys: azureContainerRegistry.OidcAuthentication.SubjectKeys,
-			}
+			feedResource.OidcAuthentication = NewAzureOidcAuthentication(
+				azureContainerRegistry.OidcAuthentication.ClientId,
+				azureContainerRegistry.OidcAuthentication.TenantId,
+				azureContainerRegistry.OidcAuthentication.Audience,
+				azureContainerRegistry.OidcAuthentication.SubjectKeys,
+			)
 		}
 	case FeedTypeBuiltIn:
 		builtInFeed := feed.(*BuiltInFeed)
@@ -207,15 +225,15 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.DownloadRetryBackoffSeconds = gitHubRepositoryFeed.DownloadRetryBackoffSeconds
 		feedResource.FeedURI = gitHubRepositoryFeed.FeedURI
 	case FeedTypeGoogleContainerRegistry:
-		googleContainerRegistry := feed.(*AzureContainerRegistry)
+		googleContainerRegistry := feed.(*GoogleContainerRegistry)
 		feedResource.APIVersion = googleContainerRegistry.APIVersion
 		feedResource.FeedURI = googleContainerRegistry.FeedURI
 		feedResource.RegistryPath = googleContainerRegistry.RegistryPath
 		if googleContainerRegistry.OidcAuthentication != nil {
-			feedResource.AzureContainerRegistryOidcAuthentication = &AzureContainerRegistryOidcAuthentication{
-				Audience:    googleContainerRegistry.OidcAuthentication.Audience,
-				SubjectKeys: googleContainerRegistry.OidcAuthentication.SubjectKeys,
-			}
+			feedResource.OidcAuthentication = NewGoogleOidcAuthentication(
+				googleContainerRegistry.OidcAuthentication.Audience,
+				googleContainerRegistry.OidcAuthentication.SubjectKeys,
+			)
 		}
 	case FeedTypeHelm:
 		helmFeed := feed.(*HelmFeed)
