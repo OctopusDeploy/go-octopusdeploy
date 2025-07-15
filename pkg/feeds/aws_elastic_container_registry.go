@@ -36,7 +36,7 @@ func NewAwsElasticContainerRegistry(name string, accessKey string, secretKey *co
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("accessKey")
 	}
 
-	if !internal.IsEmpty(accessKey) && secretKey == nil {
+	if !internal.IsEmpty(accessKey) && secretKey == nil && oidcAuthentication == nil {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("secretKey")
 	}
 
