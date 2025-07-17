@@ -166,9 +166,6 @@ func (o *OidcAuthentication) UnmarshalJSON(data []byte) error {
 	switch o.Type {
 	case OidcAuthenticationTypeAzure:
 		var azure AzureContainerRegistryOidcAuthentication
-		if err := json.Unmarshal(data, &azure); err != nil {
-			return err
-		}
 		o.Type = OidcAuthenticationTypeAzure
 		o.ClientId = azure.ClientId
 		o.TenantId = azure.TenantId
@@ -177,9 +174,6 @@ func (o *OidcAuthentication) UnmarshalJSON(data []byte) error {
 
 	case OidcAuthenticationTypeAWS:
 		var aws AwsElasticContainerRegistryOidcAuthentication
-		if err := json.Unmarshal(data, &aws); err != nil {
-			return err
-		}
 		o.Type = OidcAuthenticationTypeAWS
 		o.SessionDuration = aws.SessionDuration
 		o.Audience = aws.Audience
@@ -188,9 +182,6 @@ func (o *OidcAuthentication) UnmarshalJSON(data []byte) error {
 
 	case OidcAuthenticationTypeGoogle:
 		var google GoogleContainerRegistryOidcAuthentication
-		if err := json.Unmarshal(data, &google); err != nil {
-			return err
-		}
 		o.Type = OidcAuthenticationTypeGoogle
 		o.Audience = google.Audience
 		o.SubjectKeys = google.SubjectKeys
