@@ -30,7 +30,7 @@ func NewGoogleContainerRegistry(name string, username string, password *core.Sen
 		}
 	}
 
-	dockerContainerRegistry, err := NewDockerContainerRegistryWithFeedType(name, FeedTypeAzureContainerRegistry)
+	dockerContainerRegistry, err := NewDockerContainerRegistryWithFeedType(name, FeedTypeGoogleContainerRegistry)
 
 	if err != nil {
 		return nil, err
