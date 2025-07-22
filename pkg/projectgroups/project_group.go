@@ -6,6 +6,7 @@ type ProjectGroup struct {
 	Description       string   `json:"Description,omitempty"`
 	EnvironmentIDs    []string `json:"EnvironmentIds,omitempty"`
 	Name              string   `json:"Name,omitempty" validate:"required"`
+	Slug              string   `json:"Slug"` // deliberately send empty string
 	RetentionPolicyID string   `json:"RetentionPolicyId,omitempty"`
 	SpaceID           string   `json:"SpaceId,omitempty"`
 
