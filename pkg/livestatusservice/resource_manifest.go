@@ -1,4 +1,4 @@
-package resources
+package livestatusservice
 
 import (
 	"github.com/go-playground/validator/v10"
@@ -18,9 +18,9 @@ type GetResourceManifestRequest struct {
 // GetResourceManifestResponse represents the response from getting a resource manifest
 // Contains the manifest for a live resource
 type GetResourceManifestResponse struct {
-	LiveManifest     string                `json:"liveManifest" validate:"required"`
-	DesiredManifest  string                `json:"desiredManifest,omitempty"`
-	Diff             *LiveResourceDiff     `json:"diff,omitempty"`
+	LiveManifest    string            `json:"liveManifest" validate:"required"`
+	DesiredManifest string            `json:"desiredManifest,omitempty"`
+	Diff            *LiveResourceDiff `json:"diff,omitempty"`
 }
 
 // LiveResourceDiff represents the diff between desired and live resource manifests
