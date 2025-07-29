@@ -1,0 +1,138 @@
+package e2e
+
+import (
+	"testing"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/livestatusservice"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestGetResourceManifestWithClient_E2E(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	// Create a new client instance for the livestatus service
+	newClient := newclient.NewClientS(client.HttpSession(), client.GetSpaceID())
+	require.NotNil(t, newClient)
+
+	// Create test environment
+	environment := CreateTestEnvironment(t, client)
+	require.NotNil(t, environment)
+	defer DeleteTestEnvironment(t, client, environment)
+
+	// Create test project
+	project := CreateTestProject(t, client, nil, nil, nil)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	// Create test deployment target (machine)
+	deploymentTarget := CreateTestDeploymentTarget(t, client, environment)
+	require.NotNil(t, deploymentTarget)
+	defer CleanResourceManifestDeploymentTarget(t, client, deploymentTarget)
+
+	// Test with untenanted request
+	t.Run("GetResourceManifest_Untenanted", func(t *testing.T) {
+		request := &livestatusservice.GetResourceManifestRequest{
+			SpaceID:                                client.GetSpaceID(),
+			ProjectID:                              project.GetID(),
+			EnvironmentID:                          environment.GetID(),
+			MachineID:                              deploymentTarget.GetID(),
+			DesiredOrKubernetesMonitoredResourceID: "test-resource-id",
+		}
+
+		// Validate the request is properly formed
+		assert.True(t, request.IsUntenanted())
+		assert.False(t, request.IsTenanted())
+		err := request.Validate()
+		assert.NoError(t, err)
+
+		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
+
+		// We expect this to fail since we don't have actual kubernetes resources deployed,
+		// but we want to verify it doesn't fail due to parameter validation or URI construction
+		if err != nil {
+			// Verify it's an HTTP error (not a parameter validation error)
+			assert.NotContains(t, err.Error(), "parameter")
+			assert.NotContains(t, err.Error(), "invalid")
+		} else {
+			// If successful, verify the response structure
+			assert.NotNil(t, result)
+			assert.NotEmpty(t, result.LiveManifest)
+		}
+	})
+
+	// Test with tenanted request (if we have tenants available)
+	t.Run("GetResourceManifest_Tenanted", func(t *testing.T) {
+		request := &livestatusservice.GetResourceManifestRequest{
+			SpaceID:                                client.GetSpaceID(),
+			ProjectID:                              project.GetID(),
+			EnvironmentID:                          environment.GetID(),
+			MachineID:                              deploymentTarget.GetID(),
+			DesiredOrKubernetesMonitoredResourceID: "test-resource-id",
+			TenantID:                               "Tenants-1",
+		}
+
+		// Validate the request is properly formed
+		assert.False(t, request.IsUntenanted())
+		assert.True(t, request.IsTenanted())
+		err := request.Validate()
+		assert.NoError(t, err)
+
+		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
+
+		if err != nil {
+			assert.NotContains(t, err.Error(), "parameter")
+			assert.NotContains(t, err.Error(), "invalid")
+		} else {
+			assert.NotNil(t, result)
+			assert.NotEmpty(t, result.LiveManifest)
+		}
+	})
+}
+
+func TestGetResourceManifestWithClient_E2E_ErrorCases(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	newClient := newclient.NewClientS(client.HttpSession(), client.GetSpaceID())
+	require.NotNil(t, newClient)
+
+	t.Run("NilRequest", func(t *testing.T) {
+		result, err := livestatusservice.GetResourceManifestWithClient(newClient, nil)
+		assert.Nil(t, result)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "request")
+	})
+
+	t.Run("InvalidIDs", func(t *testing.T) {
+		request := &livestatusservice.GetResourceManifestRequest{
+			SpaceID:                                client.GetSpaceID(),
+			ProjectID:                              "invalid-project-id",
+			EnvironmentID:                          "invalid-environment-id",
+			MachineID:                              "invalid-machine-id",
+			DesiredOrKubernetesMonitoredResourceID: "test-resource-id",
+		}
+
+		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
+
+		// Should fail with HTTP error (404 or similar), not parameter validation
+		assert.Nil(t, result)
+		assert.Error(t, err)
+		// Error should be HTTP-related, not parameter validation
+		assert.NotContains(t, err.Error(), "parameter")
+		assert.NotContains(t, err.Error(), "invalid parameter")
+	})
+}
+
+func CleanResourceManifestDeploymentTarget(t *testing.T, client *client.Client, deploymentTarget *machines.DeploymentTarget) {
+	if client == nil || deploymentTarget == nil {
+		return
+	}
+
+	err := client.Machines.DeleteByID(deploymentTarget.GetID())
+	require.NoError(t, err)
+}
