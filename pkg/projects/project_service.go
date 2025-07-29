@@ -393,7 +393,6 @@ func (s *ProjectService) GetProgression(project *Project) (*Progression, error) 
 	return resp.(*Progression), nil
 }
 
-
 // ----- new -----
 
 // Add creates a new project.
@@ -605,4 +604,3 @@ func GetByIdentifier(client newclient.Client, spaceId string, identifier string)
 
 	return GetByName(client, client.GetSpaceID(), identifier)
 }
-

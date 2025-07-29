@@ -78,7 +78,7 @@ func (s *ResourceManifestService) GetResourceManifest(request *GetResourceManife
 	return resp.(*GetResourceManifestResponse), nil
 }
 
-// New
+// ----- new -----
 
 // GetResourceManifestWithClient retrieves a resource manifest using the new client implementation
 func GetResourceManifestWithClient(client newclient.Client, request *GetResourceManifestRequest) (*GetResourceManifestResponse, error) {
