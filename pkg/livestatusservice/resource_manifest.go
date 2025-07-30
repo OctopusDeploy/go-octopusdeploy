@@ -53,11 +53,6 @@ func NewGetResourceManifestRequestWithTenant(spaceID, projectID, environmentID, 
 	}
 }
 
-// IsUntenanted returns true if the request is for an untenanted resource
-func (r *GetResourceManifestRequest) IsUntenanted() bool {
-	return r.TenantID == ""
-}
-
 // IsTenanted returns true if the request is for a tenanted resource
 func (r *GetResourceManifestRequest) IsTenanted() bool {
 	return r.TenantID != ""

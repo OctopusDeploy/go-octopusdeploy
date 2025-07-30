@@ -24,7 +24,7 @@ func GetResourceManifestWithClient(client newclient.Client, request *GetResource
 	var templateStr string
 	var pathVars map[string]interface{}
 
-	if request.IsUntenanted() {
+	if !request.IsTenanted() {
 		templateStr = resourceManifestUntenantedTemplate
 		pathVars = map[string]interface{}{
 			"spaceId":                                spaceID,

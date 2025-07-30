@@ -70,7 +70,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		}
 
 		// Validate the request is properly formed
-		assert.True(t, request.IsUntenanted())
+		assert.True(t, !request.IsTenanted())
 		assert.False(t, request.IsTenanted())
 		err := request.Validate()
 		assert.NoError(t, err)
@@ -102,7 +102,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		}
 
 		// Validate the request is properly formed
-		assert.False(t, request.IsUntenanted())
+		assert.False(t, !request.IsTenanted())
 		assert.True(t, request.IsTenanted())
 		err := request.Validate()
 		assert.NoError(t, err)

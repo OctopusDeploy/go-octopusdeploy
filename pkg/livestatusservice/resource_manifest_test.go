@@ -21,7 +21,7 @@ func TestNewGetResourceManifestRequest(t *testing.T) {
 	assert.Equal(t, machineID, request.MachineID)
 	assert.Equal(t, resourceID, request.DesiredOrKubernetesMonitoredResourceID)
 	assert.Empty(t, request.TenantID)
-	assert.True(t, request.IsUntenanted())
+	assert.True(t, !request.IsTenanted())
 	assert.False(t, request.IsTenanted())
 }
 
@@ -41,7 +41,7 @@ func TestNewGetResourceManifestRequestWithTenant(t *testing.T) {
 	assert.Equal(t, tenantID, request.TenantID)
 	assert.Equal(t, machineID, request.MachineID)
 	assert.Equal(t, resourceID, request.DesiredOrKubernetesMonitoredResourceID)
-	assert.False(t, request.IsUntenanted())
+	assert.False(t, !request.IsTenanted())
 	assert.True(t, request.IsTenanted())
 }
 
@@ -56,7 +56,7 @@ func TestGetResourceManifestRequestTenantMethods(t *testing.T) {
 		DesiredOrKubernetesMonitoredResourceID: "Resources-1",
 	}
 
-	assert.True(t, untenanteRequest.IsUntenanted())
+	assert.True(t, !untenanteRequest.IsTenanted())
 	assert.False(t, untenanteRequest.IsTenanted())
 
 	// Test tenanted request
@@ -69,7 +69,7 @@ func TestGetResourceManifestRequestTenantMethods(t *testing.T) {
 		DesiredOrKubernetesMonitoredResourceID: "Resources-1",
 	}
 
-	assert.False(t, tenantedRequest.IsUntenanted())
+	assert.False(t, !tenantedRequest.IsTenanted())
 	assert.True(t, tenantedRequest.IsTenanted())
 }
 
