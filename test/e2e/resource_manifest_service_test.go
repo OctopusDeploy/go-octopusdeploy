@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"os"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -12,50 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestResourceManifestClientSetup validates that the client setup works correctly
-func TestResourceManifestClientSetup(t *testing.T) {
-	// Validate environment variables are set
-	host := os.Getenv("OCTOPUS_HOST")
-	apiKey := os.Getenv("OCTOPUS_API_KEY")
-	spaceID := os.Getenv("OCTOPUS_SPACE")
-
-	if host == "" || apiKey == "" {
-		t.Skip("OCTOPUS_HOST and OCTOPUS_API_KEY environment variables must be set")
-	}
-
-	t.Logf("Testing with Octopus server: %s, Space: %s", host, spaceID)
-
-	// Test basic client creation
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient, "octopusClient should not be nil")
-
-	// Test client methods
-	httpSession := octopusClient.HttpSession()
-	require.NotNil(t, httpSession, "HttpSession should not be nil")
-
-	clientSpaceID := octopusClient.GetSpaceID()
-	require.NotEmpty(t, clientSpaceID, "SpaceID should not be empty")
-
-	t.Logf("Client SpaceID: %s", clientSpaceID)
-
-	// Test newclient creation
-	newClient := newclient.NewClientS(httpSession, clientSpaceID)
-	require.NotNil(t, newClient, "newClient should not be nil")
-
-	t.Log("Client setup validation successful")
-}
-
-func TestGetResourceManifestWithClient_E2E(t *testing.T) {
-	// Validate environment variables are set
-	host := os.Getenv("OCTOPUS_HOST")
-	apiKey := os.Getenv("OCTOPUS_API_KEY")
-	spaceID := os.Getenv("OCTOPUS_SPACE")
-
-	if host == "" || apiKey == "" {
-		t.Skip("OCTOPUS_HOST and OCTOPUS_API_KEY environment variables must be set")
-	}
-
-	t.Logf("Using Octopus server: %s, Space: %s", host, spaceID)
+func TestGetResourceManifestWithClient(t *testing.T) {
 
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient, "octopusClient should not be nil - check environment variables")
@@ -67,11 +23,9 @@ func TestGetResourceManifestWithClient_E2E(t *testing.T) {
 	clientSpaceID := octopusClient.GetSpaceID()
 	require.NotEmpty(t, clientSpaceID, "SpaceID should not be empty")
 
-	t.Logf("Client SpaceID: %s", clientSpaceID)
-
 	// Create a new client instance for the livestatus service
 	newClient := newclient.NewClientS(httpSession, clientSpaceID)
-	require.NotNil(t, newClient, "newClient should not be nil - check newclient.NewClientS implementation")
+	require.NotNil(t, newClient, "newClient should not be nil")
 
 	// Create test environment
 	environment := CreateTestEnvironment(t, octopusClient)
@@ -159,13 +113,6 @@ func TestGetResourceManifestWithClient_E2E(t *testing.T) {
 }
 
 func TestGetResourceManifestWithClient_E2E_ErrorCases(t *testing.T) {
-	// Validate environment variables are set
-	host := os.Getenv("OCTOPUS_HOST")
-	apiKey := os.Getenv("OCTOPUS_API_KEY")
-
-	if host == "" || apiKey == "" {
-		t.Skip("OCTOPUS_HOST and OCTOPUS_API_KEY environment variables must be set")
-	}
 
 	client := getOctopusClient()
 	require.NotNil(t, client, "client should not be nil - check environment variables")
