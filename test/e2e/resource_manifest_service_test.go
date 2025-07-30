@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetResourceManifestWithClient(t *testing.T) {
-
+// setupClientForTest sets up the Octopus client and new client for testing
+func setupClientForTest(t *testing.T) (*client.Client, newclient.Client) {
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient, "octopusClient should not be nil - check environment variables")
 
@@ -26,6 +26,13 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 	// Create a new client instance for the livestatus service
 	newClient := newclient.NewClientS(httpSession, clientSpaceID)
 	require.NotNil(t, newClient, "newClient should not be nil")
+
+	return octopusClient, newClient
+}
+
+func TestGetResourceManifestWithClient(t *testing.T) {
+
+	octopusClient, newClient := setupClientForTest(t)
 
 	// Create test environment
 	environment := CreateTestEnvironment(t, octopusClient)
@@ -112,20 +119,9 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 	})
 }
 
-func TestGetResourceManifestWithClient_E2E_ErrorCases(t *testing.T) {
+func TestGetResourceManifestWithClient_ErrorCases(t *testing.T) {
 
-	client := getOctopusClient()
-	require.NotNil(t, client, "client should not be nil - check environment variables")
-
-	// Validate the client has required methods
-	httpSession := client.HttpSession()
-	require.NotNil(t, httpSession, "HttpSession should not be nil")
-
-	clientSpaceID := client.GetSpaceID()
-	require.NotEmpty(t, clientSpaceID, "SpaceID should not be empty")
-
-	newClient := newclient.NewClientS(httpSession, clientSpaceID)
-	require.NotNil(t, newClient, "newClient should not be nil - check newclient.NewClientS implementation")
+	octopusClient, newClient := setupClientForTest(t)
 
 	t.Run("NilRequest", func(t *testing.T) {
 		result, err := livestatusservice.GetResourceManifestWithClient(newClient, nil)
@@ -136,7 +132,7 @@ func TestGetResourceManifestWithClient_E2E_ErrorCases(t *testing.T) {
 
 	t.Run("InvalidIDs", func(t *testing.T) {
 		request := &livestatusservice.GetResourceManifestRequest{
-			SpaceID:                                client.GetSpaceID(),
+			SpaceID:                                octopusClient.GetSpaceID(),
 			ProjectID:                              "invalid-project-id",
 			EnvironmentID:                          "invalid-environment-id",
 			MachineID:                              "invalid-machine-id",
