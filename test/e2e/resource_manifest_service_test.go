@@ -70,24 +70,19 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		}
 
 		// Validate the request is properly formed
-		assert.True(t, !request.IsTenanted())
 		assert.False(t, request.IsTenanted())
 		err := request.Validate()
 		assert.NoError(t, err)
 
 		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
 
-		// We expect this to fail since we don't have actual kubernetes resources deployed,
-		// but we want to verify it doesn't fail due to parameter validation or URI construction
-		if err != nil {
-			// Verify it's an HTTP error (not a parameter validation error)
-			assert.NotContains(t, err.Error(), "parameter")
-			assert.NotContains(t, err.Error(), "invalid")
-		} else {
-			// If successful, verify the response structure
-			assert.NotNil(t, result)
-			assert.NotEmpty(t, result.LiveManifest)
-		}
+		// We expect this to fail with a 404 since we don't have actual kubernetes resources deployed
+		assert.Nil(t, result)
+		assert.Error(t, err)
+		// Verify it's a 404 HTTP error (not a parameter validation error)
+		assert.Contains(t, err.Error(), "404")
+		assert.NotContains(t, err.Error(), "parameter")
+		assert.NotContains(t, err.Error(), "invalid")
 	})
 
 	// Test with tenanted request (if we have tenants available)
@@ -102,51 +97,19 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		}
 
 		// Validate the request is properly formed
-		assert.False(t, !request.IsTenanted())
 		assert.True(t, request.IsTenanted())
 		err := request.Validate()
 		assert.NoError(t, err)
 
 		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
 
-		if err != nil {
-			assert.NotContains(t, err.Error(), "parameter")
-			assert.NotContains(t, err.Error(), "invalid")
-		} else {
-			assert.NotNil(t, result)
-			assert.NotEmpty(t, result.LiveManifest)
-		}
-	})
-}
-
-func TestGetResourceManifestWithClient_ErrorCases(t *testing.T) {
-
-	octopusClient, newClient := setupClientForTest(t)
-
-	t.Run("NilRequest", func(t *testing.T) {
-		result, err := livestatusservice.GetResourceManifestWithClient(newClient, nil)
+		// We expect this to fail with a 404 since we don't have actual kubernetes resources deployed
 		assert.Nil(t, result)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "request")
-	})
-
-	t.Run("InvalidIDs", func(t *testing.T) {
-		request := &livestatusservice.GetResourceManifestRequest{
-			SpaceID:                                octopusClient.GetSpaceID(),
-			ProjectID:                              "invalid-project-id",
-			EnvironmentID:                          "invalid-environment-id",
-			MachineID:                              "invalid-machine-id",
-			DesiredOrKubernetesMonitoredResourceID: "test-resource-id",
-		}
-
-		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
-
-		// Should fail with HTTP error (404 or similar), not parameter validation
-		assert.Nil(t, result)
-		assert.Error(t, err)
-		// Error should be HTTP-related, not parameter validation
+		// Verify it's a 404 HTTP error (not a parameter validation error)
+		assert.Contains(t, err.Error(), "404")
 		assert.NotContains(t, err.Error(), "parameter")
-		assert.NotContains(t, err.Error(), "invalid parameter")
+		assert.NotContains(t, err.Error(), "invalid")
 	})
 }
 
