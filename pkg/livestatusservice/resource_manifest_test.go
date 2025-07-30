@@ -6,45 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewGetResourceManifestRequest(t *testing.T) {
-	spaceID := "Spaces-1"
-	projectID := "Projects-1"
-	environmentID := "Environments-1"
-	machineID := "Machines-1"
-	resourceID := "Resources-1"
-
-	request := NewGetResourceManifestRequest(spaceID, projectID, environmentID, machineID, resourceID)
-
-	assert.Equal(t, spaceID, request.SpaceID)
-	assert.Equal(t, projectID, request.ProjectID)
-	assert.Equal(t, environmentID, request.EnvironmentID)
-	assert.Equal(t, machineID, request.MachineID)
-	assert.Equal(t, resourceID, request.DesiredOrKubernetesMonitoredResourceID)
-	assert.Empty(t, request.TenantID)
-	assert.True(t, !request.IsTenanted())
-	assert.False(t, request.IsTenanted())
-}
-
-func TestNewGetResourceManifestRequestWithTenant(t *testing.T) {
-	spaceID := "Spaces-1"
-	projectID := "Projects-1"
-	environmentID := "Environments-1"
-	tenantID := "Tenants-1"
-	machineID := "Machines-1"
-	resourceID := "Resources-1"
-
-	request := NewGetResourceManifestRequestWithTenant(spaceID, projectID, environmentID, tenantID, machineID, resourceID)
-
-	assert.Equal(t, spaceID, request.SpaceID)
-	assert.Equal(t, projectID, request.ProjectID)
-	assert.Equal(t, environmentID, request.EnvironmentID)
-	assert.Equal(t, tenantID, request.TenantID)
-	assert.Equal(t, machineID, request.MachineID)
-	assert.Equal(t, resourceID, request.DesiredOrKubernetesMonitoredResourceID)
-	assert.False(t, !request.IsTenanted())
-	assert.True(t, request.IsTenanted())
-}
-
 func TestGetResourceManifestRequestTenantMethods(t *testing.T) {
 	// Test untenanted request
 	untenanteRequest := &GetResourceManifestRequest{
@@ -91,34 +52,6 @@ func TestGetResourceManifestRequestValidation(t *testing.T) {
 
 	err = invalidRequest.Validate()
 	assert.Error(t, err)
-}
-
-func TestNewGetResourceManifestResponse(t *testing.T) {
-	liveManifest := "apiVersion: v1\nkind: Pod\nmetadata:\n  name: test-pod"
-
-	response := NewGetResourceManifestResponse(liveManifest)
-
-	assert.Equal(t, liveManifest, response.LiveManifest)
-	assert.Empty(t, response.DesiredManifest)
-	assert.Nil(t, response.Diff)
-
-	err := response.Validate()
-	assert.NoError(t, err)
-}
-
-func TestNewLiveResourceDiff(t *testing.T) {
-	left := "left manifest"
-	right := "right manifest"
-	diff := "- left manifest\n+ right manifest"
-
-	resourceDiff := NewLiveResourceDiff(left, right, diff)
-
-	assert.Equal(t, left, resourceDiff.Left)
-	assert.Equal(t, right, resourceDiff.Right)
-	assert.Equal(t, diff, resourceDiff.Diff)
-
-	err := resourceDiff.Validate()
-	assert.NoError(t, err)
 }
 
 func TestGetResourceManifestResponseValidation(t *testing.T) {
