@@ -76,7 +76,9 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 
 		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
 
-		// We expect this to fail with a 404 since we don't have actual kubernetes resources deployed
+		// We expect this to fail with a 404 since we don't have actual Kubernetes resources deployed
+		// We don't have a mechanism to add Kubernetes resources since Kubernetes resources are normally
+		// added via the Kubernetes monitor, and we do not have an equivalent HTTP request.
 		assert.Nil(t, result)
 		assert.Error(t, err)
 		// Verify it's a 404 HTTP error (not a parameter validation error)
@@ -103,7 +105,9 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 
 		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
 
-		// We expect this to fail with a 404 since we don't have actual kubernetes resources deployed
+		// We expect this to fail with a 404 since we don't have actual Kubernetes resources deployed
+		// We don't have a mechanism to add Kubernetes resources since Kubernetes resources are normally
+		// added via the Kubernetes monitor, and we do not have an equivalent HTTP request.
 		assert.Nil(t, result)
 		assert.Error(t, err)
 		// Verify it's a 404 HTTP error (not a parameter validation error)
