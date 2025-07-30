@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetResourceManifestRequestTenantMethods(t *testing.T) {
+func TestGetResourceManifestRequest_IsTenanted(t *testing.T) {
 	// Test untenanted request
 	untenanteRequest := &GetResourceManifestRequest{
 		SpaceID:                                "Spaces-1",
@@ -17,7 +17,6 @@ func TestGetResourceManifestRequestTenantMethods(t *testing.T) {
 		DesiredOrKubernetesMonitoredResourceID: "Resources-1",
 	}
 
-	assert.True(t, !untenanteRequest.IsTenanted())
 	assert.False(t, untenanteRequest.IsTenanted())
 
 	// Test tenanted request
@@ -30,11 +29,10 @@ func TestGetResourceManifestRequestTenantMethods(t *testing.T) {
 		DesiredOrKubernetesMonitoredResourceID: "Resources-1",
 	}
 
-	assert.False(t, !tenantedRequest.IsTenanted())
 	assert.True(t, tenantedRequest.IsTenanted())
 }
 
-func TestGetResourceManifestRequestValidation(t *testing.T) {
+func TestGetResourceManifestRequest_Validate(t *testing.T) {
 	// Test valid request
 	validRequest := &GetResourceManifestRequest{
 		SpaceID:                                "Spaces-1",
@@ -54,7 +52,7 @@ func TestGetResourceManifestRequestValidation(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGetResourceManifestResponseValidation(t *testing.T) {
+func TestGetResourceManifestResponse_Validate(t *testing.T) {
 	// Test valid response
 	validResponse := &GetResourceManifestResponse{
 		LiveManifest: "valid manifest",
@@ -70,7 +68,7 @@ func TestGetResourceManifestResponseValidation(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestLiveResourceDiffValidation(t *testing.T) {
+func TestLiveResourceDiff_Validate(t *testing.T) {
 	// Test valid diff
 	validDiff := &LiveResourceDiff{
 		Left:  "left",
@@ -99,12 +97,17 @@ func TestGetResourceManifestResponseWithDiff(t *testing.T) {
 		Diff:            diff,
 	}
 
-	assert.Equal(t, liveManifest, response.LiveManifest)
-	assert.Equal(t, desiredManifest, response.DesiredManifest)
-	assert.NotNil(t, response.Diff)
-	assert.Equal(t, "left", response.Diff.Left)
-	assert.Equal(t, "right", response.Diff.Right)
-	assert.Equal(t, "diff content", response.Diff.Diff)
+	expected := &GetResourceManifestResponse{
+		LiveManifest:    liveManifest,
+		DesiredManifest: desiredManifest,
+		Diff: &LiveResourceDiff{
+			Left:  "left",
+			Right: "right",
+			Diff:  "diff content",
+		},
+	}
+
+	assert.Equal(t, expected, response)
 
 	err := response.Validate()
 	assert.NoError(t, err)
