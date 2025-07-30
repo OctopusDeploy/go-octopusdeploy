@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"os"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -11,33 +12,96 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestResourceManifestClientSetup validates that the client setup works correctly
+func TestResourceManifestClientSetup(t *testing.T) {
+	// Validate environment variables are set
+	host := os.Getenv("OCTOPUS_HOST")
+	apiKey := os.Getenv("OCTOPUS_API_KEY")
+	spaceID := os.Getenv("OCTOPUS_SPACE")
+
+	if host == "" || apiKey == "" {
+		t.Skip("OCTOPUS_HOST and OCTOPUS_API_KEY environment variables must be set")
+	}
+
+	t.Logf("Testing with Octopus server: %s, Space: %s", host, spaceID)
+
+	// Test basic client creation
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient, "octopusClient should not be nil")
+
+	// Test client methods
+	httpSession := octopusClient.HttpSession()
+	require.NotNil(t, httpSession, "HttpSession should not be nil")
+
+	clientSpaceID := octopusClient.GetSpaceID()
+	require.NotEmpty(t, clientSpaceID, "SpaceID should not be empty")
+
+	t.Logf("Client SpaceID: %s", clientSpaceID)
+
+	// Test newclient creation
+	newClient := newclient.NewClientS(httpSession, clientSpaceID)
+	require.NotNil(t, newClient, "newClient should not be nil")
+
+	t.Log("Client setup validation successful")
+}
+
 func TestGetResourceManifestWithClient_E2E(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
+	// Validate environment variables are set
+	host := os.Getenv("OCTOPUS_HOST")
+	apiKey := os.Getenv("OCTOPUS_API_KEY")
+	spaceID := os.Getenv("OCTOPUS_SPACE")
+
+	if host == "" || apiKey == "" {
+		t.Skip("OCTOPUS_HOST and OCTOPUS_API_KEY environment variables must be set")
+	}
+
+	t.Logf("Using Octopus server: %s, Space: %s", host, spaceID)
+
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient, "octopusClient should not be nil - check environment variables")
+
+	// Validate the client has required methods
+	httpSession := octopusClient.HttpSession()
+	require.NotNil(t, httpSession, "HttpSession should not be nil")
+
+	clientSpaceID := octopusClient.GetSpaceID()
+	require.NotEmpty(t, clientSpaceID, "SpaceID should not be empty")
+
+	t.Logf("Client SpaceID: %s", clientSpaceID)
 
 	// Create a new client instance for the livestatus service
-	newClient := newclient.NewClientS(client.HttpSession(), client.GetSpaceID())
-	require.NotNil(t, newClient)
+	newClient := newclient.NewClientS(httpSession, clientSpaceID)
+	require.NotNil(t, newClient, "newClient should not be nil - check newclient.NewClientS implementation")
 
 	// Create test environment
-	environment := CreateTestEnvironment(t, client)
+	environment := CreateTestEnvironment(t, octopusClient)
 	require.NotNil(t, environment)
-	defer DeleteTestEnvironment(t, client, environment)
+	defer DeleteTestEnvironment(t, octopusClient, environment)
+
+	space := GetDefaultSpace(t, octopusClient)
+
+	lifecycle := CreateTestLifecycle(t, octopusClient)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, octopusClient, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, octopusClient)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, octopusClient, projectGroup)
 
 	// Create test project
-	project := CreateTestProject(t, client, nil, nil, nil)
+	project := CreateTestProject(t, octopusClient, space, lifecycle, projectGroup)
 	require.NotNil(t, project)
-	defer DeleteTestProject(t, client, project)
+	defer DeleteTestProject(t, octopusClient, project)
 
 	// Create test deployment target (machine)
-	deploymentTarget := CreateTestDeploymentTarget(t, client, environment)
+	deploymentTarget := CreateTestDeploymentTarget(t, octopusClient, environment)
 	require.NotNil(t, deploymentTarget)
-	defer CleanResourceManifestDeploymentTarget(t, client, deploymentTarget)
+	defer CleanResourceManifestDeploymentTarget(t, octopusClient, deploymentTarget)
 
 	// Test with untenanted request
 	t.Run("GetResourceManifest_Untenanted", func(t *testing.T) {
 		request := &livestatusservice.GetResourceManifestRequest{
-			SpaceID:                                client.GetSpaceID(),
+			SpaceID:                                octopusClient.GetSpaceID(),
 			ProjectID:                              project.GetID(),
 			EnvironmentID:                          environment.GetID(),
 			MachineID:                              deploymentTarget.GetID(),
@@ -68,7 +132,7 @@ func TestGetResourceManifestWithClient_E2E(t *testing.T) {
 	// Test with tenanted request (if we have tenants available)
 	t.Run("GetResourceManifest_Tenanted", func(t *testing.T) {
 		request := &livestatusservice.GetResourceManifestRequest{
-			SpaceID:                                client.GetSpaceID(),
+			SpaceID:                                octopusClient.GetSpaceID(),
 			ProjectID:                              project.GetID(),
 			EnvironmentID:                          environment.GetID(),
 			MachineID:                              deploymentTarget.GetID(),
@@ -95,11 +159,26 @@ func TestGetResourceManifestWithClient_E2E(t *testing.T) {
 }
 
 func TestGetResourceManifestWithClient_E2E_ErrorCases(t *testing.T) {
-	client := getOctopusClient()
-	require.NotNil(t, client)
+	// Validate environment variables are set
+	host := os.Getenv("OCTOPUS_HOST")
+	apiKey := os.Getenv("OCTOPUS_API_KEY")
 
-	newClient := newclient.NewClientS(client.HttpSession(), client.GetSpaceID())
-	require.NotNil(t, newClient)
+	if host == "" || apiKey == "" {
+		t.Skip("OCTOPUS_HOST and OCTOPUS_API_KEY environment variables must be set")
+	}
+
+	client := getOctopusClient()
+	require.NotNil(t, client, "client should not be nil - check environment variables")
+
+	// Validate the client has required methods
+	httpSession := client.HttpSession()
+	require.NotNil(t, httpSession, "HttpSession should not be nil")
+
+	clientSpaceID := client.GetSpaceID()
+	require.NotEmpty(t, clientSpaceID, "SpaceID should not be empty")
+
+	newClient := newclient.NewClientS(httpSession, clientSpaceID)
+	require.NotNil(t, newClient, "newClient should not be nil - check newclient.NewClientS implementation")
 
 	t.Run("NilRequest", func(t *testing.T) {
 		result, err := livestatusservice.GetResourceManifestWithClient(newClient, nil)
