@@ -5,10 +5,14 @@ import (
 	"log"
 	"net/url"
 	"os"
+	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/stretchr/testify/require"
 )
 
 func getOctopusClient() *client.Client {
@@ -55,4 +59,33 @@ func getOctopusClient() *client.Client {
 	}
 
 	return octopusClient
+}
+
+// setupLiveStatusClientForTest sets up the Octopus client and new client for livestatus service testing
+func setupLiveStatusClientForTest(t *testing.T) (*client.Client, newclient.Client) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient, "octopusClient should not be nil - check environment variables")
+
+	// Validate the client has required methods
+	httpSession := octopusClient.HttpSession()
+	require.NotNil(t, httpSession, "HttpSession should not be nil")
+
+	clientSpaceID := octopusClient.GetSpaceID()
+	require.NotEmpty(t, clientSpaceID, "SpaceID should not be empty")
+
+	// Create a new client instance for the livestatus service
+	newClient := newclient.NewClientS(httpSession, clientSpaceID)
+	require.NotNil(t, newClient, "newClient should not be nil")
+
+	return octopusClient, newClient
+}
+
+// CleanLiveStatusDeploymentTarget cleans up the deployment target used for livestatus service testing
+func CleanLiveStatusDeploymentTarget(t *testing.T, client *client.Client, deploymentTarget *machines.DeploymentTarget) {
+	if client == nil || deploymentTarget == nil {
+		return
+	}
+
+	err := client.Machines.DeleteByID(deploymentTarget.GetID())
+	require.NoError(t, err)
 }

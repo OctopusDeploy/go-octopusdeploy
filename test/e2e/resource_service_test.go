@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetResourceManifestWithClient(t *testing.T) {
+func TestGetResourceWithClient(t *testing.T) {
 
 	octopusClient, newClient := setupLiveStatusClientForTest(t)
 
@@ -38,8 +38,8 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 	defer CleanLiveStatusDeploymentTarget(t, octopusClient, deploymentTarget)
 
 	// Test with untenanted request
-	t.Run("GetResourceManifest_Untenanted", func(t *testing.T) {
-		request := &livestatusservice.GetResourceManifestRequest{
+	t.Run("GetResource_Untenanted", func(t *testing.T) {
+		request := &livestatusservice.GetResourceRequest{
 			SpaceID:                                octopusClient.GetSpaceID(),
 			ProjectID:                              project.GetID(),
 			EnvironmentID:                          environment.GetID(),
@@ -52,7 +52,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		err := request.Validate()
 		assert.NoError(t, err)
 
-		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
+		result, err := livestatusservice.GetResourceWithClient(newClient, request)
 
 		// We expect this to fail with a 404 since we don't have actual Kubernetes resources deployed
 		// We don't have a mechanism to add Kubernetes resources since Kubernetes resources are normally
@@ -66,8 +66,8 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 	})
 
 	// Test with tenanted request (if we have tenants available)
-	t.Run("GetResourceManifest_Tenanted", func(t *testing.T) {
-		request := &livestatusservice.GetResourceManifestRequest{
+	t.Run("GetResource_Tenanted", func(t *testing.T) {
+		request := &livestatusservice.GetResourceRequest{
 			SpaceID:                                octopusClient.GetSpaceID(),
 			ProjectID:                              project.GetID(),
 			EnvironmentID:                          environment.GetID(),
@@ -81,7 +81,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		err := request.Validate()
 		assert.NoError(t, err)
 
-		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
+		result, err := livestatusservice.GetResourceWithClient(newClient, request)
 
 		// We expect this to fail with a 404 since we don't have actual Kubernetes resources deployed
 		// We don't have a mechanism to add Kubernetes resources since Kubernetes resources are normally
@@ -92,5 +92,32 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		assert.Contains(t, err.Error(), "Resource is not found")
 		assert.NotContains(t, err.Error(), "parameter")
 		assert.NotContains(t, err.Error(), "invalid")
+	})
+
+	// Test with invalid request (nil request)
+	t.Run("GetResource_InvalidRequest_Nil", func(t *testing.T) {
+		result, err := livestatusservice.GetResourceWithClient(newClient, nil)
+
+		assert.Nil(t, result)
+		assert.Error(t, err)
+		// Verify it's a parameter validation error
+		assert.Contains(t, err.Error(), "parameter")
+		assert.Contains(t, err.Error(), "request")
+	})
+
+	// Test with invalid request (missing required fields)
+	t.Run("GetResource_InvalidRequest_MissingFields", func(t *testing.T) {
+		request := &livestatusservice.GetResourceRequest{
+			SpaceID: octopusClient.GetSpaceID(),
+			// Missing required fields: ProjectID, EnvironmentID, MachineID, DesiredOrKubernetesMonitoredResourceID
+		}
+
+		err := request.Validate()
+		assert.Error(t, err)
+
+		// Even though validation fails, the service call should handle parameter errors gracefully
+		result, err := livestatusservice.GetResourceWithClient(newClient, request)
+		assert.Nil(t, result)
+		assert.Error(t, err)
 	})
 }
