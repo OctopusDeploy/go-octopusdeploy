@@ -1,4 +1,4 @@
-package livestatusservice
+package observability
 
 import (
 	"github.com/go-playground/validator/v10"
@@ -16,24 +16,24 @@ type GetResourceRequest struct {
 }
 
 // GetResourceResponse represents the response containing detailed summary of a live kubernetes resource
-// Contains detailed information about either a top-level resource or a child resource  
+// Contains detailed information about either a top-level resource or a child resource
 type GetResourceResponse struct {
 	Resource *KubernetesLiveStatusDetailedResource `json:"resource" validate:"required"`
 }
 
 // KubernetesLiveStatusDetailedResource represents detailed information about a live kubernetes resource
 type KubernetesLiveStatusDetailedResource struct {
-	Name               string                                   `json:"Name,omitempty"`
-	Namespace          string                                   `json:"Namespace,omitempty"`
-	Kind               string                                   `json:"Kind,omitempty"`
-	HealthStatus       string                                   `json:"HealthStatus,omitempty"`
-	SyncStatus         *string                                  `json:"SyncStatus,omitempty"`
-	MachineID          string                                   `json:"MachineId,omitempty"`
-	LastUpdated        string                                   `json:"LastUpdated,omitempty"`
-	Details            *KubernetesResourceDetails               `json:"Details,omitempty"`
-	Children           []KubernetesLiveStatusDetailedResource   `json:"Children,omitempty"`
-	DesiredResourceID  *string                                  `json:"DesiredResourceId,omitempty"`
-	ResourceID         string                                   `json:"ResourceId,omitempty"`
+	Name              string                                 `json:"Name,omitempty"`
+	Namespace         string                                 `json:"Namespace,omitempty"`
+	Kind              string                                 `json:"Kind,omitempty"`
+	HealthStatus      string                                 `json:"HealthStatus,omitempty"`
+	SyncStatus        *string                                `json:"SyncStatus,omitempty"`
+	MachineID         string                                 `json:"MachineId,omitempty"`
+	LastUpdated       string                                 `json:"LastUpdated,omitempty"`
+	Details           *KubernetesResourceDetails             `json:"Details,omitempty"`
+	Children          []KubernetesLiveStatusDetailedResource `json:"Children,omitempty"`
+	DesiredResourceID *string                                `json:"DesiredResourceId,omitempty"`
+	ResourceID        string                                 `json:"ResourceId,omitempty"`
 }
 
 // KubernetesResourceDetails represents the detailed information about a kubernetes resource
