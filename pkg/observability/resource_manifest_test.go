@@ -1,4 +1,4 @@
-package livestatusservice
+package observability
 
 import (
 	"testing"

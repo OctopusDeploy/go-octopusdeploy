@@ -1,4 +1,4 @@
-package livestatusservice
+package observability
 
 import (
 	"time"
@@ -12,7 +12,7 @@ type ResourceEventsSessionId string
 // GetResourceEventsRequest represents a request to get resource events for a session
 // Request for retrieving all the events for the specified session
 type GetResourceEventsRequest struct {
-	SpaceID   string                   `json:"spaceId" validate:"required"`
+	SpaceID   string                  `json:"spaceId" validate:"required"`
 	SessionID ResourceEventsSessionId `json:"sessionId" validate:"required" uri:"sessionId" url:"sessionId"`
 }
 
@@ -26,16 +26,16 @@ type GetResourceEventsResponse struct {
 
 // KubernetesEventResource represents a Kubernetes event resource
 type KubernetesEventResource struct {
-	FirstObservedTime    time.Time `json:"firstObservedTime" validate:"required"`
-	LastObservedTime     time.Time `json:"lastObservedTime" validate:"required"`
-	Count                int       `json:"count" validate:"required"`
-	Action               string    `json:"action" validate:"required"`
-	Reason               string    `json:"reason" validate:"required"`
-	Note                 string    `json:"note" validate:"required"`
-	ReportingController  string    `json:"reportingController" validate:"required"`
-	ReportingInstance    string    `json:"reportingInstance" validate:"required"`
-	Type                 string    `json:"type" validate:"required"`
-	Manifest             string    `json:"manifest" validate:"required"`
+	FirstObservedTime   time.Time `json:"firstObservedTime" validate:"required"`
+	LastObservedTime    time.Time `json:"lastObservedTime" validate:"required"`
+	Count               int       `json:"count" validate:"required"`
+	Action              string    `json:"action" validate:"required"`
+	Reason              string    `json:"reason" validate:"required"`
+	Note                string    `json:"note" validate:"required"`
+	ReportingController string    `json:"reportingController" validate:"required"`
+	ReportingInstance   string    `json:"reportingInstance" validate:"required"`
+	Type                string    `json:"type" validate:"required"`
+	Manifest            string    `json:"manifest" validate:"required"`
 }
 
 // MonitorErrorResource represents an error resource for monitoring operations

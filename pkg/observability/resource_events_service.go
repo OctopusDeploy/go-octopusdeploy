@@ -1,4 +1,4 @@
-package livestatusservice
+package observability
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"

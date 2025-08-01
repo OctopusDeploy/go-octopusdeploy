@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/livestatusservice"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/observability"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/stretchr/testify/assert"
@@ -61,7 +61,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 
 	// Test with untenanted request
 	t.Run("GetResourceManifest_Untenanted", func(t *testing.T) {
-		request := &livestatusservice.GetResourceManifestRequest{
+		request := &observability.GetResourceManifestRequest{
 			SpaceID:                                octopusClient.GetSpaceID(),
 			ProjectID:                              project.GetID(),
 			EnvironmentID:                          environment.GetID(),
@@ -74,7 +74,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		err := request.Validate()
 		assert.NoError(t, err)
 
-		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
+		result, err := observability.GetResourceManifestWithClient(newClient, request)
 
 		// We expect this to fail with a 404 since we don't have actual Kubernetes resources deployed
 		// We don't have a mechanism to add Kubernetes resources since Kubernetes resources are normally
@@ -89,7 +89,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 
 	// Test with tenanted request (if we have tenants available)
 	t.Run("GetResourceManifest_Tenanted", func(t *testing.T) {
-		request := &livestatusservice.GetResourceManifestRequest{
+		request := &observability.GetResourceManifestRequest{
 			SpaceID:                                octopusClient.GetSpaceID(),
 			ProjectID:                              project.GetID(),
 			EnvironmentID:                          environment.GetID(),
@@ -103,7 +103,7 @@ func TestGetResourceManifestWithClient(t *testing.T) {
 		err := request.Validate()
 		assert.NoError(t, err)
 
-		result, err := livestatusservice.GetResourceManifestWithClient(newClient, request)
+		result, err := observability.GetResourceManifestWithClient(newClient, request)
 
 		// We expect this to fail with a 404 since we don't have actual Kubernetes resources deployed
 		// We don't have a mechanism to add Kubernetes resources since Kubernetes resources are normally
