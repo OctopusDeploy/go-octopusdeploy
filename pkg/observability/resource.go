@@ -38,14 +38,9 @@ type KubernetesLiveStatusDetailedResource struct {
 
 // KubernetesResourceDetails represents the detailed information about a kubernetes resource
 type KubernetesResourceDetails struct {
-	Labels            map[string]string      `json:"Labels,omitempty"`
-	Annotations       map[string]string      `json:"Annotations,omitempty"`
-	CreationTimestamp string                 `json:"CreationTimestamp,omitempty"`
-	Spec              map[string]interface{} `json:"Spec,omitempty"`
-	Status            map[string]interface{} `json:"Status,omitempty"`
-	OwnerReferences   []interface{}          `json:"OwnerReferences,omitempty"`
-	Events            []interface{}          `json:"Events,omitempty"`
-	Logs              []string               `json:"Logs,omitempty"`
+	Labels            map[string]string `json:"Labels,omitempty"`
+	Annotations       map[string]string `json:"Annotations,omitempty"`
+	CreationTimestamp string            `json:"CreationTimestamp,omitempty"`
 }
 
 // NewGetResourceRequest creates a new GetResourceRequest for untenanted resources
