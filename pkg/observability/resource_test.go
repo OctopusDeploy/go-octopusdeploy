@@ -86,7 +86,7 @@ func TestKubernetesLiveStatusDetailedResource_Validate(t *testing.T) {
 		ResourceID:   "12345-67890",
 		HealthStatus: "Healthy",
 		LastUpdated:  "2024-01-01T00:00:00Z",
-		Details: &KubernetesResourceDetails{
+		Details: &ManifestSummary{
 			Labels: map[string]string{
 				"app": "test",
 			},

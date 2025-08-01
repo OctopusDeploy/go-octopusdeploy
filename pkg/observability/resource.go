@@ -30,14 +30,14 @@ type KubernetesLiveStatusDetailedResource struct {
 	SyncStatus        *string                                `json:"SyncStatus,omitempty"`
 	MachineID         string                                 `json:"MachineId,omitempty"`
 	LastUpdated       string                                 `json:"LastUpdated,omitempty"`
-	Details           *KubernetesResourceDetails             `json:"Details,omitempty"`
+	Details           *ManifestSummary                       `json:"Details,omitempty"`
 	Children          []KubernetesLiveStatusDetailedResource `json:"Children,omitempty"`
 	DesiredResourceID *string                                `json:"DesiredResourceId,omitempty"`
 	ResourceID        string                                 `json:"ResourceId,omitempty"`
 }
 
-// KubernetesResourceDetails represents the detailed information about a kubernetes resource
-type KubernetesResourceDetails struct {
+// ManifestSummary represents the detailed information about a kubernetes resource
+type ManifestSummary struct {
 	Labels            map[string]string `json:"Labels,omitempty"`
 	Annotations       map[string]string `json:"Annotations,omitempty"`
 	CreationTimestamp string            `json:"CreationTimestamp,omitempty"`
@@ -94,6 +94,6 @@ func (r *KubernetesLiveStatusDetailedResource) Validate() error {
 }
 
 // Validate checks the state of the resource details and returns an error if invalid
-func (r *KubernetesResourceDetails) Validate() error {
+func (r *ManifestSummary) Validate() error {
 	return validator.New().Struct(r)
 }
