@@ -1,4 +1,4 @@
-package livestatusservice
+package observability
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -6,14 +6,14 @@ import (
 )
 
 const (
-	resourceManifestUntenantedTemplate = "/api/{spaceId}/projects/{projectId}/environments/{environmentId}/untenanted/machines/{machineId}/resources/{desiredOrKubernetesMonitoredResourceId}/manifest"
-	resourceManifestTenantedTemplate   = "/api/{spaceId}/projects/{projectId}/environments/{environmentId}/tenants/{tenantId}/machines/{machineId}/resources/{desiredOrKubernetesMonitoredResourceId}/manifest"
+	getResourceUntenantedTemplate = "/api/{spaceId}/projects/{projectId}/environments/{environmentId}/untenanted/machines/{machineId}/resources/{desiredOrKubernetesMonitoredResourceId}"
+	getResourceTenantedTemplate   = "/api/{spaceId}/projects/{projectId}/environments/{environmentId}/tenants/{tenantId}/machines/{machineId}/resources/{desiredOrKubernetesMonitoredResourceId}"
 )
 
-// GetResourceManifestWithClient retrieves a resource manifest using the new client implementation
-func GetResourceManifestWithClient(client newclient.Client, request *GetResourceManifestRequest) (*GetResourceManifestResponse, error) {
+// GetResourceWithClient retrieves detailed summary of a live kubernetes resource using the new client implementation
+func GetResourceWithClient(client newclient.Client, request *GetResourceRequest) (*GetResourceResponse, error) {
 	if request == nil {
-		return nil, internal.CreateInvalidParameterError("GetResourceManifest", "request")
+		return nil, internal.CreateInvalidParameterError("GetResource", "request")
 	}
 
 	spaceID, err := internal.GetSpaceID(request.SpaceID, client.GetSpaceID())
@@ -25,7 +25,7 @@ func GetResourceManifestWithClient(client newclient.Client, request *GetResource
 	var pathVars map[string]interface{}
 
 	if !request.IsTenanted() {
-		templateStr = resourceManifestUntenantedTemplate
+		templateStr = getResourceUntenantedTemplate
 		pathVars = map[string]interface{}{
 			"spaceId":                                spaceID,
 			"projectId":                              request.ProjectID,
@@ -34,7 +34,7 @@ func GetResourceManifestWithClient(client newclient.Client, request *GetResource
 			"desiredOrKubernetesMonitoredResourceId": request.DesiredOrKubernetesMonitoredResourceID,
 		}
 	} else {
-		templateStr = resourceManifestTenantedTemplate
+		templateStr = getResourceTenantedTemplate
 		pathVars = map[string]interface{}{
 			"spaceId":                                spaceID,
 			"projectId":                              request.ProjectID,
@@ -50,7 +50,7 @@ func GetResourceManifestWithClient(client newclient.Client, request *GetResource
 		return nil, err
 	}
 
-	resp, err := newclient.Get[GetResourceManifestResponse](client.HttpSession(), expandedUri)
+	resp, err := newclient.Get[GetResourceResponse](client.HttpSession(), expandedUri)
 	if err != nil {
 		return nil, err
 	}
