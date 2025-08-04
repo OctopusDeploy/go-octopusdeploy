@@ -1,6 +1,7 @@
 package runbooks
 
 import (
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
 	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
@@ -11,17 +12,18 @@ import (
 
 // RunbookSnapshot represents a runbook snapshot.
 type RunbookSnapshot struct {
-	Assembled                     *time.Time                  `json:"Assembled,omitempty"`
-	FrozenProjectVariableSetID    string                      `json:"FrozenProjectVariableSetId,omitempty"`
-	FrozenRunbookProcessID        string                      `json:"FrozenRunbookProcessId,omitempty"`
-	LibraryVariableSetSnapshotIDs []string                    `json:"LibraryVariableSetSnapshotIds"`
-	Name                          string                      `json:"Name,omitempty"`
-	Notes                         string                      `json:"Notes,omitempty"`
-	ProjectID                     string                      `json:"ProjectId" validate:"required,notblank"`
-	ProjectVariableSetSnapshotID  string                      `json:"ProjectVariableSetSnapshotId,omitempty"`
-	RunbookID                     string                      `json:"RunbookId" validate:"required,notblank"`
-	SelectedPackages              []*packages.SelectedPackage `json:"SelectedPackages"`
-	SpaceID                       string                      `json:"SpaceId,omitempty"`
+	Assembled                     *time.Time                              `json:"Assembled,omitempty"`
+	FrozenProjectVariableSetID    string                                  `json:"FrozenProjectVariableSetId,omitempty"`
+	FrozenRunbookProcessID        string                                  `json:"FrozenRunbookProcessId,omitempty"`
+	LibraryVariableSetSnapshotIDs []string                                `json:"LibraryVariableSetSnapshotIds"`
+	Name                          string                                  `json:"Name,omitempty"`
+	Notes                         string                                  `json:"Notes,omitempty"`
+	ProjectID                     string                                  `json:"ProjectId" validate:"required,notblank"`
+	ProjectVariableSetSnapshotID  string                                  `json:"ProjectVariableSetSnapshotId,omitempty"`
+	RunbookID                     string                                  `json:"RunbookId" validate:"required,notblank"`
+	SelectedPackages              []*packages.SelectedPackage             `json:"SelectedPackages"`
+	SelectedGitResources          []*gitdependencies.SelectedGitResources `json:"SelectedGitResources,omitempty"`
+	SpaceID                       string                                  `json:"SpaceId,omitempty"`
 
 	resources.Resource
 }

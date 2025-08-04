@@ -122,6 +122,7 @@ func (s *ChannelService) Update(channel *Channel) (*Channel, error) {
 // --- new ---
 
 const template = "/api/{spaceId}/channels{/id}{?skip,take,ids,partialName}"
+const templateV2 = "/api/{spaceId}/projects/{projectId}/channels{/id}{?skip,take,ids,partialName}"
 
 // Add creates a new channel.
 func Add(client newclient.Client, channel *Channel) (*Channel, error) {
@@ -153,4 +154,9 @@ func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 // GetAll returns all channels. If an error occurs, it returns nil.
 func GetAll(client newclient.Client, spaceID string) ([]*Channel, error) {
 	return newclient.GetAll[Channel](client, template, spaceID)
+}
+
+// GetByProjectID returns all channels in given project.
+func GetByProjectID(client newclient.Client, spaceID string, channelsQuery QueryByProjectID) (*resources.Resources[*Channel], error) {
+	return newclient.GetByQuery[Channel](client, templateV2, spaceID, channelsQuery)
 }

@@ -2,6 +2,7 @@ package actiontemplates
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
@@ -10,15 +11,16 @@ import (
 
 // ActionTemplate represents an action template in Octopus Deploy.
 type ActionTemplate struct {
-	ActionType                string                        `json:"ActionType" validate:"required,notblank"`
-	CommunityActionTemplateID string                        `json:"CommunityActionTemplateId,omitempty"`
-	Description               string                        `json:"Description,omitempty"`
-	Name                      string                        `json:"Name" validate:"required"`
-	Packages                  []packages.PackageReference   `json:"Packages,omitempty"`
-	Parameters                []ActionTemplateParameter     `json:"Parameters,omitempty"`
-	Properties                map[string]core.PropertyValue `json:"Properties,omitempty"`
-	SpaceID                   string                        `json:"SpaceId,omitempty"`
-	Version                   int32                         `json:"Version,omitempty"`
+	ActionType                string                          `json:"ActionType" validate:"required,notblank"`
+	CommunityActionTemplateID string                          `json:"CommunityActionTemplateId,omitempty"`
+	Description               string                          `json:"Description,omitempty"`
+	Name                      string                          `json:"Name" validate:"required"`
+	Packages                  []packages.PackageReference     `json:"Packages,omitempty"`
+	GitDependencies           []gitdependencies.GitDependency `json:"GitDependencies,omitempty"`
+	Parameters                []ActionTemplateParameter       `json:"Parameters,omitempty"`
+	Properties                map[string]core.PropertyValue   `json:"Properties,omitempty"`
+	SpaceID                   string                          `json:"SpaceId,omitempty"`
+	Version                   int32                           `json:"Version,omitempty"`
 
 	resources.Resource
 }
@@ -26,12 +28,13 @@ type ActionTemplate struct {
 // NewActionTemplate creates and initializes an action template.
 func NewActionTemplate(name string, actionType string) *ActionTemplate {
 	return &ActionTemplate{
-		ActionType: actionType,
-		Name:       name,
-		Packages:   []packages.PackageReference{},
-		Parameters: []ActionTemplateParameter{},
-		Properties: map[string]core.PropertyValue{},
-		Resource:   *resources.NewResource(),
+		ActionType:      actionType,
+		Name:            name,
+		Packages:        []packages.PackageReference{},
+		GitDependencies: []gitdependencies.GitDependency{},
+		Parameters:      []ActionTemplateParameter{},
+		Properties:      map[string]core.PropertyValue{},
+		Resource:        *resources.NewResource(),
 	}
 }
 

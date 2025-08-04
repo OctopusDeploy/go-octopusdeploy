@@ -2,10 +2,9 @@ package internal
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"regexp"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 // ValidateStringInSlice checks if a string is in the given slice

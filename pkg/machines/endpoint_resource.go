@@ -24,7 +24,7 @@ type EndpointResource struct {
 	CloudServiceName                     string                                 `json:"CloudServiceName"`
 	ClusterCertificate                   string                                 `json:"ClusterCertificate,omitempty"`
 	ClusterCertificatePath               string                                 `json:"ClusterCertificatePath,omitempty"`
-	ClusterURL                           *url.URL                               `json:"ClusterUrl" validate:"required,url"`
+	ClusterURL                           *url.URL                               `json:"ClusterUrl" validate:"required"`
 	CommunicationStyle                   string                                 `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive KubernetesTentacle"`
 	ConnectionEndpoint                   string                                 `json:"ConnectionEndpoint,omitempty"`
 	Container                            *deployments.DeploymentActionContainer `json:"Container,omitempty"`
@@ -50,7 +50,7 @@ type EndpointResource struct {
 	Thumbprint                           string                                 `json:"Thumbprint" validate:"required"`
 	WorkingDirectory                     string                                 `json:"OctopusWorkingDirectory,omitempty"`
 	UseCurrentInstanceCount              bool                                   `json:"UseCurrentInstanceCount"`
-	URI                                  *url.URL                               `json:"Uri" validate:"required,uri"`
+	URI                                  *url.URL                               `json:"Uri" validate:"required"`
 	WebAppName                           string                                 `json:"WebAppName,omitempty"`
 	WebAppSlotName                       string                                 `json:"WebAppSlotName"`
 

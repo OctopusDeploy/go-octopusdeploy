@@ -1,8 +1,9 @@
 package deploymentfreezes
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"time"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type TenantProjectEnvironment struct {
@@ -36,16 +37,17 @@ const (
 )
 
 type RecurringSchedule struct {
-	Type                RecurringScheduleType    `json:"Type"`
-	Unit                int                      `json:"Unit"`
-	EndType             RecurringScheduleEndType `json:"EndType"`
-	EndOnDate           *time.Time               `json:"EndOnDate,omitempty"`
-	EndAfterOccurrences int                      `json:"EndAfterOccurrences,omitempty"`
-	MonthlyScheduleType string                   `json:"MonthlyScheduleType,omitempty"`
-	DateOfMonth         string                   `json:"DateOfMonth,omitempty"`
-	DayNumberOfMonth    string                   `json:"DayNumberOfMonth,omitempty"`
-	DaysOfWeek          []string                 `json:"DaysOfWeek,omitempty"`
-	DayOfWeek           string                   `json:"DayOfWeek,omitempty"`
+	Type                   RecurringScheduleType    `json:"Type"`
+	Unit                   int                      `json:"Unit"`
+	UserUtcOffsetInMinutes int                      `json:"UserUtcOffsetInMinutes,omitempty"`
+	EndType                RecurringScheduleEndType `json:"EndType"`
+	EndOnDate              *time.Time               `json:"EndOnDate,omitempty"`
+	EndAfterOccurrences    int                      `json:"EndAfterOccurrences,omitempty"`
+	MonthlyScheduleType    string                   `json:"MonthlyScheduleType,omitempty"`
+	DateOfMonth            string                   `json:"DateOfMonth,omitempty"`
+	DayNumberOfMonth       string                   `json:"DayNumberOfMonth,omitempty"`
+	DaysOfWeek             []string                 `json:"DaysOfWeek,omitempty"`
+	DayOfWeek              string                   `json:"DayOfWeek,omitempty"`
 }
 
 type DeploymentFreezes struct {
@@ -55,11 +57,12 @@ type DeploymentFreezes struct {
 
 type DeploymentFreeze struct {
 	Name                          string                     `json:"Name" validate:"required"`
-	Start                         *time.Time                 `json:"Start,required"`
-	End                           *time.Time                 `json:"End,required"`
+	Start                         *time.Time                 `json:"Start" validate:"required"`
+	End                           *time.Time                 `json:"End" validate:"required"`
 	ProjectEnvironmentScope       map[string][]string        `json:"ProjectEnvironmentScope,omitempty"`
 	TenantProjectEnvironmentScope []TenantProjectEnvironment `json:"TenantProjectEnvironmentScope,omitempty"`
 	RecurringSchedule             *RecurringSchedule         `json:"RecurringSchedule,omitempty"`
+	OwnerId                       string                     `json:"OwnerId,omitempty"`
 
 	resources.Resource
 }

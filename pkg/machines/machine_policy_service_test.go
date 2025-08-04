@@ -37,6 +37,7 @@ func CreateTestMachinePolicy(t *testing.T, service *MachinePolicyService) *Machi
 	machineHealthCheckPolicy.HealthCheckInterval = getRandomDuration(1)
 
 	machineUpdatePolicy := NewMachineUpdatePolicy()
+	machinePackageCacheRetentionPolicy := NewDefaultMachinePackageCacheRetentionPolicy()
 
 	machinePolicy := NewMachinePolicy(name)
 	machinePolicy.ConnectionConnectTimeout = connectionConnectTimeout
@@ -45,6 +46,7 @@ func CreateTestMachinePolicy(t *testing.T, service *MachinePolicyService) *Machi
 	machinePolicy.MachineCleanupPolicy = machineCleanupPolicy
 	machinePolicy.MachineHealthCheckPolicy = machineHealthCheckPolicy
 	machinePolicy.MachineUpdatePolicy = machineUpdatePolicy
+	machinePolicy.MachinePackageCacheRetentionPolicy = machinePackageCacheRetentionPolicy
 	machinePolicy.PollingRequestMaximumMessageProcessingTimeout = pollingRequestMaximumMessageProcessingTimeout
 	machinePolicy.PollingRequestQueueTimeout = pollingRequestQueueTimeout
 	require.NoError(t, machinePolicy.Validate())
@@ -100,6 +102,7 @@ func IsEqualMachinePolicies(t *testing.T, expected *MachinePolicy, actual *Machi
 	assert.Equal(t, expected.MachineConnectivityPolicy, actual.MachineConnectivityPolicy)
 	assert.Equal(t, expected.MachineHealthCheckPolicy, actual.MachineHealthCheckPolicy)
 	assert.Equal(t, expected.MachineUpdatePolicy, actual.MachineUpdatePolicy)
+	assert.Equal(t, expected.MachinePackageCacheRetentionPolicy, actual.MachinePackageCacheRetentionPolicy)
 	assert.Equal(t, expected.Name, actual.Name)
 	assert.Equal(t, expected.PollingRequestMaximumMessageProcessingTimeout, actual.PollingRequestMaximumMessageProcessingTimeout)
 	assert.Equal(t, expected.PollingRequestQueueTimeout, actual.PollingRequestQueueTimeout)

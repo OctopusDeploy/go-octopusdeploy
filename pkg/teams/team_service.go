@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
@@ -149,4 +150,20 @@ func (s *TeamService) GetScopedUserRoles(team Team, query core.SkipTakeQuery) (*
 	}
 
 	return resp.(*resources.Resources[*userroles.ScopedUserRole]), nil
+}
+
+// --- new ---
+
+const teamsTemplate = "/api/{spaceId}/teams{/id}{?skip,take,ids,partialName}"
+
+func Add(client newclient.Client, team *Team) (*Team, error) {
+	return newclient.Add[Team](client, teamsTemplate, team.SpaceID, team)
+}
+
+func GetByID(client newclient.Client, spaceId string, id string) (*Team, error) {
+	return newclient.GetByID[Team](client, teamsTemplate, spaceId, id)
+}
+
+func DeleteByID(client newclient.Client, spaceId string, id string) error {
+	return newclient.DeleteByID(client, teamsTemplate, spaceId, id)
 }

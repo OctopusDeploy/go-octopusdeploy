@@ -3,6 +3,7 @@ package feeds
 import (
 	"errors"
 	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
@@ -20,16 +21,38 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 
 	switch feedResource.GetFeedType() {
 	case FeedTypeAwsElasticContainerRegistry:
-		awsElasticContainerRegistry, err := NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region)
+		var awsOidc *AwsElasticContainerRegistryOidcAuthentication
+		if feedResource.OidcAuthentication != nil {
+			if aws, ok := feedResource.OidcAuthentication.GetAWS(); ok {
+				awsOidc = aws
+			}
+		}
+		awsElasticContainerRegistry, err := NewAwsElasticContainerRegistry(feedResource.GetName(), feedResource.AccessKey, feedResource.SecretKey, feedResource.Region, awsOidc)
 		if err != nil {
 			return nil, err
 		}
 		feed = awsElasticContainerRegistry
+	case FeedTypeAzureContainerRegistry:
+		var azureOidc *AzureContainerRegistryOidcAuthentication
+		if feedResource.OidcAuthentication != nil {
+			if azure, ok := feedResource.OidcAuthentication.GetAzure(); ok {
+				azureOidc = azure
+			}
+		}
+		azureContainerRegistry, err := NewAzureContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), azureOidc)
+		if err != nil {
+			return nil, err
+		}
+		azureContainerRegistry.APIVersion = feedResource.APIVersion
+		azureContainerRegistry.FeedURI = feedResource.FeedURI
+		azureContainerRegistry.RegistryPath = feedResource.RegistryPath
+		feed = azureContainerRegistry
 	case FeedTypeBuiltIn:
 		builtInFeed, err := NewBuiltInFeed(feedResource.GetName())
 		if err != nil {
 			return nil, err
 		}
+		builtInFeed.DeletePackagesAssociatedWithReleases = feedResource.DeletePackagesAssociatedWithReleases
 		builtInFeed.DeleteUnreleasedPackagesAfterDays = feedResource.DeleteUnreleasedPackagesAfterDays
 		builtInFeed.DownloadAttempts = feedResource.DownloadAttempts
 		builtInFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
@@ -53,6 +76,21 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		gitHubRepositoryFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
 		gitHubRepositoryFeed.FeedURI = feedResource.FeedURI
 		feed = gitHubRepositoryFeed
+	case FeedTypeGoogleContainerRegistry:
+		var googleOidc *GoogleContainerRegistryOidcAuthentication
+		if feedResource.OidcAuthentication != nil {
+			if google, ok := feedResource.OidcAuthentication.GetGoogle(); ok {
+				googleOidc = google
+			}
+		}
+		googleContainerRegistry, err := NewGoogleContainerRegistry(feedResource.GetName(), feedResource.GetUsername(), feedResource.GetPassword(), googleOidc)
+		if err != nil {
+			return nil, err
+		}
+		googleContainerRegistry.APIVersion = feedResource.APIVersion
+		googleContainerRegistry.FeedURI = feedResource.FeedURI
+		googleContainerRegistry.RegistryPath = feedResource.RegistryPath
+		feed = googleContainerRegistry
 	case FeedTypeHelm:
 		helmFeed, err := NewHelmFeed(feedResource.GetName())
 		if err != nil {
@@ -148,8 +186,30 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.AccessKey = awsElasticContainerRegistry.AccessKey
 		feedResource.Region = awsElasticContainerRegistry.Region
 		feedResource.SecretKey = awsElasticContainerRegistry.SecretKey
+		if awsElasticContainerRegistry.OidcAuthentication != nil {
+			feedResource.OidcAuthentication = NewAwsOidcAuthentication(
+				awsElasticContainerRegistry.OidcAuthentication.SessionDuration,
+				awsElasticContainerRegistry.OidcAuthentication.Audience,
+				awsElasticContainerRegistry.OidcAuthentication.RoleArn,
+				awsElasticContainerRegistry.OidcAuthentication.SubjectKeys,
+			)
+		}
+	case FeedTypeAzureContainerRegistry:
+		azureContainerRegistry := feed.(*AzureContainerRegistry)
+		feedResource.APIVersion = azureContainerRegistry.APIVersion
+		feedResource.FeedURI = azureContainerRegistry.FeedURI
+		feedResource.RegistryPath = azureContainerRegistry.RegistryPath
+		if azureContainerRegistry.OidcAuthentication != nil {
+			feedResource.OidcAuthentication = NewAzureOidcAuthentication(
+				azureContainerRegistry.OidcAuthentication.ClientId,
+				azureContainerRegistry.OidcAuthentication.TenantId,
+				azureContainerRegistry.OidcAuthentication.Audience,
+				azureContainerRegistry.OidcAuthentication.SubjectKeys,
+			)
+		}
 	case FeedTypeBuiltIn:
 		builtInFeed := feed.(*BuiltInFeed)
+		feedResource.DeletePackagesAssociatedWithReleases = builtInFeed.DeletePackagesAssociatedWithReleases
 		feedResource.DeleteUnreleasedPackagesAfterDays = builtInFeed.DeleteUnreleasedPackagesAfterDays
 		feedResource.DownloadAttempts = builtInFeed.DownloadAttempts
 		feedResource.DownloadRetryBackoffSeconds = builtInFeed.DownloadRetryBackoffSeconds
@@ -164,6 +224,17 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.DownloadAttempts = gitHubRepositoryFeed.DownloadAttempts
 		feedResource.DownloadRetryBackoffSeconds = gitHubRepositoryFeed.DownloadRetryBackoffSeconds
 		feedResource.FeedURI = gitHubRepositoryFeed.FeedURI
+	case FeedTypeGoogleContainerRegistry:
+		googleContainerRegistry := feed.(*GoogleContainerRegistry)
+		feedResource.APIVersion = googleContainerRegistry.APIVersion
+		feedResource.FeedURI = googleContainerRegistry.FeedURI
+		feedResource.RegistryPath = googleContainerRegistry.RegistryPath
+		if googleContainerRegistry.OidcAuthentication != nil {
+			feedResource.OidcAuthentication = NewGoogleOidcAuthentication(
+				googleContainerRegistry.OidcAuthentication.Audience,
+				googleContainerRegistry.OidcAuthentication.SubjectKeys,
+			)
+		}
 	case FeedTypeHelm:
 		helmFeed := feed.(*HelmFeed)
 		feedResource.FeedURI = helmFeed.FeedURI
