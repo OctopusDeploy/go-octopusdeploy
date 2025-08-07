@@ -31,7 +31,6 @@ const (
 	ServiceInterruptionService                  string = "InterruptionService"
 	ServiceInvitationService                    string = "InvitationService"
 	ServiceJiraIntegrationService               string = "JiraIntegrationService"
-	ServiceKubernetesMonitorService             string = "KubernetesMonitorService"
 	ServiceLetsEncryptConfigurationService      string = "LetsEncryptConfigurationService"
 	ServiceLibraryVariableSetService            string = "LibraryVariableSetService"
 	ServiceLicenseService                       string = "LicenseService"

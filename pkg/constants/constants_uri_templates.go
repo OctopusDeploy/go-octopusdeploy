@@ -56,7 +56,6 @@ const (
 	TestURIIssueTrackers                     string = "/api/issuetrackers{?skip,take,ids,partialName}"
 	TestURIJiraConnectAppCredentialsTest     string = "/api/jiraintegration/connectivitycheck/connectapp"
 	TestURIJiraCredentialsTest               string = "/api/jiraintegration/connectivitycheck/jira"
-	TestURIKubernetesMonitors                string = "/api/Spaces-1/observability/kubernetes-monitors{/id}"
 	TestURILetsEncryptConfiguration          string = "/api/letsencryptconfiguration"
 	TestURILibraryVariables                  string = "/api/libraryvariablesets{/id}{?skip,contentType,take,ids,partialName}"
 	TestURILifecycles                        string = "/api/lifecycles{/id}{?skip,take,ids,partialName}"
