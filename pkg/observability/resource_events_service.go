@@ -6,8 +6,7 @@ import (
 )
 
 const (
-	beginResourceEventsSessionTemplate = "/api/{spaceId}/observability/events/sessions"
-	resourceEventsTemplate = "/api/{spaceId}/observability/events/sessions/{sessionId}"
+	resourceEventsTemplate = "/api/{spaceId}/observability/events/sessions{/sessionId}"
 )
 
 // BeginResourceEventsSessionWithClient begins a resource events session using the new client implementation
@@ -25,7 +24,7 @@ func BeginResourceEventsSessionWithClient(client newclient.Client, request *Begi
 		"spaceId": spaceID,
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(beginResourceEventsSessionTemplate, pathVars)
+	expandedUri, err := client.URITemplateCache().Expand(resourceEventsTemplate, pathVars)
 	if err != nil {
 		return nil, err
 	}
