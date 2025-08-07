@@ -2,60 +2,45 @@ package kubernetesmonitors
 
 import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
 
-// KubernetesMonitorService handles communication with Kubernetes Monitor-related methods of the Octopus API.
-type KubernetesMonitorService struct {
-	services.CanDeleteService
-}
+const template = "/api/{spaceId}/observability/kubernetes-monitors{/id}"
 
-// NewKubernetesMonitorService returns a KubernetesMonitorService with a preconfigured client.
-func NewKubernetesMonitorService(sling *sling.Sling, uriTemplate string) *KubernetesMonitorService {
-	return &KubernetesMonitorService{
-		CanDeleteService: services.CanDeleteService{
-			Service: services.NewService(constants.ServiceKubernetesMonitorService, sling, uriTemplate),
-		},
-	}
-}
-
-// Register registers a Kubernetes monitor with the Octopus Deploy server.
-func (s *KubernetesMonitorService) Register(command *RegisterKubernetesMonitorCommand) (*RegisterKubernetesMonitorResponse, error) {
+// Register registers the given Kubernetes Monitor parameters with the Octopus Deploy server.
+func Register(
+	client newclient.Client, command *RegisterKubernetesMonitorCommand,
+) (*RegisterKubernetesMonitorResponse, error) {
 	if command == nil {
-		return nil, internal.CreateInvalidParameterError("register", "command")
+		return nil, internal.CreateInvalidParameterError("Register", "command")
 	}
 
-	path, err := services.GetPath(s)
+	spaceID, err := internal.GetSpaceID(command.SpaceID, client.GetSpaceID())
 	if err != nil {
 		return nil, err
 	}
 
-	resp, err := services.ApiPost(s.GetClient(), command, new(RegisterKubernetesMonitorResponse), path)
+	path, err := client.URITemplateCache().Expand(template, map[string]any{
+		"spaceId": spaceID,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return resp.(*RegisterKubernetesMonitorResponse), nil
+	res, err := newclient.Post[RegisterKubernetesMonitorResponse](client.HttpSession(), path, command)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
-// GetByID returns the Kubernetes monitor that matches the input ID. If one cannot be found, it returns nil and an error.
-func (s *KubernetesMonitorService) GetByID(id string) (*KubernetesMonitor, error) {
-	if internal.IsEmpty(id) {
-		return nil, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID)
-	}
+// GetByID returns the Kubernetes Monitor that matches the input ID. If one cannot be found, it returns nil and an error.
+func GetByID(client newclient.Client, spaceID string, ID string) (*GetKubernetesMonitorResponse, error) {
+	return newclient.GetByID[GetKubernetesMonitorResponse](client, template, spaceID, ID)
+}
 
-	path, err := services.GetByIDPath(s, id)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := api.ApiGet(s.GetClient(), new(KubernetesMonitor), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp.(*KubernetesMonitor), nil
+// DeleteByID deletes a Kubernetes Monitor based on the provided ID.
+func DeleteByID(client newclient.Client, spaceID string, ID string) error {
+	return newclient.DeleteByID(client, template, spaceID, ID)
 }

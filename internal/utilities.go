@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"math/rand"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -37,6 +38,14 @@ func GetRandomThumbprint() string {
 func GetRandomVersion() string {
 	now := time.Now()
 	return fmt.Sprintf("%d.%d.%d.%d", now.Year(), now.Month(), now.Day(), now.Hour()*10000+now.Minute()*100+now.Second())
+}
+
+func GetRandomPollingAddress() *url.URL {
+	// Generate a random polling address using a random string
+	randomString := strings.ToLower(GetRandomString(20))
+	pollingAddress := fmt.Sprintf("poll://%s/", randomString)
+	parsedURL, _ := url.Parse(pollingAddress)
+	return parsedURL
 }
 
 func IsEmpty(s string) bool {

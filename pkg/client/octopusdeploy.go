@@ -34,7 +34,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/invitations"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/issuetrackers"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/jira"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/kubernetesmonitors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/licenses"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
@@ -109,7 +108,6 @@ type Client struct {
 	Invitations                    *invitations.InvitationService
 	IssueTrackers                  *issuetrackers.IssueTrackerService
 	JiraIntegration                *jira.JiraIntegrationService
-	KubernetesMonitor              *kubernetesmonitors.KubernetesMonitorService
 	LetsEncryptConfiguration       *configuration.LetsEncryptConfigurationService
 	LibraryVariableSets            *variables.LibraryVariableSetService
 	Licenses                       *licenses.LicenseService
@@ -333,7 +331,6 @@ func NewClientWithCredentials(
 	issueTrackersPath := root.GetLinkPath(sroot, constants.LinkIssueTrackers)
 	jiraConnectAppCredentialsTestPath := root.GetLinkPath(sroot, constants.LinkJiraConnectAppCredentialsTest)
 	jiraCredentialsTestPath := root.GetLinkPath(sroot, constants.LinkJiraCredentialsTest)
-	kubernetesMonitorPath := root.GetLinkPath(sroot, constants.LinkKubernetesMonitor)
 	letsEncryptConfigurationPath := root.GetLinkPath(sroot, constants.LinkLetsEncryptConfiguration)
 	libraryVariablesPath := root.GetLinkPath(sroot, constants.LinkLibraryVariables)
 	lifecyclesPath := root.GetLinkPath(sroot, constants.LinkLifecycles)
@@ -454,7 +451,6 @@ func NewClientWithCredentials(
 		Invitations:                    invitations.NewInvitationService(base, invitationsPath),
 		IssueTrackers:                  issuetrackers.NewIssueTrackerService(base, issueTrackersPath),
 		JiraIntegration:                jira.NewJiraIntegrationService(base, jiraIntegrationPath, jiraConnectAppCredentialsTestPath, jiraCredentialsTestPath),
-		KubernetesMonitor:              kubernetesmonitors.NewKubernetesMonitorService(base, kubernetesMonitorPath),
 		LetsEncryptConfiguration:       configuration.NewLetsEncryptConfigurationService(base, letsEncryptConfigurationPath),
 		LibraryVariableSets:            variables.NewLibraryVariableSetService(base, libraryVariablesPath),
 		Licenses:                       licenses.NewLicenseService(base, licensesPath, currentLicensePath, currentLicenseStatusPath),

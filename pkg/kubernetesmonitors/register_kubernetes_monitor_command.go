@@ -9,11 +9,12 @@ import (
 type RegisterKubernetesMonitorCommand struct {
 	InstallationID *uuid.UUID `json:"InstallationId" validate:"required"`
 	MachineID      string     `json:"MachineId" validate:"required"`
+	SpaceID        string     `json:"SpaceId,omitempty"`
 }
 
 // NewRegisterKubernetesMonitorCommand creates a new Kubernetes monitor registration command with the specified parameters.
 func NewRegisterKubernetesMonitorCommand(
-	installationID *uuid.UUID, spaceID string, machineID string,
+	installationID *uuid.UUID, machineID string,
 ) *RegisterKubernetesMonitorCommand {
 	return &RegisterKubernetesMonitorCommand{
 		InstallationID: installationID,
