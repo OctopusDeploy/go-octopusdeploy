@@ -186,9 +186,7 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 // NewClientWithAccessToken returns a new Octopus API client using an access token instead of an api key. If a nil client is provided, a
 // new http.Client will be used.
-func NewClientWithAccessToken(
-	httpClient *http.Client, apiURL *url.URL, accessToken string, spaceID string,
-) (*Client, error) {
+func NewClientWithAccessToken(httpClient *http.Client, apiURL *url.URL, accessToken string, spaceID string) (*Client, error) {
 	accessTokenCredential, err := NewAccessToken(accessToken)
 	if err != nil {
 		return nil, err
@@ -198,9 +196,7 @@ func NewClientWithAccessToken(
 
 // NewClientForTool returns a new Octopus API client with a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
-func NewClientForTool(
-	httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string,
-) (*Client, error) {
+func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
 	apiKeyCredential, err := NewApiKey(apiKey)
 	if err != nil {
 		return nil, err
@@ -210,9 +206,7 @@ func NewClientForTool(
 
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
-func NewClientWithCredentials(
-	httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string,
-) (*Client, error) {
+func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
@@ -506,9 +500,7 @@ func NewClientWithCredentials(
 	}, nil
 }
 
-func getRoot(
-	httpClient *http.Client, baseURL string, credentials ICredential, requestingTool string,
-) (*sling.Sling, *RootResource, error) {
+func getRoot(httpClient *http.Client, baseURL string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
 	base := sling.
 		New().
 		Client(httpClient).
