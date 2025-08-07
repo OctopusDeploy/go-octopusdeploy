@@ -6,8 +6,7 @@ import (
 )
 
 const (
-	containerLogsTemplate      = "/api/{spaceId}/observability/logs/sessions/{sessionId}"
-	beginContainerLogsTemplate = "/api/{spaceId}/observability/logs/sessions"
+	containerLogsTemplate = "/api/{spaceId}/observability/logs/sessions{/sessionId}"
 )
 
 // GetContainerLogsWithClient retrieves container logs using the new client implementation
@@ -54,7 +53,7 @@ func BeginContainerLogsSessionWithClient(client newclient.Client, command *Begin
 		"spaceId": spaceID,
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(beginContainerLogsTemplate, pathVars)
+	expandedUri, err := client.URITemplateCache().Expand(containerLogsTemplate, pathVars)
 	if err != nil {
 		return nil, err
 	}
