@@ -7,6 +7,67 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBeginResourceEventsSessionRequest_Validate(t *testing.T) {
+	// Test valid request
+	validRequest := &BeginResourceEventsSessionRequest{
+		SpaceID:                            "Spaces-1",
+		ProjectID:                          "Projects-1",
+		EnvironmentID:                      "Environments-1",
+		MachineID:                         "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+	}
+
+	err := validRequest.Validate()
+	assert.NoError(t, err)
+
+	// Test valid request with optional TenantID
+	tenantID := "Tenants-1"
+	validRequestWithTenant := &BeginResourceEventsSessionRequest{
+		SpaceID:                            "Spaces-1",
+		ProjectID:                          "Projects-1",
+		EnvironmentID:                      "Environments-1",
+		TenantID:                          &tenantID,
+		MachineID:                         "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+	}
+
+	err = validRequestWithTenant.Validate()
+	assert.NoError(t, err)
+
+	// Test invalid request (missing required fields)
+	invalidRequest := &BeginResourceEventsSessionRequest{}
+
+	err = invalidRequest.Validate()
+	assert.Error(t, err)
+
+	// Test invalid request (missing SpaceID)
+	invalidRequestNoSpace := &BeginResourceEventsSessionRequest{
+		ProjectID:                          "Projects-1",
+		EnvironmentID:                      "Environments-1",
+		MachineID:                         "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+	}
+
+	err = invalidRequestNoSpace.Validate()
+	assert.Error(t, err)
+}
+
+func TestBeginResourceEventsSessionResponse_Validate(t *testing.T) {
+	// Test valid response
+	validResponse := &BeginResourceEventsSessionResponse{
+		SessionID: ResourceEventsSessionId("session-123"),
+	}
+
+	err := validResponse.Validate()
+	assert.NoError(t, err)
+
+	// Test invalid response (missing required SessionID)
+	invalidResponse := &BeginResourceEventsSessionResponse{}
+
+	err = invalidResponse.Validate()
+	assert.Error(t, err)
+}
+
 func TestGetResourceEventsRequest_Validate(t *testing.T) {
 	// Test valid request
 	validRequest := &GetResourceEventsRequest{

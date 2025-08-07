@@ -9,6 +9,23 @@ import (
 // ResourceEventsSessionId represents a resource events session identifier
 type ResourceEventsSessionId string
 
+// BeginResourceEventsSessionRequest represents a request to begin a resource events session
+// Request to start monitoring events for a specific Kubernetes resource
+type BeginResourceEventsSessionRequest struct {
+	SpaceID                            string `json:"spaceId" validate:"required"`
+	ProjectID                          string `json:"projectId" validate:"required"`
+	EnvironmentID                      string `json:"environmentId" validate:"required"`
+	TenantID                          *string `json:"tenantId,omitempty"`
+	MachineID                         string `json:"machineId" validate:"required"`
+	DesiredOrKubernetesMonitoredResourceID string `json:"desiredOrKubernetesMonitoredResourceId" validate:"required"`
+}
+
+// BeginResourceEventsSessionResponse represents the response for beginning a resource events session
+// Response containing a session ID for the event monitoring session
+type BeginResourceEventsSessionResponse struct {
+	SessionID ResourceEventsSessionId `json:"sessionId" validate:"required"`
+}
+
 // GetResourceEventsRequest represents a request to get resource events for a session
 // Request for retrieving all the events for the specified session
 type GetResourceEventsRequest struct {
@@ -42,6 +59,24 @@ type KubernetesEventResource struct {
 type MonitorErrorResource struct {
 	Message string `json:"message" validate:"required"`
 	Code    string `json:"code,omitempty"`
+}
+
+// NewBeginResourceEventsSessionRequest creates a new BeginResourceEventsSessionRequest
+func NewBeginResourceEventsSessionRequest(spaceID, projectID, environmentID, machineID, desiredOrKubernetesMonitoredResourceID string) *BeginResourceEventsSessionRequest {
+	return &BeginResourceEventsSessionRequest{
+		SpaceID:                            spaceID,
+		ProjectID:                          projectID,
+		EnvironmentID:                      environmentID,
+		MachineID:                         machineID,
+		DesiredOrKubernetesMonitoredResourceID: desiredOrKubernetesMonitoredResourceID,
+	}
+}
+
+// NewBeginResourceEventsSessionResponse creates a new BeginResourceEventsSessionResponse
+func NewBeginResourceEventsSessionResponse(sessionID ResourceEventsSessionId) *BeginResourceEventsSessionResponse {
+	return &BeginResourceEventsSessionResponse{
+		SessionID: sessionID,
+	}
 }
 
 // NewGetResourceEventsRequest creates a new GetResourceEventsRequest
@@ -93,6 +128,16 @@ func NewMonitorErrorResource(message string, code string) *MonitorErrorResource 
 		Message: message,
 		Code:    code,
 	}
+}
+
+// Validate checks the state of the request and returns an error if invalid
+func (r *BeginResourceEventsSessionRequest) Validate() error {
+	return validator.New().Struct(r)
+}
+
+// Validate checks the state of the response and returns an error if invalid
+func (r *BeginResourceEventsSessionResponse) Validate() error {
+	return validator.New().Struct(r)
 }
 
 // Validate checks the state of the request and returns an error if invalid
