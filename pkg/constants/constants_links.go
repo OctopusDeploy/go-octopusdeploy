@@ -59,6 +59,7 @@ const (
 	LinkIssueTrackers                     string = "IssueTrackers"
 	LinkJiraConnectAppCredentialsTest     string = "JiraConnectAppCredentialsTest"
 	LinkJiraCredentialsTest               string = "JiraCredentialsTest"
+	LinkKubernetesMonitor                 string = "KubernetesMonitors"
 	LinkLetsEncryptConfiguration          string = "LetsEncryptConfiguration"
 	LinkLibraryVariables                  string = "LibraryVariables"
 	LinkLifecycles                        string = "Lifecycles"

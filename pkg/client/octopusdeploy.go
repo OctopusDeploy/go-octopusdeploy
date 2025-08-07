@@ -34,6 +34,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/invitations"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/issuetrackers"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/jira"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/kubernetesmonitors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/licenses"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
@@ -108,6 +109,7 @@ type Client struct {
 	Invitations                    *invitations.InvitationService
 	IssueTrackers                  *issuetrackers.IssueTrackerService
 	JiraIntegration                *jira.JiraIntegrationService
+	KubernetesMonitor              *kubernetesmonitors.KubernetesMonitorService
 	LetsEncryptConfiguration       *configuration.LetsEncryptConfigurationService
 	LibraryVariableSets            *variables.LibraryVariableSetService
 	Licenses                       *licenses.LicenseService
@@ -186,7 +188,9 @@ func NewClient(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID 
 
 // NewClientWithAccessToken returns a new Octopus API client using an access token instead of an api key. If a nil client is provided, a
 // new http.Client will be used.
-func NewClientWithAccessToken(httpClient *http.Client, apiURL *url.URL, accessToken string, spaceID string) (*Client, error) {
+func NewClientWithAccessToken(
+	httpClient *http.Client, apiURL *url.URL, accessToken string, spaceID string,
+) (*Client, error) {
 	accessTokenCredential, err := NewAccessToken(accessToken)
 	if err != nil {
 		return nil, err
@@ -196,7 +200,9 @@ func NewClientWithAccessToken(httpClient *http.Client, apiURL *url.URL, accessTo
 
 // NewClientForTool returns a new Octopus API client with a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
-func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string) (*Client, error) {
+func NewClientForTool(
+	httpClient *http.Client, apiURL *url.URL, apiKey string, spaceID string, requestingTool string,
+) (*Client, error) {
 	apiKeyCredential, err := NewApiKey(apiKey)
 	if err != nil {
 		return nil, err
@@ -206,7 +212,9 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
-func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string) (*Client, error) {
+func NewClientWithCredentials(
+	httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string,
+) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
@@ -325,6 +333,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	issueTrackersPath := root.GetLinkPath(sroot, constants.LinkIssueTrackers)
 	jiraConnectAppCredentialsTestPath := root.GetLinkPath(sroot, constants.LinkJiraConnectAppCredentialsTest)
 	jiraCredentialsTestPath := root.GetLinkPath(sroot, constants.LinkJiraCredentialsTest)
+	kubernetesMonitorPath := root.GetLinkPath(sroot, constants.LinkKubernetesMonitor)
 	letsEncryptConfigurationPath := root.GetLinkPath(sroot, constants.LinkLetsEncryptConfiguration)
 	libraryVariablesPath := root.GetLinkPath(sroot, constants.LinkLibraryVariables)
 	lifecyclesPath := root.GetLinkPath(sroot, constants.LinkLifecycles)
@@ -445,6 +454,7 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 		Invitations:                    invitations.NewInvitationService(base, invitationsPath),
 		IssueTrackers:                  issuetrackers.NewIssueTrackerService(base, issueTrackersPath),
 		JiraIntegration:                jira.NewJiraIntegrationService(base, jiraIntegrationPath, jiraConnectAppCredentialsTestPath, jiraCredentialsTestPath),
+		KubernetesMonitor:              kubernetesmonitors.NewKubernetesMonitorService(base, kubernetesMonitorPath),
 		LetsEncryptConfiguration:       configuration.NewLetsEncryptConfigurationService(base, letsEncryptConfigurationPath),
 		LibraryVariableSets:            variables.NewLibraryVariableSetService(base, libraryVariablesPath),
 		Licenses:                       licenses.NewLicenseService(base, licensesPath, currentLicensePath, currentLicenseStatusPath),
@@ -500,7 +510,9 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	}, nil
 }
 
-func getRoot(httpClient *http.Client, baseURL string, credentials ICredential, requestingTool string) (*sling.Sling, *RootResource, error) {
+func getRoot(
+	httpClient *http.Client, baseURL string, credentials ICredential, requestingTool string,
+) (*sling.Sling, *RootResource, error) {
 	base := sling.
 		New().
 		Client(httpClient).
