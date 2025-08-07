@@ -121,3 +121,123 @@ func TestGetContainerLogsResponseWithError(t *testing.T) {
 	assert.Equal(t, expected, response)
 	assert.NoError(t, response.Validate())
 }
+
+func TestBeginContainerLogsSessionCommand_Validate(t *testing.T) {
+	// Test valid command
+	validCommand := &BeginContainerLogsSessionCommand{
+		SpaceID:                                "Spaces-1",
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		MachineID:                              "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+		PodName:                                "my-pod",
+		ContainerName:                          "app-container",
+		ShowPreviousContainer:                  false,
+	}
+
+	err := validCommand.Validate()
+	assert.NoError(t, err)
+
+	// Test valid command with tenant ID (optional)
+	tenantID := "Tenants-1"
+	validCommandWithTenant := &BeginContainerLogsSessionCommand{
+		SpaceID:                                "Spaces-1",
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		TenantID:                               &tenantID,
+		MachineID:                              "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+		PodName:                                "my-pod",
+		ContainerName:                          "app-container",
+		ShowPreviousContainer:                  true,
+	}
+
+	err = validCommandWithTenant.Validate()
+	assert.NoError(t, err)
+
+	// Test invalid command (missing required fields)
+	invalidCommand := &BeginContainerLogsSessionCommand{}
+
+	err = invalidCommand.Validate()
+	assert.Error(t, err)
+
+	// Test invalid command (missing SpaceID)
+	invalidCommandNoSpace := &BeginContainerLogsSessionCommand{
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		MachineID:                              "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+		PodName:                                "my-pod",
+		ContainerName:                          "app-container",
+	}
+
+	err = invalidCommandNoSpace.Validate()
+	assert.Error(t, err)
+
+	// Test invalid command (missing ProjectID)
+	invalidCommandNoProject := &BeginContainerLogsSessionCommand{
+		SpaceID:                                "Spaces-1",
+		EnvironmentID:                          "Environments-1",
+		MachineID:                              "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+		PodName:                                "my-pod",
+		ContainerName:                          "app-container",
+	}
+
+	err = invalidCommandNoProject.Validate()
+	assert.Error(t, err)
+
+	// Test invalid command (missing PodName)
+	invalidCommandNoPod := &BeginContainerLogsSessionCommand{
+		SpaceID:                                "Spaces-1",
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		MachineID:                              "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+		ContainerName:                          "app-container",
+	}
+
+	err = invalidCommandNoPod.Validate()
+	assert.Error(t, err)
+
+	// Test invalid command (missing ContainerName)
+	invalidCommandNoContainer := &BeginContainerLogsSessionCommand{
+		SpaceID:                                "Spaces-1",
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		MachineID:                              "Machines-1",
+		DesiredOrKubernetesMonitoredResourceID: "resource-123",
+		PodName:                                "my-pod",
+	}
+
+	err = invalidCommandNoContainer.Validate()
+	assert.Error(t, err)
+}
+
+func TestBeginContainerLogsSessionResponse_Validate(t *testing.T) {
+	// Test valid response
+	validResponse := &BeginContainerLogsSessionResponse{
+		SessionID: ContainerLogSessionId("session-abc123"),
+	}
+
+	err := validResponse.Validate()
+	assert.NoError(t, err)
+
+	// Test valid response with error
+	validResponseWithError := &BeginContainerLogsSessionResponse{
+		SessionID: ContainerLogSessionId("session-def456"),
+		Error: &MonitorErrorResource{
+			Message: "Connection timeout",
+			Code:    "ERR_TIMEOUT",
+		},
+	}
+
+	err = validResponseWithError.Validate()
+	assert.NoError(t, err)
+
+	// Test invalid response (missing SessionID)
+	invalidResponse := &BeginContainerLogsSessionResponse{}
+
+	err = invalidResponse.Validate()
+	assert.Error(t, err)
+}
