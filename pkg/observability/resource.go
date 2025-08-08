@@ -30,7 +30,7 @@ type KubernetesLiveStatusDetailedResource struct {
 	SyncStatus        *string                                `json:"SyncStatus,omitempty"`
 	MachineID         string                                 `json:"MachineId,omitempty"`
 	LastUpdated       string                                 `json:"LastUpdated,omitempty"`
-	Details           *ManifestSummary                       `json:"Details,omitempty"`
+	ManifestSummary   *ManifestSummary                       `json:"ManifestSummary,omitempty"`
 	Children          []KubernetesLiveStatusDetailedResource `json:"Children,omitempty"`
 	DesiredResourceID *string                                `json:"DesiredResourceId,omitempty"`
 	ResourceID        string                                 `json:"ResourceId,omitempty"`
