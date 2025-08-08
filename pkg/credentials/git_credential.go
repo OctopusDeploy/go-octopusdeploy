@@ -7,5 +7,5 @@ type GitCredential interface {
 
 // gitCredential is the embedded struct used for Git credentials.
 type gitCredential struct {
-	CredentialType Type `json:"Type" validate:"omitempty,oneof=Anonymous Reference UsernamePassword"`
+	CredentialType Type `json:"Type" validate:"omitempty,oneof=Anonymous Reference UsernamePassword GitHub"`
 }
