@@ -2,6 +2,7 @@ package observability
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -142,50 +143,44 @@ func (p *PodManifestSummary) Validate() error {
 
 // UnmarshalJSON custom unmarshaling for KubernetesLiveStatusDetailedResource
 func (r *KubernetesLiveStatusDetailedResource) UnmarshalJSON(data []byte) error {
-	// Create a temporary struct with the same fields but using raw JSON for ManifestSummary
-	type TempResource struct {
-		Name              string                                 `json:"Name,omitempty"`
-		Namespace         string                                 `json:"Namespace,omitempty"`
-		Kind              string                                 `json:"Kind,omitempty"`
-		HealthStatus      string                                 `json:"HealthStatus,omitempty"`
-		SyncStatus        *string                                `json:"SyncStatus,omitempty"`
-		MachineID         string                                 `json:"MachineId,omitempty"`
-		LastUpdated       string                                 `json:"LastUpdated,omitempty"`
-		ManifestSummary   json.RawMessage                        `json:"ManifestSummary,omitempty"`
-		Children          []KubernetesLiveStatusDetailedResource `json:"Children,omitempty"`
-		DesiredResourceID *string                                `json:"DesiredResourceId,omitempty"`
-		ResourceID        string                                 `json:"ResourceId,omitempty"`
+
+	type manifestSummaryDiscriminator struct {
+		Kind string `json:"Kind"`
 	}
 
-	var temp TempResource
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
+	// Alias to avoid infinite recursion during unmarshaling
+	type Alias KubernetesLiveStatusDetailedResource
+
+	// Temporary struct
+	aux := &struct {
+		*Alias
+		ManifestSummary json.RawMessage `json:"ManifestSummary,omitempty"`
+	}{
+		Alias: (*Alias)(r),
 	}
 
-	// Copy all fields except ManifestSummary
-	r.Name = temp.Name
-	r.Namespace = temp.Namespace
-	r.Kind = temp.Kind
-	r.HealthStatus = temp.HealthStatus
-	r.SyncStatus = temp.SyncStatus
-	r.MachineID = temp.MachineID
-	r.LastUpdated = temp.LastUpdated
-	r.Children = temp.Children
-	r.DesiredResourceID = temp.DesiredResourceID
-	r.ResourceID = temp.ResourceID
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return fmt.Errorf("failed to unmarshal resource: %w", err)
+	}
+	if len(aux.ManifestSummary) > 0 && string(aux.ManifestSummary) != "null" {
+		// Peek at the Kind field within ManifestSummary
+		var discriminator manifestSummaryDiscriminator
+		if err := json.Unmarshal(aux.ManifestSummary, &discriminator); err != nil {
+			return fmt.Errorf("failed to determine ManifestSummary kind: %w", err)
+		}
 
-	// Handle ManifestSummary based on resource Kind
-	if len(temp.ManifestSummary) > 0 {
-		if r.Kind == "Pod" {
+		// unmarshal based on the Kind discriminator
+		switch discriminator.Kind {
+		case "Pod":
 			var podSummary PodManifestSummary
-			if err := json.Unmarshal(temp.ManifestSummary, &podSummary); err != nil {
-				return err
+			if err := json.Unmarshal(aux.ManifestSummary, &podSummary); err != nil {
+				return fmt.Errorf("failed to unmarshal PodManifestSummary: %w", err)
 			}
 			r.ManifestSummary = &podSummary
-		} else {
+		default:
 			var manifestSummary ManifestSummary
-			if err := json.Unmarshal(temp.ManifestSummary, &manifestSummary); err != nil {
-				return err
+			if err := json.Unmarshal(aux.ManifestSummary, &manifestSummary); err != nil {
+				return fmt.Errorf("failed to unmarshal ManifestSummary: %w", err)
 			}
 			r.ManifestSummary = &manifestSummary
 		}
