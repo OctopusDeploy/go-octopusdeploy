@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	liveStatusUntenantedTemplate = "/api/spaces/{spaceId}/projects/{projectId}/environments/{environmentId}/untenanted/livestatus"
-	liveStatusTenantedTemplate   = "/api/spaces/{spaceId}/projects/{projectId}/environments/{environmentId}/tenants/{tenantId}/livestatus"
+	liveStatusUntenantedTemplate = "/api/spaces/{spaceId}/projects/{projectId}/environments/{environmentId}/untenanted/livestatus{?summaryOnly}"
+	liveStatusTenantedTemplate   = "/api/spaces/{spaceId}/projects/{projectId}/environments/{environmentId}/tenants/{tenantId}/livestatus{?summaryOnly}"
 )
 
 // GetLiveStatusWithClient retrieves live status using the new client implementation
@@ -35,27 +35,13 @@ func GetLiveStatusWithClient(client newclient.Client, request *GetLiveStatusRequ
 		template = liveStatusUntenantedTemplate
 	}
 
+	if request.SummaryOnly {
+		pathVars["summaryOnly"] = "true"
+	}
+
 	expandedUri, err := client.URITemplateCache().Expand(template, pathVars)
 	if err != nil {
 		return nil, err
-	}
-
-	// Add query parameters if needed
-	queryParams := map[string]string{}
-	if request.SummaryOnly {
-		queryParams["summaryOnly"] = "true"
-	}
-
-	if len(queryParams) > 0 {
-		expandedUri = expandedUri + "?"
-		first := true
-		for key, value := range queryParams {
-			if !first {
-				expandedUri = expandedUri + "&"
-			}
-			expandedUri = expandedUri + key + "=" + value
-			first = false
-		}
 	}
 
 	resp, err := newclient.Get[GetLiveStatusResponse](client.HttpSession(), expandedUri)
