@@ -24,12 +24,18 @@ const (
 	RetentionUnitItems string = "Items"
 )
 
+const (
+	strategyCount   string = "Count"
+	strategyDefault string = "Default"
+	strategyForever string = "Forever"
+)
+
 func NewLifecycle(name string) *Lifecycle {
 	return &Lifecycle{
 		Name:                    strings.TrimSpace(name),
 		Phases:                  []*Phase{},
-		ReleaseRetentionPolicy:  core.NewRetentionPeriod(30, RetentionUnitDays, false),
-		TentacleRetentionPolicy: core.NewRetentionPeriod(30, RetentionUnitDays, false),
+		ReleaseRetentionPolicy:  core.NewRetentionPeriod(strategyDefault),
+		TentacleRetentionPolicy: core.NewRetentionPeriod(strategyDefault),
 		Resource:                *resources.NewResource(),
 	}
 }
