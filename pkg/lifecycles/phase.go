@@ -19,7 +19,7 @@ func NewPhase(name string) *Phase {
 		AutomaticDeploymentTargets: []string{},
 		Name:                       name,
 		OptionalDeploymentTargets:  []string{},
-		ReleaseRetentionPolicy:     core.NewRetentionPeriod(30, "Days", false),
-		TentacleRetentionPolicy:    core.NewRetentionPeriod(30, "Days", false),
+		ReleaseRetentionPolicy:     core.CountBasedRetentionPeriod(30, RetentionUnitDays),
+		TentacleRetentionPolicy:    core.CountBasedRetentionPeriod(30, RetentionUnitDays),
 	}
 }

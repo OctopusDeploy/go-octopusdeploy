@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -252,6 +253,41 @@ func TestLifecycleAddGetAndDelete_NewClient(t *testing.T) {
 	getLifecycle, err := lifecycles.GetByID(octopusClient, lifecycle.SpaceID, lifecycle.GetID())
 	assert.NoError(t, err, "there was an error raised getting lifecycle when there should not be")
 	assert.Equal(t, lifecycle.Name, getLifecycle.Name)
+}
+
+func TestLifecycleRetentionPolicies_AddUpdateGet_NewClient(t *testing.T) {
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	// Create lifecycle
+	lifecycle := lifecycles.NewLifecycle("Random Lifecycle Name")
+	lifecycle.ReleaseRetentionPolicy = core.SpaceDefaultRetentionPeriod()
+	lifecycle.TentacleRetentionPolicy = core.KeepForeverRetentionPeriod()
+
+	createdLifecycle, err := lifecycles.Add(octopusClient, lifecycle)
+	require.NoError(t, err)
+
+	defer cleanLifecycle_NewClient(t, octopusClient, createdLifecycle)
+
+	getLifecycle, err := lifecycles.GetByID(octopusClient, createdLifecycle.SpaceID, createdLifecycle.GetID())
+	assert.NoError(t, err)
+
+	assert.Equal(t, getLifecycle.ReleaseRetentionPolicy.Strategy, core.RetentionStrategyDefault)
+	assert.Equal(t, getLifecycle.TentacleRetentionPolicy.Strategy, core.RetentionStrategyForever)
+
+	// Update lifecycle
+	phase := lifecycles.NewPhase("Test Phase")
+	phase.ReleaseRetentionPolicy = core.CountBasedRetentionPeriod(99, core.RetentionUnitItems)
+	phase.TentacleRetentionPolicy = core.SpaceDefaultRetentionPeriod()
+	getLifecycle.Phases = append(getLifecycle.Phases, phase)
+
+	updatedLifecycle, err := lifecycles.Update(octopusClient, getLifecycle)
+	assert.NoError(t, err)
+
+	assert.Equal(t, updatedLifecycle.ReleaseRetentionPolicy.Strategy, core.RetentionStrategyDefault)
+	assert.Equal(t, updatedLifecycle.TentacleRetentionPolicy.Strategy, core.RetentionStrategyForever)
+	assert.Equal(t, updatedLifecycle.Phases[0].ReleaseRetentionPolicy.Strategy, core.RetentionStrategyCount)
+	assert.Equal(t, updatedLifecycle.Phases[0].TentacleRetentionPolicy.Strategy, core.RetentionStrategyDefault)
 }
 
 func createTestLifecycle_NewClient(t *testing.T, client *client.Client, lifecycleName string) *lifecycles.Lifecycle {

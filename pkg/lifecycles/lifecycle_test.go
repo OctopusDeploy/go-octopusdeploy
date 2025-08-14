@@ -24,8 +24,8 @@ func TestLifecycleAsJSON(t *testing.T) {
 	lifecycle.Phases[0].IsOptionalPhase = true
 	lifecycle.Phases[0].MinimumEnvironmentsBeforePromotion = 123
 	lifecycle.Phases[0].OptionalDeploymentTargets = []string{"Environments-1"}
-	lifecycle.Phases[0].ReleaseRetentionPolicy = core.NewRetentionPeriod(1, "Days", false)
-	lifecycle.Phases[0].TentacleRetentionPolicy = core.NewRetentionPeriod(0, "Items", true)
+	lifecycle.Phases[0].ReleaseRetentionPolicy = core.CountBasedRetentionPeriod(1, "Days")
+	lifecycle.Phases[0].TentacleRetentionPolicy = core.KeepForeverRetentionPeriod()
 	lifecycle.Phases = append(lifecycle.Phases, NewPhase("test-phase-name-2"))
 	lifecycle.Phases[1].ID = "test-phase-id-2"
 	lifecycle.Phases[1].ReleaseRetentionPolicy = nil
@@ -51,12 +51,14 @@ func TestLifecycleAsJSON(t *testing.T) {
 				"ReleaseRetentionPolicy": {
 					"Unit": "Days",
 					"QuantityToKeep": 1,
-					"ShouldKeepForever": false
+					"ShouldKeepForever": false,
+					"Strategy": "Count"
 				},
 				"TentacleRetentionPolicy": {
 					"Unit": "Items",
 					"QuantityToKeep": 0,
-					"ShouldKeepForever": true
+					"ShouldKeepForever": true,
+					"Strategy": "Forever"
 				}
 			},
 			{
@@ -74,12 +76,14 @@ func TestLifecycleAsJSON(t *testing.T) {
 		"ReleaseRetentionPolicy": {
 			"Unit": "Days",
 			"QuantityToKeep": 3,
-			"ShouldKeepForever": false
+			"ShouldKeepForever": false,
+			"Strategy": "Count"
 		},
 		"TentacleRetentionPolicy": {
 			"Unit": "Items",
 			"QuantityToKeep": 2,
-			"ShouldKeepForever": false
+			"ShouldKeepForever": false,
+			"Strategy": "Count"
 		},
 		"Links": {
 			"Self": "test-self-link",
@@ -119,6 +123,53 @@ func TestLifecycleUnmarshalJSON(t *testing.T) {
 	require.Nil(t, lifecycle.TentacleRetentionPolicy)
 }
 
+func TestLifecycleWithRetentionPoliciesUnmarshalJSON(t *testing.T) {
+	description := internal.GetRandomName()
+	name := internal.GetRandomName()
+	spaceID := internal.GetRandomName()
+
+	releaseQuantityToKeep := int32(50)
+	releaseUnit := core.RetentionUnitDays
+	releaseShouldKeepForever := false
+
+	tentacleQuantityToKeep := int32(0)
+	tentacleUnit := core.RetentionUnitItems
+	tentacleShouldKeepForever := true
+
+	inputJSON := fmt.Sprintf(`{
+		"Description": "%s",
+		"Name": "%s",
+		"SpaceId": "%s",
+		"ReleaseRetentionPolicy": {
+			"QuantityToKeep": %d,
+			"ShouldKeepForever": %t,
+			"Unit": "%s"
+		},
+		"TentacleRetentionPolicy": {
+			"QuantityToKeep": %d,
+			"ShouldKeepForever": %t,
+			"Unit": "%s"
+		}
+	}`, description, name, spaceID, releaseQuantityToKeep, releaseShouldKeepForever, releaseUnit,
+		tentacleQuantityToKeep, tentacleShouldKeepForever, tentacleUnit)
+
+	var lifecycle Lifecycle
+	err := json.Unmarshal([]byte(inputJSON), &lifecycle)
+
+	require.NoError(t, err)
+	require.NotNil(t, lifecycle)
+
+	require.Equal(t, lifecycle.ReleaseRetentionPolicy.QuantityToKeep, releaseQuantityToKeep)
+	require.Equal(t, lifecycle.ReleaseRetentionPolicy.ShouldKeepForever, releaseShouldKeepForever)
+	require.Equal(t, lifecycle.ReleaseRetentionPolicy.Unit, releaseUnit)
+	require.Equal(t, lifecycle.ReleaseRetentionPolicy.Strategy, "Count")
+
+	require.Equal(t, lifecycle.TentacleRetentionPolicy.QuantityToKeep, tentacleQuantityToKeep)
+	require.Equal(t, lifecycle.TentacleRetentionPolicy.ShouldKeepForever, tentacleShouldKeepForever)
+	require.Equal(t, lifecycle.TentacleRetentionPolicy.Unit, tentacleUnit)
+	require.Equal(t, lifecycle.TentacleRetentionPolicy.Strategy, "Forever")
+}
+
 func TestLifecycleNew(t *testing.T) {
 	name := "name"
 
@@ -153,12 +204,14 @@ func TestLifecycleToJson(t *testing.T) {
 		"ReleaseRetentionPolicy": {
 			"QuantityToKeep": 30,
 			"ShouldKeepForever": false,
-			"Unit": "Days"
+			"Unit": "Days",
+			"Strategy": "Count"
 		},
 		"TentacleRetentionPolicy": {
 			"QuantityToKeep": 30,
 			"ShouldKeepForever": false,
-			"Unit": "Days"
+			"Unit": "Days",
+			"Strategy": "Count"
 		}
 	}`, name)
 
@@ -177,12 +230,14 @@ func TestLifecycleToJson(t *testing.T) {
 		"ReleaseRetentionPolicy": {
 			"QuantityToKeep": 30,
 			"ShouldKeepForever": false,
-			"Unit": "Days"
+			"Unit": "Days",
+			"Strategy": "Count"
 		},
 		"TentacleRetentionPolicy": {
 			"QuantityToKeep": 30,
 			"ShouldKeepForever": false,
-			"Unit": "Days"
+			"Unit": "Days",
+			"Strategy": "Count"
 		}
 	}`, description, name)
 
@@ -240,8 +295,9 @@ func TestLifecycleFromJson(t *testing.T) {
   },
   "TentacleRetentionPolicy": {
     "Unit": "Items",
-    "QuantityToKeep": 2,
-    "ShouldKeepForever": false
+    "QuantityToKeep": 0,
+    "ShouldKeepForever": true,
+	"Strategy": "Default"
   },
   "Description": "",
   "Links": {
@@ -267,9 +323,11 @@ func TestLifecycleFromJson(t *testing.T) {
 	require.Equal(t, RetentionUnitDays, phase0.ReleaseRetentionPolicy.Unit)
 	require.Equal(t, int32(1), phase0.ReleaseRetentionPolicy.QuantityToKeep)
 	require.Equal(t, false, phase0.ReleaseRetentionPolicy.ShouldKeepForever)
+	require.Equal(t, "Count", phase0.ReleaseRetentionPolicy.Strategy)
 	require.Equal(t, RetentionUnitItems, phase0.TentacleRetentionPolicy.Unit)
 	require.Equal(t, int32(0), phase0.TentacleRetentionPolicy.QuantityToKeep)
 	require.Equal(t, true, phase0.TentacleRetentionPolicy.ShouldKeepForever)
+	require.Equal(t, "Forever", phase0.TentacleRetentionPolicy.Strategy)
 
 	require.Equal(t, (*core.RetentionPeriod)(nil), lifecycle.Phases[1].ReleaseRetentionPolicy)
 	require.Equal(t, (*core.RetentionPeriod)(nil), lifecycle.Phases[1].TentacleRetentionPolicy)
@@ -277,9 +335,12 @@ func TestLifecycleFromJson(t *testing.T) {
 	require.Equal(t, RetentionUnitDays, lifecycle.ReleaseRetentionPolicy.Unit)
 	require.Equal(t, int32(3), lifecycle.ReleaseRetentionPolicy.QuantityToKeep)
 	require.Equal(t, false, lifecycle.ReleaseRetentionPolicy.ShouldKeepForever)
+	require.Equal(t, "Count", lifecycle.ReleaseRetentionPolicy.Strategy)
+
 	require.Equal(t, RetentionUnitItems, lifecycle.TentacleRetentionPolicy.Unit)
-	require.Equal(t, int32(2), lifecycle.TentacleRetentionPolicy.QuantityToKeep)
-	require.Equal(t, false, lifecycle.TentacleRetentionPolicy.ShouldKeepForever)
+	require.Equal(t, int32(0), lifecycle.TentacleRetentionPolicy.QuantityToKeep)
+	require.Equal(t, true, lifecycle.TentacleRetentionPolicy.ShouldKeepForever)
+	require.Equal(t, "Default", lifecycle.TentacleRetentionPolicy.Strategy)
 }
 
 func TestValidateLifecycleValuesPhaseWithJustANamePasses(t *testing.T) {
