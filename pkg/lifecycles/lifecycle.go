@@ -24,12 +24,6 @@ const (
 	RetentionUnitItems string = "Items"
 )
 
-const (
-	strategyCount   string = "Count"
-	strategyDefault string = "Default"
-	strategyForever string = "Forever"
-)
-
 func NewLifecycle(name string) *Lifecycle {
 	return &Lifecycle{
 		Name:                    strings.TrimSpace(name),
