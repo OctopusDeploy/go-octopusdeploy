@@ -159,21 +159,6 @@ func (s *ActionTemplateService) Search(searchQuery string) ([]ActionTemplateSear
 	return searchResults, err
 }
 
-// GetByPartialName performs a lookup and returns action templates with a matching
-// partial name.
-func (s *ActionTemplateService) GetByPartialName(partialName string) ([]*ActionTemplateSearch, error) {
-	if internal.IsEmpty(partialName) {
-		return []*ActionTemplateSearch{}, internal.CreateInvalidParameterError(constants.OperationGetByPartialName, constants.ParameterPartialName)
-	}
-
-	path, err := services.GetByPartialNamePath(s, partialName)
-	if err != nil {
-		return []*ActionTemplateSearch{}, err
-	}
-
-	return services.GetPagedResponse[ActionTemplateSearch](s, path)
-}
-
 // Update modifies an ActionTemplate based on the one provided as input.
 //
 // Deprecated: use actiontemplates.Update
