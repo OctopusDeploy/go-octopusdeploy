@@ -237,3 +237,9 @@ func GetVersionByID(client newclient.Client, spaceID string, actionTemplateID st
 
 	return newclient.Get[ActionTemplate](client.HttpSession(), uri)
 }
+
+// Get returns a collection of action templates based on the criteria defined by its
+// input query parameter.
+func Get(client newclient.Client, spaceID string, actionsQuery ActionTemplateSearch) (*resources.Resources[*ActionTemplate], error) {
+	return newclient.GetByQuery[ActionTemplate](client, template, spaceID, actionsQuery)
+}
