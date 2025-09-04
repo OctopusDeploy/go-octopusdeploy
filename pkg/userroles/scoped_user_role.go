@@ -11,7 +11,7 @@ type ScopedUserRole struct {
 	ProjectGroupIDs []string `json:"ProjectGroupIds,omitempty"`
 	TeamID          string   `json:"TeamId" validate:"required"`
 	TenantIDs       []string `json:"TenantIds,omitempty"`
-	SpaceID         string   `json:"SpaceId"`
+	SpaceID         string   `json:"SpaceId,omitempty"`
 	UserRoleID      string   `json:"UserRoleId" validate:"required"`
 
 	resources.Resource
