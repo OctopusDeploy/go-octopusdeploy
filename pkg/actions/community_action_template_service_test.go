@@ -69,3 +69,12 @@ func TestCommunityActionTemplateServiceInstall(t *testing.T) {
 	require.Error(t, err)
 	require.Nil(t, resource)
 }
+
+func TestCommunityActionTemplateServiceInstallInSpace(t *testing.T) {
+	service := createCommunityActionTemplateService(t)
+	require.NotNil(t, service)
+
+	resource, err := service.InstallToSpace(CommunityActionTemplate{}, "Spaces-12345")
+	require.Error(t, err)
+	require.Nil(t, resource)
+}
