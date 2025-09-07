@@ -1,4 +1,4 @@
-package livestatusservice
+package observability
 
 import (
 	"github.com/go-playground/validator/v10"

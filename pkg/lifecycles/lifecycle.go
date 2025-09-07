@@ -28,8 +28,8 @@ func NewLifecycle(name string) *Lifecycle {
 	return &Lifecycle{
 		Name:                    strings.TrimSpace(name),
 		Phases:                  []*Phase{},
-		ReleaseRetentionPolicy:  core.NewRetentionPeriod(30, RetentionUnitDays, false),
-		TentacleRetentionPolicy: core.NewRetentionPeriod(30, RetentionUnitDays, false),
+		ReleaseRetentionPolicy:  core.CountBasedRetentionPeriod(30, RetentionUnitDays),
+		TentacleRetentionPolicy: core.CountBasedRetentionPeriod(30, RetentionUnitDays),
 		Resource:                *resources.NewResource(),
 	}
 }
