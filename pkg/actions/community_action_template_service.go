@@ -24,7 +24,7 @@ func NewCommunityActionTemplateService(sling *sling.Sling, uriTemplate string) *
 	}
 }
 
-func (s *CommunityActionTemplateService) getInstallationPath(resource CommunityActionTemplate) (string, error) {
+func (s *CommunityActionTemplateService) getInstallationPath(resource CommunityActionTemplate, spaceId string) (string, error) {
 	if err := resource.Validate(); err != nil {
 		return "", internal.CreateValidationFailureError(constants.OperationInstall, err)
 	}
@@ -38,6 +38,10 @@ func (s *CommunityActionTemplateService) getInstallationPath(resource CommunityA
 
 	path, err := s.GetURITemplate().Expand(values)
 	path = path + "/installation"
+
+	if spaceId != "" {
+		path = path + "/" + spaceId
+	}
 
 	return path, err
 }
@@ -131,9 +135,14 @@ func (s *CommunityActionTemplateService) GetByName(name string) (*CommunityActio
 	return nil, internal.CreateResourceNotFoundError(s.GetName(), constants.ParameterName, name)
 }
 
-// Install installs a community step template.
+// Install installs a community step template to the default space.
 func (s *CommunityActionTemplateService) Install(resource CommunityActionTemplate) (*CommunityActionTemplate, error) {
-	path, err := s.getInstallationPath(resource)
+	return s.InstallToSpace(resource, "")
+}
+
+// InstallToSpace installs a community step template to the specified space.
+func (s *CommunityActionTemplateService) InstallToSpace(resource CommunityActionTemplate, spaceId string) (*CommunityActionTemplate, error) {
+	path, err := s.getInstallationPath(resource, spaceId)
 	if err != nil {
 		return nil, err
 	}
@@ -146,10 +155,16 @@ func (s *CommunityActionTemplateService) Install(resource CommunityActionTemplat
 	return resp.(*CommunityActionTemplate), nil
 }
 
-// Update modifies a community action template based on the one provided as
+// Update modifies a community action template in the default space based on the one provided as
 // input.
 func (s *CommunityActionTemplateService) Update(resource CommunityActionTemplate) (*CommunityActionTemplate, error) {
-	path, err := s.getInstallationPath(resource)
+	return s.UpdateInSpace(resource, "")
+}
+
+// UpdateInSpace modifies a community action template in a space based on the one provided as
+// input.
+func (s *CommunityActionTemplateService) UpdateInSpace(resource CommunityActionTemplate, spaceId string) (*CommunityActionTemplate, error) {
+	path, err := s.getInstallationPath(resource, spaceId)
 	if err != nil {
 		return nil, err
 	}
