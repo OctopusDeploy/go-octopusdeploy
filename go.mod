@@ -1,6 +1,8 @@
 module github.com/OctopusDeploy/go-octopusdeploy/v2
 
-go 1.19
+go 1.23.0
+
+toolchain go1.23.3
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
@@ -13,7 +15,7 @@ require (
 	github.com/kinbiko/jsonassert v1.1.1
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20230129154200-a960b3787bd2
-	golang.org/x/text v0.21.0
+	golang.org/x/text v0.28.0
 )
 
 require (
@@ -24,8 +26,8 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/net v0.43.0 // indirect
+	golang.org/x/sys v0.35.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
