@@ -2,8 +2,6 @@ module github.com/OctopusDeploy/go-octopusdeploy/v2
 
 go 1.23.0
 
-toolchain go1.23.3
-
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
 	github.com/OctopusDeploy/go-octodiff v1.0.0
