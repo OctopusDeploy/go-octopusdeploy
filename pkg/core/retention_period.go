@@ -22,14 +22,6 @@ const (
 	RetentionUnitItems string = "Items"
 )
 
-func NewRetentionPeriod(quantityToKeep int32, unit string, shouldKeepForever bool) *RetentionPeriod {
-	if shouldKeepForever {
-		return KeepForeverRetentionPeriod()
-	} else {
-		return CountBasedRetentionPeriod(quantityToKeep, unit)
-	}
-}
-
 func CountBasedRetentionPeriod(quantityToKeep int32, unit string) *RetentionPeriod {
 	return &RetentionPeriod{
 		QuantityToKeep:    quantityToKeep,
