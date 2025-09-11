@@ -75,10 +75,10 @@ func (r *RetentionPeriod) UnmarshalJSON(data []byte) error {
 	r.Unit = fields.Unit
 
 	if fields.Strategy == "" {
-		if r.ShouldKeepForever == true {
-			r.Strategy = RetentionStrategyForever
-		} else {
+		if r.QuantityToKeep > 0 {
 			r.Strategy = RetentionStrategyCount
+		} else {
+			r.Strategy = RetentionStrategyDefault
 		}
 	} else {
 		r.Strategy = fields.Strategy
