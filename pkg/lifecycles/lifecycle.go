@@ -9,12 +9,14 @@ import (
 )
 
 type Lifecycle struct {
-	Description             string                `json:"Description,omitempty"`
-	Name                    string                `json:"Name" validate:"required"`
-	Phases                  []*Phase              `json:"Phases,omitempty"`
-	ReleaseRetentionPolicy  *core.RetentionPeriod `json:"ReleaseRetentionPolicy,omitempty"`
-	SpaceID                 string                `json:"SpaceId,omitempty"`
-	TentacleRetentionPolicy *core.RetentionPeriod `json:"TentacleRetentionPolicy,omitempty"`
+	Description               string                  `json:"Description,omitempty"`
+	Name                      string                  `json:"Name" validate:"required"`
+	Phases                    []*Phase                `json:"Phases,omitempty"`
+	SpaceID                   string                  `json:"SpaceId,omitempty"`
+	ReleaseRetentionPolicy    *core.RetentionPeriod   `json:"ReleaseRetentionPolicy,omitempty"`
+	TentacleRetentionPolicy   *core.RetentionPeriod   `json:"TentacleRetentionPolicy,omitempty"`
+	ReleaseRetentionStrategy  *core.RetentionStrategy `json:"ReleaseRetentionStrategy,omitempty"`
+	TentacleRetentionStrategy *core.RetentionStrategy `json:"TentacleRetentionStrategy,omitempty"`
 
 	resources.Resource
 }
@@ -26,11 +28,13 @@ const (
 
 func NewLifecycle(name string) *Lifecycle {
 	return &Lifecycle{
-		Name:                    strings.TrimSpace(name),
-		Phases:                  []*Phase{},
-		ReleaseRetentionPolicy:  core.CountBasedRetentionPeriod(30, RetentionUnitDays),
-		TentacleRetentionPolicy: core.CountBasedRetentionPeriod(30, RetentionUnitDays),
-		Resource:                *resources.NewResource(),
+		Name:                      strings.TrimSpace(name),
+		Phases:                    []*Phase{},
+		ReleaseRetentionPolicy:    core.CountBasedRetentionPeriod(30, RetentionUnitDays),
+		TentacleRetentionPolicy:   core.CountBasedRetentionPeriod(30, RetentionUnitDays),
+		ReleaseRetentionStrategy:  core.SpaceDefaultRetentionStrategy(),
+		TentacleRetentionStrategy: core.SpaceDefaultRetentionStrategy(),
+		Resource:                  *resources.NewResource(),
 	}
 }
 

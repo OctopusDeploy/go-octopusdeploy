@@ -10,34 +10,35 @@ import (
 )
 
 type Deployment struct {
-	Changes                  []*releases.ReleaseChanges `json:"Changes"`
-	ChangesMarkdown          string                     `json:"ChangesMarkdown,omitempty"`
-	ChannelID                string                     `json:"ChannelId,omitempty"`
-	Comments                 string                     `json:"Comments,omitempty"`
-	Created                  *time.Time                 `json:"Created,omitempty"`
-	DeployedBy               string                     `json:"DeployedBy,omitempty"`
-	DeployedByID             string                     `json:"DeployedById,omitempty"`
-	DeployedToMachineIDs     []string                   `json:"DeployedToMachineIds"`
-	DeploymentProcessID      string                     `json:"DeploymentProcessId,omitempty"`
-	EnvironmentID            string                     `json:"EnvironmentId" validate:"required"`
-	ExcludedMachineIDs       []string                   `json:"ExcludedMachineIds"`
-	FailureEncountered       bool                       `json:"FailureEncountered"`
-	ForcePackageDownload     bool                       `json:"ForcePackageDownload"`
-	ForcePackageRedeployment bool                       `json:"ForcePackageRedeployment"`
-	FormValues               map[string]string          `json:"FormValues,omitempty"`
-	ManifestVariableSetID    string                     `json:"ManifestVariableSetId,omitempty"`
-	Name                     string                     `json:"Name,omitempty"`
-	ProjectID                string                     `json:"ProjectId,omitempty"`
-	QueueTime                *time.Time                 `json:"QueueTime,omitempty"`
-	QueueTimeExpiry          *time.Time                 `json:"QueueTimeExpiry,omitempty"`
-	ReleaseID                string                     `json:"ReleaseId" validate:"required"`
-	SkipActions              []string                   `json:"SkipActions"`
-	SpaceID                  string                     `json:"SpaceId,omitempty"`
-	SpecificMachineIDs       []string                   `json:"SpecificMachineIds"`
-	TaskID                   string                     `json:"TaskId,omitempty"`
-	TenantID                 string                     `json:"TenantId,omitempty"`
-	TentacleRetentionPeriod  *core.RetentionPeriod      `json:"TentacleRetentionPeriod,omitempty"`
-	UseGuidedFailure         bool                       `json:"UseGuidedFailure"`
+	Changes                   []*releases.ReleaseChanges `json:"Changes"`
+	ChangesMarkdown           string                     `json:"ChangesMarkdown,omitempty"`
+	ChannelID                 string                     `json:"ChannelId,omitempty"`
+	Comments                  string                     `json:"Comments,omitempty"`
+	Created                   *time.Time                 `json:"Created,omitempty"`
+	DeployedBy                string                     `json:"DeployedBy,omitempty"`
+	DeployedByID              string                     `json:"DeployedById,omitempty"`
+	DeployedToMachineIDs      []string                   `json:"DeployedToMachineIds"`
+	DeploymentProcessID       string                     `json:"DeploymentProcessId,omitempty"`
+	EnvironmentID             string                     `json:"EnvironmentId" validate:"required"`
+	ExcludedMachineIDs        []string                   `json:"ExcludedMachineIds"`
+	FailureEncountered        bool                       `json:"FailureEncountered"`
+	ForcePackageDownload      bool                       `json:"ForcePackageDownload"`
+	ForcePackageRedeployment  bool                       `json:"ForcePackageRedeployment"`
+	FormValues                map[string]string          `json:"FormValues,omitempty"`
+	ManifestVariableSetID     string                     `json:"ManifestVariableSetId,omitempty"`
+	Name                      string                     `json:"Name,omitempty"`
+	ProjectID                 string                     `json:"ProjectId,omitempty"`
+	QueueTime                 *time.Time                 `json:"QueueTime,omitempty"`
+	QueueTimeExpiry           *time.Time                 `json:"QueueTimeExpiry,omitempty"`
+	ReleaseID                 string                     `json:"ReleaseId" validate:"required"`
+	SkipActions               []string                   `json:"SkipActions"`
+	SpaceID                   string                     `json:"SpaceId,omitempty"`
+	SpecificMachineIDs        []string                   `json:"SpecificMachineIds"`
+	TaskID                    string                     `json:"TaskId,omitempty"`
+	TenantID                  string                     `json:"TenantId,omitempty"`
+	TentacleRetentionPeriod   *core.RetentionPeriod      `json:"TentacleRetentionPeriod,omitempty"`
+	TentacleRetentionStrategy *core.RetentionStrategy    `json:"TentacleRetentionStrategy,omitempty"`
+	UseGuidedFailure          bool                       `json:"UseGuidedFailure"`
 
 	resources.Resource
 }
