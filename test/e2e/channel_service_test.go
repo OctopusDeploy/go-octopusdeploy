@@ -38,6 +38,7 @@ func AssertEqualChannels(t *testing.T, expected *channels.Channel, actual *chann
 	assert.True(t, reflect.DeepEqual(expected.TenantTags, actual.TenantTags))
 	assert.True(t, reflect.DeepEqual(expected.GitReferenceRules, actual.GitReferenceRules))
 	assert.True(t, reflect.DeepEqual(expected.GitResourceRules, actual.GitResourceRules))
+	assert.True(t, reflect.DeepEqual(expected.CustomFieldDefinitions, actual.CustomFieldDefinitions))
 }
 
 func CreateTestChannel(t *testing.T, client *client.Client, project *projects.Project) *channels.Channel {
