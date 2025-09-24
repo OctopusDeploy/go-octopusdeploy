@@ -2,6 +2,7 @@ package releases
 
 import (
 	"encoding/json"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
@@ -12,19 +13,20 @@ type CreateReleaseCommandV1 struct {
 	// payload.
 	// It'd be nice to allow SpaceIDOrName, but the current server implementation requires a SpaceID
 	// (not a name) in the URL route, so we must force the caller to specify an ID only.
-	SpaceID               string   `json:"spaceId"`
-	ProjectIDOrName       string   `json:"projectName"`
-	PackageVersion        string   `json:"packageVersion,omitempty"`
-	GitCommit             string   `json:"gitCommit,omitempty"`
-	GitRef                string   `json:"gitRef,omitempty"`
-	ReleaseVersion        string   `json:"releaseVersion,omitempty"`
-	ChannelIDOrName       string   `json:"channelName,omitempty"`
-	Packages              []string `json:"packages,omitempty"`
-	GitResources          []string `json:"gitResources,omitempty"`
-	ReleaseNotes          string   `json:"releaseNotes,omitempty"`
-	IgnoreIfAlreadyExists bool     `json:"ignoreIfAlreadyExists"`
-	IgnoreChannelRules    bool     `json:"ignoreChannelRules"`
-	PackagePrerelease     string   `json:"packagePrerelease,omitempty"`
+	SpaceID               string            `json:"spaceId"`
+	ProjectIDOrName       string            `json:"projectName"`
+	PackageVersion        string            `json:"packageVersion,omitempty"`
+	GitCommit             string            `json:"gitCommit,omitempty"`
+	GitRef                string            `json:"gitRef,omitempty"`
+	ReleaseVersion        string            `json:"releaseVersion,omitempty"`
+	ChannelIDOrName       string            `json:"channelName,omitempty"`
+	Packages              []string          `json:"packages,omitempty"`
+	GitResources          []string          `json:"gitResources,omitempty"`
+	ReleaseNotes          string            `json:"releaseNotes,omitempty"`
+	IgnoreIfAlreadyExists bool              `json:"ignoreIfAlreadyExists"`
+	IgnoreChannelRules    bool              `json:"ignoreChannelRules"`
+	PackagePrerelease     string            `json:"packagePrerelease,omitempty"`
+	CustomFields          map[string]string `json:"customFields,omitempty"`
 }
 
 type CreateReleaseResponseV1 struct {

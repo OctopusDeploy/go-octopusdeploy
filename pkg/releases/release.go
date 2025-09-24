@@ -1,8 +1,9 @@
 package releases
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
 	"time"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
@@ -22,6 +23,7 @@ type Release struct {
 	SelectedGitResources               []*gitdependencies.SelectedGitResources  `json:"SelectedGitResources,omitempty"`
 	SpaceID                            string                                   `json:"SpaceId,omitempty"`
 	Version                            string                                   `json:"Version"`
+	CustomFields                       map[string]string                        `json:"CustomFields,omitempty"`
 
 	resources.Resource
 }

@@ -10,29 +10,31 @@ import (
 )
 
 type Channel struct {
-	Description       string                   `json:"Description,omitempty"`
-	IsDefault         bool                     `json:"IsDefault"`
-	LifecycleID       string                   `json:"LifecycleId,omitempty"`
-	Name              string                   `json:"Name" validate:"required,notblank,notall"`
-	ProjectID         string                   `json:"ProjectId" validate:"required,notblank"`
-	Rules             []ChannelRule            `json:"Rules,omitempty"`
-	SpaceID           string                   `json:"SpaceId,omitempty"`
-	TenantTags        []string                 `json:"TenantTags,omitempty"`
-	GitReferenceRules []string                 `json:"GitReferenceRules,omitempty"`
-	GitResourceRules  []ChannelGitResourceRule `json:"GitResourceRules,omitempty"`
+	Description            string                         `json:"Description,omitempty"`
+	IsDefault              bool                           `json:"IsDefault"`
+	LifecycleID            string                         `json:"LifecycleId,omitempty"`
+	Name                   string                         `json:"Name" validate:"required,notblank,notall"`
+	ProjectID              string                         `json:"ProjectId" validate:"required,notblank"`
+	Rules                  []ChannelRule                  `json:"Rules,omitempty"`
+	SpaceID                string                         `json:"SpaceId,omitempty"`
+	TenantTags             []string                       `json:"TenantTags,omitempty"`
+	GitReferenceRules      []string                       `json:"GitReferenceRules,omitempty"`
+	GitResourceRules       []ChannelGitResourceRule       `json:"GitResourceRules,omitempty"`
+	CustomFieldDefinitions []ChannelCustomFieldDefinition `json:"CustomFieldDefinitions,omitempty"`
 
 	resources.Resource
 }
 
 func NewChannel(name string, projectID string) *Channel {
 	return &Channel{
-		Name:              strings.TrimSpace(name),
-		ProjectID:         projectID,
-		Rules:             []ChannelRule{},
-		TenantTags:        []string{},
-		GitReferenceRules: []string{},
-		GitResourceRules:  []ChannelGitResourceRule{},
-		Resource:          *resources.NewResource(),
+		Name:                   strings.TrimSpace(name),
+		ProjectID:              projectID,
+		Rules:                  []ChannelRule{},
+		TenantTags:             []string{},
+		GitReferenceRules:      []string{},
+		GitResourceRules:       []ChannelGitResourceRule{},
+		CustomFieldDefinitions: []ChannelCustomFieldDefinition{},
+		Resource:               *resources.NewResource(),
 	}
 }
 
