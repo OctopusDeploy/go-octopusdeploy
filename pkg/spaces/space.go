@@ -20,9 +20,10 @@ type Space struct {
 // NewSpace initializes a Space with a name.
 func NewSpace(name string) *Space {
 	return &Space{
-		Name:               name,
-		Resource:           *resources.NewResource(),
-		SpaceManagersTeams: []string{}, // ensure required field is always present
+		Name:                     name,
+		Resource:                 *resources.NewResource(),
+		SpaceManagersTeams:       []string{}, // ensure required field is always present
+		SpaceManagersTeamMembers: []string{}, // ensure required field is always present
 	}
 }
 
