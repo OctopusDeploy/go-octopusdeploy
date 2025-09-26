@@ -21,6 +21,7 @@ type Project struct {
 	DefaultToSkipIfAlreadyInstalled                 bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
 	DeploymentChangesTemplate                       string                                    `json:"DeploymentChangesTemplate,omitempty"`
 	DeploymentProcessID                             string                                    `json:"DeploymentProcessId,omitempty"`
+	DeprovisioningRunbookID                         string                                    `json:"DeprovisioningRunbookId,omitempty"`
 	Description                                     string                                    `json:"Description,omitempty"`
 	ExtensionSettings                               []extensions.ExtensionSettings            `json:"ExtensionSettings,omitempty"`
 	IncludedLibraryVariableSets                     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
@@ -31,6 +32,7 @@ type Project struct {
 	Name                                            string                                    `json:"Name" validate:"required"`
 	PersistenceSettings                             PersistenceSettings                       `json:"PersistenceSettings,omitempty"`
 	ProjectGroupID                                  string                                    `json:"ProjectGroupId" validate:"required"`
+	ProvisioningRunbookID                           string                                    `json:"ProvisioningRunbookId,omitempty"`
 	ReleaseCreationStrategy                         *ReleaseCreationStrategy                  `json:"ReleaseCreationStrategy,omitempty"`
 	ReleaseNotesTemplate                            string                                    `json:"ReleaseNotesTemplate,omitempty"`
 	Slug                                            string                                    `json:"Slug,omitempty"`
@@ -82,6 +84,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 		DefaultToSkipIfAlreadyInstalled                 bool                                      `json:"DefaultToSkipIfAlreadyInstalled"`
 		DeploymentChangesTemplate                       string                                    `json:"DeploymentChangesTemplate,omitempty"`
 		DeploymentProcessID                             string                                    `json:"DeploymentProcessId,omitempty"`
+		DeprovisioningRunbookID                         string                                    `json:"DeprovisioningRunbookId,omitempty"`
 		Description                                     string                                    `json:"Description,omitempty"`
 		IncludedLibraryVariableSets                     []string                                  `json:"IncludedLibraryVariableSetIds,omitempty"`
 		IsDisabled                                      bool                                      `json:"IsDisabled"`
@@ -90,6 +93,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 		LifecycleID                                     string                                    `json:"LifecycleId" validate:"required"`
 		Name                                            string                                    `json:"Name" validate:"required"`
 		ProjectGroupID                                  string                                    `json:"ProjectGroupId" validate:"required"`
+		ProvisioningRunbookID                           string                                    `json:"ProvisioningRunbookId,omitempty"`
 		ReleaseCreationStrategy                         *ReleaseCreationStrategy                  `json:"ReleaseCreationStrategy,omitempty"`
 		ReleaseNotesTemplate                            string                                    `json:"ReleaseNotesTemplate,omitempty"`
 		Slug                                            string                                    `json:"Slug,omitempty"`
@@ -121,6 +125,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	p.DefaultToSkipIfAlreadyInstalled = fields.DefaultToSkipIfAlreadyInstalled
 	p.DeploymentChangesTemplate = fields.DeploymentChangesTemplate
 	p.DeploymentProcessID = fields.DeploymentProcessID
+	p.DeprovisioningRunbookID = fields.DeprovisioningRunbookID
 	p.Description = fields.Description
 	p.IncludedLibraryVariableSets = fields.IncludedLibraryVariableSets
 	p.IsDisabled = fields.IsDisabled
@@ -129,6 +134,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	p.LifecycleID = fields.LifecycleID
 	p.Name = fields.Name
 	p.ProjectGroupID = fields.ProjectGroupID
+	p.ProvisioningRunbookID = fields.ProvisioningRunbookID
 	p.ReleaseCreationStrategy = fields.ReleaseCreationStrategy
 	p.ReleaseNotesTemplate = fields.ReleaseNotesTemplate
 	p.Slug = fields.Slug
