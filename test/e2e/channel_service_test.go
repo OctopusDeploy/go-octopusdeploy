@@ -35,6 +35,9 @@ func AssertEqualChannels(t *testing.T, expected *channels.Channel, actual *chann
 	assert.Equal(t, expected.Name, actual.Name)
 	assert.Equal(t, expected.ProjectID, actual.ProjectID)
 	assert.True(t, reflect.DeepEqual(expected.Rules, actual.Rules))
+	assert.Equal(t, expected.ParentEnvironmentID, actual.ParentEnvironmentID)
+	assert.Equal(t, expected.Type, actual.Type)
+	assert.Equal(t, expected.EphemeralEnvironmentNameTemplate, actual.EphemeralEnvironmentNameTemplate)
 	assert.True(t, reflect.DeepEqual(expected.TenantTags, actual.TenantTags))
 	assert.True(t, reflect.DeepEqual(expected.GitReferenceRules, actual.GitReferenceRules))
 	assert.True(t, reflect.DeepEqual(expected.GitResourceRules, actual.GitResourceRules))
@@ -50,6 +53,7 @@ func CreateTestChannel(t *testing.T, client *client.Client, project *projects.Pr
 	name := internal.GetRandomName()
 
 	channel := channels.NewChannel(name, project.GetID())
+	channel.Type = channels.ChannelTypeLifecycle
 	require.NotNil(t, channel)
 	require.NoError(t, channel.Validate())
 
@@ -299,6 +303,7 @@ func CreateTestChannel_NewClient(t *testing.T, client *client.Client, project *p
 	name := internal.GetRandomName()
 
 	channel := channels.NewChannel(name, project.GetID())
+	channel.Type = channels.ChannelTypeLifecycle
 	require.NotNil(t, channel)
 	require.NoError(t, channel.Validate())
 
