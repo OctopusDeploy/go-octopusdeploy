@@ -11,6 +11,7 @@ import (
 type Environment struct {
 	AllowDynamicInfrastructure bool                           `json:"AllowDynamicInfrastructure"`
 	Description                string                         `json:"Description,omitempty"`
+	EnvironmentTags            []string                       `json:"EnvironmentTags,omitempty"`
 	ExtensionSettings          []extensions.ExtensionSettings `json:"ExtensionSettings,omitempty"`
 	Name                       string                         `json:"Name" validate:"required"`
 	Slug                       string                         `json:"Slug"` // deliberately send empty string
@@ -35,13 +36,14 @@ func NewEnvironment(name string) *Environment {
 // UnmarshalJSON sets an environment to its representation in JSON.
 func (e *Environment) UnmarshalJSON(data []byte) error {
 	var fields struct {
-		AllowDynamicInfrastructure bool   `json:"AllowDynamicInfrastructure"`
-		Description                string `json:"Description,omitempty"`
-		Name                       string `json:"Name" validate:"required"`
-		Slug                       string `json:"Slug"`
-		SortOrder                  int    `json:"SortOrder"`
-		SpaceID                    string `json:"SpaceId"`
-		UseGuidedFailure           bool   `json:"UseGuidedFailure"`
+		AllowDynamicInfrastructure bool     `json:"AllowDynamicInfrastructure"`
+		Description                string   `json:"Description,omitempty"`
+		EnvironmentTags            []string `json:"EnvironmentTags,omitempty"`
+		Name                       string   `json:"Name" validate:"required"`
+		Slug                       string   `json:"Slug"`
+		SortOrder                  int      `json:"SortOrder"`
+		SpaceID                    string   `json:"SpaceId"`
+		UseGuidedFailure           bool     `json:"UseGuidedFailure"`
 		resources.Resource
 	}
 
@@ -57,6 +59,7 @@ func (e *Environment) UnmarshalJSON(data []byte) error {
 
 	e.AllowDynamicInfrastructure = fields.AllowDynamicInfrastructure
 	e.Description = fields.Description
+	e.EnvironmentTags = fields.EnvironmentTags
 	e.Name = fields.Name
 	e.Slug = fields.Slug
 	e.SortOrder = fields.SortOrder

@@ -152,7 +152,7 @@ func (s *TagSetService) Update(tagSet *TagSet) (*TagSet, error) {
 
 // --- new ---
 
-const template = "/api/{spaceId}/tagsets{/id}{?skip,take,ids,partialName}"
+const template = "/api/{spaceId}/tagsets{/id}{?skip,take,ids,partialName,scopes}"
 
 // Add creates a new tag set.
 func Add(client newclient.Client, tagSet *TagSet) (*TagSet, error) {
