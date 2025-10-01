@@ -29,6 +29,12 @@ func TestChannelServiceAdd(t *testing.T) {
 	resource, err = service.Add(invalidResource)
 	assert.Equal(t, internal.CreateValidationFailureError(constants.OperationAdd, invalidResource.Validate()), err)
 	assert.Nil(t, resource)
+
+	invalidResource = NewChannel("test-channel", "Projects-1")
+	invalidResource.Type = "invalid"
+	resource, err = service.Add(invalidResource)
+	assert.Error(t, err)
+	assert.Nil(t, resource)
 }
 
 func TestChannelServiceGetByID(t *testing.T) {
