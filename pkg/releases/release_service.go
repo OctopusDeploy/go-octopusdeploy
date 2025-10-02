@@ -138,6 +138,34 @@ func GetMissingPackages(client newclient.Client, release *Release) ([]MissingPac
 	return res.Packages, nil
 }
 
+func GetReleaseDeploymentTemplate(client newclient.Client, spaceID string, releaseID string) (*ReleaseDeploymentTemplate, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentTemplate", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentTemplate", "spaceID")
+	}
+	if releaseID == "" {
+		return nil, internal.CreateInvalidParameterError("GetReleaseDeploymentTemplate", "releaseID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseDeploymentTemplate, map[string]any{
+		"spaceId":   spaceID,
+		"releaseId": releaseID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := newclient.Get[ReleaseDeploymentTemplate](client.HttpSession(), expandedUri)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 // ----- Experimental ---------------------------------------------------------
 
 // GetReleasesInProjectChannel is EXPERIMENTAL
