@@ -10,7 +10,7 @@ type Variable struct {
 	Prompt      *VariablePromptOptions `json:"Prompt,omitempty"`
 	Scope       VariableScope          `json:"Scope"`
 	Type        string                 `json:"Type"`
-	Value       string                 `json:"Value"`
+	Value       *string                `json:"Value"`
 	SpaceID     string                 `json:"SpaceId,omitempty"`
 
 	resources.Resource
