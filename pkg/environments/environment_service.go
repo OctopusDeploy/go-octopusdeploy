@@ -223,7 +223,10 @@ func GetAllEphemeralEnvironments(client newclient.Client, spaceID string) (*ephe
 		Type: "Ephemeral",
 	}
 
-	values, _ := uritemplates.Struct2map(query)
+	values, err := uritemplates.Struct2map(query)
+	if err != nil {
+		return nil, err
+	}
 	if values == nil {
 		values = map[string]any{}
 	}
