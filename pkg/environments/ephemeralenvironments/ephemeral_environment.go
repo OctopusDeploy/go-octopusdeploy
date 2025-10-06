@@ -13,7 +13,7 @@ type EphemeralEnvironment struct {
 }
 
 type EphemeralEnvironmentV2Response struct {
-	Environments *EphemeralEnvironmentResponse `json:Environments`
+	Environments *EphemeralEnvironmentResponse `json:"Environments"`
 }
 
 type EphemeralEnvironmentResponse struct {
