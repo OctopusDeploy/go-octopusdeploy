@@ -1,6 +1,9 @@
 package environments
 
 import (
+	"errors"
+	"math"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments/ephemeralenvironments"
@@ -219,14 +222,15 @@ func GetAllEphemeralEnvironments(client newclient.Client, spaceID string) (*ephe
 
 	query := &EnvironmentV2Query{
 		Skip: 0,
-		Take: 2147483647,
+		Take: math.MaxInt32,
 		Type: "Ephemeral",
 	}
 
-	values, err := uritemplates.Struct2map(query)
-	if err != nil {
-		return nil, err
+	values, success := uritemplates.Struct2map(query)
+	if success == false {
+		return nil, errors.New("failed to convert query")
 	}
+
 	if values == nil {
 		values = map[string]any{}
 	}
