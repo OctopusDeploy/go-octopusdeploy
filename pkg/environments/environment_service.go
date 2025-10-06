@@ -210,7 +210,7 @@ func GetAll(client newclient.Client, spaceID string) ([]*Environment, error) {
 	return newclient.GetAll[Environment](client, template, spaceID)
 }
 
-// GetAllEphemeralEnvironments returns all ephemeral environments. If an error occurs, it returns nil.
+// GetAllEphemeralEnvironments returns a response containing all ephemeral environments. If an error occurs, it returns nil.
 func GetAllEphemeralEnvironments(client newclient.Client, spaceID string) (*ephemeralenvironments.EphemeralEnvironmentResponse, error) {
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
 	if err != nil {
