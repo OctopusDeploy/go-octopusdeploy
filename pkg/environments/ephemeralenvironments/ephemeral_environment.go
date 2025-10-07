@@ -12,10 +12,6 @@ type EphemeralEnvironment struct {
 	ParentEnvironmentId string `json:"ParentEnvironmentId"`
 }
 
-type EphemeralEnvironmentV2Response struct {
-	Environments *EphemeralEnvironmentResponse `json:"Environments"`
-}
-
 type EphemeralEnvironmentResponse struct {
 	ItemType       string                  `json:"ItemType"`
 	TotalResults   int                     `json:"TotalResults"`
