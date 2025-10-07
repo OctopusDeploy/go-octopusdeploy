@@ -241,10 +241,10 @@ func GetAllEphemeralEnvironments(client newclient.Client, spaceID string) (*ephe
 		return nil, err
 	}
 
-	res, err := newclient.Get[ephemeralenvironments.EphemeralEnvironmentV2Response](client.HttpSession(), path)
+	res, err := newclient.Get[ephemeralenvironments.EphemeralEnvironmentResponse](client.HttpSession(), path)
 	if err != nil {
 		return nil, err
 	}
 
-	return res.Environments, nil
+	return res, nil
 }
