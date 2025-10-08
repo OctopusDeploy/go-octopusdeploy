@@ -1,6 +1,6 @@
 module github.com/OctopusDeploy/go-octopusdeploy/v2
 
-go 1.23.0
+go 1.23.12
 
 require (
 	github.com/MakeNowJust/heredoc/v2 v2.0.1
