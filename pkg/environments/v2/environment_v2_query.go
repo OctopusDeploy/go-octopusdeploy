@@ -1,4 +1,4 @@
-package environments
+package v2
 
 type EnvironmentV2Query struct {
 	Ids         []string `uri:"ids,omitempty" url:"ids,omitempty"`
