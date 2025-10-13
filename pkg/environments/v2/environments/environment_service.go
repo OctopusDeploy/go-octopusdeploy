@@ -13,6 +13,8 @@ import (
 // its input query parameter. If an error occurs, an empty collection is
 // returned along with the associated error.
 func Get(client newclient.Client, spaceID string, environmentsQuery EnvironmentQuery) (*EnvironmentResponse, error) {
+	// TODO: investigate why other files can use this: C:\dev\go-octopusdeploy\pkg\resources\resources.go
+	// This currently works as is, but the other ones use the TResource generic type and this one doesn't.
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
 	if err != nil {
 		return nil, err
