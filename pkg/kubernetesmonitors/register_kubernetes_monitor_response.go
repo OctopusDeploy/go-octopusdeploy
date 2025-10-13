@@ -7,13 +7,13 @@ import (
 // RegisterKubernetesMonitorResponse represents the successful response to a completed registration command for a Kubernetes Monitor.
 type RegisterKubernetesMonitorResponse struct {
 	Resource              KubernetesMonitor `json:"Resource" validate:"required"`
-	AuthenticationToken   string            `json:"AuthenticationToken" validate:"required"`
+	AuthenticationToken   *string           `json:"AuthenticationToken,omitempty"`
 	CertificateThumbprint string            `json:"CertificateThumbprint" validate:"required"`
 }
 
 // NewRegisterKubernetesMonitorResponse creates a new Kubernetes monitor registration response with the specified parameters.
 func NewRegisterKubernetesMonitorResponse(
-	monitor KubernetesMonitor, authenticationToken string, certificateThumbprint string,
+	monitor KubernetesMonitor, authenticationToken *string, certificateThumbprint string,
 ) *RegisterKubernetesMonitorResponse {
 	return &RegisterKubernetesMonitorResponse{
 		Resource:              monitor,
