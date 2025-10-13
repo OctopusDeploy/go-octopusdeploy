@@ -1,6 +1,6 @@
-package v2
+package environments
 
-type EnvironmentV2Query struct {
+type EnvironmentQuery struct {
 	Ids         []string `uri:"ids,omitempty" url:"ids,omitempty"`
 	PartialName string   `uri:"partialName,omitempty" url:"partialName,omitempty"`
 	Skip        int      `uri:"skip" url:"skip"`

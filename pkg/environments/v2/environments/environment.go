@@ -1,8 +1,8 @@
-package v2
+package environments
 
 import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/extensions"
 
-type EnvironmentV2 struct {
+type Environment struct {
 	ID               string   `json:"Id"`
 	Name             string   `json:"Name"`
 	SpaceID          string   `json:"SpaceId"`

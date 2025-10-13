@@ -1,4 +1,4 @@
-package v2
+package pagination
 
 type PaginatedCollectionFields struct {
 	ItemType       string `json:"ItemType"`
