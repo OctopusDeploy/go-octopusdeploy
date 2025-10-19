@@ -1,9 +1,5 @@
 package ephemeralenvironments
 
-import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core/pagination"
-)
-
 type EphemeralEnvironment struct {
 	ID                  string `json:"Id"`
 	Name                string `json:"Name"`
@@ -14,10 +10,4 @@ type EphemeralEnvironment struct {
 	SortOrder           int    `json:"SortOrder"`
 	UseGuidedFailure    bool   `json:"UseGuidedFailure"`
 	ParentEnvironmentId string `json:"ParentEnvironmentId"`
-}
-
-type EphemeralEnvironmentResponse struct {
-	Items []*EphemeralEnvironment `json:"Items"`
-
-	pagination.PaginatedCollectionFields
 }

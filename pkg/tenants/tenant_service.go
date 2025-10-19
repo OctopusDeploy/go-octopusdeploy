@@ -323,7 +323,7 @@ func GetProjectVariables(client newclient.Client, query variables.GetTenantProje
 	return newclient.GetResourceByQuery[variables.GetTenantProjectVariablesResponse](client, tenantProjectVariableTemplate, query)
 }
 
-// GetCommonVariables returns all tenant pagination variables. If an error occurs, it returns nil.
+// GetCommonVariables returns all tenant common variables. If an error occurs, it returns nil.
 func GetCommonVariables(client newclient.Client, query variables.GetTenantCommonVariablesQuery) (*variables.GetTenantCommonVariablesResponse, error) {
 	return newclient.GetResourceByQuery[variables.GetTenantCommonVariablesResponse](client, tenantCommonVariableTemplate, query)
 }
@@ -333,7 +333,7 @@ func UpdateProjectVariables(client newclient.Client, spaceID string, tenantID st
 	return newclient.Update[variables.ModifyTenantProjectVariablesResponse](client, tenantProjectVariableTemplate, spaceID, tenantID, projectVariables)
 }
 
-// UpdateCommonVariables modifies tenant pagination variables based on the ones provided as input.
+// UpdateCommonVariables modifies tenant common variables based on the ones provided as input.
 func UpdateCommonVariables(client newclient.Client, spaceID string, tenantID string, commonVariables *variables.ModifyTenantCommonVariablesCommand) (*variables.ModifyTenantCommonVariablesResponse, error) {
 	return newclient.Update[variables.ModifyTenantCommonVariablesResponse](client, tenantCommonVariableTemplate, spaceID, tenantID, commonVariables)
 }
