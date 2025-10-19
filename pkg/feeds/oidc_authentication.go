@@ -108,7 +108,7 @@ func (o *OidcAuthentication) MarshalJSON() ([]byte, error) {
 	// Always include the Type field
 	result["Type"] = o.Type
 
-	// Add pagination fields
+	// Add common fields
 	if o.Audience != "" {
 		result["Audience"] = o.Audience
 	}
@@ -133,7 +133,7 @@ func (o *OidcAuthentication) MarshalJSON() ([]byte, error) {
 			result["RoleArn"] = o.RoleArn
 		}
 	case OidcAuthenticationTypeGoogle:
-		// Google only has pagination fields, no additional ones
+		// Google only has common fields, no additional ones
 	}
 
 	return json.Marshal(result)
