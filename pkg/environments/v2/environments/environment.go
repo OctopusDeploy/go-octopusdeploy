@@ -1,7 +1,6 @@
 package environments
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core/pagination"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/extensions"
 )
 
@@ -22,10 +21,4 @@ type Environment struct {
 
 	// Fields for Ephemeral environments
 	ParentEnvironmentId string `json:"ParentEnvironmentId,omitempty"`
-}
-
-type EnvironmentResponse struct {
-	Items []*Environment `json:"Items"`
-
-	pagination.PaginatedCollectionFields
 }
