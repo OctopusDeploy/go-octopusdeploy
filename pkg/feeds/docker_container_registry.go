@@ -8,9 +8,11 @@ import (
 
 // DockerContainerRegistry represents a Docker container registry.
 type DockerContainerRegistry struct {
-	APIVersion   string `json:"ApiVersion,omitempty"`
-	FeedURI      string `json:"FeedUri,omitempty"`
-	RegistryPath string `json:"RegistryPath,omitempty"`
+	APIVersion                  string `json:"ApiVersion,omitempty"`
+	DownloadAttempts            int    `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds int    `json:"DownloadRetryBackoffSeconds"`
+	FeedURI                     string `json:"FeedUri,omitempty"`
+	RegistryPath                string `json:"RegistryPath,omitempty"`
 
 	feed
 }
@@ -26,8 +28,10 @@ func NewDockerContainerRegistryWithFeedType(name string, feedType FeedType) (*Do
 	}
 
 	dockerContainerRegistry := DockerContainerRegistry{
-		FeedURI: "https://index.docker.io",
-		feed:    *newFeed(name, feedType),
+		DownloadAttempts:            5,
+		DownloadRetryBackoffSeconds: 10,
+		FeedURI:                     "https://index.docker.io",
+		feed:                        *newFeed(name, feedType),
 	}
 
 	// validate to ensure that all expectations are met

@@ -44,6 +44,8 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		azureContainerRegistry.APIVersion = feedResource.APIVersion
+		azureContainerRegistry.DownloadAttempts = feedResource.DownloadAttempts
+		azureContainerRegistry.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
 		azureContainerRegistry.FeedURI = feedResource.FeedURI
 		azureContainerRegistry.RegistryPath = feedResource.RegistryPath
 		feed = azureContainerRegistry
@@ -64,6 +66,8 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		dockerContainerRegistry.APIVersion = feedResource.APIVersion
+		dockerContainerRegistry.DownloadAttempts = feedResource.DownloadAttempts
+		dockerContainerRegistry.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
 		dockerContainerRegistry.FeedURI = feedResource.FeedURI
 		dockerContainerRegistry.RegistryPath = feedResource.RegistryPath
 		feed = dockerContainerRegistry
@@ -88,6 +92,8 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		googleContainerRegistry.APIVersion = feedResource.APIVersion
+		googleContainerRegistry.DownloadAttempts = feedResource.DownloadAttempts
+		googleContainerRegistry.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
 		googleContainerRegistry.FeedURI = feedResource.FeedURI
 		googleContainerRegistry.RegistryPath = feedResource.RegistryPath
 		feed = googleContainerRegistry
@@ -197,6 +203,8 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 	case FeedTypeAzureContainerRegistry:
 		azureContainerRegistry := feed.(*AzureContainerRegistry)
 		feedResource.APIVersion = azureContainerRegistry.APIVersion
+		feedResource.DownloadAttempts = azureContainerRegistry.DownloadAttempts
+		feedResource.DownloadRetryBackoffSeconds = azureContainerRegistry.DownloadRetryBackoffSeconds
 		feedResource.FeedURI = azureContainerRegistry.FeedURI
 		feedResource.RegistryPath = azureContainerRegistry.RegistryPath
 		if azureContainerRegistry.OidcAuthentication != nil {
@@ -217,6 +225,8 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 	case FeedTypeDocker:
 		dockerContainerRegistry := feed.(*DockerContainerRegistry)
 		feedResource.APIVersion = dockerContainerRegistry.APIVersion
+		feedResource.DownloadAttempts = dockerContainerRegistry.DownloadAttempts
+		feedResource.DownloadRetryBackoffSeconds = dockerContainerRegistry.DownloadRetryBackoffSeconds
 		feedResource.FeedURI = dockerContainerRegistry.FeedURI
 		feedResource.RegistryPath = dockerContainerRegistry.RegistryPath
 	case FeedTypeGitHub:
@@ -227,6 +237,8 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 	case FeedTypeGoogleContainerRegistry:
 		googleContainerRegistry := feed.(*GoogleContainerRegistry)
 		feedResource.APIVersion = googleContainerRegistry.APIVersion
+		feedResource.DownloadAttempts = googleContainerRegistry.DownloadAttempts
+		feedResource.DownloadRetryBackoffSeconds = googleContainerRegistry.DownloadRetryBackoffSeconds
 		feedResource.FeedURI = googleContainerRegistry.FeedURI
 		feedResource.RegistryPath = googleContainerRegistry.RegistryPath
 		if googleContainerRegistry.OidcAuthentication != nil {
