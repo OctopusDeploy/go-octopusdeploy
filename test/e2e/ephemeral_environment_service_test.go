@@ -6,10 +6,11 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments/v2/ephemeralenvironments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/stretchr/testify/require"
 )
 
-func TestEnvironmentServiceCreateEphemeralEnvironment_NewClient(t *testing.T) {
+func TestEnvironmentServiceCreateEphemeralEnvironment(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
@@ -40,7 +41,7 @@ func TestEnvironmentServiceCreateEphemeralEnvironment_NewClient(t *testing.T) {
 	require.NotNil(t, ephemeralChannel)
 	defer DeleteTestChannel(t, client, ephemeralChannel)
 
-	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project.ID)
+	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project)
 	//	defer DeleteTestEnvironment_NewClient(t, client, createdEnvironment)
 
 	environments, err := ephemeralenvironments.GetAll(client, client.GetSpaceID())
@@ -50,7 +51,7 @@ func TestEnvironmentServiceCreateEphemeralEnvironment_NewClient(t *testing.T) {
 	require.Equal(t, createdEnvironmentId, environments.Items[0].ID)
 }
 
-func CreateEphemeralEnvironment(t *testing.T, client *client.Client, projectId string) string {
+func CreateEphemeralEnvironment(t *testing.T, client *client.Client, project *projects.Project) string {
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -58,7 +59,7 @@ func CreateEphemeralEnvironment(t *testing.T, client *client.Client, projectId s
 
 	name := internal.GetRandomName()
 
-	createdEnvironment, err := ephemeralenvironments.Create(client, client.GetSpaceID(), projectId, name)
+	createdEnvironment, err := ephemeralenvironments.Create(client, client.GetSpaceID(), project.GetID(), name)
 	require.NoError(t, err)
 	require.NotNil(t, createdEnvironment)
 	require.NotEmpty(t, createdEnvironment.Id)
