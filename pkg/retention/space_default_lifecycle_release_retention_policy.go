@@ -7,3 +7,19 @@ type LifecycleReleaseRetentionPolicy struct {
 	Unit 		 string `json:"Unit"`
 	SpaceDefaultRetentionPolicy
 }
+
+func CountBasedLifecycleReleaseRetentionPolicy(quantityToKeep int, unit string) *LifecycleReleaseRetentionPolicy {
+	return &LifecycleReleaseRetentionPolicy{
+		QuantityToKeep: quantityToKeep,
+		Strategy:       RetentionStrategyCount,
+		Unit:          unit,
+	}
+}
+
+func KeepForeverLifecycleReleaseRetentionPolicy() *LifecycleReleaseRetentionPolicy {
+	return &LifecycleReleaseRetentionPolicy{
+		QuantityToKeep: 0,
+		Strategy:       RetentionStrategyForever,
+		Unit:          RetentionUnitItems,
+	}
+}
