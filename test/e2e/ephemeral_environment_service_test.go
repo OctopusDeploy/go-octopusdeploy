@@ -29,10 +29,6 @@ func TestEnvironmentServiceCreateEphemeralEnvironment(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
-	channel := CreateTestChannel(t, client, project)
-	require.NotNil(t, channel)
-	defer DeleteTestChannel(t, client, channel)
-
 	parentEnvironment := CreateParentEnvironment(t, client)
 	require.NotNil(t, parentEnvironment)
 	defer DeleteParentEnvironment(t, client, parentEnvironment)
@@ -47,6 +43,7 @@ func TestEnvironmentServiceCreateEphemeralEnvironment(t *testing.T) {
 	environments, err := ephemeralenvironments.GetAll(client, client.GetSpaceID())
 	require.NoError(t, err)
 	require.NotNil(t, environments)
+	require.NotEmpty(t, environments.Items)
 
 	require.Equal(t, createdEnvironmentId, environments.Items[0].ID)
 }
