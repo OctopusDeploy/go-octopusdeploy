@@ -56,7 +56,7 @@ func CreateEphemeralEnvironment(t *testing.T, client *client.Client, project *pr
 
 	name := internal.GetRandomName()
 
-	createdEnvironment, err := ephemeralenvironments.Create(client, client.GetSpaceID(), project.GetID(), name)
+	createdEnvironment, err := ephemeralenvironments.Add(client, client.GetSpaceID(), project.GetID(), name)
 	require.NoError(t, err)
 	require.NotNil(t, createdEnvironment)
 	require.NotEmpty(t, createdEnvironment.Id)

@@ -29,14 +29,14 @@ type CreateEnvironmentCommand struct {
 	ProjectID       string `uri:"projectId"`
 }
 
-func Create(client newclient.Client, spaceID string, projectID string, environmentName string) (*CreateEnvironmentResponse, error) {
+func Add(client newclient.Client, spaceID string, projectID string, environmentName string) (*CreateEnvironmentResponse, error) {
 	body := &CreateEnvironmentCommand{
 		EnvironmentName: environmentName,
 		SpaceID:         spaceID,
 		ProjectID:       projectID,
 	}
 
-	path, err := client.URITemplateCache().Expand(v2.CreateTemplate, map[string]any{
+	path, err := client.URITemplateCache().Expand(v2.CreateEphemeralEnvironmentTemplate, map[string]any{
 		"projectId": projectID,
 		"spaceId":   spaceID,
 	})
