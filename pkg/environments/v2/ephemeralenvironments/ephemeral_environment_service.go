@@ -9,14 +9,14 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-func GetAll(client newclient.Client, spaceID string) (*resources.Resources[*environments.Environment], error) {
+func GetAll(client newclient.Client, spaceID string) (*resources.Resources[*EphemeralEnvironment], error) {
 	query := &environments.EnvironmentQuery{
 		Skip: 0,
 		Take: math.MaxInt32,
 		Type: []string{"Ephemeral"},
 	}
 
-	return newclient.GetByQuery[environments.Environment](client, v2.Template, spaceID, query)
+	return newclient.GetByQuery[EphemeralEnvironment](client, v2.Template, spaceID, query)
 }
 
 type CreateEnvironmentResponse struct {
