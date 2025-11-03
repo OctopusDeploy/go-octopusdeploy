@@ -32,13 +32,13 @@ type CreateEnvironmentCommand struct {
 type DeprovisionEphemeralEnvironmentProjectCommand struct{}
 
 type DeprovisionEphemeralEnvironmentProjectResponse struct {
-	DeprovisioningRun DeprovisioningRunbookRun `json:"DeprovisioningRunbookRuns"`
+	DeprovisioningRun DeprovisioningRunbookRun `json:"DeprovisioningRun"`
 }
 
 type DeprovisionEphemeralEnvironmentCommand struct{}
 
 type DeprovisionEphemeralEnvironmentResponse struct {
-	DeprovisioningRuns []DeprovisioningRunbookRun `json:"DeprovisioningRunbookRuns"`
+	DeprovisioningRuns []DeprovisioningRunbookRun `json:"DeprovisioningRuns"`
 }
 
 type DeprovisioningRunbookRun struct {
@@ -79,7 +79,6 @@ func DeprovisionForProject(client newclient.Client, spaceID string, environmentI
 	}
 
 	return newclient.Add[DeprovisionEphemeralEnvironmentProjectResponse](client, path, spaceID, body)
-
 }
 
 func Deprovision(client newclient.Client, spaceID string, environmentId string) (*DeprovisionEphemeralEnvironmentResponse, error) {
