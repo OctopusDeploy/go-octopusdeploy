@@ -120,7 +120,6 @@ func TestEnvironmentServiceDeprovisionEphemeralEnvironmentForProject(t *testing.
 	defer DeleteTestChannel(t, client, ephemeralChannel)
 
 	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project)
-
 	DeprovisionEphemeralEnvironmentForProject(t, client, &createdEnvironmentId, project)
 
 	environments, err := ephemeralenvironments.GetAll(client, client.GetSpaceID())
