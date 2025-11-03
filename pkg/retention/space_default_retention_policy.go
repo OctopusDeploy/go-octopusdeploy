@@ -5,9 +5,9 @@ import (
 )
 
 type SpaceDefaultRetentionPolicy struct {
-	SpaceId string `json:"SpaceId"`
-	Id      string `json:"Id"`
-	Name    string `json:"Name"`
+	SpaceId       string        `json:"SpaceId"`
+	Id            string        `json:"Id"`
+	Name          string        `json:"Name"`
 	RetentionType RetentionType `json:"RetentionType"`
 	resources.Resource
 }
@@ -21,3 +21,8 @@ const (
 	RetentionUnitDays  string = "Days"
 	RetentionUnitItems string = "Items"
 )
+
+// PolicyResource contains all possible fields whereas Policy just contains
+func (policy *SpaceDefaultRetentionPolicy) GetSpaceID() string {
+	return policy.SpaceId
+}
