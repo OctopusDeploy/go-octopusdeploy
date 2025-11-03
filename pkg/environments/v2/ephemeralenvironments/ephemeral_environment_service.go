@@ -66,7 +66,7 @@ func Add(client newclient.Client, spaceID string, projectID string, environmentN
 func DeprovisionForProject(client newclient.Client, spaceID string, environmentId string, projectId string) (*DeprovisionEnvironmentProjectResponse, error) {
 	body := &DeprovisionEnvironmentProjectCommand{
 		Id:        environmentId,
-		ProjectID: "",
+		ProjectID: projectId,
 		SpaceID:   spaceID,
 	}
 
