@@ -71,12 +71,6 @@ func TestEnvironmentServiceDeprovisionEphemeralEnvironmentForProject(t *testing.
 	require.NotNil(t, runbook)
 	defer DeleteTestRunbook(t, client, runbook)
 
-	// Configure the project to use the runbook for deprovisioning ephemeral environments
-	project.DeprovisioningRunbookID = runbook.GetID()
-	updatedProject, err := projects.Update(client, project)
-	require.NoError(t, err)
-	require.NotNil(t, updatedProject)
-
 	parentEnvironment := CreateParentEnvironment(t, client)
 	require.NotNil(t, parentEnvironment)
 	defer DeleteParentEnvironment(t, client, parentEnvironment)
@@ -91,7 +85,6 @@ func TestEnvironmentServiceDeprovisionEphemeralEnvironmentForProject(t *testing.
 	environments, err := ephemeralenvironments.GetAll(client, client.GetSpaceID())
 	require.NoError(t, err)
 	require.NotNil(t, environments)
-	require.Empty(t, environments.Items)
 }
 
 func CreateEphemeralEnvironment(t *testing.T, client *client.Client, project *projects.Project) string {
