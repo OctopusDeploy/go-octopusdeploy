@@ -29,11 +29,16 @@ type CreateEnvironmentCommand struct {
 	ProjectID       string `uri:"projectId"`
 }
 
-type DeprovisionEphemeralEnvironmentProjectCommand struct {
-}
+type DeprovisionEphemeralEnvironmentProjectCommand struct{}
 
 type DeprovisionEphemeralEnvironmentProjectResponse struct {
 	DeprovisioningRun DeprovisioningRunbookRun `json:"DeprovisioningRunbookRuns"`
+}
+
+type DeprovisionEphemeralEnvironmentCommand struct{}
+
+type DeprovisionEphemeralEnvironmentResponse struct {
+	DeprovisioningRuns []DeprovisioningRunbookRun `json:"DeprovisioningRunbookRuns"`
 }
 
 type DeprovisioningRunbookRun struct {
@@ -74,4 +79,20 @@ func DeprovisionForProject(client newclient.Client, spaceID string, environmentI
 	}
 
 	return newclient.Add[DeprovisionEphemeralEnvironmentProjectResponse](client, path, spaceID, body)
+
+}
+
+func Deprovision(client newclient.Client, spaceID string, environmentId string) (*DeprovisionEphemeralEnvironmentResponse, error) {
+	body := &DeprovisionEphemeralEnvironmentCommand{}
+
+	path, err := client.URITemplateCache().Expand(v2.DeprovisionEphemeralEnvironmentTemplate, map[string]any{
+		"id":      environmentId,
+		"spaceId": spaceID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Add[DeprovisionEphemeralEnvironmentResponse](client, path, spaceID, body)
 }

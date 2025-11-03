@@ -38,7 +38,7 @@ func TestEnvironmentServiceCreateEphemeralEnvironment(t *testing.T) {
 	defer DeleteTestChannel(t, client, ephemeralChannel)
 
 	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project)
-	//	defer DeleteTestEnvironment_NewClient(t, client, createdEnvironment)
+	defer DeprovisionEphemeralEnvironment(t, client, &createdEnvironmentId)
 
 	environments, err := ephemeralenvironments.GetAll(client, client.GetSpaceID())
 	require.NoError(t, err)
@@ -46,6 +46,46 @@ func TestEnvironmentServiceCreateEphemeralEnvironment(t *testing.T) {
 	require.NotEmpty(t, environments.Items)
 
 	require.Equal(t, createdEnvironmentId, environments.Items[0].ID)
+}
+
+func TestEnvironmentServiceDeprovisionEphemeralEnvironment(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	runbook := CreateTestRunbook(t, client, lifecycle, projectGroup, project)
+	require.NotNil(t, runbook)
+	defer DeleteTestRunbook(t, client, runbook)
+
+	parentEnvironment := CreateParentEnvironment(t, client)
+	require.NotNil(t, parentEnvironment)
+	defer DeleteParentEnvironment(t, client, parentEnvironment)
+
+	ephemeralChannel := CreateEphemeralTestChannel(t, client, project, parentEnvironment)
+	require.NotNil(t, ephemeralChannel)
+	defer DeleteTestChannel(t, client, ephemeralChannel)
+
+	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project)
+
+	DeprovisionEphemeralEnvironment(t, client, &createdEnvironmentId)
+
+	environments, err := ephemeralenvironments.GetAll(client, client.GetSpaceID())
+	require.NoError(t, err)
+	require.NotNil(t, environments)
 }
 
 func TestEnvironmentServiceDeprovisionEphemeralEnvironmentForProject(t *testing.T) {
@@ -80,6 +120,7 @@ func TestEnvironmentServiceDeprovisionEphemeralEnvironmentForProject(t *testing.
 	defer DeleteTestChannel(t, client, ephemeralChannel)
 
 	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project)
+
 	DeprovisionEphemeralEnvironmentForProject(t, client, &createdEnvironmentId, project)
 
 	environments, err := ephemeralenvironments.GetAll(client, client.GetSpaceID())
@@ -114,4 +155,17 @@ func DeprovisionEphemeralEnvironmentForProject(t *testing.T, client *client.Clie
 	require.NotNil(t, deprovisionResponse)
 
 	return deprovisionResponse.DeprovisioningRun
+}
+
+func DeprovisionEphemeralEnvironment(t *testing.T, client *client.Client, environmentId *string) []ephemeralenvironments.DeprovisioningRunbookRun {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	deprovisionResponse, err := ephemeralenvironments.Deprovision(client, client.GetSpaceID(), *environmentId)
+	require.NoError(t, err)
+	require.NotNil(t, deprovisionResponse)
+
+	return deprovisionResponse.DeprovisioningRuns
 }
