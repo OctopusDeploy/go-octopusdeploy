@@ -1,5 +1,9 @@
 package ephemeralenvironments
 
+import (
+	"math"
+)
+
 type EphemeralEnvironment struct {
 	ID                  string `json:"Id"`
 	Name                string `json:"Name"`
@@ -10,4 +14,14 @@ type EphemeralEnvironment struct {
 	SortOrder           int    `json:"SortOrder"`
 	UseGuidedFailure    bool   `json:"UseGuidedFailure"`
 	ParentEnvironmentId string `json:"ParentEnvironmentId"`
+}
+
+func NewEphemeralEnvironment(name string, parentEnvironmentID string, spaceID string) *EphemeralEnvironment {
+	return &EphemeralEnvironment{
+		Name:                name,
+		SpaceID:             spaceID,
+		SortOrder:           math.MaxInt,
+		Type:                "Ephemeral",
+		ParentEnvironmentId: parentEnvironmentID,
+	}
 }
