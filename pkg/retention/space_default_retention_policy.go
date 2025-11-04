@@ -21,11 +21,6 @@ const (
 	RetentionUnitItems string = "Items"
 )
 
-// PolicyResource contains all possible fields whereas Policy just contains
-func (policy *SpaceDefaultRetentionPolicy) GetSpaceID() string {
-	return policy.SpaceId
-}
-
 type SpaceDefaultRetentionPolicyResource struct {
 	SpaceDefaultRetentionPolicy
 	QuantityToKeep int    `json:"QuantityToKeep"`
@@ -36,4 +31,8 @@ type SpaceDefaultRetentionPolicyResource struct {
 type ISpaceDefaultRetentionPolicy interface {
 	GetSpaceID() string
 	resources.IResource
+}
+
+func (policy *SpaceDefaultRetentionPolicy) GetSpaceID() string {
+	return policy.SpaceId
 }

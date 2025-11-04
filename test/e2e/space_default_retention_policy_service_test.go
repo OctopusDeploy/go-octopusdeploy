@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/retention"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"github.com/stretchr/testify/require"
@@ -53,19 +52,9 @@ func TestModifyLifecycleReleaseRetentionDefaultPolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	policy := retention.LifecycleReleaseRetentionPolicy{
-		Unit:           retention.RetentionUnitItems,
-		QuantityToKeep: 4,
-		Strategy:       retention.RetentionStrategyCount,
-		SpaceDefaultRetentionPolicy: retention.SpaceDefaultRetentionPolicy{
-			SpaceId:       defaultSpace.ID,
-			RetentionType: retention.LifecycleReleaseRetentionType,
-			Resource: resources.Resource{
-				ID: defaultSpaceLifecycleReleasePolicy.ID,
-			},
-		},
-	}
-	res, err := retention.Update(client, &policy)
+	policy := retention.CountBasedLifecycleReleaseRetentionPolicy(4, retention.RetentionUnitItems, defaultSpace.ID, defaultSpaceLifecycleReleasePolicy.ID)
+
+	res, err := retention.Update(client, policy)
 	require.NoError(t, err)
 	require.NotNil(t, res)
 	require.Equal(t, res.QuantityToKeep, 4)
@@ -86,19 +75,8 @@ func TestModifyLifecycleTentacleRetentionDefaultPolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	policy := retention.LifecycleTentacleRetentionPolicy{
-		Unit:           retention.RetentionUnitDays,
-		QuantityToKeep: 3,
-		Strategy:       retention.RetentionStrategyCount,
-		SpaceDefaultRetentionPolicy: retention.SpaceDefaultRetentionPolicy{
-			SpaceId:       defaultSpace.ID,
-			RetentionType: retention.LifecycleTentacleRetentionType,
-			Resource: resources.Resource{
-				ID: defaultSpaceLifecycleReleasePolicy.ID,
-			},
-		},
-	}
-	res, err := retention.Update(client, &policy)
+	policy := retention.CountBasedLifecycleTentacleRetentionPolicy(3, retention.RetentionUnitDays, defaultSpace.ID, defaultSpaceLifecycleReleasePolicy.ID)
+	res, err := retention.Update(client, policy)
 	require.NoError(t, err)
 	require.NotNil(t, res)
 	require.Equal(t, res.QuantityToKeep, 3)
