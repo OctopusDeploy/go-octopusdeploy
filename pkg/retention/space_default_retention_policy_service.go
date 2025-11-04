@@ -10,11 +10,11 @@ type SpaceDefaultRetentionPolicyService struct {
 }
 
 type SpaceDefaultRetentionPolicyQuery struct {
-	RetentionType string `url:"type"`
-	SpaceID       string `url:"spaceId"`
+	RetentionType RetentionType `uri:"RetentionType"`
+	SpaceID       string        `uri:"spaceId"`
 }
 
-const template = "/api/{spaceId}/retentionpolicies{?type}}"
+const template = "/api/{spaceId}/retentionpolicies{/id}{?RetentionType}"
 
 func Get(client newclient.Client, spaceDefaultRetentionPolicyQuery SpaceDefaultRetentionPolicyQuery) (*SpaceDefaultRetentionPolicy, error) {
 	res, err := newclient.GetResourceByQuery[SpaceDefaultRetentionPolicy](client, template, spaceDefaultRetentionPolicyQuery)
@@ -24,8 +24,8 @@ func Get(client newclient.Client, spaceDefaultRetentionPolicyQuery SpaceDefaultR
 	return res, nil
 }
 
-func Update(client newclient.Client, spaceDefaultRetentionPolicy SpaceDefaultRetentionPolicy) (*SpaceDefaultRetentionPolicy, error) {
-	res, err := newclient.Update[SpaceDefaultRetentionPolicy](client, template, spaceDefaultRetentionPolicy.GetSpaceID(), spaceDefaultRetentionPolicy.ID, spaceDefaultRetentionPolicy)
+func Update(client newclient.Client, spaceDefaultRetentionPolicy ISpaceDefaultRetentionPolicy) (*SpaceDefaultRetentionPolicyResource, error) {
+	res, err := newclient.Update[SpaceDefaultRetentionPolicyResource](client, template, spaceDefaultRetentionPolicy.GetSpaceID(), spaceDefaultRetentionPolicy.GetID(), spaceDefaultRetentionPolicy)
 	if err != nil {
 		return nil, err
 	}
