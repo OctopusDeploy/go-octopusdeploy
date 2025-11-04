@@ -8,6 +8,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments/v2/parentenvironments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/stretchr/testify/assert"
@@ -54,6 +55,36 @@ func CreateTestChannel(t *testing.T, client *client.Client, project *projects.Pr
 
 	channel := channels.NewChannel(name, project.GetID())
 	channel.Type = channels.ChannelTypeLifecycle
+	require.NotNil(t, channel)
+	require.NoError(t, channel.Validate())
+
+	createdChannel, err := client.Channels.Add(channel)
+	require.NoError(t, err)
+	require.NotNil(t, createdChannel)
+	require.NotEmpty(t, createdChannel.GetID())
+
+	// verify the add operation was successful
+	channelToCompare, err := client.Channels.GetByID(createdChannel.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, channelToCompare)
+	AssertEqualChannels(t, createdChannel, channelToCompare)
+
+	return createdChannel
+}
+
+func CreateEphemeralTestChannel(t *testing.T, client *client.Client, project *projects.Project, parentEnvironment *parentenvironments.ParentEnvironment) *channels.Channel {
+	if client == nil {
+		client = getOctopusClient()
+	}
+	require.NotNil(t, client)
+
+	name := internal.GetRandomName()
+
+	channel := channels.NewChannel(name, project.GetID())
+	channel.Type = channels.ChannelTypeEphemeral
+	channel.ParentEnvironmentID = parentEnvironment.ID
+	channel.AutomaticEphemeralEnvironmentDeployments = false
+	channel.EphemeralEnvironmentNameTemplate = "Ephemeral-{Octopus.Environment.Name}-{Octopus.Release.Number}"
 	require.NotNil(t, channel)
 	require.NoError(t, channel.Validate())
 
