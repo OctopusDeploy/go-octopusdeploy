@@ -11,16 +11,6 @@ type SpaceDefaultRetentionPolicy struct {
 	resources.Resource
 }
 
-const (
-	RetentionStrategyForever string = "Forever"
-	RetentionStrategyCount   string = "Count"
-)
-
-const (
-	RetentionUnitDays  string = "Days"
-	RetentionUnitItems string = "Items"
-)
-
 type SpaceDefaultRetentionPolicyResource struct {
 	SpaceDefaultRetentionPolicy
 	QuantityToKeep int    `json:"QuantityToKeep"`

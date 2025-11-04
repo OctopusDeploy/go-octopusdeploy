@@ -9,11 +9,6 @@ type SpaceDefaultRetentionPolicyService struct {
 	services.Service
 }
 
-type SpaceDefaultRetentionPolicyQuery struct {
-	RetentionType RetentionType `uri:"RetentionType"`
-	SpaceID       string        `uri:"spaceId"`
-}
-
 const template = "/api/{spaceId}/retentionpolicies{/id}{?RetentionType}"
 
 func Get(client newclient.Client, spaceDefaultRetentionPolicyQuery SpaceDefaultRetentionPolicyQuery) (*SpaceDefaultRetentionPolicy, error) {
