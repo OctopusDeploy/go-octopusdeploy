@@ -64,6 +64,7 @@ const (
 	ServiceServerConfigurationService           string = "ServerConfigurationService"
 	ServiceServerStatusService                  string = "ServerStatusService"
 	ServiceSpaceService                         string = "SpaceService"
+	ServiceSpaceDefaultRetentionPolicyService   string = "SpaceDefaultRetentionPolicyService"
 	ServiceSMTPConfigurationService             string = "SMTPConfigurationService"
 	ServiceSubscriptionService                  string = "SubscriptionService"
 	ServiceTagSetService                        string = "TagSetService"
