@@ -52,7 +52,7 @@ func TestModifyLifecycleReleaseRetentionDefaultPolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	policy := retention.CountBasedLifecycleReleaseRetentionPolicy(4, retention.RetentionUnitItems, defaultSpace.ID, defaultSpaceLifecycleReleasePolicy.ID)
+	policy := retention.NewCountBasedLifecycleReleaseRetentionPolicy(4, retention.RetentionUnitItems, defaultSpace.ID, defaultSpaceLifecycleReleasePolicy.ID)
 
 	res, err := retention.Update(client, policy)
 	require.NoError(t, err)
@@ -75,7 +75,7 @@ func TestModifyLifecycleTentacleRetentionDefaultPolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	policy := retention.CountBasedLifecycleTentacleRetentionPolicy(3, retention.RetentionUnitDays, defaultSpace.ID, defaultSpaceLifecycleReleasePolicy.ID)
+	policy := retention.NewCountBasedLifecycleTentacleRetentionPolicy(3, retention.RetentionUnitDays, defaultSpace.ID, defaultSpaceLifecycleReleasePolicy.ID)
 	res, err := retention.Update(client, policy)
 	require.NoError(t, err)
 	require.NotNil(t, res)
