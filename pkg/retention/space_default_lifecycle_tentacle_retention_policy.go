@@ -24,7 +24,7 @@ func NewCountBasedLifecycleTentacleRetentionPolicy(quantityToKeep int, unit stri
 	}
 }
 
-func KeepForeverLifecycleTentacleRetentionPolicy(spaceId string, policyId string) *LifecycleTentacleRetentionPolicy {
+func NewKeepForeverLifecycleTentacleRetentionPolicy(spaceId string, policyId string) *LifecycleTentacleRetentionPolicy {
 	return &LifecycleTentacleRetentionPolicy{
 		QuantityToKeep: 0,
 		Strategy:       RetentionStrategyForever,
