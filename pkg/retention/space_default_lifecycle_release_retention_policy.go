@@ -24,7 +24,7 @@ func NewCountBasedLifecycleReleaseRetentionPolicy(quantityToKeep int, unit strin
 	}
 }
 
-func KeepForeverLifecycleReleaseRetentionPolicy(spaceId string, policyId string) *LifecycleReleaseRetentionPolicy {
+func NewKeepForeverLifecycleReleaseRetentionPolicy(spaceId string, policyId string) *LifecycleReleaseRetentionPolicy {
 	return &LifecycleReleaseRetentionPolicy{
 		QuantityToKeep: 0,
 		Strategy:       RetentionStrategyForever,
