@@ -9,7 +9,7 @@ type LifecycleTentacleRetentionPolicy struct {
 	SpaceDefaultRetentionPolicy
 }
 
-func CountBasedLifecycleTentacleRetentionPolicy(quantityToKeep int, unit string, spaceId string, policyId string) *LifecycleTentacleRetentionPolicy {
+func NewCountBasedLifecycleTentacleRetentionPolicy(quantityToKeep int, unit string, spaceId string, policyId string) *LifecycleTentacleRetentionPolicy {
 	return &LifecycleTentacleRetentionPolicy{
 		QuantityToKeep: quantityToKeep,
 		Strategy:       RetentionStrategyCount,
