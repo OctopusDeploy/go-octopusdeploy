@@ -9,7 +9,7 @@ type LifecycleReleaseRetentionPolicy struct {
 	SpaceDefaultRetentionPolicy
 }
 
-func CountBasedLifecycleReleaseRetentionPolicy(quantityToKeep int, unit string, spaceId string, policyId string) *LifecycleReleaseRetentionPolicy {
+func NewCountBasedLifecycleReleaseRetentionPolicy(quantityToKeep int, unit string, spaceId string, policyId string) *LifecycleReleaseRetentionPolicy {
 	return &LifecycleReleaseRetentionPolicy{
 		QuantityToKeep: quantityToKeep,
 		Strategy:       RetentionStrategyCount,
