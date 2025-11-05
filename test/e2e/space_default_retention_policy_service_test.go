@@ -13,8 +13,8 @@ func TestReadLifecycleReleaseRetentionDefaultPolicy(t *testing.T) {
 
 	defaultSpace, _ := spaces.GetDefaultSpace(client)
 	query := retention.SpaceDefaultRetentionPolicyQuery{
-		retention.LifecycleReleaseRetentionType,
-		defaultSpace.ID,
+		RetentionType: retention.LifecycleReleaseRetentionType,
+		SpaceID:       defaultSpace.ID,
 	}
 	res, err := retention.Get(client, query)
 
@@ -29,8 +29,8 @@ func TestReadLifecycleTentacleRetentionDefaultPolicy(t *testing.T) {
 
 	defaultSpace, _ := spaces.GetDefaultSpace(client)
 	query := retention.SpaceDefaultRetentionPolicyQuery{
-		retention.LifecycleTentacleRetentionType,
-		defaultSpace.ID,
+		RetentionType: retention.LifecycleTentacleRetentionType,
+		SpaceID:       defaultSpace.ID,
 	}
 	res, err := retention.Get(client, query)
 
@@ -44,8 +44,8 @@ func TestModifyLifecycleReleaseRetentionDefaultPolicy(t *testing.T) {
 	require.NotNil(t, client)
 	defaultSpace, _ := spaces.GetDefaultSpace(client)
 	query := retention.SpaceDefaultRetentionPolicyQuery{
-		retention.LifecycleReleaseRetentionType,
-		defaultSpace.ID,
+		RetentionType: retention.LifecycleReleaseRetentionType,
+		SpaceID:       defaultSpace.ID,
 	}
 	defaultSpaceLifecycleReleasePolicy, err := retention.Get(client, query)
 	if err != nil {
@@ -67,8 +67,8 @@ func TestModifyLifecycleTentacleRetentionDefaultPolicy(t *testing.T) {
 	require.NotNil(t, client)
 	defaultSpace, _ := spaces.GetDefaultSpace(client)
 	query := retention.SpaceDefaultRetentionPolicyQuery{
-		retention.LifecycleTentacleRetentionType,
-		defaultSpace.ID,
+		RetentionType: retention.LifecycleTentacleRetentionType,
+		SpaceID:       defaultSpace.ID,
 	}
 	defaultSpaceLifecycleReleasePolicy, err := retention.Get(client, query)
 	if err != nil {
