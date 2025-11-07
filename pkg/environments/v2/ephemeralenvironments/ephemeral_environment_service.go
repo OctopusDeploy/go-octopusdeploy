@@ -9,6 +9,26 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
+func GetByID(client newclient.Client, spaceID string, id string) (*EphemeralEnvironment, error) {
+	query := &environments.EnvironmentQuery{
+		Skip: 0,
+		Take: 1,
+		Type: []string{"Ephemeral"},
+		IDs:  []string{id},
+	}
+
+	result, err := newclient.GetByQuery[EphemeralEnvironment](client, v2.Template, spaceID, query)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result.Items) == 0 {
+		return nil, nil
+	}
+
+	return result.Items[0], nil
+}
+
 func GetAll(client newclient.Client, spaceID string) (*resources.Resources[*EphemeralEnvironment], error) {
 	query := &environments.EnvironmentQuery{
 		Skip: 0,
@@ -19,31 +39,15 @@ func GetAll(client newclient.Client, spaceID string) (*resources.Resources[*Ephe
 	return newclient.GetByQuery[EphemeralEnvironment](client, v2.Template, spaceID, query)
 }
 
-type CreateEnvironmentResponse struct {
-	Id string `json:"Id"`
-}
+func GetByPartialName(client newclient.Client, spaceID string, partialName string) (*resources.Resources[*EphemeralEnvironment], error) {
+	query := &environments.EnvironmentQuery{
+		Skip:        0,
+		Take:        math.MaxInt32,
+		PartialName: partialName,
+		Type:        []string{"Ephemeral"},
+	}
 
-type CreateEnvironmentCommand struct {
-	EnvironmentName string `json:"EnvironmentName"`
-	SpaceID         string `uri:"spaceId"`
-	ProjectID       string `uri:"projectId"`
-}
-
-type DeprovisionEphemeralEnvironmentProjectCommand struct{}
-
-type DeprovisionEphemeralEnvironmentProjectResponse struct {
-	DeprovisioningRun DeprovisioningRunbookRun `json:"DeprovisioningRun"`
-}
-
-type DeprovisionEphemeralEnvironmentCommand struct{}
-
-type DeprovisionEphemeralEnvironmentResponse struct {
-	DeprovisioningRuns []DeprovisioningRunbookRun `json:"DeprovisioningRuns"`
-}
-
-type DeprovisioningRunbookRun struct {
-	RunbookRunID string `json:"RunbookRunId"`
-	TaskId       string `json:"TaskId"`
+	return newclient.GetByQuery[EphemeralEnvironment](client, v2.Template, spaceID, query)
 }
 
 func Add(client newclient.Client, spaceID string, projectID string, environmentName string) (*CreateEnvironmentResponse, error) {
