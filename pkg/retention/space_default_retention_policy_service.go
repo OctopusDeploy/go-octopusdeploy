@@ -11,8 +11,8 @@ type SpaceDefaultRetentionPolicyService struct {
 
 const template = "/api/{spaceId}/retentionpolicies{/id}{?RetentionType}"
 
-func Get(client newclient.Client, spaceDefaultRetentionPolicyQuery SpaceDefaultRetentionPolicyQuery) (*SpaceDefaultRetentionPolicy, error) {
-	res, err := newclient.GetResourceByQuery[SpaceDefaultRetentionPolicy](client, template, spaceDefaultRetentionPolicyQuery)
+func Get(client newclient.Client, spaceDefaultRetentionPolicyQuery SpaceDefaultRetentionPolicyQuery) (*SpaceDefaultRetentionPolicyResource, error) {
+	res, err := newclient.GetResourceByQuery[SpaceDefaultRetentionPolicyResource](client, template, spaceDefaultRetentionPolicyQuery)
 	if err != nil {
 		return nil, err
 	}
