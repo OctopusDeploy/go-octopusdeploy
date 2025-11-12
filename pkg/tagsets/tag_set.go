@@ -7,6 +7,7 @@ type TagSetScope string
 const (
 	TagSetScopeTenant      TagSetScope = "Tenant"
 	TagSetScopeEnvironment TagSetScope = "Environment"
+	TagSetScopeProject     TagSetScope = "Project"
 )
 
 type TagSetType string
