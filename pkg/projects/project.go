@@ -42,6 +42,7 @@ type Project struct {
 	VariableSetID                                   string                                    `json:"VariableSetId,omitempty"`
 	VersioningStrategy                              *VersioningStrategy                       `json:"VersioningStrategy,omitempty"`
 	CombineHealthAndSyncStatusInDashboardLiveStatus bool                                      `json:"CombineHealthAndSyncStatusInDashboardLiveStatus"`
+	ProjectTags                                     []string                                  `json:"ProjectTags,omitempty"`
 
 	resources.Resource
 }
@@ -103,6 +104,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 		VariableSetID                                   string                                    `json:"VariableSetId,omitempty"`
 		VersioningStrategy                              *VersioningStrategy                       `json:"VersioningStrategy,omitempty"`
 		CombineHealthAndSyncStatusInDashboardLiveStatus bool                                      `json:"CombineHealthAndSyncStatusInDashboardLiveStatus"`
+		ProjectTags                                     []string                                  `json:"ProjectTags,omitempty"`
 		resources.Resource
 	}
 
@@ -145,6 +147,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 	p.VersioningStrategy = fields.VersioningStrategy
 	p.Resource = fields.Resource
 	p.CombineHealthAndSyncStatusInDashboardLiveStatus = fields.CombineHealthAndSyncStatusInDashboardLiveStatus
+	p.ProjectTags = fields.ProjectTags
 
 	var project map[string]*json.RawMessage
 	if err := json.Unmarshal(data, &project); err != nil {
