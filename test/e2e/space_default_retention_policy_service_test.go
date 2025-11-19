@@ -114,7 +114,7 @@ func TestModifyRunbookRetentionDefaultPolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	policy := retention.NewCountBasedLifecycleTentacleRetentionPolicy(3, retention.RetentionUnitDays, defaultSpace.ID, defaultSpaceRunbookPolicy.ID)
+	policy := retention.NewCountBasedRunbookRetentionPolicy(3, retention.RetentionUnitDays, defaultSpace.ID, defaultSpaceRunbookPolicy.ID)
 	res, err := retention.Update(client, policy)
 	require.NoError(t, err)
 	require.NotNil(t, res)
