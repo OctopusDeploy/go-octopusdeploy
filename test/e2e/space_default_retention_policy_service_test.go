@@ -101,7 +101,7 @@ func TestModifyLifecycleTentacleRetentionDefaultPolicy(t *testing.T) {
 	require.Equal(t, res.Unit, retention.RetentionUnitDays)
 }
 
-func TestModifyRunbookRetentionDefaultPolicy(t *testing.T) {
+func TestModifyRunbookRetentionDefaultPolicyUsingCount(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 	defaultSpace, _ := spaces.GetDefaultSpace(client)
@@ -121,4 +121,25 @@ func TestModifyRunbookRetentionDefaultPolicy(t *testing.T) {
 	require.Equal(t, res.QuantityToKeep, 3)
 	require.Equal(t, res.Strategy, retention.RetentionStrategyCount)
 	require.Equal(t, res.Unit, retention.RetentionUnitDays)
+}
+
+func TestModifyRunbookRetentionDefaultPolicyUsingForever(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+	defaultSpace, _ := spaces.GetDefaultSpace(client)
+	query := retention.SpaceDefaultRetentionPolicyQuery{
+		RetentionType: retention.RunbookRetentionType,
+		SpaceID:       defaultSpace.ID,
+	}
+	defaultSpaceRunbookPolicy, err := retention.Get(client, query)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	policy := retention.NewKeepForeverRunbookRetentionPolicy(defaultSpace.ID, defaultSpaceRunbookPolicy.ID)
+	res, err := retention.Update(client, policy)
+	require.NoError(t, err)
+	require.NotNil(t, res)
+	require.Equal(t, res.QuantityToKeep, 0)
+	require.Equal(t, res.Strategy, retention.RetentionStrategyForever)
 }
