@@ -221,8 +221,11 @@ func CreateTestUsernamePasswordAccount(t *testing.T, client *client.Client) acco
 	require.NotNil(t, client)
 
 	name := internal.GetRandomName()
+	username := internal.GetRandomName()
 
-	account, err := accounts.NewUsernamePasswordAccount(name)
+	account, err := accounts.NewUsernamePasswordAccount(name, func(a *accounts.UsernamePasswordAccount) {
+		a.Username = username
+	})
 	require.NotNil(t, account)
 	require.NoError(t, err)
 	require.NoError(t, account.Validate())
