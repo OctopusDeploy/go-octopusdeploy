@@ -78,12 +78,6 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		r.Credentials = usernamePasswordCredential
-	case credentials.GitCredentialTypeReference:
-		var referenceCredential *credentials.Reference
-		if err := json.Unmarshal(*credentialsRaw, &referenceCredential); err != nil {
-			return err
-		}
-		r.Credentials = referenceCredential
 	}
 
 	return nil
