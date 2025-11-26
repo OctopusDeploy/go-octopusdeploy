@@ -5,6 +5,7 @@ type RetentionType string
 const (
 	LifecycleReleaseRetentionType  = RetentionType("LifecycleRelease")
 	LifecycleTentacleRetentionType = RetentionType("LifecycleTentacle")
+	RunbookRetentionType           = RetentionType("RunbookRetention")
 )
 
 const (
