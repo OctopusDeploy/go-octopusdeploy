@@ -28,7 +28,7 @@ func CreateAzureOIDCExample() {
 		// Other claims
 		audience string = ""
 
-		// Custom claims - optional key-value pairs added to OIDC tokens
+		// Optional custom claims
 		customClaims = map[string]string{
 			"claim1": "value1",
 			"claim2": "value2",
