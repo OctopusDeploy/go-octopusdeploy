@@ -27,6 +27,10 @@ func TestAzureOIDCAccount(t *testing.T) {
 	invalidDeploymentSubjectKeys := []string{"space", "target"}
 	invalidHealthCheckSubjectKeys := []string{"space", "project"}
 	invalidAccountTestSubjectKeys := []string{"space", "project"}
+	customClaims := map[string]string{
+		"claim1": "value1",
+		"claim2": "value2",
+	}
 
 	testCases := []struct {
 		TestName                string
@@ -44,21 +48,23 @@ func TestAzureOIDCAccount(t *testing.T) {
 		DeploymentSubjectKeys   []string
 		HealthCheckSubjectKeys  []string
 		AccountTestSubjectKeys  []string
+		CustomClaims            map[string]string
 	}{
-		{"Valid", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"EmptyName", true, &applicationID, authenticationEndpoint, azureEnvironment, "", resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"WhitespaceName", true, &applicationID, authenticationEndpoint, azureEnvironment, " ", resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"EmptySpaceID", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, "", &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"WhitespaceSpaceID", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, " ", &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"NilApplicationID", true, nil, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"NilSubscriptionID", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, nil, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"NilTenantID", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, nil, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"InvalidAuthenticationEndpoint", true, &applicationID, invalidURI, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"InvalidResourceManagerEndpoint", true, &applicationID, authenticationEndpoint, azureEnvironment, name, invalidURI, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"NilSubjectKeys", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", nil, nil, nil},
-		{"InvalidDeploymentSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"InvalidHealthCheckSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys},
-		{"InvalidAccountTestSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys},
+		{"Valid", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"ValidWithCustomClaims", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, customClaims},
+		{"EmptyName", true, &applicationID, authenticationEndpoint, azureEnvironment, "", resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"WhitespaceName", true, &applicationID, authenticationEndpoint, azureEnvironment, " ", resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"EmptySpaceID", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, "", &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"WhitespaceSpaceID", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, " ", &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"NilApplicationID", true, nil, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"NilSubscriptionID", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, nil, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"NilTenantID", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, nil, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"InvalidAuthenticationEndpoint", true, &applicationID, invalidURI, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"InvalidResourceManagerEndpoint", true, &applicationID, authenticationEndpoint, azureEnvironment, name, invalidURI, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, audience, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"NilSubjectKeys", false, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", nil, nil, nil, nil},
+		{"InvalidDeploymentSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"InvalidHealthCheckSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys, nil},
+		{"InvalidAccountTestSubjectKeys", true, &applicationID, authenticationEndpoint, azureEnvironment, name, resourceManagerEndpoint, spaceID, &subscriptionID, tenantedDeploymentMode, &tenantID, "", deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys, nil},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
@@ -73,6 +79,7 @@ func TestAzureOIDCAccount(t *testing.T) {
 				DeploymentSubjectKeys:   tc.DeploymentSubjectKeys,
 				HealthCheckSubjectKeys:  tc.HealthCheckSubjectKeys,
 				AccountTestSubjectKeys:  tc.AccountTestSubjectKeys,
+				CustomClaims:            tc.CustomClaims,
 			}
 			azureOIDCAccount.AccountType = AccountTypeAzureOIDC
 			azureOIDCAccount.Name = tc.Name

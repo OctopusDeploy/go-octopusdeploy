@@ -20,6 +20,10 @@ func TestAwsOIDCAccount(t *testing.T) {
 	invalidDeploymentSubjectKeys := []string{"space", "target"}
 	invalidHealthCheckSubjectKeys := []string{"space", "project"}
 	invalidAccountTestSubjectKeys := []string{"space", "project"}
+	customClaims := map[string]string{
+		"claim1": "value1",
+		"claim2": "value2",
+	}
 
 	testCases := []struct {
 		TestName               string
@@ -32,16 +36,18 @@ func TestAwsOIDCAccount(t *testing.T) {
 		DeploymentSubjectKeys  []string
 		HealthCheckSubjectKeys []string
 		AccountTestSubjectKeys []string
+		CustomClaims           map[string]string
 	}{
-		{"Valid", false, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"EmptyName", true, "", spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"WhitespaceName", true, " ", spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"EmptySpaceID", false, name, "", tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"WhitespaceSpaceID", false, name, " ", tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"NilSubjectKeys", false, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, nil, nil, nil},
-		{"InvalidDeploymentSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys},
-		{"InvalidHealthCheckSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys},
-		{"InvalidAccountTestSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys},
+		{"Valid", false, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"ValidWithCustomClaims", false, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, customClaims},
+		{"EmptyName", true, "", spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"WhitespaceName", true, " ", spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"EmptySpaceID", false, name, "", tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"WhitespaceSpaceID", false, name, " ", tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"NilSubjectKeys", false, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, nil, nil, nil, nil},
+		{"InvalidDeploymentSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, invalidDeploymentSubjectKeys, healthCheckSubjectKeys, accountTestSubjectKeys, nil},
+		{"InvalidHealthCheckSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, invalidHealthCheckSubjectKeys, invalidAccountTestSubjectKeys, nil},
+		{"InvalidAccountTestSubjectKeys", true, name, spaceID, tenantedDeploymentMode, roleArn, sessionDuration, deploymentSubjectKeys, healthCheckSubjectKeys, invalidAccountTestSubjectKeys, nil},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.TestName, func(t *testing.T) {
@@ -51,6 +57,7 @@ func TestAwsOIDCAccount(t *testing.T) {
 				DeploymentSubjectKeys:  tc.DeploymentSubjectKeys,
 				HealthCheckSubjectKeys: tc.HealthCheckSubjectKeys,
 				AccountTestSubjectKeys: tc.AccountTestSubjectKeys,
+				CustomClaims:           tc.CustomClaims,
 			}
 			awsOIDCAccount.AccountType = AccountTypeAwsOIDC
 			awsOIDCAccount.Name = tc.Name
