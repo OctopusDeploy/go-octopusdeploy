@@ -28,6 +28,12 @@ func CreateAzureOIDCExample() {
 		// Other claims
 		audience string = ""
 
+		// Custom claims - optional key-value pairs added to OIDC tokens
+		customClaims = map[string]string{
+			"claim1": "value1",
+			"claim2": "value2",
+		}
+
 		// account values
 		accountName        string   = "Azure Account"
 		accountDescription string   = "My Azure Account"
@@ -59,6 +65,7 @@ func CreateAzureOIDCExample() {
 	azureAccount.HealthCheckSubjectKeys = healthCheckSubjectKeys
 	azureAccount.AccountTestSubjectKeys = accountTestSubjectKeys
 	azureAccount.Audience = audience
+	azureAccount.CustomClaims = customClaims
 
 	// fill in account details
 	azureAccount.Description = accountDescription
