@@ -35,6 +35,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		awsOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
 		awsOIDCAccount.AccountTestSubjectKeys = accountResource.AccountTestSubjectKeys
 		awsOIDCAccount.HealthCheckSubjectKeys = accountResource.HealthCheckSubjectKeys
+		awsOIDCAccount.CustomClaims = accountResource.CustomClaims
 		account = awsOIDCAccount
 	case AccountTypeAzureServicePrincipal:
 		azureServicePrincipalAccount, err := NewAzureServicePrincipalAccount(accountResource.GetName(), *accountResource.SubscriptionID, *accountResource.TenantID, *accountResource.ApplicationID, accountResource.ApplicationPassword)
@@ -57,6 +58,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		azureOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
 		azureOIDCAccount.AccountTestSubjectKeys = accountResource.AccountTestSubjectKeys
 		azureOIDCAccount.HealthCheckSubjectKeys = accountResource.HealthCheckSubjectKeys
+		azureOIDCAccount.CustomClaims = accountResource.CustomClaims
 		account = azureOIDCAccount
 	case AccountTypeAzureSubscription:
 		azureSubscriptionAccount, err := NewAzureSubscriptionAccount(accountResource.GetName(), *accountResource.SubscriptionID)
@@ -76,6 +78,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		}
 		genericOIDCAccount.Audience = accountResource.Audience
 		genericOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
+		genericOIDCAccount.CustomClaims = accountResource.CustomClaims
 		account = genericOIDCAccount
 	case AccountTypeGoogleCloudPlatformAccount:
 		googleCloudPlatformAccount, err := NewGoogleCloudPlatformAccount(accountResource.GetName(), accountResource.JsonKey)
@@ -154,6 +157,7 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		accountResource.DeploymentSubjectKeys = awsOIDCAccount.DeploymentSubjectKeys
 		accountResource.AccountTestSubjectKeys = awsOIDCAccount.AccountTestSubjectKeys
 		accountResource.HealthCheckSubjectKeys = awsOIDCAccount.HealthCheckSubjectKeys
+		accountResource.CustomClaims = awsOIDCAccount.CustomClaims
 	case AccountTypeAzureServicePrincipal:
 		azureServicePrincipalAccount := account.(*AzureServicePrincipalAccount)
 		accountResource.ApplicationID = azureServicePrincipalAccount.ApplicationID
@@ -175,6 +179,7 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		accountResource.DeploymentSubjectKeys = azureOIDCAccount.DeploymentSubjectKeys
 		accountResource.AccountTestSubjectKeys = azureOIDCAccount.AccountTestSubjectKeys
 		accountResource.HealthCheckSubjectKeys = azureOIDCAccount.HealthCheckSubjectKeys
+		accountResource.CustomClaims = azureOIDCAccount.CustomClaims
 	case AccountTypeAzureSubscription:
 		azureSubscriptionAccount := account.(*AzureSubscriptionAccount)
 		accountResource.AzureEnvironment = azureSubscriptionAccount.AzureEnvironment
@@ -187,6 +192,7 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		genericOidcAccount := account.(*GenericOIDCAccount)
 		accountResource.DeploymentSubjectKeys = genericOidcAccount.DeploymentSubjectKeys
 		accountResource.Audience = genericOidcAccount.Audience
+		accountResource.CustomClaims = genericOidcAccount.CustomClaims
 	case AccountTypeGoogleCloudPlatformAccount:
 		googleCloudPlatformAccount := account.(*GoogleCloudPlatformAccount)
 		accountResource.JsonKey = googleCloudPlatformAccount.JsonKey

@@ -9,8 +9,9 @@ import (
 
 // GenericOIDCAccount represents a Generic OIDC account.
 type GenericOIDCAccount struct {
-	Audience              string   `json:"Audience,omitempty"`
-	DeploymentSubjectKeys []string `json:"DeploymentSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space environment project tenant runbook account type'"`
+	Audience              string            `json:"Audience,omitempty"`
+	DeploymentSubjectKeys []string          `json:"DeploymentSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space environment project tenant runbook account type'"`
+	CustomClaims          map[string]string `json:"CustomClaims,omitempty"`
 
 	account
 }

@@ -10,16 +10,17 @@ import (
 
 // AzureOIDCAccount represents an Azure OIDC account.
 type AzureOIDCAccount struct {
-	ApplicationID           *uuid.UUID `json:"ClientId" validate:"required"`
-	AuthenticationEndpoint  string     `json:"ActiveDirectoryEndpointBaseUri,omitempty" validate:"required_with=AzureEnvironment,omitempty,uri"`
-	AzureEnvironment        string     `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
-	ResourceManagerEndpoint string     `json:"ResourceManagementEndpointBaseUri" validate:"required_with=AzureEnvironment,omitempty,uri"`
-	SubscriptionID          *uuid.UUID `json:"SubscriptionNumber" validate:"required"`
-	TenantID                *uuid.UUID `json:"TenantId" validate:"required"`
-	Audience                string     `json:"Audience,omitempty"`
-	DeploymentSubjectKeys   []string   `json:"DeploymentSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space environment project tenant runbook account type'"`
-	HealthCheckSubjectKeys  []string   `json:"HealthCheckSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account target type'"`
-	AccountTestSubjectKeys  []string   `json:"AccountTestSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account type'"`
+	ApplicationID           *uuid.UUID        `json:"ClientId" validate:"required"`
+	AuthenticationEndpoint  string            `json:"ActiveDirectoryEndpointBaseUri,omitempty" validate:"required_with=AzureEnvironment,omitempty,uri"`
+	AzureEnvironment        string            `json:"AzureEnvironment,omitempty" validate:"omitempty,oneof=AzureCloud AzureChinaCloud AzureGermanCloud AzureUSGovernment"`
+	ResourceManagerEndpoint string            `json:"ResourceManagementEndpointBaseUri" validate:"required_with=AzureEnvironment,omitempty,uri"`
+	SubscriptionID          *uuid.UUID        `json:"SubscriptionNumber" validate:"required"`
+	TenantID                *uuid.UUID        `json:"TenantId" validate:"required"`
+	Audience                string            `json:"Audience,omitempty"`
+	DeploymentSubjectKeys   []string          `json:"DeploymentSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space environment project tenant runbook account type'"`
+	HealthCheckSubjectKeys  []string          `json:"HealthCheckSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account target type'"`
+	AccountTestSubjectKeys  []string          `json:"AccountTestSubjectKeys,omitempty" validate:"omitempty,dive,oneof=space account type'"`
+	CustomClaims            map[string]string `json:"CustomClaims,omitempty"`
 
 	account
 }
