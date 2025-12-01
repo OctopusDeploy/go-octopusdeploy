@@ -44,6 +44,7 @@ type AccountResource struct {
 	AccountTestSubjectKeys  []string                    `json:"AccountTestSubjectKeys,omitempty"`
 	RoleArn                 string                      `json:"RoleArn,omitempty"`
 	SessionDuration         string                      `json:"SessionDuration,omitempty"`
+	CustomClaims            map[string]string           `json:"CustomClaims,omitempty"`
 
 	resources.Resource
 }

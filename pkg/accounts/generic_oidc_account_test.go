@@ -11,6 +11,10 @@ func TestGenericOIDCAccount(t *testing.T) {
 	audience := "api://default"
 	deploymentSubjectKeys := []string{"space", "project", "tenant", "environment"}
 	invalidDeploymentSubjectKeys := []string{"space", "target"}
+	customClaims := map[string]string{
+		"claim1": "value1",
+		"claim2": "value2",
+	}
 
 	testCases := []struct {
 		TestName              string
@@ -18,11 +22,13 @@ func TestGenericOIDCAccount(t *testing.T) {
 		Name                  string
 		Audience              string
 		DeploymentSubjectKeys []string
+		CustomClaims          map[string]string
 	}{
-		{"Valid", false, name, audience, deploymentSubjectKeys},
-		{"EmptyName", true, "", audience, deploymentSubjectKeys},
-		{"NilSubjectKeys", false, name, "", nil},
-		{"InvalidDeploymentSubjectKeys", true, name, "", invalidDeploymentSubjectKeys},
+		{"Valid", false, name, audience, deploymentSubjectKeys, nil},
+		{"ValidWithCustomClaims", false, name, audience, deploymentSubjectKeys, customClaims},
+		{"EmptyName", true, "", audience, deploymentSubjectKeys, nil},
+		{"NilSubjectKeys", false, name, "", nil, nil},
+		{"InvalidDeploymentSubjectKeys", true, name, "", invalidDeploymentSubjectKeys, nil},
 	}
 
 	for _, tc := range testCases {
@@ -30,6 +36,7 @@ func TestGenericOIDCAccount(t *testing.T) {
 			genericOIDCAccount := &GenericOIDCAccount{
 				Audience:              tc.Audience,
 				DeploymentSubjectKeys: tc.DeploymentSubjectKeys,
+				CustomClaims:          tc.CustomClaims,
 			}
 			genericOIDCAccount.AccountType = AccountTypeGenericOIDCAccount
 			genericOIDCAccount.Name = tc.Name
