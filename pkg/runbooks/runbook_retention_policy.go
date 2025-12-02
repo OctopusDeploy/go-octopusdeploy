@@ -61,7 +61,7 @@ func (r *RunbookRetentionPolicy) MarshalJSON() ([]byte, error) {
 		QuantityToKeep    int32  `json:"QuantityToKeep"`
 		ShouldKeepForever bool   `json:"ShouldKeepForever"`
 		Unit              string `json:"Unit"`
-		Strategy          string `json:"Strategy,omitempty"`
+		Strategy          string `json:"Strategy"`
 	}
 
 	fields.QuantityToKeep = r.QuantityToKeep
@@ -78,7 +78,7 @@ func (r *RunbookRetentionPolicy) UnmarshalJSON(data []byte) error {
 		QuantityToKeep    int32  `json:"QuantityToKeep"`
 		ShouldKeepForever bool   `json:"ShouldKeepForever"`
 		Unit              string `json:"Unit"`
-		Strategy          string `json:"Strategy,omitempty"`
+		Strategy          string `json:"Strategy"`
 	}
 
 	if err := json.Unmarshal(data, &fields); err != nil {
