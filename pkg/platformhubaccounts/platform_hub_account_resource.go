@@ -8,11 +8,18 @@ import (
 
 // PlatformHubAccountResource represents details for all Platform Hub accounts.
 type PlatformHubAccountResource struct {
-	AccountType PlatformHubAccountType `json:"AccountType" validate:"required,oneof=AmazonWebServicesAccount"`
+	AccountType PlatformHubAccountType `json:"AccountType" validate:"required,oneof=AmazonWebServicesAccount AmazonWebServicesOidcAccount"`
 	Description string                 `json:"Description,omitempty"`
 	Name        string                 `json:"Name" validate:"required,notall"`
 	AccessKey   string                 `json:"AccessKey,omitempty"`
 	SecretKey   *core.SensitiveValue   `json:"SecretKey,omitempty"`
+
+	// OIDC-specific fields
+	RoleArn                string   `json:"RoleArn,omitempty"`
+	SessionDuration        string   `json:"SessionDuration,omitempty"`
+	DeploymentSubjectKeys  []string `json:"DeploymentSubjectKeys,omitempty"`
+	HealthCheckSubjectKeys []string `json:"HealthCheckSubjectKeys,omitempty"`
+	AccountTestSubjectKeys []string `json:"AccountTestSubjectKeys,omitempty"`
 
 	resources.Resource
 }
@@ -70,6 +77,16 @@ func (r *PlatformHubAccountResource) ToPlatformHubAccount() (IPlatformHubAccount
 			return nil, err
 		}
 		account = awsAccount
+	case AccountTypePlatformHubAwsOIDCAccount:
+		oidcAccount, err := NewPlatformHubAwsOIDCAccount(r.GetName(), r.RoleArn)
+		if err != nil {
+			return nil, err
+		}
+		oidcAccount.SessionDuration = r.SessionDuration
+		oidcAccount.DeploymentSubjectKeys = r.DeploymentSubjectKeys
+		oidcAccount.HealthCheckSubjectKeys = r.HealthCheckSubjectKeys
+		oidcAccount.AccountTestSubjectKeys = r.AccountTestSubjectKeys
+		account = oidcAccount
 	default:
 		return nil, internal.CreateInvalidParameterError("ToPlatformHubAccount", "AccountType")
 	}
@@ -101,6 +118,13 @@ func ToPlatformHubAccountResource(account IPlatformHubAccount) (*PlatformHubAcco
 		awsAccount := account.(*PlatformHubAwsAccount)
 		resource.AccessKey = awsAccount.AccessKey
 		resource.SecretKey = awsAccount.SecretKey
+	case AccountTypePlatformHubAwsOIDCAccount:
+		oidcAccount := account.(*PlatformHubAwsOIDCAccount)
+		resource.RoleArn = oidcAccount.RoleArn
+		resource.SessionDuration = oidcAccount.SessionDuration
+		resource.DeploymentSubjectKeys = oidcAccount.DeploymentSubjectKeys
+		resource.HealthCheckSubjectKeys = oidcAccount.HealthCheckSubjectKeys
+		resource.AccountTestSubjectKeys = oidcAccount.AccountTestSubjectKeys
 	default:
 		return nil, internal.CreateInvalidParameterError("ToPlatformHubAccountResource", "AccountType")
 	}
