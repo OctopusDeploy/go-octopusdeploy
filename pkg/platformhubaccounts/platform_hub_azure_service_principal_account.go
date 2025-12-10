@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+// PlatformHubAzureServicePrincipalAccount represents a Platform Hub Azure Service Principal account.
 type PlatformHubAzureServicePrincipalAccount struct {
 	SubscriptionID              string               `json:"SubscriptionNumber" validate:"required"`
 	TenantID                    string               `json:"TenantId" validate:"required"`
@@ -21,6 +22,7 @@ type PlatformHubAzureServicePrincipalAccount struct {
 	platformHubAccount
 }
 
+// NewPlatformHubAzureServicePrincipalAccount initializes and returns a Platform Hub Azure Service Principal account with a name, subscription ID, tenant ID, application ID, and password.
 func NewPlatformHubAzureServicePrincipalAccount(name string, subscriptionID string, tenantID string, applicationID string, password *core.SensitiveValue) (*PlatformHubAzureServicePrincipalAccount, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterName)

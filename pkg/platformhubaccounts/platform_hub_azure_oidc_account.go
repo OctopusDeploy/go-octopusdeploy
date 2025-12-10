@@ -8,6 +8,7 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+// PlatformHubAzureOidcAccount represents a Platform Hub Azure OpenID Connect account.
 type PlatformHubAzureOidcAccount struct {
 	SubscriptionID             string   `json:"SubscriptionNumber" validate:"required"`
 	ApplicationID              string   `json:"ClientId" validate:"required"`
@@ -23,6 +24,7 @@ type PlatformHubAzureOidcAccount struct {
 	platformHubAccount
 }
 
+// NewPlatformHubAzureOidcAccount initializes and returns a Platform Hub Azure OpenID Connect account with a name, subscription ID, application ID, and tenant ID.
 func NewPlatformHubAzureOidcAccount(name string, subscriptionID string, applicationID string, tenantID string) (*PlatformHubAzureOidcAccount, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterName)

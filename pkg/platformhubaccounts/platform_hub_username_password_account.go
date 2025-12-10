@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+// PlatformHubUsernamePasswordAccount represents a Platform Hub Username-Password account.
 type PlatformHubUsernamePasswordAccount struct {
 	Username string               `json:"Username" validate:"required"`
 	Password *core.SensitiveValue `json:"Password" validate:"required"`
@@ -16,6 +17,7 @@ type PlatformHubUsernamePasswordAccount struct {
 	platformHubAccount
 }
 
+// NewPlatformHubUsernamePasswordAccount initializes and returns a Platform Hub Username-Password account with a name, username, and password.
 func NewPlatformHubUsernamePasswordAccount(name string, username string, password *core.SensitiveValue) (*PlatformHubUsernamePasswordAccount, error) {
 	if internal.IsEmpty(name) {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError(constants.ParameterName)
