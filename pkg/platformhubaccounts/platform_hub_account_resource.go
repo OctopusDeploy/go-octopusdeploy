@@ -8,18 +8,28 @@ import (
 
 // PlatformHubAccountResource represents details for all Platform Hub accounts.
 type PlatformHubAccountResource struct {
-	AccountType PlatformHubAccountType `json:"AccountType" validate:"required,oneof=AmazonWebServicesAccount AmazonWebServicesOidcAccount"`
+	AccountType PlatformHubAccountType `json:"AccountType" validate:"required,oneof=AmazonWebServicesAccount AmazonWebServicesOidcAccount AzureOidc AzureServicePrincipal GoogleCloudAccount GenericOidcAccount UsernamePassword"`
 	Description string                 `json:"Description,omitempty"`
 	Name        string                 `json:"Name" validate:"required,notall"`
-	AccessKey   string                 `json:"AccessKey,omitempty"`
-	SecretKey   *core.SensitiveValue   `json:"SecretKey,omitempty"`
+	AccessKey                     string                 `json:"AccessKey,omitempty"`
+	SecretKey                     *core.SensitiveValue   `json:"SecretKey,omitempty"`
+	JsonKey                       *core.SensitiveValue   `json:"JsonKey,omitempty"`
+	ExecutionSubjectKeys          []string               `json:"ExecutionSubjectKeys,omitempty"`
+	Audience                      string                 `json:"Audience,omitempty"`
+	Username                      string                 `json:"Username,omitempty"`
+	Password                      *core.SensitiveValue   `json:"Password,omitempty"`
+	SubscriptionNumber            string                 `json:"SubscriptionNumber,omitempty"`
+	TenantID                      string                 `json:"TenantId,omitempty"`
+	ApplicationID                 string                 `json:"ClientId,omitempty"`
+	DeploymentSubjectKeys         []string               `json:"DeploymentSubjectKeys,omitempty"`
+	HealthCheckSubjectKeys        []string               `json:"HealthCheckSubjectKeys,omitempty"`
+	AccountTestSubjectKeys        []string               `json:"AccountTestSubjectKeys,omitempty"`
+	AzureEnvironment              string                 `json:"AzureEnvironment,omitempty"`
+	AuthenticationEndpoint        string                 `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
+	ResourceManagementEndpoint    string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
 
-	// OIDC-specific fields
-	RoleArn                string   `json:"RoleArn,omitempty"`
-	SessionDuration        string   `json:"SessionDuration,omitempty"`
-	DeploymentSubjectKeys  []string `json:"DeploymentSubjectKeys,omitempty"`
-	HealthCheckSubjectKeys []string `json:"HealthCheckSubjectKeys,omitempty"`
-	AccountTestSubjectKeys []string `json:"AccountTestSubjectKeys,omitempty"`
+	RoleArn                string `json:"RoleArn,omitempty"`
+	SessionDuration        string `json:"SessionDuration,omitempty"`
 
 	resources.Resource
 }
@@ -87,6 +97,48 @@ func (r *PlatformHubAccountResource) ToPlatformHubAccount() (IPlatformHubAccount
 		oidcAccount.HealthCheckSubjectKeys = r.HealthCheckSubjectKeys
 		oidcAccount.AccountTestSubjectKeys = r.AccountTestSubjectKeys
 		account = oidcAccount
+	case AccountTypePlatformHubAzureServicePrincipalAccount:
+		azureSpAccount, err := NewPlatformHubAzureServicePrincipalAccount(r.GetName(), r.SubscriptionNumber, r.TenantID, r.ApplicationID, r.Password)
+		if err != nil {
+			return nil, err
+		}
+		azureSpAccount.AzureEnvironment = r.AzureEnvironment
+		azureSpAccount.AuthenticationEndpoint = r.AuthenticationEndpoint
+		azureSpAccount.ResourceManagementEndpoint = r.ResourceManagementEndpoint
+		account = azureSpAccount
+	case AccountTypePlatformHubAzureOidcAccount:
+		azureOidcAccount, err := NewPlatformHubAzureOidcAccount(r.GetName(), r.SubscriptionNumber, r.ApplicationID, r.TenantID)
+		if err != nil {
+			return nil, err
+		}
+		azureOidcAccount.ExecutionSubjectKeys = r.DeploymentSubjectKeys
+		azureOidcAccount.HealthSubjectKeys = r.HealthCheckSubjectKeys
+		azureOidcAccount.AccountTestSubjectKeys = r.AccountTestSubjectKeys
+		azureOidcAccount.Audience = r.Audience
+		azureOidcAccount.AzureEnvironment = r.AzureEnvironment
+		azureOidcAccount.AuthenticationEndpoint = r.AuthenticationEndpoint
+		azureOidcAccount.ResourceManagementEndpoint = r.ResourceManagementEndpoint
+		account = azureOidcAccount
+	case AccountTypePlatformHubGcpAccount:
+		gcpAccount, err := NewPlatformHubGcpAccount(r.GetName(), r.JsonKey)
+		if err != nil {
+			return nil, err
+		}
+		account = gcpAccount
+	case AccountTypePlatformHubGenericOidcAccount:
+		oidcAccount, err := NewPlatformHubGenericOidcAccount(r.GetName())
+		if err != nil {
+			return nil, err
+		}
+		oidcAccount.ExecutionSubjectKeys = r.ExecutionSubjectKeys
+		oidcAccount.Audience = r.Audience
+		account = oidcAccount
+	case AccountTypePlatformHubUsernamePasswordAccount:
+		usernamePasswordAccount, err := NewPlatformHubUsernamePasswordAccount(r.GetName(), r.Username, r.Password)
+		if err != nil {
+			return nil, err
+		}
+		account = usernamePasswordAccount
 	default:
 		return nil, internal.CreateInvalidParameterError("ToPlatformHubAccount", "AccountType")
 	}
@@ -125,6 +177,38 @@ func ToPlatformHubAccountResource(account IPlatformHubAccount) (*PlatformHubAcco
 		resource.DeploymentSubjectKeys = oidcAccount.DeploymentSubjectKeys
 		resource.HealthCheckSubjectKeys = oidcAccount.HealthCheckSubjectKeys
 		resource.AccountTestSubjectKeys = oidcAccount.AccountTestSubjectKeys
+	case AccountTypePlatformHubAzureServicePrincipalAccount:
+		azureSpAccount := account.(*PlatformHubAzureServicePrincipalAccount)
+		resource.SubscriptionNumber = azureSpAccount.SubscriptionID
+		resource.TenantID = azureSpAccount.TenantID
+		resource.ApplicationID = azureSpAccount.ApplicationID
+		resource.Password = azureSpAccount.Password
+		resource.AzureEnvironment = azureSpAccount.AzureEnvironment
+		resource.AuthenticationEndpoint = azureSpAccount.AuthenticationEndpoint
+		resource.ResourceManagementEndpoint = azureSpAccount.ResourceManagementEndpoint
+	case AccountTypePlatformHubAzureOidcAccount:
+		azureOidcAccount := account.(*PlatformHubAzureOidcAccount)
+		resource.SubscriptionNumber = azureOidcAccount.SubscriptionID
+		resource.ApplicationID = azureOidcAccount.ApplicationID
+		resource.TenantID = azureOidcAccount.TenantID
+		resource.DeploymentSubjectKeys = azureOidcAccount.ExecutionSubjectKeys
+		resource.HealthCheckSubjectKeys = azureOidcAccount.HealthSubjectKeys
+		resource.AccountTestSubjectKeys = azureOidcAccount.AccountTestSubjectKeys
+		resource.Audience = azureOidcAccount.Audience
+		resource.AzureEnvironment = azureOidcAccount.AzureEnvironment
+		resource.AuthenticationEndpoint = azureOidcAccount.AuthenticationEndpoint
+		resource.ResourceManagementEndpoint = azureOidcAccount.ResourceManagementEndpoint
+	case AccountTypePlatformHubGcpAccount:
+		gcpAccount := account.(*PlatformHubGcpAccount)
+		resource.JsonKey = gcpAccount.JsonKey
+	case AccountTypePlatformHubGenericOidcAccount:
+		oidcAccount := account.(*PlatformHubGenericOidcAccount)
+		resource.ExecutionSubjectKeys = oidcAccount.ExecutionSubjectKeys
+		resource.Audience = oidcAccount.Audience
+	case AccountTypePlatformHubUsernamePasswordAccount:
+		usernamePasswordAccount := account.(*PlatformHubUsernamePasswordAccount)
+		resource.Username = usernamePasswordAccount.Username
+		resource.Password = usernamePasswordAccount.Password
 	default:
 		return nil, internal.CreateInvalidParameterError("ToPlatformHubAccountResource", "AccountType")
 	}
