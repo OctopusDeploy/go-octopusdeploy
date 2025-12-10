@@ -57,6 +57,77 @@ func TestToPlatformHubAccount(t *testing.T) {
 	require.True(t, ok)
 	require.Equal(t, accessKey, awsAccount.AccessKey)
 	require.Equal(t, secretKey, awsAccount.SecretKey)
+
+	// Test with valid GCP account
+	jsonKey := core.NewSensitiveValue(internal.GetRandomName())
+	name = internal.GetRandomName()
+
+	accountResource = NewPlatformHubAccountResource(name, AccountTypePlatformHubGcpAccount)
+	accountResource.JsonKey = jsonKey
+	accountResource.Description = "Test GCP description"
+	accountResource.ID = "test-gcp-id"
+
+	account, err = accountResource.ToPlatformHubAccount()
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.Equal(t, AccountTypePlatformHubGcpAccount, account.GetAccountType())
+	require.Equal(t, name, account.GetName())
+	require.Equal(t, "Test GCP description", account.GetDescription())
+	require.Equal(t, "test-gcp-id", account.GetID())
+
+	// Verify it's a GCP account
+	gcpAccount, ok := account.(*PlatformHubGcpAccount)
+	require.True(t, ok)
+	require.Equal(t, jsonKey, gcpAccount.JsonKey)
+
+	// Test with valid Generic OIDC account
+	name = internal.GetRandomName()
+	executionSubjectKeys := []string{"space", "project"}
+	audience := "api://default"
+
+	accountResource = NewPlatformHubAccountResource(name, AccountTypePlatformHubGenericOidcAccount)
+	accountResource.ExecutionSubjectKeys = executionSubjectKeys
+	accountResource.Audience = audience
+	accountResource.Description = "Test Generic OIDC description"
+	accountResource.ID = "test-oidc-id"
+
+	account, err = accountResource.ToPlatformHubAccount()
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.Equal(t, AccountTypePlatformHubGenericOidcAccount, account.GetAccountType())
+	require.Equal(t, name, account.GetName())
+	require.Equal(t, "Test Generic OIDC description", account.GetDescription())
+	require.Equal(t, "test-oidc-id", account.GetID())
+
+	// Verify it's a Generic OIDC account
+	oidcAccount, ok := account.(*PlatformHubGenericOidcAccount)
+	require.True(t, ok)
+	require.Equal(t, executionSubjectKeys, oidcAccount.ExecutionSubjectKeys)
+	require.Equal(t, audience, oidcAccount.Audience)
+
+	// Test with valid UsernamePassword account
+	name = internal.GetRandomName()
+	username := internal.GetRandomName()
+	password := core.NewSensitiveValue(internal.GetRandomName())
+
+	accountResource = NewPlatformHubAccountResource(name, AccountTypePlatformHubUsernamePasswordAccount)
+	accountResource.Username = username
+	accountResource.Password = password
+	accountResource.Description = "Test UsernamePassword description"
+	accountResource.ID = "test-userpass-id"
+
+	account, err = accountResource.ToPlatformHubAccount()
+	require.NotNil(t, account)
+	require.NoError(t, err)
+	require.Equal(t, AccountTypePlatformHubUsernamePasswordAccount, account.GetAccountType())
+	require.Equal(t, name, account.GetName())
+	require.Equal(t, "Test UsernamePassword description", account.GetDescription())
+	require.Equal(t, "test-userpass-id", account.GetID())
+
+	usernamePasswordAccount, ok := account.(*PlatformHubUsernamePasswordAccount)
+	require.True(t, ok)
+	require.Equal(t, username, usernamePasswordAccount.Username)
+	require.Equal(t, password, usernamePasswordAccount.Password)
 }
 
 func TestToPlatformHubAccountResource(t *testing.T) {
@@ -92,6 +163,72 @@ func TestToPlatformHubAccountResource(t *testing.T) {
 	require.NotNil(t, accountResource2)
 	require.NoError(t, err)
 	require.Equal(t, accountResource, accountResource2)
+
+	// Test with valid GCP account
+	jsonKey := core.NewSensitiveValue(internal.GetRandomName())
+	name = internal.GetRandomName()
+
+	gcpAccount, err := NewPlatformHubGcpAccount(name, jsonKey)
+	require.NoError(t, err)
+	require.NotNil(t, gcpAccount)
+
+	gcpAccount.Description = "Test GCP description"
+	gcpAccount.ID = "test-gcp-id"
+
+	accountResource, err = ToPlatformHubAccountResource(gcpAccount)
+	require.NotNil(t, accountResource)
+	require.NoError(t, err)
+	require.Equal(t, AccountTypePlatformHubGcpAccount, accountResource.GetAccountType())
+	require.Equal(t, name, accountResource.GetName())
+	require.Equal(t, "Test GCP description", accountResource.GetDescription())
+	require.Equal(t, "test-gcp-id", accountResource.GetID())
+	require.Equal(t, jsonKey, accountResource.JsonKey)
+
+	// Test with valid Generic OIDC account
+	name = internal.GetRandomName()
+	executionSubjectKeys := []string{"space", "project", "environment"}
+	audience := "api://default"
+
+	oidcAccount, err := NewPlatformHubGenericOidcAccount(name)
+	require.NoError(t, err)
+	require.NotNil(t, oidcAccount)
+
+	oidcAccount.Description = "Test Generic OIDC description"
+	oidcAccount.ID = "test-oidc-id"
+	oidcAccount.ExecutionSubjectKeys = executionSubjectKeys
+	oidcAccount.Audience = audience
+
+	accountResource, err = ToPlatformHubAccountResource(oidcAccount)
+	require.NotNil(t, accountResource)
+	require.NoError(t, err)
+	require.Equal(t, AccountTypePlatformHubGenericOidcAccount, accountResource.GetAccountType())
+	require.Equal(t, name, accountResource.GetName())
+	require.Equal(t, "Test Generic OIDC description", accountResource.GetDescription())
+	require.Equal(t, "test-oidc-id", accountResource.GetID())
+	require.Equal(t, executionSubjectKeys, accountResource.ExecutionSubjectKeys)
+	require.Equal(t, audience, accountResource.Audience)
+
+	// Test with valid UsernamePassword account
+	name = internal.GetRandomName()
+	username := internal.GetRandomName()
+	password := core.NewSensitiveValue(internal.GetRandomName())
+
+	usernamePasswordAccount, err := NewPlatformHubUsernamePasswordAccount(name, username, password)
+	require.NoError(t, err)
+	require.NotNil(t, usernamePasswordAccount)
+
+	usernamePasswordAccount.Description = "Test UsernamePassword description"
+	usernamePasswordAccount.ID = "test-userpass-id"
+
+	accountResource, err = ToPlatformHubAccountResource(usernamePasswordAccount)
+	require.NotNil(t, accountResource)
+	require.NoError(t, err)
+	require.Equal(t, AccountTypePlatformHubUsernamePasswordAccount, accountResource.GetAccountType())
+	require.Equal(t, name, accountResource.GetName())
+	require.Equal(t, "Test UsernamePassword description", accountResource.GetDescription())
+	require.Equal(t, "test-userpass-id", accountResource.GetID())
+	require.Equal(t, username, accountResource.Username)
+	require.Equal(t, password, accountResource.Password)
 }
 
 func TestToPlatformHubAccountResourceUnknownType(t *testing.T) {
