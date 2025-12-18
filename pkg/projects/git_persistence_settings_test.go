@@ -88,11 +88,7 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranch(t *testing.
 		"ProtectedBranchNamePatterns": [],
 		"ProtectedDefaultBranch": true,
 		"Type": "%s",
-		"Url": "%s",
-		"ConversionState": {
-			"VariablesAreInGit": false,
-			"RunbooksAreInGit": false
-		}
+		"Url": "%s"
 	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
@@ -125,11 +121,7 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranchAsLastItem(t
 		"ProtectedBranchNamePatterns": ["foo"],
 		"ProtectedDefaultBranch": true,
 		"Type": "%s",
-		"Url": "%s",
-		"ConversionState": {
-			"VariablesAreInGit": false,
-			"RunbooksAreInGit": false
-		}
+		"Url": "%s"
 	}`, basePath, gitCredentialsAsJSON, defaultBranch, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
@@ -163,11 +155,7 @@ func TestGitPersistenceSettingsMarshalJSONWithoutProtectedDefaultBranch(t *testi
 		"ProtectedBranchNamePatterns": ["%s"],
 		"ProtectedDefaultBranch": false,
 		"Type": "%s",
-		"Url": "%s",
-		"ConversionState": {
-			"VariablesAreInGit": false,
-			"RunbooksAreInGit": false
-		}
+		"Url": "%s"
 	}`, basePath, gitCredentialsAsJSON, defaultBranch, protectedBranchName, projects.PersistenceSettingsTypeVersionControlled, url.String())
 
 	gitPersistenceSettings := projects.NewGitPersistenceSettings(basePath, gitCredentials, defaultBranch, protectedBranchNamePatterns, url)
@@ -176,6 +164,29 @@ func TestGitPersistenceSettingsMarshalJSONWithoutProtectedDefaultBranch(t *testi
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
 
 	jsonassert.New(t).Assertf(expectedJson, string(gitPersistenceSettingsAsJSON))
+}
+
+func TestGitPersistenceSettingsMarshalJSON_OmitsConversionState(t *testing.T) {
+	url, err := url.Parse("https://example.com/")
+	require.NoError(t, err)
+
+	gitPersistenceSettings := projects.NewGitPersistenceSettings(
+		"base/path",
+		credentials.NewAnonymous(),
+		"main",
+		[]string{},
+		url,
+	)
+
+	jsonBytes, err := json.Marshal(gitPersistenceSettings)
+	require.NoError(t, err)
+
+	var result map[string]interface{}
+	err = json.Unmarshal(jsonBytes, &result)
+	require.NoError(t, err)
+
+	_, hasConversionState := result["ConversionState"]
+	require.False(t, hasConversionState, "ConversionState should not be present in serialized JSON as it is a read-only field")
 }
 
 func TestGitPersistenceSettingsUnmarshalJSONWithoutProtectedDefaultBranch(t *testing.T) {

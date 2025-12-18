@@ -145,7 +145,6 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 		ProtectedBranchNamePatterns []string                  `json:"ProtectedBranchNamePatterns"`
 		URL                         string                    `json:"Url,omitempty"`
 		Type                        PersistenceSettingsType   `json:"Type,omitempty"`
-		ConversionState             map[string]interface{}    `json:"ConversionState,omitempty"`
 	}{
 		BasePath:                    p.BasePath(),
 		Credentials:                 p.Credential(),
@@ -154,10 +153,6 @@ func (p *gitPersistenceSettings) MarshalJSON() ([]byte, error) {
 		ProtectedBranchNamePatterns: protectedBranches,
 		URL:                         p.URL().String(),
 		Type:                        p.Type(),
-		ConversionState: map[string]interface{}{
-			"VariablesAreInGit": p.conversionState.VariablesAreInGit,
-			"RunbooksAreInGit":  p.conversionState.RunbooksAreInGit,
-		},
 	}
 
 	return json.Marshal(persistenceSettings)
