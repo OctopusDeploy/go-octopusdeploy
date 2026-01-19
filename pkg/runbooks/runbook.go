@@ -18,6 +18,7 @@ type Runbook struct {
 	PublishedRunbookSnapshotID string                      `json:"PublishedRunbookSnapshotId,omitempty"`
 	RunRetentionPolicy         *RunbookRetentionPolicy     `json:"RunRetentionPolicy,omitempty"`
 	RunbookProcessID           string                      `json:"RunbookProcessId,omitempty"`
+	RunbookTags                []string                    `json:"RunbookTags,omitempty"`
 	SpaceID                    string                      `json:"SpaceId,omitempty"`
 	ForcePackageDownload       bool                        `json:"ForcePackageDownload"`
 
