@@ -113,6 +113,15 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		mavenFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
 		mavenFeed.FeedURI = feedResource.FeedURI
 		feed = mavenFeed
+	case FeedTypeNpm:
+		npmFeed, err := NewNpmFeed(feedResource.GetName(), feedResource.FeedURI)
+		if err != nil {
+			return nil, err
+		}
+		npmFeed.DownloadAttempts = feedResource.DownloadAttempts
+		npmFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
+		npmFeed.FeedURI = feedResource.FeedURI
+		feed = npmFeed
 	case FeedTypeNuGet:
 		nuGetFeed, err := NewNuGetFeed(feedResource.GetName(), feedResource.FeedURI)
 		if err != nil {
@@ -255,6 +264,11 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.DownloadAttempts = mavenFeed.DownloadAttempts
 		feedResource.DownloadRetryBackoffSeconds = mavenFeed.DownloadRetryBackoffSeconds
 		feedResource.FeedURI = mavenFeed.FeedURI
+	case FeedTypeNpm:
+		npmFeed := feed.(*NpmFeed)
+		feedResource.DownloadAttempts = npmFeed.DownloadAttempts
+		feedResource.DownloadRetryBackoffSeconds = npmFeed.DownloadRetryBackoffSeconds
+		feedResource.FeedURI = npmFeed.FeedURI
 	case FeedTypeNuGet:
 		nuGetFeed := feed.(*NuGetFeed)
 		feedResource.DownloadAttempts = nuGetFeed.DownloadAttempts
