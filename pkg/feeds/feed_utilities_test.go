@@ -343,6 +343,100 @@ func TestMaven(t *testing.T) {
 	}
 }
 
+func TestNpm(t *testing.T) {
+	feedResource := FeedResource{
+		AccessKey:                         "",
+		APIVersion:                        "test",
+		DeleteUnreleasedPackagesAfterDays: 10,
+		DownloadAttempts:                  5,
+		DownloadRetryBackoffSeconds:       10,
+		EnhancedMode:                      false,
+		FeedType:                          FeedTypeNpm,
+		FeedURI:                           "https://registry.npmjs.org",
+		IsBuiltInRepoSyncEnabled:          false,
+		Name:                              "NPM Feed",
+		Password:                          nil,
+		PackageAcquisitionLocationOptions: nil,
+		Region:                            "",
+		RegistryPath:                      "",
+		SecretKey:                         nil,
+		SpaceID:                           "",
+		Username:                          "testuser",
+		LayoutRegex:                       "",
+		Repository:                        "",
+		UseMachineCredentials:             false,
+		Resource:                          resources.Resource{},
+	}
+
+	feed, err := ToFeed(&feedResource)
+
+	if err != nil {
+		t.Fatalf("Error should not have been returned")
+	}
+
+	typedFeed := feed.(*NpmFeed)
+
+	if typedFeed.Name != "NPM Feed" {
+		t.Fatalf("Name does not match")
+	}
+
+	if typedFeed.DownloadAttempts != 5 {
+		t.Fatalf("DownloadAttempts does not match")
+	}
+
+	if typedFeed.DownloadRetryBackoffSeconds != 10 {
+		t.Fatalf("DownloadRetryBackoffSeconds does not match")
+	}
+
+	if typedFeed.FeedURI != "https://registry.npmjs.org" {
+		t.Fatalf("FeedURI does not match")
+	}
+
+	if typedFeed.GetUsername() != "testuser" {
+		t.Fatalf("Username does not match")
+	}
+}
+
+func TestNpmToResource(t *testing.T) {
+	feed := NpmFeed{
+		DownloadAttempts:            5,
+		DownloadRetryBackoffSeconds: 10,
+		FeedURI:                     "https://registry.npmjs.org",
+		feed:                        *newFeed("NPM Feed", FeedTypeNpm),
+	}
+	feed.SetUsername("testuser")
+
+	feedResource, err := ToFeedResource(&feed)
+
+	if err != nil {
+		t.Fatalf("Error should not have been returned. %s", err)
+	}
+
+	if feedResource.FeedType != FeedTypeNpm {
+		t.Fatalf("FeedType does not match")
+	}
+
+	if feedResource.Name != "NPM Feed" {
+		t.Fatalf("Name does not match")
+	}
+
+	if feedResource.FeedURI != "https://registry.npmjs.org" {
+		t.Fatalf("FeedURI does not match")
+	}
+
+	if feedResource.DownloadAttempts != 5 {
+		t.Fatalf("DownloadAttempts does not match")
+	}
+
+	if feedResource.DownloadRetryBackoffSeconds != 10 {
+		t.Fatalf("DownloadRetryBackoffSeconds does not match")
+	}
+
+	if feedResource.Username != "testuser" {
+		t.Fatalf("Username does not match")
+	}
+}
+
 func TestNuget(t *testing.T) {
 	feedResource := FeedResource{
 		AccessKey:                         "",
