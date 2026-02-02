@@ -172,11 +172,13 @@ func Update(client newclient.Client, scriptModule *variables.ScriptModule) (*var
 	}
 
 	for _, variable := range variableSet.Variables {
-		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
+		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") && !strings.Contains(variable.Name, ".Language[") {
+			variable.Name = fmt.Sprintf("Octopus.Script.Module[%s]", scriptModule.Name)
 			variable.Value = scriptModule.ScriptBody
 		}
 
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module.Language[") {
+			variable.Name = fmt.Sprintf("Octopus.Script.Module.Language[%s]", scriptModule.Name)
 			variable.Value = scriptModule.Syntax
 		}
 	}
