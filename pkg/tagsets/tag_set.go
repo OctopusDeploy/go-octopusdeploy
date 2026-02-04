@@ -9,6 +9,7 @@ const (
 	TagSetScopeEnvironment TagSetScope = "Environment"
 	TagSetScopeProject     TagSetScope = "Project"
 	TagSetScopeRunbook     TagSetScope = "Runbook"
+	TagSetScopeTarget      TagSetScope = "Target"
 )
 
 type TagSetType string
