@@ -16,4 +16,5 @@ const (
 	FeedTypeArtifactoryGeneric          = FeedType("ArtifactoryGeneric")
 	FeedTypeS3                          = FeedType("S3")
 	FeedTypeOCIRegistry                 = FeedType("OciRegistry")
+	FeedTypeGcsStorage                  = FeedType("GcsStorage")
 )
