@@ -8,10 +8,12 @@ import (
 )
 
 type GcsStorageFeed struct {
-	UseServiceAccountKey  bool                                      `json:"UseServiceAccountKey"`
-	ServiceAccountJsonKey *core.SensitiveValue                      `json:"ServiceAccountJsonKey,omitempty"`
-	Project               string                                    `json:"Project,omitempty"`
-	OidcAuthentication    *GoogleContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
+	UseServiceAccountKey        bool                                       `json:"UseServiceAccountKey"`
+	ServiceAccountJsonKey       *core.SensitiveValue                       `json:"ServiceAccountJsonKey,omitempty"`
+	Project                     string                                     `json:"Project,omitempty"`
+	OidcAuthentication          *GoogleContainerRegistryOidcAuthentication `json:"OidcAuthentication,omitempty"`
+	DownloadAttempts            int                                        `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds int                                        `json:"DownloadRetryBackoffSeconds"`
 
 	feed
 }
@@ -32,11 +34,13 @@ func NewGcsStorageFeed(name string, useServiceAccountKey bool, serviceAccountJso
 	}
 
 	feed := GcsStorageFeed{
-		UseServiceAccountKey:  useServiceAccountKey,
-		ServiceAccountJsonKey: serviceAccountJsonKey,
-		Project:               project,
-		OidcAuthentication:    oidcAuthentication,
-		feed:                  *newFeed(name, FeedTypeGcsStorage),
+		UseServiceAccountKey:        useServiceAccountKey,
+		ServiceAccountJsonKey:       serviceAccountJsonKey,
+		Project:                     project,
+		OidcAuthentication:          oidcAuthentication,
+		DownloadAttempts:            5,
+		DownloadRetryBackoffSeconds: 10,
+		feed:                        *newFeed(name, FeedTypeGcsStorage),
 	}
 
 	if err := feed.Validate(); err != nil {
