@@ -8,4 +8,5 @@ type GitDependency struct {
 	FilePathFilters              []string `json:"FilePathFilters,omitempty"`
 	GitCredentialId              string   `json:"GitCredentialId,omitempty"`
 	StepPackageInputsReferenceId string   `json:"StepPackageInputsReferenceId,omitempty"`
+	GitHubConnectionId           string   `json:"GitHubConnectionId,omitempty"`
 }

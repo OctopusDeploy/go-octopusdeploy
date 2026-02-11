@@ -84,6 +84,8 @@ func (s *TenantService) Clone(sourceTenant *Tenant, request TenantCloneRequest) 
 	return resp.(*Tenant), nil
 }
 
+// Deprecated: Use UpdateProjectVariables and UpdateCommonVariables instead.
+// This method will be removed in a future version.
 func (s *TenantService) CreateVariables(tenant *Tenant, tenantVariable *variables.TenantVariables) (*variables.TenantVariables, error) {
 	resp, err := services.ApiAdd(s.GetClient(), tenantVariable, new(variables.TenantVariables), tenant.Links["Variables"])
 	if err != nil {
@@ -245,6 +247,8 @@ func (s *TenantService) GetByIdentifier(identifier string) (*Tenant, error) {
 	return s.GetByName(identifier)
 }
 
+// Deprecated: Use GetProjectVariables and GetCommonVariables instead.
+// This method will be removed in a future version.
 func (s *TenantService) GetVariables(tenant *Tenant) (*variables.TenantVariables, error) {
 	resp, err := api.ApiGet(s.GetClient(), new(variables.TenantVariables), tenant.Links["Variables"])
 	if err != nil {
@@ -271,6 +275,8 @@ func (s *TenantService) Update(resource *Tenant) (*Tenant, error) {
 	return resp.(*Tenant), nil
 }
 
+// Deprecated: Use UpdateProjectVariables and UpdateCommonVariables instead.
+// This method will be removed in a future version.
 func (s *TenantService) UpdateVariables(tenant *Tenant, tenantVariables *variables.TenantVariables) (*variables.TenantVariables, error) {
 	resp, err := services.ApiPost(s.GetClient(), tenantVariables, new(variables.TenantVariables), tenant.Links["Variables"])
 	if err != nil {

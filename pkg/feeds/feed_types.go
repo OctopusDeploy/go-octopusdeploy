@@ -11,6 +11,7 @@ const (
 	FeedTypeGoogleContainerRegistry     = FeedType("GoogleContainerRegistry")
 	FeedTypeHelm                        = FeedType("Helm")
 	FeedTypeMaven                       = FeedType("Maven")
+	FeedTypeNpm                         = FeedType("Npm")
 	FeedTypeNuGet                       = FeedType("NuGet")
 	FeedTypeOctopusProject              = FeedType("OctopusProject")
 	FeedTypeArtifactoryGeneric          = FeedType("ArtifactoryGeneric")

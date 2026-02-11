@@ -16,8 +16,9 @@ type Runbook struct {
 	Name                       string                      `json:"Name,omitempty"`
 	ProjectID                  string                      `json:"ProjectId,omitempty"`
 	PublishedRunbookSnapshotID string                      `json:"PublishedRunbookSnapshotId,omitempty"`
-	RunRetentionPolicy         *RunbookRetentionPeriod     `json:"RunRetentionPolicy,omitempty"`
+	RunRetentionPolicy         *RunbookRetentionPolicy     `json:"RunRetentionPolicy,omitempty"`
 	RunbookProcessID           string                      `json:"RunbookProcessId,omitempty"`
+	RunbookTags                []string                    `json:"RunbookTags,omitempty"`
 	SpaceID                    string                      `json:"SpaceId,omitempty"`
 	ForcePackageDownload       bool                        `json:"ForcePackageDownload"`
 
@@ -32,7 +33,7 @@ func NewRunbook(name string, projectID string) *Runbook {
 		MultiTenancyMode:         core.TenantedDeploymentModeUntenanted,
 		Name:                     name,
 		ProjectID:                projectID,
-		RunRetentionPolicy:       NewRunbookRetentionPeriod(),
+		RunRetentionPolicy:       NewDefaultRunbookRetentionPolicy(),
 		Resource:                 *resources.NewResource(),
 	}
 }
