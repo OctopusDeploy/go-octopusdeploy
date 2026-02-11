@@ -153,6 +153,20 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 			return nil, err
 		}
 		feed = s3Feed
+	case FeedTypeGcsStorage:
+		var googleOidc *GoogleContainerRegistryOidcAuthentication
+		if feedResource.OidcAuthentication != nil {
+			if google, ok := feedResource.OidcAuthentication.GetGoogle(); ok {
+				googleOidc = google
+			}
+		}
+		gcsFeed, err := NewGcsStorageFeed(feedResource.GetName(), feedResource.UseServiceAccountKey, feedResource.ServiceAccountJsonKey, feedResource.Project, googleOidc)
+		if err != nil {
+			return nil, err
+		}
+		gcsFeed.DownloadAttempts = feedResource.DownloadAttempts
+		gcsFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
+		feed = gcsFeed
 	case FeedTypeOCIRegistry:
 		ociFeed, err := NewOCIRegistryFeed(feedResource.GetName())
 		if err != nil {
@@ -285,6 +299,19 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.AccessKey = s3Feed.AccessKey
 		feedResource.SecretKey = s3Feed.SecretKey
 		feedResource.UseMachineCredentials = s3Feed.UseMachineCredentials
+	case FeedTypeGcsStorage:
+		gcsFeed := feed.(*GcsStorageFeed)
+		feedResource.DownloadAttempts = gcsFeed.DownloadAttempts
+		feedResource.DownloadRetryBackoffSeconds = gcsFeed.DownloadRetryBackoffSeconds
+		feedResource.UseServiceAccountKey = gcsFeed.UseServiceAccountKey
+		feedResource.ServiceAccountJsonKey = gcsFeed.ServiceAccountJsonKey
+		feedResource.Project = gcsFeed.Project
+		if gcsFeed.OidcAuthentication != nil {
+			feedResource.OidcAuthentication = NewGoogleOidcAuthentication(
+				gcsFeed.OidcAuthentication.Audience,
+				gcsFeed.OidcAuthentication.SubjectKeys,
+			)
+		}
 	case FeedTypeOCIRegistry:
 		ociFeed := feed.(*OCIRegistryFeed)
 		feedResource.FeedURI = ociFeed.FeedURI

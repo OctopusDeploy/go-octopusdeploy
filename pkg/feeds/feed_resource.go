@@ -30,6 +30,9 @@ type FeedResource struct {
 	LayoutRegex                                string                                         `json:"LayoutRegex,omitempty"`
 	Repository                                 string                                         `json:"Repository,omitempty"`
 	UseMachineCredentials                      bool                                           `json:"UseMachineCredentials,omitempty"`
+	UseServiceAccountKey                       bool                                           `json:"UseServiceAccountKey,omitempty"`
+	ServiceAccountJsonKey                      *core.SensitiveValue                           `json:"ServiceAccountJsonKey,omitempty"`
+	Project                                    string                                         `json:"Project,omitempty"`
 	resources.Resource
 }
 
