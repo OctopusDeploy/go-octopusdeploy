@@ -164,6 +164,8 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		if err != nil {
 			return nil, err
 		}
+		gcsFeed.DownloadAttempts = feedResource.DownloadAttempts
+		gcsFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
 		feed = gcsFeed
 	case FeedTypeOCIRegistry:
 		ociFeed, err := NewOCIRegistryFeed(feedResource.GetName())
@@ -299,6 +301,8 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 		feedResource.UseMachineCredentials = s3Feed.UseMachineCredentials
 	case FeedTypeGcsStorage:
 		gcsFeed := feed.(*GcsStorageFeed)
+		feedResource.DownloadAttempts = gcsFeed.DownloadAttempts
+		feedResource.DownloadRetryBackoffSeconds = gcsFeed.DownloadRetryBackoffSeconds
 		feedResource.UseServiceAccountKey = gcsFeed.UseServiceAccountKey
 		feedResource.ServiceAccountJsonKey = gcsFeed.ServiceAccountJsonKey
 		feedResource.Project = gcsFeed.Project
