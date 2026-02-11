@@ -38,6 +38,8 @@ func NewGcsStorageFeed(name string, useServiceAccountKey bool, serviceAccountJso
 		ServiceAccountJsonKey:       serviceAccountJsonKey,
 		Project:                     project,
 		OidcAuthentication:          oidcAuthentication,
+		DownloadAttempts:            5,
+		DownloadRetryBackoffSeconds: 10,
 		feed:                        *newFeed(name, FeedTypeGcsStorage),
 	}
 
