@@ -28,7 +28,7 @@ func NewDashboardService(sling *sling.Sling, uriTemplate string, dashboardDynami
 	}
 }
 
-func GetDynamicDashboardItem(client newclient.Client,spaceID string, dashboardQuery DashboardQuery) (*resources.Resources[*DashboardItem], error) {
+func GetDynamicDashboardItem(client newclient.Client,spaceID string, dashboardQuery DashboardDynamicQuery) (*resources.Resources[*DashboardDynamicQuery], error) {
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
 	if err != nil {
 		return nil, err
@@ -45,9 +45,9 @@ func GetDynamicDashboardItem(client newclient.Client,spaceID string, dashboardQu
 		return nil, err
 	}
 
-	resp, err := newclient.Get[resources.Resources[*DashboardItem]](client.HttpSession(), expandedUri)
+	resp, err := newclient.Get[resources.Resources[*DashboardDynamicQuery]](client.HttpSession(), expandedUri)
 	if err != nil {
-		return &resources.Resources[*DashboardItem]{}, err
+		return &resources.Resources[*DashboardDynamicQuery]{}, err
 	}
 
 	return resp, nil
