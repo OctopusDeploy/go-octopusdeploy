@@ -26,6 +26,7 @@ type AccountResource struct {
 	Name                    string                      `json:"Name" validate:"required,notall"`
 	PrivateKeyFile          *core.SensitiveValue        `json:"PrivateKeyFile,omitempty"`
 	PrivateKeyPassphrase    *core.SensitiveValue        `json:"PrivateKeyPassphrase,omitempty"`
+	Region                  string                      `json:"Region,omitempty"`
 	ResourceManagerEndpoint string                      `json:"ResourceManagementEndpointBaseUri,omitempty"`
 	SecretKey               *core.SensitiveValue        `json:"SecretKey,omitempty"`
 	Slug                    string                      `json:"Slug,omitempty"`
