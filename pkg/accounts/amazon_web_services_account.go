@@ -13,6 +13,7 @@ import (
 type AmazonWebServicesAccount struct {
 	AccessKey string               `json:"AccessKey" validate:"required"`
 	SecretKey *core.SensitiveValue `json:"SecretKey" validate:"required"`
+	Region    string               `json:"Region,omitempty"`
 
 	account
 }

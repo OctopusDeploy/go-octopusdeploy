@@ -23,6 +23,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		if err != nil {
 			return nil, err
 		}
+		amazonWebServicesAccount.Region = accountResource.Region
 		account = amazonWebServicesAccount
 	case AccountTypeAwsOIDC:
 		awsOIDCAccount, err := NewAwsOIDCAccount(accountResource.GetName(), accountResource.RoleArn)
@@ -31,6 +32,7 @@ func ToAccount(accountResource *AccountResource) (IAccount, error) {
 		}
 		awsOIDCAccount.RoleArn = accountResource.RoleArn
 		awsOIDCAccount.SessionDuration = accountResource.SessionDuration
+		awsOIDCAccount.Region = accountResource.Region
 		awsOIDCAccount.Audience = accountResource.Audience
 		awsOIDCAccount.DeploymentSubjectKeys = accountResource.DeploymentSubjectKeys
 		awsOIDCAccount.AccountTestSubjectKeys = accountResource.AccountTestSubjectKeys
@@ -149,10 +151,12 @@ func ToAccountResource(account IAccount) (*AccountResource, error) {
 		amazonWebServicesAccount := account.(*AmazonWebServicesAccount)
 		accountResource.AccessKey = amazonWebServicesAccount.AccessKey
 		accountResource.SecretKey = amazonWebServicesAccount.SecretKey
+		accountResource.Region = amazonWebServicesAccount.Region
 	case AccountTypeAwsOIDC:
 		awsOIDCAccount := account.(*AwsOIDCAccount)
 		accountResource.RoleArn = awsOIDCAccount.RoleArn
 		accountResource.SessionDuration = awsOIDCAccount.SessionDuration
+		accountResource.Region = awsOIDCAccount.Region
 		accountResource.Audience = awsOIDCAccount.Audience
 		accountResource.DeploymentSubjectKeys = awsOIDCAccount.DeploymentSubjectKeys
 		accountResource.AccountTestSubjectKeys = awsOIDCAccount.AccountTestSubjectKeys
