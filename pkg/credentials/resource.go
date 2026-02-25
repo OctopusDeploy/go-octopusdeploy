@@ -109,6 +109,12 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		r.Details = usernamePasswordGitCredential
+	case GitCredentialTypeGitHubApp:
+		var gitHubAppGitCredential *GitHubApp
+		if err := json.Unmarshal(*gitCredentials, &gitHubAppGitCredential); err != nil {
+			return err
+		}
+		r.Details = gitHubAppGitCredential
 	}
 
 	return nil
