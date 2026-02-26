@@ -251,6 +251,13 @@ func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		p.credential = usernamePasswordGitCredential
+	case credentials.GitCredentialTypeGitHubApp:
+		var gitHubAppGitCredential *credentials.GitHubApp
+		err := json.Unmarshal(*gitCredentials, &gitHubAppGitCredential)
+		if err != nil {
+			return err
+		}
+		p.credential = gitHubAppGitCredential
 	}
 
 	var conversionState *json.RawMessage
