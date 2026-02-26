@@ -9,9 +9,8 @@ import (
 )
 
 type OIDCIdentityQuery struct {
-	ServiceAccountId string `uri:"serviceAccountId" url:"serviceAccountId"`
-	Skip             int    `uri:"skip" url:"skip"`
-	Take             int    `uri:"take" url:"take"`
+	Skip int `uri:"skip,omitempty" url:"skip,omitempty"`
+	Take int `uri:"take,omitempty" url:"take,omitempty"`
 }
 
 type OIDCIdentity struct {
@@ -21,13 +20,6 @@ type OIDCIdentity struct {
 	ServiceAccountID string `json:"ServiceAccountId"`
 	Subject          string `json:"Subject"`
 	resources.Resource
-}
-
-type ServiceAccountOIDCIdentitiesResponse struct {
-	ServerUrl      string          `json:"ServerUrl"`
-	ExternalId     string          `json:"ExternalId"`
-	OidcIdentities []*OIDCIdentity `json:"OidcIdentities"`
-	Count          int             `json:"Count"`
 }
 
 // NewOIDCIdentity initializes a Service Account with required fields.
@@ -78,30 +70,6 @@ func GetOIDCIdentities(client newclient.Client, query OIDCIdentityQuery) (*resou
 	}
 
 	res, err := newclient.Get[resources.Resources[*OIDCIdentity]](client.HttpSession(), path)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-// GetServiceAccountOIDCData queries the service account and identities for the provided service account ID
-func GetServiceAccountOIDCData(client newclient.Client, query OIDCIdentityQuery) (*ServiceAccountOIDCIdentitiesResponse, error) {
-	if internal.IsEmpty(query.ServiceAccountId) {
-		return nil, internal.CreateInvalidParameterError("GetServiceAccountOIDCData", "query.ServiceAccountId")
-	}
-
-	values, _ := uritemplates.Struct2map(query)
-	if values == nil {
-		values = map[string]any{}
-	}
-
-	path, err := client.URITemplateCache().Expand(serviceAccountOIDCIDQueryTemplate, values)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := newclient.Get[ServiceAccountOIDCIdentitiesResponse](client.HttpSession(), path)
 	if err != nil {
 		return nil, err
 	}
