@@ -17,15 +17,11 @@ func Add(client newclient.Client, policy *PlatformHubPolicy, commitMessage strin
 		return nil, internal.CreateValidationFailureError("Add", validationError)
 	}
 
-	path, pathError := client.URITemplateCache().Expand(template, map[string]any{"gitRef": policy.GitRef})
-	if pathError != nil {
-		return nil, pathError
+	command, path, commandError := buildAddCommand(client, policy, commitMessage)
+	if commandError != nil {
+		return nil, commandError
 	}
 
-	command := platformHubPolicyUpsertCommand{
-		ChangeDescription: commitMessage,
-		PlatformHubPolicy: *policy,
-	}
 	createdPolicy, addError := newclient.Post[PlatformHubPolicy](client.HttpSession(), path, command)
 	if addError != nil {
 		return nil, addError
@@ -33,18 +29,18 @@ func Add(client newclient.Client, policy *PlatformHubPolicy, commitMessage strin
 	return createdPolicy, nil
 }
 
-func buildAddCommand(client newclient.Client, policy *PlatformHubPolicy, commitMessage string) (*platformHubPolicyUpsertCommand, *string, error) {
+func buildAddCommand(client newclient.Client, policy *PlatformHubPolicy, commitMessage string) (*platformHubPolicyUpsertCommand, string, error) {
 	if policy == nil {
-		return nil, nil, internal.CreateRequiredParameterIsEmptyOrNilError("policy")
+		return nil, "", internal.CreateRequiredParameterIsEmptyOrNilError("policy")
 	}
 
 	if validationError := policy.Validate(); validationError != nil {
-		return nil, nil, internal.CreateValidationFailureError("Add", validationError)
+		return nil, "", internal.CreateValidationFailureError("Add", validationError)
 	}
 
 	path, pathError := client.URITemplateCache().Expand(template, map[string]any{"gitRef": policy.GitRef})
 	if pathError != nil {
-		return nil, nil, pathError
+		return nil, "", pathError
 	}
 
 	command := platformHubPolicyUpsertCommand{
@@ -52,7 +48,7 @@ func buildAddCommand(client newclient.Client, policy *PlatformHubPolicy, commitM
 		PlatformHubPolicy: *policy,
 	}
 
-	return &command, &path, nil
+	return &command, path, nil
 }
 
 type platformHubPolicyUpsertCommand struct {
