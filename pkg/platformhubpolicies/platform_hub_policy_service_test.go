@@ -23,7 +23,7 @@ func TestPlatformHubPolicyService_BuildAddCommand(t *testing.T) {
 	command, path, commandError := buildAddCommand(client, newPolicy, commitMessage)
 	require.NoError(t, commandError)
 
-	require.Equal(t, fmt.Sprintf("/api/platformhub/%s/policies", urlEncodedGitRef), *path)
+	require.Equal(t, fmt.Sprintf("/api/platformhub/%s/policies", urlEncodedGitRef), path)
 
 	require.NotNil(t, command)
 	require.Equal(t, policy.name, command.GetName())
