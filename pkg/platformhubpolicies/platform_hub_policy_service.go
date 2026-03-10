@@ -5,7 +5,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
 
-const template = "/api/platformhub/{gitRef}/policies{/slug}"
+const template = "/api/platformhub/{gitRef}/policies{/slug}{?skip,take,partialName}"
 
 // Add creates a new Platform Hub policy.
 func Add(client newclient.Client, policy *PlatformHubPolicy, commitMessage string) (*PlatformHubPolicy, error) {
@@ -27,6 +27,37 @@ func Add(client newclient.Client, policy *PlatformHubPolicy, commitMessage strin
 		return nil, addError
 	}
 	return createdPolicy, nil
+}
+
+// PoliciesQuery represents query parameters for listing policies.
+type PoliciesQuery struct {
+	GitRef      string `uri:"gitRef" json:"gitRef"`
+	PartialName string `uri:"partialName,omitempty" json:"partialName,omitempty"`
+	Skip        int    `uri:"skip,omitempty" json:"skip,omitempty"`
+	Take        int    `uri:"take,omitempty" json:"take,omitempty"`
+}
+
+// PoliciesResponse represents the response from listing Platform Hub policies.
+type PoliciesResponse struct {
+	Policies           []PlatformHubPolicy `json:"Policies"`
+	ItemsPerPage       int                 `json:"ItemsPerPage"`
+	FilteredItemsCount int                 `json:"FilteredItemsCount"`
+	TotalItemsCount    int                 `json:"TotalItemsCount"`
+}
+
+// Get returns a collection of Platform Hub policies based on the provided query.
+func Get(client newclient.Client, query PoliciesQuery) (*PoliciesResponse, error) {
+	path, pathError := client.URITemplateCache().Expand(template, query)
+	if pathError != nil {
+		return nil, pathError
+	}
+
+	response, responseError := newclient.Get[PoliciesResponse](client.HttpSession(), path)
+	if responseError != nil {
+		return nil, responseError
+	}
+
+	return response, nil
 }
 
 // GetBySlug returns the Platform Hub policy that matches given GitRef and Slug.
