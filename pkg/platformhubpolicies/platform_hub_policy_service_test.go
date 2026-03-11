@@ -22,7 +22,7 @@ func TestPlatformHubPolicyService_BuildAddCommand_Valid(t *testing.T) {
 	commitMessage := "Create new policy"
 
 	// Act
-	newPolicy := expectedPolicy.Create()
+	newPolicy := expectedPolicy.Build()
 	command, path, commandError := buildAddCommand(client, *newPolicy, commitMessage)
 
 	require.NoError(t, commandError)
@@ -35,7 +35,7 @@ func TestPlatformHubPolicyService_BuildAddCommand_Valid(t *testing.T) {
 func TestPlatformHubPolicyService_BuildAddCommand_Invalid(t *testing.T) {
 	var client = newclient.NewClient(&newclient.HttpSession{})
 
-	invalidPolicy := newPolicyBuilder().WithName("InvalidPolicyName").WithConditionsRego("").Create()
+	invalidPolicy := newPolicyBuilder().WithName("InvalidPolicyName").WithConditionsRego("").Build()
 
 	_, _, invalidCommandError := buildAddCommand(client, *invalidPolicy, "commit invalid command")
 
@@ -54,7 +54,7 @@ func TestPlatformHubPolicyService_BuildUpdateCommand_Valid(t *testing.T) {
 	commitMessage := "Update valid policy"
 
 	// Act
-	newPolicy := expectedPolicy.Create()
+	newPolicy := expectedPolicy.Build()
 	command, path, commandError := buildUpdateCommand(client, *newPolicy, commitMessage)
 
 	require.NoError(t, commandError)
@@ -67,7 +67,7 @@ func TestPlatformHubPolicyService_BuildUpdateCommand_Valid(t *testing.T) {
 func TestPlatformHubPolicyService_BuildUpdateCommand_Invalid(t *testing.T) {
 	var client = newclient.NewClient(&newclient.HttpSession{})
 
-	invalidPolicy := newPolicyBuilder().WithName("Invalid Action").WithViolationAction("").Create()
+	invalidPolicy := newPolicyBuilder().WithName("Invalid Action").WithViolationAction("").Build()
 	_, _, invalidCommandError := buildUpdateCommand(client, *invalidPolicy, "commit invalid command")
 
 	require.ErrorContains(t, invalidCommandError, "ViolationAction")

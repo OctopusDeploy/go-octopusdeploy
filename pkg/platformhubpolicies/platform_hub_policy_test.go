@@ -35,7 +35,7 @@ func TestPlatformHubPolicyNew_Invalid(t *testing.T) {
 }
 
 func TestPlatformHubPolicyValidate_Name(t *testing.T) {
-	policy := newPolicyBuilder().Create()
+	policy := newPolicyBuilder().Build()
 
 	// Valid
 	policy.SetName("Valid Name")
@@ -50,35 +50,35 @@ func TestPlatformHubPolicyValidate_Name(t *testing.T) {
 }
 
 func TestPlatformHubPolicyValidate_GitRef(t *testing.T) {
-	policy := newPolicyBuilder().WithGitRef("main").Create()
+	policy := newPolicyBuilder().WithGitRef("main").Build()
 
 	// Valid
 	require.NoError(t, policy.Validate())
 
 	// Invalid
-	policy = newPolicyBuilder().WithGitRef("").Create()
+	policy = newPolicyBuilder().WithGitRef("").Build()
 	require.ErrorContains(t, policy.Validate(), "GitRef")
 
-	policy = newPolicyBuilder().WithGitRef("   ").Create()
+	policy = newPolicyBuilder().WithGitRef("   ").Build()
 	require.ErrorContains(t, policy.Validate(), "GitRef")
 }
 
 func TestPlatformHubPolicyValidate_Slug(t *testing.T) {
-	policy := newPolicyBuilder().WithSlug("valid_slug").Create()
+	policy := newPolicyBuilder().WithSlug("valid_slug").Build()
 
 	// Valid
 	require.NoError(t, policy.Validate())
 
 	// Invalid
-	policy = newPolicyBuilder().WithSlug("").Create()
+	policy = newPolicyBuilder().WithSlug("").Build()
 	require.ErrorContains(t, policy.Validate(), "Slug")
 
-	policy = newPolicyBuilder().WithSlug("   ").Create()
+	policy = newPolicyBuilder().WithSlug("   ").Build()
 	require.ErrorContains(t, policy.Validate(), "Slug")
 }
 
 func TestPlatformHubPolicyValidate_Description(t *testing.T) {
-	policy := newPolicyBuilder().Create()
+	policy := newPolicyBuilder().Build()
 
 	// Description is optional
 	policy.SetDescription("Description")
@@ -89,7 +89,7 @@ func TestPlatformHubPolicyValidate_Description(t *testing.T) {
 }
 
 func TestPlatformHubPolicyValidate_ScopeRego(t *testing.T) {
-	policy := newPolicyBuilder().Create()
+	policy := newPolicyBuilder().Build()
 
 	// Valid
 	policy.SetScopeRego("package scope")
@@ -104,7 +104,7 @@ func TestPlatformHubPolicyValidate_ScopeRego(t *testing.T) {
 }
 
 func TestPlatformHubPolicyValidate_ConditionsRego(t *testing.T) {
-	policy := newPolicyBuilder().Create()
+	policy := newPolicyBuilder().Build()
 
 	// Valid
 	policy.SetConditionsRego("package conditions")
@@ -119,7 +119,7 @@ func TestPlatformHubPolicyValidate_ConditionsRego(t *testing.T) {
 }
 
 func TestPlatformHubPolicyValidate_ViolationAction(t *testing.T) {
-	policy := newPolicyBuilder().Create()
+	policy := newPolicyBuilder().Build()
 
 	// Valid
 	policy.SetViolationAction("block")
@@ -134,7 +134,7 @@ func TestPlatformHubPolicyValidate_ViolationAction(t *testing.T) {
 }
 
 func TestPlatformHubPolicyValidate_ViolationReason(t *testing.T) {
-	policy := newPolicyBuilder().Create()
+	policy := newPolicyBuilder().Build()
 
 	// ViolationReason is optional
 	policy.SetViolationReason("Some reason")
@@ -206,7 +206,7 @@ func (b *policyBuilder) WithViolationAction(violationAction string) *policyBuild
 	return b
 }
 
-func (b *policyBuilder) Create() *PlatformHubPolicy {
+func (b *policyBuilder) Build() *PlatformHubPolicy {
 	return &PlatformHubPolicy{
 		Name:            b.name,
 		GitRef:          b.gitRef,
