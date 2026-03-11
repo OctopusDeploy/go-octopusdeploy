@@ -1,6 +1,8 @@
 package platformhubpolicies
 
 import (
+	"sync"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
@@ -107,11 +109,22 @@ func (p *PlatformHubPolicy) SetViolationAction(violationAction string) {
 
 // Validate checks the state of the policy and returns an error if invalid.
 func (p *PlatformHubPolicy) Validate() error {
-	v := validator.New()
-	err := v.RegisterValidation("notblank", validators.NotBlank)
+	validate, err := getValidator()
 	if err != nil {
 		return err
 	}
 
-	return v.Struct(p)
+	return validate.Struct(p)
+}
+
+var getValidator = sync.OnceValues(buildValidator)
+
+func buildValidator() (*validator.Validate, error) {
+	v := validator.New()
+	err := v.RegisterValidation("notblank", validators.NotBlank)
+	if err != nil {
+		return nil, err
+	}
+
+	return v, nil
 }
