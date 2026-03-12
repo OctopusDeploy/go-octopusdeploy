@@ -78,37 +78,37 @@ func buildGetVersionsPath(client newclient.Client, query VersionsQuery) (string,
 }
 
 // ActivateVersion activates a published Platform Hub policy version.
-func ActivateVersion(client newclient.Client, version PlatformHubPolicyVersion) (PlatformHubPolicyVersion, error) {
-	return modifyVersionStatus(client, version, true)
+func ActivateVersion(client newclient.Client, slug string, version string) (PlatformHubPolicyVersion, error) {
+	return modifyVersionStatus(client, slug, version, true)
 }
 
 // DeactivateVersion deactivates a published Platform Hub policy version.
-func DeactivateVersion(client newclient.Client, version PlatformHubPolicyVersion) (PlatformHubPolicyVersion, error) {
-	return modifyVersionStatus(client, version, false)
+func DeactivateVersion(client newclient.Client, slug string, version string) (PlatformHubPolicyVersion, error) {
+	return modifyVersionStatus(client, slug, version, false)
 }
 
 type modifyVersionStatusCommand struct {
 	IsActive bool `json:"IsActive"`
 }
 
-func modifyVersionStatus(client newclient.Client, version PlatformHubPolicyVersion, isActive bool) (PlatformHubPolicyVersion, error) {
-	command, path, err := buildModifyVersionStatusCommand(client, version, isActive)
+func modifyVersionStatus(client newclient.Client, slug string, version string, isActive bool) (PlatformHubPolicyVersion, error) {
+	command, path, err := buildModifyVersionStatusCommand(client, slug, version, isActive)
 	if err != nil {
-		return version, err
+		return PlatformHubPolicyVersion{}, err
 	}
 
 	modifiedVersion, postErr := newclient.Post[PlatformHubPolicyVersion](client.HttpSession(), path, command)
 	if postErr != nil {
-		return version, postErr
+		return PlatformHubPolicyVersion{}, postErr
 	}
 
 	return *modifiedVersion, nil
 }
 
-func buildModifyVersionStatusCommand(client newclient.Client, version PlatformHubPolicyVersion, isActive bool) (modifyVersionStatusCommand, string, error) {
+func buildModifyVersionStatusCommand(client newclient.Client, slug string, version string, isActive bool) (modifyVersionStatusCommand, string, error) {
 	path, pathError := client.URITemplateCache().Expand("/api/platformhub/policies/{slug}/versions/{version}/modify-status", map[string]any{
-		"slug":    version.Slug,
-		"version": version.Version,
+		"slug":    slug,
+		"version": version,
 	})
 	if pathError != nil {
 		return modifyVersionStatusCommand{}, "", pathError

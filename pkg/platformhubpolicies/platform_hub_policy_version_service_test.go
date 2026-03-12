@@ -39,7 +39,7 @@ func TestPlatformHubPolicyVersionService_BuildActivateCommand(t *testing.T) {
 	}
 
 	// Act
-	command, path, commandError := buildModifyVersionStatusCommand(client, version, true)
+	command, path, commandError := buildModifyVersionStatusCommand(client, version.Slug, version.Version, true)
 
 	require.NoError(t, commandError)
 	require.Equal(t, fmt.Sprintf("/api/platformhub/policies/%s/versions/%s/modify-status", version.Slug, version.Version), path)
@@ -60,7 +60,7 @@ func TestPlatformHubPolicyVersionService_BuildDeactivateCommand(t *testing.T) {
 	}
 
 	// Act
-	command, path, commandError := buildModifyVersionStatusCommand(client, version, false)
+	command, path, commandError := buildModifyVersionStatusCommand(client, version.Slug, version.Version, false)
 
 	require.NoError(t, commandError)
 	require.Equal(t, fmt.Sprintf("/api/platformhub/policies/%s/versions/%s/modify-status", version.Slug, version.Version), path)
