@@ -6,35 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPlatformHubPolicyNew_Valid(t *testing.T) {
-	newPolicy, err := NewPlatformHubPolicy("Policy One", "refs/heads/main", "policy_one", "package policy_one", "package policy_one", "block")
-	require.NoError(t, err)
-	require.NotNil(t, newPolicy)
-	require.NoError(t, newPolicy.Validate())
-
-	require.Equal(t, "Policy One", newPolicy.GetName())
-	require.Equal(t, "refs/heads/main", newPolicy.GetGitRef())
-	require.Equal(t, "policy_one", newPolicy.GetSlug())
-	require.Empty(t, newPolicy.GetDescription())
-	require.Equal(t, "package policy_one", newPolicy.GetScopeRego())
-	require.Equal(t, "package policy_one", newPolicy.GetConditionsRego())
-	require.Equal(t, "block", newPolicy.GetViolationAction())
-	require.Empty(t, newPolicy.GetViolationReason())
-}
-
-func TestPlatformHubPolicyNew_Invalid(t *testing.T) {
-	// Invalid GitRef
-	gitRef, gitRefError := NewPlatformHubPolicy("Policy One", "", "policy_one", "package policy_one", "package policy_one", "block")
-	require.ErrorContains(t, gitRefError, "GitRef")
-	require.Nil(t, gitRef)
-
-	// Invalid GitRef
-	slug, slugError := NewPlatformHubPolicy("Policy One", "main", "  ", "package policy_one", "package policy_one", "block")
-	require.ErrorContains(t, slugError, "Slug")
-	require.Nil(t, slug)
-}
-
-func TestPlatformHubPolicyValidate_Name(t *testing.T) {
+func TestPolicyValidate_Name(t *testing.T) {
 	policy := newPolicyBuilder().Build()
 
 	// Valid
@@ -49,7 +21,7 @@ func TestPlatformHubPolicyValidate_Name(t *testing.T) {
 	require.ErrorContains(t, policy.Validate(), "Name")
 }
 
-func TestPlatformHubPolicyValidate_GitRef(t *testing.T) {
+func TestPolicyValidate_GitRef(t *testing.T) {
 	policy := newPolicyBuilder().WithGitRef("main").Build()
 
 	// Valid
@@ -63,7 +35,7 @@ func TestPlatformHubPolicyValidate_GitRef(t *testing.T) {
 	require.ErrorContains(t, policy.Validate(), "GitRef")
 }
 
-func TestPlatformHubPolicyValidate_Slug(t *testing.T) {
+func TestPolicyValidate_Slug(t *testing.T) {
 	policy := newPolicyBuilder().WithSlug("valid_slug").Build()
 
 	// Valid
@@ -77,7 +49,7 @@ func TestPlatformHubPolicyValidate_Slug(t *testing.T) {
 	require.ErrorContains(t, policy.Validate(), "Slug")
 }
 
-func TestPlatformHubPolicyValidate_Description(t *testing.T) {
+func TestPolicyValidate_Description(t *testing.T) {
 	policy := newPolicyBuilder().Build()
 
 	// Description is optional
@@ -88,7 +60,7 @@ func TestPlatformHubPolicyValidate_Description(t *testing.T) {
 	require.NoError(t, policy.Validate())
 }
 
-func TestPlatformHubPolicyValidate_ScopeRego(t *testing.T) {
+func TestPolicyValidate_ScopeRego(t *testing.T) {
 	policy := newPolicyBuilder().Build()
 
 	// Valid
@@ -103,7 +75,7 @@ func TestPlatformHubPolicyValidate_ScopeRego(t *testing.T) {
 	require.ErrorContains(t, policy.Validate(), "ScopeRego")
 }
 
-func TestPlatformHubPolicyValidate_ConditionsRego(t *testing.T) {
+func TestPolicyValidate_ConditionsRego(t *testing.T) {
 	policy := newPolicyBuilder().Build()
 
 	// Valid
@@ -118,7 +90,7 @@ func TestPlatformHubPolicyValidate_ConditionsRego(t *testing.T) {
 	require.ErrorContains(t, policy.Validate(), "ConditionsRego")
 }
 
-func TestPlatformHubPolicyValidate_ViolationAction(t *testing.T) {
+func TestPolicyValidate_ViolationAction(t *testing.T) {
 	policy := newPolicyBuilder().Build()
 
 	// Valid
@@ -133,7 +105,7 @@ func TestPlatformHubPolicyValidate_ViolationAction(t *testing.T) {
 	require.ErrorContains(t, policy.Validate(), "ViolationAction")
 }
 
-func TestPlatformHubPolicyValidate_ViolationReason(t *testing.T) {
+func TestPolicyValidate_ViolationReason(t *testing.T) {
 	policy := newPolicyBuilder().Build()
 
 	// ViolationReason is optional
@@ -206,8 +178,21 @@ func (b *policyBuilder) WithViolationAction(violationAction string) *policyBuild
 	return b
 }
 
-func (b *policyBuilder) Build() *PlatformHubPolicy {
-	return &PlatformHubPolicy{
+func (b *policyBuilder) Build() Policy {
+	return &persistedPolicy{
+		Name:            b.name,
+		GitRef:          b.gitRef,
+		Slug:            b.slug,
+		ScopeRego:       b.scopeRego,
+		ConditionsRego:  b.conditionsRego,
+		ViolationAction: b.violationAction,
+		Description:     b.description,
+		ViolationReason: b.violationReason,
+	}
+}
+
+func (b *policyBuilder) BuildCandidate() *PolicyCandidate {
+	return &PolicyCandidate{
 		Name:            b.name,
 		GitRef:          b.gitRef,
 		Slug:            b.slug,
