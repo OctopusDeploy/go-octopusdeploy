@@ -84,8 +84,8 @@ func Publish(client newclient.Client, policy PolicyKey, version string) (Publish
 	return publishedVersion, nil
 }
 
-// GetVersions returns published versions of a Platform Hub policy.
-func GetVersions(client newclient.Client, query PublishedPoliciesQuery) (*PublishedPoliciesQueryResult, error) {
+// ListVersions returns published versions of a Platform Hub policy.
+func ListVersions(client newclient.Client, query PublishedPoliciesQuery) (*PublishedPoliciesQueryResult, error) {
 	path, pathError := buildGetVersionsPath(client, query)
 	if pathError != nil {
 		return nil, pathError
