@@ -1,6 +1,8 @@
 package platformhubpolicies
 
 import (
+	"encoding/json"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
@@ -123,6 +125,29 @@ type PoliciesQueryResult struct {
 	TotalItemsCount    int
 }
 
+func (r *PoliciesQueryResult) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Policies           []persistedPolicy `json:"Policies"`
+		ItemsPerPage       int               `json:"ItemsPerPage"`
+		FilteredItemsCount int               `json:"FilteredItemsCount"`
+		TotalItemsCount    int               `json:"TotalItemsCount"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	r.ItemsPerPage = raw.ItemsPerPage
+	r.FilteredItemsCount = raw.FilteredItemsCount
+	r.TotalItemsCount = raw.TotalItemsCount
+	r.Policies = make([]Policy, len(raw.Policies))
+
+	for i := range raw.Policies {
+		r.Policies[i] = &raw.Policies[i]
+	}
+
+	return nil
+}
+
 // PublishedPoliciesQuery query parameters for listing published policy versions.
 type PublishedPoliciesQuery struct {
 	Slug string `uri:"slug"`
@@ -135,6 +160,27 @@ type PublishedPoliciesQueryResult struct {
 	Items        []PublishedPolicy
 	ItemsPerPage int
 	TotalResults int
+}
+
+func (r *PublishedPoliciesQueryResult) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Items        []publishedPolicyVersion `json:"Items"`
+		ItemsPerPage int                      `json:"ItemsPerPage"`
+		TotalResults int                      `json:"TotalResults"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	r.ItemsPerPage = raw.ItemsPerPage
+	r.TotalResults = raw.TotalResults
+	r.Items = make([]PublishedPolicy, len(raw.Items))
+
+	for i := range raw.Items {
+		r.Items[i] = &raw.Items[i]
+	}
+
+	return nil
 }
 
 func buildAddCommand(client newclient.Client, candidate PolicyCandidate, commitMessage string) (platformHubPolicyUpsertCommand, string, error) {
@@ -212,7 +258,7 @@ func buildPublishCommand(client newclient.Client, policy PolicyKey, version stri
 }
 
 func buildGetVersionsPath(client newclient.Client, query PublishedPoliciesQuery) (string, error) {
-	return client.URITemplateCache().Expand("/api/platformhub/policies/{slug}/versions{?skip,take}", query)
+	return client.URITemplateCache().Expand("/api/platformhub/policies/{slug}/versions/v2{?skip,take}", query)
 }
 
 type modifyVersionStatusCommand struct {
