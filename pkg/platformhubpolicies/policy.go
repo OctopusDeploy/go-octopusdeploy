@@ -8,8 +8,8 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
-// PolicyCandidate represents a set of information to create new Hub policy.
-type PolicyCandidate struct {
+// PolicyDraft represents a set of information to create new Hub policy.
+type PolicyDraft struct {
 	GitRef          string
 	Slug            string
 	Name            string

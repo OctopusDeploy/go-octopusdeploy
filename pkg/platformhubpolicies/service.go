@@ -10,7 +10,7 @@ import (
 const template = "/api/platformhub/{gitRef}/policies{/slug}{?skip,take,partialName}"
 
 // Add creates and stores new policy in Platform Hub.
-func Add(client newclient.Client, policy PolicyCandidate, commitMessage string) (Policy, error) {
+func Add(client newclient.Client, policy PolicyDraft, commitMessage string) (Policy, error) {
 	command, path, commandError := buildAddCommand(client, policy, commitMessage)
 	if commandError != nil {
 		return nil, commandError
@@ -40,8 +40,8 @@ func List(client newclient.Client, query PoliciesQuery) (*PoliciesQueryResult, e
 }
 
 // GetBySlug returns the Platform Hub policy that matches given policy key.
-func GetBySlug(client newclient.Client, key PolicyKey) (Policy, error) {
-	path, pathError := client.URITemplateCache().Expand(template, map[string]any{"gitRef": key.GetGitRef(), "slug": key.GetSlug()})
+func GetBySlug(client newclient.Client, gitRef string, slug string) (Policy, error) {
+	path, pathError := client.URITemplateCache().Expand(template, map[string]any{"gitRef": gitRef, "slug": slug})
 	if pathError != nil {
 		return nil, pathError
 	}
@@ -183,7 +183,7 @@ func (r *PublishedPoliciesQueryResult) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func buildAddCommand(client newclient.Client, candidate PolicyCandidate, commitMessage string) (platformHubPolicyUpsertCommand, string, error) {
+func buildAddCommand(client newclient.Client, candidate PolicyDraft, commitMessage string) (platformHubPolicyUpsertCommand, string, error) {
 	policy := persistedPolicy{
 		GitRef:          candidate.GitRef,
 		Slug:            candidate.Slug,

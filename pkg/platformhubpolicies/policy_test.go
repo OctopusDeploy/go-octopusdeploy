@@ -191,8 +191,8 @@ func (b *policyBuilder) Build() Policy {
 	}
 }
 
-func (b *policyBuilder) BuildCandidate() *PolicyCandidate {
-	return &PolicyCandidate{
+func (b *policyBuilder) BuildDraft() *PolicyDraft {
+	return &PolicyDraft{
 		Name:            b.name,
 		GitRef:          b.gitRef,
 		Slug:            b.slug,

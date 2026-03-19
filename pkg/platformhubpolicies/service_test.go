@@ -22,7 +22,7 @@ func TestPolicy_BuildAddCommand_Valid(t *testing.T) {
 	commitMessage := "Create new policy"
 
 	// Act
-	policy := expectedPolicy.BuildCandidate()
+	policy := expectedPolicy.BuildDraft()
 	command, path, commandError := buildAddCommand(client, *policy, commitMessage)
 
 	require.NoError(t, commandError)
@@ -35,7 +35,7 @@ func TestPolicy_BuildAddCommand_Valid(t *testing.T) {
 func TestPolicy_BuildAddCommand_Invalid(t *testing.T) {
 	var client = newclient.NewClient(&newclient.HttpSession{})
 
-	invalidPolicy := newPolicyBuilder().WithName("InvalidPolicyName").WithConditionsRego("").BuildCandidate()
+	invalidPolicy := newPolicyBuilder().WithName("InvalidPolicyName").WithConditionsRego("").BuildDraft()
 
 	_, _, invalidCommandError := buildAddCommand(client, *invalidPolicy, "commit invalid command")
 
