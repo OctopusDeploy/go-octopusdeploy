@@ -21,6 +21,7 @@ type Deployment struct {
 	DeploymentProcessID      string                     `json:"DeploymentProcessId,omitempty"`
 	EnvironmentID            string                     `json:"EnvironmentId" validate:"required"`
 	ExcludedMachineIDs       []string                   `json:"ExcludedMachineIds"`
+	ExcludedTargetTagIds     []string                   `json:"ExcludedTargetTagIds,omitempty"`
 	FailureEncountered       bool                       `json:"FailureEncountered"`
 	ForcePackageDownload     bool                       `json:"ForcePackageDownload"`
 	ForcePackageRedeployment bool                       `json:"ForcePackageRedeployment"`
@@ -34,6 +35,7 @@ type Deployment struct {
 	SkipActions              []string                   `json:"SkipActions"`
 	SpaceID                  string                     `json:"SpaceId,omitempty"`
 	SpecificMachineIDs       []string                   `json:"SpecificMachineIds"`
+	SpecificTargetTagIds     []string                   `json:"SpecificTargetTagIds,omitempty"`
 	TaskID                   string                     `json:"TaskId,omitempty"`
 	TenantID                 string                     `json:"TenantId,omitempty"`
 	TentacleRetentionPeriod  *core.RetentionPeriod      `json:"TentacleRetentionPeriod,omitempty"`
