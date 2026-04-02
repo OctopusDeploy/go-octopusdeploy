@@ -152,3 +152,164 @@ func TestDeployment_MarshalJSON(t *testing.T) {
 
 	require.JSONEq(t, expectedJSON, string(jsonBytes))
 }
+
+func TestDeploymentTemplateStep_MarshalJSON(t *testing.T) {
+	step := deployments.DeploymentTemplateStep{
+		ActionID:     "Actions-1",
+		ActionName:   "Deploy Package",
+		ActionNumber: "1",
+		Roles:        []string{"web-server", "app-server"},
+		AvailableTagSets: []*deployments.TagSetPreview{
+			{
+				TagSetID:   "TagSets-1",
+				TagSetName: "Role",
+				TagSetType: "MultiSelect",
+				SortOrder:  1,
+				AvailableTags: []*deployments.TargetTagPreview{
+					{
+						TagID:     "Tags-1",
+						TagName:   "WebServer",
+						SortOrder: 1,
+					},
+					{
+						TagID:     "Tags-2",
+						TagName:   "Database",
+						SortOrder: 2,
+					},
+				},
+			},
+			{
+				TagSetID:   "TagSets-2",
+				TagSetName: "Environment",
+				TagSetType: "SingleSelect",
+				SortOrder:  2,
+				AvailableTags: []*deployments.TargetTagPreview{
+					{
+						TagID:     "Tags-3",
+						TagName:   "Production",
+						SortOrder: 1,
+					},
+				},
+			},
+		},
+		MachineNames:            []string{"web-01", "web-02"},
+		CanBeSkipped:            true,
+		IsDisabled:              false,
+		HasNoApplicableMachines: false,
+	}
+
+	jsonBytes, err := json.Marshal(step)
+	require.NoError(t, err)
+
+	expectedJSON := `{
+		"ActionId": "Actions-1",
+		"ActionName": "Deploy Package",
+		"ActionNumber": "1",
+		"Roles": ["web-server", "app-server"],
+		"AvailableTagSets": [
+			{
+				"TagSetId": "TagSets-1",
+				"TagSetName": "Role",
+				"TagSetType": "MultiSelect",
+				"SortOrder": 1,
+				"AvailableTags": [
+					{
+						"TagId": "Tags-1",
+						"TagName": "WebServer",
+						"SortOrder": 1
+					},
+					{
+						"TagId": "Tags-2",
+						"TagName": "Database",
+						"SortOrder": 2
+					}
+				]
+			},
+			{
+				"TagSetId": "TagSets-2",
+				"TagSetName": "Environment",
+				"TagSetType": "SingleSelect",
+				"SortOrder": 2,
+				"AvailableTags": [
+					{
+						"TagId": "Tags-3",
+						"TagName": "Production",
+						"SortOrder": 1
+					}
+				]
+			}
+		],
+		"MachineNames": ["web-01", "web-02"],
+		"CanBeSkipped": true,
+		"IsDisabled": false,
+		"HasNoApplicableMachines": false
+	}`
+
+	require.JSONEq(t, expectedJSON, string(jsonBytes))
+}
+
+func TestDeploymentPreview_MarshalJSON(t *testing.T) {
+	preview := deployments.DeploymentPreview{
+		Form: &deployments.Form{
+			Values:   map[string]string{"Variable1": "Value1"},
+			Elements: []*deployments.Element{},
+		},
+		StepsToExecute: []*deployments.DeploymentTemplateStep{
+			{
+				ActionID:     "Actions-1",
+				ActionName:   "Deploy Package",
+				ActionNumber: "1",
+				AvailableTagSets: []*deployments.TagSetPreview{
+					{
+						TagSetID:   "TagSets-1",
+						TagSetName: "Role",
+						AvailableTags: []*deployments.TargetTagPreview{
+							{
+								TagID:   "Tags-1",
+								TagName: "WebServer",
+							},
+						},
+					},
+				},
+				MachineNames: []string{"web-01"},
+			},
+		},
+		UseGuidedFailureModeByDefault: true,
+	}
+
+	jsonBytes, err := json.Marshal(preview)
+	require.NoError(t, err)
+
+	expectedJSON := `{
+		"Form": {
+			"Values": {"Variable1": "Value1"},
+			"Elements": []
+		},
+		"StepsToExecute": [
+			{
+				"ActionId": "Actions-1",
+				"ActionName": "Deploy Package",
+				"ActionNumber": "1",
+				"AvailableTagSets": [
+					{
+						"TagSetId": "TagSets-1",
+						"TagSetName": "Role",
+						"AvailableTags": [
+							{
+								"TagId": "Tags-1",
+								"TagName": "WebServer"
+							}
+						]
+					}
+				],
+				"MachineNames": ["web-01"],
+				"CanBeSkipped": false,
+				"IsDisabled": false,
+				"HasNoApplicableMachines": false
+			}
+		],
+		"UseGuidedFailureModeByDefault": true
+	}`
+
+	require.JSONEq(t, expectedJSON, string(jsonBytes))
+}
