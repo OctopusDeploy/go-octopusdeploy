@@ -10,7 +10,7 @@ import (
 )
 
 type Channel struct {
-	CustomFieldDefinitions                   []ChannelCustomFieldDefinition `json:"CustomFieldDefinitions,omitempty"`
+	CustomFieldDefinitions                   []ChannelCustomFieldDefinition `json:"CustomFieldDefinitions"`
 	Description                              string                         `json:"Description,omitempty"`
 	EphemeralEnvironmentNameTemplate         string                         `json:"EphemeralEnvironmentNameTemplate,omitempty"`
 	IsDefault                                bool                           `json:"IsDefault"`
