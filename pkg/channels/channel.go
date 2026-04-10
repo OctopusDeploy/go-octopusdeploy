@@ -31,14 +31,13 @@ type Channel struct {
 
 func NewChannel(name string, projectID string) *Channel {
 	return &Channel{
-		Name:                   strings.TrimSpace(name),
-		ProjectID:              projectID,
-		Rules:                  []ChannelRule{},
-		TenantTags:             []string{},
-		GitReferenceRules:      []string{},
-		GitResourceRules:       []ChannelGitResourceRule{},
-		CustomFieldDefinitions: &[]ChannelCustomFieldDefinition{},
-		Resource:               *resources.NewResource(),
+		Name:              strings.TrimSpace(name),
+		ProjectID:         projectID,
+		Rules:             []ChannelRule{},
+		TenantTags:        []string{},
+		GitReferenceRules: []string{},
+		GitResourceRules:  []ChannelGitResourceRule{},
+		Resource:          *resources.NewResource(),
 	}
 }
 
