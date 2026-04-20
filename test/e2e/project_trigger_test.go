@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
@@ -90,6 +91,10 @@ func TestProjectScheduledRunbookTrigger(t *testing.T) {
 	require.NotNil(t, lifecycle)
 	defer DeleteTestLifecycle(t, client, lifecycle)
 
+	environment := CreateTestEnvironment(t, client)
+	require.NotNil(t, environment)
+	defer DeleteTestEnvironment(t, client, environment)
+
 	projectGroup := CreateTestProjectGroup(t, client)
 	require.NotNil(t, projectGroup)
 	defer DeleteTestProjectGroup(t, client, projectGroup)
@@ -104,10 +109,12 @@ func TestProjectScheduledRunbookTrigger(t *testing.T) {
 
 	action := actions.NewRunRunbookAction()
 	action.Runbook = runbook.GetID()
+	action.Environments = []string{environment.GetID()}
 
-	password := internal.GetRandomName()
+	password := getShortRandomName()
+	secret := core.SensitiveValue{HasValue: true, NewValue: &password}
 
-	filter := filters.NewWebhookTriggerFilter(password)
+	filter := filters.NewWebhookTriggerFilter(secret)
 
 	projectTrigger := triggers.NewProjectTrigger(internal.GetRandomName(), internal.GetRandomName(), createRandomBoolean(), project, action, filter)
 	require.NotNil(t, projectTrigger)
