@@ -98,7 +98,12 @@ func TestProjectScheduledRunbookTrigger(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, client, project)
 
+	runbook := CreateTestRunbook(t, client, lifecycle, projectGroup, project)
+	require.NotNil(t, runbook)
+	defer DeleteTestRunbook(t, client, runbook)
+
 	action := actions.NewRunRunbookAction()
+	action.Runbook = runbook.GetID()
 
 	password := internal.GetRandomName()
 
