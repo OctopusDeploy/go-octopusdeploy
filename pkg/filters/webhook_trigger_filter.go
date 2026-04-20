@@ -1,17 +1,19 @@
 package filters
 
+import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+
 type WebhookTriggerFilter struct {
-	Password  string `json:"Password"`
-	WebhookId string `json:"WebhookId,omitempty"`
+	Secret    core.SensitiveValue `json:"Secret"`
+	WebhookId string              `json:"WebhookId,omitempty"`
 
 	triggerFilter
 }
 
-func NewWebhookTriggerFilter(password string) *WebhookTriggerFilter {
+func NewWebhookTriggerFilter(secret core.SensitiveValue) *WebhookTriggerFilter {
 
 	return &WebhookTriggerFilter{
 		triggerFilter: *newTriggerFilter(WebhookFilter),
-		Password:      password,
+		Secret:        secret,
 	}
 }
 
