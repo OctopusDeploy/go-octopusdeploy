@@ -72,7 +72,7 @@ func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *proj
 	require.NotEmpty(t, createdProjectTrigger.GetID())
 
 	// verify the add operation was successful
-	projectTriggerToCompare, err := client.ProjectTriggers.GetByID(createdProjectTrigger.GetID())
+	projectTriggerToCompare, err := triggers.GetById(client, project.SpaceID, createdProjectTrigger.GetID())
 	require.NoError(t, err)
 	require.NotNil(t, projectTriggerToCompare)
 	AssertEqualProjectTriggers(t, createdProjectTrigger, projectTriggerToCompare)
@@ -140,11 +140,11 @@ func DeleteTestProjectTrigger(t *testing.T, client *client.Client, projectTrigge
 	}
 	require.NotNil(t, client)
 
-	err := client.ProjectTriggers.Delete(projectTrigger)
+	err := triggers.DeleteById(client, projectTrigger.SpaceID, projectTrigger.ID)
 	assert.NoError(t, err)
 
 	// verify the delete operation was successful
-	deletedProjectTrigger, err := client.ProjectTriggers.GetByID(projectTrigger.GetID())
+	deletedProjectTrigger, err := triggers.GetById(client, projectTrigger.SpaceID, projectTrigger.GetID())
 	assert.Error(t, err)
 	assert.Nil(t, deletedProjectTrigger)
 }
