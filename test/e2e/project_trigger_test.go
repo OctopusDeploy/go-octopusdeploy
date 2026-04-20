@@ -65,7 +65,7 @@ func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *proj
 	require.NotNil(t, projectTrigger)
 	require.NoError(t, projectTrigger.Validate())
 
-	createdProjectTrigger, err := client.ProjectTriggers.Add(projectTrigger)
+	createdProjectTrigger, err := triggers.Add(client, projectTrigger)
 	require.NoError(t, err)
 	require.NotNil(t, createdProjectTrigger)
 	require.NotEmpty(t, createdProjectTrigger.GetID())
@@ -77,6 +77,47 @@ func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *proj
 	AssertEqualProjectTriggers(t, createdProjectTrigger, projectTriggerToCompare)
 
 	return createdProjectTrigger
+}
+
+func TestProjectScheduledRunbookTrigger(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	action := actions.NewRunRunbookAction()
+
+	password := internal.GetRandomName()
+
+	filter := filters.NewWebhookTriggerFilter(password)
+
+	projectTrigger := triggers.NewProjectTrigger(internal.GetRandomName(), internal.GetRandomName(), createRandomBoolean(), project, action, filter)
+	require.NotNil(t, projectTrigger)
+	require.NoError(t, projectTrigger.Validate())
+
+	createdProjectTrigger, err := triggers.Add(client, projectTrigger)
+	require.NoError(t, err)
+	require.NotNil(t, createdProjectTrigger)
+	require.NotEmpty(t, createdProjectTrigger.GetID())
+
+	// verify the add operation was successful
+	projectTriggerToCompare, err := triggers.GetById(client, project.SpaceID, createdProjectTrigger.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, projectTriggerToCompare)
+	AssertEqualProjectTriggers(t, createdProjectTrigger, projectTriggerToCompare)
 }
 
 func DeleteTestProjectTrigger(t *testing.T, client *client.Client, projectTrigger *triggers.ProjectTrigger) {
