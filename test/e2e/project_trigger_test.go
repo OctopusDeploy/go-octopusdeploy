@@ -8,7 +8,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/triggers"
@@ -40,7 +39,7 @@ func AssertEqualProjectTriggers(t *testing.T, expected *triggers.ProjectTrigger,
 	assert.Equal(t, expected.SpaceID, actual.SpaceID)
 }
 
-func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *projects.Project, environment *environments.Environment) *triggers.ProjectTrigger {
+func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *projects.Project) *triggers.ProjectTrigger {
 	require.NotNil(t, project)
 
 	if client == nil {
@@ -187,7 +186,7 @@ func TestProjectTriggerAddGetUpdateDelete(t *testing.T) {
 	require.NotNil(t, environment)
 	defer DeleteTestEnvironment(t, octopusClient, environment)
 
-	projectTrigger := CreateTestProjectTrigger(t, octopusClient, project, environment)
+	projectTrigger := CreateTestProjectTrigger(t, octopusClient, project)
 	require.NotNil(t, lifecycle)
 	defer DeleteTestProjectTrigger(t, octopusClient, projectTrigger)
 
@@ -216,137 +215,6 @@ func TestProjectTriggerGetAll(t *testing.T) {
 	defer DeleteTestProject(t, octopusClient, project)
 
 	projectTriggers, err := octopusClient.ProjectTriggers.GetAll()
-	require.NoError(t, err)
-	require.NotNil(t, projectTriggers)
-}
-
-// ----- new -----
-
-func New_CreateTestProjectTrigger(t *testing.T, client *client.Client, project *projects.Project) *triggers.ProjectTrigger {
-	require.NotNil(t, project)
-
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	space := GetDefaultSpace(t, client)
-	require.NotNil(t, space)
-
-	now := time.Now()
-	start := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
-
-	action := actions.NewAutoDeployAction(createRandomBoolean())
-	filter := filters.NewOnceDailyScheduledTriggerFilter([]filters.Weekday{filters.Tuesday}, start)
-
-	projectTrigger := triggers.NewProjectTrigger(internal.GetRandomName(), internal.GetRandomName(), createRandomBoolean(), project, action, filter)
-	require.NotNil(t, projectTrigger)
-	require.NoError(t, projectTrigger.Validate())
-
-	createdProjectTrigger, err := client.ProjectTriggers.Add(projectTrigger)
-	require.NoError(t, err)
-	require.NotNil(t, createdProjectTrigger)
-	require.NotEmpty(t, createdProjectTrigger.GetID())
-
-	// verify the add operation was successful
-	projectTriggerToCompare, err := triggers.GetById(client, space.ID, createdProjectTrigger.GetID())
-	require.NoError(t, err)
-	require.NotNil(t, projectTriggerToCompare)
-	AssertEqualProjectTriggers(t, createdProjectTrigger, projectTriggerToCompare)
-
-	return createdProjectTrigger
-}
-
-func New_DeleteTestProjectTrigger(t *testing.T, client *client.Client, projectTrigger *triggers.ProjectTrigger) {
-	require.NotNil(t, projectTrigger)
-
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	space := GetDefaultSpace(t, client)
-	require.NotNil(t, space)
-
-	err := triggers.DeleteById(client, space.ID, projectTrigger.ID)
-	assert.NoError(t, err)
-
-	// verify the delete operation was successful
-	deletedProjectTrigger, err := triggers.GetById(client, space.ID, projectTrigger.GetID())
-	assert.Error(t, err)
-	assert.Nil(t, deletedProjectTrigger)
-}
-
-func New_UpdateTestProjectTrigger(t *testing.T, client *client.Client, projectTrigger *triggers.ProjectTrigger) *triggers.ProjectTrigger {
-	require.NotNil(t, projectTrigger)
-
-	if client == nil {
-		client = getOctopusClient()
-	}
-	require.NotNil(t, client)
-
-	space := GetDefaultSpace(t, client)
-	require.NotNil(t, space)
-
-	projectTrigger, err := triggers.Update(client, projectTrigger)
-	assert.NoError(t, err)
-	assert.NotNil(t, projectTrigger)
-
-	return projectTrigger
-}
-
-func New_TestProjectTriggerAddGetUpdateDelete(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
-
-	space := GetDefaultSpace(t, octopusClient)
-	require.NotNil(t, space)
-
-	lifecycle := CreateTestLifecycle(t, octopusClient)
-	require.NotNil(t, lifecycle)
-	defer DeleteTestLifecycle(t, octopusClient, lifecycle)
-
-	projectGroup := CreateTestProjectGroup(t, octopusClient)
-	require.NotNil(t, projectGroup)
-	defer DeleteTestProjectGroup(t, octopusClient, projectGroup)
-
-	project := CreateTestProject(t, octopusClient, space, lifecycle, projectGroup)
-	require.NotNil(t, project)
-	defer DeleteTestProject(t, octopusClient, project)
-
-	environment := CreateTestEnvironment(t, octopusClient)
-	require.NotNil(t, environment)
-	defer DeleteTestEnvironment(t, octopusClient, environment)
-
-	projectTrigger := New_CreateTestProjectTrigger(t, octopusClient, project)
-	require.NotNil(t, lifecycle)
-	defer New_DeleteTestProjectTrigger(t, octopusClient, projectTrigger)
-
-	projectTrigger.Name = GetRandomName()
-	updatedProjectTrigger := New_UpdateTestProjectTrigger(t, octopusClient, projectTrigger)
-	require.NotNil(t, updatedProjectTrigger)
-}
-
-func New_TestProjectTriggerGetAll(t *testing.T) {
-	octopusClient := getOctopusClient()
-	require.NotNil(t, octopusClient)
-
-	space := GetDefaultSpace(t, octopusClient)
-	require.NotNil(t, space)
-
-	lifecycle := CreateTestLifecycle(t, octopusClient)
-	require.NotNil(t, lifecycle)
-	defer DeleteTestLifecycle(t, octopusClient, lifecycle)
-
-	projectGroup := CreateTestProjectGroup(t, octopusClient)
-	require.NotNil(t, projectGroup)
-	defer DeleteTestProjectGroup(t, octopusClient, projectGroup)
-
-	project := CreateTestProject(t, octopusClient, space, lifecycle, projectGroup)
-	require.NotNil(t, project)
-	defer DeleteTestProject(t, octopusClient, project)
-
-	projectTriggers, err := triggers.GetAll(octopusClient, space.ID)
 	require.NoError(t, err)
 	require.NotNil(t, projectTriggers)
 }
