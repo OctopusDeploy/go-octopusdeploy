@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/configuration"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
@@ -115,6 +116,7 @@ func UpdateTestProjectTrigger(t *testing.T, client *client.Client, projectTrigge
 
 func SetupClientAndProjectAndLifecycleAndProjectGroup(t *testing.T) (*client.Client, *projects.Project, *lifecycles.Lifecycle,
 	*projectgroups.ProjectGroup) {
+
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
@@ -163,6 +165,16 @@ func TestProjectTriggerGetAll(t *testing.T) {
 func TestProjectWebhookRunbookTrigger(t *testing.T) {
 
 	octopusClient, project, lifecycle, projectGroup := SetupClientAndProjectAndLifecycleAndProjectGroup(t)
+
+	//feature toggle must be present and enabled to run this test, otherwise skip it
+	webhookTriggersFeatureToggle, err := configuration.Get(octopusClient, &configuration.FeatureToggleConfigurationQuery{Name: "webhook-triggers"})
+	if err != nil {
+		t.Skip("Could not get feature toggle configuration")
+	} else if len(webhookTriggersFeatureToggle.FeatureToggles) == 0 {
+		t.Skip("WebhookTriggers feature toggle is not present")
+	} else if webhookTriggersFeatureToggle.FeatureToggles[0].IsEnabled == false {
+		t.Skip("WebhookTriggers feature toggle is not enabled")
+	}
 
 	environment := CreateTestEnvironment(t, octopusClient)
 	require.NotNil(t, environment)
