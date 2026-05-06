@@ -41,6 +41,7 @@ const (
 	ParameterSecretKey              string = "secretKey"
 	ParameterSling                  string = "sling"
 	ParameterSpace                  string = "space"
+	ParameterSubscription           string = "subscription"
 	ParameterTagSet                 string = "tagSet"
 	ParameterTask                   string = "task"
 	ParameterTeam                   string = "team"
