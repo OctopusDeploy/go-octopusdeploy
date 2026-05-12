@@ -43,6 +43,7 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 		azureWebAppEndpoint.ResourceGroupName = endpointResource.ResourceGroupName
 		azureWebAppEndpoint.WebAppName = endpointResource.WebAppName
 		azureWebAppEndpoint.WebAppSlotName = endpointResource.WebAppSlotName
+		azureWebAppEndpoint.DefaultWorkerPoolID = endpointResource.DefaultWorkerPoolID
 		endpoint = azureWebAppEndpoint
 	case "Kubernetes":
 		kubernetesEndpoint := NewKubernetesEndpoint(endpointResource.ClusterURL)
