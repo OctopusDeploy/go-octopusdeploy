@@ -88,7 +88,8 @@ and add a Visual Studio Code workspace setting (`.vscode/settings.json`) for the
 Once your pull request has been approved:
 1. **Squash** (not merge) your PR with a [conventional commit]([url](https://www.conventionalcommits.org/en/v1.0.0/#summary)) message
    - Merged PR's will still make it into the release notes, but the release notes will also be polluted with the  merge commit (see [example]([url](https://github.com/OctopusDeploy/go-octopusdeploy/releases/tag/v2.107.0)))
-3. Tag the commit with the next version number - the [release workflow]([url](https://github.com/OctopusDeploy/go-octopusdeploy/actions/workflows/release.yml)) then trigger to create the release
+3. Tag the commit with the next version number - the [release workflow]([url](https://github.com/OctopusDeploy/go-octopusdeploy/actions/workflows/release.yml)) then trigger to create the release in GitHub
+   - Since this is a GO library, it doesn't need to be pushed anywhere else to be shared
 
 ## 🤝 Contributions
 
