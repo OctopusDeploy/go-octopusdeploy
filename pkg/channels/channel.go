@@ -10,7 +10,7 @@ import (
 )
 
 type Channel struct {
-	CustomFieldDefinitions                   []ChannelCustomFieldDefinition `json:"CustomFieldDefinitions,omitempty"`
+	CustomFieldDefinitions                   *[]ChannelCustomFieldDefinition `json:"CustomFieldDefinitions,omitempty"`
 	Description                              string                         `json:"Description,omitempty"`
 	EphemeralEnvironmentNameTemplate         string                         `json:"EphemeralEnvironmentNameTemplate,omitempty"`
 	IsDefault                                bool                           `json:"IsDefault"`
@@ -31,14 +31,13 @@ type Channel struct {
 
 func NewChannel(name string, projectID string) *Channel {
 	return &Channel{
-		Name:                   strings.TrimSpace(name),
-		ProjectID:              projectID,
-		Rules:                  []ChannelRule{},
-		TenantTags:             []string{},
-		GitReferenceRules:      []string{},
-		GitResourceRules:       []ChannelGitResourceRule{},
-		CustomFieldDefinitions: []ChannelCustomFieldDefinition{},
-		Resource:               *resources.NewResource(),
+		Name:              strings.TrimSpace(name),
+		ProjectID:         projectID,
+		Rules:             []ChannelRule{},
+		TenantTags:        []string{},
+		GitReferenceRules: []string{},
+		GitResourceRules:  []ChannelGitResourceRule{},
+		Resource:          *resources.NewResource(),
 	}
 }
 
