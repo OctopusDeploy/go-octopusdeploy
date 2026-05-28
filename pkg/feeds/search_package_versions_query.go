@@ -10,4 +10,6 @@ type SearchPackageVersionsQuery struct {
 	Skip                int    `uri:"skip,omitempty"`
 	Take                int    `uri:"take,omitempty"`
 	VersionRange        string `uri:"versionRange,omitempty"`
+	VersioningStrategy  string `uri:"versioningStrategy,omitempty"`
+	VersionTagRegex     string `uri:"versionTagRegex,omitempty"`
 }
