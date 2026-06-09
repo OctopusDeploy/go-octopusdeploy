@@ -15,7 +15,7 @@ type OIDCIdentityQuery struct {
 }
 
 type OIDCIdentity struct {
-	Audience         string `json:"Audience"`
+	Audience         string `json:"Audience,omitempty"`
 	Issuer           string `json:"Issuer"`
 	Name             string `json:"Name"`
 	ServiceAccountID string `json:"ServiceAccountId"`
