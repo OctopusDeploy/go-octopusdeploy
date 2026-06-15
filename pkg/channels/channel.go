@@ -24,7 +24,7 @@ type Channel struct {
 	TenantTags                               []string                       `json:"TenantTags,omitempty"`
 	Type                                     ChannelType                    `json:"Type,omitempty"`
 	GitReferenceRules                        []string                       `json:"GitReferenceRules,omitempty"`
-	GitResourceRules                         []ChannelGitResourceRule       `json:"GitResourceRules,omitempty"`
+	GitResourceRules                         []ChannelGitResourceRule       `json:"GitResourceRules,omitempty" validate:"dive"`
 
 	resources.Resource
 }
