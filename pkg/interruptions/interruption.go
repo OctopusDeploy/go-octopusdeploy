@@ -7,19 +7,20 @@ import (
 )
 
 type Interruption struct {
-	CanTakeResponsibility       bool      `json:"CanTakeResponsibility"`
-	CorrelationID               string    `json:"CorrelationId,omitempty"`
-	Created                     time.Time `json:"Created,omitempty"`
-	Form                        *Form     `json:"Form,omitempty"`
-	HasResponsibility           bool      `json:"HasResponsibility"`
-	IsLinkedToOtherInterruption bool      `json:"IsLinkedToOtherInterruption"`
-	IsPending                   bool      `json:"IsPending"`
-	RelatedDocumentIDs          []string  `json:"RelatedDocumentIds"`
-	ResponsibleTeamIDs          []string  `json:"ResponsibleTeamIds"`
-	ResponsibleUserID           string    `json:"ResponsibleUserId,omitempty"`
-	SpaceID                     string    `json:"SpaceId,omitempty"`
-	TaskID                      string    `json:"TaskId,omitempty"`
-	Title                       string    `json:"Title,omitempty"`
+	CanTakeResponsibility       bool             `json:"CanTakeResponsibility"`
+	CorrelationID               string           `json:"CorrelationId,omitempty"`
+	Created                     time.Time        `json:"Created,omitempty"`
+	Form                        *Form            `json:"Form,omitempty"`
+	HasResponsibility           bool             `json:"HasResponsibility"`
+	IsLinkedToOtherInterruption bool             `json:"IsLinkedToOtherInterruption"`
+	IsPending                   bool             `json:"IsPending"`
+	RelatedDocumentIDs          []string         `json:"RelatedDocumentIds"`
+	ResponsibleTeamIDs          []string         `json:"ResponsibleTeamIds"`
+	ResponsibleUserID           string           `json:"ResponsibleUserId,omitempty"`
+	SpaceID                     string           `json:"SpaceId,omitempty"`
+	TaskID                      string           `json:"TaskId,omitempty"`
+	Title                       string           `json:"Title,omitempty"`
+	Type                        InterruptionType `json:"Type,omitempty"`
 
 	resources.Resource
 }
@@ -30,5 +31,14 @@ func NewInterruption() *Interruption {
 	}
 }
 
-const ManualInterverventionApprove = "Proceed"
+const ManualInterventionApprove = "Proceed"
 const ManualInterventionDecline = "Abort"
+
+type InterruptionType string
+
+const (
+	ManualIntervention    InterruptionType = "ManualIntervention"
+	GuidedFailure         InterruptionType = "GuidedFailure"
+	PullRequestCompletion InterruptionType = "PullRequestCompletion"
+	ArgoCDApplicationSync InterruptionType = "ArgoCDApplicationSync"
+)
