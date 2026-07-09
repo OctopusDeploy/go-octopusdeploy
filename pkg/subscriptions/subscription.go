@@ -28,6 +28,10 @@ type EventNotificationSubscription struct {
 	EmailShowDatesInTimeZoneId          string                                `json:"EmailShowDatesInTimeZoneId"`
 	EmailTeams                          []string                              `json:"EmailTeams"`
 	Filter                              *EventNotificationSubscriptionFilter  `json:"Filter"`
+	SlackChannelIds                     []string                              `json:"SlackChannelIds"`
+	SlackChannelNames                   []string                              `json:"SlackChannelNames"`
+	SlackDigestFormat                   string                                `json:"SlackDigestFormat"`
+	SlackFrequencyPeriod                string                                `json:"SlackFrequencyPeriod"`
 	WebhookHeaderKey                    string                                `json:"WebhookHeaderKey"`
 	WebhookHeaderValue                  string                                `json:"WebhookHeaderValue"`
 	WebhookLastProcessed                *time.Time                            `json:"WebhookLastProcessed,omitempty"`
@@ -56,6 +60,10 @@ func NewSubscription(name string) *Subscription {
 			EmailPriority:              "Normal",
 			EmailShowDatesInTimeZoneId: "UTC",
 			EmailTeams:                 []string{},
+			SlackChannelIds:            []string{},
+			SlackChannelNames:          []string{},
+			SlackDigestFormat:          "Summary",
+			SlackFrequencyPeriod:       "01:00:00",
 			WebhookTeams:               []string{},
 			WebhookTimeout:             "00:00:10",
 			Filter: &EventNotificationSubscriptionFilter{
