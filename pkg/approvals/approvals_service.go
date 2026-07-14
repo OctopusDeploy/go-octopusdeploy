@@ -54,6 +54,7 @@ func GetByTaskID(client newclient.Client, spaceID string, serverTaskID string) (
 }
 
 // GetByID returns the server-task approval that matches the input ID.
+// It returns (nil, nil) if the response contains no server-task approval.
 func GetByID(client newclient.Client, spaceID string, ID string) (*ServerTaskApproval, error) {
 	if ID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyError("ID")

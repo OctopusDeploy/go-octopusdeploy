@@ -68,3 +68,17 @@ func TestApprovalMarshal(t *testing.T) {
 	}`
 	require.JSONEq(t, expected, string(data))
 }
+
+func TestChangeRequestApprovalStateValues(t *testing.T) {
+	cases := map[ChangeRequestApprovalState]string{
+		ChangeRequestApprovalStatePreApproval:  "PreApproval",
+		ChangeRequestApprovalStateApproved:     "Approved",
+		ChangeRequestApprovalStatePostApproval: "PostApproval",
+	}
+	for state, want := range cases {
+		cr := ChangeRequest{ChangeRequestApprovalState: state}
+		data, err := json.Marshal(cr)
+		require.NoError(t, err)
+		require.Contains(t, string(data), `"ChangeRequestApprovalState":"`+want+`"`)
+	}
+}
