@@ -21,24 +21,25 @@ type EventNotificationSubscriptionFilter struct {
 }
 
 type EventNotificationSubscription struct {
-	EmailDigestLastProcessed            *time.Time                            `json:"EmailDigestLastProcessed,omitempty"`
-	EmailDigestLastProcessedEventAutoId *int64                                `json:"EmailDigestLastProcessedEventAutoId,omitempty"`
-	EmailFrequencyPeriod                string                                `json:"EmailFrequencyPeriod"`
-	EmailPriority                       string                                `json:"EmailPriority"`
-	EmailShowDatesInTimeZoneId          string                                `json:"EmailShowDatesInTimeZoneId"`
-	EmailTeams                          []string                              `json:"EmailTeams"`
-	Filter                              *EventNotificationSubscriptionFilter  `json:"Filter"`
-	SlackChannelIds                     []string                              `json:"SlackChannelIds"`
-	SlackChannelNames                   []string                              `json:"SlackChannelNames"`
-	SlackDigestFormat                   string                                `json:"SlackDigestFormat"`
-	SlackFrequencyPeriod                string                                `json:"SlackFrequencyPeriod"`
-	WebhookHeaderKey                    string                                `json:"WebhookHeaderKey"`
-	WebhookHeaderValue                  string                                `json:"WebhookHeaderValue"`
-	WebhookLastProcessed                *time.Time                            `json:"WebhookLastProcessed,omitempty"`
-	WebhookLastProcessedEventAutoId     *int64                                `json:"WebhookLastProcessedEventAutoId,omitempty"`
-	WebhookTeams                        []string                              `json:"WebhookTeams"`
-	WebhookTimeout                      string                                `json:"WebhookTimeout"`
-	WebhookURI                          string                                `json:"WebhookURI"`
+	EmailDigestLastProcessed            *time.Time                           `json:"EmailDigestLastProcessed,omitempty"`
+	EmailDigestLastProcessedEventAutoId *int64                               `json:"EmailDigestLastProcessedEventAutoId,omitempty"`
+	EmailFrequencyPeriod                string                               `json:"EmailFrequencyPeriod"`
+	EmailPriority                       string                               `json:"EmailPriority"`
+	EmailShowDatesInTimeZoneId          string                               `json:"EmailShowDatesInTimeZoneId"`
+	EmailTeams                          []string                             `json:"EmailTeams"`
+	Filter                              *EventNotificationSubscriptionFilter `json:"Filter"`
+	SlackChannelIds                     []string                             `json:"SlackChannelIds"`
+	SlackChannelNames                   []string                             `json:"SlackChannelNames"`
+	// Deprecated: SlackDigestFormat is no longer used by Octopus Server; Slack digests always send a summary. It will be removed in a future release.
+	SlackDigestFormat               string     `json:"SlackDigestFormat"`
+	SlackFrequencyPeriod            string     `json:"SlackFrequencyPeriod"`
+	WebhookHeaderKey                string     `json:"WebhookHeaderKey"`
+	WebhookHeaderValue              string     `json:"WebhookHeaderValue"`
+	WebhookLastProcessed            *time.Time `json:"WebhookLastProcessed,omitempty"`
+	WebhookLastProcessedEventAutoId *int64     `json:"WebhookLastProcessedEventAutoId,omitempty"`
+	WebhookTeams                    []string   `json:"WebhookTeams"`
+	WebhookTimeout                  string     `json:"WebhookTimeout"`
+	WebhookURI                      string     `json:"WebhookURI"`
 }
 
 type Subscription struct {
@@ -82,7 +83,7 @@ func NewSubscription(name string) *Subscription {
 	}
 }
 
-func (s *Subscription) GetName() string { return s.Name }
+func (s *Subscription) GetName() string     { return s.Name }
 func (s *Subscription) SetName(name string) { s.Name = name }
 
 func (s *Subscription) Validate() error {
