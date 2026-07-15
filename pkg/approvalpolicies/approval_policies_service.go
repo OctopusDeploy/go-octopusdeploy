@@ -1,6 +1,8 @@
 package approvalpolicies
 
 import (
+	"math"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
@@ -18,9 +20,16 @@ func Get(client newclient.Client, spaceID string, query ApprovalPoliciesQuery) (
 	return newclient.GetByQuery[ApprovalPolicy](client, template, spaceID, query)
 }
 
-// GetAll returns all approval policies in the space, following pagination links.
+// GetAll returns all approval policies in the space. The list endpoint requires
+// the skip and take query parameters, so this issues a single request with the
+// maximum take rather than relying on the generic paginated helper (which omits
+// them and would be rejected by the server).
 func GetAll(client newclient.Client, spaceID string) ([]*ApprovalPolicy, error) {
-	return newclient.GetAll[ApprovalPolicy](client, template, spaceID)
+	res, err := Get(client, spaceID, ApprovalPoliciesQuery{Skip: 0, Take: math.MaxInt32})
+	if err != nil {
+		return nil, err
+	}
+	return res.Items, nil
 }
 
 // Add creates a new approval policy.
