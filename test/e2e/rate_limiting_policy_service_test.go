@@ -108,9 +108,9 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 		modifyResponse, modifyError := ratelimitingpolicies.Modify(
 			client,
 			ratelimitingpolicies.ModifyRateLimitingPolicyCommand{
-				Id:              policy.Id,
-				Name:            policy.Name,
-				ScopeType:       policy.ScopeType,
+				Id:        policy.Id,
+				Name:      policy.Name,
+				ScopeType: policy.ScopeType,
 
 				IsEnabled:       isEnabled,
 				RequestsPerHour: requestsPerHour,
@@ -170,9 +170,9 @@ func TestModifyRateLimitingPolicyError(t *testing.T) {
 	modifyResponse, modifyError := ratelimitingpolicies.Modify(
 		client,
 		ratelimitingpolicies.ModifyRateLimitingPolicyCommand{
-			Id:              policy.Id,
-			Name:            "New name", // Not allowed to change built-in policy names
-			ScopeType:       policy.ScopeType,
+			Id:        policy.Id,
+			Name:      "New name", // Not allowed to change built-in policy names
+			ScopeType: policy.ScopeType,
 
 			IsEnabled:       policy.IsEnabled,
 			RequestsPerHour: policy.RequestsPerHour,

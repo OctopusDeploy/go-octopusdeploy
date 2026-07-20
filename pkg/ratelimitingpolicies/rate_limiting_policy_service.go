@@ -14,10 +14,14 @@ func GetByID(client newclient.Client, request GetRateLimitingPolicyByIdRequest) 
 	}
 
 	path, pathError := client.URITemplateCache().Expand(rateLimitingPoliciesTemplate, request)
-	if pathError != nil { return nil, pathError }
+	if pathError != nil {
+		return nil, pathError
+	}
 
 	result, resultError := newclient.Get[RateLimitingPolicy](client.HttpSession(), path)
-	if resultError != nil { return nil, resultError }
+	if resultError != nil {
+		return nil, resultError
+	}
 
 	return result, nil
 }
@@ -25,10 +29,14 @@ func GetByID(client newclient.Client, request GetRateLimitingPolicyByIdRequest) 
 // List returns a paginated collection of rate limiting policies.
 func List(client newclient.Client, request ListRateLimitingPoliciesRequest) (*ListRateLimitingPoliciesResponse, error) {
 	path, pathError := client.URITemplateCache().Expand(rateLimitingPoliciesTemplate, request)
-	if pathError != nil { return nil, pathError }
+	if pathError != nil {
+		return nil, pathError
+	}
 
 	result, resultError := newclient.Get[ListRateLimitingPoliciesResponse](client.HttpSession(), path)
-	if resultError != nil { return nil, resultError }
+	if resultError != nil {
+		return nil, resultError
+	}
 
 	return result, nil
 }
@@ -40,10 +48,14 @@ func Modify(client newclient.Client, command ModifyRateLimitingPolicyCommand) (*
 	}
 
 	path, pathError := client.URITemplateCache().Expand(rateLimitingPoliciesTemplate, command)
-	if pathError != nil { return nil, pathError }
+	if pathError != nil {
+		return nil, pathError
+	}
 
 	result, resultError := newclient.Put[RateLimitingPolicy](client.HttpSession(), path, command)
-	if resultError != nil { return nil, resultError }
+	if resultError != nil {
+		return nil, resultError
+	}
 
 	return result, nil
 }
