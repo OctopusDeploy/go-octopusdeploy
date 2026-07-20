@@ -64,7 +64,7 @@ func TestListRateLimitingPoliciesSkipTake(t *testing.T) {
 	assert.Equal(t, "RateLimitingPolicy-2", response2.Items[0].Id)
 }
 
-func TestGetRateLimitingPolicyById(t *testing.T) {
+func TestGetRateLimitingPolicyByID(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
 
@@ -77,7 +77,7 @@ func TestGetRateLimitingPolicyById(t *testing.T) {
 	assert.Len(t, listResponse.Items, 3)
 
 	for _, policy := range listResponse.Items {
-		getResponse, getError := ratelimitingpolicies.GetById(
+		getResponse, getError := ratelimitingpolicies.GetByID(
 			client,
 			ratelimitingpolicies.GetRateLimitingPolicyByIdRequest{
 				Id: policy.Id,
@@ -128,7 +128,7 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 		assert.Equal(t, auditMode, modifyResponse.AuditMode)
 
 		// Ensure the modify actually set those properties with a follow-up GET
-		getResponse, getError := ratelimitingpolicies.GetById(
+		getResponse, getError := ratelimitingpolicies.GetByID(
 			client,
 			ratelimitingpolicies.GetRateLimitingPolicyByIdRequest{
 				Id: policy.Id,

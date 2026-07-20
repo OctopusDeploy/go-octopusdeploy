@@ -7,8 +7,8 @@ import (
 
 const rateLimitingPoliciesTemplate = "/api/ratelimitingpolicies{/id}{?skip,take}"
 
-// GetById returns the rate limiting policy that matches the given ID.
-func GetById(client newclient.Client, request GetRateLimitingPolicyByIdRequest) (*RateLimitingPolicy, error) {
+// GetByID returns the rate limiting policy that matches the given ID.
+func GetByID(client newclient.Client, request GetRateLimitingPolicyByIdRequest) (*RateLimitingPolicy, error) {
 	if request.Id == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyError("Id")
 	}
