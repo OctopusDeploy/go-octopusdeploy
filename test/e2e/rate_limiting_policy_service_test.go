@@ -45,7 +45,7 @@ func TestListRateLimitingPoliciesSkipTake(t *testing.T) {
 	assert.Equal(t, 3, response1.TotalResults)
 	assert.Equal(t, 3, response1.NumberOfPages)
 	assert.Equal(t, 2, response1.LastPageNumber)
-	assert.Equal(t, "RateLimitingPolicy-1", response1.Items[0].Id)
+	assert.Equal(t, "RateLimitingPolicies-1", response1.Items[0].Id)
 
 	response2, err2 := ratelimitingpolicies.List(
 		client,
@@ -61,7 +61,7 @@ func TestListRateLimitingPoliciesSkipTake(t *testing.T) {
 	assert.Equal(t, 3, response2.TotalResults)
 	assert.Equal(t, 3, response2.NumberOfPages)
 	assert.Equal(t, 2, response2.LastPageNumber)
-	assert.Equal(t, "RateLimitingPolicy-2", response2.Items[0].Id)
+	assert.Equal(t, "RateLimitingPolicies-2", response2.Items[0].Id)
 }
 
 func TestGetRateLimitingPolicyByID(t *testing.T) {
