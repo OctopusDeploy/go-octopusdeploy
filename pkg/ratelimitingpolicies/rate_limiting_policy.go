@@ -1,7 +1,7 @@
 package ratelimitingpolicies
 
 type RateLimitingPolicy struct {
-	Id              string                      `json:"Id"`
+	ID              string                      `json:"Id"`
 	IsBuiltIn       bool                        `json:"IsBuiltIn"`
 	Name            string                      `json:"Name"`
 	IsEnabled       bool                        `json:"IsEnabled"`
@@ -12,7 +12,7 @@ type RateLimitingPolicy struct {
 }
 
 type GetRateLimitingPolicyByIdRequest struct {
-	Id string `uri:"id"`
+	ID string `uri:"id"`
 }
 
 type ListRateLimitingPoliciesRequest struct {
@@ -30,7 +30,7 @@ type ListRateLimitingPoliciesResponse struct {
 }
 
 type ModifyRateLimitingPolicyCommand struct {
-	Id              string                      `uri:"id"`
+	ID              string                      `uri:"id" json:"-"`
 	Name            string                      `json:"Name"`
 	IsEnabled       bool                        `json:"IsEnabled"`
 	ScopeType       RateLimitingPolicyScopeType `json:"ScopeType"`

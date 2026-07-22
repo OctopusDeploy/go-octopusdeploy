@@ -31,7 +31,7 @@ func TestRateLimitingPolicyScopeTypeJsonUnmarshalInvalid(t *testing.T) {
 
 func TestRateLimitingPolicyMarshalRoundTrip(t *testing.T) {
 	policy := RateLimitingPolicy{
-		Id:              "RateLimitingPolicies-2",
+		ID:              "RateLimitingPolicies-2",
 		IsBuiltIn:       true,
 		Name:            "Authenticated requests",
 		IsEnabled:       true,
@@ -63,7 +63,7 @@ func TestRateLimitingPolicyMarshalRoundTrip(t *testing.T) {
 
 func TestModifyRateLimitingPolicyCommandMarshal(t *testing.T) {
 	command := ModifyRateLimitingPolicyCommand{
-		Id:              "RateLimitingPolicies-1",
+		ID:              "RateLimitingPolicies-1",
 		Name:            "Changed",
 		IsEnabled:       true,
 		ScopeType:       Unauthenticated,
@@ -75,7 +75,6 @@ func TestModifyRateLimitingPolicyCommandMarshal(t *testing.T) {
 	data, err := json.Marshal(command)
 	require.NoError(t, err)
 	require.JSONEq(t, `{
-		"Id": "RateLimitingPolicies-1",
 		"Name": "Changed",
 		"IsEnabled": true,
 		"ScopeType": "Unauthenticated",

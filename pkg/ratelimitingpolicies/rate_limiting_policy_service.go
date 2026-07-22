@@ -9,8 +9,8 @@ const rateLimitingPoliciesTemplate = "/api/ratelimitingpolicies{/id}{?skip,take}
 
 // GetByID returns the rate limiting policy that matches the given ID.
 func GetByID(client newclient.Client, request GetRateLimitingPolicyByIdRequest) (*RateLimitingPolicy, error) {
-	if request.Id == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyError("Id")
+	if request.ID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyError("ID")
 	}
 
 	path, pathError := client.URITemplateCache().Expand(rateLimitingPoliciesTemplate, request)
@@ -43,8 +43,8 @@ func List(client newclient.Client, request ListRateLimitingPoliciesRequest) (*Li
 
 // Modify changes the rate limiting policy that matches the given ID.
 func Modify(client newclient.Client, command ModifyRateLimitingPolicyCommand) (*RateLimitingPolicy, error) {
-	if command.Id == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyError("Id")
+	if command.ID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyError("ID")
 	}
 
 	path, pathError := client.URITemplateCache().Expand(rateLimitingPoliciesTemplate, command)

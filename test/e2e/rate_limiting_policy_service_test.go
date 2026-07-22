@@ -45,7 +45,7 @@ func TestListRateLimitingPoliciesSkipTake(t *testing.T) {
 	assert.Equal(t, 3, response1.TotalResults)
 	assert.Equal(t, 3, response1.NumberOfPages)
 	assert.Equal(t, 2, response1.LastPageNumber)
-	assert.Equal(t, "RateLimitingPolicies-1", response1.Items[0].Id)
+	assert.Equal(t, "RateLimitingPolicies-1", response1.Items[0].ID)
 
 	response2, err2 := ratelimitingpolicies.List(
 		client,
@@ -61,7 +61,7 @@ func TestListRateLimitingPoliciesSkipTake(t *testing.T) {
 	assert.Equal(t, 3, response2.TotalResults)
 	assert.Equal(t, 3, response2.NumberOfPages)
 	assert.Equal(t, 2, response2.LastPageNumber)
-	assert.Equal(t, "RateLimitingPolicies-2", response2.Items[0].Id)
+	assert.Equal(t, "RateLimitingPolicies-2", response2.Items[0].ID)
 }
 
 func TestGetRateLimitingPolicyByID(t *testing.T) {
@@ -80,12 +80,12 @@ func TestGetRateLimitingPolicyByID(t *testing.T) {
 		getResponse, getError := ratelimitingpolicies.GetByID(
 			client,
 			ratelimitingpolicies.GetRateLimitingPolicyByIdRequest{
-				Id: policy.Id,
+				ID: policy.ID,
 			})
 
 		assert.NoError(t, getError)
 		assert.NotNil(t, getResponse)
-		assert.Equal(t, policy.Id, getResponse.Id)
+		assert.Equal(t, policy.ID, getResponse.ID)
 	}
 }
 
@@ -108,7 +108,7 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 		modifyResponse, modifyError := ratelimitingpolicies.Modify(
 			client,
 			ratelimitingpolicies.ModifyRateLimitingPolicyCommand{
-				Id:        policy.Id,
+				ID:        policy.ID,
 				Name:      policy.Name,
 				ScopeType: policy.ScopeType,
 
@@ -119,7 +119,7 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 			})
 		assert.NoError(t, modifyError)
 		assert.NotNil(t, modifyResponse)
-		assert.Equal(t, policy.Id, modifyResponse.Id)
+		assert.Equal(t, policy.ID, modifyResponse.ID)
 		assert.Equal(t, policy.Name, modifyResponse.Name)
 		assert.Equal(t, policy.ScopeType, modifyResponse.ScopeType)
 		assert.Equal(t, isEnabled, modifyResponse.IsEnabled)
@@ -131,12 +131,12 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 		getResponse, getError := ratelimitingpolicies.GetByID(
 			client,
 			ratelimitingpolicies.GetRateLimitingPolicyByIdRequest{
-				Id: policy.Id,
+				ID: policy.ID,
 			})
 
 		assert.NoError(t, getError)
 		assert.NotNil(t, getResponse)
-		assert.Equal(t, policy.Id, getResponse.Id)
+		assert.Equal(t, policy.ID, getResponse.ID)
 		assert.Equal(t, policy.Name, getResponse.Name)
 		assert.Equal(t, policy.ScopeType, getResponse.ScopeType)
 		assert.Equal(t, isEnabled, getResponse.IsEnabled)
@@ -170,7 +170,7 @@ func TestModifyRateLimitingPolicyError(t *testing.T) {
 	modifyResponse, modifyError := ratelimitingpolicies.Modify(
 		client,
 		ratelimitingpolicies.ModifyRateLimitingPolicyCommand{
-			Id:        policy.Id,
+			ID:        policy.ID,
 			Name:      "New name", // Not allowed to change built-in policy names
 			ScopeType: policy.ScopeType,
 
