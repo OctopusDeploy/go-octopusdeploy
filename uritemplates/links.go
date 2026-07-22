@@ -44,6 +44,7 @@ const (
 	RunbookSnapshotsByProject = "/api/{spaceId}/projects/{projectId}/runbookSnapshots{/name}{?skip,take,searchByName}"                              // GET
 	RunbookSnapshotRunPreview = "/api/{spaceId}/runbookSnapshots/{snapshotId}/runbookRuns/preview/{environmentId}{?includeDisabledSteps}"           // GET
 	RunbookRunTenantPreview   = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                     // POST
+	RunbookSnapshotVariables  = "/api/{spaceId}/runbookSnapshots/{snapshotId}/snapshot-variables"                                                   // POST
 
 	GitRunbookById             = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}"                                                                 // GET, DELETE
 	GitRunbooksByProject       = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                              // GET
