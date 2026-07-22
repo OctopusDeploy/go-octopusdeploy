@@ -33,6 +33,7 @@ const (
 	ReleasesByProject           = "/api/{spaceId}/projects/{projectId}/releases{/version}{?skip,take,searchByVersion}"             // GET
 	ReleasesByProjectAndChannel = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"  // GET
 	ReleaseDeploymentTemplate   = "/api/{spaceId}/releases/{releaseId}/deployments/template"                                       // GET
+	ReleaseSnapshotVariables    = "/api/{spaceId}/releases/{releaseId}/snapshot-variables"                                         // POST
 
 	Runbooks                  = "/api/{spaceId}/runbooks{/id}{?skip,take,ids,partialName,clone,projectIds}"                                         // GET
 	RunbooksByProject         = "/api/{spaceId}/projects/{projectId}/runbooks{?skip,take,partialName}"                                              // GET
