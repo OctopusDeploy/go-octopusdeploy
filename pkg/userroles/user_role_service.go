@@ -149,17 +149,11 @@ func Add(client newclient.Client, userRole *UserRole) (*UserRole, error) {
 // Get returns a collection of user roles based on the criteria defined by its
 // input query parameter. If an error occurs, an empty collection is returned
 // along with the associated error.
-func Get(client newclient.Client, spaceID string, userRolesQuery UserRolesQuery) (*resources.Resources[*UserRole], error) {
-	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
-	if err != nil {
-		return nil, err
-	}
-
+func Get(client newclient.Client, userRolesQuery UserRolesQuery) (*resources.Resources[*UserRole], error) {
 	values, _ := uritemplates.Struct2map(userRolesQuery)
 	if values == nil {
 		values = map[string]any{}
 	}
-	values["spaceId"] = spaceID
 
 	expandedUri, err := client.URITemplateCache().Expand(userRolesTemplate, values)
 	if err != nil {
