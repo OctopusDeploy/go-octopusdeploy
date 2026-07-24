@@ -28,6 +28,7 @@ type SSHEndpoint struct {
 	ProxyID            string `json:"ProxyId,omitempty"`
 	Port               int
 	URI                *url.URL `json:"Uri"`
+	KeyAlgo            string
 
 	endpoint
 }
@@ -62,6 +63,11 @@ func (s *SSHEndpoint) GetFingerprint() string {
 	return s.Fingerprint
 }
 
+// GetKeyAlgo returns the algorithm used with this SSH endpoints fingerprint
+func (s *SSHEndpoint) GetKeyAlgo() string {
+	return s.KeyAlgo
+}
+
 // GetHost returns the host associated with this SSH endpoint.
 func (s *SSHEndpoint) GetHost() string {
 	return s.Host
@@ -82,6 +88,7 @@ func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 		Port               int
 		ProxyID            string `json:"ProxyId,omitempty"`
 		URI                string `json:"Uri"`
+		KeyAlgo            string
 		resources.Resource
 	}{
 		AccountID:          s.AccountID,
@@ -92,6 +99,7 @@ func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 		Port:               s.Port,
 		ProxyID:            s.ProxyID,
 		URI:                s.URI.String(),
+		KeyAlgo:            s.KeyAlgo,
 		Resource:           s.Resource,
 	}
 
