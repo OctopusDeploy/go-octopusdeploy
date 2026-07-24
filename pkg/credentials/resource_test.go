@@ -147,3 +147,51 @@ func TestResourceWithReferenceAsJSON(t *testing.T) {
 
 	jsonassert.New(t).Assertf(expectedJSON, string(resourceAsJSON))
 }
+
+func TestResourceWithSshKeyAsJSON(t *testing.T) {
+	description := internal.GetRandomName()
+	id := internal.GetRandomName()
+	name := internal.GetRandomName()
+	selfLink := internal.GetRandomName()
+	privateKey := core.NewSensitiveValue(internal.GetRandomName())
+
+	restrictions := credentials.RepositoryRestrictions{
+		Enabled:             false,
+		AllowedRepositories: []string{},
+	}
+
+	restrictionsAsJSON, err := json.Marshal(restrictions)
+	require.NoError(t, err)
+	require.NotNil(t, restrictionsAsJSON)
+
+	sshKey := credentials.NewSshKey(privateKey)
+	sshKey.Username = internal.GetRandomName()
+	sshKey.KeyName = internal.GetRandomName()
+
+	sshKeyAsJSON, err := json.Marshal(sshKey)
+	require.NoError(t, err)
+	require.NotNil(t, sshKeyAsJSON)
+
+	resource := credentials.NewResource(name, sshKey)
+	resource.Description = description
+	resource.ID = id
+	resource.Links["Self"] = selfLink
+	resource.RepositoryRestrictions = &restrictions
+
+	expectedJSON := fmt.Sprintf(`{
+		"Description": "%s",
+		"Details": %s,
+		"RepositoryRestrictions": %s,
+		"Id": "%s",
+		"Name": "%s",
+		"Links": {
+			"Self": "%s"
+		}
+	}`, description, sshKeyAsJSON, restrictionsAsJSON, id, name, selfLink)
+
+	resourceAsJSON, err := json.Marshal(resource)
+	require.NoError(t, err)
+	require.NotNil(t, resourceAsJSON)
+
+	jsonassert.New(t).Assertf(expectedJSON, string(resourceAsJSON))
+}
