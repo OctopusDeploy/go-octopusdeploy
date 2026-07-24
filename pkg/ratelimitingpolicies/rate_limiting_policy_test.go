@@ -31,14 +31,14 @@ func TestRateLimitingPolicyScopeTypeJsonUnmarshalInvalid(t *testing.T) {
 
 func TestRateLimitingPolicyMarshalRoundTrip(t *testing.T) {
 	policy := RateLimitingPolicy{
-		ID:              "RateLimitingPolicies-2",
-		IsBuiltIn:       true,
-		Name:            "Authenticated requests",
-		IsEnabled:       true,
-		ScopeType:       AuthenticatedHuman,
-		RequestsPerHour: 10_000,
-		BurstLimit:      5_000,
-		AuditMode:       true,
+		ID:                "RateLimitingPolicies-2",
+		IsBuiltIn:         true,
+		Name:              "Authenticated requests",
+		IsEnabled:         true,
+		ScopeType:         AuthenticatedHuman,
+		RequestsPerMinute: 10_000,
+		BurstLimit:        5_000,
+		AuditMode:         true,
 	}
 
 	data, err := json.Marshal(policy)
@@ -50,7 +50,7 @@ func TestRateLimitingPolicyMarshalRoundTrip(t *testing.T) {
 		"Name": "Authenticated requests",
 		"IsEnabled": true,
 		"ScopeType": "AuthenticatedHuman",
-		"RequestsPerHour": 10000,
+		"RequestsPerMinute": 10000,
 		"BurstLimit": 5000,
 		"AuditMode": true
 	}`
@@ -63,13 +63,13 @@ func TestRateLimitingPolicyMarshalRoundTrip(t *testing.T) {
 
 func TestModifyRateLimitingPolicyCommandMarshal(t *testing.T) {
 	command := ModifyRateLimitingPolicyCommand{
-		ID:              "RateLimitingPolicies-1",
-		Name:            "Changed",
-		IsEnabled:       true,
-		ScopeType:       Unauthenticated,
-		RequestsPerHour: 123,
-		BurstLimit:      456,
-		AuditMode:       true,
+		ID:                "RateLimitingPolicies-1",
+		Name:              "Changed",
+		IsEnabled:         true,
+		ScopeType:         Unauthenticated,
+		RequestsPerMinute: 123,
+		BurstLimit:        456,
+		AuditMode:         true,
 	}
 
 	data, err := json.Marshal(command)
@@ -78,7 +78,7 @@ func TestModifyRateLimitingPolicyCommandMarshal(t *testing.T) {
 		"Name": "Changed",
 		"IsEnabled": true,
 		"ScopeType": "Unauthenticated",
-		"RequestsPerHour": 123,
+		"RequestsPerMinute": 123,
 		"BurstLimit": 456,
 		"AuditMode": true
 	}`, string(data))
@@ -98,7 +98,7 @@ func TestListRateLimitingPoliciesResponseUnmarshal(t *testing.T) {
 				"IsBuiltIn": true,
 				"ScopeType": "AuthenticatedHuman",
 				"IsEnabled": true,
-				"RequestsPerHour": 1000,
+				"RequestsPerMinute": 1000,
 				"BurstLimit": 50,
 				"AuditMode": true
 			},
@@ -108,7 +108,7 @@ func TestListRateLimitingPoliciesResponseUnmarshal(t *testing.T) {
 				"IsBuiltIn": true,
 				"ScopeType": "AuthenticatedAgent",
 				"IsEnabled": false,
-				"RequestsPerHour": 500,
+				"RequestsPerMinute": 500,
 				"BurstLimit": 25,
 				"AuditMode": false
 			}

@@ -104,7 +104,7 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 	assert.Len(t, listResponse.Items, 1)
 	policy := listResponse.Items[0]
 
-	testModify := func(isEnabled bool, requestsPerHour int, burstLimit int, auditMode bool) {
+	testModify := func(isEnabled bool, requestsPerMinute int, burstLimit int, auditMode bool) {
 		modifyResponse, modifyError := ratelimitingpolicies.Modify(
 			client,
 			ratelimitingpolicies.ModifyRateLimitingPolicyCommand{
@@ -112,10 +112,10 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 				Name:      policy.Name,
 				ScopeType: policy.ScopeType,
 
-				IsEnabled:       isEnabled,
-				RequestsPerHour: requestsPerHour,
-				BurstLimit:      burstLimit,
-				AuditMode:       auditMode,
+				IsEnabled:         isEnabled,
+				RequestsPerMinute: requestsPerMinute,
+				BurstLimit:        burstLimit,
+				AuditMode:         auditMode,
 			})
 		assert.NoError(t, modifyError)
 		assert.NotNil(t, modifyResponse)
@@ -123,7 +123,7 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 		assert.Equal(t, policy.Name, modifyResponse.Name)
 		assert.Equal(t, policy.ScopeType, modifyResponse.ScopeType)
 		assert.Equal(t, isEnabled, modifyResponse.IsEnabled)
-		assert.Equal(t, requestsPerHour, modifyResponse.RequestsPerHour)
+		assert.Equal(t, requestsPerMinute, modifyResponse.RequestsPerMinute)
 		assert.Equal(t, burstLimit, modifyResponse.BurstLimit)
 		assert.Equal(t, auditMode, modifyResponse.AuditMode)
 
@@ -140,7 +140,7 @@ func TestModifyRateLimitingPolicy(t *testing.T) {
 		assert.Equal(t, policy.Name, getResponse.Name)
 		assert.Equal(t, policy.ScopeType, getResponse.ScopeType)
 		assert.Equal(t, isEnabled, getResponse.IsEnabled)
-		assert.Equal(t, requestsPerHour, getResponse.RequestsPerHour)
+		assert.Equal(t, requestsPerMinute, getResponse.RequestsPerMinute)
 		assert.Equal(t, burstLimit, getResponse.BurstLimit)
 		assert.Equal(t, auditMode, getResponse.AuditMode)
 	}
@@ -174,10 +174,10 @@ func TestModifyRateLimitingPolicyError(t *testing.T) {
 			Name:      "New name", // Not allowed to change built-in policy names
 			ScopeType: policy.ScopeType,
 
-			IsEnabled:       policy.IsEnabled,
-			RequestsPerHour: policy.RequestsPerHour,
-			BurstLimit:      policy.BurstLimit,
-			AuditMode:       policy.AuditMode,
+			IsEnabled:         policy.IsEnabled,
+			RequestsPerMinute: policy.RequestsPerMinute,
+			BurstLimit:        policy.BurstLimit,
+			AuditMode:         policy.AuditMode,
 		})
 	assert.Nil(t, modifyResponse)
 	assert.Error(t, modifyError)
