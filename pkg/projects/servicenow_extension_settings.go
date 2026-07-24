@@ -8,8 +8,8 @@ import (
 )
 
 type ServiceNowExtensionSettings struct {
-	IsStateAutomaticallyTransitioned bool
-	StandardChangeTemplateName       string
+	IsStateAutomaticallyTransitioned bool   `json:"AutomaticStateTransition"`
+	StandardChangeTemplateName       string `json:"StandardChangeTemplateName,omitempty"`
 
 	ext.ConnectedChangeControlExtensionSettings
 }
