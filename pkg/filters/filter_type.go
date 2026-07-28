@@ -12,4 +12,5 @@ const (
 	OnceDailySchedule
 	FeedFilter
 	GitFilter
+	WebhookFilter
 )
