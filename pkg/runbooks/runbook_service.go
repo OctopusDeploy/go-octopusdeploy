@@ -240,6 +240,30 @@ func GetSnapshot(client newclient.Client, spaceID string, projectID string, snap
 	return newclient.Get[RunbookSnapshot](client.HttpSession(), expandedUri)
 }
 
+// SnapshotVariables refreshes (re-snapshots) the variable snapshot for an existing runbook snapshot.
+// It POSTs to /api/{spaceId}/runbookSnapshots/{snapshotId}/snapshot-variables and returns the updated snapshot.
+func SnapshotVariables(client newclient.Client, spaceID string, snapshotID string) (*RunbookSnapshot, error) {
+	if client == nil {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+	}
+	if snapshotID == "" {
+		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("snapshotID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbookSnapshotVariables, map[string]any{
+		"spaceId":    spaceID,
+		"snapshotId": snapshotID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Post[RunbookSnapshot](client.HttpSession(), expandedUri, nil)
+}
+
 // ListEnvironments returns the list of valid environments for a given runbook
 func ListEnvironments(client newclient.Client, spaceID string, projectID string, runbookID string) ([]*environments.Environment, error) {
 	if spaceID == "" {
