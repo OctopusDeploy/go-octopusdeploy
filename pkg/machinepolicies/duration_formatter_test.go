@@ -1,4 +1,4 @@
-package machines
+package machinepolicies
 
 import (
 	"testing"
