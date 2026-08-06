@@ -3,6 +3,7 @@ package machines
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -30,20 +31,67 @@ func ToTimeSpan(duration time.Duration) string {
 	return fmt.Sprintf("%02d.%02d:%02d:%02d.%05d", days, hours, minutes, seconds, secondsFraction)
 }
 
+// FromTimeSpan parses a .NET time span, "[d.]hh:mm:ss[.fffffff]", into a duration. The day and
+// fractional-second components are optional, and the server does not pad the day component to a
+// fixed width, so the fields cannot be read at fixed offsets. Input that does not parse yields a
+// zero duration.
 func FromTimeSpan(timeSpan string) time.Duration {
-	if len(timeSpan) == 8 {
-		hours, _ := strconv.ParseInt(timeSpan[0:2], 10, 64)
-		minutes, _ := strconv.ParseInt(timeSpan[3:5], 10, 64)
-		seconds, _ := strconv.ParseInt(timeSpan[6:8], 10, 64)
-		duration, _ := time.ParseDuration(fmt.Sprintf("%dh%dm%ds", hours, minutes, seconds))
-		return duration
+	var days int64
+	remainder := timeSpan
+
+	// Both the day separator and the fractional-second separator are ".", so a leading segment is
+	// only the day component when the rest still holds a complete "hh:mm:ss".
+	if index := strings.Index(remainder, "."); index >= 0 && strings.Count(remainder[index+1:], ":") == 2 {
+		parsedDays, err := strconv.ParseInt(remainder[:index], 10, 64)
+		if err != nil {
+			return 0
+		}
+		days = parsedDays
+		remainder = remainder[index+1:]
 	}
 
-	days, _ := strconv.ParseInt(timeSpan[0:0], 10, 32)
-	hours, _ := strconv.ParseInt(timeSpan[2:4], 10, 64)
-	hours += (days * 24)
-	minutes, _ := strconv.ParseInt(timeSpan[5:7], 10, 64)
-	seconds, _ := strconv.ParseInt(timeSpan[8:10], 10, 64)
-	duration, _ := time.ParseDuration(fmt.Sprintf("%dh%dm%ds", hours, minutes, seconds))
-	return duration
+	var fraction time.Duration
+	if index := strings.Index(remainder, "."); index >= 0 {
+		digits := remainder[index+1:]
+		parsedFraction, err := strconv.ParseInt(digits, 10, 64)
+		if err != nil {
+			return 0
+		}
+		// The digits are a decimal fraction of a second, however many of them there are.
+		scale := pow10(len(digits))
+		fraction = time.Duration(parsedFraction * int64(time.Second) / scale)
+		remainder = remainder[:index]
+	}
+
+	fields := strings.Split(remainder, ":")
+	if len(fields) != 3 {
+		return 0
+	}
+
+	hours, err := strconv.ParseInt(fields[0], 10, 64)
+	if err != nil {
+		return 0
+	}
+	minutes, err := strconv.ParseInt(fields[1], 10, 64)
+	if err != nil {
+		return 0
+	}
+	seconds, err := strconv.ParseInt(fields[2], 10, 64)
+	if err != nil {
+		return 0
+	}
+
+	return time.Duration(days)*24*time.Hour +
+		time.Duration(hours)*time.Hour +
+		time.Duration(minutes)*time.Minute +
+		time.Duration(seconds)*time.Second +
+		fraction
+}
+
+func pow10(exponent int) int64 {
+	result := int64(1)
+	for i := 0; i < exponent; i++ {
+		result *= 10
+	}
+	return result
 }
