@@ -225,6 +225,15 @@ func GetVersionByID(client newclient.Client, spaceID string, actionTemplateID st
 
 // Get returns a collection of action templates based on the criteria defined by its
 // input query parameter.
+//
+// Deprecated: ActionTemplateSearch carries no uri tags, so its fields never reach the server and
+// every call returns the default first page. Use GetByQuery.
 func Get(client newclient.Client, spaceID string, actionsQuery ActionTemplateSearch) (*resources.Resources[*ActionTemplate], error) {
 	return newclient.GetByQuery[ActionTemplate](client, template, spaceID, actionsQuery)
+}
+
+// GetByQuery returns a collection of action templates based on the criteria defined by its
+// input query parameter.
+func GetByQuery(client newclient.Client, spaceID string, actionTemplatesQuery Query) (*resources.Resources[*ActionTemplate], error) {
+	return newclient.GetByQuery[ActionTemplate](client, template, spaceID, actionTemplatesQuery)
 }
