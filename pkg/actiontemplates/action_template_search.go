@@ -1,6 +1,7 @@
 package actiontemplates
 
-// ActionTemplateSearch represents an action template search.
+// ActionTemplateSearch is a search result returned by ActionTemplateService.Search. It is a
+// response shape, not a query: use Query to filter a collection request.
 type ActionTemplateSearch struct {
 	Author                    string            `json:"Author,omitempty"`
 	Categories                []string          `json:"Categories"`
