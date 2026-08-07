@@ -6,6 +6,7 @@ type ServerStatus struct {
 	IsDatabaseEncrypted                     bool   `json:"IsDatabaseEncrypted"`
 	IsMajorMinorUpgrade                     bool   `json:"IsMajorMinorUpgrade"`
 	IsInMaintenanceMode                     bool   `json:"IsInMaintenanceMode"`
+	IsPotentialClone                        bool   `json:"IsPotentialClone"`
 	IsUpgradeAvailable                      bool   `json:"IsUpgradeAvailable"`
 	MaintenanceExpires                      string `json:"MaintenanceExpires,omitempty"`
 	MaximumAvailableVersion                 string `json:"MaximumAvailableVersion,omitempty"`
