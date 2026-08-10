@@ -35,6 +35,7 @@ jobs:
           DB_CONNECTION_STRING: 'Server=sqlserver;Database=OctopusDeploy;User Id=sa;Password=${{ env.SA_PASSWORD }};'
           ADMIN_API_KEY: ${{ env.ADMIN_API_KEY }}
           ENABLE_USAGE: N
+          DISABLE_RATE_LIMITING: Y
           OCTOPUS_SERVER_BASE64_LICENSE: ${{ secrets.OCTOPUS_SERVER_BASE64_LICENSE }}
           OCTOPUS__FeatureToggles__EphemeralEnvironmentsManualDeploymentsFeatureToggle: 'true'
           OCTOPUS__FeatureToggles__EphemeralEnvironmentsFeatureToggle: 'true'
