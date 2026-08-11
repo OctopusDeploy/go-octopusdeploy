@@ -3,24 +3,27 @@ package dashboard
 import (
 	"time"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/interruptions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type DashboardItem struct {
-	ChannelID                string     `json:"ChannelId,omitempty"`
-	CompletedTime            *time.Time `json:"CompletedTime,omitempty"`
-	Created                  *time.Time `json:"Created,omitempty"`
-	DeploymentID             string     `json:"DeploymentId,omitempty"`
-	Duration                 string     `json:"Duration,omitempty"`
-	EnvironmentID            string     `json:"EnvironmentId,omitempty"`
-	ErrorMessage             string     `json:"ErrorMessage,omitempty"`
-	HasPendingInterruptions  bool       `json:"HasPendingInterruptions"`
-	HasPendingPreconditions  bool       `json:"HasPendingPreconditions"`
-	HasWarningsOrErrors      bool       `json:"HasWarningsOrErrors"`
-	IsCompleted              bool       `json:"IsCompleted"`
-	IsCurrent                bool       `json:"IsCurrent"`
-	IsPrevious               bool       `json:"IsPrevious"`
-	PendingInterruptionTypes []string   `json:"PendingInterruptionTypes,omitempty"`
+	ChannelID                string                           `json:"ChannelId,omitempty"`
+	CompletedTime            *time.Time                       `json:"CompletedTime,omitempty"`
+	Created                  *time.Time                       `json:"Created,omitempty"`
+	DeploymentID             string                           `json:"DeploymentId,omitempty"`
+	Duration                 string                           `json:"Duration,omitempty"`
+	EnvironmentID            string                           `json:"EnvironmentId,omitempty"`
+	ErrorMessage             string                           `json:"ErrorMessage,omitempty"`
+	HasPendingInterruptions  bool                             `json:"HasPendingInterruptions"`
+	HasPendingPreconditions  bool                             `json:"HasPendingPreconditions"`
+	HasWarningsOrErrors      bool                             `json:"HasWarningsOrErrors"`
+	IsCompleted              bool                             `json:"IsCompleted"`
+	IsCurrent                bool                             `json:"IsCurrent"`
+	IsPrevious               bool                             `json:"IsPrevious"`
+	PendingInterruptionTypes []interruptions.InterruptionType `json:"PendingInterruptionTypes,omitempty"`
+	// PendingPreconditionTypes is an open set of strings server side rather than
+	// a fixed enum, so it is not typed.
 	PendingPreconditionTypes []string   `json:"PendingPreconditionTypes,omitempty"`
 	ProjectID                string     `json:"ProjectId,omitempty"`
 	QueueTime                *time.Time `json:"QueueTime,omitempty"`

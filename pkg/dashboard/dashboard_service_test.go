@@ -7,6 +7,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/interruptions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -268,4 +269,36 @@ func TestDashboardDeserializationTenantedItem(t *testing.T) {
 	require.Len(t, dashboard.Items, 1)
 	assert.Equal(t, "Tenants-1", dashboard.Items[0].TenantID)
 	assert.Equal(t, "1.0.0", dashboard.Items[0].ReleaseVersion)
+}
+
+// TestDashboardDeserializationPendingTypes covers an item waiting on a manual
+// intervention or an approval. Both collections are empty on a healthy
+// dashboard, so this is the only coverage they get.
+func TestDashboardDeserializationPendingTypes(t *testing.T) {
+	dashboard := &Dashboard{}
+	require.NoError(t, json.Unmarshal([]byte(`{
+	  "Items": [
+	    {
+	      "ProjectId": "Projects-1",
+	      "EnvironmentId": "Environments-1",
+	      "State": "Queued",
+	      "HasPendingInterruptions": true,
+	      "PendingInterruptionTypes": ["ManualIntervention", "GuidedFailure"],
+	      "HasPendingPreconditions": true,
+	      "PendingPreconditionTypes": ["Approval"]
+	    }
+	  ]
+	}`), dashboard))
+
+	require.Len(t, dashboard.Items, 1)
+	item := dashboard.Items[0]
+
+	assert.True(t, item.HasPendingInterruptions)
+	assert.Equal(t, []interruptions.InterruptionType{
+		interruptions.InterruptionTypeManualIntervention,
+		interruptions.InterruptionTypeGuidedFailure,
+	}, item.PendingInterruptionTypes)
+
+	assert.True(t, item.HasPendingPreconditions)
+	assert.Equal(t, []string{"Approval"}, item.PendingPreconditionTypes)
 }
