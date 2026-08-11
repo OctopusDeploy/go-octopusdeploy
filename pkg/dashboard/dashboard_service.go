@@ -28,6 +28,10 @@ func NewDashboardService(sling *sling.Sling, uriTemplate string, dashboardDynami
 //
 // Passing a zero-valued query returns every project and environment the caller
 // can see, subject to the server's project limit.
+//
+// The query filters on IDs, not names. The server does not reject a name, it
+// simply matches nothing, so a name-filtered call returns an empty dashboard
+// that is indistinguishable from nothing being deployed.
 func (s *DashboardService) GetDynamicDashboard(query DashboardDynamicQuery) (*Dashboard, error) {
 	path, err := s.getDynamicDashboardPath(query)
 	if err != nil {

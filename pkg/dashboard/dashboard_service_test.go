@@ -162,7 +162,16 @@ func TestDashboardDeserialization(t *testing.T) {
 	      "Duration": "59 seconds",
 	      "IsCurrent": true,
 	      "IsPrevious": false,
-	      "IsCompleted": true
+	      "IsCompleted": true,
+	      "HasPendingInterruptions": false,
+	      "HasPendingPreconditions": false,
+	      "PendingInterruptionTypes": [],
+	      "PendingPreconditionTypes": [],
+	      "Links": {
+	        "Self": "/api/Spaces-1/deployments/Deployments-387",
+	        "Release": "/api/Spaces-1/releases/Releases-302",
+	        "Task": "/api/tasks/ServerTasks-12388"
+	      }
 	    }
 	  ],
 	  "ProjectLimit": null,
@@ -185,6 +194,16 @@ func TestDashboardDeserialization(t *testing.T) {
 	assert.False(t, item.IsPrevious)
 	require.NotNil(t, item.CompletedTime)
 	assert.Equal(t, 2026, item.CompletedTime.Year())
+
+	// Each item carries its own Id and Links. Without them a caller cannot reach
+	// the deployment, release or task without rebuilding paths from the IDs.
+	assert.Equal(t, "Deployments-387", item.GetID())
+	assert.Equal(t, "/api/Spaces-1/deployments/Deployments-387", item.Links["Self"])
+	assert.Equal(t, "/api/tasks/ServerTasks-12388", item.Links["Task"])
+	assert.False(t, item.HasPendingInterruptions)
+	assert.False(t, item.HasPendingPreconditions)
+	assert.Empty(t, item.PendingInterruptionTypes)
+	assert.Empty(t, item.PendingPreconditionTypes)
 
 	// The reference data is what makes the item IDs printable, so check each
 	// lookup resolves rather than only that it parsed.
