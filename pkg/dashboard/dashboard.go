@@ -8,11 +8,11 @@ import (
 // dynamic dashboard endpoints: the deployments themselves in Items, plus the
 // reference data needed to resolve the IDs those items carry.
 type Dashboard struct {
-	Items         []*DashboardItem               `json:"Items"`
-	Projects      []*DashboardProject            `json:"Projects"`
-	ProjectGroups []*DashboardProjectGroup       `json:"ProjectGroups"`
-	Environments  []*resources.ReferenceDataItem `json:"Environments"`
-	Tenants       []*DashboardTenant             `json:"Tenants"`
+	Items         []*DashboardItem         `json:"Items"`
+	Projects      []*DashboardProject      `json:"Projects"`
+	ProjectGroups []*DashboardProjectGroup `json:"ProjectGroups"`
+	Environments  []*DashboardEnvironment  `json:"Environments"`
+	Tenants       []*DashboardTenant       `json:"Tenants"`
 
 	// ProjectLimit is set when the server caps how many projects the dashboard
 	// reports on, and is nil when no cap applies. Callers showing a full list
@@ -36,6 +36,14 @@ type DashboardProject struct {
 	TenantedDeploymentMode         string   `json:"TenantedDeploymentMode,omitempty"`
 	CanPerformUntenantedDeployment bool     `json:"CanPerformUntenantedDeployment"`
 	IsDisabled                     bool     `json:"IsDisabled"`
+
+	resources.Resource
+}
+
+// DashboardEnvironment is the subset of an environment the dashboard returns to
+// accompany its items.
+type DashboardEnvironment struct {
+	Name string `json:"Name,omitempty"`
 
 	resources.Resource
 }

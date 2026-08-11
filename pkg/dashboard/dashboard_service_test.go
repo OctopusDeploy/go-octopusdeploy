@@ -131,7 +131,11 @@ func TestDashboardDeserialization(t *testing.T) {
 	    }
 	  ],
 	  "Environments": [
-	    { "Id": "Environments-3", "Name": "Development" },
+	    {
+	      "Id": "Environments-3",
+	      "Name": "Development",
+	      "Links": { "Self": "/api/Spaces-1/environments/Environments-3" }
+	    },
 	    { "Id": "Environments-1", "Name": "Staging" },
 	    { "Id": "Environments-2", "Name": "Production" }
 	  ],
@@ -222,6 +226,8 @@ func TestDashboardDeserialization(t *testing.T) {
 	require.Len(t, dashboard.Environments, 3)
 	assert.Equal(t, []string{"Development", "Staging", "Production"},
 		[]string{dashboard.Environments[0].Name, dashboard.Environments[1].Name, dashboard.Environments[2].Name})
+	assert.Equal(t, "Environments-3", dashboard.Environments[0].GetID())
+	assert.Equal(t, "/api/Spaces-1/environments/Environments-3", dashboard.Environments[0].Links["Self"])
 
 	require.Len(t, dashboard.Tenants, 1)
 	assert.Equal(t, "Tenants-1", dashboard.Tenants[0].GetID())
