@@ -1,6 +1,6 @@
 package actiontemplates
 
-// ActionTemplateSearch is a result returned by ActionTemplateService.Search, not a query type.
+// ActionTemplateSearch is a result returned by ActionTemplateService.Search.
 type ActionTemplateSearch struct {
 	Author                    string            `json:"Author,omitempty"`
 	Categories                []string          `json:"Categories"`
