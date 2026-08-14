@@ -1,6 +1,8 @@
 package deployments
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -40,8 +42,10 @@ func (s *DeploymentProcessService) Get(project *projects.Project, gitRef string)
 		gitRef = gitPersistenceSettings.DefaultBranch()
 	}
 
-	template, _ := uritemplates.Parse(project.Links["DeploymentProcess"])
-	path, _ := template.Expand(map[string]interface{}{"gitRef": gitRef})
+	path, err := expandLink("project", "DeploymentProcess", project.Links["DeploymentProcess"], map[string]interface{}{"gitRef": gitRef})
+	if err != nil {
+		return nil, err
+	}
 
 	resp, err := api.ApiGet(s.GetClient(), new(DeploymentProcess), path)
 	if err != nil {
@@ -60,8 +64,6 @@ func (s *DeploymentProcessService) GetTemplate(deploymentProcess *DeploymentProc
 		return nil, internal.CreateInvalidParameterError("GetTemplate", "deploymentProcess")
 	}
 
-	template, _ := uritemplates.Parse(deploymentProcess.Links["Template"])
-
 	values := map[string]interface{}{}
 
 	if len(channelID) > 0 {
@@ -72,7 +74,10 @@ func (s *DeploymentProcessService) GetTemplate(deploymentProcess *DeploymentProc
 		values["releaseId"] = releaseID
 	}
 
-	path, _ := template.Expand(values)
+	path, err := expandLink("deploymentProcess", "Template", deploymentProcess.Links["Template"], values)
+	if err != nil {
+		return nil, err
+	}
 
 	resp, err := api.ApiGet(s.GetClient(), new(DeploymentProcessTemplate), path)
 	if err != nil {
@@ -163,8 +168,10 @@ func GetDeploymentProcessByGitRef(client newclient.Client, spaceID string, proje
 	}
 
 	// TODO: remove use of links
-	template, _ := uritemplates.Parse(project.Links["DeploymentProcess"])
-	path, _ := template.Expand(map[string]interface{}{"gitRef": gitRef})
+	path, err := expandLink("project", "DeploymentProcess", project.Links["DeploymentProcess"], map[string]interface{}{"gitRef": gitRef})
+	if err != nil {
+		return nil, err
+	}
 
 	deploymentProcess, err := newclient.Get[DeploymentProcess](client.HttpSession(), path)
 	if err != nil {
@@ -196,8 +203,6 @@ func GetDeploymentProcessTemplate(client newclient.Client, deploymentProcess *De
 		return nil, internal.CreateInvalidParameterError("GetTemplate", "deploymentProcess")
 	}
 
-	template, _ := uritemplates.Parse(deploymentProcess.Links["Template"])
-
 	values := map[string]interface{}{}
 
 	if len(channelID) > 0 {
@@ -208,7 +213,10 @@ func GetDeploymentProcessTemplate(client newclient.Client, deploymentProcess *De
 		values["releaseId"] = releaseID
 	}
 
-	path, _ := template.Expand(values)
+	path, err := expandLink("deploymentProcess", "Template", deploymentProcess.Links["Template"], values)
+	if err != nil {
+		return nil, err
+	}
 
 	deploymentProcessTemplate, err := newclient.Get[DeploymentProcessTemplate](client.HttpSession(), path)
 	if err != nil {
@@ -216,6 +224,21 @@ func GetDeploymentProcessTemplate(client newclient.Client, deploymentProcess *De
 	}
 
 	return deploymentProcessTemplate, nil
+}
+
+// expandLink expands a hypermedia link template, returning an error when the
+// link is absent rather than falling through to an empty path.
+func expandLink(resource string, name string, link string, values map[string]interface{}) (string, error) {
+	if internal.IsEmpty(link) {
+		return "", fmt.Errorf("the state of the input %s is not valid; cannot resolve %s link", resource, name)
+	}
+
+	template, err := uritemplates.Parse(link)
+	if err != nil {
+		return "", err
+	}
+
+	return template.Expand(values)
 }
 
 // GetAllDeploymentProcesses returns all deployment processes. If none can be found or an error
