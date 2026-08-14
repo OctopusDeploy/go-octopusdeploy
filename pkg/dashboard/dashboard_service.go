@@ -22,6 +22,24 @@ func NewDashboardService(sling *sling.Sling, uriTemplate string, dashboardDynami
 	}
 }
 
+// GetDashboard returns the dashboard, optionally narrowed to a project or
+// release and to the given tenants and tenant tags.
+//
+// Like GetDynamicDashboard, the query filters on IDs rather than names.
+func (s *DashboardService) GetDashboard(query DashboardQuery) (*Dashboard, error) {
+	path, err := s.GetURITemplate().Expand(query)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := api.ApiGet(s.GetClient(), new(Dashboard), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.(*Dashboard), nil
+}
+
 // GetDynamicDashboard returns the release currently deployed to each
 // environment, optionally narrowed to the given projects and environments, and
 // optionally including the deployment preceding the current one.

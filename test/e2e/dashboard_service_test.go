@@ -205,3 +205,85 @@ func TestDashboardGetDynamicDashboardFiltersByEnvironmentID(t *testing.T) {
 		require.Equal(t, environmentID, item.EnvironmentID)
 	}
 }
+
+func TestDashboardGetDashboardUnfiltered(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	board, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{})
+	require.NoError(t, err)
+	require.NotNil(t, board)
+	require.False(t, board.IsFiltered)
+	skipWithoutItems(t, board)
+
+	projectIDs := map[string]bool{}
+	for _, project := range board.Projects {
+		projectIDs[project.GetID()] = true
+	}
+
+	for _, item := range board.Items {
+		require.True(t, projectIDs[item.ProjectID], "item project %s missing from reference data", item.ProjectID)
+		require.NotEmpty(t, item.GetID())
+		require.NotEmpty(t, item.Links["Self"])
+	}
+}
+
+func TestDashboardGetDashboardFiltersByProjectID(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	board, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{})
+	require.NoError(t, err)
+	projectID, projectName := projectWithItems(t, board)
+
+	filtered, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{ProjectID: projectID})
+	require.NoError(t, err)
+	require.True(t, filtered.IsFiltered)
+	require.NotEmpty(t, filtered.Items)
+	for _, item := range filtered.Items {
+		require.Equal(t, projectID, item.ProjectID)
+	}
+
+	// As with the dynamic dashboard, the server matches IDs only.
+	byName, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{ProjectID: projectName})
+	require.NoError(t, err)
+	require.Empty(t, byName.Items, "a project name matched items; the server contract may have changed")
+}
+
+// TestDashboardGetDashboardIncludeLatest exercises the parameter that carried
+// only a url tag before #442 and so never reached the server.
+func TestDashboardGetDashboardIncludeLatest(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	board, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{IncludeLatest: true, ShowAll: true})
+	require.NoError(t, err)
+	require.NotNil(t, board)
+}
+
+func TestDashboardGetDashboardFiltersByTenant(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	board, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{})
+	require.NoError(t, err)
+
+	tenantID := ""
+	for _, item := range board.Items {
+		if item.TenantID != "" {
+			tenantID = item.TenantID
+			break
+		}
+	}
+	if tenantID == "" {
+		t.Skip("no tenanted deployment on the dashboard")
+	}
+
+	filtered, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{SelectedTenants: []string{tenantID}})
+	require.NoError(t, err)
+	require.True(t, filtered.IsFiltered)
+	require.NotEmpty(t, filtered.Items)
+	for _, item := range filtered.Items {
+		require.Equal(t, tenantID, item.TenantID)
+	}
+}
