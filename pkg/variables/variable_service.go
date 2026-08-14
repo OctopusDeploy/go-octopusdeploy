@@ -22,6 +22,32 @@ func (e errInvalidVariableServiceParameter) Error() string {
 	return fmt.Sprintf("VariableService: invalid parameter, %s", e.ParameterName)
 }
 
+// errSensitiveVariableWouldBeCleared reports a write that would replace a stored secret with an
+// empty string. The server matches a variable without an ID by name, so an empty value overwrites
+// whatever is already held under that name.
+type errSensitiveVariableWouldBeCleared struct {
+	VariableName string
+}
+
+func (e errSensitiveVariableWouldBeCleared) Error() string {
+	return fmt.Sprintf("VariableService: sensitive variable %s has no value and no ID; writing it would clear the stored value. Send the variable's ID to keep the existing value, or set a value explicitly", e.VariableName)
+}
+
+// validateSensitiveVariables rejects sensitive variables that carry neither a value nor an ID.
+func validateSensitiveVariables(variableSet VariableSet) error {
+	for _, variable := range variableSet.Variables {
+		if variable == nil {
+			continue
+		}
+
+		if variable.IsSensitive && internal.IsEmpty(variable.Value) && internal.IsEmpty(variable.GetID()) {
+			return errSensitiveVariableWouldBeCleared{VariableName: variable.Name}
+		}
+	}
+
+	return nil
+}
+
 type VariableService struct {
 	namesPath   string
 	previewPath string
@@ -233,6 +259,10 @@ func (s *VariableService) Update(ownerID string, variableSet VariableSet) (Varia
 
 	if internal.IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
+	}
+
+	if err := validateSensitiveVariables(variableSet); err != nil {
+		return VariableSet{}, err
 	}
 
 	path := internal.TrimTemplate(s.GetPath())
@@ -505,6 +535,10 @@ func UpdateSingle(client newclient.Client, spaceID string, ownerID string, varia
 func Update(client newclient.Client, spaceID string, ownerID string, variableSet VariableSet) (VariableSet, error) {
 	if internal.IsEmpty(ownerID) {
 		return VariableSet{}, errInvalidVariableServiceParameter{ParameterName: "ownerID"}
+	}
+
+	if err := validateSensitiveVariables(variableSet); err != nil {
+		return VariableSet{}, err
 	}
 
 	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
