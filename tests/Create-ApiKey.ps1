@@ -10,7 +10,7 @@ $LoginObj = New-Object Octopus.Client.Model.LoginCommand
 $LoginObj.Username = "admin"
 $LoginObj.Password = "Password01!"
 
-#Loging in to Octopus
+#Logging in to Octopus
 $repository.Users.SignIn($LoginObj)
 
 #Getting current user logged in
