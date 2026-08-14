@@ -25,6 +25,71 @@ func TestNewDashboardService(t *testing.T) {
 	require.Equal(t, constants.TestURIDashboardDynamic, service.dashboardDynamicPath)
 }
 
+func TestDashboardServiceGetDashboardPath(t *testing.T) {
+	service := createDashboardService(t)
+
+	tests := []struct {
+		name     string
+		query    DashboardQuery
+		expected map[string][]string
+	}{
+		{
+			name:     "empty query returns the unfiltered dashboard",
+			query:    DashboardQuery{},
+			expected: map[string][]string{},
+		},
+		{
+			name:     "project",
+			query:    DashboardQuery{ProjectID: "Projects-1"},
+			expected: map[string][]string{"projectId": {"Projects-1"}},
+		},
+		{
+			name:     "release",
+			query:    DashboardQuery{ReleaseID: "Releases-1"},
+			expected: map[string][]string{"releaseId": {"Releases-1"}},
+		},
+		{
+			name:     "include latest",
+			query:    DashboardQuery{IncludeLatest: true},
+			expected: map[string][]string{"highestLatestVersionPerProjectAndEnvironment": {"true"}},
+		},
+		{
+			name:     "show all",
+			query:    DashboardQuery{ShowAll: true},
+			expected: map[string][]string{"showAll": {"true"}},
+		},
+		{
+			// Both bools default to false server side, so false must not be sent.
+			name:     "false bools are omitted",
+			query:    DashboardQuery{IncludeLatest: false, ShowAll: false},
+			expected: map[string][]string{},
+		},
+		{
+			name: "tenants and tags",
+			query: DashboardQuery{
+				SelectedTenants: []string{"Tenants-1", "Tenants-2"},
+				SelectedTags:    []string{"Region/Aus-East"},
+			},
+			expected: map[string][]string{
+				"selectedTenants": {"Tenants-1,Tenants-2"},
+				"selectedTags":    {"Region/Aus-East"},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			path, err := service.GetURITemplate().Expand(test.query)
+			require.NoError(t, err)
+
+			parsed, err := url.Parse(path)
+			require.NoError(t, err)
+			assert.Equal(t, "/api/Spaces-1/dashboard", parsed.Path)
+			assert.Equal(t, url.Values(test.expected), parsed.Query())
+		})
+	}
+}
+
 func TestDashboardServiceGetDynamicDashboardPath(t *testing.T) {
 	service := createDashboardService(t)
 

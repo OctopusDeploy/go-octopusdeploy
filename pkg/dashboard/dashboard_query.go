@@ -1,7 +1,7 @@
 package dashboard
 
 type DashboardQuery struct {
-	IncludeLatest   bool     `url:"highestLatestVersionPerProjectAndEnvironment"`
+	IncludeLatest   bool     `uri:"highestLatestVersionPerProjectAndEnvironment,omitempty" url:"highestLatestVersionPerProjectAndEnvironment,omitempty"`
 	ProjectID       string   `uri:"projectId,omitempty" url:"projectId,omitempty"`
 	SelectedTags    []string `uri:"selectedTags,omitempty" url:"selectedTags,omitempty"`
 	SelectedTenants []string `uri:"selectedTenants,omitempty" url:"selectedTenants,omitempty"`
