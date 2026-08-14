@@ -134,7 +134,7 @@ func (s *EnvironmentService) GetByName(name string) ([]*Environment, error) {
 	return services.GetPagedResponse[Environment](s, path)
 }
 
-// GetByPartialName performs a lookup and returns enironments with a matching
+// GetByPartialName performs a lookup and returns environments with a matching
 // partial name.
 func (s *EnvironmentService) GetByPartialName(partialName string) ([]*Environment, error) {
 	if internal.IsEmpty(partialName) {
