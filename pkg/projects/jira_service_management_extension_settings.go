@@ -63,6 +63,11 @@ func (j JiraServiceManagementExtensionSettings) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON sets the Jira Service Management (JSM) extension settings to its representation in JSON.
+//
+// The server stores these values verbatim, so any of them can come back as null;
+// a project that isn't change controlled skips validation entirely and can be left
+// with a null ServiceDeskProjectName. Values of an unexpected type are ignored
+// rather than asserted, which would panic.
 func (j *JiraServiceManagementExtensionSettings) UnmarshalJSON(b []byte) error {
 	var fields struct {
 		ExtensionID extensions.ExtensionID `json:"ExtensionId"`
@@ -78,11 +83,17 @@ func (j *JiraServiceManagementExtensionSettings) UnmarshalJSON(b []byte) error {
 	for k, v := range fields.Values {
 		switch k {
 		case "JsmChangeControlled":
-			j.SetIsChangeControlled(v.(bool))
+			if value, ok := v.(bool); ok {
+				j.SetIsChangeControlled(value)
+			}
 		case "JsmConnectionId":
-			j.SetConnectionID(v.(string))
+			if value, ok := v.(string); ok {
+				j.SetConnectionID(value)
+			}
 		case "ServiceDeskProjectName":
-			j.ServiceDeskProjectName = v.(string)
+			if value, ok := v.(string); ok {
+				j.ServiceDeskProjectName = value
+			}
 		}
 	}
 
