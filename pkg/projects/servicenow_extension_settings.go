@@ -8,8 +8,8 @@ import (
 )
 
 type ServiceNowExtensionSettings struct {
-	IsStateAutomaticallyTransitioned bool   `json:"AutomaticStateTransition"`
-	StandardChangeTemplateName       string `json:"StandardChangeTemplateName,omitempty"`
+	IsStateAutomaticallyTransitioned bool
+	StandardChangeTemplateName       string
 
 	ext.ConnectedChangeControlExtensionSettings
 }
@@ -48,6 +48,10 @@ func (s *ServiceNowExtensionSettings) SetIsChangeControlled(isChangeControlled b
 }
 
 // MarshalJSON returns the ServiceNow extension settings as its JSON encoding.
+//
+// Every value is always written, including an empty StandardChangeTemplateName.
+// The server treats empty as "no standard change template", and the portal reads
+// the key back without guarding against it being absent.
 func (s ServiceNowExtensionSettings) MarshalJSON() ([]byte, error) {
 	extensionSettings := struct {
 		ExtensionID extensions.ExtensionID `json:"ExtensionId"`
@@ -66,6 +70,11 @@ func (s ServiceNowExtensionSettings) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON sets the ServiceNow extension settings to its representation in JSON.
+//
+// The server stores these values verbatim, so any of them can come back as null;
+// StandardChangeTemplateName in particular is optional and is null on projects that
+// don't use a standard change template. Values of an unexpected type are ignored
+// rather than asserted, which would panic.
 func (s *ServiceNowExtensionSettings) UnmarshalJSON(b []byte) error {
 	var fields struct {
 		ExtensionID extensions.ExtensionID `json:"ExtensionId"`
@@ -81,13 +90,21 @@ func (s *ServiceNowExtensionSettings) UnmarshalJSON(b []byte) error {
 	for k, v := range fields.Values {
 		switch k {
 		case "AutomaticStateTransition":
-			s.IsStateAutomaticallyTransitioned = v.(bool)
+			if value, ok := v.(bool); ok {
+				s.IsStateAutomaticallyTransitioned = value
+			}
 		case "StandardChangeTemplateName":
-			s.StandardChangeTemplateName = v.(string)
+			if value, ok := v.(string); ok {
+				s.StandardChangeTemplateName = value
+			}
 		case "ServiceNowChangeControlled":
-			s.SetIsChangeControlled(v.(bool))
+			if value, ok := v.(bool); ok {
+				s.SetIsChangeControlled(value)
+			}
 		case "ServiceNowConnectionId":
-			s.SetConnectionID(v.(string))
+			if value, ok := v.(string); ok {
+				s.SetConnectionID(value)
+			}
 		}
 	}
 
