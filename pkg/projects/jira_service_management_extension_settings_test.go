@@ -68,12 +68,13 @@ func TestJiraServiceManagementExtensionSettingsUnmarshalJSON(t *testing.T) {
 			"JsmChangeControlled": %v,
 			"ServiceDeskProjectName": "%s"
 		}
-	}`, extensions.ServiceNowExtensionID, connectionID, isChangeControlled, serviceDeskProjectName)
+	}`, extensions.JiraServiceManagementExtensionID, connectionID, isChangeControlled, serviceDeskProjectName)
 
 	var j projects.JiraServiceManagementExtensionSettings
 	err := json.Unmarshal([]byte(inputJSON), &j)
 	require.NoError(t, err)
 	require.NotNil(t, j)
+	require.Equal(t, extensions.JiraServiceManagementExtensionID, j.ExtensionID())
 	require.Equal(t, connectionID, j.ConnectionID())
 	require.Equal(t, isChangeControlled, j.IsChangeControlled())
 	require.Equal(t, serviceDeskProjectName, j.ServiceDeskProjectName)
