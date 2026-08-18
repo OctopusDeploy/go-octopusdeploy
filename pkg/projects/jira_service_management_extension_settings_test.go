@@ -68,13 +68,53 @@ func TestJiraServiceManagementExtensionSettingsUnmarshalJSON(t *testing.T) {
 			"JsmChangeControlled": %v,
 			"ServiceDeskProjectName": "%s"
 		}
-	}`, extensions.ServiceNowExtensionID, connectionID, isChangeControlled, serviceDeskProjectName)
+	}`, extensions.JiraServiceManagementExtensionID, connectionID, isChangeControlled, serviceDeskProjectName)
 
 	var j projects.JiraServiceManagementExtensionSettings
 	err := json.Unmarshal([]byte(inputJSON), &j)
 	require.NoError(t, err)
 	require.NotNil(t, j)
+	require.Equal(t, extensions.JiraServiceManagementExtensionID, j.ExtensionID())
 	require.Equal(t, connectionID, j.ConnectionID())
 	require.Equal(t, isChangeControlled, j.IsChangeControlled())
 	require.Equal(t, serviceDeskProjectName, j.ServiceDeskProjectName)
+}
+
+func TestJiraServiceManagementExtensionSettingsUnmarshalJSONWithNullServiceDeskProjectName(t *testing.T) {
+	connectionID := internal.GetRandomName()
+
+	inputJSON := fmt.Sprintf(`{
+		"ExtensionId": "%s",
+		"Values": {
+			"JsmConnectionId": "%s",
+			"JsmChangeControlled": false,
+			"ServiceDeskProjectName": null
+		}
+	}`, extensions.JiraServiceManagementExtensionID, connectionID)
+
+	var j projects.JiraServiceManagementExtensionSettings
+	err := json.Unmarshal([]byte(inputJSON), &j)
+	require.NoError(t, err)
+	require.Equal(t, connectionID, j.ConnectionID())
+	require.False(t, j.IsChangeControlled())
+	require.Empty(t, j.ServiceDeskProjectName)
+}
+
+func TestJiraServiceManagementExtensionSettingsUnmarshalJSONWithMissingServiceDeskProjectName(t *testing.T) {
+	connectionID := internal.GetRandomName()
+
+	inputJSON := fmt.Sprintf(`{
+		"ExtensionId": "%s",
+		"Values": {
+			"JsmConnectionId": "%s",
+			"JsmChangeControlled": false
+		}
+	}`, extensions.JiraServiceManagementExtensionID, connectionID)
+
+	var j projects.JiraServiceManagementExtensionSettings
+	err := json.Unmarshal([]byte(inputJSON), &j)
+	require.NoError(t, err)
+	require.Equal(t, connectionID, j.ConnectionID())
+	require.False(t, j.IsChangeControlled())
+	require.Empty(t, j.ServiceDeskProjectName)
 }

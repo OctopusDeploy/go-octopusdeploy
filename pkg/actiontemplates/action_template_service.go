@@ -225,6 +225,14 @@ func GetVersionByID(client newclient.Client, spaceID string, actionTemplateID st
 
 // Get returns a collection of action templates based on the criteria defined by its
 // input query parameter.
+//
+// Deprecated: use actiontemplates.GetByQuery.
 func Get(client newclient.Client, spaceID string, actionsQuery ActionTemplateSearch) (*resources.Resources[*ActionTemplate], error) {
 	return newclient.GetByQuery[ActionTemplate](client, template, spaceID, actionsQuery)
+}
+
+// GetByQuery returns a collection of action templates based on the criteria defined by its
+// input query parameter.
+func GetByQuery(client newclient.Client, spaceID string, actionTemplatesQuery Query) (*resources.Resources[*ActionTemplate], error) {
+	return newclient.GetByQuery[ActionTemplate](client, template, spaceID, actionTemplatesQuery)
 }
