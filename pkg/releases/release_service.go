@@ -233,3 +233,36 @@ func GetReleaseInProject(client newclient.Client, spaceID string, projectID stri
 	}
 	return newclient.Get[Release](client.HttpSession(), expandedUri)
 }
+
+type snapshotVariablesByNameCommand struct {
+	Variables []VariableIdentifier `json:"Variables"`
+}
+
+func SnapshotVariablesByName(client newclient.Client, release *Release, variables []VariableIdentifier) (*Release, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
+	}
+	if release == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "release")
+	}
+	if len(variables) == 0 {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "variables")
+	}
+
+	spaceId, err := internal.GetSpaceID(release.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseSnapshotVariablesByName, map[string]any{
+		"SpaceId":   spaceId,
+		"ReleaseId": release.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	command := snapshotVariablesByNameCommand{Variables: variables}
+	return newclient.Post[Release](client.HttpSession(), expandedUri, command)
+
+}

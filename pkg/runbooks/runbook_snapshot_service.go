@@ -2,10 +2,14 @@ package runbooks
 
 import (
 	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/dghubble/sling"
 )
 
@@ -75,4 +79,38 @@ func (s *RunbookSnapshotService) GetByID(id string) (*RunbookSnapshot, error) {
 	}
 
 	return resp.(*RunbookSnapshot), nil
+}
+
+// ----- Experimental ---------------------------------------------------------
+
+type snapshotVariablesByNameRequest struct {
+	Variables []releases.VariableIdentifier `json:"Variables"`
+}
+
+func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSnapshot, variables []releases.VariableIdentifier) (*RunbookSnapshot, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
+	}
+	if runbookSnapshot == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "runbookSnapshot")
+	}
+	if len(variables) == 0 {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "variables")
+	}
+
+	spaceId, err := internal.GetSpaceID(runbookSnapshot.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbookSnapshotVariablesByName, map[string]any{
+		"spaceId":           spaceId,
+		"runbookSnapshotId": runbookSnapshot.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	command := snapshotVariablesByNameRequest{Variables: variables}
+	return newclient.Post[RunbookSnapshot](client.HttpSession(), expandedUri, command)
 }
