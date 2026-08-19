@@ -83,6 +83,7 @@ func (s *RunbookSnapshotService) GetByID(id string) (*RunbookSnapshot, error) {
 
 // ----- Experimental ---------------------------------------------------------
 
+// enable toggle partial-updates-on-variables
 type snapshotVariablesByNameRequest struct {
 	Variables []releases.VariableIdentifier `json:"Variables"`
 }
