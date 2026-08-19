@@ -80,6 +80,10 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 		endpoint = listeningTentacleEndpoint
 	}
 
+	if IsNil(endpoint) {
+		return nil, internal.CreateInvalidParameterError("ToEndpoint", "endpointResource.CommunicationStyle")
+	}
+
 	endpoint.SetLinks(endpointResource.GetLinks())
 	endpoint.SetModifiedBy(endpointResource.GetModifiedBy())
 	endpoint.SetModifiedOn(endpointResource.GetModifiedOn())
