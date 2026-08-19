@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
@@ -251,7 +252,9 @@ func TestDashboardGetDashboardFiltersByProjectID(t *testing.T) {
 }
 
 // TestDashboardGetDashboardIncludeLatest exercises the parameter that carried
-// only a url tag before #442 and so never reached the server.
+// only a url tag before #442 and so never reached the server. Neither parameter
+// narrows the result, so what is assertable is the shape the name promises: the
+// highest version per project and environment, meaning one item per cell.
 func TestDashboardGetDashboardIncludeLatest(t *testing.T) {
 	client := getOctopusClient()
 	require.NotNil(t, client)
@@ -259,6 +262,51 @@ func TestDashboardGetDashboardIncludeLatest(t *testing.T) {
 	board, err := client.Dashboards.GetDashboard(dashboard.DashboardQuery{IncludeLatest: true, ShowAll: true})
 	require.NoError(t, err)
 	require.NotNil(t, board)
+	require.False(t, board.IsFiltered)
+	skipWithoutItems(t, board)
+
+	projectIDs := map[string]bool{}
+	for _, project := range board.Projects {
+		projectIDs[project.GetID()] = true
+	}
+	environmentIDs := map[string]bool{}
+	for _, environment := range board.Environments {
+		environmentIDs[environment.GetID()] = true
+	}
+	tenantIDs := map[string]bool{}
+	for _, tenant := range board.Tenants {
+		tenantIDs[tenant.GetID()] = true
+	}
+
+	cells := map[string]bool{}
+	for _, item := range board.Items {
+		require.True(t, projectIDs[item.ProjectID], "item project %s missing from reference data", item.ProjectID)
+		require.True(t, environmentIDs[item.EnvironmentID], "item environment %s missing from reference data", item.EnvironmentID)
+		if item.TenantID != "" {
+			require.True(t, tenantIDs[item.TenantID], "item tenant %s missing from reference data", item.TenantID)
+		}
+
+		// Enough of a cell to render: which release is deployed, how it went,
+		// and a link to the deployment behind it.
+		require.NotEmpty(t, item.ReleaseVersion)
+		require.NotEmpty(t, item.State)
+		require.NotEmpty(t, item.TaskID)
+		require.NotEmpty(t, item.Links["Self"])
+		if item.IsCompleted {
+			require.NotNil(t, item.CompletedTime)
+		}
+
+		// This endpoint reports what is deployed now; previous deployments are
+		// only reachable through the dynamic dashboard's IncludePrevious.
+		require.True(t, item.IsCurrent)
+		require.False(t, item.IsPrevious)
+
+		// highestLatestVersionPerProjectAndEnvironment resolves each cell to one
+		// release, so a repeated cell means it did not do what its name says.
+		cell := fmt.Sprintf("%s/%s/%s", item.ProjectID, item.EnvironmentID, item.TenantID)
+		require.False(t, cells[cell], "two items for cell %s", cell)
+		cells[cell] = true
+	}
 }
 
 func TestDashboardGetDashboardFiltersByTenant(t *testing.T) {
