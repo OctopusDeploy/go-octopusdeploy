@@ -28,6 +28,13 @@ func NewMachineHealthCheckPolicy() *MachineHealthCheckPolicy {
 
 // MarshalJSON returns a machine health check policy as its JSON encoding.
 func (m *MachineHealthCheckPolicy) MarshalJSON() ([]byte, error) {
+	// A zero interval is omitted rather than sent as "00:00:00": the server treats an
+	// absent interval as "no scheduled health checks", but "00:00:00" as "check constantly".
+	healthCheckInterval := ""
+	if m.HealthCheckInterval > 0 {
+		healthCheckInterval = ToTimeSpan(m.HealthCheckInterval)
+	}
+
 	machineHealthCheckPolicy := struct {
 		BashHealthCheckPolicy       *MachineScriptPolicy `json:"BashHealthCheckPolicy,omitempty"`
 		HealthCheckCron             string               `json:"HealthCheckCron,omitempty"`
@@ -39,7 +46,7 @@ func (m *MachineHealthCheckPolicy) MarshalJSON() ([]byte, error) {
 		BashHealthCheckPolicy:       m.BashHealthCheckPolicy,
 		HealthCheckCron:             m.HealthCheckCron,
 		HealthCheckCronTimezone:     m.HealthCheckCronTimezone,
-		HealthCheckInterval:         ToTimeSpan(m.HealthCheckInterval),
+		HealthCheckInterval:         healthCheckInterval,
 		HealthCheckType:             m.HealthCheckType,
 		PowerShellHealthCheckPolicy: m.PowerShellHealthCheckPolicy,
 	}
