@@ -205,6 +205,12 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		m.Endpoint = kubernetesTentacleEndpoint
+	case "AwsEcsCluster":
+		var awsEcsClusterEndpoint *AwsEcsClusterEndpoint
+		if err := json.Unmarshal(*endpoint, &awsEcsClusterEndpoint); err != nil {
+			return err
+		}
+		m.Endpoint = awsEcsClusterEndpoint
 	}
 
 	return nil
