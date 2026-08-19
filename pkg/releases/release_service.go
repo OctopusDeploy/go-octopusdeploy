@@ -255,8 +255,8 @@ func SnapshotVariablesByName(client newclient.Client, release *Release, variable
 	}
 
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseSnapshotVariablesByName, map[string]any{
-		"SpaceId":   spaceId,
-		"ReleaseId": release.ID,
+		"spaceId":   spaceId,
+		"releaseId": release.ID,
 	})
 	if err != nil {
 		return nil, err
