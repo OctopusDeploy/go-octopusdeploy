@@ -247,17 +247,17 @@ func GetSnapshot(client newclient.Client, spaceID string, projectID string, snap
 	return newclient.Get[RunbookSnapshot](client.HttpSession(), expandedUri)
 }
 
-// SnapshotVariables refreshes (re-snapshots) the variable snapshot for an existing runbook snapshot.
+// UpdateSnapshotVariables refreshes (re-snapshots) the variable snapshot for an existing runbook snapshot.
 // It POSTs to /api/{spaceId}/runbookSnapshots/{snapshotId}/snapshot-variables and returns the updated snapshot.
-func SnapshotVariables(client newclient.Client, spaceID string, snapshotID string) (*RunbookSnapshot, error) {
+func UpdateSnapshotVariables(client newclient.Client, spaceID string, snapshotID string) (*RunbookSnapshot, error) {
 	if client == nil {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("client")
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client")
 	}
 	if spaceID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID")
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID")
 	}
 	if snapshotID == "" {
-		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("snapshotID")
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "snapshotID")
 	}
 
 	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbookSnapshotVariables, map[string]any{

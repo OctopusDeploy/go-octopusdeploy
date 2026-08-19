@@ -56,15 +56,15 @@ func TestRunbookServiceNew(t *testing.T) {
 	}
 }
 
-func TestRunbookSnapshotVariablesValidation(t *testing.T) {
-	_, err := SnapshotVariables(nil, "Spaces-1", "RunbookSnapshots-1")
-	assert.Equal(t, internal.CreateRequiredParameterIsEmptyOrNilError("client"), err)
+func TestRunbookUpdateSnapshotVariablesValidation(t *testing.T) {
+	_, err := UpdateSnapshotVariables(nil, "Spaces-1", "RunbookSnapshots-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client"), err)
 
 	client := newclient.NewClient(&newclient.HttpSession{})
 
-	_, err = SnapshotVariables(client, "", "RunbookSnapshots-1")
-	assert.Equal(t, internal.CreateRequiredParameterIsEmptyOrNilError("spaceID"), err)
+	_, err = UpdateSnapshotVariables(client, "", "RunbookSnapshots-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID"), err)
 
-	_, err = SnapshotVariables(client, "Spaces-1", "")
-	assert.Equal(t, internal.CreateRequiredParameterIsEmptyOrNilError("snapshotID"), err)
+	_, err = UpdateSnapshotVariables(client, "Spaces-1", "")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "snapshotID"), err)
 }

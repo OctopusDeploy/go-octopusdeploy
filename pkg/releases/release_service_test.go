@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestReleaseSnapshotVariablesValidation(t *testing.T) {
-	_, err := SnapshotVariables(nil, "Spaces-1", "Releases-1")
-	assert.Equal(t, internal.CreateInvalidParameterError("SnapshotVariables", "client"), err)
+func TestReleaseUpdateSnapshotVariablesValidation(t *testing.T) {
+	_, err := UpdateSnapshotVariables(nil, "Spaces-1", "Releases-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client"), err)
 
 	client := newclient.NewClient(&newclient.HttpSession{})
 
-	_, err = SnapshotVariables(client, "", "Releases-1")
-	assert.Equal(t, internal.CreateInvalidParameterError("SnapshotVariables", "spaceID"), err)
+	_, err = UpdateSnapshotVariables(client, "", "Releases-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID"), err)
 
-	_, err = SnapshotVariables(client, "Spaces-1", "")
-	assert.Equal(t, internal.CreateInvalidParameterError("SnapshotVariables", "releaseID"), err)
+	_, err = UpdateSnapshotVariables(client, "Spaces-1", "")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "releaseID"), err)
 }
