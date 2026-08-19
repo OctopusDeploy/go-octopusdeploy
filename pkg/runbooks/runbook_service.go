@@ -140,6 +140,13 @@ func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
 }
 
+// Get returns runbooks across a space, in a standard Octopus paginated result structure.
+// Use RunbooksQuery to filter by project, name, or ID. To list the runbooks of a single
+// project, List is a convenience wrapper over the project-scoped endpoint.
+func Get(client newclient.Client, spaceID string, runbooksQuery RunbooksQuery) (*resources.Resources[*Runbook], error) {
+	return newclient.GetByQuery[Runbook](client, template, spaceID, runbooksQuery)
+}
+
 // List returns a list of runbooks from the server, in a standard Octopus paginated result structure.
 // If you don't specify --limit the server will use a default limit (typically 30)
 func List(client newclient.Client, spaceID string, projectID string, filter string, limit int) (*resources.Resources[*Runbook], error) {
