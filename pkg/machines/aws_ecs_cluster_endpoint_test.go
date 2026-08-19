@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/stretchr/testify/assert"
@@ -142,4 +143,101 @@ func TestIsNilRecognisesTypedNilEndpoints(t *testing.T) {
 
 	assert.True(t, IsNil(awsEcsCluster))
 	assert.True(t, IsNil(kubernetesTentacle))
+}
+
+// The same target with account credentials and an assumed role, every field the
+// server can populate set. Captured from /api/Spaces-1/machines/Machines-89.
+const assumeRoleEndpointAsJSON = `{
+  "CommunicationStyle": "AwsEcsCluster",
+  "DefaultWorkerPoolId": "WorkerPools-1",
+  "ClusterName": "repro-604-assumerole-cluster",
+  "Region": "eu-west-1",
+  "AccountId": "Accounts-1",
+  "UseInstanceRole": false,
+  "AssumeRole": true,
+  "AssumedRoleArn": "arn:aws:iam::123456789012:role/OctopusEcsDeploy",
+  "AssumedRoleSession": "octopus-cli-604-session",
+  "AssumeRoleSessionDurationSeconds": 3600,
+  "AssumeRoleExternalId": "external-id-604",
+  "Id": null,
+  "LastModifiedOn": null,
+  "LastModifiedBy": null,
+  "Links": {}
+}`
+
+func TestAwsEcsClusterEndpointAssumeRole(t *testing.T) {
+	var endpoint AwsEcsClusterEndpoint
+	require.NoError(t, json.Unmarshal([]byte(assumeRoleEndpointAsJSON), &endpoint))
+
+	assert.Equal(t, "repro-604-assumerole-cluster", endpoint.ClusterName)
+	assert.Equal(t, "eu-west-1", endpoint.Region)
+	assert.Equal(t, "Accounts-1", endpoint.AccountID)
+	assert.False(t, endpoint.UseInstanceRole)
+	assert.True(t, endpoint.AssumeRole)
+	assert.Equal(t, "arn:aws:iam::123456789012:role/OctopusEcsDeploy", endpoint.AssumedRoleARN)
+	assert.Equal(t, "octopus-cli-604-session", endpoint.AssumedRoleSession)
+	assert.Equal(t, 3600, endpoint.AssumeRoleSessionDurationSeconds)
+	assert.Equal(t, "external-id-604", endpoint.AssumeRoleExternalID)
+}
+
+// Guards field coverage: if the server starts sending a key this endpoint does
+// not model, this fails rather than silently dropping it. The payloads above are
+// captured from a server, so a Server-side addition shows up here on capture.
+func TestAwsEcsClusterEndpointModelsEveryFieldTheServerSends(t *testing.T) {
+	// Populated so that no omitempty field drops out of the comparison.
+	modelled := &AwsEcsClusterEndpoint{
+		AccountID:                        "Accounts-1",
+		AssumedRoleARN:                   "arn",
+		AssumedRoleSession:               "session",
+		AssumeRole:                       true,
+		AssumeRoleExternalID:             "external",
+		AssumeRoleSessionDurationSeconds: 3600,
+		ClusterName:                      "cluster",
+		DefaultWorkerPoolID:              "WorkerPools-1",
+		Region:                           "us-east-1",
+		UseInstanceRole:                  true,
+		endpoint:                         *newEndpoint("AwsEcsCluster"),
+	}
+	modelled.SetID("Machines-89")
+	modelled.SetModifiedBy("nick")
+	now := time.Now()
+	modelled.SetModifiedOn(&now)
+	modelled.SetLinks(map[string]string{"Self": "/api/Spaces-1/machines/Machines-89"})
+
+	encoded, err := json.Marshal(modelled)
+	require.NoError(t, err)
+
+	var known map[string]any
+	require.NoError(t, json.Unmarshal(encoded, &known))
+
+	for _, payload := range []string{ecsClusterTargetsAsJSON, assumeRoleEndpointAsJSON} {
+		for _, sent := range endpointsIn(t, payload) {
+			for key := range sent {
+				assert.Contains(t, known, key, "the server sends %q but AwsEcsClusterEndpoint does not model it", key)
+			}
+		}
+	}
+}
+
+// endpointsIn returns the endpoint objects in a captured payload, which is
+// either a target, a list of targets, or a bare endpoint.
+func endpointsIn(t *testing.T, payload string) []map[string]any {
+	t.Helper()
+
+	var list []map[string]any
+	if err := json.Unmarshal([]byte(payload), &list); err == nil {
+		endpoints := []map[string]any{}
+		for _, target := range list {
+			endpoints = append(endpoints, target["Endpoint"].(map[string]any))
+		}
+		return endpoints
+	}
+
+	var single map[string]any
+	require.NoError(t, json.Unmarshal([]byte(payload), &single))
+	if endpoint, ok := single["Endpoint"].(map[string]any); ok {
+		return []map[string]any{endpoint}
+	}
+
+	return []map[string]any{single}
 }
