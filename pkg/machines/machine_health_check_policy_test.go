@@ -1,4 +1,4 @@
-package machinepolicies
+package machines
 
 import (
 	"encoding/json"
