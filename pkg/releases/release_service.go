@@ -4,6 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -235,11 +236,11 @@ func GetReleaseInProject(client newclient.Client, spaceID string, projectID stri
 }
 
 type snapshotVariablesByNameCommand struct {
-	Variables []VariableIdentifier `json:"Variables"`
+	Variables []core.VariableIdentifier `json:"Variables"`
 }
 
 // enable toggle partial-updates-on-variables
-func SnapshotVariablesByName(client newclient.Client, release *Release, variables []VariableIdentifier) (*Release, error) {
+func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier) (*Release, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
 	}

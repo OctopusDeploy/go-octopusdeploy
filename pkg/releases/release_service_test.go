@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/stretchr/testify/require"
 )
 
 func TestSnapshotVariablesByNameMarshall(t *testing.T) {
-	command := snapshotVariablesByNameCommand{Variables: []VariableIdentifier{
+	command := snapshotVariablesByNameCommand{Variables: []core.VariableIdentifier{
 		{
 			Name:    internal.GetRandomName(),
 			OwnerID: internal.GetRandomName(),

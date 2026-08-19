@@ -7,6 +7,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/configuration"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
@@ -248,8 +249,8 @@ func TestReleaseServiceSnapshotVariablesByName(t *testing.T) {
 	variable.Value = "newValue"
 	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
 
-	variableIdentifier := releases.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
-	variableIdentifiers := []releases.VariableIdentifier{variableIdentifier}
+	variableIdentifier := core.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
+	variableIdentifiers := []core.VariableIdentifier{variableIdentifier}
 
 	updatedRelease, err := releases.SnapshotVariablesByName(octopusClient, release, variableIdentifiers)
 	assert.NoError(t, err)

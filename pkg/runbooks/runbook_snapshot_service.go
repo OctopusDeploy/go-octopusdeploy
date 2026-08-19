@@ -5,8 +5,8 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
@@ -85,10 +85,10 @@ func (s *RunbookSnapshotService) GetByID(id string) (*RunbookSnapshot, error) {
 
 // enable toggle partial-updates-on-variables
 type snapshotVariablesByNameRequest struct {
-	Variables []releases.VariableIdentifier `json:"Variables"`
+	Variables []core.VariableIdentifier `json:"Variables"`
 }
 
-func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSnapshot, variables []releases.VariableIdentifier) (*RunbookSnapshot, error) {
+func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSnapshot, variables []core.VariableIdentifier) (*RunbookSnapshot, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
 	}

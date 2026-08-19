@@ -6,10 +6,10 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/configuration"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/lifecycles"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectgroups"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/stretchr/testify/assert"
@@ -179,8 +179,8 @@ func TestRunbookSnapshotServiceSnapshotVariablesByName(t *testing.T) {
 	variable.Value = "newValue"
 	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
 
-	variableIdentifier := releases.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
-	variableIdentifiers := []releases.VariableIdentifier{variableIdentifier}
+	variableIdentifier := core.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
+	variableIdentifiers := []core.VariableIdentifier{variableIdentifier}
 
 	updatedRunbookSnapshot, err := runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, variableIdentifiers)
 	assert.NoError(t, err)
