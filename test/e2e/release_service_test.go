@@ -234,6 +234,7 @@ func TestReleaseServiceSnapshotVariablesByName(t *testing.T) {
 
 	variable.Value = "oldValue"
 	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
+	require.NoError(t, err)
 
 	channel := CreateTestChannel(t, octopusClient, project)
 	require.NotNil(t, channel)
@@ -248,13 +249,14 @@ func TestReleaseServiceSnapshotVariablesByName(t *testing.T) {
 	// Act
 	variable.Value = "newValue"
 	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
+	require.NoError(t, err)
 
 	variableIdentifier := core.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
 	variableIdentifiers := []core.VariableIdentifier{variableIdentifier}
 
 	updatedRelease, err := releases.SnapshotVariablesByName(octopusClient, release, variableIdentifiers)
-	assert.NoError(t, err)
-	assert.NotNil(t, updatedRelease)
+	require.NoError(t, err)
+	require.NotNil(t, updatedRelease)
 
 	// Assert
 	assert.NotEqual(t, oldProjectSnapshotId, updatedRelease.ProjectVariableSetSnapshotID)

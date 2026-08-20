@@ -164,6 +164,7 @@ func TestRunbookSnapshotServiceSnapshotVariablesByName(t *testing.T) {
 
 	variable.Value = "oldValue"
 	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
+	require.NoError(t, err)
 
 	runbook := CreateTestRunbook(t, octopusClient, lifecycle, projectGroup, project)
 	require.NotNil(t, runbook)
@@ -178,13 +179,14 @@ func TestRunbookSnapshotServiceSnapshotVariablesByName(t *testing.T) {
 	// Act
 	variable.Value = "newValue"
 	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
+	require.NoError(t, err)
 
 	variableIdentifier := core.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
 	variableIdentifiers := []core.VariableIdentifier{variableIdentifier}
 
 	updatedRunbookSnapshot, err := runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, variableIdentifiers)
-	assert.NoError(t, err)
-	assert.NotNil(t, updatedRunbookSnapshot)
+	require.NoError(t, err)
+	require.NotNil(t, updatedRunbookSnapshot)
 
 	// Assert
 	assert.NotEqual(t, oldProjectSnapshotId, updatedRunbookSnapshot.ProjectVariableSetSnapshotID)
