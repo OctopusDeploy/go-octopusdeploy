@@ -82,7 +82,7 @@ func (s *RunbookSnapshotService) GetByID(id string) (*RunbookSnapshot, error) {
 }
 
 // ----- Experimental ---------------------------------------------------------
-type snapshotVariablesByNameRequest struct {
+type snapshotVariablesByNameCommand struct {
 	Variables []core.VariableIdentifier `json:"Variables"`
 }
 
@@ -111,6 +111,6 @@ func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSn
 		return nil, err
 	}
 
-	command := snapshotVariablesByNameRequest{Variables: variables}
+	command := snapshotVariablesByNameCommand{Variables: variables}
 	return newclient.Post[RunbookSnapshot](client.HttpSession(), expandedUri, command)
 }
