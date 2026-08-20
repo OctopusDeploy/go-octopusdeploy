@@ -40,6 +40,7 @@ jobs:
           OCTOPUS__FeatureToggles__EphemeralEnvironmentsManualDeploymentsFeatureToggle: 'true'
           OCTOPUS__FeatureToggles__EphemeralEnvironmentsFeatureToggle: 'true'
           OCTOPUS__FeatureToggles__RateLimitingV2FeatureToggle: 'true'
+          OCTOPUS__FeatureToggles__PartialUpdatesOnVariablesFeatureToggle: 'true'
         ports:
           - 8080:8080
     # https://github.com/dorny/test-reporter/issues/168
