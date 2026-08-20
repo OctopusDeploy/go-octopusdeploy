@@ -1,6 +1,8 @@
 package releases
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -239,7 +241,7 @@ type snapshotVariablesByNameCommand struct {
 	Variables []core.VariableIdentifier `json:"Variables"`
 }
 
-// to use, enable toggle partial-updates-on-variables
+// SnapshotVariablesByName requires octopus feature toggle partial-updates-on-variables = true
 func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier) (*Release, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
@@ -249,6 +251,15 @@ func SnapshotVariablesByName(client newclient.Client, release *Release, variable
 	}
 	if len(variables) == 0 {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "variables")
+	}
+
+	for i, v := range variables {
+		if v.Name == "" {
+			return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", fmt.Sprintf("variables[%d].Name", i))
+		}
+		if v.OwnerID == "" {
+			return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", fmt.Sprintf("variables[%d].OwnerId", i))
+		}
 	}
 
 	spaceId, err := internal.GetSpaceID(release.SpaceID, client.GetSpaceID())
