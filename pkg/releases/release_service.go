@@ -239,7 +239,7 @@ type snapshotVariablesByNameCommand struct {
 	Variables []core.VariableIdentifier `json:"Variables"`
 }
 
-// enable toggle partial-updates-on-variables
+// to use, enable toggle partial-updates-on-variables
 func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier) (*Release, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")

@@ -82,12 +82,11 @@ func (s *RunbookSnapshotService) GetByID(id string) (*RunbookSnapshot, error) {
 }
 
 // ----- Experimental ---------------------------------------------------------
-
-// enable toggle partial-updates-on-variables
 type snapshotVariablesByNameRequest struct {
 	Variables []core.VariableIdentifier `json:"Variables"`
 }
 
+// to use, enable toggle partial-updates-on-variables
 func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSnapshot, variables []core.VariableIdentifier) (*RunbookSnapshot, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
