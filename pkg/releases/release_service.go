@@ -166,6 +166,30 @@ func GetReleaseDeploymentTemplate(client newclient.Client, spaceID string, relea
 	return res, nil
 }
 
+// UpdateSnapshotVariables refreshes (re-snapshots) the variable snapshot for an existing release.
+// It POSTs to /api/{spaceId}/releases/{releaseId}/snapshot-variables and returns the updated release.
+func UpdateSnapshotVariables(client newclient.Client, spaceID string, releaseID string) (*Release, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID")
+	}
+	if releaseID == "" {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "releaseID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseSnapshotVariables, map[string]any{
+		"spaceId":   spaceID,
+		"releaseId": releaseID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Post[Release](client.HttpSession(), expandedUri, nil)
+}
+
 // ----- Experimental ---------------------------------------------------------
 
 // GetReleasesInProjectChannel is EXPERIMENTAL

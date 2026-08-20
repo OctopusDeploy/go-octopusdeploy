@@ -5,6 +5,7 @@ import (
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
@@ -53,4 +54,17 @@ func TestRunbookServiceNew(t *testing.T) {
 			services.NewServiceTests(t, service, uriTemplate, ServiceName)
 		})
 	}
+}
+
+func TestRunbookUpdateSnapshotVariablesValidation(t *testing.T) {
+	_, err := UpdateSnapshotVariables(nil, "Spaces-1", "RunbookSnapshots-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client"), err)
+
+	client := newclient.NewClient(&newclient.HttpSession{})
+
+	_, err = UpdateSnapshotVariables(client, "", "RunbookSnapshots-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID"), err)
+
+	_, err = UpdateSnapshotVariables(client, "Spaces-1", "")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "snapshotID"), err)
 }
