@@ -82,10 +82,6 @@ func (s *RunbookSnapshotService) GetByID(id string) (*RunbookSnapshot, error) {
 }
 
 // ----- Experimental ---------------------------------------------------------
-type snapshotVariablesByNameCommand struct {
-	Variables []core.VariableIdentifier `json:"Variables"`
-}
-
 // SnapshotVariablesByName requires octopus feature toggle partial-updates-on-variables = true
 func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSnapshot, variables []core.VariableIdentifier) (*RunbookSnapshot, error) {
 	if client == nil {
@@ -120,6 +116,6 @@ func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSn
 		return nil, err
 	}
 
-	command := snapshotVariablesByNameCommand{Variables: variables}
+	command := core.SnapshotVariablesByNameCommand{Variables: variables}
 	return newclient.Post[RunbookSnapshot](client.HttpSession(), expandedUri, command)
 }

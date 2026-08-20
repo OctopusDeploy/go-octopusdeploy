@@ -237,10 +237,6 @@ func GetReleaseInProject(client newclient.Client, spaceID string, projectID stri
 	return newclient.Get[Release](client.HttpSession(), expandedUri)
 }
 
-type snapshotVariablesByNameCommand struct {
-	Variables []core.VariableIdentifier `json:"Variables"`
-}
-
 // SnapshotVariablesByName requires octopus feature toggle partial-updates-on-variables = true
 func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier) (*Release, error) {
 	if client == nil {
@@ -275,7 +271,7 @@ func SnapshotVariablesByName(client newclient.Client, release *Release, variable
 		return nil, err
 	}
 
-	command := snapshotVariablesByNameCommand{Variables: variables}
+	command := core.SnapshotVariablesByNameCommand{Variables: variables}
 	return newclient.Post[Release](client.HttpSession(), expandedUri, command)
 
 }
