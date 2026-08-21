@@ -184,7 +184,7 @@ func TestUserRoleServiceAddGetDelete_NewClient(t *testing.T) {
 		query := userroles.UserRolesQuery{
 			IDs: []string{userRole.GetID()},
 		}
-		userRolesToCompare, err := userroles.Get(client, client.GetSpaceID(), query)
+		userRolesToCompare, err := userroles.Get(client, query)
 		require.NoError(t, err)
 		require.NotNil(t, userRolesToCompare)
 		for _, userRoleToCompare := range userRolesToCompare.Items {
