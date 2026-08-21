@@ -21,7 +21,7 @@ type FeedService struct {
 	services.CanDeleteService
 }
 
-// NewFeedService returns an feed service with a preconfigured client.
+// NewFeedService returns a feed service with a preconfigured client.
 func NewFeedService(sling *sling.Sling, uriTemplate string, builtInFeedStats string) *FeedService {
 	return &FeedService{
 		builtInFeedStats: builtInFeedStats,
