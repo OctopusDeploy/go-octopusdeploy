@@ -286,7 +286,7 @@ func Update(client newclient.Client, feed IFeed) (IFeed, error) {
 	return ToFeed(res)
 }
 
-// DeleteByID will delete a account with the provided id.
+// DeleteByID will delete an account with the provided id.
 func DeleteByID(client newclient.Client, spaceID string, id string) error {
 	return newclient.DeleteByID(client, template, spaceID, id)
 }
