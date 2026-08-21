@@ -9,6 +9,7 @@ type ReleaseTemplateGitResource struct {
 	IsResolvable                   bool                            `json:"IsResolvable"`
 	Name                           string                          `json:"Name,omitempty"`
 	FilePathFilters                []string                        `json:"FilePathFilters,omitempty"`
-	GitCredentialId                string                          `json:"NuGetPackageId,omitempty"`
+	GitCredentialId                string                          `json:"GitCredentialId,omitempty"`
+	GitHubConnectionId             string                          `json:"GitHubConnectionId,omitempty"`
 	GitResourceSelectedLastRelease actions.VersionControlReference `json:"GitResourceSelectedLastRelease,omitempty"`
 }
