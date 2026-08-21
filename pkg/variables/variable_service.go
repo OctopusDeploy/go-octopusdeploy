@@ -131,7 +131,7 @@ func (s *VariableService) GetByName(ownerID string, name string, scope *Variable
 	return matchedVariables, nil
 }
 
-// AddSingle adds a single variable to a owner ID. This automates the act of fetching
+// AddSingle adds a single variable to an owner ID. This automates the act of fetching
 // the variable set, adding a new item to it, and posting back to Octopus
 //
 // Deprecated: Use variables.AddSingle
@@ -153,7 +153,7 @@ func (s *VariableService) AddSingle(ownerID string, variable *Variable) (Variabl
 	return s.Update(ownerID, variables)
 }
 
-// UpdateSingle adds a single variable to a owner ID. This automates the act of fetching
+// UpdateSingle adds a single variable to an owner ID. This automates the act of fetching
 // the variable set, updating the existing item, and posting back to Octopus
 //
 // Deprecated: Use variables.UpdateSingle
@@ -181,7 +181,7 @@ func (s *VariableService) UpdateSingle(ownerID string, variable *Variable) (Vari
 	return VariableSet{}, services.ErrItemNotFound
 }
 
-// DeleteSingle removes a single variable from a owner ID. This automates the act of fetching
+// DeleteSingle removes a single variable from an owner ID. This automates the act of fetching
 // the variable set, removing the existing item, and posting back to Octopus
 //
 // Deprecated: Use variables.DeleteSingle

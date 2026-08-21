@@ -72,7 +72,7 @@ func (s *ChannelService) Get(channelsQuery Query) (*resources.Resources[*Channel
 // GetAll returns all channels. If none can be found or an error occurs, it
 // returns an empty collection.
 //
-// Depreacted: use channels.GetAll
+// Deprecated: use channels.GetAll
 func (s *ChannelService) GetAll() ([]*Channel, error) {
 	items := []*Channel{}
 	path, err := services.GetAllPath(s)
