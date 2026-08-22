@@ -1,8 +1,11 @@
 package deployments_test
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
+	"net/url"
 	"testing"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -78,4 +81,38 @@ func TestDeploymentProcessServiceGetWithEmptyID(t *testing.T) {
 	resource, err = service.GetByID(" ")
 	require.Equal(t, err, internal.CreateInvalidParameterError(constants.OperationGetByID, constants.ParameterID))
 	require.Nil(t, resource)
+}
+
+func TestDeploymentProcessServiceGetWithMissingLinks(t *testing.T) {
+	service := createDeploymentProcessService(t)
+
+	repositoryURL, err := url.Parse("https://github.com/OctopusDeploy/manifests.git")
+	require.NoError(t, err)
+
+	project := projects.NewProject(internal.GetRandomName(), "Lifecycles-1", "ProjectGroups-1")
+	project.PersistenceSettings = projects.NewGitPersistenceSettings("", nil, "main", nil, repositoryURL)
+	project.Links = map[string]string{}
+
+	resource, err := service.Get(project, "main")
+	require.Error(t, err)
+	require.Nil(t, resource)
+
+	resource, err = deployments.GetDeploymentProcessByGitRef(nil, "Spaces-1", project, "main")
+	require.Error(t, err)
+	require.Nil(t, resource)
+}
+
+func TestDeploymentProcessServiceGetTemplateWithMissingLinks(t *testing.T) {
+	service := createDeploymentProcessService(t)
+
+	deploymentProcess := deployments.NewDeploymentProcess("Projects-1")
+	deploymentProcess.Links = map[string]string{}
+
+	resource, err := service.GetTemplate(deploymentProcess, "Channels-1", "")
+	require.Error(t, err)
+	require.Nil(t, resource)
+
+	template, err := deployments.GetDeploymentProcessTemplate(nil, deploymentProcess, "Channels-1", "")
+	require.Error(t, err)
+	require.Nil(t, template)
 }
