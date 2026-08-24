@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 
@@ -295,10 +296,8 @@ func TestReleaseServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
 	require.NotNil(t, project)
 	defer DeleteTestProject(t, octopusClient, project)
 
-	variableA := CreateTestVariable(t, project.ID, internal.GetRandomName())
-	require.NotNil(t, variableA)
-	variableB := CreateTestVariable(t, project.ID, internal.GetRandomName())
-	require.NotNil(t, variableB)
+	variable := CreateTestVariable(t, project.ID, internal.GetRandomName())
+	require.NotNil(t, variable)
 
 	channel := CreateTestChannel(t, octopusClient, project)
 	require.NotNil(t, channel)
@@ -310,33 +309,34 @@ func TestReleaseServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
 
 	staleToken := release.VariableSnapshotConcurrencyToken
 
-	variableA.Value = "updatedA"
-	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variableA)
+	variable.Value = "updatedValue1"
+	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
 	require.NoError(t, err)
 
 	// Act: refresh using the token captured before the release was fetched again advances the snapshot
 	firstUpdate, err := releases.SnapshotVariablesByName(octopusClient, release, []core.VariableIdentifier{
-		{Name: variableA.Name, OwnerID: project.ID},
+		{Name: variable.Name, OwnerID: project.ID},
 	}, staleToken)
 	require.NoError(t, err)
 	require.NotNil(t, firstUpdate)
 
 	// Assert: reusing the now-stale token is rejected with a conflict
-	variableB.Value = "updatedB"
-	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variableB)
+	variable.Value = "updatedValue2"
+	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
 	require.NoError(t, err)
 
 	_, err = releases.SnapshotVariablesByName(octopusClient, release, []core.VariableIdentifier{
-		{Name: variableB.Name, OwnerID: project.ID},
+		{Name: variable.Name, OwnerID: project.ID},
 	}, staleToken)
 	require.Error(t, err)
-	apiError, ok := err.(*core.APIError)
+	var apiError *core.APIError
+	ok := errors.As(err, &apiError)
 	require.True(t, ok)
 	assert.Equal(t, http.StatusConflict, apiError.StatusCode)
 
 	// Assert: supplying the current token succeeds
 	secondUpdate, err := releases.SnapshotVariablesByName(octopusClient, firstUpdate, []core.VariableIdentifier{
-		{Name: variableB.Name, OwnerID: project.ID},
+		{Name: variable.Name, OwnerID: project.ID},
 	}, firstUpdate.VariableSnapshotConcurrencyToken)
 	require.NoError(t, err)
 	require.NotNil(t, secondUpdate)
