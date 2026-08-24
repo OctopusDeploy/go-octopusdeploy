@@ -238,7 +238,7 @@ func GetReleaseInProject(client newclient.Client, spaceID string, projectID stri
 }
 
 // SnapshotVariablesByName requires octopus feature toggle partial-updates-on-variables = true
-func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier) (*Release, error) {
+func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier, concurrencyToken *string) (*Release, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
 	}
@@ -271,7 +271,6 @@ func SnapshotVariablesByName(client newclient.Client, release *Release, variable
 		return nil, err
 	}
 
-	command := core.SnapshotVariablesByNameCommand{Variables: variables}
+	command := core.SnapshotVariablesByNameCommand{Variables: variables, VariableSnapshotConcurrencyToken: concurrencyToken}
 	return newclient.Post[Release](client.HttpSession(), expandedUri, command)
-
 }

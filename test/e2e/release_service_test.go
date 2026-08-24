@@ -1,6 +1,8 @@
 package e2e
 
 import (
+	"errors"
+	"net/http"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -254,10 +256,88 @@ func TestReleaseServiceSnapshotVariablesByName(t *testing.T) {
 	variableIdentifier := core.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
 	variableIdentifiers := []core.VariableIdentifier{variableIdentifier}
 
-	updatedRelease, err := releases.SnapshotVariablesByName(octopusClient, release, variableIdentifiers)
+	updatedRelease, err := releases.SnapshotVariablesByName(octopusClient, release, variableIdentifiers, nil)
 	require.NoError(t, err)
 	require.NotNil(t, updatedRelease)
 
 	// Assert
 	assert.NotEqual(t, oldProjectSnapshotId, updatedRelease.ProjectVariableSetSnapshotID)
+}
+
+func TestReleaseServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
+
+	//Arrange
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	toggle, err := configuration.Get(octopusClient, &configuration.FeatureToggleConfigurationQuery{
+		Name: "partial-updates-on-variables",
+	})
+	if err != nil {
+		t.Skip("Could not get feature toggle configuration")
+	} else if len(toggle.FeatureToggles) == 0 {
+		t.Skip("PartialUpdatesOnVariables feature toggle is not present")
+	} else if !toggle.FeatureToggles[0].IsEnabled {
+		t.Skip("PartialUpdatesOnVariables feature toggle is not enabled")
+	}
+
+	space := GetDefaultSpace(t, octopusClient)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, octopusClient)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, octopusClient, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, octopusClient)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, octopusClient, projectGroup)
+
+	project := CreateTestProject(t, octopusClient, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, octopusClient, project)
+
+	variable := CreateTestVariable(t, project.ID, internal.GetRandomName())
+	require.NotNil(t, variable)
+
+	channel := CreateTestChannel(t, octopusClient, project)
+	require.NotNil(t, channel)
+	defer DeleteTestChannel(t, octopusClient, channel)
+
+	release := CreateTestRelease(t, octopusClient, channel, project)
+	require.NotNil(t, release)
+	defer DeleteTestRelease(t, octopusClient, release)
+
+	staleToken := release.VariableSnapshotConcurrencyToken
+
+	variable.Value = "updatedValue1"
+	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
+	require.NoError(t, err)
+
+	// Act: refresh using the token captured before the release was fetched again advances the snapshot
+	firstUpdate, err := releases.SnapshotVariablesByName(octopusClient, release, []core.VariableIdentifier{
+		{Name: variable.Name, OwnerID: project.ID},
+	}, &staleToken)
+	require.NoError(t, err)
+	require.NotNil(t, firstUpdate)
+
+	// Assert: reusing the now-stale token is rejected with a conflict
+	variable.Value = "updatedValue2"
+	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variable)
+	require.NoError(t, err)
+
+	_, err = releases.SnapshotVariablesByName(octopusClient, release, []core.VariableIdentifier{
+		{Name: variable.Name, OwnerID: project.ID},
+	}, &staleToken)
+	require.Error(t, err)
+	var apiError *core.APIError
+	ok := errors.As(err, &apiError)
+	require.True(t, ok)
+	assert.Equal(t, http.StatusConflict, apiError.StatusCode)
+
+	// Assert: supplying the current token succeeds
+	secondUpdate, err := releases.SnapshotVariablesByName(octopusClient, firstUpdate, []core.VariableIdentifier{
+		{Name: variable.Name, OwnerID: project.ID},
+	}, &firstUpdate.VariableSnapshotConcurrencyToken)
+	require.NoError(t, err)
+	require.NotNil(t, secondUpdate)
 }
