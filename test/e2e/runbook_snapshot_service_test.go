@@ -186,7 +186,7 @@ func TestRunbookSnapshotServiceSnapshotVariablesByName(t *testing.T) {
 	variableIdentifier := core.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
 	variableIdentifiers := []core.VariableIdentifier{variableIdentifier}
 
-	updatedRunbookSnapshot, err := runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, variableIdentifiers)
+	updatedRunbookSnapshot, err := runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, variableIdentifiers, nil)
 	require.NoError(t, err)
 	require.NotNil(t, updatedRunbookSnapshot)
 
@@ -246,7 +246,7 @@ func TestRunbookSnapshotServiceSnapshotVariablesByNameConcurrency(t *testing.T) 
 	// Act: the token captured right after creation is still valid for the first update
 	firstUpdate, err := runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, []core.VariableIdentifier{
 		{Name: variable.Name, OwnerID: project.ID},
-	}, staleToken)
+	}, &staleToken)
 	require.NoError(t, err)
 	require.NotNil(t, firstUpdate)
 
@@ -257,7 +257,7 @@ func TestRunbookSnapshotServiceSnapshotVariablesByNameConcurrency(t *testing.T) 
 
 	_, err = runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, []core.VariableIdentifier{
 		{Name: variable.Name, OwnerID: project.ID},
-	}, staleToken)
+	}, &staleToken)
 	require.Error(t, err)
 	var apiError *core.APIError
 	ok := errors.As(err, &apiError)
@@ -267,7 +267,7 @@ func TestRunbookSnapshotServiceSnapshotVariablesByNameConcurrency(t *testing.T) 
 	// Assert: supplying the current token succeeds
 	secondUpdate, err := runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, []core.VariableIdentifier{
 		{Name: variable.Name, OwnerID: project.ID},
-	}, firstUpdate.VariableSnapshotConcurrencyToken)
+	}, &firstUpdate.VariableSnapshotConcurrencyToken)
 	require.NoError(t, err)
 	require.NotNil(t, secondUpdate)
 }

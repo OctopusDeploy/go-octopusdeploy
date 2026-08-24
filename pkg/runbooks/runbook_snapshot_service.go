@@ -83,7 +83,7 @@ func (s *RunbookSnapshotService) GetByID(id string) (*RunbookSnapshot, error) {
 
 // ----- Experimental ---------------------------------------------------------
 // SnapshotVariablesByName requires octopus feature toggle partial-updates-on-variables = true
-func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSnapshot, variables []core.VariableIdentifier, concurrencyToken ...string) (*RunbookSnapshot, error) {
+func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSnapshot, variables []core.VariableIdentifier, concurrencyToken *string) (*RunbookSnapshot, error) {
 	if client == nil {
 		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
 	}
@@ -116,11 +116,6 @@ func SnapshotVariablesByName(client newclient.Client, runbookSnapshot *RunbookSn
 		return nil, err
 	}
 
-	token := runbookSnapshot.VariableSnapshotConcurrencyToken
-	if len(concurrencyToken) > 0 {
-		token = concurrencyToken[0]
-	}
-
-	command := core.SnapshotVariablesByNameCommand{Variables: variables, VariableSnapshotConcurrencyToken: token}
+	command := core.SnapshotVariablesByNameCommand{Variables: variables, VariableSnapshotConcurrencyToken: concurrencyToken}
 	return newclient.Post[RunbookSnapshot](client.HttpSession(), expandedUri, command)
 }

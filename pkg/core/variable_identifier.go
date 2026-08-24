@@ -12,5 +12,5 @@ type SnapshotVariablesByNameCommand struct {
 
 	// VariableSnapshotConcurrencyToken is the token read from the release or runbook snapshot. When supplied,
 	// the update fails if the snapshot has changed since. Omit to skip the check.
-	VariableSnapshotConcurrencyToken string `json:"VariableSnapshotConcurrencyToken,omitempty"`
+	VariableSnapshotConcurrencyToken *string `json:"VariableSnapshotConcurrencyToken,omitempty"`
 }

@@ -256,7 +256,7 @@ func TestReleaseServiceSnapshotVariablesByName(t *testing.T) {
 	variableIdentifier := core.VariableIdentifier{Name: variable.Name, OwnerID: project.ID}
 	variableIdentifiers := []core.VariableIdentifier{variableIdentifier}
 
-	updatedRelease, err := releases.SnapshotVariablesByName(octopusClient, release, variableIdentifiers)
+	updatedRelease, err := releases.SnapshotVariablesByName(octopusClient, release, variableIdentifiers, nil)
 	require.NoError(t, err)
 	require.NotNil(t, updatedRelease)
 
@@ -316,7 +316,7 @@ func TestReleaseServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
 	// Act: refresh using the token captured before the release was fetched again advances the snapshot
 	firstUpdate, err := releases.SnapshotVariablesByName(octopusClient, release, []core.VariableIdentifier{
 		{Name: variable.Name, OwnerID: project.ID},
-	}, staleToken)
+	}, &staleToken)
 	require.NoError(t, err)
 	require.NotNil(t, firstUpdate)
 
@@ -327,7 +327,7 @@ func TestReleaseServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
 
 	_, err = releases.SnapshotVariablesByName(octopusClient, release, []core.VariableIdentifier{
 		{Name: variable.Name, OwnerID: project.ID},
-	}, staleToken)
+	}, &staleToken)
 	require.Error(t, err)
 	var apiError *core.APIError
 	ok := errors.As(err, &apiError)
@@ -337,7 +337,7 @@ func TestReleaseServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
 	// Assert: supplying the current token succeeds
 	secondUpdate, err := releases.SnapshotVariablesByName(octopusClient, firstUpdate, []core.VariableIdentifier{
 		{Name: variable.Name, OwnerID: project.ID},
-	}, firstUpdate.VariableSnapshotConcurrencyToken)
+	}, &firstUpdate.VariableSnapshotConcurrencyToken)
 	require.NoError(t, err)
 	require.NotNil(t, secondUpdate)
 }
