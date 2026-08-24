@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
@@ -190,4 +191,83 @@ func TestRunbookSnapshotServiceSnapshotVariablesByName(t *testing.T) {
 
 	// Assert
 	assert.NotEqual(t, oldProjectSnapshotId, updatedRunbookSnapshot.ProjectVariableSetSnapshotID)
+}
+
+func TestRunbookSnapshotServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
+
+	//Arrange
+	octopusClient := getOctopusClient()
+	require.NotNil(t, octopusClient)
+
+	toggle, err := configuration.Get(octopusClient, &configuration.FeatureToggleConfigurationQuery{
+		Name: "partial-updates-on-variables",
+	})
+	if err != nil {
+		t.Skip("Could not get feature toggle configuration")
+	} else if len(toggle.FeatureToggles) == 0 {
+		t.Skip("PartialUpdatesOnVariables feature toggle is not present")
+	} else if !toggle.FeatureToggles[0].IsEnabled {
+		t.Skip("PartialUpdatesOnVariables feature toggle is not enabled")
+	}
+
+	space := GetDefaultSpace(t, octopusClient)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, octopusClient)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, octopusClient, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, octopusClient)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, octopusClient, projectGroup)
+
+	project := CreateTestProject(t, octopusClient, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, octopusClient, project)
+
+	variableA := CreateTestVariable(t, project.ID, internal.GetRandomName())
+	require.NotNil(t, variableA)
+	variableB := CreateTestVariable(t, project.ID, internal.GetRandomName())
+	require.NotNil(t, variableB)
+
+	runbook := CreateTestRunbook(t, octopusClient, lifecycle, projectGroup, project)
+	require.NotNil(t, runbook)
+	defer DeleteTestRunbook(t, octopusClient, runbook)
+
+	runbookSnapshot := CreateTestRunbookSnapshot(t, octopusClient, lifecycle, projectGroup, project, runbook)
+	require.NotNil(t, runbookSnapshot)
+	defer DeleteTestRunbookSnapshot(t, octopusClient, runbookSnapshot)
+
+	staleToken := runbookSnapshot.VariableSnapshotConcurrencyToken
+
+	variableA.Value = "updatedA"
+	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variableA)
+	require.NoError(t, err)
+
+	// Act: the token captured right after creation is still valid for the first update
+	firstUpdate, err := runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, []core.VariableIdentifier{
+		{Name: variableA.Name, OwnerID: project.ID},
+	}, staleToken)
+	require.NoError(t, err)
+	require.NotNil(t, firstUpdate)
+
+	// Assert: reusing the now-stale token is rejected with a conflict
+	variableB.Value = "updatedB"
+	_, err = variables.UpdateSingle(octopusClient, space.ID, project.ID, variableB)
+	require.NoError(t, err)
+
+	_, err = runbooks.SnapshotVariablesByName(octopusClient, runbookSnapshot, []core.VariableIdentifier{
+		{Name: variableB.Name, OwnerID: project.ID},
+	}, staleToken)
+	require.Error(t, err)
+	apiError, ok := err.(*core.APIError)
+	require.True(t, ok)
+	assert.Equal(t, http.StatusConflict, apiError.StatusCode)
+
+	// Assert: supplying the current token succeeds
+	secondUpdate, err := runbooks.SnapshotVariablesByName(octopusClient, firstUpdate, []core.VariableIdentifier{
+		{Name: variableB.Name, OwnerID: project.ID},
+	}, firstUpdate.VariableSnapshotConcurrencyToken)
+	require.NoError(t, err)
+	require.NotNil(t, secondUpdate)
 }

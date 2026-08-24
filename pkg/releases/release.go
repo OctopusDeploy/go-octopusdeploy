@@ -24,6 +24,7 @@ type Release struct {
 	SpaceID                            string                                   `json:"SpaceId,omitempty"`
 	Version                            string                                   `json:"Version"`
 	CustomFields                       map[string]string                        `json:"CustomFields,omitempty"`
+	VariableSnapshotConcurrencyToken   string                                   `json:"VariableSnapshotConcurrencyToken,omitempty"`
 
 	resources.Resource
 }
