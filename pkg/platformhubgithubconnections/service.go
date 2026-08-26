@@ -10,9 +10,6 @@ const (
 	connectionsTemplate  = "/api/platformhub/githubconnections/connections{?skip,take}"
 	connectionTemplate   = "/api/platformhub/githubconnections/connections/{id}"
 	repositoriesTemplate = "/api/platformhub/githubconnections/connections/{connectionId}/repositories"
-
-	// defaultPageSize matches the server's default 'take'.
-	defaultPageSize = 30
 )
 
 // ConnectionDetails represents a single Platform Hub GitHub App connection, including the
@@ -49,24 +46,6 @@ func List(client newclient.Client, skip int, take int) (*ConnectionsQueryResult,
 	}
 
 	return newclient.Get[ConnectionsQueryResult](client.HttpSession(), path)
-}
-
-// ListAll returns every Platform Hub GitHub App connection, paging until TotalResults is reached.
-func ListAll(client newclient.Client) ([]*githubconnections.Connection, error) {
-	connections := make([]*githubconnections.Connection, 0)
-
-	for {
-		page, err := List(client, len(connections), defaultPageSize)
-		if err != nil {
-			return nil, err
-		}
-
-		connections = append(connections, page.Connections...)
-
-		if len(page.Connections) == 0 || len(connections) >= page.TotalResults {
-			return connections, nil
-		}
-	}
 }
 
 // GetByID returns the Platform Hub GitHub App connection with the given ID, along with the
