@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	connectionsTemplate  = "/api/platformhub/githubconnections/connections{?skip,take}"
-	connectionTemplate   = "/api/platformhub/githubconnections/connections/{id}"
-	repositoriesTemplate = "/api/platformhub/githubconnections/connections/{connectionId}/repositories"
+	connectionsTemplate  = "/api/platformhub/github/connections{?skip,take}"
+	connectionTemplate   = "/api/platformhub/github/connections/{id}"
+	repositoriesTemplate = "/api/platformhub/github/connections/{connectionId}/repositories"
 )
 
 // ConnectionDetails represents a single Platform Hub GitHub App connection, including the
