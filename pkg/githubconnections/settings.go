@@ -4,7 +4,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
 
-const settingsPath = "/api/githubconnections/app/settings"
+const settingsPath = "/api/github/app/settings"
 
 // Settings represents the server-wide GitHub App settings.
 type Settings struct {
