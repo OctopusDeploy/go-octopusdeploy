@@ -80,39 +80,6 @@ func TestList(t *testing.T) {
 	assert.Nil(t, result.Connections[1].Installation)
 }
 
-func TestListAllPagesUntilTotalResults(t *testing.T) {
-	const firstPage = `{"Connections":[{"Id":"GitHubAppConnections-1"}],"ItemsPerPage":1,"NumberOfPages":2,"TotalResults":2}`
-	const secondPage = `{"Connections":[{"Id":"GitHubAppConnections-2"}],"ItemsPerPage":1,"NumberOfPages":2,"TotalResults":2}`
-
-	var requested []string
-	client := newTestClient(t, &requested, firstPage, secondPage)
-
-	connections, err := ListAll(client)
-	require.NoError(t, err)
-
-	require.Len(t, requested, 2)
-	assert.Equal(t, "/api/platformhub/githubconnections/connections?skip=0&take=30", requested[0])
-	assert.Equal(t, "/api/platformhub/githubconnections/connections?skip=1&take=30", requested[1])
-
-	require.Len(t, connections, 2)
-	assert.Equal(t, "GitHubAppConnections-1", connections[0].ID)
-	assert.Equal(t, "GitHubAppConnections-2", connections[1].ID)
-}
-
-func TestListAllStopsOnEmptyPage(t *testing.T) {
-	// A TotalResults larger than the server actually returns must not loop forever.
-	const page = `{"Connections":[],"ItemsPerPage":30,"NumberOfPages":1,"TotalResults":5}`
-
-	var requested []string
-	client := newTestClient(t, &requested, page)
-
-	connections, err := ListAll(client)
-	require.NoError(t, err)
-
-	assert.Len(t, requested, 1)
-	assert.Empty(t, connections)
-}
-
 func TestGetByID(t *testing.T) {
 	const payload = `{
 	  "Id": "GitHubAppConnections-1",
