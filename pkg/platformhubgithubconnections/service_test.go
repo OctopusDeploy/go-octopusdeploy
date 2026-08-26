@@ -94,7 +94,7 @@ func TestGetByID(t *testing.T) {
 	      "IsPrivate": true,
 	      "Visibility": "private",
 	      "Language": "Go",
-	      "GitUrl": "https://githubconnections.com/OctopusDeploy/hub.git",
+	      "GitUrl": "https://github.com/OctopusDeploy/hub.git",
 	      "DefaultBranch": "main"
 	    }
 	  ],
@@ -130,8 +130,8 @@ func TestGetByIDWithEmptyID(t *testing.T) {
 func TestGetRepositories(t *testing.T) {
 	const payload = `{
 	  "Repositories": [
-	    { "RepositoryId": "R_1", "RepositoryName": "hub", "GitUrl": "https://githubconnections.com/OctopusDeploy/hub.git", "DefaultBranch": "main" },
-	    { "RepositoryId": "R_2", "RepositoryName": "other", "GitUrl": "https://githubconnections.com/OctopusDeploy/other.git", "DefaultBranch": "trunk" }
+	    { "RepositoryId": "R_1", "RepositoryName": "hub", "GitUrl": "https://github.com/OctopusDeploy/hub.git", "DefaultBranch": "main" },
+	    { "RepositoryId": "R_2", "RepositoryName": "other", "GitUrl": "https://github.com/OctopusDeploy/other.git", "DefaultBranch": "trunk" }
 	  ]
 	}`
 

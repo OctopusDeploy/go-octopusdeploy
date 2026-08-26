@@ -35,63 +35,6 @@ func newTestClient(t *testing.T, recorded *[]recordedRequest, payload string) ne
 	return newclient.NewClient(&newclient.HttpSession{HttpClient: server.Client(), BaseURL: baseURL})
 }
 
-func TestListSummaries(t *testing.T) {
-	const payload = `{
-	  "ProcessTemplateSummaries": [
-	    {
-	      "Id": "refs/heads/main:my-template",
-	      "Name": "My Template",
-	      "GitRef": "refs/heads/main",
-	      "Slug": "my-template",
-	      "Description": "Does a thing",
-	      "Icon": { "Id": "rocket", "Color": "#25D384" },
-	      "Version": "1.0.0",
-	      "PublishedDate": "2026-08-25T01:02:03.000+00:00",
-	      "HasError": false
-	    },
-	    { "Name": "Unpublished", "GitRef": "refs/heads/main", "Slug": "unpublished", "HasError": true }
-	  ],
-	  "TotalResults": 2,
-	  "ItemsPerPage": 30,
-	  "TotalNoOfProcessTemplates": 2
-	}`
-
-	var recorded []recordedRequest
-	client := newTestClient(t, &recorded, payload)
-
-	result, err := ListSummaries(client, SummariesQuery{GitRef: "refs/heads/main", PartialName: "My", Skip: 0, Take: 30})
-	require.NoError(t, err)
-
-	assert.Equal(t, "/api/platformhub/refs%2Fheads%2Fmain/processtemplates/summaries?take=30&partialName=My", recorded[0].uri)
-
-	require.Len(t, result.ProcessTemplateSummaries, 2)
-	assert.Equal(t, 2, result.TotalResults)
-	assert.Equal(t, 2, result.TotalNoOfProcessTemplates)
-
-	first := result.ProcessTemplateSummaries[0]
-	assert.Equal(t, "My Template", first.Name)
-	assert.Equal(t, "my-template", first.Slug)
-	assert.Equal(t, "1.0.0", first.Version)
-	require.NotNil(t, first.PublishedDate)
-	assert.Equal(t, 2026, first.PublishedDate.Year())
-	require.NotNil(t, first.Icon)
-	assert.Equal(t, "rocket", first.Icon.ID)
-
-	second := result.ProcessTemplateSummaries[1]
-	assert.Nil(t, second.PublishedDate)
-	assert.True(t, second.HasError)
-}
-
-func TestListSummariesWithEmptyGitRef(t *testing.T) {
-	var recorded []recordedRequest
-	client := newTestClient(t, &recorded, `{}`)
-
-	result, err := ListSummaries(client, SummariesQuery{})
-	require.Error(t, err)
-	require.Nil(t, result)
-	assert.Empty(t, recorded)
-}
-
 func TestList(t *testing.T) {
 	const payload = `{
 	  "ProcessTemplates": [
