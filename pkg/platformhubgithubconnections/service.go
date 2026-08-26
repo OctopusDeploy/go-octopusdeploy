@@ -23,8 +23,7 @@ type ConnectionDetails struct {
 	UnknownRepositories []*githubconnections.UnknownRepository `json:"UnknownRepositories"`
 }
 
-// ConnectionsQuery represents the query parameters for listing connections. Both
-// skip and take are required by the server contract, so neither is omitted when empty.
+// ConnectionsQuery represents the query parameters for listing connections. Both skip and take are required.
 type ConnectionsQuery struct {
 	Skip int `uri:"skip" json:"skip"`
 	Take int `uri:"take" json:"take"`

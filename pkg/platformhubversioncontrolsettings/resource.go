@@ -85,9 +85,8 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 		}
 		r.Credentials = gitHubAppCredential
 	}
-	// GitCredentialTypeReference is deliberately not handled: Platform Hub's reference
-	// credential (ReferencePlatformHubGitCredentialUsageResource) is not believed to be
-	// fully validated on save, so it is not exposed here.
+	// GitCredentialTypeReference isn't handled as using a reference credential
+	// (ReferencePlatformHubGitCredentialUsageResource) isn't fully supported yet
 
 	return nil
 }

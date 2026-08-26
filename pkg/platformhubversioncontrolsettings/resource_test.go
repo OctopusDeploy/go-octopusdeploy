@@ -11,7 +11,7 @@ import (
 
 func TestResource_UnmarshalJSON_Anonymous(t *testing.T) {
 	const payload = `{
-		"Url": "https://githubconnections.com/OctopusDeploy/hub.git",
+		"Url": "https://github.com/OctopusDeploy/hub.git",
 		"DefaultBranch": "main",
 		"BasePath": ".octopus/",
 		"Credentials": { "Type": "Anonymous" }
@@ -31,7 +31,7 @@ func TestResource_UnmarshalJSON_Anonymous(t *testing.T) {
 
 func TestResource_UnmarshalJSON_UsernamePassword(t *testing.T) {
 	const payload = `{
-		"Url": "https://githubconnections.com/OctopusDeploy/hub.git",
+		"Url": "https://github.com/OctopusDeploy/hub.git",
 		"DefaultBranch": "main",
 		"BasePath": ".octopus/",
 		"Credentials": { "Type": "UsernamePassword", "Username": "octobob", "Password": { "HasValue": true } }
@@ -50,7 +50,7 @@ func TestResource_UnmarshalJSON_UsernamePassword(t *testing.T) {
 
 func TestResource_UnmarshalJSON_GitHubApp(t *testing.T) {
 	const payload = `{
-		"Url": "https://githubconnections.com/OctopusDeploy/hub.git",
+		"Url": "https://github.com/OctopusDeploy/hub.git",
 		"DefaultBranch": "main",
 		"BasePath": ".octopus/",
 		"Credentials": { "Type": "GitHub", "Id": "GitHubAppConnections-1" }
