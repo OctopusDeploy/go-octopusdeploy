@@ -227,12 +227,14 @@ func TestPackageServiceUploadDelta_UploadedDelta(t *testing.T) {
 	require.NotNil(t, deltaResponse)
 	defer DeleteTestPackage(t, octopus, deltaResponse.GetID())
 
-	// it tells us if it did delta via response.UploadInfo
-	// Orion: Note These are the values when run on my machine, but because the data is random, and
-	// due to platform differences they may not always be the same; commented out and left for
-	// explanatory purposes only.
-	assert.Equal(t, int64(1049158), deltaResponse.UploadInfo.FileSize)
-	assert.Equal(t, int64(524938), deltaResponse.UploadInfo.DeltaSize)
+	// it tells us if it did delta via response.UploadInfo.
+	// The exact byte counts depend on the random content and on the zip encoder in the toolchain
+	// building the test (archive/zip's per-entry overhead changed in Go 1.27), so assert the
+	// relationship that actually matters: only content2.txt is new, so the delta should carry
+	// roughly half of the full file rather than all of it.
+	assert.Greater(t, deltaResponse.UploadInfo.FileSize, int64(1024*1024))
+	assert.Less(t, deltaResponse.UploadInfo.DeltaSize, deltaResponse.UploadInfo.FileSize)
+	assert.Greater(t, deltaResponse.UploadInfo.DeltaSize, int64(256*1024))
 	assert.Equal(t, packages.DeltaBehaviourUploadedDeltaFile, deltaResponse.UploadInfo.DeltaBehaviour)
 }
 
