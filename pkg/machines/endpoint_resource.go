@@ -16,6 +16,11 @@ type EndpointResource struct {
 	AadUserCredentialPassword            *core.SensitiveValue                   `json:"AadUserCredentialPassword,omitempty"`
 	AccountID                            string                                 `json:"AccountId"`
 	ApplicationsDirectory                string                                 `json:"ApplicationsDirectory,omitempty"`
+	AssumedRoleARN                       string                                 `json:"AssumedRoleArn,omitempty"`
+	AssumedRoleSession                   string                                 `json:"AssumedRoleSession,omitempty"`
+	AssumeRole                           bool                                   `json:"AssumeRole"`
+	AssumeRoleExternalID                 string                                 `json:"AssumeRoleExternalId,omitempty"`
+	AssumeRoleSessionDurationSeconds     int                                    `json:"AssumeRoleSessionDurationSeconds,omitempty"`
 	Authentication                       IKubernetesAuthentication              `json:"Authentication,omitempty"`
 	CertificateSignatureAlgorithm        string                                 `json:"CertificateSignatureAlgorithm,omitempty"`
 	CertificateStoreLocation             string                                 `json:"CertificateStoreLocation,omitempty"`
@@ -24,8 +29,9 @@ type EndpointResource struct {
 	CloudServiceName                     string                                 `json:"CloudServiceName"`
 	ClusterCertificate                   string                                 `json:"ClusterCertificate,omitempty"`
 	ClusterCertificatePath               string                                 `json:"ClusterCertificatePath,omitempty"`
-	ClusterURL                           *url.URL                               `json:"ClusterUrl" validate:"required"`
-	CommunicationStyle                   string                                 `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive KubernetesTentacle"`
+	ClusterName                          string                                 `json:"ClusterName,omitempty"`
+	ClusterURL                           *url.URL                               `json:"ClusterUrl"`
+	CommunicationStyle                   string                                 `json:"CommunicationStyle" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster AzureWebApp Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive KubernetesTentacle AwsEcsCluster"`
 	ConnectionEndpoint                   string                                 `json:"ConnectionEndpoint,omitempty"`
 	Container                            *deployments.DeploymentActionContainer `json:"Container,omitempty"`
 	ContainerOptions                     string                                 `json:"ContainerOptions,omitempty"`
@@ -37,6 +43,7 @@ type EndpointResource struct {
 	Namespace                            string                                 `json:"Namespace,omitempty"`
 	Port                                 int                                    `json:"Port,omitempty"`
 	ProxyID                              string                                 `json:"ProxyId,omitempty"`
+	Region                               string                                 `json:"Region,omitempty"`
 	ResourceGroupName                    string                                 `json:"ResourceGroupName,omitempty"`
 	RunningInContainer                   bool                                   `json:"RunningInContainer"`
 	SecurityMode                         string                                 `json:"SecurityMode,omitempty" validate:"omitempty,oneof=Unsecure SecureClientCertificate SecureAzureAD"`
@@ -47,10 +54,11 @@ type EndpointResource struct {
 	StorageAccountName                   string                                 `json:"StorageAccountName"`
 	SwapIfPossible                       bool                                   `json:"SwapIfPossible"`
 	TentacleVersionDetails               *TentacleVersionDetails                `json:"TentacleVersionDetails,omitempty"`
-	Thumbprint                           string                                 `json:"Thumbprint" validate:"required"`
+	Thumbprint                           string                                 `json:"Thumbprint"`
 	WorkingDirectory                     string                                 `json:"OctopusWorkingDirectory,omitempty"`
 	UseCurrentInstanceCount              bool                                   `json:"UseCurrentInstanceCount"`
-	URI                                  *url.URL                               `json:"Uri" validate:"required"`
+	UseInstanceRole                      bool                                   `json:"UseInstanceRole"`
+	URI                                  *url.URL                               `json:"Uri"`
 	WebAppName                           string                                 `json:"WebAppName,omitempty"`
 	WebAppSlotName                       string                                 `json:"WebAppSlotName"`
 
@@ -73,7 +81,31 @@ func (e *EndpointResource) GetCommunicationStyle() string {
 // Validate checks the state of the endpoint resource and returns an error if
 // invalid.
 func (e EndpointResource) Validate() error {
-	return validator.New().Struct(e)
+	validate := validator.New()
+	validate.RegisterStructValidation(validateEndpointResource, EndpointResource{})
+
+	return validate.Struct(e)
+}
+
+// validateEndpointResource requires the fields that the communication style in
+// hand actually uses. A blanket "required" on ClusterUrl, Thumbprint and Uri
+// asked every style for all three, which no single endpoint has.
+func validateEndpointResource(sl validator.StructLevel) {
+	resource := sl.Current().Interface().(EndpointResource)
+
+	switch resource.CommunicationStyle {
+	case "Kubernetes":
+		if resource.ClusterURL == nil {
+			sl.ReportError(resource.ClusterURL, "ClusterUrl", "ClusterURL", "required", "")
+		}
+	case "TentacleActive", "TentaclePassive", "KubernetesTentacle":
+		if resource.URI == nil {
+			sl.ReportError(resource.URI, "Uri", "URI", "required", "")
+		}
+		if resource.Thumbprint == "" {
+			sl.ReportError(resource.Thumbprint, "Thumbprint", "Thumbprint", "required", "")
+		}
+	}
 }
 
 var _ IEndpoint = &EndpointResource{}

@@ -7,4 +7,5 @@ type PackageReference struct {
 	Name                string            `json:"Name,omitempty"`
 	PackageID           string            `json:"PackageId,omitempty"`
 	Properties          map[string]string `json:"Properties"`
+	Version             string            `json:"Version,omitempty"`
 }

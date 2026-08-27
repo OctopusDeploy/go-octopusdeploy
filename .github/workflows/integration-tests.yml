@@ -35,9 +35,12 @@ jobs:
           DB_CONNECTION_STRING: 'Server=sqlserver;Database=OctopusDeploy;User Id=sa;Password=${{ env.SA_PASSWORD }};'
           ADMIN_API_KEY: ${{ env.ADMIN_API_KEY }}
           ENABLE_USAGE: N
+          DISABLE_RATE_LIMITING: Y
           OCTOPUS_SERVER_BASE64_LICENSE: ${{ secrets.OCTOPUS_SERVER_BASE64_LICENSE }}
           OCTOPUS__FeatureToggles__EphemeralEnvironmentsManualDeploymentsFeatureToggle: 'true'
           OCTOPUS__FeatureToggles__EphemeralEnvironmentsFeatureToggle: 'true'
+          OCTOPUS__FeatureToggles__RateLimitingV2FeatureToggle: 'true'
+          OCTOPUS__FeatureToggles__PartialUpdatesOnVariablesFeatureToggle: 'true'
         ports:
           - 8080:8080
     # https://github.com/dorny/test-reporter/issues/168

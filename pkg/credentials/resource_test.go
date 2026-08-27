@@ -75,9 +75,9 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, restrictionsAsJSON)
 
-	anonymousdAsJSON, err := json.Marshal(anonymous)
+	anonymousAsJSON, err := json.Marshal(anonymous)
 	require.NoError(t, err)
-	require.NotNil(t, anonymousdAsJSON)
+	require.NotNil(t, anonymousAsJSON)
 
 	resource := credentials.NewResource(name, anonymous)
 	resource.Description = description
@@ -94,7 +94,7 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 		"Links": {
 			"Self": "%s"
 		}
-	}`, description, anonymousdAsJSON, restrictionsAsJSON, id, name, selfLink)
+	}`, description, anonymousAsJSON, restrictionsAsJSON, id, name, selfLink)
 
 	resourceAsJSON, err := json.Marshal(resource)
 	require.NoError(t, err)

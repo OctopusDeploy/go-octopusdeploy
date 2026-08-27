@@ -174,6 +174,15 @@ func ToFeed(feedResource *FeedResource) (IFeed, error) {
 		}
 		ociFeed.FeedURI = feedResource.FeedURI
 		feed = ociFeed
+	case FeedTypePyPI:
+		pyPiFeed, err := NewPyPiFeed(feedResource.GetName(), feedResource.FeedURI)
+		if err != nil {
+			return nil, err
+		}
+		pyPiFeed.DownloadAttempts = feedResource.DownloadAttempts
+		pyPiFeed.DownloadRetryBackoffSeconds = feedResource.DownloadRetryBackoffSeconds
+		pyPiFeed.FeedURI = feedResource.FeedURI
+		feed = pyPiFeed
 	default:
 		return nil, errors.New("unknown feed type: " + fmt.Sprint(feedResource.GetFeedType()))
 	}
@@ -315,6 +324,11 @@ func ToFeedResource(feed IFeed) (*FeedResource, error) {
 	case FeedTypeOCIRegistry:
 		ociFeed := feed.(*OCIRegistryFeed)
 		feedResource.FeedURI = ociFeed.FeedURI
+	case FeedTypePyPI:
+		pyPiFeed := feed.(*PyPiFeed)
+		feedResource.DownloadAttempts = pyPiFeed.DownloadAttempts
+		feedResource.DownloadRetryBackoffSeconds = pyPiFeed.DownloadRetryBackoffSeconds
+		feedResource.FeedURI = pyPiFeed.FeedURI
 	case FeedTypeOctopusProject:
 		// nothing to copy
 	}

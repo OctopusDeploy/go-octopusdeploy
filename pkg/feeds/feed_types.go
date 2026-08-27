@@ -18,4 +18,5 @@ const (
 	FeedTypeS3                          = FeedType("S3")
 	FeedTypeOCIRegistry                 = FeedType("OciRegistry")
 	FeedTypeGcsStorage                  = FeedType("GcsStorage")
+	FeedTypePyPI                        = FeedType("PyPi")
 )

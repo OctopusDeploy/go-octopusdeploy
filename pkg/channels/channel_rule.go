@@ -14,5 +14,15 @@ type ChannelRule struct {
 	//to specify the range of versions to include
 	VersionRange string `json:"VersionRange,omitempty"`
 
+	// VersioningStrategy controls how packages are ordered to determine the latest version.
+	// Set to "MostRecentlyPublished" to use publish date ordering instead of SemVer comparison.
+	// When unset or "SemVer", the existing behaviour applies.
+	VersioningStrategy string `json:"VersioningStrategy,omitempty"`
+
+	// VersionTagRegex is a regex matched against the full version/tag string.
+	// Used with VersioningStrategy "MostRecentlyPublished" as an alternative to
+	// VersionRange and Tag, supporting non-SemVer versioning schemes.
+	VersionTagRegex string `json:"VersionTagRegex,omitempty"`
+
 	resources.Resource
 }

@@ -1,9 +1,12 @@
 package releases
 
 import (
+	"fmt"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
@@ -232,4 +235,42 @@ func GetReleaseInProject(client newclient.Client, spaceID string, projectID stri
 		return nil, err
 	}
 	return newclient.Get[Release](client.HttpSession(), expandedUri)
+}
+
+// SnapshotVariablesByName requires octopus feature toggle partial-updates-on-variables = true
+func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier, concurrencyToken *string) (*Release, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
+	}
+	if release == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "release")
+	}
+	if len(variables) == 0 {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "variables")
+	}
+
+	for i, v := range variables {
+		if v.Name == "" {
+			return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", fmt.Sprintf("variables[%d].Name", i))
+		}
+		if v.OwnerID == "" {
+			return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", fmt.Sprintf("variables[%d].OwnerId", i))
+		}
+	}
+
+	spaceId, err := internal.GetSpaceID(release.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseSnapshotVariablesByName, map[string]any{
+		"spaceId":   spaceId,
+		"releaseId": release.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	command := core.SnapshotVariablesByNameCommand{Variables: variables, VariableSnapshotConcurrencyToken: concurrencyToken}
+	return newclient.Post[Release](client.HttpSession(), expandedUri, command)
 }

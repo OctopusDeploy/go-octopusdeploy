@@ -4,10 +4,11 @@ import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 
 // AzureWebAppEndpoint represents the an Azure web app-based endpoint.
 type AzureWebAppEndpoint struct {
-	AccountID         string `json:"AccountId"`
-	ResourceGroupName string `json:"ResourceGroupName,omitempty"`
-	WebAppName        string `json:"WebAppName,omitempty"`
-	WebAppSlotName    string `json:"WebAppSlotName"`
+	AccountID           string `json:"AccountId"`
+	ResourceGroupName   string `json:"ResourceGroupName,omitempty"`
+	WebAppName          string `json:"WebAppName,omitempty"`
+	WebAppSlotName      string `json:"WebAppSlotName"`
+	DefaultWorkerPoolID string `json:"DefaultWorkerPoolId"`
 
 	endpoint
 }
@@ -23,3 +24,15 @@ func NewAzureWebAppEndpoint() *AzureWebAppEndpoint {
 
 var _ resources.IResource = &AzureWebAppEndpoint{}
 var _ IEndpoint = &AzureWebAppEndpoint{}
+
+// GetDefaultWorkerPoolID returns the default worker pool ID of this endpoint.
+func (e AzureWebAppEndpoint) GetDefaultWorkerPoolID() string {
+	return e.DefaultWorkerPoolID
+}
+
+// SetDefaultWorkerPoolID sets the default worker pool ID of this endpoint.
+func (e *AzureWebAppEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID string) {
+	e.DefaultWorkerPoolID = defaultWorkerPoolID
+}
+
+var _ IRunsOnAWorker = &AzureWebAppEndpoint{}

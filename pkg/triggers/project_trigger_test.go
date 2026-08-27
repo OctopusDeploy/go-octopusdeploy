@@ -8,6 +8,7 @@ import (
 
 	"github.com/MakeNowJust/heredoc/v2"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
@@ -318,6 +319,150 @@ func TestTriggerJsonSerialization(t *testing.T) {
 				},
 			},
 		}, output)
+	})
+
+	t.Run("serialize including webhook filter", func(t *testing.T) {
+		action := actions.NewCreateReleaseAction("Channels-123")
+
+		filter := filters.NewWebhookTriggerFilter(false, core.NewSensitiveValue("secret"))
+
+		project := projects.NewProject("foo", "Lifecycles-123", "ProjectGroup-123")
+		project.SetID("Projects-123")
+
+		projectTrigger := triggers.NewProjectTrigger("triggerName", "triggerDescription", false, project, action, filter)
+
+		output := &bytes.Buffer{}
+		err := json.NewEncoder(output).Encode(projectTrigger)
+		assert.Nil(t, err)
+
+		assert.Equal(t, heredoc.Doc(`
+			{"Action":{"ChannelId":"Channels-123","ActionType":"CreateRelease"},"Description":"triggerDescription","Filter":{"Secret":{"HasValue":true,"Hint":null,"NewValue":"secret"},"RequireApiKey":false,"FilterType":"WebhookFilter"},"IsDisabled":false,"Name":"triggerName","ProjectId":"Projects-123","SpaceId":""}
+			`), output.String())
+	})
+
+	t.Run("serialize including api key webhook filter", func(t *testing.T) {
+		action := actions.NewCreateReleaseAction("Channels-123")
+
+		filter := filters.NewWebhookTriggerFilter(true, nil)
+
+		project := projects.NewProject("foo", "Lifecycles-123", "ProjectGroup-123")
+		project.SetID("Projects-123")
+
+		projectTrigger := triggers.NewProjectTrigger("triggerName", "triggerDescription", false, project, action, filter)
+
+		output := &bytes.Buffer{}
+		err := json.NewEncoder(output).Encode(projectTrigger)
+		assert.Nil(t, err)
+
+		assert.Equal(t, heredoc.Doc(`
+			{"Action":{"ChannelId":"Channels-123","ActionType":"CreateRelease"},"Description":"triggerDescription","Filter":{"RequireApiKey":true,"FilterType":"WebhookFilter"},"IsDisabled":false,"Name":"triggerName","ProjectId":"Projects-123","SpaceId":""}
+			`), output.String())
+	})
+
+	t.Run("deserialize webhook filter", func(t *testing.T) {
+		data := []byte(heredoc.Doc(`
+		{
+		  "Id": "ProjectTriggers-21",
+		  "Name": "Webhook Trigger",
+		  "ProjectId": "Projects-314",
+		  "IsDisabled": false,
+		  "Filter": {
+			"FilterType": "WebhookFilter",
+			"WebhookId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+			"Secret": {
+			  "HasValue": true,
+			  "Hint": null,
+			  "NewValue": null
+			},
+			"Id": null,
+			"LastModifiedOn": null,
+			"LastModifiedBy": null,
+			"Links": {}
+		  },
+		  "Action": {
+			"ActionType": "CreateRelease",
+			"ChannelId": "Channels-123",
+			"Id": null,
+			"LastModifiedOn": null,
+			"LastModifiedBy": null,
+			"Links": {}
+		  },
+		  "SpaceId": "Spaces-1",
+		  "Description": "",
+		  "Links": {
+			"Self": "/api/Spaces-1/projects/Projects-314/triggers/ProjectTriggers-21",
+			"Project": "/api/Spaces-1/projects/Projects-314"
+		  }
+		}
+		`))
+		var output = new(triggers.ProjectTrigger)
+		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
+		assert.Nil(t, err)
+
+		action := actions.NewCreateReleaseAction("Channels-123")
+
+		filter := filters.NewWebhookTriggerFilter(false, &core.SensitiveValue{HasValue: true})
+		filter.WebhookID = "d290f1ee-6c54-4b01-90e6-d701748f0851"
+
+		assert.Equal(t, action, output.Action)
+		assert.Equal(t, filter, output.Filter)
+
+		assert.Equal(t, &triggers.ProjectTrigger{
+			Action:      action,
+			Description: "",
+			Filter:      filter,
+			IsDisabled:  false,
+			Name:        "Webhook Trigger",
+			ProjectID:   "Projects-314",
+			SpaceID:     "Spaces-1",
+			Resource: resources.Resource{
+				ID: "ProjectTriggers-21",
+				Links: map[string]string{
+					"Project": "/api/Spaces-1/projects/Projects-314",
+					"Self":    "/api/Spaces-1/projects/Projects-314/triggers/ProjectTriggers-21",
+				},
+			},
+		}, output)
+	})
+
+	t.Run("deserialize api key webhook filter", func(t *testing.T) {
+		data := []byte(heredoc.Doc(`
+		{
+		  "Id": "ProjectTriggers-21",
+		  "Name": "Webhook Trigger",
+		  "ProjectId": "Projects-314",
+		  "IsDisabled": false,
+		  "Filter": {
+			"FilterType": "WebhookFilter",
+			"WebhookId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+			"Secret": null,
+			"RequireApiKey": true,
+			"Id": null,
+			"LastModifiedOn": null,
+			"LastModifiedBy": null,
+			"Links": {}
+		  },
+		  "Action": {
+			"ActionType": "CreateRelease",
+			"ChannelId": "Channels-123",
+			"Id": null,
+			"LastModifiedOn": null,
+			"LastModifiedBy": null,
+			"Links": {}
+		  },
+		  "SpaceId": "Spaces-1",
+		  "Description": "",
+		  "Links": {}
+		}
+		`))
+		var output = new(triggers.ProjectTrigger)
+		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
+		assert.Nil(t, err)
+
+		filter := filters.NewWebhookTriggerFilter(true, nil)
+		filter.WebhookID = "d290f1ee-6c54-4b01-90e6-d701748f0851"
+
+		assert.Equal(t, filter, output.Filter)
 	})
 
 	t.Run("deserialize CronExpressionSchedule from a 2022.3 server", func(t *testing.T) {

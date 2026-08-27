@@ -146,6 +146,13 @@ func Update(client newclient.Client, channel *Channel) (*Channel, error) {
 	return newclient.Update[Channel](client, template, channel.SpaceID, channel.ID, channel)
 }
 
+// UpdateChannel modifies a channel from a request that supports explicit
+// field clearing.
+func UpdateChannel(client newclient.Client, request *newclient.UpdateRequest[Channel]) (*Channel, error) {
+	channel := request.Resource()
+	return newclient.Update[Channel](client, template, channel.SpaceID, channel.ID, request)
+}
+
 // DeleteById deletes the channel based on the ID provided as input.
 func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
@@ -157,6 +164,8 @@ func GetAll(client newclient.Client, spaceID string) ([]*Channel, error) {
 }
 
 // GetByProjectID returns all channels in given project.
-func GetByProjectID(client newclient.Client, spaceID string, channelsQuery QueryByProjectID) (*resources.Resources[*Channel], error) {
+func GetByProjectID(
+	client newclient.Client, spaceID string, channelsQuery QueryByProjectID,
+) (*resources.Resources[*Channel], error) {
 	return newclient.GetByQuery[Channel](client, templateV2, spaceID, channelsQuery)
 }

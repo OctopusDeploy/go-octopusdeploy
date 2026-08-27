@@ -43,6 +43,7 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 		azureWebAppEndpoint.ResourceGroupName = endpointResource.ResourceGroupName
 		azureWebAppEndpoint.WebAppName = endpointResource.WebAppName
 		azureWebAppEndpoint.WebAppSlotName = endpointResource.WebAppSlotName
+		azureWebAppEndpoint.DefaultWorkerPoolID = endpointResource.DefaultWorkerPoolID
 		endpoint = azureWebAppEndpoint
 	case "Kubernetes":
 		kubernetesEndpoint := NewKubernetesEndpoint(endpointResource.ClusterURL)
@@ -77,6 +78,21 @@ func ToEndpoint(endpointResource *EndpointResource) (IEndpoint, error) {
 	case "TentaclePassive":
 		listeningTentacleEndpoint := NewListeningTentacleEndpoint(endpointResource.URI, endpointResource.Thumbprint)
 		endpoint = listeningTentacleEndpoint
+	case "AwsEcsCluster":
+		awsEcsClusterEndpoint := NewAwsEcsClusterEndpoint(endpointResource.ClusterName, endpointResource.Region)
+		awsEcsClusterEndpoint.AccountID = endpointResource.AccountID
+		awsEcsClusterEndpoint.AssumedRoleARN = endpointResource.AssumedRoleARN
+		awsEcsClusterEndpoint.AssumedRoleSession = endpointResource.AssumedRoleSession
+		awsEcsClusterEndpoint.AssumeRole = endpointResource.AssumeRole
+		awsEcsClusterEndpoint.AssumeRoleExternalID = endpointResource.AssumeRoleExternalID
+		awsEcsClusterEndpoint.AssumeRoleSessionDurationSeconds = endpointResource.AssumeRoleSessionDurationSeconds
+		awsEcsClusterEndpoint.DefaultWorkerPoolID = endpointResource.DefaultWorkerPoolID
+		awsEcsClusterEndpoint.UseInstanceRole = endpointResource.UseInstanceRole
+		endpoint = awsEcsClusterEndpoint
+	}
+
+	if IsNil(endpoint) {
+		return nil, internal.CreateInvalidParameterError("ToEndpoint", "endpointResource.CommunicationStyle")
 	}
 
 	endpoint.SetLinks(endpointResource.GetLinks())
@@ -100,6 +116,18 @@ func ToEndpointResource(endpoint IEndpoint) (*EndpointResource, error) {
 	endpointResource := NewEndpointResource(endpoint.GetCommunicationStyle())
 
 	switch endpointResource.GetCommunicationStyle() {
+	case "AwsEcsCluster":
+		awsEcsClusterEndpoint := endpoint.(*AwsEcsClusterEndpoint)
+		endpointResource.AccountID = awsEcsClusterEndpoint.AccountID
+		endpointResource.AssumedRoleARN = awsEcsClusterEndpoint.AssumedRoleARN
+		endpointResource.AssumedRoleSession = awsEcsClusterEndpoint.AssumedRoleSession
+		endpointResource.AssumeRole = awsEcsClusterEndpoint.AssumeRole
+		endpointResource.AssumeRoleExternalID = awsEcsClusterEndpoint.AssumeRoleExternalID
+		endpointResource.AssumeRoleSessionDurationSeconds = awsEcsClusterEndpoint.AssumeRoleSessionDurationSeconds
+		endpointResource.ClusterName = awsEcsClusterEndpoint.ClusterName
+		endpointResource.DefaultWorkerPoolID = awsEcsClusterEndpoint.DefaultWorkerPoolID
+		endpointResource.Region = awsEcsClusterEndpoint.Region
+		endpointResource.UseInstanceRole = awsEcsClusterEndpoint.UseInstanceRole
 	case "AzureCloudService":
 		azureCloudServiceEndpoint := endpoint.(*AzureCloudServiceEndpoint)
 		endpointResource.AccountID = azureCloudServiceEndpoint.AccountID

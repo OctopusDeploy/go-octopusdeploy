@@ -1,4 +1,4 @@
-﻿package releases
+package releases
 
 import "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 

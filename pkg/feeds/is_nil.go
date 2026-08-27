@@ -22,6 +22,8 @@ func IsNil(i interface{}) bool {
 		return v == nil
 	case *OctopusProjectFeed:
 		return v == nil
+	case *PyPiFeed:
+		return v == nil
 	default:
 		return v == nil
 	}
