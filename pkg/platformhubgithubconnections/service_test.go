@@ -66,7 +66,7 @@ func TestList(t *testing.T) {
 
 	// skip and take are [Required] on the server contract, so a zero skip must still be sent.
 	require.Len(t, requested, 1)
-	assert.Equal(t, "/api/platformhub/githubconnections/connections?skip=0&take=30", requested[0])
+	assert.Equal(t, "/api/platformhub/github/connections?skip=0&take=30", requested[0])
 
 	require.Len(t, result.Connections, 2)
 	assert.Equal(t, 2, result.TotalResults)
@@ -107,7 +107,7 @@ func TestGetByID(t *testing.T) {
 	connection, err := GetByID(client, "GitHubAppConnections-1")
 	require.NoError(t, err)
 
-	assert.Equal(t, "/api/platformhub/githubconnections/connections/GitHubAppConnections-1", requested[0])
+	assert.Equal(t, "/api/platformhub/github/connections/GitHubAppConnections-1", requested[0])
 	assert.Equal(t, githubconnections.ConnectionStatusConnected, connection.Status)
 	assert.Equal(t, "All good", connection.StatusUserMessage)
 	require.Len(t, connection.Repositories, 1)
@@ -141,7 +141,7 @@ func TestGetRepositories(t *testing.T) {
 	repositories, err := GetRepositories(client, "GitHubAppConnections-1")
 	require.NoError(t, err)
 
-	assert.Equal(t, "/api/platformhub/githubconnections/connections/GitHubAppConnections-1/repositories", requested[0])
+	assert.Equal(t, "/api/platformhub/github/connections/GitHubAppConnections-1/repositories", requested[0])
 	require.Len(t, repositories, 2)
 	assert.Equal(t, "trunk", repositories[1].DefaultBranch)
 }

@@ -27,7 +27,7 @@ func TestGetSettings(t *testing.T) {
 	settings, err := GetSettings(client)
 	require.NoError(t, err)
 
-	assert.Equal(t, "/api/githubconnections/app/settings", requested)
+	assert.Equal(t, "/api/github/app/settings", requested)
 	assert.True(t, settings.CanUseGitHubApp)
 	assert.False(t, settings.CanUseTrustedFlow)
 }
