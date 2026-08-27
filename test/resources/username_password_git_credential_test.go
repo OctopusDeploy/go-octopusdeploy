@@ -53,7 +53,7 @@ func TestUsernamePasswordGitCredentialMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, usernamePasswordGitCredentialAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(usernamePasswordGitCredentialAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(usernamePasswordGitCredentialAsJSON))
 }
 
 func TestUsernamePasswordGitCredentialUnmarshalJSON(t *testing.T) {

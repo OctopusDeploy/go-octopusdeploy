@@ -21,5 +21,5 @@ func TestAnonymousMarshalJSON(t *testing.T) {
 		"Type": "%s"
 	}`, credentials.GitCredentialTypeAnonymous)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(anonymousAsJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(anonymousAsJSON))
 }

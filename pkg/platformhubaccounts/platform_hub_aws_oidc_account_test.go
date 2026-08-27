@@ -149,7 +149,7 @@ func TestPlatformHubAwsOIDCAccountMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, accountAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(accountAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(accountAsJSON))
 }
 
 func TestPlatformHubAwsOIDCAccountNewWithConfigs(t *testing.T) {

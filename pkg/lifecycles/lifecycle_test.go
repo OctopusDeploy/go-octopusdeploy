@@ -96,7 +96,7 @@ func TestLifecycleAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, lifecycleAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(lifecycleAsJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(lifecycleAsJSON))
 }
 
 func TestLifecycleUnmarshalJSON(t *testing.T) {
@@ -219,7 +219,7 @@ func TestLifecycleToJson(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, lifecycleAsJson)
 
-	jsonassert.New(t).Assertf(string(lifecycleAsJson), expectedJson)
+	jsonassert.New(t).Assertf(string(lifecycleAsJson), "%s", expectedJson)
 
 	description := "test-description"
 	lifecycle.Description = description
@@ -245,7 +245,7 @@ func TestLifecycleToJson(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, lifecycleAsJson)
 
-	jsonassert.New(t).Assertf(string(lifecycleAsJson), expectedJson)
+	jsonassert.New(t).Assertf(string(lifecycleAsJson), "%s", expectedJson)
 }
 
 func TestLifecycleFromJson(t *testing.T) {

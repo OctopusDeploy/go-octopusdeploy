@@ -28,7 +28,7 @@ func TestDefectAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, actualJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(actualJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(actualJSON))
 }
 
 func TestDefectWithStatusAsJSON(t *testing.T) {
@@ -53,6 +53,6 @@ func TestDefectWithStatusAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, actualJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(actualJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(actualJSON))
 
 }

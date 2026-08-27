@@ -49,5 +49,5 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 	outputJSON, err := json.Marshal(sub)
 	require.NoError(t, err)
 
-	jsonassert.New(t).Assertf(inputJSON, string(outputJSON))
+	jsonassert.New(t).Assertf(inputJSON, "%s", string(outputJSON))
 }

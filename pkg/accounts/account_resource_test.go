@@ -122,5 +122,5 @@ func TestAccountResourceAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, accountAsJSON)
 
-	jsonassert.New(t).Assertf(exampleAsJSON, string(accountAsJSON))
+	jsonassert.New(t).Assertf(exampleAsJSON, "%s", string(accountAsJSON))
 }
