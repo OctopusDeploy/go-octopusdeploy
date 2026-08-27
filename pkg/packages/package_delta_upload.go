@@ -198,7 +198,7 @@ func deltaFallbackUploadFullFile(
 
 // requestDeltaSignature asks the server for a signature for a package (packageId and version in the params map).
 // If the server returns 404 (not found) this indicates there's no existing package to delta off, in which case
-// requestDeltaSignature will return (nil, nil) indiciating no signature but also no error.
+// requestDeltaSignature will return (nil, nil) indicating no signature but also no error.
 func requestDeltaSignature(client newclient.Client, params map[string]any) (*PackageSignatureResponse, error) {
 	signatureUri, err := client.URITemplateCache().Expand(uritemplates.PackageDeltaSignature, params)
 	if err != nil {
