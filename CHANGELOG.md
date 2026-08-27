@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.117.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.116.0...v2.117.0) (2026-08-27)
+
+
+### Features
+
+* support specific and excluded target tag IDs for deployments and runbook runs ([#409](https://github.com/OctopusDeploy/go-octopusdeploy/issues/409)) ([2a0dc1f](https://github.com/OctopusDeploy/go-octopusdeploy/commit/2a0dc1fa43549f963d4f58ef105e75e65b4bc29d))
+
 ## [2.116.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.115.0...v2.116.0) (2026-08-24)
 
 
