@@ -57,7 +57,7 @@ func TestCreateBuildInformationCommandMarshalJSON(t *testing.T) {
 	commandAsJSON, err := json.Marshal(createBuildInformationCommand)
 	require.NoError(t, err)
 	require.NotNil(t, commandAsJSON)
-	jsonassert.New(t).Assertf(string(commandAsJSON), expectedJson)
+	jsonassert.New(t).Assertf(string(commandAsJSON), "%s", expectedJson)
 }
 
 func TestCreateBuildInformationCommandUnmarshalJSON(t *testing.T) {

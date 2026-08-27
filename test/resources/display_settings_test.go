@@ -48,7 +48,7 @@ func TestDisplaySettingsAsJson(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, displaySettingsAsJson)
 
-	jsonassert.New(t).Assertf(expectedJson, string(displaySettingsAsJson))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(displaySettingsAsJson))
 }
 
 func TestSelectOptions(t *testing.T) {

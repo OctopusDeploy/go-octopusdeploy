@@ -53,7 +53,7 @@ func TestJiraServiceManagementExtensionSettingsMarshalJSON(t *testing.T) {
 		}
 	}`, extensions.JiraServiceManagementExtensionID, isChangeControlled, connectionID, serviceDeskProjectName)
 
-	jsonassert.New(t).Assertf(expectedJson, string(jiraServiceManagementExtensionSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(jiraServiceManagementExtensionSettingsAsJSON))
 }
 
 func TestJiraServiceManagementExtensionSettingsUnmarshalJSON(t *testing.T) {

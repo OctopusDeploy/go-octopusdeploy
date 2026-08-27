@@ -56,7 +56,7 @@ func TestResourceWithUsernamePasswordAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resourceAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(resourceAsJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(resourceAsJSON))
 }
 
 func TestResourceWithAnonymousAsJSON(t *testing.T) {
@@ -100,7 +100,7 @@ func TestResourceWithAnonymousAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resourceAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(resourceAsJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(resourceAsJSON))
 }
 
 func TestResourceWithReferenceAsJSON(t *testing.T) {
@@ -145,5 +145,5 @@ func TestResourceWithReferenceAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resourceAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(resourceAsJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(resourceAsJSON))
 }

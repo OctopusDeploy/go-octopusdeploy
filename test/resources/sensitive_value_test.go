@@ -70,7 +70,7 @@ func TestSensitiveValueBehaviour(t *testing.T) {
 		"NewValue": "%s"
   	}`, hasValue, hint, newValue)
 
-	jsonassert.New(t).Assertf(string(sensitiveValueAsJSON), testWithHintSensitiveValueAsJSON)
+	jsonassert.New(t).Assertf(string(sensitiveValueAsJSON), "%s", testWithHintSensitiveValueAsJSON)
 }
 
 func TestNewSensitiveValueBehaviour(t *testing.T) {
