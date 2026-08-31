@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.117.1](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.117.0...v2.117.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* refuse to write a sensitive variable that would clear its value ([39ea402](https://github.com/OctopusDeploy/go-octopusdeploy/commit/39ea4020d40bcdc6426a8ea25e30224046de116c)), closes [#449](https://github.com/OctopusDeploy/go-octopusdeploy/issues/449)
+* **test:** assert delta upload sizes relationally, not as exact bytes ([1860c3d](https://github.com/OctopusDeploy/go-octopusdeploy/commit/1860c3defd0104e9a508c16c08257149fc448c8d))
+
 ## [2.117.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.116.0...v2.117.0) (2026-08-27)
 
 
