@@ -68,8 +68,10 @@ type ApprovalRule struct {
 	TagScopes []ApprovalRuleTagScope `json:"TagScopes"`
 	IdScopes  []ApprovalRuleIdScope  `json:"IdScopes"`
 
-	// MinimumApproversRequired is accepted in the range 1-99.
-	MinimumApproversRequired int `json:"MinimumApproversRequired"`
+	// MinimumApproversRequired is accepted in the range 1-99. It is omitted when
+	// zero, which is never a valid value, so that the server applies its default
+	// of 2 rather than rejecting the request.
+	MinimumApproversRequired int `json:"MinimumApproversRequired,omitempty"`
 
 	// AllowSelfApproval controls whether the deployment creator may approve their own
 	// deployment. There is no separate "block by creator" field — this is it, inverted.

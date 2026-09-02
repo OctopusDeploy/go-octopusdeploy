@@ -99,6 +99,23 @@ func TestNewApprovalRuleDefaults(t *testing.T) {
 	require.NotNil(t, rule.ApprovingTeamIds)
 }
 
+// TestApprovalRuleOmitsUnsetMinimumApprovers guards that an unset value is left
+// out of the request. Zero is never valid, and the server rejects it outright,
+// whereas omitting the field applies the server default.
+func TestApprovalRuleOmitsUnsetMinimumApprovers(t *testing.T) {
+	rule := NewApprovalRule("example")
+	rule.MinimumApproversRequired = 0
+
+	data, err := json.Marshal(rule)
+	require.NoError(t, err)
+	require.NotContains(t, string(data), "MinimumApproversRequired")
+
+	rule.MinimumApproversRequired = 3
+	data, err = json.Marshal(rule)
+	require.NoError(t, err)
+	require.Contains(t, string(data), `"MinimumApproversRequired":3`)
+}
+
 func TestTenantApprovalStrategyValues(t *testing.T) {
 	cases := map[TenantApprovalStrategy]string{
 		TenantApprovalStrategyPerRelease: "PerRelease",
