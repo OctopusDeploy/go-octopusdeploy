@@ -31,6 +31,8 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 		"SlackChannelNames": ["general", "releases"],
 		"SlackFrequencyPeriod": "01:00:00",
 		"SlackDigestFormat": "Detailed",
+		"TeamsFrequencyPeriod": "",
+		"TeamsWebhooks": null,
 		"WebhookHeaderKey": "",
 		"WebhookHeaderValue": "",
 		"WebhookTeams": [],
