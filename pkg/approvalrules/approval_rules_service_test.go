@@ -1,4 +1,4 @@
-package approvalpolicies
+package approvalrules
 
 import (
 	"testing"
