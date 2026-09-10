@@ -8,12 +8,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// TeamsWebhookSubscriptionTarget is one Microsoft Teams channel a subscription notifies via an incoming webhook URL.
-// Url is sensitive and write-only: the API accepts a NewValue on write but never returns it; reads show HasValue only.
-type TeamsWebhookSubscriptionTarget struct {
-	Id   string              `json:"Id"`
-	Name string              `json:"Name"`
-	Url  *core.SensitiveValue `json:"Url,omitempty"`
+// TeamsChannelSubscriptionTarget is one Microsoft Teams channel a subscription notifies via an incoming webhook URL.
+// WebhookUrl is sensitive and write-only: the API accepts a NewValue on write but never returns it; reads show HasValue only.
+type TeamsChannelSubscriptionTarget struct {
+	Id         string               `json:"Id"`
+	Name       string               `json:"Name"`
+	WebhookUrl *core.SensitiveValue `json:"WebhookUrl,omitempty"`
 }
 
 type EventNotificationSubscriptionFilter struct {
@@ -45,7 +45,7 @@ type EventNotificationSubscription struct {
 	TeamsDigestLastProcessed            *time.Time                       `json:"TeamsDigestLastProcessed,omitempty"`
 	TeamsDigestLastProcessedEventAutoId *int64                           `json:"TeamsDigestLastProcessedEventAutoId,omitempty"`
 	TeamsFrequencyPeriod                string                           `json:"TeamsFrequencyPeriod"`
-	TeamsWebhooks                       []TeamsWebhookSubscriptionTarget `json:"TeamsWebhooks"`
+	TeamsChannels                       []TeamsChannelSubscriptionTarget `json:"TeamsChannels"`
 	WebhookHeaderKey                    string                           `json:"WebhookHeaderKey"`
 	WebhookHeaderValue                  string                           `json:"WebhookHeaderValue"`
 	WebhookLastProcessed                *time.Time                       `json:"WebhookLastProcessed,omitempty"`
@@ -78,7 +78,7 @@ func NewSubscription(name string) *Subscription {
 			SlackChannelNames:          []string{},
 			SlackDigestFormat:          "Summary",
 			SlackFrequencyPeriod:       "01:00:00",
-			TeamsWebhooks:              []TeamsWebhookSubscriptionTarget{},
+			TeamsChannels:              []TeamsChannelSubscriptionTarget{},
 			TeamsFrequencyPeriod:       "01:00:00",
 			WebhookTeams:               []string{},
 			WebhookTimeout:             "00:00:10",

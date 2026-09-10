@@ -32,7 +32,7 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 		"SlackFrequencyPeriod": "01:00:00",
 		"SlackDigestFormat": "Detailed",
 		"TeamsFrequencyPeriod": "",
-		"TeamsWebhooks": null,
+		"TeamsChannels": null,
 		"WebhookHeaderKey": "",
 		"WebhookHeaderValue": "",
 		"WebhookTeams": [],
@@ -57,17 +57,17 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 func TestNewSubscriptionTeamsDefaults(t *testing.T) {
 	s := subscriptions.NewSubscription("my-subscription")
 
-	require.NotNil(t, s.EventNotificationSubscription.TeamsWebhooks)
-	require.Empty(t, s.EventNotificationSubscription.TeamsWebhooks)
+	require.NotNil(t, s.EventNotificationSubscription.TeamsChannels)
+	require.Empty(t, s.EventNotificationSubscription.TeamsChannels)
 	require.Equal(t, "01:00:00", s.EventNotificationSubscription.TeamsFrequencyPeriod)
 }
 
 func TestEventNotificationSubscriptionTeamsFieldsJSON(t *testing.T) {
-	// The server never returns the URL value, Url is HasValue: true with no NewValue.
+	// The server never returns the URL value, WebhookUrl is HasValue: true with no NewValue.
 	inputJSON := `{
-		"TeamsWebhooks": [
-			{"Id": "id-1", "Name": "general", "Url": {"HasValue": true}},
-			{"Id": "id-2", "Name": "releases", "Url": {"HasValue": true}}
+		"TeamsChannels": [
+			{"Id": "id-1", "Name": "general", "WebhookUrl": {"HasValue": true}},
+			{"Id": "id-2", "Name": "releases", "WebhookUrl": {"HasValue": true}}
 		],
 		"TeamsFrequencyPeriod": "01:00:00"
 	}`
@@ -76,11 +76,11 @@ func TestEventNotificationSubscriptionTeamsFieldsJSON(t *testing.T) {
 	err := json.Unmarshal([]byte(inputJSON), &sub)
 	require.NoError(t, err)
 
-	require.Len(t, sub.TeamsWebhooks, 2)
-	require.Equal(t, "id-1", sub.TeamsWebhooks[0].Id)
-	require.Equal(t, "general", sub.TeamsWebhooks[0].Name)
-	require.NotNil(t, sub.TeamsWebhooks[0].Url)
-	require.True(t, sub.TeamsWebhooks[0].Url.HasValue)
-	require.Nil(t, sub.TeamsWebhooks[0].Url.NewValue)
+	require.Len(t, sub.TeamsChannels, 2)
+	require.Equal(t, "id-1", sub.TeamsChannels[0].Id)
+	require.Equal(t, "general", sub.TeamsChannels[0].Name)
+	require.NotNil(t, sub.TeamsChannels[0].WebhookUrl)
+	require.True(t, sub.TeamsChannels[0].WebhookUrl.HasValue)
+	require.Nil(t, sub.TeamsChannels[0].WebhookUrl.NewValue)
 	require.Equal(t, "01:00:00", sub.TeamsFrequencyPeriod)
 }
