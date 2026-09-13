@@ -254,7 +254,7 @@ func Update(client newclient.Client, space *Space) (*Space, error) {
 	return res, nil
 }
 
-// GetDefaultSpace tries to find default space. Returns nil if a default space can not be found.
+// GetDefaultSpace tries to find default space. Returns nil if a default space cannot be found.
 func GetDefaultSpace(client newclient.Client) (*Space, error) {
 	// TODO: this should change to return a custom error (can't find default space)
 	spaces, err := GetAll(client)
