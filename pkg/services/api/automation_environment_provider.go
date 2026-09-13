@@ -17,6 +17,9 @@ var knownEnvironments = map[string][]string{
 	// https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables
 	"AzureDevOps": {"TF_BUILD", "BUILD_BUILDID", "AGENT_WORKFOLDER"},
 
+	// https://code.claude.com/docs/en/env-vars
+	"ClaudeCode": {"CLAUDECODE"},
+
 	// https://confluence.atlassian.com/bamboo/bamboo-variables-289277087.html
 	"Bamboo":       {"bamboo_agentId"},
 	"AppVeyor":     {"APPVEYOR"},
