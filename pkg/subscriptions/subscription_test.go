@@ -31,6 +31,8 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 		"SlackChannelNames": ["general", "releases"],
 		"SlackFrequencyPeriod": "01:00:00",
 		"SlackDigestFormat": "Detailed",
+		"TeamsFrequencyPeriod": "",
+		"TeamsChannels": null,
 		"WebhookHeaderKey": "",
 		"WebhookHeaderValue": "",
 		"WebhookTeams": [],
@@ -50,4 +52,35 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 	require.NoError(t, err)
 
 	jsonassert.New(t).Assertf(inputJSON, "%s", string(outputJSON))
+}
+
+func TestNewSubscriptionTeamsDefaults(t *testing.T) {
+	s := subscriptions.NewSubscription("my-subscription")
+
+	require.NotNil(t, s.EventNotificationSubscription.TeamsChannels)
+	require.Empty(t, s.EventNotificationSubscription.TeamsChannels)
+	require.Equal(t, "01:00:00", s.EventNotificationSubscription.TeamsFrequencyPeriod)
+}
+
+func TestEventNotificationSubscriptionTeamsFieldsJSON(t *testing.T) {
+	// The server never returns the URL value, WebhookUrl is HasValue: true with no NewValue.
+	inputJSON := `{
+		"TeamsChannels": [
+			{"Id": "id-1", "Name": "general", "WebhookUrl": {"HasValue": true}},
+			{"Id": "id-2", "Name": "releases", "WebhookUrl": {"HasValue": true}}
+		],
+		"TeamsFrequencyPeriod": "01:00:00"
+	}`
+
+	var sub subscriptions.EventNotificationSubscription
+	err := json.Unmarshal([]byte(inputJSON), &sub)
+	require.NoError(t, err)
+
+	require.Len(t, sub.TeamsChannels, 2)
+	require.Equal(t, "id-1", sub.TeamsChannels[0].Id)
+	require.Equal(t, "general", sub.TeamsChannels[0].Name)
+	require.NotNil(t, sub.TeamsChannels[0].WebhookUrl)
+	require.True(t, sub.TeamsChannels[0].WebhookUrl.HasValue)
+	require.Nil(t, sub.TeamsChannels[0].WebhookUrl.NewValue)
+	require.Equal(t, "01:00:00", sub.TeamsFrequencyPeriod)
 }
