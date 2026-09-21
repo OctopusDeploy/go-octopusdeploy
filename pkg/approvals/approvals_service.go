@@ -23,14 +23,14 @@ type getServerTaskApprovalByTaskIdResponse struct {
 	Resource *ServerTaskApprovalDetail `json:"Resource,omitempty"`
 }
 
-// getServerTaskApprovalByIdResponse unwraps the nested resource for get-by-id.
-type getServerTaskApprovalByIdResponse struct {
-	ServerTaskApproval *ServerTaskApproval `json:"ServerTaskApproval,omitempty"`
-}
-
 // GetByTaskID returns the approval detail for a server task. Returns (nil, nil)
-// when the task has no approval requirement (feature off, not a deployment/runbook,
-// or no policy applies).
+// when the task has no approval requirement (approvals disabled, not a
+// deployment/runbook, or no approval rule applies).
+//
+// Approvals and ApprovalsCount are tallied across the whole change request, not
+// just this server task: they include votes cast against sibling server task
+// approvals that share the same ChangeRequest.Id, deduplicated to one vote per
+// user with a rejection taking precedence.
 func GetByTaskID(client newclient.Client, spaceID string, serverTaskID string) (*ServerTaskApprovalDetail, error) {
 	if serverTaskID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyError("serverTaskID")
@@ -54,7 +54,6 @@ func GetByTaskID(client newclient.Client, spaceID string, serverTaskID string) (
 }
 
 // GetByID returns the server-task approval that matches the input ID.
-// It returns (nil, nil) if the response contains no server-task approval.
 func GetByID(client newclient.Client, spaceID string, ID string) (*ServerTaskApproval, error) {
 	if ID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyError("ID")
@@ -70,11 +69,7 @@ func GetByID(client newclient.Client, spaceID string, ID string) (*ServerTaskApp
 	if err != nil {
 		return nil, err
 	}
-	res, err := newclient.Get[getServerTaskApprovalByIdResponse](client.HttpSession(), path)
-	if err != nil {
-		return nil, err
-	}
-	return res.ServerTaskApproval, nil
+	return newclient.Get[ServerTaskApproval](client.HttpSession(), path)
 }
 
 // Get returns a paginated collection of server-task approvals matching the query.
@@ -87,8 +82,14 @@ func GetAll(client newclient.Client, spaceID string) ([]*ServerTaskApproval, err
 	return newclient.GetAll[ServerTaskApproval](client, serverTaskApprovalsTemplate, spaceID)
 }
 
-// ListApprovals returns the individual decisions recorded against a server-task approval.
-// The server returns a bare array (not a paginated collection).
+// ListApprovals returns the individual decisions recorded for the change request
+// that the given server-task approval belongs to. The server returns a bare array
+// (not a paginated collection).
+//
+// The result is scoped to the change request rather than to serverTaskApprovalID:
+// entries may carry a different ServerTaskApprovalId when sibling server tasks
+// share the same ChangeRequest.Id. Votes are deduplicated to one per user, with a
+// rejection taking precedence over an approval.
 func ListApprovals(client newclient.Client, spaceID string, serverTaskApprovalID string) ([]*Approval, error) {
 	if serverTaskApprovalID == "" {
 		return nil, internal.CreateRequiredParameterIsEmptyError("serverTaskApprovalID")
@@ -135,6 +136,12 @@ func GetApprovalByID(client newclient.Client, spaceID string, serverTaskApproval
 }
 
 // AddApproval records a new decision (approve/reject) against a server-task approval.
+//
+// A user may vote only once per change request, so this fails when the user has
+// already voted against any server task approval sharing the change request. It
+// also fails when the change is no longer active or has left the PreApproval
+// state, or when the approval rule snapshot that governed the change request is
+// no longer available.
 func AddApproval(client newclient.Client, spaceID string, serverTaskApprovalID string, approval *Approval) (*Approval, error) {
 	if approval == nil {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("approval")
@@ -156,7 +163,8 @@ func AddApproval(client newclient.Client, spaceID string, serverTaskApprovalID s
 	return newclient.Post[Approval](client.HttpSession(), path, approval)
 }
 
-// UpdateApproval modifies an existing decision.
+// UpdateApproval modifies an existing decision. It fails once the change has
+// completed, that is when the change is inactive or has left the PreApproval state.
 func UpdateApproval(client newclient.Client, spaceID string, serverTaskApprovalID string, approval *Approval) (*Approval, error) {
 	if approval == nil {
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("approval")

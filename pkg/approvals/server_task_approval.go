@@ -9,7 +9,13 @@ const (
 	ChangeRequestApprovalStatePostApproval ChangeRequestApprovalState = "PostApproval"
 )
 
-// ChangeRequest is the (optionally ITSM-backed) change associated with a server-task approval.
+// ChangeRequest is the (optionally ITSM-backed) change associated with a
+// server-task approval. Its Id is the key that groups server task approvals:
+// deployments are gated per change request, and several server tasks can share
+// one — for example the tenants of a release when the governing approval rule
+// uses the PerRelease tenant approval strategy. Approval votes are tallied across
+// every server task approval sharing an Id. There is no dedicated change request
+// endpoint on the API; use Get or GetAll and group by this Id.
 type ChangeRequest struct {
 	Id                         string                     `json:"Id"`
 	Number                     string                     `json:"Number,omitempty"`

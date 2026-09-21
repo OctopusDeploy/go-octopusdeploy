@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.118.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.117.1...v2.118.0) (2026-09-17)
+
+
+### Features
+
+* rename approval policies to approval rules and fix approvals decoding ([#477](https://github.com/OctopusDeploy/go-octopusdeploy/issues/477)) ([68b4d64](https://github.com/OctopusDeploy/go-octopusdeploy/commit/68b4d64f3a81b2a7b8b25f19f39ce20ab72c417d))
+
+
+### Bug Fixes
+
+* correct GitCredentialId JSON tag on ReleaseTemplateGitResource ([0c90f46](https://github.com/OctopusDeploy/go-octopusdeploy/commit/0c90f4697dd58d86eb78dbfca5c000bd76100b7b)), closes [#443](https://github.com/OctopusDeploy/go-octopusdeploy/issues/443)
+
 ## [2.117.1](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.117.0...v2.117.1) (2026-08-31)
 
 
