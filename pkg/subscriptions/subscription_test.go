@@ -84,3 +84,33 @@ func TestEventNotificationSubscriptionTeamsFieldsJSON(t *testing.T) {
 	require.Nil(t, sub.TeamsChannels[0].WebhookUrl.NewValue)
 	require.Equal(t, "01:00:00", sub.TeamsFrequencyPeriod)
 }
+
+func TestEventNotificationSubscriptionTeamsAppChannelJSON(t *testing.T) {
+	channelId := "19:abc123@thread.tacv2"
+	teamId := "team-guid-1234"
+	teamName := "Octopus Deploy"
+
+	inputJSON := `{
+		"TeamsChannels": [
+			{"Id": "id-1", "Type": "AppChannel", "Name": "general", "ChannelId": "19:abc123@thread.tacv2", "TeamId": "team-guid-1234", "TeamName": "Octopus Deploy"}
+		],
+		"TeamsFrequencyPeriod": "01:00:00"
+	}`
+
+	var sub subscriptions.EventNotificationSubscription
+	err := json.Unmarshal([]byte(inputJSON), &sub)
+	require.NoError(t, err)
+
+	require.Len(t, sub.TeamsChannels, 1)
+	ch := sub.TeamsChannels[0]
+	require.Equal(t, "id-1", ch.Id)
+	require.Equal(t, "AppChannel", ch.Type)
+	require.Equal(t, "general", ch.Name)
+	require.Nil(t, ch.WebhookUrl)
+	require.NotNil(t, ch.ChannelId)
+	require.Equal(t, channelId, *ch.ChannelId)
+	require.NotNil(t, ch.TeamId)
+	require.Equal(t, teamId, *ch.TeamId)
+	require.NotNil(t, ch.TeamName)
+	require.Equal(t, teamName, *ch.TeamName)
+}

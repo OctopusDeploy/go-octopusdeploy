@@ -8,12 +8,17 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// TeamsChannelSubscriptionTarget is one Microsoft Teams channel a subscription notifies via an incoming webhook URL.
+// TeamsChannelSubscriptionTarget is one Microsoft Teams destination a subscription notifies.
+// Type is "Webhook" (incoming webhook URL) or "AppChannel" (Octopus Teams app channel).
 // WebhookUrl is sensitive and write-only: the API accepts a NewValue on write but never returns it; reads show HasValue only.
 type TeamsChannelSubscriptionTarget struct {
 	Id         string               `json:"Id"`
+	Type       string               `json:"Type,omitempty"`
 	Name       string               `json:"Name"`
 	WebhookUrl *core.SensitiveValue `json:"WebhookUrl,omitempty"`
+	ChannelId  *string              `json:"ChannelId,omitempty"`
+	TeamId     *string              `json:"TeamId,omitempty"`
+	TeamName   *string              `json:"TeamName,omitempty"`
 }
 
 type EventNotificationSubscriptionFilter struct {
