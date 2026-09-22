@@ -13,7 +13,7 @@ require (
 	github.com/kinbiko/jsonassert v1.2.0
 	github.com/stretchr/testify v1.12.1
 	golang.org/x/exp v0.0.0-20230129154200-a960b3787bd2
-	golang.org/x/text v0.41.0
+	golang.org/x/text v0.42.0
 )
 
 require (
