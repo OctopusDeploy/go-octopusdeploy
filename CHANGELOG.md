@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.119.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.118.0...v2.119.0) (2026-09-25)
+
+
+### Features
+
+* add teams webhooks and app channels to subscriptions ([#478](https://github.com/OctopusDeploy/go-octopusdeploy/issues/478)) ([26f63af](https://github.com/OctopusDeploy/go-octopusdeploy/commit/26f63af74b94b40a39ce4856f5a7bfadafa0b2d2))
+
 ## [2.118.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.117.1...v2.118.0) (2026-09-17)
 
 
