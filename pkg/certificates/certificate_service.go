@@ -17,7 +17,7 @@ type CertificateService struct {
 	services.CanDeleteService
 }
 
-// NewCertificateService returns an certificateService with a preconfigured client.
+// NewCertificateService returns a certificateService with a preconfigured client.
 func NewCertificateService(sling *sling.Sling, uriTemplate string) *CertificateService {
 	return &CertificateService{
 		CanDeleteService: services.CanDeleteService{

@@ -11,7 +11,7 @@ import (
 func TestGetResourceRequest_IsTenanted(t *testing.T) {
 	t.Run("should return untenanted resource", func(t *testing.T) {
 		// Test untenanted request
-		untenanteRequest := &GetResourceRequest{
+		untenantedRequest := &GetResourceRequest{
 			SpaceID:                                "Spaces-1",
 			ProjectID:                              "Projects-1",
 			EnvironmentID:                          "Environments-1",
@@ -20,7 +20,7 @@ func TestGetResourceRequest_IsTenanted(t *testing.T) {
 			DesiredOrKubernetesMonitoredResourceID: "Resources-1",
 		}
 
-		assert.False(t, untenanteRequest.IsTenanted())
+		assert.False(t, untenantedRequest.IsTenanted())
 	})
 
 	t.Run("should return tenanted resource", func(t *testing.T) {
