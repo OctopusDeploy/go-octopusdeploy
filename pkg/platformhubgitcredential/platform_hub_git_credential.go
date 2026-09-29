@@ -64,20 +64,35 @@ func (r *PlatformHubGitCredential) UnmarshalJSON(b []byte) error {
 		r.RepositoryRestrictions = &repositoryRestrictions
 	}
 
-	var gitCredentials *json.RawMessage
-
 	if rawResource["Details"] != nil {
 		detailsValue := rawResource["Details"]
 
-		if err := json.Unmarshal(*detailsValue, &gitCredentials); err != nil {
+		var properties map[string]*json.RawMessage
+		if err := json.Unmarshal(*detailsValue, &properties); err != nil {
 			return err
 		}
 
-		var usernamePasswordGitCredential *credentials.UsernamePassword
-		if err := json.Unmarshal(*gitCredentials, &usernamePasswordGitCredential); err != nil {
-			return err
+		credentialType := credentials.GitCredentialTypeUsernamePassword
+		if properties["Type"] != nil {
+			if err := json.Unmarshal(*properties["Type"], &credentialType); err != nil {
+				return err
+			}
 		}
-		r.Details = usernamePasswordGitCredential
+
+		switch credentialType {
+		case credentials.GitCredentialTypeSshKey:
+			var sshKeyGitCredential *credentials.SshKey
+			if err := json.Unmarshal(*detailsValue, &sshKeyGitCredential); err != nil {
+				return err
+			}
+			r.Details = sshKeyGitCredential
+		default:
+			var usernamePasswordGitCredential *credentials.UsernamePassword
+			if err := json.Unmarshal(*detailsValue, &usernamePasswordGitCredential); err != nil {
+				return err
+			}
+			r.Details = usernamePasswordGitCredential
+		}
 	}
 
 	return nil

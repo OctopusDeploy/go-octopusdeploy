@@ -115,6 +115,12 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		r.Details = gitHubAppGitCredential
+	case GitCredentialTypeSshKey:
+		var sshKeyGitCredential *SshKey
+		if err := json.Unmarshal(*gitCredentials, &sshKeyGitCredential); err != nil {
+			return err
+		}
+		r.Details = sshKeyGitCredential
 	}
 
 	return nil
