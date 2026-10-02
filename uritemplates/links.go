@@ -34,6 +34,7 @@ const (
 	ReleasesByProjectAndChannel    = "/api/{spaceId}/projects/{projectId}/channels/{channelId}/releases{?skip,take,searchByVersion}"  // GET
 	ReleaseDeploymentTemplate      = "/api/{spaceId}/releases/{releaseId}/deployments/template"                                       // GET
 	ReleaseSnapshotVariablesByName = "/api/{spaceId}/releases/{releaseId}/snapshot-variables-by-name"                                 // POST
+	ReleaseSnapshotVariables       = "/api/{spaceId}/releases/{releaseId}/snapshot-variables"                                         // POST
 
 	Runbooks                       = "/api/{spaceId}/runbooks{/id}{?skip,take,ids,partialName,clone,projectIds}"                                         // GET
 	RunbooksByProject              = "/api/{spaceId}/projects/{projectId}/runbooks{?skip,take,partialName}"                                              // GET
@@ -45,6 +46,7 @@ const (
 	RunbookSnapshotRunPreview      = "/api/{spaceId}/runbookSnapshots/{snapshotId}/runbookRuns/preview/{environmentId}{?includeDisabledSteps}"           // GET
 	RunbookRunTenantPreview        = "/api/{spaceId}/projects/{projectId}/runbooks/{runbookId}/runbookRuns/previews"                                     // POST
 	RunbookSnapshotVariablesByName = "/api/{spaceId}/runbookSnapshots/{runbookSnapshotId}/snapshot-variables-by-name"                                    // POST
+	RunbookSnapshotVariables       = "/api/{spaceId}/runbookSnapshots/{snapshotId}/snapshot-variables"                                                   // POST
 
 	GitRunbookById             = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks/{id}"                                                                 // GET, DELETE
 	GitRunbooksByProject       = "/api/{spaceId}/projects/{projectId}/{gitRef}/runbooks{?skip,take,partialName}"                                              // GET
