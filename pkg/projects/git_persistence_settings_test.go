@@ -96,7 +96,7 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranch(t *testing.
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(gitPersistenceSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(gitPersistenceSettingsAsJSON))
 }
 
 func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranchAsLastItem(t *testing.T) {
@@ -129,7 +129,7 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranchAsLastItem(t
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(gitPersistenceSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(gitPersistenceSettingsAsJSON))
 }
 
 func TestGitPersistenceSettingsMarshalJSONWithoutProtectedDefaultBranch(t *testing.T) {
@@ -163,7 +163,7 @@ func TestGitPersistenceSettingsMarshalJSONWithoutProtectedDefaultBranch(t *testi
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(gitPersistenceSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(gitPersistenceSettingsAsJSON))
 }
 
 func TestGitPersistenceSettingsMarshalJSON_OmitsConversionState(t *testing.T) {

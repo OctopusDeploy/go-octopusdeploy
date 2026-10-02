@@ -114,7 +114,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 		}
 	}`
 
-	jsonassert.New(t).Assertf(actual, expected)
+	jsonassert.New(t).Assertf(actual, "%s", expected)
 }
 
 func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {

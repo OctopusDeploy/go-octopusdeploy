@@ -1,0 +1,23 @@
+# Keeps dependencies current so CVE fixes arrive as routine PRs.
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directories:
+      - "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      gomod:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directories:
+      - "/"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      github_actions:
+        patterns:
+          - "*"

@@ -27,7 +27,7 @@ func TestAnonymousGitCredentialMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, anonymousGitCredentialAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(anonymousGitCredentialAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(anonymousGitCredentialAsJSON))
 }
 
 func TestAnonymousGitCredentialUnmarshalJSON(t *testing.T) {

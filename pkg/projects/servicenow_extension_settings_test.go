@@ -59,7 +59,7 @@ func TestServiceNowExtensionSettingsMarshalJSON(t *testing.T) {
 		}
 	}`, extensions.ServiceNowExtensionID, isStateAutomaticallyTransitioned, standardChangeTemplateName, isChangeControlled, connectionID)
 
-	jsonassert.New(t).Assertf(expectedJson, string(serviceNowExtensionSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(serviceNowExtensionSettingsAsJSON))
 }
 
 func TestServiceNowExtensionSettingsMarshalJSONWithoutStandardChangeTemplateName(t *testing.T) {
@@ -79,7 +79,7 @@ func TestServiceNowExtensionSettingsMarshalJSONWithoutStandardChangeTemplateName
 		}
 	}`, extensions.ServiceNowExtensionID, connectionID)
 
-	jsonassert.New(t).Assertf(expectedJson, string(serviceNowExtensionSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(serviceNowExtensionSettingsAsJSON))
 }
 
 func TestServiceNowExtensionSettingsUnmarshalJSON(t *testing.T) {

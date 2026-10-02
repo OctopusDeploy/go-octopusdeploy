@@ -24,7 +24,7 @@ func TestCountBasedRunbookRetentionPolicyMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, runbookRetentionPolicyAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(runbookRetentionPolicyAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(runbookRetentionPolicyAsJSON))
 }
 
 func TestKeepForeverRunbookRetentionPolicyMarshalJSON(t *testing.T) {
@@ -41,7 +41,7 @@ func TestKeepForeverRunbookRetentionPolicyMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, runbookRetentionPolicyAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(runbookRetentionPolicyAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(runbookRetentionPolicyAsJSON))
 }
 
 func TestDefaultRunbookRetentionPolicyMarshalJSON(t *testing.T) {
@@ -58,7 +58,7 @@ func TestDefaultRunbookRetentionPolicyMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, runbookRetentionPolicyAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(runbookRetentionPolicyAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(runbookRetentionPolicyAsJSON))
 }
 
 func TestCountBasedRunbookRetentionPolicyWithStrategyUnmarshalJSON(t *testing.T) {

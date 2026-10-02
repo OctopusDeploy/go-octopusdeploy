@@ -14,8 +14,11 @@ type CreateExecutionAbstractCommandV1 struct {
 	ForcePackageDownload           bool              `json:"forcePackageDownload"`
 	SpecificMachineNames           []string          `json:"specificMachineNames,omitempty"`
 	ExcludedMachineNames           []string          `json:"excludedMachineNames,omitempty"`
+	SpecificTargetTagNames         []string          `json:"specificTargetTagNames,omitempty"`
+	ExcludedTargetTagNames         []string          `json:"excludedTargetTagNames,omitempty"`
 	SkipStepNames                  []string          `json:"skipStepNames,omitempty"`
 	UseGuidedFailure               *bool             `json:"useGuidedFailure"`     // note: nil is valid, meaning 'use default'
+	Priority                       string            `json:"priority,omitempty"`   // "LifecycleDefault", "On" or "Off"; omitted when empty
 	RunAt                          string            `json:"runAt,omitempty"`      // contains a datetimeOffset-parseable value
 	NoRunAfter                     string            `json:"noRunAfter,omitempty"` // contains a datetimeOffset-parseable value
 	Variables                      map[string]string `json:"variables,omitempty"`

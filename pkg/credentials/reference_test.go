@@ -24,5 +24,5 @@ func TestReferenceMarshalJSON(t *testing.T) {
 		"Type": "%s"
 	}`, id, credentials.GitCredentialTypeReference)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(referenceAsJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(referenceAsJSON))
 }

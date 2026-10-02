@@ -148,7 +148,7 @@ func (a *Accounts) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// GetNextPage retrives the next page from the links collection. If no next page
+// GetNextPage retrieves the next page from the links collection. If no next page
 // exists it will return nill
 func (r *Accounts) GetNextPage(client *sling.Sling) (*Accounts, error) {
 	if r.Links.PageNext == "" {
@@ -161,7 +161,7 @@ func (r *Accounts) GetNextPage(client *sling.Sling) (*Accounts, error) {
 	return ToAccounts(response.(*resources.Resources[*AccountResource])), nil
 }
 
-// GetAllPages will retrive all remaining next pages in the link collection
+// GetAllPages will retrieve all remaining next pages in the link collection
 // and return the result as list of concatenated Items; Including the items
 // from the base Resource.
 func (r *Accounts) GetAllPages(client *sling.Sling) ([]IAccount, error) {

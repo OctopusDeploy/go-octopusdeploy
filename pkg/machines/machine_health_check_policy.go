@@ -28,6 +28,12 @@ func NewMachineHealthCheckPolicy() *MachineHealthCheckPolicy {
 
 // MarshalJSON returns a machine health check policy as its JSON encoding.
 func (m *MachineHealthCheckPolicy) MarshalJSON() ([]byte, error) {
+	// The server reads an absent interval as "no health checks" but "00:00:00" as "check constantly".
+	healthCheckInterval := ""
+	if m.HealthCheckInterval > 0 {
+		healthCheckInterval = ToTimeSpan(m.HealthCheckInterval)
+	}
+
 	machineHealthCheckPolicy := struct {
 		BashHealthCheckPolicy       *MachineScriptPolicy `json:"BashHealthCheckPolicy,omitempty"`
 		HealthCheckCron             string               `json:"HealthCheckCron,omitempty"`
@@ -39,7 +45,7 @@ func (m *MachineHealthCheckPolicy) MarshalJSON() ([]byte, error) {
 		BashHealthCheckPolicy:       m.BashHealthCheckPolicy,
 		HealthCheckCron:             m.HealthCheckCron,
 		HealthCheckCronTimezone:     m.HealthCheckCronTimezone,
-		HealthCheckInterval:         ToTimeSpan(m.HealthCheckInterval),
+		HealthCheckInterval:         healthCheckInterval,
 		HealthCheckType:             m.HealthCheckType,
 		PowerShellHealthCheckPolicy: m.PowerShellHealthCheckPolicy,
 	}
@@ -70,9 +76,8 @@ func (m *MachineHealthCheckPolicy) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if len(fields.HealthCheckInterval) > 0 {
-		m.HealthCheckInterval = FromTimeSpan(fields.HealthCheckInterval)
-	}
+	// An absent interval means no health checks, so it must clear any existing value.
+	m.HealthCheckInterval = FromTimeSpan(fields.HealthCheckInterval)
 
 	m.BashHealthCheckPolicy = fields.BashHealthCheckPolicy
 	m.HealthCheckCron = fields.HealthCheckCron

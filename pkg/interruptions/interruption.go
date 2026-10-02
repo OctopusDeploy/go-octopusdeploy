@@ -30,5 +30,8 @@ func NewInterruption() *Interruption {
 	}
 }
 
-const ManualInterverventionApprove = "Proceed"
+const ManualInterventionApprove = "Proceed"
 const ManualInterventionDecline = "Abort"
+
+// Deprecated: use ManualInterventionApprove.
+const ManualInterverventionApprove = ManualInterventionApprove

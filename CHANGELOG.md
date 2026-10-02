@@ -1,0 +1,60 @@
+# Changelog
+
+## [2.119.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.118.0...v2.119.0) (2026-09-25)
+
+
+### Features
+
+* add teams webhooks and app channels to subscriptions ([#478](https://github.com/OctopusDeploy/go-octopusdeploy/issues/478)) ([26f63af](https://github.com/OctopusDeploy/go-octopusdeploy/commit/26f63af74b94b40a39ce4856f5a7bfadafa0b2d2))
+
+## [2.118.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.117.1...v2.118.0) (2026-09-17)
+
+
+### Features
+
+* rename approval policies to approval rules and fix approvals decoding ([#477](https://github.com/OctopusDeploy/go-octopusdeploy/issues/477)) ([68b4d64](https://github.com/OctopusDeploy/go-octopusdeploy/commit/68b4d64f3a81b2a7b8b25f19f39ce20ab72c417d))
+
+
+### Bug Fixes
+
+* correct GitCredentialId JSON tag on ReleaseTemplateGitResource ([0c90f46](https://github.com/OctopusDeploy/go-octopusdeploy/commit/0c90f4697dd58d86eb78dbfca5c000bd76100b7b)), closes [#443](https://github.com/OctopusDeploy/go-octopusdeploy/issues/443)
+
+## [2.117.1](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.117.0...v2.117.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* refuse to write a sensitive variable that would clear its value ([39ea402](https://github.com/OctopusDeploy/go-octopusdeploy/commit/39ea4020d40bcdc6426a8ea25e30224046de116c)), closes [#449](https://github.com/OctopusDeploy/go-octopusdeploy/issues/449)
+* **test:** assert delta upload sizes relationally, not as exact bytes ([1860c3d](https://github.com/OctopusDeploy/go-octopusdeploy/commit/1860c3defd0104e9a508c16c08257149fc448c8d))
+
+## [2.117.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.116.0...v2.117.0) (2026-08-27)
+
+
+### Features
+
+* support specific and excluded target tag IDs for deployments and runbook runs ([#409](https://github.com/OctopusDeploy/go-octopusdeploy/issues/409)) ([2a0dc1f](https://github.com/OctopusDeploy/go-octopusdeploy/commit/2a0dc1fa43549f963d4f58ef105e75e65b4bc29d))
+
+## [2.116.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.115.0...v2.116.0) (2026-08-24)
+
+
+### Features
+
+* add concurrency token support for partial variable snapshot updates ([#465](https://github.com/OctopusDeploy/go-octopusdeploy/issues/465)) ([7bc0e78](https://github.com/OctopusDeploy/go-octopusdeploy/commit/7bc0e785257ca19557846e45bc7a40dd2bbe58e9))
+* add GetDashboard and assert every query field carries a uri tag ([3f475dd](https://github.com/OctopusDeploy/go-octopusdeploy/commit/3f475dd30918a126d7124d4b1bace5fa0c64eb53)), closes [#442](https://github.com/OctopusDeploy/go-octopusdeploy/issues/442)
+* add GetDynamicDashboard to DashboardService ([3f545ad](https://github.com/OctopusDeploy/go-octopusdeploy/commit/3f545ad03a01058faaf8f166e8936888dd6238ca))
+* add interruptions.InterruptionType and use it on DashboardItem ([b263a38](https://github.com/OctopusDeploy/go-octopusdeploy/commit/b263a38fef044fcdc468c1a48e4f9bde5c70aa27))
+* add Priority to the shared create-execution command ([c39c4a4](https://github.com/OctopusDeploy/go-octopusdeploy/commit/c39c4a475029c075ce14dc900a9a5c2499936658))
+* add runbooks.Get for space-wide runbook queries ([9cb294e](https://github.com/OctopusDeploy/go-octopusdeploy/commit/9cb294e536618e1a8aa50a36b904b060679d35d8))
+* add server health, timezones and document counts to serverstatus ([d4d2984](https://github.com/OctopusDeploy/go-octopusdeploy/commit/d4d2984ec8f42224b71b580568501bd5c170fbf7)), closes [#47](https://github.com/OctopusDeploy/go-octopusdeploy/issues/47)
+* add system info, recent logs and system report to serverstatus ([9020da2](https://github.com/OctopusDeploy/go-octopusdeploy/commit/9020da27f867270f08cac89063cbcdda728005ab)), closes [#47](https://github.com/OctopusDeploy/go-octopusdeploy/issues/47)
+* convert Amazon ECS cluster endpoints through EndpointResource ([18bea46](https://github.com/OctopusDeploy/go-octopusdeploy/commit/18bea4622d118d26c3f20b62144ee5be4dc6a2e5))
+* deserialise Amazon ECS cluster target endpoints ([c902a51](https://github.com/OctopusDeploy/go-octopusdeploy/commit/c902a5153aff6db9535ca8a491f2b5dcf2aff500))
+
+
+### Bug Fixes
+
+* add actiontemplates.GetByQuery so collection filters reach the server ([cd2b594](https://github.com/OctopusDeploy/go-octopusdeploy/commit/cd2b5946e2cd80e6727850cc5428882b2c891b50)), closes [#437](https://github.com/OctopusDeploy/go-octopusdeploy/issues/437)
+* complete DashboardItem and document that the dashboard filters on IDs ([fb3d95e](https://github.com/OctopusDeploy/go-octopusdeploy/commit/fb3d95e9ea3ce77d7cf58850b6d39908688adad5))
+* model environment Links and add dashboard e2e coverage ([0518886](https://github.com/OctopusDeploy/go-octopusdeploy/commit/051888622310948d3f44865dbc30c23e519bf14b))
+* tolerate a null ServiceDeskProjectName from the server ([16b9fae](https://github.com/OctopusDeploy/go-octopusdeploy/commit/16b9fae94f88612b69e41f1e78e8243b6e3a0b84))
+* tolerate a null StandardChangeTemplateName from the server ([d50e716](https://github.com/OctopusDeploy/go-octopusdeploy/commit/d50e71640b1049603237741f32b166beda44c2d7))

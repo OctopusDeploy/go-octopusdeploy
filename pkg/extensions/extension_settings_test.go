@@ -64,5 +64,5 @@ func TestExtensionSettingsMarshalJSON(t *testing.T) {
 		standardChangeTemplateName,
 	)
 
-	jsonassert.New(t).Assertf(expectedJson, string(serviceNowExtensionSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(serviceNowExtensionSettingsAsJSON))
 }

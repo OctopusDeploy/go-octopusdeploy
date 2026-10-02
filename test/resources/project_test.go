@@ -48,7 +48,7 @@ func TestProjectMarshalJSON(t *testing.T) {
 	projectAsJSON, err := json.Marshal(project)
 	require.NoError(t, err)
 	require.NotNil(t, projectAsJSON)
-	jsonassert.New(t).Assertf(string(projectAsJSON), expectedJson)
+	jsonassert.New(t).Assertf(string(projectAsJSON), "%s", expectedJson)
 
 	connectivityPolicy := core.NewConnectivityPolicy()
 	connectivityPolicyAsJSON, err := json.Marshal(connectivityPolicy)
@@ -73,7 +73,7 @@ func TestProjectMarshalJSON(t *testing.T) {
 		"CombineHealthAndSyncStatusInDashboardLiveStatus": false
 	}`, lifecycleID, name, connectivityPolicyAsJSON, projectGroupID)
 
-	jsonassert.New(t).Assertf(string(projectAsJSON), expectedJson)
+	jsonassert.New(t).Assertf(string(projectAsJSON), "%s", expectedJson)
 }
 
 func TestProjectUnmarshalJSON(t *testing.T) {

@@ -25,3 +25,6 @@ vendor
 .env
 
 go-octopusdeploy
+
+# macOS
+.DS_Store

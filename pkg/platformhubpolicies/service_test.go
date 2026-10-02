@@ -189,7 +189,7 @@ func testAssertUpsertCommandMarshalJSON(t *testing.T, command platformHubPolicyU
 		"ViolationAction": "%s"
 	}`, expectedCommit, expected.name, expected.gitRef, expected.slug, expected.description, expected.scopeRego, expected.conditionsRego, expected.violationReason, expected.violationAction)
 
-	jsonassert.New(t).Assertf(expectedJson, string(jsonCommand))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(jsonCommand))
 }
 
 func TestPoliciesQueryResult_UnmarshalJSON(t *testing.T) {

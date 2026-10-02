@@ -54,7 +54,7 @@ func NewSSHKeyAccount(name string, username string, privateKeyFile *core.Sensiti
 	return &account, nil
 }
 
-// SetPrivateKeyPassphrase sets the private key [assphrase of this SSH key pair account.
+// SetPrivateKeyPassphrase sets the private key passphrase of this SSH key pair account.
 func (s *SSHKeyAccount) SetPrivateKeyPassphrase(privateKeyPassphrase *core.SensitiveValue) {
 	s.PrivateKeyPassphrase = privateKeyPassphrase
 }

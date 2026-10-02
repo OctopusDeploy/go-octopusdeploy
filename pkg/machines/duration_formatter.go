@@ -3,6 +3,7 @@ package machines
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -30,20 +31,52 @@ func ToTimeSpan(duration time.Duration) string {
 	return fmt.Sprintf("%02d.%02d:%02d:%02d.%05d", days, hours, minutes, seconds, secondsFraction)
 }
 
+// FromTimeSpan parses a .NET TimeSpan ("[-][d.]hh:mm:ss[.fffffff]") into a duration.
 func FromTimeSpan(timeSpan string) time.Duration {
-	if len(timeSpan) == 8 {
-		hours, _ := strconv.ParseInt(timeSpan[0:2], 10, 64)
-		minutes, _ := strconv.ParseInt(timeSpan[3:5], 10, 64)
-		seconds, _ := strconv.ParseInt(timeSpan[6:8], 10, 64)
-		duration, _ := time.ParseDuration(fmt.Sprintf("%dh%dm%ds", hours, minutes, seconds))
-		return duration
+	if timeSpan == "" {
+		return 0
 	}
 
-	days, _ := strconv.ParseInt(timeSpan[0:0], 10, 32)
-	hours, _ := strconv.ParseInt(timeSpan[2:4], 10, 64)
-	hours += (days * 24)
-	minutes, _ := strconv.ParseInt(timeSpan[5:7], 10, 64)
-	seconds, _ := strconv.ParseInt(timeSpan[8:10], 10, 64)
-	duration, _ := time.ParseDuration(fmt.Sprintf("%dh%dm%ds", hours, minutes, seconds))
+	negative := strings.HasPrefix(timeSpan, "-")
+	if negative {
+		timeSpan = timeSpan[1:]
+	}
+
+	var days int64
+	if dot := strings.IndexByte(timeSpan, '.'); dot >= 0 && dot < strings.IndexByte(timeSpan, ':') {
+		days, _ = strconv.ParseInt(timeSpan[:dot], 10, 64)
+		timeSpan = timeSpan[dot+1:]
+	}
+
+	var fraction time.Duration
+	if dot := strings.IndexByte(timeSpan, '.'); dot >= 0 {
+		// .NET fractional seconds are ticks of 100ns, up to 7 digits.
+		ticks := timeSpan[dot+1:]
+		if len(ticks) > 7 {
+			ticks = ticks[:7]
+		}
+		ticks += strings.Repeat("0", 7-len(ticks))
+		parsed, _ := strconv.ParseInt(ticks, 10, 64)
+		fraction = time.Duration(parsed) * 100 * time.Nanosecond
+		timeSpan = timeSpan[:dot]
+	}
+
+	parts := strings.Split(timeSpan, ":")
+	if len(parts) != 3 {
+		return 0
+	}
+	hours, _ := strconv.ParseInt(parts[0], 10, 64)
+	minutes, _ := strconv.ParseInt(parts[1], 10, 64)
+	seconds, _ := strconv.ParseInt(parts[2], 10, 64)
+
+	duration := time.Duration(days)*24*time.Hour +
+		time.Duration(hours)*time.Hour +
+		time.Duration(minutes)*time.Minute +
+		time.Duration(seconds)*time.Second +
+		fraction
+
+	if negative {
+		return -duration
+	}
 	return duration
 }

@@ -52,7 +52,7 @@ type MockHttpServer struct {
 	Response chan responseOrError
 
 	// so test code can detect unanswered requests or responses at the end.
-	// Not strictly neccessary as unanswered req/resp results in a channel deadlock
+	// Not strictly necessary as unanswered req/resp results in a channel deadlock
 	// and go panics and kills the process, so we find out about it, but this is a bit
 	// less confusing to troubleshoot
 	pendingMsgCount int32

@@ -11,11 +11,26 @@ type MachineDeploymentPreview struct {
 	HealthStatus      string `json:"HealthStatus,omitempty"` // machines.HealthStatus validate:"omitempty,oneof=HasWarnings Healthy Unavailable Unhealthy Unknown"`
 }
 
+type TargetTagPreview struct {
+	TagID     string `json:"TagId,omitempty"`
+	TagName   string `json:"TagName,omitempty"`
+	SortOrder int    `json:"SortOrder,omitempty"`
+}
+
+type TagSetPreview struct {
+	TagSetID      string              `json:"TagSetId,omitempty"`
+	TagSetName    string              `json:"TagSetName,omitempty"`
+	TagSetType    string              `json:"TagSetType,omitempty"`
+	SortOrder     int                 `json:"SortOrder,omitempty"`
+	AvailableTags []*TargetTagPreview `json:"AvailableTags,omitempty"`
+}
+
 type DeploymentTemplateStep struct {
 	ActionID                string                         `json:"ActionId,omitempty"`
 	ActionName              string                         `json:"ActionName,omitempty"`
 	ActionNumber            string                         `json:"ActionNumber,omitempty"`
 	Roles                   []string                       `json:"Roles,omitempty"`
+	AvailableTagSets        []*TagSetPreview               `json:"AvailableTagSets,omitempty"`
 	MachineNames            []string                       `json:"MachineNames,omitempty"`
 	Machines                []*MachineDeploymentPreview    `json:"Machines,omitempty"`
 	CanBeSkipped            bool                           `json:"CanBeSkipped"`
