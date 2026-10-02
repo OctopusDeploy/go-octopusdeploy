@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.120.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.119.0...v2.120.0) (2026-10-02)
+
+
+### Features
+
+* add UpdateSnapshotVariables for releases and runbook snapshots ([#484](https://github.com/OctopusDeploy/go-octopusdeploy/issues/484)) ([fd02df8](https://github.com/OctopusDeploy/go-octopusdeploy/commit/fd02df843adce4b8d876adebef958d29ef1509a2))
+
 ## [2.119.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.118.0...v2.119.0) (2026-09-25)
 
 
