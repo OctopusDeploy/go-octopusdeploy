@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.120.1](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.120.0...v2.120.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* Add missing Name field in EnvironmentQuery ([#486](https://github.com/OctopusDeploy/go-octopusdeploy/issues/486)) ([a5fed37](https://github.com/OctopusDeploy/go-octopusdeploy/commit/a5fed37a0d5899240b6d1d9e43df7036ba3968ad))
+
 ## [2.120.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.119.0...v2.120.0) (2026-10-02)
 
 
