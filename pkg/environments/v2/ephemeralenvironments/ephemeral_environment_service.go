@@ -96,3 +96,24 @@ func Deprovision(client newclient.Client, spaceID string, environmentId string) 
 
 	return newclient.Add[DeprovisionEphemeralEnvironmentResponse](client, path, spaceID, body)
 }
+
+// GetStatus returns the provisioning status of an ephemeral environment for a project.
+func GetStatus(client newclient.Client, spaceID string, environmentId string, projectId string) (*EphemeralEnvironmentStatus, error) {
+	path, err := client.URITemplateCache().Expand(v2.GetEphemeralEnvironmentStatusTemplate, map[string]any{
+		"id":        environmentId,
+		"projectId": projectId,
+		"spaceId":   spaceID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Get[EphemeralEnvironmentStatus](client.HttpSession(), path)
+}
+
+// Delete deletes an ephemeral environment without running its deprovisioning runbook.
+// Use it for environments that cannot be deprovisioned, for example when provisioning failed.
+func Delete(client newclient.Client, spaceID string, environmentId string) error {
+	return newclient.DeleteByID(client, v2.DeleteEphemeralEnvironmentTemplate, spaceID, environmentId)
+}
