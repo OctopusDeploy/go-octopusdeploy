@@ -96,7 +96,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 	})
 
 	t.Run("deserialize OnceDailySchedule filter from a 2022.3 server", func(t *testing.T) {
-		// Note the Startime with 3 decimal places of milliseconds, with no timezone info, which Go doesn't normally deal with
+		// Note the StartTime with 3 decimal places of milliseconds, with no timezone info, which Go doesn't normally deal with
 		// captured verbatim from real server
 		data := []byte(heredoc.Doc(`
 		{
