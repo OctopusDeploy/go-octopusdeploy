@@ -26,3 +26,8 @@ type DeprovisioningRunbookRun struct {
 	RunbookRunID string `json:"RunbookRunId"`
 	TaskId       string `json:"TaskId"`
 }
+
+// EphemeralEnvironmentStatus is the provisioning status of an ephemeral environment for a project.
+type EphemeralEnvironmentStatus struct {
+	Status string `json:"Status"`
+}
