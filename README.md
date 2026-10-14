@@ -5,7 +5,6 @@
   <p align="center">
     <a href="https://github.com/OctopusDeploy/go-octopusdeploy/releases/latest"><img alt="GitHub release" src="https://img.shields.io/github/v/release/OctopusDeploy/go-octopusdeploy.svg?logo=github&style=flat-square"></a>
     <a href="https://pkg.go.dev/github.com/OctopusDeploy/go-octopusdeploy"><img alt="PkgGoDev" src="https://pkg.go.dev/badge/github.com/OctopusDeploy/go-octopusdeploy"></a>
-    <a href="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy"><img src="https://goreportcard.com/badge/github.com/OctopusDeploy/go-octopusdeploy" alt="Go Report"></a>
   </p>
 </div>
 
