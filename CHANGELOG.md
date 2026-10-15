@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.121.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.120.1...v2.121.0) (2026-10-15)
+
+
+### Features
+
+* add Platform Hub Version Control Settings and GitHub Connections ([#470](https://github.com/OctopusDeploy/go-octopusdeploy/issues/470)) ([00ab060](https://github.com/OctopusDeploy/go-octopusdeploy/commit/00ab06032903e14e71eead5cfb252352e6c10d3e))
+
 ## [2.120.1](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.120.0...v2.120.1) (2026-10-09)
 
 
