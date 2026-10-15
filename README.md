@@ -59,6 +59,52 @@ if err != nil {
 
 Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by most services that are exposed through the client if not exposed in the package. These operations are configured at runtime since the Octopus REST API is hypermedia-driven.
 
+### Rate limiting
+
+Octopus Server can [limit the rate of requests](https://octopus.com/docs/administration/managing-infrastructure/rate-limiting) from each client. When a client sends too many requests, the server returns `429 Too Many Requests` and does not process the request.
+
+By default, the client does not handle rate limits. To make the client obey the rate limits, use `NewClientWithOptions` and set `RateLimit`:
+
+```go
+import (
+    "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+    "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimit"
+)
+
+credentials, err := client.NewApiKey(apiKey)
+if err != nil {
+    _ = fmt.Errorf("error creating API key credentials: %v", err)
+    return
+}
+
+rateLimitOptions := ratelimit.DefaultOptions()
+
+octopusClient, err := client.NewClientWithOptions(nil, apiURL, credentials, spaceID, "", &client.ClientOptions{
+    RateLimit: &rateLimitOptions,
+})
+if err != nil {
+    _ = fmt.Errorf("error creating API client: %v", err)
+    return
+}
+```
+
+With rate limiting on, the client does these things:
+
+- When the server returns `429 Too Many Requests`, the client waits and sends the request again. It waits for the time in the `Retry-After` header. If the server does not send this header, it uses exponential backoff.
+- When the `Octopus-RateLimit` advisory header shows that no requests remain, the client waits before it sends the next request. This prevents most `429` responses.
+
+You can change these settings in `ratelimit.Options`:
+
+| Setting              | Default    | Description                                                                                                                                         |
+| -------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MaxRetries`         | `3`        | The maximum number of times to send a request again after a `429` response. Set to `0` to turn off retries.                                         |
+| `MaxWait`            | `60s`      | The maximum time to wait before a request. If `Retry-After` is longer than this time, the client does not retry and returns the `429` response.     |
+| `UseAdvisoryHeaders` | `true`     | Wait before a request when the advisory headers show that no requests remain.                                                                       |
+
+The client retries a request only if it can send the request body again. For example, the client does not retry a package upload.
+
+If you supply an `http.Client`, the client uses a copy of it and does not change it. To use rate limiting with an `http.Client` of your own in other code, wrap its transport with `ratelimit.NewTransport`.
+
 Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory. There are also many [integration](/test) and unit tests available to examine that demonstrate the capabilities of this API client.
 
 ## Testing

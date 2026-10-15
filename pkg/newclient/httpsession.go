@@ -73,6 +73,9 @@ func (h *HttpSession) DoRawJsonRequest(req *http.Request, requestBody any, outpu
 			req.Header.Set("Content-Type", "application/json")
 		}
 		req.Body = io.NopCloser(bytes.NewReader(body))
+		req.GetBody = func() (io.ReadCloser, error) {
+			return io.NopCloser(bytes.NewReader(body)), nil
+		}
 	}
 
 	if req.Header.Get("Accept") == "" {
