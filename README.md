@@ -90,7 +90,7 @@ The pull request workflow runs golangci-lint, and your pull request must pass it
 
 See the [golangci-lint website](https://golangci-lint.run) for the install instructions.
 
-To format the code, and then find lint issues, run these commands in the cli root folder:
+To format the code, and then find lint issues, run these commands in the root folder:
 
 ```shell
 golangci-lint fmt ./...
