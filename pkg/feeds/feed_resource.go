@@ -1,38 +1,39 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type FeedResource struct {
-	AccessKey                                  string                                         `json:"AccessKey,omitempty"`
-	OidcAuthentication                         *OidcAuthentication                            `json:"OidcAuthentication,omitempty"`
-	APIVersion                                 string                                         `json:"ApiVersion,omitempty"`
-	DeletePackagesAssociatedWithReleases       bool                                           `json:"DeletePackagesAssociatedWithReleases"`
-	DeleteUnreleasedPackagesAfterDays          int                                            `json:"DeleteUnreleasedPackagesAfterDays"`
-	DownloadAttempts                           int                                            `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds                int                                            `json:"DownloadRetryBackoffSeconds"`
-	EnhancedMode                               bool                                           `json:"EnhancedMode"`
-	FeedType                                   FeedType                                       `json:"FeedType" validate:"required,notblank"`
-	FeedURI                                    string                                         `json:"FeedUri,omitempty"`
-	IsBuiltInRepoSyncEnabled                   bool                                           `json:"IsBuiltInRepoSyncEnabled"`
-	Name                                       string                                         `json:"Name" validate:"required,notblank"`
-	Password                                   *core.SensitiveValue                           `json:"Password,omitempty"`
-	PackageAcquisitionLocationOptions          []string                                       `json:"PackageAcquisitionLocationOptions,omitempty"`
-	Region                                     string                                         `json:"Region,omitempty"`
-	RegistryPath                               string                                         `json:"RegistryPath,omitempty"`
-	SecretKey                                  *core.SensitiveValue                           `json:"SecretKey,omitempty"`
-	SpaceID                                    string                                         `json:"SpaceId,omitempty"`
-	Username                                   string                                         `json:"Username,omitempty"`
-	LayoutRegex                                string                                         `json:"LayoutRegex,omitempty"`
-	Repository                                 string                                         `json:"Repository,omitempty"`
-	UseMachineCredentials                      bool                                           `json:"UseMachineCredentials,omitempty"`
-	UseServiceAccountKey                       bool                                           `json:"UseServiceAccountKey,omitempty"`
-	ServiceAccountJsonKey                      *core.SensitiveValue                           `json:"ServiceAccountJsonKey,omitempty"`
-	Project                                    string                                         `json:"Project,omitempty"`
+	AccessKey                            string               `json:"AccessKey,omitempty"`
+	OidcAuthentication                   *OidcAuthentication  `json:"OidcAuthentication,omitempty"`
+	APIVersion                           string               `json:"ApiVersion,omitempty"`
+	DeletePackagesAssociatedWithReleases bool                 `json:"DeletePackagesAssociatedWithReleases"`
+	DeleteUnreleasedPackagesAfterDays    int                  `json:"DeleteUnreleasedPackagesAfterDays"`
+	DownloadAttempts                     int                  `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds          int                  `json:"DownloadRetryBackoffSeconds"`
+	EnhancedMode                         bool                 `json:"EnhancedMode"`
+	FeedType                             FeedType             `json:"FeedType" validate:"required,notblank"`
+	FeedURI                              string               `json:"FeedUri,omitempty"`
+	IsBuiltInRepoSyncEnabled             bool                 `json:"IsBuiltInRepoSyncEnabled"`
+	Name                                 string               `json:"Name" validate:"required,notblank"`
+	Password                             *core.SensitiveValue `json:"Password,omitempty"`
+	PackageAcquisitionLocationOptions    []string             `json:"PackageAcquisitionLocationOptions,omitempty"`
+	Region                               string               `json:"Region,omitempty"`
+	RegistryPath                         string               `json:"RegistryPath,omitempty"`
+	SecretKey                            *core.SensitiveValue `json:"SecretKey,omitempty"`
+	SpaceID                              string               `json:"SpaceId,omitempty"`
+	Username                             string               `json:"Username,omitempty"`
+	LayoutRegex                          string               `json:"LayoutRegex,omitempty"`
+	Repository                           string               `json:"Repository,omitempty"`
+	UseMachineCredentials                bool                 `json:"UseMachineCredentials,omitempty"`
+	UseServiceAccountKey                 bool                 `json:"UseServiceAccountKey,omitempty"`
+	ServiceAccountJsonKey                *core.SensitiveValue `json:"ServiceAccountJsonKey,omitempty"`
+	Project                              string               `json:"Project,omitempty"`
 	resources.Resource
 }
 

@@ -16,7 +16,6 @@
 //	values["repo"] = "uritemplates"
 //	expanded, _ := template.Expand(values)
 //	fmt.Printf(expanded)
-//
 package uritemplates
 
 import (
@@ -232,9 +231,9 @@ func (self *templatePart) expand(buf *bytes.Buffer, values map[string]interface{
 		buf.WriteString(self.raw)
 		return nil
 	}
-	var zeroLen = buf.Len()
+	zeroLen := buf.Len()
 	buf.WriteString(self.first)
-	var firstLen = buf.Len()
+	firstLen := buf.Len()
 	for _, term := range self.terms {
 		value, exists := values[term.name]
 		if !exists {
@@ -330,7 +329,7 @@ func (self *templatePart) expandMap(buf *bytes.Buffer, t templateTerm, m map[str
 	if !t.explode {
 		self.expandName(buf, t.name, len(m) == 0)
 	}
-	var firstLen = buf.Len()
+	firstLen := buf.Len()
 	for k, value := range m {
 		if firstLen != buf.Len() {
 			if t.explode {
@@ -361,7 +360,7 @@ func (self *templatePart) expandMap(buf *bytes.Buffer, t templateTerm, m map[str
 func Struct2map(v interface{}) (map[string]interface{}, bool) {
 	value := reflect.ValueOf(v)
 	switch value.Type().Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		return Struct2map(value.Elem().Interface())
 	case reflect.Struct:
 		m := make(map[string]interface{})
@@ -417,7 +416,7 @@ func isEmptyValue(v reflect.Value) bool {
 		return v.Uint() == 0
 	case reflect.Float32, reflect.Float64:
 		return v.Float() == 0
-	case reflect.Interface, reflect.Ptr:
+	case reflect.Interface, reflect.Pointer:
 		return v.IsNil()
 	}
 

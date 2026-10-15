@@ -3,8 +3,9 @@ package services
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
 func NewServiceTests(t *testing.T, service IService, uriTemplate string, ServiceName string) {

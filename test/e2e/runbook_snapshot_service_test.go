@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/configuration"
@@ -14,14 +17,13 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func AssertEqualRunbookSnapshots(
 	t *testing.T,
 	expected *runbooks.RunbookSnapshot,
-	actual *runbooks.RunbookSnapshot) {
+	actual *runbooks.RunbookSnapshot,
+) {
 	// equality cannot be determined through a direct comparison (below)
 	// because APIs like GetByPartialName do not include the fields,
 	// LastModifiedBy and LastModifiedOn
@@ -48,8 +50,8 @@ func CreateTestRunbookSnapshot(
 	lifecycle *lifecycles.Lifecycle,
 	projectGroup *projectgroups.ProjectGroup,
 	project *projects.Project,
-	runbook *runbooks.Runbook) *runbooks.RunbookSnapshot {
-
+	runbook *runbooks.Runbook,
+) *runbooks.RunbookSnapshot {
 	require.NotNil(t, lifecycle)
 	require.NotNil(t, projectGroup)
 	require.NotNil(t, project)
@@ -130,8 +132,7 @@ func TestRunbookSnapshotServiceAddGetDelete(t *testing.T) {
 }
 
 func TestRunbookSnapshotServiceSnapshotVariablesByName(t *testing.T) {
-
-	//Arrange
+	// Arrange
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
@@ -195,8 +196,7 @@ func TestRunbookSnapshotServiceSnapshotVariablesByName(t *testing.T) {
 }
 
 func TestRunbookSnapshotServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
-
-	//Arrange
+	// Arrange
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 

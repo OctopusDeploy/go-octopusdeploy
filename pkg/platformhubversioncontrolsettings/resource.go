@@ -61,7 +61,7 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 
 		if credentialsProperties["Type"] != nil {
 			t := credentialsProperties["Type"]
-			json.Unmarshal(*t, &credentialType)
+			_ = json.Unmarshal(*t, &credentialType)
 		}
 	}
 

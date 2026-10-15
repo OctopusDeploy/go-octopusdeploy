@@ -39,7 +39,6 @@ func GetStepsUsingRoleExample() {
 	// Loop through list
 	for _, project := range projects {
 		deploymentProcess, err := client.DeploymentProcesses.GetByID(project.DeploymentProcessID)
-
 		if err != nil {
 			_ = fmt.Errorf("error: %w", err)
 		}

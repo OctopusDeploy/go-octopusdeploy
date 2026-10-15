@@ -2,9 +2,10 @@ package examples
 
 import (
 	"fmt"
+	"net/url"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/teams"
-	"net/url"
 )
 
 func CreateTeamExample() {

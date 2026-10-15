@@ -3,12 +3,13 @@ package variables
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 )
 
 func createLibraryVariableSetService(t *testing.T) *LibraryVariableSetService {
@@ -287,5 +288,5 @@ func TestLibraryVariableSetServiceUpdate(t *testing.T) {
 	expected := CreateTestLibraryVariableSet(t, service)
 	actual := UpdateLibraryVariableSet(t, service, expected)
 	IsEqualLibraryVariableSets(t, expected, actual)
-	defer DeleteTestLibraryVariableSet(t, service, expected)
+	defer func() { _ = DeleteTestLibraryVariableSet(t, service, expected) }()
 }

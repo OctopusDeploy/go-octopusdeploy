@@ -31,7 +31,7 @@ func Add(client newclient.Client, platformHubAccount IPlatformHubAccount) (IPlat
 		return nil, internal.CreateRequiredParameterIsEmptyOrNilError("platformHubAccountID")
 	}
 
-	//create only returns the id of the new resource, so we need to get the full object
+	// create only returns the id of the new resource, so we need to get the full object
 	return GetByID(client, res.ID)
 }
 
@@ -84,7 +84,7 @@ func Update(client newclient.Client, platformHubAccount IPlatformHubAccount) (IP
 		return nil, err
 	}
 
-	//modify doesn't return the updated object, so we return the input object after a successful update
+	// modify doesn't return the updated object, so we return the input object after a successful update
 	return platformHubAccount, nil
 }
 

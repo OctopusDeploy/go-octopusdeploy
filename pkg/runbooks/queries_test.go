@@ -4,8 +4,9 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
 // TestRunbooksQueryExpandsIntoTemplate covers the path Get relies on: RunbooksQuery is

@@ -23,17 +23,17 @@ func ToWorkerPool(workerPoolResource *WorkerPoolResource) (IWorkerPool, error) {
 		workerPool = NewStaticWorkerPool(workerPoolResource.GetName())
 	}
 
-	workerPool.SetCanAddWorkers((workerPoolResource.GetCanAddWorkers()))
-	workerPool.SetDescription((workerPoolResource.GetDescription()))
+	workerPool.SetCanAddWorkers(workerPoolResource.GetCanAddWorkers())
+	workerPool.SetDescription(workerPoolResource.GetDescription())
 	workerPool.SetID(workerPoolResource.GetID())
-	workerPool.SetIsDefault((workerPoolResource.GetIsDefault()))
+	workerPool.SetIsDefault(workerPoolResource.GetIsDefault())
 	workerPool.SetLinks(workerPoolResource.GetLinks())
 	workerPool.SetModifiedBy(workerPoolResource.GetModifiedBy())
 	workerPool.SetModifiedOn(workerPoolResource.GetModifiedOn())
-	workerPool.SetName((workerPoolResource.GetName()))
-	workerPool.SetSpaceID((workerPoolResource.GetSpaceID()))
-	workerPool.SetSortOrder((workerPoolResource.GetSortOrder()))
-	workerPool.SetWorkerPoolType((workerPoolResource.GetWorkerPoolType()))
+	workerPool.SetName(workerPoolResource.GetName())
+	workerPool.SetSpaceID(workerPoolResource.GetSpaceID())
+	workerPool.SetSortOrder(workerPoolResource.GetSortOrder())
+	workerPool.SetWorkerPoolType(workerPoolResource.GetWorkerPoolType())
 
 	return workerPool, nil
 }
@@ -65,17 +65,17 @@ func ToWorkerPoolResource(workerPool IWorkerPool) (*WorkerPoolResource, error) {
 		// nothing to copy
 	}
 
-	workerPoolResource.SetCanAddWorkers((workerPool.GetCanAddWorkers()))
-	workerPoolResource.SetDescription((workerPool.GetDescription()))
+	workerPoolResource.SetCanAddWorkers(workerPool.GetCanAddWorkers())
+	workerPoolResource.SetDescription(workerPool.GetDescription())
 	workerPoolResource.SetID(workerPool.GetID())
-	workerPoolResource.SetIsDefault((workerPool.GetIsDefault()))
+	workerPoolResource.SetIsDefault(workerPool.GetIsDefault())
 	workerPoolResource.SetLinks(workerPool.GetLinks())
 	workerPoolResource.SetModifiedBy(workerPool.GetModifiedBy())
 	workerPoolResource.SetModifiedOn(workerPool.GetModifiedOn())
-	workerPoolResource.SetName((workerPool.GetName()))
-	workerPoolResource.SetSpaceID((workerPool.GetSpaceID()))
-	workerPoolResource.SetSortOrder((workerPool.GetSortOrder()))
-	workerPoolResource.SetWorkerPoolType((workerPool.GetWorkerPoolType()))
+	workerPoolResource.SetName(workerPool.GetName())
+	workerPoolResource.SetSpaceID(workerPool.GetSpaceID())
+	workerPoolResource.SetSortOrder(workerPool.GetSortOrder())
+	workerPoolResource.SetWorkerPoolType(workerPool.GetWorkerPoolType())
 
 	return workerPoolResource, nil
 }

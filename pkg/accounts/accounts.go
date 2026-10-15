@@ -3,9 +3,10 @@ package accounts
 import (
 	"encoding/json"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
 )
 
 // Accounts defines a collection of accounts with built-in support for paged

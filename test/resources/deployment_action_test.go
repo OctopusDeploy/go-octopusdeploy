@@ -3,8 +3,9 @@ package resources
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 func TestDeploymentActionProperties(t *testing.T) {

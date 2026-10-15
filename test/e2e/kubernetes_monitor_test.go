@@ -4,13 +4,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/kubernetesmonitors"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/require"
 )
 
 func TestRegisterMonitor(t *testing.T) {
@@ -57,7 +58,6 @@ func TestRegisterMonitor(t *testing.T) {
 	_, err = kubernetesmonitors.GetByID(client, client.GetSpaceID(), res.Resource.ID)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not found")
-
 }
 
 func CreateTestKubernetesDeploymentTarget_NewClient(

@@ -1,23 +1,24 @@
 package platformhubaccounts
 
 import (
+	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
-	"github.com/go-playground/validator/v10"
-	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // PlatformHubAzureServicePrincipalAccount represents a Platform Hub Azure Service Principal account.
 type PlatformHubAzureServicePrincipalAccount struct {
-	SubscriptionID              string               `json:"SubscriptionNumber" validate:"required"`
-	TenantID                    string               `json:"TenantId" validate:"required"`
-	ApplicationID               string               `json:"ClientId" validate:"required"`
-	Password                    *core.SensitiveValue `json:"Password" validate:"required"`
-	AzureEnvironment            string               `json:"AzureEnvironment,omitempty"`
-	AuthenticationEndpoint      string               `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
-	ResourceManagementEndpoint  string               `json:"ResourceManagementEndpointBaseUri,omitempty"`
+	SubscriptionID             string               `json:"SubscriptionNumber" validate:"required"`
+	TenantID                   string               `json:"TenantId" validate:"required"`
+	ApplicationID              string               `json:"ClientId" validate:"required"`
+	Password                   *core.SensitiveValue `json:"Password" validate:"required"`
+	AzureEnvironment           string               `json:"AzureEnvironment,omitempty"`
+	AuthenticationEndpoint     string               `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
+	ResourceManagementEndpoint string               `json:"ResourceManagementEndpointBaseUri,omitempty"`
 
 	platformHubAccount
 }

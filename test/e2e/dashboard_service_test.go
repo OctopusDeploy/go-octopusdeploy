@@ -7,8 +7,9 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/dashboard"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/dashboard"
 )
 
 // These tests read whatever the target instance happens to hold rather than

@@ -1,13 +1,14 @@
 package channels
 
 import (
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
 )
 
 type ChannelService struct {
@@ -121,8 +122,10 @@ func (s *ChannelService) Update(channel *Channel) (*Channel, error) {
 
 // --- new ---
 
-const template = "/api/{spaceId}/channels{/id}{?skip,take,ids,partialName}"
-const templateV2 = "/api/{spaceId}/projects/{projectId}/channels{/id}{?skip,take,ids,partialName}"
+const (
+	template   = "/api/{spaceId}/channels{/id}{?skip,take,ids,partialName}"
+	templateV2 = "/api/{spaceId}/projects/{projectId}/channels{/id}{?skip,take,ids,partialName}"
+)
 
 // Add creates a new channel.
 func Add(client newclient.Client, channel *Channel) (*Channel, error) {

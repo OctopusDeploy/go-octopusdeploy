@@ -3,6 +3,6 @@ package projects
 type PersistenceSettingsType string
 
 const (
-	PersistenceSettingsTypeDatabase = PersistenceSettingsType("Database")
+	PersistenceSettingsTypeDatabase          = PersistenceSettingsType("Database")
 	PersistenceSettingsTypeVersionControlled = PersistenceSettingsType("VersionControlled")
 )

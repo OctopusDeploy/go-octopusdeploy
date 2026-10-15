@@ -80,7 +80,7 @@ func indexFields(t reflect.Type) fieldIndex {
 // addFields follows encoding/json's flattening: descend into anonymous fields,
 // outer names shadow embedded ones.
 func addFields(t reflect.Type, idx fieldIndex) {
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	if t.Kind() != reflect.Struct {

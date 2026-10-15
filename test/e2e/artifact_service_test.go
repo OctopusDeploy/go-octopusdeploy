@@ -3,11 +3,12 @@ package e2e
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/artifacts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func CreateTestArtifact(t *testing.T, client *client.Client) *artifacts.Artifact {
@@ -42,7 +43,6 @@ func DeleteTestArtifact(t *testing.T, client *client.Client, artifact *artifacts
 	deletedArtifact, err := client.Artifacts.GetByID(artifact.GetID())
 	assert.Error(t, err)
 	assert.Nil(t, deletedArtifact)
-
 }
 
 func AssertEqualArtifacts(t *testing.T, expected *artifacts.Artifact, actual *artifacts.Artifact) {

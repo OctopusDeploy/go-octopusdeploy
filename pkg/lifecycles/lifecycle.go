@@ -3,9 +3,10 @@ package lifecycles
 import (
 	"strings"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/go-playground/validator/v10"
 )
 
 type Lifecycle struct {
@@ -38,7 +39,6 @@ func NewLifecycle(name string) *Lifecycle {
 func (l *Lifecycle) Validate() error {
 	validate := validator.New()
 	err := validate.Struct(l)
-
 	if err != nil {
 		return err
 	}

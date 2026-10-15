@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"net/url"
 
+	uuid "github.com/google/uuid"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	uuid "github.com/google/uuid"
 )
 
 func CreateAzureServicePrincipalExample() {

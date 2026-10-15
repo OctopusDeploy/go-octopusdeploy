@@ -5,15 +5,17 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/OctopusDeploy/go-octodiff/pkg/octodiff"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/OctopusDeploy/go-octodiff/pkg/octodiff"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
 )
 
 type PackageSignatureResponse struct {
@@ -27,7 +29,8 @@ func uploadDelta(
 	fileName string,
 	input io.ReadSeeker,
 	inputLength int64,
-	overwriteMode OverwriteMode) (outResponse *PackageUploadResponseV2, outErr error) {
+	overwriteMode OverwriteMode,
+) (outResponse *PackageUploadResponseV2, outErr error) {
 	// theoretically very old servers might not support delta push, but the Go Client is new enough that
 	// we don't need to worry about gracefully handling those and can just fail with an HTTP 404 if we happen to hit one of those
 
@@ -154,7 +157,8 @@ func deltaFallbackUploadFullFile(
 	deltaLength int64,
 	requestSignatureDuration time.Duration,
 	buildDeltaDuration time.Duration,
-	deltaBehaviour DeltaBehaviour) (*PackageUploadResponseV2, error) {
+	deltaBehaviour DeltaBehaviour,
+) (*PackageUploadResponseV2, error) {
 	// we can recover by pushing the full file
 	// need to seek back to the start or the regular forward-read will fail
 	_, err := input.Seek(0, io.SeekStart)
@@ -215,8 +219,8 @@ func requestDeltaSignature(client newclient.Client, params map[string]any) (*Pac
 	}
 	defer newclient.CloseResponse(resp)
 
-	var responseBody = new(PackageSignatureResponse)
-	var responseError = new(core.APIError)
+	responseBody := new(PackageSignatureResponse)
+	responseError := new(core.APIError)
 	bodyDecoder := json.NewDecoder(resp.Body)
 	if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
 		err = bodyDecoder.Decode(responseBody)

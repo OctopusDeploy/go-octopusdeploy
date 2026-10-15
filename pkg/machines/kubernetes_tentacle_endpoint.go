@@ -2,8 +2,9 @@ package machines
 
 import (
 	"encoding/json"
-	"github.com/go-playground/validator/v10"
 	"net/url"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type KubernetesTentacleEndpoint struct {

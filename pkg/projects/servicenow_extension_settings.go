@@ -111,6 +111,8 @@ func (s *ServiceNowExtensionSettings) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-var _ extensions.ExtensionSettings = &ServiceNowExtensionSettings{}
-var _ extensions.ChangeControlExtensionSettings = &ServiceNowExtensionSettings{}
-var _ extensions.ConnectedChangeControlExtensionSettings = &ServiceNowExtensionSettings{}
+var (
+	_ extensions.ExtensionSettings                       = &ServiceNowExtensionSettings{}
+	_ extensions.ChangeControlExtensionSettings          = &ServiceNowExtensionSettings{}
+	_ extensions.ConnectedChangeControlExtensionSettings = &ServiceNowExtensionSettings{}
+)

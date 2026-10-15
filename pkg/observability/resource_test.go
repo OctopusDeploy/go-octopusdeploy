@@ -196,15 +196,15 @@ func TestKubernetesLiveStatusDetailedResource_UnmarshalJSON_Pod(t *testing.T) {
 
 	// Verify ManifestSummary is properly parsed as PodManifestSummary
 	assert.NotNil(t, resource.ManifestSummary)
-	
+
 	// Type assert to PodManifestSummary to access Containers
 	podSummary, ok := resource.ManifestSummary.(*PodManifestSummary)
 	assert.True(t, ok, "ManifestSummary should be of type *PodManifestSummary for Pod resources")
 	assert.NotNil(t, podSummary)
-	
+
 	// Verify Containers field is properly parsed
 	assert.Equal(t, []string{"test-nginx"}, podSummary.GetContainers())
-	
+
 	// Verify basic ManifestSummary interface methods work
 	assert.Contains(t, resource.ManifestSummary.GetLabels(), "Octopus.Action.Id")
 	assert.Equal(t, "d7419a77-ff63-4072-a861-dd7ab4ec4229", resource.ManifestSummary.GetLabels()["Octopus.Action.Id"])
@@ -241,12 +241,12 @@ func TestKubernetesLiveStatusDetailedResource_UnmarshalJSON_NonPod(t *testing.T)
 
 	// Verify ManifestSummary is parsed as base ManifestSummary (not PodManifestSummary)
 	assert.NotNil(t, resource.ManifestSummary)
-	
+
 	// Type assert to make sure it's the base type, not PodManifestSummary
 	manifestSummary, ok := resource.ManifestSummary.(*ManifestSummary)
 	assert.True(t, ok, "ManifestSummary should be of type *ManifestSummary for non-Pod resources")
 	assert.NotNil(t, manifestSummary)
-	
+
 	// Verify interface methods work
 	assert.Equal(t, "test-app", resource.ManifestSummary.GetLabels()["app"])
 	assert.Equal(t, "1", resource.ManifestSummary.GetAnnotations()["deployment.kubernetes.io/revision"])
@@ -286,7 +286,7 @@ func TestGetResourceResponse_UnmarshalJSON_Pod(t *testing.T) {
 	// Verify the resource is properly parsed
 	assert.NotNil(t, response.Resource)
 	assert.Equal(t, "Pod", response.Resource.Kind)
-	
+
 	// Verify ManifestSummary contains Containers for Pod
 	podSummary, ok := response.Resource.ManifestSummary.(*PodManifestSummary)
 	assert.True(t, ok, "ManifestSummary should be PodManifestSummary for Pod resources")

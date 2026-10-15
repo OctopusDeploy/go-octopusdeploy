@@ -6,9 +6,10 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
 
 func TestGetSettings(t *testing.T) {

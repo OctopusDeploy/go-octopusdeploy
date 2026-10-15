@@ -3,12 +3,13 @@ package lifecycles
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 )
 
 func createLifecycleService(t *testing.T) *LifecycleService {
@@ -140,7 +141,7 @@ func TestLifecycleServiceAdd(t *testing.T) {
 	resource, err = service.Add(resource)
 	assert.NoError(t, err)
 	assert.NotNil(t, resource)
-	defer service.DeleteByID(resource.GetID())
+	defer func() { _ = service.DeleteByID(resource.GetID()) }()
 }
 
 func TestLifecycleServiceGetWithEmptyID(t *testing.T) {

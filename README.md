@@ -82,6 +82,23 @@ and add a Visual Studio Code workspace setting (`.vscode/settings.json`) for the
     "go.testEnvFile": "${workspaceFolder}/.env"
 }
 ```
+
+### Linting and formatting
+
+We use [golangci-lint](https://golangci-lint.run) to lint and format the code. The configuration is in `.golangci.yml`.
+The pull request workflow runs golangci-lint, and your pull request must pass it.
+
+See the [golangci-lint website](https://golangci-lint.run) for the install instructions.
+
+To format the code, and then find lint issues, run these commands in the root folder:
+
+```shell
+golangci-lint fmt ./...
+golangci-lint run ./...
+```
+
+If you have make, you can run make fmt and make lint instead.
+
 ## Release
 
 Once your pull request has been approved:

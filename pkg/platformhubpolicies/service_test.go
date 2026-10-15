@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
 
 func TestPolicy_BuildAddCommand_Valid(t *testing.T) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	expectedPolicy := newPolicyBuilder().
 		WithName("ValidPolicyName").
@@ -33,7 +34,7 @@ func TestPolicy_BuildAddCommand_Valid(t *testing.T) {
 }
 
 func TestPolicy_BuildAddCommand_Invalid(t *testing.T) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	invalidPolicy := newPolicyBuilder().WithName("InvalidPolicyName").WithConditionsRego("").BuildDraft()
 
@@ -43,7 +44,7 @@ func TestPolicy_BuildAddCommand_Invalid(t *testing.T) {
 }
 
 func TestPolicy_BuildUpdateCommand_Valid(t *testing.T) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	expectedPolicy := newPolicyBuilder().WithName("Valid Policy").
 		WithGitRef("refs/heads/main").
@@ -65,7 +66,7 @@ func TestPolicy_BuildUpdateCommand_Valid(t *testing.T) {
 }
 
 func TestPolicy_BuildUpdateCommand_Invalid(t *testing.T) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	invalidPolicy := newPolicyBuilder().WithName("Invalid Action").WithViolationAction("").Build()
 	_, _, invalidCommandError := buildUpdateCommand(client, invalidPolicy, "commit invalid command")
@@ -74,7 +75,7 @@ func TestPolicy_BuildUpdateCommand_Invalid(t *testing.T) {
 }
 
 func TestPolicy_BuildPublishCommand(t *testing.T) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	gitRef := "refs/heads/main"
 	slug := "my_policy"
@@ -115,7 +116,7 @@ func TestPolicy_BuildDeactivateCommand(t *testing.T) {
 }
 
 func assertModifyVersionStatusCommand(t *testing.T, version publishedPolicyVersion, activated bool) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	// Act
 	command, path, commandError := buildModifyVersionStatusCommand(client, &version, activated)
@@ -132,7 +133,7 @@ func assertModifyVersionStatusCommand(t *testing.T, version publishedPolicyVersi
 }
 
 func TestPolicy_BuildGetVersionsPath_All(t *testing.T) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	// All parameters
 	query := PublishedPoliciesQuery{
@@ -148,7 +149,7 @@ func TestPolicy_BuildGetVersionsPath_All(t *testing.T) {
 }
 
 func TestPolicy_BuildGetVersionsPath_OnlySlug(t *testing.T) {
-	var client = newclient.NewClient(&newclient.HttpSession{})
+	client := newclient.NewClient(&newclient.HttpSession{})
 
 	query := PublishedPoliciesQuery{
 		Slug: "my_policy",
