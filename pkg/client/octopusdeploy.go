@@ -49,6 +49,7 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/proxies"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimit"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/reporting"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
@@ -208,6 +209,22 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
 func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string) (*Client, error) {
+	return NewClientWithOptions(httpClient, apiURL, apiCredentials, spaceID, requestingTool, ClientOptions{})
+}
+
+// ClientOptions configures optional client behaviour. The zero value gives the defaults.
+type ClientOptions struct {
+	// RateLimit configures how the client deals with the server's rate limiting. By default, requests the server
+	// rejects with HTTP 429 are retried, and requests are not paced against the server's advisory rate limit headers.
+	RateLimit ratelimit.Options
+}
+
+// NewClientWithOptions returns a new Octopus API client with the specified credentials, a tool reference in the
+// useragent string, and the given options. If a nil client is provided, a new http.Client will be used.
+//
+// The client makes its requests through a copy of httpClient whose Transport is wrapped to handle the server's rate
+// limiting (see the ratelimit package); httpClient itself is not modified.
+func NewClientWithOptions(httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string, options ClientOptions) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
@@ -226,6 +243,12 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	if httpClient == nil {
 		httpClient = &http.Client{}
 	}
+
+	// Every request this client makes, through sling or the httpSession, goes out on this one http.Client, so they all
+	// share one view of the rate limit allowance they are spending.
+	rateLimitedClient := *httpClient
+	rateLimitedClient.Transport = ratelimit.NewTransport(httpClient.Transport, options.RateLimit)
+	httpClient = &rateLimitedClient
 
 	// fetch root resource and process paths
 	base, root, err := getRoot(httpClient, baseURLWithAPI, apiCredentials, requestingTool)

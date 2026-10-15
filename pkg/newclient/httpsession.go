@@ -73,6 +73,11 @@ func (h *HttpSession) DoRawJsonRequest(req *http.Request, requestBody any, outpu
 			req.Header.Set("Content-Type", "application/json")
 		}
 		req.Body = io.NopCloser(bytes.NewReader(body))
+		req.ContentLength = int64(len(body))
+		// GetBody lets the request be replayed, e.g. when it's retried after the server rate limits it.
+		req.GetBody = func() (io.ReadCloser, error) {
+			return io.NopCloser(bytes.NewReader(body)), nil
+		}
 	}
 
 	if req.Header.Get("Accept") == "" {
