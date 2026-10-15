@@ -9,35 +9,35 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestNewClientWithNilBaseUsesDefaultTransport(t *testing.T) {
-	client := NewClient(nil, testOptions())
+func TestNewHttpClientWithNilBaseUsesDefaultTransport(t *testing.T) {
+	client := NewHttpClient(nil, testOptions())
 
 	require.NotNil(t, client)
 	require.IsType(t, &Transport{}, client.Transport)
 	require.Equal(t, http.DefaultTransport, client.Transport.(*Transport).base)
 }
 
-func TestNewClientWrapsTheTransportOfBase(t *testing.T) {
+func TestNewHttpClientWrapsTheTransportOfBase(t *testing.T) {
 	server := &fakeServer{responses: []func() *http.Response{newResponse(http.StatusOK, nil)}}
 	base := &http.Client{Transport: server}
 
-	client := NewClient(base, testOptions())
+	client := NewHttpClient(base, testOptions())
 
 	require.IsType(t, &Transport{}, client.Transport)
 	require.Equal(t, server, client.Transport.(*Transport).base)
 }
 
-func TestNewClientDoesNotChangeBase(t *testing.T) {
+func TestNewHttpClientDoesNotChangeBase(t *testing.T) {
 	server := &fakeServer{responses: []func() *http.Response{newResponse(http.StatusOK, nil)}}
 	base := &http.Client{Transport: server}
 
-	client := NewClient(base, testOptions())
+	client := NewHttpClient(base, testOptions())
 
 	require.NotSame(t, base, client)
 	require.Equal(t, server, base.Transport)
 }
 
-func TestNewClientKeepsTheSettingsOfBase(t *testing.T) {
+func TestNewHttpClientKeepsTheSettingsOfBase(t *testing.T) {
 	jar, err := cookiejar.New(nil)
 	require.NoError(t, err)
 	checkRedirect := func(req *http.Request, via []*http.Request) error {
@@ -49,7 +49,7 @@ func TestNewClientKeepsTheSettingsOfBase(t *testing.T) {
 		CheckRedirect: checkRedirect,
 	}
 
-	client := NewClient(base, testOptions())
+	client := NewHttpClient(base, testOptions())
 
 	require.Equal(t, base.Timeout, client.Timeout)
 	require.Equal(t, base.Jar, client.Jar)
@@ -57,13 +57,13 @@ func TestNewClientKeepsTheSettingsOfBase(t *testing.T) {
 	require.ErrorIs(t, client.CheckRedirect(nil, nil), http.ErrUseLastResponse)
 }
 
-func TestNewClientRetriesTooManyRequests(t *testing.T) {
+func TestNewHttpClientRetriesTooManyRequests(t *testing.T) {
 	server := &fakeServer{responses: []func() *http.Response{
 		newResponse(http.StatusTooManyRequests, map[string]string{"Retry-After": "0"}),
 		newResponse(http.StatusOK, nil),
 	}}
 
-	client := NewClient(&http.Client{Transport: server}, testOptions())
+	client := NewHttpClient(&http.Client{Transport: server}, testOptions())
 	resp, err := client.Get(testURL)
 
 	require.NoError(t, err)

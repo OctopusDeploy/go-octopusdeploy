@@ -63,7 +63,7 @@ Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by mo
 
 Octopus Server can [limit the rate of requests](https://octopus.com/docs/administration/managing-infrastructure/rate-limiting) from each client. When a client sends too many requests, the server returns `429 Too Many Requests` and does not process the request.
 
-By default, the client does not handle rate limits. To make the client obey the rate limits, create an `http.Client` with `ratelimit.NewClient` and give it to the client:
+By default, the client does not handle rate limits. To make the client obey the rate limits, create an `http.Client` with `ratelimit.NewHttpClient` and give it to the client:
 
 ```go
 import (
@@ -71,7 +71,7 @@ import (
     "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client/ratelimit"
 )
 
-rateLimitedClient := ratelimit.NewClient(nil, ratelimit.DefaultOptions())
+rateLimitedClient := ratelimit.NewHttpClient(nil, ratelimit.DefaultOptions())
 
 octopusClient, err := client.NewClient(rateLimitedClient, apiURL, apiKey, spaceID)
 if err != nil {

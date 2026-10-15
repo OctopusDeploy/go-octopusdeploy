@@ -33,9 +33,9 @@ func CreateRateLimitedClientExample() {
 	rateLimitOptions.MaxRetries = 5
 	rateLimitOptions.MaxWait = 30 * time.Second
 
-	// the first parameter for ratelimit.NewClient can accept a http.Client if you wish to
-	// override the default; ratelimit.NewClient returns a copy and does not change it
-	httpClient := ratelimit.NewClient(nil, rateLimitOptions)
+	// the first parameter for ratelimit.NewHttpClient can accept a http.Client if you wish to
+	// override the default; ratelimit.NewHttpClient returns a copy and does not change it
+	httpClient := ratelimit.NewHttpClient(nil, rateLimitOptions)
 
 	octopusClient, err := client.NewClient(httpClient, apiURL, apiKey, spaceID)
 	if err != nil {
