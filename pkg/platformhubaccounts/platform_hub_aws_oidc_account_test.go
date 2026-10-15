@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func TestPlatformHubAwsOIDCAccount(t *testing.T) {

@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/buildinformation"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/buildinformation"
 )
 
 func TestBuildInformationCommand(t *testing.T) {

@@ -3,6 +3,9 @@ package releases
 import (
 	"fmt"
 
+	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
@@ -12,8 +15,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 )
 
 type ReleaseService struct {
@@ -128,7 +129,6 @@ func GetMissingPackages(client newclient.Client, release *Release) ([]MissingPac
 		"spaceId":   spaceID,
 		"releaseId": release.ID,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +156,6 @@ func GetReleaseDeploymentTemplate(client newclient.Client, spaceID string, relea
 		"spaceId":   spaceID,
 		"releaseId": releaseID,
 	})
-
 	if err != nil {
 		return nil, err
 	}

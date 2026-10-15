@@ -1,11 +1,12 @@
 package client
 
 import (
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
 )
 
 type RootService struct {
@@ -45,7 +46,6 @@ func GetSpaceRoot(client newclient.Client, spaceID *string) (*RootResource, erro
 		values["spaceId"] = *spaceID
 	}
 	path, err := client.URITemplateCache().Expand(template, values)
-
 	if err != nil {
 		return nil, err
 	}

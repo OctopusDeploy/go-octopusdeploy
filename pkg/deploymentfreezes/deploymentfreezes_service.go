@@ -9,8 +9,7 @@ import (
 
 const template = "/api/deploymentfreezes{/id}{?skip,take,ids,partialName,projectIds,tenantIds,environmentIds,includeComplete,status}"
 
-type DeploymentFreezeService struct {
-}
+type DeploymentFreezeService struct{}
 
 func Get(client newclient.Client, deploymentFreezesQuery DeploymentFreezeQuery) (*DeploymentFreezes, error) {
 	path, err := client.URITemplateCache().Expand(template, deploymentFreezesQuery)
@@ -40,7 +39,6 @@ func GetById(client newclient.Client, id string) (*DeploymentFreeze, error) {
 	}
 
 	return res, nil
-
 }
 
 func GetAll(client newclient.Client) (*DeploymentFreezes, error) {

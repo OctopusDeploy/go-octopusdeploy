@@ -1,10 +1,11 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 // GoogleContainerRegistry represents a Google Container Registry (GCR).
@@ -31,7 +32,6 @@ func NewGoogleContainerRegistry(name string, username string, password *core.Sen
 	}
 
 	dockerContainerRegistry, err := NewDockerContainerRegistryWithFeedType(name, FeedTypeGoogleContainerRegistry)
-
 	if err != nil {
 		return nil, err
 	}

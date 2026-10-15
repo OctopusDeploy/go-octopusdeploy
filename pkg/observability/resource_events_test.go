@@ -10,10 +10,10 @@ import (
 func TestBeginResourceEventsSessionRequest_Validate(t *testing.T) {
 	// Test valid request
 	validRequest := &BeginResourceEventsSessionRequest{
-		SpaceID:                            "Spaces-1",
-		ProjectID:                          "Projects-1",
-		EnvironmentID:                      "Environments-1",
-		MachineID:                         "Machines-1",
+		SpaceID:                                "Spaces-1",
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		MachineID:                              "Machines-1",
 		DesiredOrKubernetesMonitoredResourceID: "resource-123",
 	}
 
@@ -23,11 +23,11 @@ func TestBeginResourceEventsSessionRequest_Validate(t *testing.T) {
 	// Test valid request with optional TenantID
 	tenantID := "Tenants-1"
 	validRequestWithTenant := &BeginResourceEventsSessionRequest{
-		SpaceID:                            "Spaces-1",
-		ProjectID:                          "Projects-1",
-		EnvironmentID:                      "Environments-1",
-		TenantID:                          &tenantID,
-		MachineID:                         "Machines-1",
+		SpaceID:                                "Spaces-1",
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		TenantID:                               &tenantID,
+		MachineID:                              "Machines-1",
 		DesiredOrKubernetesMonitoredResourceID: "resource-123",
 	}
 
@@ -42,9 +42,9 @@ func TestBeginResourceEventsSessionRequest_Validate(t *testing.T) {
 
 	// Test invalid request (missing SpaceID)
 	invalidRequestNoSpace := &BeginResourceEventsSessionRequest{
-		ProjectID:                          "Projects-1",
-		EnvironmentID:                      "Environments-1",
-		MachineID:                         "Machines-1",
+		ProjectID:                              "Projects-1",
+		EnvironmentID:                          "Environments-1",
+		MachineID:                              "Machines-1",
 		DesiredOrKubernetesMonitoredResourceID: "resource-123",
 	}
 

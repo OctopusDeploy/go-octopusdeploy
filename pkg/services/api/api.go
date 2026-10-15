@@ -8,14 +8,17 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/dghubble/sling"
 )
 
-var version = "development"
-var UserAgentString = GetUserAgentString("")
+var (
+	version         = "development"
+	UserAgentString = GetUserAgentString("")
+)
 
 // Generic OctopusDeploy API Get Function.
 func ApiGet(sling *sling.Sling, inputStruct interface{}, path string) (interface{}, error) {

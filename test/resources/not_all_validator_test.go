@@ -3,9 +3,10 @@ package resources
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
 	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
 )
 
 type NotAllTestStruct struct {

@@ -3,12 +3,13 @@ package e2e
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/feeds"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func AssertEqualFeeds(t *testing.T, expected feeds.IFeed, actual feeds.IFeed) {
@@ -136,7 +137,6 @@ func CreateTestS3Feed(t *testing.T, client *client.Client) feeds.IFeed {
 	require.NoError(t, err)
 
 	return resource
-
 }
 
 func DeleteTestFeed(t *testing.T, client *client.Client, feed feeds.IFeed) {
@@ -272,7 +272,6 @@ func TestFeedServiceCRUD(t *testing.T) {
 	actual, err = client.Feeds.Update(expected)
 	require.NoError(t, err)
 	AssertEqualFeeds(t, expected, actual)
-
 }
 
 // TODO: fix test

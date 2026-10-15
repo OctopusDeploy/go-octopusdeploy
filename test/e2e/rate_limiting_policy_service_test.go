@@ -3,10 +3,11 @@ package e2e
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimitingpolicies"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimitingpolicies"
 )
 
 func TestListRateLimitingPolicies(t *testing.T) {

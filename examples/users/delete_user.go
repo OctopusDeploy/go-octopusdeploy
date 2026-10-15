@@ -2,10 +2,10 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/users"
 )
 
 // DeleteUserExample provides an example of how to delete a user from Octopus

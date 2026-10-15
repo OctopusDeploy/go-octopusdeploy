@@ -1,16 +1,17 @@
 package e2e
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workers"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workerpools"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workers"
 )
 
 func CreateTestWorker(t *testing.T, client *client.Client, workerPool workerpools.IWorkerPool) (*machines.Worker, error) {

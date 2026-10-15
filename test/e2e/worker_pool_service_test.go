@@ -3,11 +3,12 @@ package e2e
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workerpools"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func AssertEqualWorkerPools(t *testing.T, expected workerpools.IWorkerPool, actual workerpools.IWorkerPool) {
@@ -54,7 +55,6 @@ func CreateTestStaticWorkerPool(t *testing.T, client *client.Client) workerpools
 }
 
 func DeleteTestWorkerPool(t *testing.T, client *client.Client, workerPoolId string) {
-
 	if client == nil {
 		client = getOctopusClient()
 	}
@@ -247,7 +247,6 @@ func CreateTestStaticWorkerPool_NewClient(t *testing.T, client *client.Client) w
 }
 
 func DeleteTestWorkerPool_NewClient(t *testing.T, client *client.Client, workerPool workerpools.IWorkerPool) {
-
 	if client == nil {
 		client = getOctopusClient()
 	}

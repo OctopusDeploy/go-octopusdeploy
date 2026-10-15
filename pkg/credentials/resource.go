@@ -2,6 +2,7 @@ package credentials
 
 import (
 	"encoding/json"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 

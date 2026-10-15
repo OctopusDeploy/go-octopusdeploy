@@ -6,19 +6,19 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 )
 
 type ProjectService struct {
@@ -242,7 +242,6 @@ func (s *ProjectService) GetChannels(project *Project) ([]*channels.Channel, err
 	}
 
 	channelsUrl, err := url.Parse(project.Links[constants.LinkChannels])
-
 	if err != nil {
 		return projectChannels, err
 	}
@@ -252,7 +251,6 @@ func (s *ProjectService) GetChannels(project *Project) ([]*channels.Channel, err
 
 	for loadNextPage {
 		resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*channels.Channel]), path)
-
 		if err != nil {
 			return projectChannels, err
 		}
@@ -293,7 +291,6 @@ func (s *ProjectService) GetReleases(project *Project) ([]*releases.Release, err
 	}
 
 	releasesUrl, err := url.Parse(project.Links[constants.LinkReleases])
-
 	if err != nil {
 		return nil, err
 	}
@@ -379,7 +376,6 @@ func (s *ProjectService) GetProgression(project *Project) (*Progression, error) 
 	}
 
 	url, err := url.Parse(project.Links[constants.LinkProgression])
-
 	if err != nil {
 		return nil, err
 	}

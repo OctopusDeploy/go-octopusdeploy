@@ -3,8 +3,9 @@ package internal
 import (
 	"testing"
 
-	uuid "github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	uuid "github.com/google/uuid"
 )
 
 func TestValidateRequiredUUID(t *testing.T) {
@@ -90,5 +91,4 @@ func TestTrimTemplate(t *testing.T) {
 	template = "/api/users/{userId}/apikeys"
 	result = TrimTemplate(template)
 	assert.Equal(t, "/api/users", result)
-
 }

@@ -3,8 +3,9 @@ package channels
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
 )
 
 func TestChannelValidateDivesIntoGitResourceRules(t *testing.T) {

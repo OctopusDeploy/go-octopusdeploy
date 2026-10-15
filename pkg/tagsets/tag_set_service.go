@@ -3,13 +3,14 @@ package tagsets
 import (
 	"strings"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
 )
 
 type TagSetService struct {
@@ -115,7 +116,6 @@ func (s *TagSetService) GetByName(name string) (*TagSet, error) {
 	}
 
 	collection, err := s.GetAll()
-
 	if err != nil {
 		return nil, err
 	}

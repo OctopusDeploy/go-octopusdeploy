@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync/atomic"
 	"testing"
+
+	"github.com/dghubble/sling"
+	"github.com/stretchr/testify/assert"
 )
 
 func GoBegin[TResult any](action func() TResult) chan TResult {

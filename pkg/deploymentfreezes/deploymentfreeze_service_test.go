@@ -1,9 +1,11 @@
 package deploymentfreezes
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 )
 
 func createClient() newclient.Client {

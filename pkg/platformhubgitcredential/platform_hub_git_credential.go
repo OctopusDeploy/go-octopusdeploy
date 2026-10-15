@@ -2,6 +2,7 @@ package platformhubgitcredential
 
 import (
 	"encoding/json"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )

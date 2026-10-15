@@ -3,11 +3,12 @@ package triggers
 import (
 	"encoding/json"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/go-playground/validator/v10"
 )
 
 type ProjectTrigger struct {

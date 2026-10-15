@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kinbiko/jsonassert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/extensions"
-	"github.com/kinbiko/jsonassert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestEnvironmentExtensionSettingsAsJSON(t *testing.T) {

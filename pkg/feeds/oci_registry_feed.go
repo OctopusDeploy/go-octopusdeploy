@@ -1,9 +1,10 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 // OCIRegistryFeed represents a feed of Open Container Initiative Registry.

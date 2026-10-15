@@ -1,8 +1,9 @@
 package spaces
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type Space struct {

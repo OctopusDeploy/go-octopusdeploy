@@ -2,13 +2,14 @@ package triggers
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+
+	"github.com/dghubble/sling"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
 )
 
 type ProjectTriggerService struct {
@@ -33,7 +34,6 @@ func (s *ProjectTriggerService) GetByID(id string) (*ProjectTrigger, error) {
 	}
 
 	path, err := services.GetByIDPath(s, id)
-
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,6 @@ func (s *ProjectTriggerService) GetByProjectID(id string) ([]*ProjectTrigger, er
 	var triggersByProject []*ProjectTrigger
 
 	triggers, err := s.GetAll()
-
 	if err != nil {
 		return nil, err
 	}

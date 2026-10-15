@@ -37,7 +37,6 @@ func TestListeningTentacleEndpointMarshalJSON(t *testing.T) {
 	actual := string(jsonEncoding)
 
 	jsonassert.New(t).Assertf(actual, listeningTentacleEndpointAsJSON)
-
 }
 
 func TestListeningTentacleEndpointUnmarshalJSON(t *testing.T) {
