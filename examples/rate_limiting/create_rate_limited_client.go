@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimit"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client/ratelimit"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 )
 
@@ -25,12 +25,6 @@ func CreateRateLimitedClientExample() {
 		return
 	}
 
-	credentials, err := client.NewApiKey(apiKey)
-	if err != nil {
-		_ = fmt.Errorf("error creating API key credentials: %v", err)
-		return
-	}
-
 	// start from the recommended settings: 3 retries, a maximum wait of 60 seconds,
 	// and throttling with the advisory rate limit headers
 	rateLimitOptions := ratelimit.DefaultOptions()
@@ -39,11 +33,11 @@ func CreateRateLimitedClientExample() {
 	rateLimitOptions.MaxRetries = 5
 	rateLimitOptions.MaxWait = 30 * time.Second
 
-	options := &client.ClientOptions{
-		RateLimit: &rateLimitOptions,
-	}
+	// the first parameter for ratelimit.NewClient can accept a http.Client if you wish to
+	// override the default; ratelimit.NewClient returns a copy and does not change it
+	httpClient := ratelimit.NewClient(nil, rateLimitOptions)
 
-	octopusClient, err := client.NewClientWithOptions(nil, apiURL, credentials, spaceID, "", options)
+	octopusClient, err := client.NewClient(httpClient, apiURL, apiKey, spaceID)
 	if err != nil {
 		_ = fmt.Errorf("error creating API client: %v", err)
 		return

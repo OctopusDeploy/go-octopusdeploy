@@ -60,6 +60,9 @@ func DefaultOptions() Options {
 //
 // When UseAdvisoryHeaders is true, the Transport also reads the advisory headers on each response. If no tokens remain,
 // the Transport waits for one token before it sends the next request.
+//
+// Use NewTransport to create a Transport. A Transport is safe for concurrent use by multiple goroutines.
+// Do not copy a Transport after its first use.
 type Transport struct {
 	base    http.RoundTripper
 	options Options
@@ -67,6 +70,8 @@ type Transport struct {
 	mutex           sync.Mutex
 	nextRequestTime time.Time
 }
+
+var _ http.RoundTripper = (*Transport)(nil)
 
 // NewTransport returns a Transport that sends requests with base. If base is nil, the Transport uses http.DefaultTransport.
 func NewTransport(base http.RoundTripper, options Options) *Transport {
@@ -85,6 +90,10 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	for attempt := 0; ; attempt++ {
 		if t.options.UseAdvisoryHeaders {
 			if err := wait(req.Context(), t.throttleDelay()); err != nil {
+				// The base transport did not get the request, so the body must be closed here.
+				if attempt == 0 && req.Body != nil {
+					_ = req.Body.Close()
+				}
 				return nil, err
 			}
 		}

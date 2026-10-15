@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client/ratelimit"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimit"
 	"github.com/stretchr/testify/require"
 )
 
@@ -58,64 +58,25 @@ func newRateLimitedHttpClient() (*http.Client, func() int) {
 	}
 }
 
-func newTestRateLimitOptions() *ClientOptions {
-	return &ClientOptions{
-		RateLimit: &ratelimit.Options{
-			MaxRetries: 3,
-			MaxWait:    time.Second,
-		},
-	}
-}
-
-func TestNewClientWithOptionsRetriesTooManyRequests(t *testing.T) {
+func TestNewClientWithRateLimitedHttpClientRetriesTooManyRequests(t *testing.T) {
 	httpClient, rootRequestCount := newRateLimitedHttpClient()
 	apiURL, err := url.Parse("https://octopus.example")
 	require.NoError(t, err)
-	apiKey, err := NewApiKey(testRateLimitAPIKey)
-	require.NoError(t, err)
+	rateLimitedHttpClient := ratelimit.NewClient(httpClient, ratelimit.Options{MaxRetries: 3, MaxWait: time.Second})
 
-	octopusClient, err := NewClientWithOptions(httpClient, apiURL, apiKey, "", "test", newTestRateLimitOptions())
+	octopusClient, err := NewClient(rateLimitedHttpClient, apiURL, testRateLimitAPIKey, "")
 
 	require.NoError(t, err)
 	require.NotNil(t, octopusClient)
 	require.Equal(t, 2, rootRequestCount())
 }
 
-func TestNewClientWithOptionsDoesNotChangeTheHttpClient(t *testing.T) {
-	httpClient, _ := newRateLimitedHttpClient()
-	apiURL, err := url.Parse("https://octopus.example")
-	require.NoError(t, err)
-	apiKey, err := NewApiKey(testRateLimitAPIKey)
-	require.NoError(t, err)
-
-	_, err = NewClientWithOptions(httpClient, apiURL, apiKey, "", "test", newTestRateLimitOptions())
-
-	require.NoError(t, err)
-	require.IsType(t, roundTripFunc(nil), httpClient.Transport)
-}
-
-func TestNewClientWithOptionsDoesNotRetryWhenRateLimitIsNil(t *testing.T) {
+func TestNewClientWithoutRateLimitedHttpClientReturnsTooManyRequests(t *testing.T) {
 	httpClient, rootRequestCount := newRateLimitedHttpClient()
 	apiURL, err := url.Parse("https://octopus.example")
 	require.NoError(t, err)
-	apiKey, err := NewApiKey(testRateLimitAPIKey)
-	require.NoError(t, err)
 
-	octopusClient, err := NewClientWithOptions(httpClient, apiURL, apiKey, "", "test", &ClientOptions{})
-
-	require.Error(t, err)
-	require.Nil(t, octopusClient)
-	require.Equal(t, 1, rootRequestCount())
-}
-
-func TestNewClientWithOptionsDoesNotRetryWhenOptionsAreNil(t *testing.T) {
-	httpClient, rootRequestCount := newRateLimitedHttpClient()
-	apiURL, err := url.Parse("https://octopus.example")
-	require.NoError(t, err)
-	apiKey, err := NewApiKey(testRateLimitAPIKey)
-	require.NoError(t, err)
-
-	octopusClient, err := NewClientWithOptions(httpClient, apiURL, apiKey, "", "test", nil)
+	octopusClient, err := NewClient(httpClient, apiURL, testRateLimitAPIKey, "")
 
 	require.Error(t, err)
 	require.Nil(t, octopusClient)

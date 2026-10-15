@@ -63,25 +63,17 @@ Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by mo
 
 Octopus Server can [limit the rate of requests](https://octopus.com/docs/administration/managing-infrastructure/rate-limiting) from each client. When a client sends too many requests, the server returns `429 Too Many Requests` and does not process the request.
 
-By default, the client does not handle rate limits. To make the client obey the rate limits, use `NewClientWithOptions` and set `RateLimit`:
+By default, the client does not handle rate limits. To make the client obey the rate limits, create an `http.Client` with `ratelimit.NewClient` and give it to the client:
 
 ```go
 import (
     "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-    "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimit"
+    "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client/ratelimit"
 )
 
-credentials, err := client.NewApiKey(apiKey)
-if err != nil {
-    _ = fmt.Errorf("error creating API key credentials: %v", err)
-    return
-}
+rateLimitedClient := ratelimit.NewClient(nil, ratelimit.DefaultOptions())
 
-rateLimitOptions := ratelimit.DefaultOptions()
-
-octopusClient, err := client.NewClientWithOptions(nil, apiURL, credentials, spaceID, "", &client.ClientOptions{
-    RateLimit: &rateLimitOptions,
-})
+octopusClient, err := client.NewClient(rateLimitedClient, apiURL, apiKey, spaceID)
 if err != nil {
     _ = fmt.Errorf("error creating API client: %v", err)
     return
@@ -102,8 +94,6 @@ You can change these settings in `ratelimit.Options`:
 | `UseAdvisoryHeaders` | `true`     | Wait before a request when the advisory headers show that no requests remain.                                                                       |
 
 The client retries a request only if it can send the request body again. For example, the client does not retry a package upload.
-
-If you supply an `http.Client`, the client uses a copy of it and does not change it. To use rate limiting with an `http.Client` of your own in other code, wrap its transport with `ratelimit.NewTransport`.
 
 Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory. There are also many [integration](/test) and unit tests available to examine that demonstrate the capabilities of this API client.
 

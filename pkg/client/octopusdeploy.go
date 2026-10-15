@@ -49,7 +49,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projectvariables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/proxies"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/ratelimit"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/reporting"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/runbooks"
@@ -209,22 +208,6 @@ func NewClientForTool(httpClient *http.Client, apiURL *url.URL, apiKey string, s
 // NewClientWithCredentials returns a new Octopus API client with the specified credentials and a tool reference in the useragent string.
 // If a nil client is provided, a new http.Client will be used.
 func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string) (*Client, error) {
-	return NewClientWithOptions(httpClient, apiURL, apiCredentials, spaceID, requestingTool, nil)
-}
-
-// ClientOptions contains optional settings for a Client.
-type ClientOptions struct {
-	// RateLimit makes the client obey the rate limits of Octopus Server. If RateLimit is nil, the client does not
-	// retry 429 responses and does not read the advisory rate limit headers.
-	RateLimit *ratelimit.Options
-}
-
-// NewClientWithOptions returns a new Octopus API client with the specified credentials, a tool reference in the
-// useragent string, and the specified options. If a nil client is provided, a new http.Client will be used.
-// If a nil options is provided, the default behaviour is used.
-//
-// If options.RateLimit is set, the client uses a copy of httpClient. The client does not change httpClient.
-func NewClientWithOptions(httpClient *http.Client, apiURL *url.URL, apiCredentials ICredential, spaceID string, requestingTool string, options *ClientOptions) (*Client, error) {
 	if apiURL == nil {
 		return nil, internal.CreateInvalidParameterError("NewClient", "apiURL")
 	}
@@ -242,12 +225,6 @@ func NewClientWithOptions(httpClient *http.Client, apiURL *url.URL, apiCredentia
 
 	if httpClient == nil {
 		httpClient = &http.Client{}
-	}
-
-	if options != nil && options.RateLimit != nil {
-		rateLimitedClient := *httpClient
-		rateLimitedClient.Transport = ratelimit.NewTransport(httpClient.Transport, *options.RateLimit)
-		httpClient = &rateLimitedClient
 	}
 
 	// fetch root resource and process paths

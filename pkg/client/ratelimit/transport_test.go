@@ -400,6 +400,40 @@ func TestRoundTripReturnsErrorWhenContextIsCancelledDuringThrottleWait(t *testin
 	require.Equal(t, 1, server.requestCount())
 }
 
+type closeRecorder struct {
+	io.Reader
+	closed bool
+}
+
+func (c *closeRecorder) Close() error {
+	c.closed = true
+	return nil
+}
+
+func TestRoundTripClosesBodyWhenContextIsCancelledBeforeFirstAttempt(t *testing.T) {
+	server := &fakeServer{responses: []func() *http.Response{
+		newResponse(http.StatusOK, map[string]string{PolicyHeader: "l=200;rpm=1", StateHeader: "r=0;t=60"}),
+	}}
+	options := testOptions()
+	options.MaxWait = time.Minute
+	transport := NewTransport(server, options)
+
+	_, err := transport.RoundTrip(newGetRequest(t))
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	body := &closeRecorder{Reader: strings.NewReader(`{"Name":"test"}`)}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, testURL, body)
+	require.NoError(t, err)
+
+	_, err = transport.RoundTrip(req)
+
+	require.ErrorIs(t, err, context.Canceled)
+	require.True(t, body.closed)
+	require.Equal(t, 1, server.requestCount())
+}
+
 func TestParseHeader(t *testing.T) {
 	testCases := []struct {
 		name     string
