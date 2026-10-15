@@ -35,6 +35,7 @@ type Options struct {
 
 	// MaxWait is the maximum time that the Transport waits before it sends a request.
 	// If the server tells the Transport to wait longer before a retry, the Transport does not retry. It returns the 429 response.
+	// If MaxWait is 0 or less, the Transport uses the default of 60 seconds from DefaultOptions.
 	MaxWait time.Duration
 
 	// UseAdvisoryHeaders makes the Transport wait before it sends a request when the advisory headers
@@ -74,9 +75,14 @@ type Transport struct {
 var _ http.RoundTripper = (*Transport)(nil)
 
 // NewTransport returns a Transport that sends requests with base. If base is nil, the Transport uses http.DefaultTransport.
+// If options.MaxWait is 0 or less, the Transport uses the default of 60 seconds from DefaultOptions.
 func NewTransport(base http.RoundTripper, options Options) *Transport {
 	if base == nil {
 		base = http.DefaultTransport
+	}
+
+	if options.MaxWait <= 0 {
+		options.MaxWait = DefaultOptions().MaxWait
 	}
 
 	return &Transport{
@@ -116,11 +122,8 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 			return resp, nil
 		}
 
-		delay, found := retryAfter(resp)
-		if !found {
-			delay = min(backoff(attempt), t.options.MaxWait)
-		}
-		if delay > t.options.MaxWait {
+		delay, ok := t.retryDelay(resp, attempt)
+		if !ok {
 			return resp, nil
 		}
 
@@ -129,6 +132,25 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 			return nil, err
 		}
 	}
+}
+
+// CloseIdleConnections closes the idle connections of the base transport, if the base transport supports it.
+// http.Client.CloseIdleConnections calls this method.
+func (t *Transport) CloseIdleConnections() {
+	if closer, ok := t.base.(interface{ CloseIdleConnections() }); ok {
+		closer.CloseIdleConnections()
+	}
+}
+
+// retryDelay returns the time to wait before a retry. It uses the Retry-After header if the server sends it.
+// If not, it uses exponential backoff with jitter, up to MaxWait. It returns false if Retry-After is longer than MaxWait.
+func (t *Transport) retryDelay(resp *http.Response, attempt int) (time.Duration, bool) {
+	delay, found := retryAfter(resp)
+	if !found {
+		delay = min(backoff(attempt), t.options.MaxWait)
+	}
+
+	return delay, delay <= t.options.MaxWait
 }
 
 // throttleDelay returns the time to wait before the next request, as the advisory headers tell.

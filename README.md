@@ -90,7 +90,7 @@ You can change these settings in `ratelimit.Options`:
 | Setting              | Default    | Description                                                                                                                                         |
 | -------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MaxRetries`         | `3`        | The maximum number of times to send a request again after a `429` response. Set to `0` to turn off retries.                                         |
-| `MaxWait`            | `60s`      | The maximum time to wait before a request. If `Retry-After` is longer than this time, the client does not retry and returns the `429` response.     |
+| `MaxWait`            | `60s`      | The maximum time to wait before a request. If `Retry-After` is longer than this time, the client does not retry and returns the `429` response. If `MaxWait` is `0` or less, the default of `60s` is used. |
 | `UseAdvisoryHeaders` | `true`     | Wait before a request when the advisory headers show that no requests remain.                                                                       |
 
 The client retries a request only if it can send the request body again. For example, the client does not retry a package upload.

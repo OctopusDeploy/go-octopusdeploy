@@ -57,6 +57,15 @@ func TestNewHttpClientKeepsTheSettingsOfBase(t *testing.T) {
 	require.ErrorIs(t, client.CheckRedirect(nil, nil), http.ErrUseLastResponse)
 }
 
+func TestNewHttpClientCloseIdleConnectionsReachesTheBaseTransport(t *testing.T) {
+	base := &idleConnectionCloser{}
+
+	client := NewHttpClient(&http.Client{Transport: base}, testOptions())
+	client.CloseIdleConnections()
+
+	require.Equal(t, 1, base.closeCount)
+}
+
 func TestNewHttpClientRetriesTooManyRequests(t *testing.T) {
 	server := &fakeServer{responses: []func() *http.Response{
 		newResponse(http.StatusTooManyRequests, map[string]string{"Retry-After": "0"}),

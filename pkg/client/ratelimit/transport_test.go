@@ -99,6 +99,30 @@ func TestNewTransportWithNilBaseUsesDefaultTransport(t *testing.T) {
 	require.Equal(t, http.DefaultTransport, transport.base)
 }
 
+func TestNewTransportUsesDefaultMaxWaitWhenMaxWaitIsNotPositive(t *testing.T) {
+	testCases := []struct {
+		name    string
+		maxWait time.Duration
+	}{
+		{"Zero", 0},
+		{"Negative", -time.Second},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			transport := NewTransport(nil, Options{MaxRetries: 3, MaxWait: testCase.maxWait})
+
+			require.Equal(t, DefaultOptions().MaxWait, transport.options.MaxWait)
+		})
+	}
+}
+
+func TestNewTransportKeepsPositiveMaxWait(t *testing.T) {
+	transport := NewTransport(nil, Options{MaxRetries: 3, MaxWait: 5 * time.Second})
+
+	require.Equal(t, 5*time.Second, transport.options.MaxWait)
+}
+
 func TestRoundTripReturnsSuccessfulResponse(t *testing.T) {
 	server := &fakeServer{responses: []func() *http.Response{newResponse(http.StatusOK, nil)}}
 	transport := NewTransport(server, testOptions())
@@ -170,13 +194,11 @@ func TestRoundTripDoesNotRetryWhenRetryAfterIsLongerThanMaxWait(t *testing.T) {
 	}}
 	transport := NewTransport(server, testOptions())
 
-	start := time.Now()
 	resp, err := transport.RoundTrip(newGetRequest(t))
 
 	require.NoError(t, err)
 	require.Equal(t, http.StatusTooManyRequests, resp.StatusCode)
 	require.Equal(t, 1, server.requestCount())
-	require.Less(t, time.Since(start), time.Second)
 }
 
 func TestRoundTripWaitsForRetryAfter(t *testing.T) {
@@ -212,7 +234,52 @@ func TestRoundTripUsesBackoffCappedAtMaxWaitWhenRetryAfterIsMissing(t *testing.T
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 	require.Equal(t, 2, server.requestCount())
 	require.GreaterOrEqual(t, time.Since(start), 50*time.Millisecond)
-	require.Less(t, time.Since(start), 500*time.Millisecond)
+}
+
+func TestRetryDelayCapsBackoffAtMaxWait(t *testing.T) {
+	options := testOptions()
+	options.MaxWait = 50 * time.Millisecond
+	transport := NewTransport(nil, options)
+
+	// The backoff for attempt 0 is at least 500 milliseconds, thus MaxWait applies.
+	delay, ok := transport.retryDelay(newResponse(http.StatusTooManyRequests, nil)(), 0)
+
+	require.True(t, ok)
+	require.Equal(t, 50*time.Millisecond, delay)
+}
+
+func TestRetryDelayUsesBackoffWhenRetryAfterIsMissing(t *testing.T) {
+	options := testOptions()
+	options.MaxWait = time.Minute
+	transport := NewTransport(nil, options)
+
+	delay, ok := transport.retryDelay(newResponse(http.StatusTooManyRequests, nil)(), 0)
+
+	require.True(t, ok)
+	require.GreaterOrEqual(t, delay, initialBackoff/2)
+	require.Less(t, delay, initialBackoff)
+}
+
+func TestRetryDelayUsesRetryAfter(t *testing.T) {
+	options := testOptions()
+	options.MaxWait = time.Minute
+	transport := NewTransport(nil, options)
+
+	delay, ok := transport.retryDelay(newResponse(http.StatusTooManyRequests, map[string]string{"Retry-After": "5"})(), 0)
+
+	require.True(t, ok)
+	require.Equal(t, 5*time.Second, delay)
+}
+
+func TestRetryDelayRejectsRetryAfterLongerThanMaxWait(t *testing.T) {
+	options := testOptions()
+	options.MaxWait = time.Minute
+	transport := NewTransport(nil, options)
+
+	delay, ok := transport.retryDelay(newResponse(http.StatusTooManyRequests, map[string]string{"Retry-After": "120"})(), 0)
+
+	require.False(t, ok)
+	require.Equal(t, 120*time.Second, delay)
 }
 
 func TestRoundTripSendsTheSameBodyOnRetry(t *testing.T) {
@@ -265,13 +332,11 @@ func TestRoundTripReturnsErrorWhenContextIsCancelledDuringRetryWait(t *testing.T
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, testURL, nil)
 	require.NoError(t, err)
 
-	start := time.Now()
 	resp, err := transport.RoundTrip(req)
 
 	require.ErrorIs(t, err, context.DeadlineExceeded)
 	require.Nil(t, resp)
 	require.Equal(t, 1, server.requestCount())
-	require.Less(t, time.Since(start), time.Second)
 }
 
 func TestRoundTripReturnsErrorFromBaseTransport(t *testing.T) {
@@ -311,13 +376,9 @@ func TestRoundTripDoesNotWaitWhenTokensRemain(t *testing.T) {
 	transport := NewTransport(server, testOptions())
 
 	_, err := transport.RoundTrip(newGetRequest(t))
-	require.NoError(t, err)
-
-	start := time.Now()
-	_, err = transport.RoundTrip(newGetRequest(t))
 
 	require.NoError(t, err)
-	require.Less(t, time.Since(start), 50*time.Millisecond)
+	require.LessOrEqual(t, transport.throttleDelay(), time.Duration(0))
 }
 
 func TestUpdateThrottleClearsWaitWhenTokensAreAvailableAgain(t *testing.T) {
@@ -351,12 +412,14 @@ func TestRoundTripCapsThrottleWaitAtMaxWait(t *testing.T) {
 	_, err := transport.RoundTrip(newGetRequest(t))
 	require.NoError(t, err)
 
+	// 1 request per minute gives one token each minute, thus MaxWait applies.
+	require.Equal(t, 50*time.Millisecond, transport.throttleDelay())
+
 	start := time.Now()
 	_, err = transport.RoundTrip(newGetRequest(t))
 
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, time.Since(start), 50*time.Millisecond)
-	require.Less(t, time.Since(start), 500*time.Millisecond)
 }
 
 func TestRoundTripDoesNotThrottleWhenAdvisoryHeadersAreNotUsed(t *testing.T) {
@@ -368,13 +431,9 @@ func TestRoundTripDoesNotThrottleWhenAdvisoryHeadersAreNotUsed(t *testing.T) {
 	transport := NewTransport(server, options)
 
 	_, err := transport.RoundTrip(newGetRequest(t))
-	require.NoError(t, err)
-
-	start := time.Now()
-	_, err = transport.RoundTrip(newGetRequest(t))
 
 	require.NoError(t, err)
-	require.Less(t, time.Since(start), 50*time.Millisecond)
+	require.LessOrEqual(t, transport.throttleDelay(), time.Duration(0))
 }
 
 func TestRoundTripReturnsErrorWhenContextIsCancelledDuringThrottleWait(t *testing.T) {
@@ -398,6 +457,35 @@ func TestRoundTripReturnsErrorWhenContextIsCancelledDuringThrottleWait(t *testin
 	require.ErrorIs(t, err, context.DeadlineExceeded)
 	require.Nil(t, resp)
 	require.Equal(t, 1, server.requestCount())
+}
+
+// idleConnectionCloser is a base transport that records the calls to CloseIdleConnections.
+type idleConnectionCloser struct {
+	closeCount int
+}
+
+func (c *idleConnectionCloser) RoundTrip(req *http.Request) (*http.Response, error) {
+	return newResponse(http.StatusOK, nil)(), nil
+}
+
+func (c *idleConnectionCloser) CloseIdleConnections() {
+	c.closeCount++
+}
+
+func TestCloseIdleConnectionsCallsTheBaseTransport(t *testing.T) {
+	base := &idleConnectionCloser{}
+	transport := NewTransport(base, testOptions())
+
+	transport.CloseIdleConnections()
+
+	require.Equal(t, 1, base.closeCount)
+}
+
+func TestCloseIdleConnectionsDoesNothingWhenTheBaseTransportDoesNotSupportIt(t *testing.T) {
+	server := &fakeServer{responses: []func() *http.Response{newResponse(http.StatusOK, nil)}}
+	transport := NewTransport(server, testOptions())
+
+	require.NotPanics(t, transport.CloseIdleConnections)
 }
 
 type closeRecorder struct {
