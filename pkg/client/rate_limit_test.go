@@ -63,7 +63,7 @@ func TestNewClientWithRateLimitedHttpClientRetriesTooManyRequests(t *testing.T) 
 	httpClient, rootRequestCount := newRateLimitedHttpClient()
 	apiURL, err := url.Parse("https://octopus.example")
 	require.NoError(t, err)
-	rateLimitedHttpClient := ratelimit.NewHttpClient(httpClient, ratelimit.Options{MaxRetries: 3, MaxWait: time.Second})
+	rateLimitedHttpClient := ratelimit.NewHttpClient(httpClient, ratelimit.Options{RetryCount: 3, MaxDelay: time.Second})
 
 	octopusClient, err := NewClient(rateLimitedHttpClient, apiURL, testRateLimitAPIKey, "")
 

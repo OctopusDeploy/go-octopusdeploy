@@ -6,8 +6,8 @@ import "net/http"
 // The copy sends requests through a Transport that wraps the transport of base.
 // If base is nil, NewHttpClient uses a new http.Client. NewHttpClient does not change base.
 //
-// The Timeout of base includes the time that the Transport waits before a retry or a throttled request.
-// If Timeout is less than MaxWait, a request can fail with a timeout while the Transport waits.
+// The Timeout of base includes the time that the Transport waits before a retry or a paced request.
+// If Timeout is less than MaxDelay, a request can fail with a timeout while the Transport waits.
 func NewHttpClient(base *http.Client, options Options) *http.Client {
 	if base == nil {
 		base = &http.Client{}

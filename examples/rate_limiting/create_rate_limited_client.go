@@ -25,13 +25,13 @@ func CreateRateLimitedClientExample() {
 		return
 	}
 
-	// start from the recommended settings: 3 retries, a maximum wait of 60 seconds,
-	// and throttling with the advisory rate limit headers
+	// start from the recommended settings: 5 retries, a default delay of 2 seconds,
+	// a maximum delay of 30 seconds, and pacing with the rate limit headers
 	rateLimitOptions := ratelimit.DefaultOptions()
 
 	// change the settings if necessary
-	rateLimitOptions.MaxRetries = 5
-	rateLimitOptions.MaxWait = 30 * time.Second
+	rateLimitOptions.RetryCount = 10
+	rateLimitOptions.MaxDelay = 60 * time.Second
 
 	// the first parameter for ratelimit.NewHttpClient can accept a http.Client if you wish to
 	// override the default; ratelimit.NewHttpClient returns a copy and does not change it

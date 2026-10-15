@@ -82,16 +82,17 @@ if err != nil {
 
 With rate limiting on, the client does these things:
 
-- When the server returns `429 Too Many Requests`, the client waits and sends the request again. It waits for the time in the `Retry-After` header. If the server does not send this header, it uses exponential backoff.
-- When the `Octopus-RateLimit` advisory header shows that no requests remain, the client waits before it sends the next request. This prevents most `429` responses.
+- When the server returns `429 Too Many Requests`, the client waits and sends the request again. It waits for the time in the `Retry-After` header, or for `DefaultDelay` if the server does not send this header. The delay doubles with each retry, and has random jitter.
+- The client paces its requests with the `Octopus-RateLimit-Policy` and `Octopus-RateLimit` advisory headers, so that it stays in the rate limit. This prevents most `429` responses. The client uses GCRA (the Generic Cell Rate Algorithm), the same as the Octopus C# and TypeScript clients.
 
 You can change these settings in `ratelimit.Options`:
 
-| Setting              | Default    | Description                                                                                                                                         |
-| -------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MaxRetries`         | `3`        | The maximum number of times to send a request again after a `429` response. Set to `0` to turn off retries.                                         |
-| `MaxWait`            | `60s`      | The maximum time to wait before a request. If `Retry-After` is longer than this time, the client does not retry and returns the `429` response. If `MaxWait` is `0` or less, the default of `60s` is used. |
-| `UseAdvisoryHeaders` | `true`     | Wait before a request when the advisory headers show that no requests remain.                                                                       |
+| Setting               | Default | Description                                                                                                                                                                      |
+| --------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RetryCount`          | `5`     | The maximum number of times to send a request again after a `429` response. Set to `0` to turn off retries.                                                                      |
+| `DefaultDelay`        | `2s`    | The time to wait before a retry when the `429` response has no `Retry-After` header. If `DefaultDelay` is `0` or less, the default of `2s` is used.                              |
+| `MaxDelay`            | `30s`   | The maximum time to wait before a retry. If `Retry-After` is longer than this time, the client does not retry and returns the `429` response. If `MaxDelay` is `0` or less, the default of `30s` is used. |
+| `UseRateLimitHeaders` | `true`  | Pace the requests with the advisory rate limit headers.                                                                                                                          |
 
 The client retries a request only if it can send the request body again. For example, the client does not retry a package upload.
 
