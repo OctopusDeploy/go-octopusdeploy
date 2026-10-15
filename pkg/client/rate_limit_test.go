@@ -9,9 +9,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client/ratelimit"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/stretchr/testify/require"
 )
 
 const testRateLimitAPIKey = "API-ABCDEFGHIJKLMNOPQRSTUVWXYZ"
