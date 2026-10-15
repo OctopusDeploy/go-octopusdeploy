@@ -62,6 +62,9 @@ func TestGetStatusRequiresIDs(t *testing.T) {
 
 	_, err := GetStatus(client, "Spaces-1", "", "Projects-1")
 	assert.Error(t, err)
+
+	_, err = GetStatus(client, "Spaces-1", "Environments-1001", "")
+	assert.Error(t, err)
 }
 
 func TestDelete(t *testing.T) {
