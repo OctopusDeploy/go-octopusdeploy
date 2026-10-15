@@ -3,6 +3,8 @@ package ephemeralenvironments
 import (
 	"math"
 
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	v2 "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments/v2"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments/v2/environments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -95,4 +97,38 @@ func Deprovision(client newclient.Client, spaceID string, environmentId string) 
 	}
 
 	return newclient.Add[DeprovisionEphemeralEnvironmentResponse](client, path, spaceID, body)
+}
+
+// GetStatus returns the provisioning status of an ephemeral environment for a project.
+func GetStatus(client newclient.Client, spaceID string, environmentId string, projectId string) (*EphemeralEnvironmentStatus, error) {
+	spaceID, err := internal.GetSpaceID(spaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	if internal.IsEmpty(environmentId) {
+		return nil, internal.CreateRequiredParameterIsEmptyError(constants.ParameterID)
+	}
+
+	if internal.IsEmpty(projectId) {
+		return nil, internal.CreateRequiredParameterIsEmptyError(constants.ParameterProjectID)
+	}
+
+	path, err := client.URITemplateCache().Expand(v2.GetEphemeralEnvironmentStatusTemplate, map[string]any{
+		"id":        environmentId,
+		"projectId": projectId,
+		"spaceId":   spaceID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Get[EphemeralEnvironmentStatus](client.HttpSession(), path)
+}
+
+// Delete deletes an ephemeral environment without running its deprovisioning runbook.
+// Use it for environments that cannot be deprovisioned, for example when provisioning failed.
+func Delete(client newclient.Client, spaceID string, environmentId string) error {
+	return newclient.DeleteByID(client, v2.DeleteEphemeralEnvironmentTemplate, spaceID, environmentId)
 }
