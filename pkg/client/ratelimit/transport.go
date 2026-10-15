@@ -134,6 +134,11 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 }
 
+// Base returns the http.RoundTripper that the Transport uses to send requests.
+func (t *Transport) Base() http.RoundTripper {
+	return t.base
+}
+
 // CloseIdleConnections closes the idle connections of the base transport, if the base transport supports it.
 // http.Client.CloseIdleConnections calls this method.
 func (t *Transport) CloseIdleConnections() {

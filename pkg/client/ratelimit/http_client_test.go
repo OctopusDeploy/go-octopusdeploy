@@ -14,7 +14,7 @@ func TestNewHttpClientWithNilBaseUsesDefaultTransport(t *testing.T) {
 
 	require.NotNil(t, client)
 	require.IsType(t, &Transport{}, client.Transport)
-	require.Equal(t, http.DefaultTransport, client.Transport.(*Transport).base)
+	require.Equal(t, http.DefaultTransport, client.Transport.(*Transport).Base())
 }
 
 func TestNewHttpClientWrapsTheTransportOfBase(t *testing.T) {
@@ -24,7 +24,7 @@ func TestNewHttpClientWrapsTheTransportOfBase(t *testing.T) {
 	client := NewHttpClient(base, testOptions())
 
 	require.IsType(t, &Transport{}, client.Transport)
-	require.Equal(t, server, client.Transport.(*Transport).base)
+	require.Equal(t, server, client.Transport.(*Transport).Base())
 }
 
 func TestNewHttpClientDoesNotChangeBase(t *testing.T) {

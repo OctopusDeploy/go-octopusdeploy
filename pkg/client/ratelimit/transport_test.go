@@ -96,7 +96,15 @@ func TestDefaultOptions(t *testing.T) {
 func TestNewTransportWithNilBaseUsesDefaultTransport(t *testing.T) {
 	transport := NewTransport(nil, testOptions())
 
-	require.Equal(t, http.DefaultTransport, transport.base)
+	require.Equal(t, http.DefaultTransport, transport.Base())
+}
+
+func TestBaseReturnsTheBaseTransport(t *testing.T) {
+	server := &fakeServer{responses: []func() *http.Response{newResponse(http.StatusOK, nil)}}
+
+	transport := NewTransport(server, testOptions())
+
+	require.Same(t, server, transport.Base())
 }
 
 func TestNewTransportUsesDefaultMaxWaitWhenMaxWaitIsNotPositive(t *testing.T) {
