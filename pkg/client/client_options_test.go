@@ -17,14 +17,14 @@ import (
 const testRateLimitAPIKey = "API-ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 // newRateLimitedHttpClient returns an http.Client that returns 429 for the first request to the root resource.
-// After that, it returns the root resource for /api and an empty list for all other paths.
+// After that, it returns the root resource for /api or /api/ and an empty list for all other paths.
 func newRateLimitedHttpClient() (*http.Client, func() int) {
 	var mutex sync.Mutex
 	rootRequestCount := 0
 
 	httpClient := &http.Client{
 		Transport: roundTripFunc(func(request *http.Request) (*http.Response, error) {
-			if request.URL.Path == "/api" {
+			if strings.TrimSuffix(request.URL.Path, "/") == "/api" {
 				mutex.Lock()
 				rootRequestCount++
 				count := rootRequestCount
