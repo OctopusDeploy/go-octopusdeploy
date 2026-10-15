@@ -126,7 +126,7 @@ func (s *WorkerPoolService) GetByName(name string) ([]IWorkerPool, error) {
 		return []IWorkerPool{}, err
 	}
 
-	response, err := services.GetPagedResponse[WorkerPoolResource](s, path)
+	response, _ := services.GetPagedResponse[WorkerPoolResource](s, path)
 	return ToWorkerPoolArray(response), nil
 }
 
@@ -155,7 +155,7 @@ func (s *WorkerPoolService) GetByIdentifier(identifier string) (IWorkerPool, err
 	}
 
 	// this is a workaround as the api does not support querying via the worker pool slug
-	allWorkerPools, err := s.GetAll()
+	allWorkerPools, _ := s.GetAll()
 	for _, pool := range allWorkerPools {
 		if strings.EqualFold(identifier, pool.Slug) {
 			workerPool, err := s.GetByID(pool.ID)

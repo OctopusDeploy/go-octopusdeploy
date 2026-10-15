@@ -165,7 +165,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 
 		if authenticationProperties["AuthenticationType"] != nil {
 			at := authenticationProperties["AuthenticationType"]
-			json.Unmarshal(*at, &authenticationType)
+			_ = json.Unmarshal(*at, &authenticationType)
 		}
 	}
 

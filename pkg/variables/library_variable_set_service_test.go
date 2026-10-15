@@ -288,5 +288,5 @@ func TestLibraryVariableSetServiceUpdate(t *testing.T) {
 	expected := CreateTestLibraryVariableSet(t, service)
 	actual := UpdateLibraryVariableSet(t, service, expected)
 	IsEqualLibraryVariableSets(t, expected, actual)
-	defer DeleteTestLibraryVariableSet(t, service, expected)
+	defer func() { _ = DeleteTestLibraryVariableSet(t, service, expected) }()
 }

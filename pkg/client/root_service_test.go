@@ -17,7 +17,7 @@ func createRootService(t *testing.T) *RootService {
 }
 
 func BenchmarkRootServiceGet(b *testing.B) {
-	NewRootService(nil, constants.TestURIRoot).Get()
+	_, _ = NewRootService(nil, constants.TestURIRoot).Get()
 }
 
 func TestRootServiceGet(t *testing.T) {

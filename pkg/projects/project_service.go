@@ -460,7 +460,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*Project, erro
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(projectsTemplate, map[string]any{
+	expandedUri, _ := client.URITemplateCache().Expand(projectsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      id,
 	})
@@ -500,7 +500,7 @@ func ConvertToVCS(client newclient.Client, project *Project, commitMessage strin
 
 	convertToVcs := NewConvertToVcs(commitMessage, initialCommitBranch, gitPersistenceSettings)
 
-	expandedUri, err := client.URITemplateCache().Expand(convertToVcsTemplate, map[string]any{
+	expandedUri, _ := client.URITemplateCache().Expand(convertToVcsTemplate, map[string]any{
 		"spaceId": spaceID,
 		"id":      project.ID,
 	})

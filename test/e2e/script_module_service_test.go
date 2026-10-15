@@ -52,7 +52,7 @@ func TestScriptModuleAddGetAndDelete_NewClient(t *testing.T) {
 		IsEqualScriptModules(t, resource, resourceToCompare)
 	}
 
-	DeleteTestScriptModule(t, client, space.GetID(), createdScriptModule)
+	_ = DeleteTestScriptModule(t, client, space.GetID(), createdScriptModule)
 }
 
 func IsEqualScriptModules(t *testing.T, expected *variables.ScriptModule, actual *variables.ScriptModule) {

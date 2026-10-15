@@ -95,7 +95,7 @@ func (e *Environment) UnmarshalJSON(data []byte) error {
 
 			if extensionSettingsItem["ExtensionId"] != nil {
 				var extensionID extensions.ExtensionID
-				json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
+				_ = json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
 
 				switch extensionID {
 				case extensions.JiraExtensionID:

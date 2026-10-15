@@ -177,7 +177,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 
 			if extensionSettingsItem["ExtensionId"] != nil {
 				var extensionID extensions.ExtensionID
-				json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
+				_ = json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
 
 				switch extensionID {
 				case extensions.JiraServiceManagementExtensionID:
@@ -214,7 +214,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 
 		if persistenceSettingsProperties["Type"] != nil {
 			pst := persistenceSettingsProperties["Type"]
-			json.Unmarshal(*pst, &persistenceSettingsType)
+			_ = json.Unmarshal(*pst, &persistenceSettingsType)
 		}
 	}
 

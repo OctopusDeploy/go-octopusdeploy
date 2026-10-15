@@ -141,7 +141,7 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 
 		if endpointProperties["CommunicationStyle"] != nil {
 			cs := endpointProperties["CommunicationStyle"]
-			json.Unmarshal(*cs, &communicationStyle)
+			_ = json.Unmarshal(*cs, &communicationStyle)
 		}
 	}
 

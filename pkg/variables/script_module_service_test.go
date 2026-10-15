@@ -295,7 +295,7 @@ func TestScriptModuleServiceUpdate(t *testing.T) {
 	require.Nil(t, resource)
 
 	expected := CreateTestScriptModule(t, service)
-	defer DeleteTestScriptModule(t, service, expected)
+	defer func() { _ = DeleteTestScriptModule(t, service, expected) }()
 
 	expected.ScriptBody = "function Say-Hello()\r\n{\r\n    Write-Output \"Hello, World!\"\r\n}\r\n"
 	actual := UpdateScriptModule(t, service, expected)

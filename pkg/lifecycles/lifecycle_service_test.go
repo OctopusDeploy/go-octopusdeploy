@@ -141,7 +141,7 @@ func TestLifecycleServiceAdd(t *testing.T) {
 	resource, err = service.Add(resource)
 	assert.NoError(t, err)
 	assert.NotNil(t, resource)
-	defer service.DeleteByID(resource.GetID())
+	defer func() { _ = service.DeleteByID(resource.GetID()) }()
 }
 
 func TestLifecycleServiceGetWithEmptyID(t *testing.T) {

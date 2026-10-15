@@ -64,7 +64,7 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	resource, err = actiontemplates.Add(client, resource)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
-	defer client.ActionTemplates.DeleteByID(resource.GetID())
+	defer func() { _ = client.ActionTemplates.DeleteByID(resource.GetID()) }()
 }
 
 func TestActionTemplateServiceGetCategories(t *testing.T) {

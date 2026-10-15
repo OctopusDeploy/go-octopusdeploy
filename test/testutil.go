@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"sync/atomic"
@@ -140,7 +140,7 @@ type RequestWrapper struct {
 func (r *RequestWrapper) RespondWithText(body string) {
 	r.Server.Respond(&http.Response{
 		StatusCode:    http.StatusOK,
-		Body:          ioutil.NopCloser(strings.NewReader(body)),
+		Body:          io.NopCloser(strings.NewReader(body)),
 		ContentLength: int64(len(body)),
 	}, nil)
 }
@@ -158,7 +158,7 @@ func (r *RequestWrapper) RespondWith(responseObject any) {
 	// appropriate status code
 	r.Server.Respond(&http.Response{
 		StatusCode:    http.StatusOK,
-		Body:          ioutil.NopCloser(bytes.NewReader(body)),
+		Body:          io.NopCloser(bytes.NewReader(body)),
 		ContentLength: int64(len(body)),
 	}, nil)
 }

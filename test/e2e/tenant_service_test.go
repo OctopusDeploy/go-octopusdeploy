@@ -139,7 +139,7 @@ func TestTenantAddGetAndDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	tenantVariables, err = client.Tenants.GetVariables(tenant)
+	tenantVariables, _ = client.Tenants.GetVariables(tenant)
 	require.Equal(t, propertyValue.Value, tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()].Value)
 
 	tenantVariables, err = client.Tenants.GetVariables(tenant)
@@ -308,7 +308,7 @@ func TestTenantAddGetAndDelete_NewClient(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, tenantVariables)
 
-	tenantVariables, err = client.Tenants.GetVariables(tenant)
+	tenantVariables, _ = client.Tenants.GetVariables(tenant)
 	require.Equal(t, propertyValue.Value, tenantVariables.ProjectVariables[project.GetID()].Variables[environment.GetID()][project.Templates[0].GetID()].Value)
 
 	tenantVariables, err = client.Tenants.GetVariables(tenant)

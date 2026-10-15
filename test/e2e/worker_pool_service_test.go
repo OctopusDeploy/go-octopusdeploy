@@ -115,7 +115,7 @@ func TestWorkerPoolServiceGet(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, namedWorkerPools)
 
-		wp, err := client.WorkerPools.GetByID(workerPool.ID)
+		wp, _ := client.WorkerPools.GetByID(workerPool.ID)
 		AssertEqualWorkerPools(t, wp, namedWorkerPools.Items[0])
 
 		query = workerpools.WorkerPoolsQuery{
@@ -125,7 +125,7 @@ func TestWorkerPoolServiceGet(t *testing.T) {
 		namedWorkerPools, err = client.WorkerPools.Get(query)
 		require.NoError(t, err)
 		require.NotNil(t, namedWorkerPools)
-		wp, err = client.WorkerPools.GetByID(workerPool.ID)
+		wp, _ = client.WorkerPools.GetByID(workerPool.ID)
 		AssertEqualWorkerPools(t, wp, namedWorkerPools.Items[0])
 	}
 }

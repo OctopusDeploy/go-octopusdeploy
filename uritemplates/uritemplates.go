@@ -360,7 +360,7 @@ func (self *templatePart) expandMap(buf *bytes.Buffer, t templateTerm, m map[str
 func Struct2map(v interface{}) (map[string]interface{}, bool) {
 	value := reflect.ValueOf(v)
 	switch value.Type().Kind() {
-	case reflect.Ptr:
+	case reflect.Pointer:
 		return Struct2map(value.Elem().Interface())
 	case reflect.Struct:
 		m := make(map[string]interface{})
@@ -416,7 +416,7 @@ func isEmptyValue(v reflect.Value) bool {
 		return v.Uint() == 0
 	case reflect.Float32, reflect.Float64:
 		return v.Float() == 0
-	case reflect.Interface, reflect.Ptr:
+	case reflect.Interface, reflect.Pointer:
 		return v.IsNil()
 	}
 
