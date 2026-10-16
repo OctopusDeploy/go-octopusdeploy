@@ -1,6 +1,8 @@
 package deployments
 
 import (
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -10,7 +12,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
 )
 
 // DeploymentService handles communication for any operations in the Octopus

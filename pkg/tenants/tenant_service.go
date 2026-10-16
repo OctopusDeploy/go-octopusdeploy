@@ -3,6 +3,8 @@ package tenants
 import (
 	"strings"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -12,7 +14,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
 )
 
 type TenantService struct {
@@ -321,8 +322,10 @@ func GetAll(client newclient.Client, spaceID string) ([]*Tenant, error) {
 	return newclient.GetAll[Tenant](client, template, spaceID)
 }
 
-const tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables?IncludeMissingVariables={includeMissingVariables}"
-const tenantCommonVariableTemplate = "/api/{spaceId}/tenants/{id}/commonvariables?IncludeMissingVariables={includeMissingVariables}"
+const (
+	tenantProjectVariableTemplate = "/api/{spaceId}/tenants/{id}/projectvariables?IncludeMissingVariables={includeMissingVariables}"
+	tenantCommonVariableTemplate  = "/api/{spaceId}/tenants/{id}/commonvariables?IncludeMissingVariables={includeMissingVariables}"
+)
 
 // GetProjectVariables returns all tenant project variables. If an error occurs, it returns nil.
 func GetProjectVariables(client newclient.Client, query variables.GetTenantProjectVariablesQuery) (*variables.GetTenantProjectVariablesResponse, error) {

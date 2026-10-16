@@ -3,9 +3,11 @@ package accounts
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	uuid "github.com/google/uuid"
 	"github.com/stretchr/testify/require"
+
+	uuid "github.com/google/uuid"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func TestAzureSubscriptionAccountNew(t *testing.T) {

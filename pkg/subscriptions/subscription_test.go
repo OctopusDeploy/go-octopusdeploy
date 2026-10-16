@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/subscriptions"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/subscriptions"
 )
 
 func TestNewSubscriptionSlackDefaults(t *testing.T) {

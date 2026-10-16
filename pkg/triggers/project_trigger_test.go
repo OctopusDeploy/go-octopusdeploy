@@ -7,13 +7,14 @@ import (
 	"time"
 
 	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/triggers"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestTriggerJsonSerialization(t *testing.T) {
@@ -42,7 +43,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 
 	t.Run("deserialize scheduled filter with standard go timeformat", func(t *testing.T) {
 		data := []byte(`{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00Z","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"Name":"triggerName","ProjectId":"Projects-123"}`)
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 
@@ -70,7 +71,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 	t.Run("deserialize scheduled filter with an unzoned ISO format with milliseconds", func(t *testing.T) {
 		// 2022.3 server returns this
 		data := []byte(`{"Action":{"ShouldRedeployWhenMachineHasBeenDeployedTo":true,"ActionType":"AutoDeploy"},"Filter":{"MonthlyScheduleType":"DayOfMonth","DayNumberOfMonth":"1","StartTime":"2021-12-14T09:00:00.000","Timezone":"Asia/Kuala_Lumpur","FilterType":"DaysPerMonthSchedule"},"Name":"triggerName","ProjectId":"Projects-123"}`)
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 
@@ -137,7 +138,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 			"Project": "/api/Spaces-1/projects/Projects-314"
 		  }
 		}`))
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 
@@ -212,7 +213,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 		  }
 		}
 		`))
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 
@@ -288,7 +289,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 		  }
 		}
 		`))
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 
@@ -395,7 +396,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 		  }
 		}
 		`))
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 
@@ -455,7 +456,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 		  "Links": {}
 		}
 		`))
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 
@@ -506,7 +507,7 @@ func TestTriggerJsonSerialization(t *testing.T) {
 		  }
 		}
 		`))
-		var output = new(triggers.ProjectTrigger)
+		output := new(triggers.ProjectTrigger)
 		err := json.NewDecoder(bytes.NewReader(data)).Decode(output)
 		assert.Nil(t, err)
 

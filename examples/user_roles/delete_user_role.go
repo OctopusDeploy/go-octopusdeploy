@@ -2,10 +2,10 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/userroles"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/userroles"
 )
 
 // DeleteUserRoleExample provides an example of how to delete a user role from

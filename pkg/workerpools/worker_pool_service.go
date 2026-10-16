@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -13,8 +16,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 )
 
 type WorkerPoolService struct {
@@ -125,7 +126,7 @@ func (s *WorkerPoolService) GetByName(name string) ([]IWorkerPool, error) {
 		return []IWorkerPool{}, err
 	}
 
-	response, err := services.GetPagedResponse[WorkerPoolResource](s, path)
+	response, _ := services.GetPagedResponse[WorkerPoolResource](s, path)
 	return ToWorkerPoolArray(response), nil
 }
 
@@ -154,7 +155,7 @@ func (s *WorkerPoolService) GetByIdentifier(identifier string) (IWorkerPool, err
 	}
 
 	// this is a workaround as the api does not support querying via the worker pool slug
-	allWorkerPools, err := s.GetAll()
+	allWorkerPools, _ := s.GetAll()
 	for _, pool := range allWorkerPools {
 		if strings.EqualFold(identifier, pool.Slug) {
 			workerPool, err := s.GetByID(pool.ID)

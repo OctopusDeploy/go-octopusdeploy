@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 func TestSensitiveValueBehaviour(t *testing.T) {

@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 // HttpSession is a layer over http.Client, and provides the following additional functionality:
@@ -72,6 +73,9 @@ func (h *HttpSession) DoRawJsonRequest(req *http.Request, requestBody any, outpu
 			req.Header.Set("Content-Type", "application/json")
 		}
 		req.Body = io.NopCloser(bytes.NewReader(body))
+		req.GetBody = func() (io.ReadCloser, error) {
+			return io.NopCloser(bytes.NewReader(body)), nil
+		}
 	}
 
 	if req.Header.Get("Accept") == "" {
@@ -124,8 +128,8 @@ func DoRequest[TResponse any](httpSession *HttpSession, method string, path stri
 		// body will be assigned inside DoRawJsonRequest
 	}
 
-	var responsePayload = new(TResponse)
-	var errorPayload = new(core.APIError)
+	responsePayload := new(TResponse)
+	errorPayload := new(core.APIError)
 	_, err = httpSession.DoRawJsonRequest(req, body, responsePayload, errorPayload)
 	if err != nil {
 		return nil, err
@@ -149,8 +153,8 @@ func DoDelete(httpSession *HttpSession, method string, path string) error {
 		URL:    pathUrl,
 	}
 
-	var responsePayload = new(any)
-	var errorPayload = new(core.APIError)
+	responsePayload := new(any)
+	errorPayload := new(core.APIError)
 	_, err = httpSession.DoRawJsonRequest(req, nil, responsePayload, errorPayload)
 	if err != nil {
 		return err

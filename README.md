@@ -59,6 +59,43 @@ if err != nil {
 
 Operations like `Add`, `DeleteByID`, `GetByID`, and `Update` are supported by most services that are exposed through the client if not exposed in the package. These operations are configured at runtime since the Octopus REST API is hypermedia-driven.
 
+### Rate limiting
+
+Octopus Server can [limit the rate of requests](https://octopus.com/docs/administration/managing-infrastructure/rate-limiting) from each client. When a client sends too many requests, the server returns `429 Too Many Requests` and does not process the request.
+
+By default, the client does not handle rate limits. To make the client obey the rate limits, create an `http.Client` with `ratelimit.NewHttpClient` and give it to the client:
+
+```go
+import (
+    "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+    "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client/ratelimit"
+)
+
+rateLimitedClient := ratelimit.NewHttpClient(nil, ratelimit.DefaultOptions())
+
+octopusClient, err := client.NewClient(rateLimitedClient, apiURL, apiKey, spaceID)
+if err != nil {
+    _ = fmt.Errorf("error creating API client: %v", err)
+    return
+}
+```
+
+With rate limiting on, the client does these things:
+
+- When the server returns `429 Too Many Requests`, the client waits and sends the request again. It waits for the time in the `Retry-After` header, or for `DefaultDelay` if the server does not send this header. The delay doubles with each retry, and has random jitter.
+- The client paces its requests with the `Octopus-RateLimit-Policy` and `Octopus-RateLimit` advisory headers, so that it stays in the rate limit. This prevents most `429` responses. The client uses GCRA (the Generic Cell Rate Algorithm), the same as the Octopus C# and TypeScript clients.
+
+You can change these settings in `ratelimit.Options`:
+
+| Setting               | Default | Description                                                                                                                                                                      |
+| --------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RetryCount`          | `5`     | The maximum number of times to send a request again after a `429` response. Set to `0` to turn off retries.                                                                      |
+| `DefaultDelay`        | `2s`    | The time to wait before a retry when the `429` response has no `Retry-After` header. If `DefaultDelay` is `0` or less, the default of `2s` is used.                              |
+| `MaxDelay`            | `30s`   | The maximum time to wait before a retry. If `Retry-After` is longer than this time, the client does not retry and returns the `429` response. If `MaxDelay` is `0` or less, the default of `30s` is used. |
+| `UseRateLimitHeaders` | `true`  | Pace the requests with the advisory rate limit headers.                                                                                                                          |
+
+The client retries a request only if it can send the request body again. For example, the client does not retry a package upload.
+
 Numerous code samples that showcase the API and this client are available in the [examples](/examples) directory. There are also many [integration](/test) and unit tests available to examine that demonstrate the capabilities of this API client.
 
 ## Testing
@@ -82,6 +119,23 @@ and add a Visual Studio Code workspace setting (`.vscode/settings.json`) for the
     "go.testEnvFile": "${workspaceFolder}/.env"
 }
 ```
+
+### Linting and formatting
+
+We use [golangci-lint](https://golangci-lint.run) to lint and format the code. The configuration is in `.golangci.yml`.
+The pull request workflow runs golangci-lint, and your pull request must pass it.
+
+See the [golangci-lint website](https://golangci-lint.run) for the install instructions.
+
+To format the code, and then find lint issues, run these commands in the root folder:
+
+```shell
+golangci-lint fmt ./...
+golangci-lint run ./...
+```
+
+If you have make, you can run make fmt and make lint instead.
+
 ## Release
 
 Once your pull request has been approved:

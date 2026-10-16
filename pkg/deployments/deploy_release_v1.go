@@ -2,6 +2,7 @@ package deployments
 
 import (
 	"encoding/json"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"

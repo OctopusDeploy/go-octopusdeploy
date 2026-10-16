@@ -3,9 +3,10 @@ package releases
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestReleaseUpdateSnapshotVariablesValidation(t *testing.T) {

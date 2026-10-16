@@ -9,8 +9,7 @@ const (
 	UploadMethodDelta    = UploadMethod("Delta")
 )
 
-type UploadedPackageInfo interface {
-}
+type UploadedPackageInfo interface{}
 
 // ----- DeltaUploadedPackageInfo -----
 

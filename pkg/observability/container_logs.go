@@ -72,15 +72,15 @@ func (c *ContainerLogLineResource) Validate() error {
 // BeginContainerLogsSessionCommand represents a request to begin a container logs session
 // Command to request the Kubernetes monitor to start sending logs for the specified container
 type BeginContainerLogsSessionCommand struct {
-	SpaceID                             string  `json:"spaceId" validate:"required"`
-	ProjectID                           string  `json:"projectId" validate:"required"`
-	EnvironmentID                       string  `json:"environmentId" validate:"required"`
-	TenantID                            *string `json:"tenantId,omitempty"`
-	MachineID                           string  `json:"machineId" validate:"required"`
+	SpaceID                                string  `json:"spaceId" validate:"required"`
+	ProjectID                              string  `json:"projectId" validate:"required"`
+	EnvironmentID                          string  `json:"environmentId" validate:"required"`
+	TenantID                               *string `json:"tenantId,omitempty"`
+	MachineID                              string  `json:"machineId" validate:"required"`
 	DesiredOrKubernetesMonitoredResourceID string  `json:"desiredOrKubernetesMonitoredResourceId" validate:"required"`
-	PodName                             string  `json:"podName" validate:"required"`
-	ContainerName                       string  `json:"containerName" validate:"required"`
-	ShowPreviousContainer               bool    `json:"showPreviousContainer"`
+	PodName                                string  `json:"podName" validate:"required"`
+	ContainerName                          string  `json:"containerName" validate:"required"`
+	ShowPreviousContainer                  bool    `json:"showPreviousContainer"`
 }
 
 // BeginContainerLogsSessionResponse represents the response from beginning a container logs session
@@ -102,14 +102,14 @@ func NewBeginContainerLogsSessionCommand(
 	showPreviousContainer bool,
 ) *BeginContainerLogsSessionCommand {
 	return &BeginContainerLogsSessionCommand{
-		SpaceID:                             spaceID,
-		ProjectID:                           projectID,
-		EnvironmentID:                       environmentID,
-		MachineID:                           machineID,
+		SpaceID:                                spaceID,
+		ProjectID:                              projectID,
+		EnvironmentID:                          environmentID,
+		MachineID:                              machineID,
 		DesiredOrKubernetesMonitoredResourceID: desiredOrKubernetesMonitoredResourceID,
-		PodName:                             podName,
-		ContainerName:                       containerName,
-		ShowPreviousContainer:               showPreviousContainer,
+		PodName:                                podName,
+		ContainerName:                          containerName,
+		ShowPreviousContainer:                  showPreviousContainer,
 	}
 }
 
@@ -129,4 +129,3 @@ func (c *BeginContainerLogsSessionCommand) Validate() error {
 func (r *BeginContainerLogsSessionResponse) Validate() error {
 	return validator.New().Struct(r)
 }
-

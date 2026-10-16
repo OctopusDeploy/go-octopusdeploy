@@ -10,6 +10,6 @@ func PrettyJSON(data interface{}) string {
 	encoder := json.NewEncoder(buffer)
 	encoder.SetIndent("", "\t")
 
-	encoder.Encode(data)
+	_ = encoder.Encode(data)
 	return buffer.String()
 }

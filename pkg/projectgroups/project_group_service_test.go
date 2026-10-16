@@ -3,12 +3,13 @@ package projectgroups
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 )
 
 func createProjectGroupService(t *testing.T) *ProjectGroupService {
@@ -45,7 +46,6 @@ func DeleteTestProjectGroup(t *testing.T, service *ProjectGroupService, projectG
 	require.NotNil(t, service)
 
 	return service.DeleteByID(projectGroup.GetID())
-
 }
 
 func TestNewProjectGroupService(t *testing.T) {

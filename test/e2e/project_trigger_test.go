@@ -4,6 +4,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -11,8 +14,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/triggers"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func AssertEqualProjectTriggers(t *testing.T, expected *triggers.ProjectTrigger, actual *triggers.ProjectTrigger) {

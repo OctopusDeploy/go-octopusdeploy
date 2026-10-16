@@ -6,8 +6,9 @@ import (
 	"io"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/serverstatus"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/serverstatus"
 )
 
 func TestServerStatusServiceGet(t *testing.T) {

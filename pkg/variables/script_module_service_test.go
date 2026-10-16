@@ -3,12 +3,13 @@ package variables
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 )
 
 func createScriptModuleService(t *testing.T) *ScriptModuleService {
@@ -294,7 +295,7 @@ func TestScriptModuleServiceUpdate(t *testing.T) {
 	require.Nil(t, resource)
 
 	expected := CreateTestScriptModule(t, service)
-	defer DeleteTestScriptModule(t, service, expected)
+	defer func() { _ = DeleteTestScriptModule(t, service, expected) }()
 
 	expected.ScriptBody = "function Say-Hello()\r\n{\r\n    Write-Output \"Hello, World!\"\r\n}\r\n"
 	actual := UpdateScriptModule(t, service, expected)

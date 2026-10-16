@@ -6,10 +6,11 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 )
 
 // The path tests expand the template without calling the method; this covers

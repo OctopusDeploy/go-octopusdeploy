@@ -6,9 +6,11 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
-const serverTaskApprovalsTemplate = "/api/{spaceId}/servertaskapprovals{/id}{?skip,take,providerId,state}"
-const serverTaskApprovalByTaskTemplate = "/api/{spaceId}/tasks/{taskId}/servertaskapproval"
-const approvalsTemplate = "/api/{spaceId}/servertaskapprovals/{serverTaskApprovalId}/approvals{/id}"
+const (
+	serverTaskApprovalsTemplate      = "/api/{spaceId}/servertaskapprovals{/id}{?skip,take,providerId,state}"
+	serverTaskApprovalByTaskTemplate = "/api/{spaceId}/tasks/{taskId}/servertaskapproval"
+	approvalsTemplate                = "/api/{spaceId}/servertaskapprovals/{serverTaskApprovalId}/approvals{/id}"
+)
 
 // ServerTaskApprovalsQuery is the query for the paginated server-task approvals list endpoint.
 type ServerTaskApprovalsQuery struct {

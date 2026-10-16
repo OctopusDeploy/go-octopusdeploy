@@ -1,11 +1,12 @@
 package platformhubaccounts
 
 import (
+	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
-	"github.com/go-playground/validator/v10"
-	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // PlatformHubGenericOidcAccount represents a Platform Hub Generic OIDC account.

@@ -1,11 +1,13 @@
 package projects_test
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	testutil "github.com/OctopusDeploy/go-octopusdeploy/v2/test"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // Ideally we would have an integration test talking to the octopus server, however setting up VCS projects

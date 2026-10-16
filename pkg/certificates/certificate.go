@@ -1,9 +1,10 @@
 package certificates
 
 import (
+	"github.com/go-playground/validator/v10"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/go-playground/validator/v10"
 )
 
 type CertificateResource struct {

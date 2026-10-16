@@ -1,9 +1,11 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func TestGenericOIDCAccount(t *testing.T) {

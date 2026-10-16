@@ -1,9 +1,11 @@
 package api_test
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 )
 
 func TestGetAutomationEnvironment_None(t *testing.T) {

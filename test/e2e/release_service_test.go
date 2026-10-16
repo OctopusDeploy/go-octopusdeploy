@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -13,8 +16,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/releases"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func AssertEqualReleases(t *testing.T, expected *releases.Release, actual *releases.Release) {
@@ -196,12 +197,10 @@ func TestReleaseServiceGetByID(t *testing.T) {
 		assert.NoError(t, err)
 		AssertEqualReleases(t, release, releaseToCompare)
 	}
-
 }
 
 func TestReleaseServiceSnapshotVariablesByName(t *testing.T) {
-
-	//Arrange
+	// Arrange
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 
@@ -265,8 +264,7 @@ func TestReleaseServiceSnapshotVariablesByName(t *testing.T) {
 }
 
 func TestReleaseServiceSnapshotVariablesByNameConcurrency(t *testing.T) {
-
-	//Arrange
+	// Arrange
 	octopusClient := getOctopusClient()
 	require.NotNil(t, octopusClient)
 

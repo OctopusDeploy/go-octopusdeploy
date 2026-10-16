@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )

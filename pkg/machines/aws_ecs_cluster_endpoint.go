@@ -38,5 +38,7 @@ func (e *AwsEcsClusterEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID strin
 	e.DefaultWorkerPoolID = defaultWorkerPoolID
 }
 
-var _ IEndpoint = &AwsEcsClusterEndpoint{}
-var _ IRunsOnAWorker = &AwsEcsClusterEndpoint{}
+var (
+	_ IEndpoint      = &AwsEcsClusterEndpoint{}
+	_ IRunsOnAWorker = &AwsEcsClusterEndpoint{}
+)

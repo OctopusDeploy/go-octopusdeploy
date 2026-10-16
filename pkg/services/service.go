@@ -9,13 +9,14 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
 )
 
 // IService defines the contract for all services that communicate with the
@@ -281,7 +282,6 @@ func ApiAdd(sling *sling.Sling, inputStruct interface{}, resource interface{}, p
 
 	octopusDeployError := new(core.APIError)
 	resp, err := request.Receive(resource, &octopusDeployError)
-
 	if err != nil {
 		return nil, err
 	}

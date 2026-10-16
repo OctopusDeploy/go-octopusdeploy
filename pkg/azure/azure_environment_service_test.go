@@ -3,9 +3,10 @@ package azure
 import (
 	"testing"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/dghubble/sling"
 )
 
 func TestNewAzureEnvironmentService(t *testing.T) {

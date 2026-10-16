@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/accounts"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
@@ -69,7 +71,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workerpools"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/workertoolslatestimages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
 )
 
 // Client is an OctopusDeploy for making Octopus API requests.
@@ -169,7 +170,7 @@ func IsAPIKey(apiKey string) bool {
 		return false
 	}
 
-	var expression = regexp.MustCompile(`^(API-)([A-Z\d])+$`)
+	expression := regexp.MustCompile(`^(API-)([A-Z\d])+$`)
 	return expression.MatchString(apiKey)
 }
 
@@ -237,7 +238,6 @@ func NewClientWithCredentials(httpClient *http.Client, apiURL *url.URL, apiCrede
 	if !internal.IsEmpty(spaceID) {
 		spaceUrl, _ := url.JoinPath(baseURLWithAPI, spaceID)
 		base, sroot, err = getRoot(httpClient, spaceUrl, apiCredentials, requestingTool)
-
 		if err != nil {
 			if err == services.ErrItemNotFound {
 				return nil, fmt.Errorf("the space ID (%s) cannot be found", spaceID)
