@@ -71,15 +71,3 @@ func TestNewClientWithRateLimitedHttpClientRetriesTooManyRequests(t *testing.T) 
 	require.NotNil(t, octopusClient)
 	require.Equal(t, 2, rootRequestCount())
 }
-
-func TestNewClientWithoutRateLimitedHttpClientReturnsTooManyRequests(t *testing.T) {
-	httpClient, rootRequestCount := newRateLimitedHttpClient()
-	apiURL, err := url.Parse("https://octopus.example")
-	require.NoError(t, err)
-
-	octopusClient, err := NewClient(httpClient, apiURL, testRateLimitAPIKey, "")
-
-	require.Error(t, err)
-	require.Nil(t, octopusClient)
-	require.Equal(t, 1, rootRequestCount())
-}

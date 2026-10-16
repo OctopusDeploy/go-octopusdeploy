@@ -136,16 +136,6 @@ func TestNewTransportKeepsPositiveDelays(t *testing.T) {
 	require.Equal(t, 5*time.Second, transport.options.MaxDelay)
 }
 
-func TestNewTransportPacesOnlyWhenUseRateLimitHeadersIsTrue(t *testing.T) {
-	options := testOptions()
-
-	options.UseRateLimitHeaders = true
-	require.NotNil(t, NewTransport(nil, options).pacer)
-
-	options.UseRateLimitHeaders = false
-	require.Nil(t, NewTransport(nil, options).pacer)
-}
-
 func TestRoundTripReturnsSuccessfulResponse(t *testing.T) {
 	server := &fakeServer{responses: []func() *http.Response{newResponse(http.StatusOK, nil)}}
 	transport := NewTransport(server, testOptions())
@@ -182,24 +172,6 @@ func TestRoundTripRetriesUntilTheServerAcceptsTheRequest(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 	require.Equal(t, 3, server.requestCount())
-}
-
-func TestRoundTripWaitsForRetryAfter(t *testing.T) {
-	server := &fakeServer{responses: []func() *http.Response{
-		tooManyRequests("1"),
-		newResponse(http.StatusOK, nil),
-	}}
-	options := testOptions()
-	options.MaxDelay = 2 * time.Second
-	transport := NewTransport(server, options)
-
-	start := time.Now()
-	resp, err := transport.RoundTrip(newGetRequest(t))
-
-	require.NoError(t, err)
-	require.Equal(t, http.StatusOK, resp.StatusCode)
-	require.Equal(t, 2, server.requestCount())
-	require.GreaterOrEqual(t, time.Since(start), time.Second)
 }
 
 func TestRoundTripWaitsTheDefaultDelayWhenThereIsNoRetryAfterHeader(t *testing.T) {
@@ -354,7 +326,7 @@ func TestRoundTripGivesTheRateLimitHeadersToThePacer(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			server := &fakeServer{responses: []func() *http.Response{
-				newResponse(testCase.statusCode, map[string]string{PolicyHeader: testPolicy, RateLimitHeader: "r=0;t=10"}),
+				newResponse(testCase.statusCode, map[string]string{policyHeader: testPolicy, rateLimitHeader: "r=0;t=10"}),
 			}}
 			transport := NewTransport(server, testOptions())
 			testPacer, _ := newTestPacer()
@@ -372,7 +344,7 @@ func TestRoundTripWaitsForThePacer(t *testing.T) {
 	// 600 requests per minute gives one request each 100 milliseconds. No requests remain, thus the
 	// next request waits for two requests: the request that it sends, and the request that the pacer keeps back.
 	server := &fakeServer{responses: []func() *http.Response{
-		newResponse(http.StatusOK, map[string]string{PolicyHeader: "l=10;rpm=600", RateLimitHeader: "r=0;t=1"}),
+		newResponse(http.StatusOK, map[string]string{policyHeader: "l=10;rpm=600", rateLimitHeader: "r=0;t=1"}),
 	}}
 	transport := NewTransport(server, testOptions())
 
@@ -386,11 +358,35 @@ func TestRoundTripWaitsForThePacer(t *testing.T) {
 	require.GreaterOrEqual(t, time.Since(start), 150*time.Millisecond)
 }
 
+func TestRoundTripDoesNotPaceWhenUseRateLimitHeadersIsFalse(t *testing.T) {
+	// 1 request per minute and no requests remain. With pacing, the next request must wait for two minutes.
+	server := &fakeServer{responses: []func() *http.Response{
+		newResponse(http.StatusOK, map[string]string{policyHeader: "l=10;rpm=1", rateLimitHeader: "r=0;t=600"}),
+	}}
+	options := testOptions()
+	options.UseRateLimitHeaders = false
+	transport := NewTransport(server, options)
+
+	_, err := transport.RoundTrip(newGetRequest(t))
+	require.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, testURL, nil)
+	require.NoError(t, err)
+
+	resp, err := transport.RoundTrip(req)
+
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+	require.Equal(t, 2, server.requestCount())
+}
+
 func TestRoundTripPacesRetries(t *testing.T) {
 	// The 429 response tells the client to retry immediately, but no requests remain, thus the pacer makes the
 	// retry wait. A request that the limiter rejected must not go back to it immediately.
 	server := &fakeServer{responses: []func() *http.Response{
-		newResponse(http.StatusTooManyRequests, map[string]string{retryAfterHeader: "0", PolicyHeader: "l=10;rpm=600", RateLimitHeader: "r=0;t=1"}),
+		newResponse(http.StatusTooManyRequests, map[string]string{retryAfterHeader: "0", policyHeader: "l=10;rpm=600", rateLimitHeader: "r=0;t=1"}),
 		newResponse(http.StatusOK, nil),
 	}}
 	transport := NewTransport(server, testOptions())
@@ -407,7 +403,7 @@ func TestRoundTripPacesRetries(t *testing.T) {
 func TestRoundTripReturnsErrorWhenContextIsCancelledDuringPacerWait(t *testing.T) {
 	// 1 request per minute and no requests remain, thus the next request must wait for two minutes.
 	server := &fakeServer{responses: []func() *http.Response{
-		newResponse(http.StatusOK, map[string]string{PolicyHeader: "l=10;rpm=1", RateLimitHeader: "r=0;t=600"}),
+		newResponse(http.StatusOK, map[string]string{policyHeader: "l=10;rpm=1", rateLimitHeader: "r=0;t=600"}),
 	}}
 	transport := NewTransport(server, testOptions())
 

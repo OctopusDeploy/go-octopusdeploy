@@ -18,7 +18,7 @@ const reservedRequests = 1
 // values such as "0x10", "Inf" and "NaN", which the server does not send.
 var numberPattern = regexp.MustCompile(`^[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?$`)
 
-// pacer keeps requests in the rate limit that the server advertises in the PolicyHeader and RateLimitHeader
+// pacer keeps requests in the rate limit that the server advertises in the policyHeader and rateLimitHeader
 // headers. Thus the client spreads its requests out and does not send them until the server rejects them.
 //
 // The pacer uses GCRA (the Generic Cell Rate Algorithm), which has the same behaviour as the token bucket of the

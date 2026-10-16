@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	// PolicyHeader is the advisory header that tells the burst limit and the requests per minute.
+	// policyHeader is the advisory header that tells the burst limit and the requests per minute.
 	// For example: "l=200;rpm=600".
-	PolicyHeader = "Octopus-RateLimit-Policy"
+	policyHeader = "Octopus-RateLimit-Policy"
 
-	// RateLimitHeader is the advisory header that tells the remaining requests and the seconds until all of the
+	// rateLimitHeader is the advisory header that tells the remaining requests and the seconds until all of the
 	// requests are available again. For example: "r=7;t=18".
-	RateLimitHeader = "Octopus-RateLimit"
+	rateLimitHeader = "Octopus-RateLimit"
 
 	retryAfterHeader = "Retry-After"
 )
@@ -129,7 +129,7 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 		}
 
 		if t.pacer != nil {
-			t.pacer.observeResponse(resp.Header.Get(PolicyHeader), resp.Header.Get(RateLimitHeader))
+			t.pacer.observeResponse(resp.Header.Get(policyHeader), resp.Header.Get(rateLimitHeader))
 		}
 
 		if resp.StatusCode != http.StatusTooManyRequests || attempt >= t.options.RetryCount || !canRetry(req) {

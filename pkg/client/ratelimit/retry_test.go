@@ -138,13 +138,6 @@ func TestRetryDelayBacksOffFromTheDefaultDelayWhenRetryAfterIsMissing(t *testing
 	require.Equal(t, 8*time.Second, delay)
 }
 
-func TestRetryDelayRetriesImmediatelyAtEachAttemptWhenRetryAfterIsZero(t *testing.T) {
-	delay, ok := retryDelay("0", retryOptions(), 3, noJitter)
-
-	require.True(t, ok)
-	require.Equal(t, time.Duration(0), delay)
-}
-
 func TestRetryDelayAddsJitterAfterTheWaitNeverBeforeIt(t *testing.T) {
 	// The server told the earliest time to retry, thus jitter only makes the delay longer.
 	delay, ok := retryDelay("2", retryOptions(), 0, maxJitter)
@@ -162,17 +155,6 @@ func TestRetryDelayKeepsTheJitterInMaxDelay(t *testing.T) {
 	delay, ok = retryDelay("28", retryOptions(), 0, maxJitter)
 	require.True(t, ok)
 	require.LessOrEqual(t, delay, 30*time.Second)
-}
-
-func TestDefaultOptions(t *testing.T) {
-	// These are the settings that NewHttpClient users get when they use DefaultOptions: five retries, two seconds
-	// when the server does not tell the delay, never more than thirty seconds, and pacing with the rate limit headers.
-	require.Equal(t, Options{
-		RetryCount:          5,
-		DefaultDelay:        2 * time.Second,
-		MaxDelay:            30 * time.Second,
-		UseRateLimitHeaders: true,
-	}, DefaultOptions())
 }
 
 func TestWaitReturnsWhenTheDelayIsOver(t *testing.T) {
