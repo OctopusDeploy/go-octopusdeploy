@@ -5,13 +5,7 @@
 
 ### Features
 
-* add Base method to the rate limit transport ([c382947](https://github.com/OctopusDeploy/go-octopusdeploy/commit/c382947b4b3684b529c9e2af6780ad4623f80092))
-* pace requests with GCRA and match the C# and TypeScript clients ([27f2fc0](https://github.com/OctopusDeploy/go-octopusdeploy/commit/27f2fc05196c87b679f1e22b58d20af56e5cd08b))
-
-
-### Bug Fixes
-
-* address review feedback for the rate limit transport ([9868376](https://github.com/OctopusDeploy/go-octopusdeploy/commit/98683767c53734b4000919b231fa64cd4061664d))
+* Obey Octopus Server rate limits [#493](https://github.com/OctopusDeploy/go-octopusdeploy/pull/493) ([2a3b506](https://github.com/OctopusDeploy/go-octopusdeploy/commit/2a3b506c169e8c27e3f3849a4a1f3320e5245abe))
 
 ## [2.121.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.120.1...v2.121.0) (2026-10-15)
 
