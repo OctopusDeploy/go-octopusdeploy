@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.122.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.121.0...v2.122.0) (2026-10-16)
+
+
+### Features
+
+* Obey Octopus Server rate limits [#493](https://github.com/OctopusDeploy/go-octopusdeploy/pull/493) ([2a3b506](https://github.com/OctopusDeploy/go-octopusdeploy/commit/2a3b506c169e8c27e3f3849a4a1f3320e5245abe))
+
 ## [2.121.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.120.1...v2.121.0) (2026-10-15)
 
 
