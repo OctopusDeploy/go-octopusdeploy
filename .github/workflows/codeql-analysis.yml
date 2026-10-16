@@ -6,10 +6,16 @@ on:
       - integration/**
       - octopusdeploy/**
   pull_request:
+permissions:
+  contents: read
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     strategy:
       fail-fast: false
       matrix:
