@@ -52,8 +52,8 @@ func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *proj
 	start := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
 	// days := []filters.Weekday{filters.Sunday, filters.Monday}
 
-	action := actions.NewAutoDeployAction(createRandomBoolean())
-	// action := actions.NewDeployLatestReleaseAction(internal.GetRandomName(), createRandomBoolean(), []string{internal.GetRandomName()}, "")
+	// Octopus rejects the AutoDeploy action on a scheduled trigger.
+	action := actions.NewDeployLatestReleaseAction(environment.GetID(), createRandomBoolean(), []string{environment.GetID()}, "")
 	// action := actions.NewDeployNewReleaseAction(environment.GetID(), "", nil)
 	// filter := filters.NewDeploymentTargetFilter([]string{}, []string{}, []string{"MachineAvailableForDeployment"}, []string{})
 
