@@ -5,7 +5,6 @@
 
 ### Features
 
-* add claim conditions to service account OIDC identities ([9098e13](https://github.com/OctopusDeploy/go-octopusdeploy/commit/9098e13318ec0b99e4f904f29b132ca1dbf69cfa))
 * add claim conditions to service account OIDC identities ([#499](https://github.com/OctopusDeploy/go-octopusdeploy/issues/499)) ([9098e13](https://github.com/OctopusDeploy/go-octopusdeploy/commit/9098e13318ec0b99e4f904f29b132ca1dbf69cfa))
 
 ## [2.122.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.121.0...v2.122.0) (2026-10-16)
