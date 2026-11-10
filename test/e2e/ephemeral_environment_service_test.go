@@ -246,3 +246,76 @@ func DeprovisionEphemeralEnvironment(t *testing.T, client *client.Client, enviro
 
 	return deprovisionResponse.DeprovisioningRuns
 }
+
+func TestEnvironmentServiceGetStatus(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	parentEnvironment := CreateParentEnvironment(t, client)
+	require.NotNil(t, parentEnvironment)
+	defer DeleteParentEnvironment(t, client, parentEnvironment)
+
+	ephemeralChannel := CreateEphemeralTestChannel(t, client, project, parentEnvironment)
+	require.NotNil(t, ephemeralChannel)
+	defer DeleteTestChannel(t, client, ephemeralChannel)
+
+	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project)
+	defer DeprovisionEphemeralEnvironment(t, client, &createdEnvironmentId)
+
+	status, err := ephemeralenvironments.GetStatus(client, client.GetSpaceID(), createdEnvironmentId, project.GetID())
+	require.NoError(t, err)
+	require.NotNil(t, status)
+	require.NotEmpty(t, status.Status)
+}
+
+func TestEnvironmentServiceDeleteEphemeralEnvironment(t *testing.T) {
+	client := getOctopusClient()
+	require.NotNil(t, client)
+
+	space := GetDefaultSpace(t, client)
+	require.NotNil(t, space)
+
+	lifecycle := CreateTestLifecycle(t, client)
+	require.NotNil(t, lifecycle)
+	defer DeleteTestLifecycle(t, client, lifecycle)
+
+	projectGroup := CreateTestProjectGroup(t, client)
+	require.NotNil(t, projectGroup)
+	defer DeleteTestProjectGroup(t, client, projectGroup)
+
+	project := CreateTestProject(t, client, space, lifecycle, projectGroup)
+	require.NotNil(t, project)
+	defer DeleteTestProject(t, client, project)
+
+	parentEnvironment := CreateParentEnvironment(t, client)
+	require.NotNil(t, parentEnvironment)
+	defer DeleteParentEnvironment(t, client, parentEnvironment)
+
+	ephemeralChannel := CreateEphemeralTestChannel(t, client, project, parentEnvironment)
+	require.NotNil(t, ephemeralChannel)
+	defer DeleteTestChannel(t, client, ephemeralChannel)
+
+	createdEnvironmentId := CreateEphemeralEnvironment(t, client, project)
+
+	err := ephemeralenvironments.Delete(client, client.GetSpaceID(), createdEnvironmentId)
+	require.NoError(t, err)
+
+	deletedEnvironment, err := ephemeralenvironments.GetByID(client, client.GetSpaceID(), createdEnvironmentId)
+	require.NoError(t, err)
+	require.Nil(t, deletedEnvironment, "ephemeral environment should be deleted")
+}
