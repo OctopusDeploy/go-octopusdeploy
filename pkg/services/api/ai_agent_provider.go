@@ -1,9 +1,6 @@
 package api
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 // AI agents are detected separately from automation (CI) environments because the two are
 // independent dimensions: an agent commonly runs inside a CI system or on an Octopus worker,
@@ -12,8 +9,6 @@ import (
 // aiAgentEnvVar is the emerging cross-vendor convention for an agent to identify itself.
 // https://github.com/vercel/vercel/tree/main/packages/detect-agent
 const aiAgentEnvVar = "AI_AGENT"
-
-const maxAIAgentValueLength = 64
 
 type aiAgentRule struct {
 	variable string
@@ -82,33 +77,33 @@ var aiAgentValuePrefixes = []struct {
 	{"v0", "V0"},
 }
 
-// GetAIAgent returns a user agent token describing the AI agent driving this process, or an
-// empty string when none is detected. Detection is based on self-reported environment
-// variables, so it is suitable for analytics but must not be relied on for security decisions.
+// GetAIAgent returns a user agent token naming the AI agent driving this process, or an empty
+// string when none is detected. Only a normalised name is reported: the raw AI_AGENT value is
+// free-form and user-settable, so it is used for matching and never included in the output.
+// Detection is based on self-reported environment variables, so it is suitable for analytics but
+// must not be relied on for security decisions.
 //
 // Examples:
 //
-//	AIAgent/ClaudeCode (claude-code_2-1-322_agent)   AI_AGENT set by a known agent
-//	AIAgent/Other (devin@1)                          AI_AGENT set by an unrecognised agent
-//	AIAgent/Cursor                                   detected from vendor-specific variables
+//	AIAgent/ClaudeCode   AI_AGENT=claude-code_2-1-322_agent, or CLAUDECODE=1
+//	AIAgent/Cursor       CURSOR_AGENT=1
+//	AIAgent/Other        AI_AGENT set to a value that isn't recognised
 func GetAIAgent(e Environment) string {
-	if raw := sanitiseAIAgentValue(e.Getenv(aiAgentEnvVar)); raw != "" {
-		name := nameFromAIAgentValue(raw)
-		if name == "" {
-			// Vendor variables may still identify an agent that sets AI_AGENT in an unfamiliar format.
-			name = nameFromVendorVariables(e)
-		}
-		if name == "" {
-			name = "Other"
-		}
-		return fmt.Sprintf("AIAgent/%s (%s)", name, raw)
+	aiAgentValue := strings.TrimSpace(e.Getenv(aiAgentEnvVar))
+
+	name := nameFromAIAgentValue(aiAgentValue)
+	if name == "" {
+		// Also covers an agent that sets AI_AGENT in a format that isn't recognised.
+		name = nameFromVendorVariables(e)
+	}
+	if name == "" && aiAgentValue != "" {
+		name = "Other"
+	}
+	if name == "" {
+		return ""
 	}
 
-	if name := nameFromVendorVariables(e); name != "" {
-		return "AIAgent/" + name
-	}
-
-	return ""
+	return "AIAgent/" + name
 }
 
 func nameFromVendorVariables(e Environment) string {
@@ -126,30 +121,15 @@ func nameFromVendorVariables(e Environment) string {
 	return ""
 }
 
-func nameFromAIAgentValue(raw string) string {
-	normalised := strings.ReplaceAll(strings.ToLower(raw), "_", "-")
+func nameFromAIAgentValue(value string) string {
+	if value == "" {
+		return ""
+	}
+	normalised := strings.ReplaceAll(strings.ToLower(value), "_", "-")
 	for _, p := range aiAgentValuePrefixes {
 		if strings.HasPrefix(normalised, p.prefix) {
 			return p.name
 		}
 	}
 	return ""
-}
-
-// sanitiseAIAgentValue keeps AI_AGENT safe to embed in a User-Agent comment: it is free-form and
-// user-settable, so restrict it to a conservative character set and bound its length.
-func sanitiseAIAgentValue(value string) string {
-	var b strings.Builder
-	for _, r := range strings.TrimSpace(value) {
-		if b.Len() >= maxAIAgentValueLength {
-			break
-		}
-		switch {
-		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9':
-			b.WriteRune(r)
-		case r == '.', r == '_', r == '-', r == '@', r == '+':
-			b.WriteRune(r)
-		}
-	}
-	return b.String()
 }

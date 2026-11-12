@@ -94,13 +94,14 @@ func TestGetAIAgent_AIAgentVariable(t *testing.T) {
 		value    string
 		expected string
 	}{
-		{"claude-code_2-1-322_agent", "AIAgent/ClaudeCode (claude-code_2-1-322_agent)"},
-		{"claude-code", "AIAgent/ClaudeCode (claude-code)"},
-		{"cursor-cli", "AIAgent/Cursor (cursor-cli)"},
-		{"github_copilot_vscode_agent", "AIAgent/GitHubCopilot (github_copilot_vscode_agent)"},
-		{"github-copilot-cli", "AIAgent/GitHubCopilot (github-copilot-cli)"},
-		{"devin@1", "AIAgent/Devin (devin@1)"},
-		{"custom-agent@2.0", "AIAgent/Other (custom-agent@2.0)"},
+		{"claude-code_2-1-322_agent", "AIAgent/ClaudeCode"},
+		{"claude-code", "AIAgent/ClaudeCode"},
+		{"Claude-Code", "AIAgent/ClaudeCode"},
+		{"cursor-cli", "AIAgent/Cursor"},
+		{"github_copilot_vscode_agent", "AIAgent/GitHubCopilot"},
+		{"github-copilot-cli", "AIAgent/GitHubCopilot"},
+		{"devin@1", "AIAgent/Devin"},
+		{"custom-agent@2.0", "AIAgent/Other"},
 	}
 
 	for _, c := range cases {
@@ -116,25 +117,25 @@ func TestGetAIAgent_AIAgentTakesPrecedenceOverVendorVariables(t *testing.T) {
 	e := api.NewMockEnvironment()
 	e.Setenv("CURSOR_AGENT", "1")
 	e.Setenv("AI_AGENT", "claude-code_2-1-322_agent")
-	require.Equal(t, "AIAgent/ClaudeCode (claude-code_2-1-322_agent)", api.GetAIAgent(e))
+	require.Equal(t, "AIAgent/ClaudeCode", api.GetAIAgent(e))
 }
 
 func TestGetAIAgent_UnrecognisedAIAgentFallsBackToVendorName(t *testing.T) {
 	e := api.NewMockEnvironment()
 	e.Setenv("GEMINI_CLI", "1")
 	e.Setenv("AI_AGENT", "gcli")
-	require.Equal(t, "AIAgent/GeminiCLI (gcli)", api.GetAIAgent(e))
+	require.Equal(t, "AIAgent/GeminiCLI", api.GetAIAgent(e))
 }
 
-func TestGetAIAgent_SanitisesAIAgentValue(t *testing.T) {
+func TestGetAIAgent_NeverIncludesRawAIAgentValue(t *testing.T) {
 	e := api.NewMockEnvironment()
 	e.Setenv("AI_AGENT", "  evil) agent\r\nX-Injected: 1 ")
-	require.Equal(t, "AIAgent/Other (evilagentX-Injected1)", api.GetAIAgent(e))
+	require.Equal(t, "AIAgent/Other", api.GetAIAgent(e))
 
 	e.Setenv("AI_AGENT", strings.Repeat("a", 200))
-	require.Equal(t, "AIAgent/Other ("+strings.Repeat("a", 64)+")", api.GetAIAgent(e))
+	require.Equal(t, "AIAgent/Other", api.GetAIAgent(e))
 
-	e.Setenv("AI_AGENT", "()\r\n")
+	e.Setenv("AI_AGENT", " \t ")
 	require.Equal(t, "", api.GetAIAgent(e))
 }
 
