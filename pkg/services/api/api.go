@@ -66,7 +66,11 @@ func GetUserAgentString(requestingTool string) string {
 		}
 	}
 
-	automationEnvironment := GetAutomationEnvironment(&OsEnvironment{})
+	environment := &OsEnvironment{}
+	automationEnvironment := GetAutomationEnvironment(environment)
+	if aiAgent := GetAIAgent(environment); aiAgent != "" {
+		automationEnvironment = automationEnvironment + " " + aiAgent
+	}
 
 	return strings.TrimSpace(fmt.Sprintf("%s/%s (%s; %s) go/%s %s %s", "go-octopusdeploy", version, runtime.GOOS, runtime.GOARCH, runtime.Version(), automationEnvironment, requestingTool))
 }
