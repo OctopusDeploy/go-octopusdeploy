@@ -56,7 +56,8 @@ var knownAIAgents = []aiAgent{
 
 // aiAgentValuePrefixes maps the start of a normalised AI_AGENT value to a known agent name.
 // Vendors don't agree on a format (e.g. "claude-code_2-1-322_agent", "github_copilot_vscode_agent",
-// "devin@1"), so values are lowercased and underscores replaced with hyphens before matching.
+// "devin@1"), so values are lowercased and runs of underscores and whitespace replaced with a single hyphen
+// before matching.
 var aiAgentValuePrefixes = []struct {
 	prefix string
 	name   string
@@ -125,7 +126,7 @@ func nameFromAIAgentValue(value string) string {
 	if value == "" {
 		return ""
 	}
-	normalised := strings.ReplaceAll(strings.ToLower(value), "_", "-")
+	normalised := strings.Join(strings.Fields(strings.ReplaceAll(strings.ToLower(value), "_", " ")), "-")
 	for _, p := range aiAgentValuePrefixes {
 		if strings.HasPrefix(normalised, p.prefix) {
 			return p.name
