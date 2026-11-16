@@ -115,3 +115,39 @@ func TestEventNotificationSubscriptionTeamsAppChannelJSON(t *testing.T) {
 	require.NotNil(t, ch.TeamName)
 	require.Equal(t, teamName, *ch.TeamName)
 }
+
+func TestEventNotificationSubscriptionFilterAiFieldsJSON(t *testing.T) {
+	inputJSON := `{"ApiKeyIds": ["ApiKeys-1"], "AiEventsOnly": true}`
+
+	var filter subscriptions.EventNotificationSubscriptionFilter
+	err := json.Unmarshal([]byte(inputJSON), &filter)
+	require.NoError(t, err)
+	require.Equal(t, []string{"ApiKeys-1"}, filter.ApiKeyIds)
+	require.NotNil(t, filter.AiEventsOnly)
+	require.True(t, *filter.AiEventsOnly)
+}
+
+// The server keeps a filter the request leaves out, so unset fields must not be sent as empty values.
+func TestEventNotificationSubscriptionFilterLeavesUnsetAiFieldsForTheServerToKeep(t *testing.T) {
+	outputJSON, err := json.Marshal(subscriptions.NewSubscription("my-subscription").EventNotificationSubscription.Filter)
+	require.NoError(t, err)
+
+	var sent map[string]any
+	require.NoError(t, json.Unmarshal(outputJSON, &sent))
+	require.Contains(t, sent, "ApiKeyIds")
+	require.Nil(t, sent["ApiKeyIds"])
+	require.NotContains(t, sent, "AiEventsOnly")
+}
+
+func TestEventNotificationSubscriptionFilterSendsAnEmptyApiKeyListToClearIt(t *testing.T) {
+	aiEventsOnly := false
+	filter := subscriptions.EventNotificationSubscriptionFilter{ApiKeyIds: []string{}, AiEventsOnly: &aiEventsOnly}
+
+	outputJSON, err := json.Marshal(filter)
+	require.NoError(t, err)
+
+	var sent map[string]any
+	require.NoError(t, json.Unmarshal(outputJSON, &sent))
+	require.Equal(t, []any{}, sent["ApiKeyIds"])
+	require.Equal(t, false, sent["AiEventsOnly"])
+}

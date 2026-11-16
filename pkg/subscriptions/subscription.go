@@ -33,6 +33,12 @@ type EventNotificationSubscriptionFilter struct {
 	Tags            []string `json:"Tags"`
 	Tenants         []string `json:"Tenants"`
 	Users           []string `json:"Users"`
+	// ApiKeyIds limits the subscription to events raised with these API keys. Leave it nil to keep the
+	// subscription's current API keys when updating it; an empty slice clears them. Older servers ignore it.
+	ApiKeyIds []string `json:"ApiKeyIds"`
+	// AiEventsOnly limits the subscription to events by AI agents. Leave it nil to keep the subscription's
+	// current setting when updating it. Older servers ignore it.
+	AiEventsOnly *bool `json:"AiEventsOnly,omitempty"`
 }
 
 type EventNotificationSubscription struct {
