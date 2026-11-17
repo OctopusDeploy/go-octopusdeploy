@@ -33,11 +33,9 @@ type EventNotificationSubscriptionFilter struct {
 	Tags            []string `json:"Tags"`
 	Tenants         []string `json:"Tenants"`
 	Users           []string `json:"Users"`
-	// ApiKeyIds limits the subscription to events raised with these API keys. Leave it nil to keep the
-	// subscription's current API keys when updating it; an empty slice clears them. Older servers ignore it.
+	// Needs Octopus Server 2026.4.12560 or newer. On update, nil keeps the current keys and an empty slice clears them.
 	ApiKeyIds []string `json:"ApiKeyIds"`
-	// AiEventsOnly limits the subscription to events by AI agents. Leave it nil to keep the subscription's
-	// current setting when updating it. Older servers ignore it.
+	// Needs Octopus Server 2026.4.12560 or newer. On update, nil keeps the current setting.
 	AiEventsOnly *bool `json:"AiEventsOnly,omitempty"`
 }
 
