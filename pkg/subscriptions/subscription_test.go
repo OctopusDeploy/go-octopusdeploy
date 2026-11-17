@@ -127,7 +127,8 @@ func TestEventNotificationSubscriptionFilterAiFieldsJSON(t *testing.T) {
 	require.True(t, *filter.AiEventsOnly)
 }
 
-// The server keeps a filter the request leaves out, so unset fields must not be sent as empty values.
+// The server keeps a filter sent as null or left out, so unset fields must not be sent as empty values. ApiKeyIds
+// is sent as null and AiEventsOnly is left out.
 func TestEventNotificationSubscriptionFilterLeavesUnsetAiFieldsForTheServerToKeep(t *testing.T) {
 	outputJSON, err := json.Marshal(subscriptions.NewSubscription("my-subscription").EventNotificationSubscription.Filter)
 	require.NoError(t, err)
