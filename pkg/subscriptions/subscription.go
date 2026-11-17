@@ -33,6 +33,10 @@ type EventNotificationSubscriptionFilter struct {
 	Tags            []string `json:"Tags"`
 	Tenants         []string `json:"Tenants"`
 	Users           []string `json:"Users"`
+	// Needs Octopus Server 2026.4.12560 or newer. On update, nil keeps the current keys and an empty slice clears them.
+	ApiKeyIds []string `json:"ApiKeyIds"`
+	// Needs Octopus Server 2026.4.12560 or newer. On update, nil keeps the current setting.
+	AiEventsOnly *bool `json:"AiEventsOnly,omitempty"`
 }
 
 type EventNotificationSubscription struct {
