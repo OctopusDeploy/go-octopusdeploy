@@ -18,12 +18,20 @@ type aiAgentRule struct {
 }
 
 type aiAgent struct {
-	name  string
-	rules []aiAgentRule
+	name string
+	// aiAgentPrefix, when set, matches the start of a normalised AI_AGENT value. Vendors don't agree
+	// on a format (e.g. "claude-code_2-1-322_agent", "github_copilot_vscode_agent", "devin@1"), so
+	// values are lowercased and runs of underscores and whitespace replaced with a single hyphen
+	// before matching.
+	aiAgentPrefix string
+	// variables are vendor-specific environment variables that identify the agent.
+	variables []aiAgentRule
 }
 
-// knownAIAgents is ordered: the first agent with a matching rule wins, so the result is
-// deterministic when several agents' variables are present (e.g. one agent running another).
+// knownAIAgents lists each agent once. An agent can be recognised from AI_AGENT, from its vendor
+// variables, or both. AI_AGENT is checked against the whole list before any vendor variables, so a
+// self-reported identity wins (e.g. Claude Code running inside Cursor). Within each lookup the first
+// match wins, so the result is deterministic when several agents' variables are present.
 //
 // Variables that are commonly present without an agent driving the process are deliberately
 // excluded: CURSOR_TRACE_ID (any Cursor terminal), COPILOT_GITHUB_TOKEN and GOOSE_PROVIDER
@@ -34,48 +42,27 @@ type aiAgent struct {
 // https://source.dot.net/aspire/Telemetry/CodingAgentDetector.cs.html
 // https://docs.rs/is-ai-agent
 var knownAIAgents = []aiAgent{
-	{"ClaudeCode", []aiAgentRule{{variable: "CLAUDECODE"}, {variable: "CLAUDE_CODE_ENTRYPOINT"}}},
-	{"Cursor", []aiAgentRule{{variable: "CURSOR_AGENT"}, {variable: "CURSOR_EXTENSION_HOST_ROLE", value: "agent-exec"}}},
-	{"Codex", []aiAgentRule{{variable: "CODEX_SANDBOX"}, {variable: "CODEX_THREAD_ID"}, {variable: "CODEX_CI"}}},
-	{"GeminiCLI", []aiAgentRule{{variable: "GEMINI_CLI"}}},
-	{"GitHubCopilot", []aiAgentRule{{variable: "COPILOT_CLI"}, {variable: "COPILOT_AGENT"}, {variable: "GITHUB_COPILOT_CLI_MODE"}}},
-	{"OpenCode", []aiAgentRule{{variable: "OPENCODE", value: "1"}, {variable: "OPENCODE_CLIENT"}, {variable: "OPENCODE_AI"}}},
-	{"Antigravity", []aiAgentRule{{variable: "ANTIGRAVITY_AGENT"}}},
-	{"Goose", []aiAgentRule{{variable: "GOOSE_TERMINAL"}, {variable: "AGENT", value: "goose"}}},
-	{"Amp", []aiAgentRule{{variable: "AGENT", value: "amp"}}},
-	{"Cline", []aiAgentRule{{variable: "CLINE_ACTIVE"}, {variable: "CLINE_TASK_ID"}}},
-	{"RooCode", []aiAgentRule{{variable: "ROO_CODE_TASK_ID"}}},
-	{"Augment", []aiAgentRule{{variable: "AUGMENT_AGENT"}}},
-	{"QwenCode", []aiAgentRule{{variable: "QWEN_CODE"}}},
-	{"FactoryDroid", []aiAgentRule{{variable: "DROID_CLI"}}},
-	{"KimiCLI", []aiAgentRule{{variable: "KIMI_CLI"}}},
-	{"Trae", []aiAgentRule{{variable: "TRAE_AI_SHELL_ID"}}},
-	{"Aider", []aiAgentRule{{variable: "OR_APP_NAME", value: "Aider"}}},
-	{"OpenHands", []aiAgentRule{{variable: "OR_APP_NAME", value: "OpenHands"}}},
-}
-
-// aiAgentValuePrefixes maps the start of a normalised AI_AGENT value to a known agent name.
-// Vendors don't agree on a format (e.g. "claude-code_2-1-322_agent", "github_copilot_vscode_agent",
-// "devin@1"), so values are lowercased and runs of underscores and whitespace replaced with a single hyphen
-// before matching.
-var aiAgentValuePrefixes = []struct {
-	prefix string
-	name   string
-}{
-	{"claude-code", "ClaudeCode"},
-	{"cursor", "Cursor"},
-	{"codex", "Codex"},
-	{"gemini", "GeminiCLI"},
-	{"github-copilot", "GitHubCopilot"},
-	{"opencode", "OpenCode"},
-	{"antigravity", "Antigravity"},
-	{"goose", "Goose"},
-	{"amp", "Amp"},
-	{"cline", "Cline"},
-	{"augment", "Augment"},
-	{"devin", "Devin"},
-	{"replit", "Replit"},
-	{"v0", "V0"},
+	{name: "ClaudeCode", aiAgentPrefix: "claude-code", variables: []aiAgentRule{{variable: "CLAUDECODE"}, {variable: "CLAUDE_CODE_ENTRYPOINT"}}},
+	{name: "Cursor", aiAgentPrefix: "cursor", variables: []aiAgentRule{{variable: "CURSOR_AGENT"}, {variable: "CURSOR_EXTENSION_HOST_ROLE", value: "agent-exec"}}},
+	{name: "Codex", aiAgentPrefix: "codex", variables: []aiAgentRule{{variable: "CODEX_SANDBOX"}, {variable: "CODEX_THREAD_ID"}, {variable: "CODEX_CI"}}},
+	{name: "GeminiCLI", aiAgentPrefix: "gemini", variables: []aiAgentRule{{variable: "GEMINI_CLI"}}},
+	{name: "GitHubCopilot", aiAgentPrefix: "github-copilot", variables: []aiAgentRule{{variable: "COPILOT_CLI"}, {variable: "COPILOT_AGENT"}, {variable: "GITHUB_COPILOT_CLI_MODE"}}},
+	{name: "OpenCode", aiAgentPrefix: "opencode", variables: []aiAgentRule{{variable: "OPENCODE", value: "1"}, {variable: "OPENCODE_CLIENT"}, {variable: "OPENCODE_AI"}}},
+	{name: "Antigravity", aiAgentPrefix: "antigravity", variables: []aiAgentRule{{variable: "ANTIGRAVITY_AGENT"}}},
+	{name: "Goose", aiAgentPrefix: "goose", variables: []aiAgentRule{{variable: "GOOSE_TERMINAL"}, {variable: "AGENT", value: "goose"}}},
+	{name: "Amp", aiAgentPrefix: "amp", variables: []aiAgentRule{{variable: "AGENT", value: "amp"}}},
+	{name: "Cline", aiAgentPrefix: "cline", variables: []aiAgentRule{{variable: "CLINE_ACTIVE"}, {variable: "CLINE_TASK_ID"}}},
+	{name: "RooCode", variables: []aiAgentRule{{variable: "ROO_CODE_TASK_ID"}}},
+	{name: "Augment", aiAgentPrefix: "augment", variables: []aiAgentRule{{variable: "AUGMENT_AGENT"}}},
+	{name: "QwenCode", variables: []aiAgentRule{{variable: "QWEN_CODE"}}},
+	{name: "FactoryDroid", variables: []aiAgentRule{{variable: "DROID_CLI"}}},
+	{name: "KimiCLI", variables: []aiAgentRule{{variable: "KIMI_CLI"}}},
+	{name: "Trae", variables: []aiAgentRule{{variable: "TRAE_AI_SHELL_ID"}}},
+	{name: "Aider", variables: []aiAgentRule{{variable: "OR_APP_NAME", value: "Aider"}}},
+	{name: "OpenHands", variables: []aiAgentRule{{variable: "OR_APP_NAME", value: "OpenHands"}}},
+	{name: "Devin", aiAgentPrefix: "devin"},
+	{name: "Replit", aiAgentPrefix: "replit"},
+	{name: "V0", aiAgentPrefix: "v0"},
 }
 
 // GetAIAgent returns a user agent token naming the AI agent driving this process, or an empty
@@ -90,47 +77,46 @@ var aiAgentValuePrefixes = []struct {
 //	AIAgent/Cursor       CURSOR_AGENT=1
 //	AIAgent/Other        AI_AGENT set to a value that isn't recognised
 func GetAIAgent(e Environment) string {
-	aiAgentValue := strings.TrimSpace(e.Getenv(aiAgentEnvVar))
+	aiAgentNameFromEnvVar := strings.TrimSpace(e.Getenv(aiAgentEnvVar))
 
-	name := nameFromAIAgentValue(aiAgentValue)
-	if name == "" {
-		// Also covers an agent that sets AI_AGENT in a format that isn't recognised.
-		name = nameFromVendorVariables(e)
+	// Vendor variables also cover an agent that sets AI_AGENT in a format that isn't recognised.
+	if agent := findAIAgentByPrefix(aiAgentNameFromEnvVar); agent != nil {
+		return "AIAgent/" + agent.name
 	}
-	if name == "" && aiAgentValue != "" {
-		name = "Other"
+	if agent := findAIAgentByVariables(e); agent != nil {
+		return "AIAgent/" + agent.name
 	}
-	if name == "" {
-		return ""
+	if aiAgentNameFromEnvVar != "" {
+		return "AIAgent/Other"
 	}
 
-	return "AIAgent/" + name
+	return ""
 }
 
-func nameFromVendorVariables(e Environment) string {
-	for _, agent := range knownAIAgents {
-		for _, rule := range agent.rules {
+func findAIAgentByPrefix(value string) *aiAgent {
+	if value == "" {
+		return nil
+	}
+	normalised := strings.Join(strings.Fields(strings.ReplaceAll(strings.ToLower(value), "_", " ")), "-")
+	for i, agent := range knownAIAgents {
+		if agent.aiAgentPrefix != "" && strings.HasPrefix(normalised, agent.aiAgentPrefix) {
+			return &knownAIAgents[i]
+		}
+	}
+	return nil
+}
+
+func findAIAgentByVariables(e Environment) *aiAgent {
+	for i, agent := range knownAIAgents {
+		for _, rule := range agent.variables {
 			value := e.Getenv(rule.variable)
 			if value == "" {
 				continue
 			}
 			if rule.value == "" || strings.EqualFold(value, rule.value) {
-				return agent.name
+				return &knownAIAgents[i]
 			}
 		}
 	}
-	return ""
-}
-
-func nameFromAIAgentValue(value string) string {
-	if value == "" {
-		return ""
-	}
-	normalised := strings.Join(strings.Fields(strings.ReplaceAll(strings.ToLower(value), "_", " ")), "-")
-	for _, p := range aiAgentValuePrefixes {
-		if strings.HasPrefix(normalised, p.prefix) {
-			return p.name
-		}
-	}
-	return ""
+	return nil
 }
