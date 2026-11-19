@@ -3,8 +3,9 @@ package api_test
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 )
 
 func getAIAgent(variables map[string]string) string {
@@ -20,7 +21,7 @@ func TestGetAIAgent_None(t *testing.T) {
 }
 
 func TestGetAIAgent_DetectsAgentFromVendorVariable(t *testing.T) {
-	require.Equal(t, "AIAgent/ClaudeCode", getAIAgent(map[string]string{"CLAUDECODE": "1"}))
+	require.Equal(t, "(ai-agent=ClaudeCode)", getAIAgent(map[string]string{"CLAUDECODE": "1"}))
 }
 
 func TestGetAIAgent_ValueRulesRequireAMatchingValue(t *testing.T) {
@@ -29,9 +30,9 @@ func TestGetAIAgent_ValueRulesRequireAMatchingValue(t *testing.T) {
 		value    string
 		expected string
 	}{
-		{"CURSOR_EXTENSION_HOST_ROLE", "agent-exec", "AIAgent/Cursor"},
+		{"CURSOR_EXTENSION_HOST_ROLE", "agent-exec", "(ai-agent=Cursor)"},
 		{"CURSOR_EXTENSION_HOST_ROLE", "user", ""},
-		{"AGENT", "amp", "AIAgent/Amp"},
+		{"AGENT", "amp", "(ai-agent=Amp)"},
 		{"AGENT", "teamcity-agent-01", ""},
 	}
 
@@ -52,7 +53,7 @@ func TestGetAIAgent_IgnoresVariablesSetWithoutAnAgent(t *testing.T) {
 
 func TestGetAIAgent_IsDeterministicWhenAgentsAreNested(t *testing.T) {
 	for i := 0; i < 50; i++ {
-		require.Equal(t, "AIAgent/ClaudeCode", getAIAgent(map[string]string{"CURSOR_AGENT": "1", "CLAUDECODE": "1"}))
+		require.Equal(t, "(ai-agent=ClaudeCode)", getAIAgent(map[string]string{"CURSOR_AGENT": "1", "CLAUDECODE": "1"}))
 	}
 }
 
@@ -61,12 +62,12 @@ func TestGetAIAgent_MapsAIAgentToAKnownName(t *testing.T) {
 		value    string
 		expected string
 	}{
-		{"claude-code_2-1-322_agent", "AIAgent/ClaudeCode"},
-		{"Claude Code", "AIAgent/ClaudeCode"},
-		{"github_copilot_vscode_agent", "AIAgent/GitHubCopilot"},
-		{"devin@1", "AIAgent/Devin"},
-		{"custom-agent@2.0", "AIAgent/Other"},
-		{"amplitude-mcp", "AIAgent/Other"},
+		{"claude-code_2-1-322_agent", "(ai-agent=ClaudeCode)"},
+		{"Claude Code", "(ai-agent=ClaudeCode)"},
+		{"github_copilot_vscode_agent", "(ai-agent=GitHubCopilot)"},
+		{"devin@1", "(ai-agent=Devin)"},
+		{"custom-agent@2.0", "(ai-agent=Other)"},
+		{"amplitude-mcp", "(ai-agent=Other)"},
 	}
 
 	for _, c := range cases {
@@ -77,15 +78,15 @@ func TestGetAIAgent_MapsAIAgentToAKnownName(t *testing.T) {
 }
 
 func TestGetAIAgent_AIAgentTakesPrecedenceOverVendorVariables(t *testing.T) {
-	require.Equal(t, "AIAgent/ClaudeCode", getAIAgent(map[string]string{"CURSOR_AGENT": "1", "AI_AGENT": "claude-code_2-1-322_agent"}))
+	require.Equal(t, "(ai-agent=ClaudeCode)", getAIAgent(map[string]string{"CURSOR_AGENT": "1", "AI_AGENT": "claude-code_2-1-322_agent"}))
 }
 
 func TestGetAIAgent_UnrecognisedAIAgentFallsBackToVendorName(t *testing.T) {
-	require.Equal(t, "AIAgent/GeminiCLI", getAIAgent(map[string]string{"GEMINI_CLI": "1", "AI_AGENT": "gcli"}))
+	require.Equal(t, "(ai-agent=GeminiCLI)", getAIAgent(map[string]string{"GEMINI_CLI": "1", "AI_AGENT": "gcli"}))
 }
 
 func TestGetAIAgent_NeverIncludesRawAIAgentValue(t *testing.T) {
-	require.Equal(t, "AIAgent/Other", getAIAgent(map[string]string{"AI_AGENT": "  evil) agent\r\nX-Injected: 1 "}))
+	require.Equal(t, "(ai-agent=Other)", getAIAgent(map[string]string{"AI_AGENT": "  evil) agent\r\nX-Injected: 1 "}))
 	require.Equal(t, "", getAIAgent(map[string]string{"AI_AGENT": " \t "}))
 }
 
@@ -94,5 +95,5 @@ func TestGetAutomationEnvironment_IgnoresAIAgents(t *testing.T) {
 	e.Setenv("CLAUDECODE", "1")
 	e.Setenv("GITHUB_ACTIONS", "true")
 	require.Equal(t, "GitHubActions", api.GetAutomationEnvironment(e))
-	require.Equal(t, "AIAgent/ClaudeCode", api.GetAIAgent(e))
+	require.Equal(t, "(ai-agent=ClaudeCode)", api.GetAIAgent(e))
 }

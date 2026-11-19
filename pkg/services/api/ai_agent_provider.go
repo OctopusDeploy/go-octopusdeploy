@@ -1,6 +1,9 @@
 package api
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // AI agents are detected separately from automation (CI) environments because the two are
 // independent dimensions: an agent commonly runs inside a CI system or on an Octopus worker,
@@ -9,6 +12,9 @@ import "strings"
 // aiAgentEnvVar is the emerging cross-vendor convention for an agent to identify itself.
 // https://github.com/vercel/vercel/tree/main/packages/detect-agent
 const aiAgentEnvVar = "AI_AGENT"
+
+// aiAgentSeparators matches runs of underscores and whitespace, which are normalised to a single hyphen.
+var aiAgentSeparators = regexp.MustCompile(`[_\s]+`)
 
 type aiAgentRule struct {
 	variable string
@@ -66,7 +72,7 @@ var knownAIAgents = []aiAgent{
 	{name: "V0", aiAgentPrefix: "v0"},
 }
 
-// GetAIAgent returns a user agent token naming the AI agent driving this process, or an empty
+// GetAIAgent returns a User-Agent comment naming the AI agent driving this process, or an empty
 // string when none is detected. Only a normalised name is reported: the raw AI_AGENT value is
 // free-form and user-settable, so it is used for matching and never included in the output.
 // Detection is based on self-reported environment variables, so it is suitable for analytics but
@@ -74,31 +80,46 @@ var knownAIAgents = []aiAgent{
 //
 // Examples:
 //
-//	AIAgent/ClaudeCode   AI_AGENT=claude-code_2-1-322_agent, or CLAUDECODE=1
-//	AIAgent/Cursor       CURSOR_AGENT=1
-//	AIAgent/Other        AI_AGENT set to a value that isn't recognised
+//	(ai-agent=ClaudeCode)   AI_AGENT=claude-code_2-1-322_agent, or CLAUDECODE=1
+//	(ai-agent=Cursor)       CURSOR_AGENT=1
+//	(ai-agent=Other)        AI_AGENT set to a value that isn't recognised
 func GetAIAgent(e Environment) string {
 	aiAgentNameFromEnvVar := strings.TrimSpace(e.Getenv(aiAgentEnvVar))
 
 	// Vendor variables also cover an agent that sets AI_AGENT in a format that isn't recognised.
 	if agent := findAIAgentByPrefix(aiAgentNameFromEnvVar); agent != nil {
-		return "AIAgent/" + agent.name
+		return aiAgentComment(agent.name)
 	}
 	if agent := findAIAgentByVariables(e); agent != nil {
-		return "AIAgent/" + agent.name
+		return aiAgentComment(agent.name)
 	}
 	if aiAgentNameFromEnvVar != "" {
-		return "AIAgent/Other"
+		return aiAgentComment("Other")
 	}
 
 	return ""
+}
+
+// aiAgentComment formats the agent as an RFC 9110 comment, so it describes the request rather than
+// claiming to be a product in the User-Agent.
+func aiAgentComment(name string) string {
+	return "(ai-agent=" + name + ")"
+}
+
+// appendAIAgent adds the agent comment to the end of an existing User-Agent, so everything before it
+// is unchanged and existing parsers that match on the start of the header keep working.
+func appendAIAgent(userAgent string, e Environment) string {
+	if aiAgent := GetAIAgent(e); aiAgent != "" {
+		return userAgent + " " + aiAgent
+	}
+	return userAgent
 }
 
 func findAIAgentByPrefix(value string) *aiAgent {
 	if value == "" {
 		return nil
 	}
-	normalised := strings.Join(strings.Fields(strings.ReplaceAll(strings.ToLower(value), "_", " ")), "-")
+	normalised := aiAgentSeparators.ReplaceAllString(strings.ToLower(value), "-")
 	for i, agent := range knownAIAgents {
 		if agent.aiAgentPrefix != "" && matchesAIAgentPrefix(normalised, agent.aiAgentPrefix) {
 			return &knownAIAgents[i]
