@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 func TestSensitiveValueBehaviour(t *testing.T) {
@@ -70,7 +71,7 @@ func TestSensitiveValueBehaviour(t *testing.T) {
 		"NewValue": "%s"
   	}`, hasValue, hint, newValue)
 
-	jsonassert.New(t).Assertf(string(sensitiveValueAsJSON), testWithHintSensitiveValueAsJSON)
+	jsonassert.New(t).Assertf(string(sensitiveValueAsJSON), "%s", testWithHintSensitiveValueAsJSON)
 }
 
 func TestNewSensitiveValueBehaviour(t *testing.T) {

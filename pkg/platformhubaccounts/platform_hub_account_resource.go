@@ -8,28 +8,28 @@ import (
 
 // PlatformHubAccountResource represents details for all Platform Hub accounts.
 type PlatformHubAccountResource struct {
-	AccountType PlatformHubAccountType `json:"AccountType" validate:"required,oneof=AmazonWebServicesAccount AmazonWebServicesOidcAccount AzureOidc AzureServicePrincipal GoogleCloudAccount GenericOidcAccount UsernamePassword"`
-	Description string                 `json:"Description,omitempty"`
-	Name        string                 `json:"Name" validate:"required,notall"`
-	AccessKey                     string                 `json:"AccessKey,omitempty"`
-	SecretKey                     *core.SensitiveValue   `json:"SecretKey,omitempty"`
-	JsonKey                       *core.SensitiveValue   `json:"JsonKey,omitempty"`
-	ExecutionSubjectKeys          []string               `json:"ExecutionSubjectKeys,omitempty"`
-	Audience                      string                 `json:"Audience,omitempty"`
-	Username                      string                 `json:"Username,omitempty"`
-	Password                      *core.SensitiveValue   `json:"Password,omitempty"`
-	SubscriptionNumber            string                 `json:"SubscriptionNumber,omitempty"`
-	TenantID                      string                 `json:"TenantId,omitempty"`
-	ApplicationID                 string                 `json:"ClientId,omitempty"`
-	DeploymentSubjectKeys         []string               `json:"DeploymentSubjectKeys,omitempty"`
-	HealthCheckSubjectKeys        []string               `json:"HealthCheckSubjectKeys,omitempty"`
-	AccountTestSubjectKeys        []string               `json:"AccountTestSubjectKeys,omitempty"`
-	AzureEnvironment              string                 `json:"AzureEnvironment,omitempty"`
-	AuthenticationEndpoint        string                 `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
-	ResourceManagementEndpoint    string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
+	AccountType                PlatformHubAccountType `json:"AccountType" validate:"required,oneof=AmazonWebServicesAccount AmazonWebServicesOidcAccount AzureOidc AzureServicePrincipal GoogleCloudAccount GenericOidcAccount UsernamePassword"`
+	Description                string                 `json:"Description,omitempty"`
+	Name                       string                 `json:"Name" validate:"required,notall"`
+	AccessKey                  string                 `json:"AccessKey,omitempty"`
+	SecretKey                  *core.SensitiveValue   `json:"SecretKey,omitempty"`
+	JsonKey                    *core.SensitiveValue   `json:"JsonKey,omitempty"`
+	ExecutionSubjectKeys       []string               `json:"ExecutionSubjectKeys,omitempty"`
+	Audience                   string                 `json:"Audience,omitempty"`
+	Username                   string                 `json:"Username,omitempty"`
+	Password                   *core.SensitiveValue   `json:"Password,omitempty"`
+	SubscriptionNumber         string                 `json:"SubscriptionNumber,omitempty"`
+	TenantID                   string                 `json:"TenantId,omitempty"`
+	ApplicationID              string                 `json:"ClientId,omitempty"`
+	DeploymentSubjectKeys      []string               `json:"DeploymentSubjectKeys,omitempty"`
+	HealthCheckSubjectKeys     []string               `json:"HealthCheckSubjectKeys,omitempty"`
+	AccountTestSubjectKeys     []string               `json:"AccountTestSubjectKeys,omitempty"`
+	AzureEnvironment           string                 `json:"AzureEnvironment,omitempty"`
+	AuthenticationEndpoint     string                 `json:"ActiveDirectoryEndpointBaseUri,omitempty"`
+	ResourceManagementEndpoint string                 `json:"ResourceManagementEndpointBaseUri,omitempty"`
 
-	RoleArn                string `json:"RoleArn,omitempty"`
-	SessionDuration        string `json:"SessionDuration,omitempty"`
+	RoleArn         string `json:"RoleArn,omitempty"`
+	SessionDuration string `json:"SessionDuration,omitempty"`
 
 	resources.Resource
 }

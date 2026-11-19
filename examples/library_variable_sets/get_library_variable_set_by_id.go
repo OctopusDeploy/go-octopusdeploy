@@ -2,10 +2,10 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/libraryvariablesets"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/libraryvariablesets"
 )
 
 func GetLibraryVariableSetByIDExample() {

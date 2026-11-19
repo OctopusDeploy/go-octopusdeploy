@@ -1,9 +1,10 @@
 package variables
 
 import (
+	"github.com/go-playground/validator/v10"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/go-playground/validator/v10"
 )
 
 type LibraryVariableSet struct {

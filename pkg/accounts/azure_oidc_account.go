@@ -1,11 +1,13 @@
 package accounts
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
+
 	uuid "github.com/google/uuid"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
 )
 
 // AzureOIDCAccount represents an Azure OIDC account.

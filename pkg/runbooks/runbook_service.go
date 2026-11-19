@@ -3,6 +3,8 @@ package runbooks
 import (
 	"strings"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
@@ -11,7 +13,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
 )
 
 type RunbookService struct {
@@ -140,6 +141,13 @@ func DeleteByID(client newclient.Client, spaceID string, ID string) error {
 	return newclient.DeleteByID(client, template, spaceID, ID)
 }
 
+// Get returns runbooks across a space, in a standard Octopus paginated result structure.
+// Use RunbooksQuery to filter by project, name, or ID. To list the runbooks of a single
+// project, List is a convenience wrapper over the project-scoped endpoint.
+func Get(client newclient.Client, spaceID string, runbooksQuery RunbooksQuery) (*resources.Resources[*Runbook], error) {
+	return newclient.GetByQuery[Runbook](client, template, spaceID, runbooksQuery)
+}
+
 // List returns a list of runbooks from the server, in a standard Octopus paginated result structure.
 // If you don't specify --limit the server will use a default limit (typically 30)
 func List(client newclient.Client, spaceID string, projectID string, filter string, limit int) (*resources.Resources[*Runbook], error) {
@@ -238,6 +246,30 @@ func GetSnapshot(client newclient.Client, spaceID string, projectID string, snap
 	}
 
 	return newclient.Get[RunbookSnapshot](client.HttpSession(), expandedUri)
+}
+
+// UpdateSnapshotVariables refreshes (re-snapshots) the variable snapshot for an existing runbook snapshot.
+// It POSTs to /api/{spaceId}/runbookSnapshots/{snapshotId}/snapshot-variables and returns the updated snapshot.
+func UpdateSnapshotVariables(client newclient.Client, spaceID string, snapshotID string) (*RunbookSnapshot, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID")
+	}
+	if snapshotID == "" {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "snapshotID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.RunbookSnapshotVariables, map[string]any{
+		"spaceId":    spaceID,
+		"snapshotId": snapshotID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Post[RunbookSnapshot](client.HttpSession(), expandedUri, nil)
 }
 
 // ListEnvironments returns the list of valid environments for a given runbook

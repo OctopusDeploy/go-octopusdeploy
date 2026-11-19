@@ -1,10 +1,11 @@
 package authentication
 
 import (
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
 )
 
 // AuthenticationService handles communication with Authentication-related methods of the Octopus API.

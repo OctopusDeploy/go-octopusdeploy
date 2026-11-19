@@ -1,14 +1,18 @@
 package runbooks
 
 import (
+	"encoding/json"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/dghubble/sling"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 )
 
 func createRunbookService(t *testing.T) *RunbookService {
@@ -53,4 +57,58 @@ func TestRunbookServiceNew(t *testing.T) {
 			services.NewServiceTests(t, service, uriTemplate, ServiceName)
 		})
 	}
+}
+
+func TestRunbookRunCommandV1_MarshalJSON(t *testing.T) {
+	cmd := RunbookRunCommandV1{
+		RunbookName:      "My Runbook",
+		EnvironmentNames: []string{"Production", "Staging"},
+		Tenants:          []string{"Tenant-1"},
+		TenantTags:       []string{"Region/US", "Tier/Premium"},
+		Snapshot:         "Snapshot-1",
+		CreateExecutionAbstractCommandV1: deployments.CreateExecutionAbstractCommandV1{
+			SpaceID:                "Spaces-1",
+			ProjectIDOrName:        "MyProject",
+			SpecificMachineNames:   []string{"runbook-server1"},
+			ExcludedMachineNames:   []string{"maintenance-server"},
+			SpecificTargetTagNames: []string{"Role/RunbookServer", "Environment/Production"},
+			ExcludedTargetTagNames: []string{"Role/Database", "Maintenance/True"},
+			SkipStepNames:          []string{"Optional Step"},
+		},
+	}
+
+	jsonBytes, err := json.Marshal(cmd)
+	require.NoError(t, err)
+
+	expectedJSON := `{
+		"runbookName": "My Runbook",
+		"environmentNames": ["Production", "Staging"],
+		"tenants": ["Tenant-1"],
+		"tenantTags": ["Region/US", "Tier/Premium"],
+		"snapshot": "Snapshot-1",
+		"spaceId": "Spaces-1",
+		"projectName": "MyProject",
+		"specificMachineNames": ["runbook-server1"],
+		"excludedMachineNames": ["maintenance-server"],
+		"specificTargetTagNames": ["Role/RunbookServer", "Environment/Production"],
+		"excludedTargetTagNames": ["Role/Database", "Maintenance/True"],
+		"skipStepNames": ["Optional Step"],
+		"forcePackageDownload": false,
+		"useGuidedFailure": null
+	}`
+
+	require.JSONEq(t, expectedJSON, string(jsonBytes))
+}
+
+func TestRunbookUpdateSnapshotVariablesValidation(t *testing.T) {
+	_, err := UpdateSnapshotVariables(nil, "Spaces-1", "RunbookSnapshots-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client"), err)
+
+	client := newclient.NewClient(&newclient.HttpSession{})
+
+	_, err = UpdateSnapshotVariables(client, "", "RunbookSnapshots-1")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID"), err)
+
+	_, err = UpdateSnapshotVariables(client, "Spaces-1", "")
+	assert.Equal(t, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "snapshotID"), err)
 }

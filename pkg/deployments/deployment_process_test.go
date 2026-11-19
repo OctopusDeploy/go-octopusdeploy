@@ -7,10 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 )
 
 func TestDeploymentProcessAsJSON(t *testing.T) {
@@ -44,7 +45,7 @@ func TestDeploymentProcessAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, actualJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(actualJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(actualJSON))
 
 	stepName := internal.GetRandomName()
 
@@ -74,5 +75,5 @@ func TestDeploymentProcessAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, actualJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(actualJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(actualJSON))
 }

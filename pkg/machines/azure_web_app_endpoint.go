@@ -22,8 +22,10 @@ func NewAzureWebAppEndpoint() *AzureWebAppEndpoint {
 	return azureWebAppEndpoint
 }
 
-var _ resources.IResource = &AzureWebAppEndpoint{}
-var _ IEndpoint = &AzureWebAppEndpoint{}
+var (
+	_ resources.IResource = &AzureWebAppEndpoint{}
+	_ IEndpoint           = &AzureWebAppEndpoint{}
+)
 
 // GetDefaultWorkerPoolID returns the default worker pool ID of this endpoint.
 func (e AzureWebAppEndpoint) GetDefaultWorkerPoolID() string {

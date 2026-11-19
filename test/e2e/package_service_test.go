@@ -3,15 +3,17 @@ package e2e
 import (
 	"archive/zip"
 	"bytes"
-	cryptoRand "crypto/rand"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	cryptoRand "crypto/rand"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // UploadRandomTestPackage uses the V1 Upload method in go-octopusdeploy. It does not support delta compression
@@ -21,7 +23,7 @@ func UploadRandomTestPackage(t *testing.T, client *client.Client) (*packages.Pac
 	}
 	require.NotNil(t, client)
 
-	var fileName = fmt.Sprintf("%s.1.0.0.zip", internal.GetRandomString(8))
+	fileName := fmt.Sprintf("%s.1.0.0.zip", internal.GetRandomString(8))
 
 	// octopus expects packages to be zip files, best we make a zip
 	zipFileBytes := createZip(t, zippedFile{
@@ -115,7 +117,7 @@ func TestPackageServiceUploadDelta_NotEfficient(t *testing.T) {
 	require.NotNil(t, octopus)
 
 	pkgName := "delta_" + internal.GetRandomString(8)
-	var fileName = fmt.Sprintf("%s.1.0.0.zip", pkgName)
+	fileName := fmt.Sprintf("%s.1.0.0.zip", pkgName)
 
 	zipFileBytes1 := createZip(t, zippedFile{
 		name:    "content.txt",
@@ -136,7 +138,7 @@ func TestPackageServiceUploadDelta_NotEfficient(t *testing.T) {
 
 	assert.Equal(t, packages.DeltaBehaviourNoPreviousFile, initialResponse.UploadInfo.DeltaBehaviour)
 
-	var fileName2 = fmt.Sprintf("%s.2.0.0.zip", pkgName)
+	fileName2 := fmt.Sprintf("%s.2.0.0.zip", pkgName)
 
 	// because the zip files are tiny here, the delta ends up larger than the zip so should produce the "not efficient"
 	// outcome. We need bigger files for Delta to work
@@ -175,7 +177,7 @@ func TestPackageServiceUploadDelta_UploadedDelta(t *testing.T) {
 	require.NotNil(t, octopus)
 
 	pkgName := "delta_" + internal.GetRandomString(8)
-	var fileName = fmt.Sprintf("%s.1.0.0.zip", pkgName)
+	fileName := fmt.Sprintf("%s.1.0.0.zip", pkgName)
 
 	// we need a bigger file to make the delta worthwhile. Random so it shouldn't compress too much
 	randomContent1 := make([]byte, 512*1024)
@@ -201,7 +203,7 @@ func TestPackageServiceUploadDelta_UploadedDelta(t *testing.T) {
 
 	assert.Equal(t, packages.DeltaBehaviourNoPreviousFile, initialResponse.UploadInfo.DeltaBehaviour)
 
-	var fileName2 = fmt.Sprintf("%s.2.0.0.zip", pkgName)
+	fileName2 := fmt.Sprintf("%s.2.0.0.zip", pkgName)
 
 	randomContent2 := make([]byte, 512*1024)
 	_, err = cryptoRand.Read(randomContent2)
@@ -227,12 +229,14 @@ func TestPackageServiceUploadDelta_UploadedDelta(t *testing.T) {
 	require.NotNil(t, deltaResponse)
 	defer DeleteTestPackage(t, octopus, deltaResponse.GetID())
 
-	// it tells us if it did delta via response.UploadInfo
-	// Orion: Note These are the values when run on my machine, but because the data is random, and
-	// due to platform differences they may not always be the same; commented out and left for
-	// explanatory purposes only.
-	assert.Equal(t, int64(1049158), deltaResponse.UploadInfo.FileSize)
-	assert.Equal(t, int64(524938), deltaResponse.UploadInfo.DeltaSize)
+	// it tells us if it did delta via response.UploadInfo.
+	// The exact byte counts depend on the random content and on the zip encoder in the toolchain
+	// building the test (archive/zip's per-entry overhead changed in Go 1.27), so assert the
+	// relationship that actually matters: only content2.txt is new, so the delta should carry
+	// roughly half of the full file rather than all of it.
+	assert.Greater(t, deltaResponse.UploadInfo.FileSize, int64(1024*1024))
+	assert.Less(t, deltaResponse.UploadInfo.DeltaSize, deltaResponse.UploadInfo.FileSize)
+	assert.Greater(t, deltaResponse.UploadInfo.DeltaSize, int64(256*1024))
 	assert.Equal(t, packages.DeltaBehaviourUploadedDeltaFile, deltaResponse.UploadInfo.DeltaBehaviour)
 }
 

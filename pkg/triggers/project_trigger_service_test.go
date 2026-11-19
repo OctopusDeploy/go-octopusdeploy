@@ -3,11 +3,12 @@ package triggers
 import (
 	"testing"
 
+	"github.com/dghubble/sling"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNewProjectTriggerService(t *testing.T) {

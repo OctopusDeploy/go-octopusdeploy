@@ -6,10 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 func TestPlatformHubUsernamePasswordAccountNew(t *testing.T) {
@@ -67,7 +68,7 @@ func TestPlatformHubUsernamePasswordAccountMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, accountAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(accountAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(accountAsJSON))
 }
 
 func TestPlatformHubUsernamePasswordAccountNewWithConfigs(t *testing.T) {

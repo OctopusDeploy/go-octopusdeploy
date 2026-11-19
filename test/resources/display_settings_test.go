@@ -3,12 +3,13 @@ package resources
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 func TestDisplaySettings(t *testing.T) {
@@ -48,7 +49,7 @@ func TestDisplaySettingsAsJson(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, displaySettingsAsJson)
 
-	jsonassert.New(t).Assertf(expectedJson, string(displaySettingsAsJson))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(displaySettingsAsJson))
 }
 
 func TestSelectOptions(t *testing.T) {

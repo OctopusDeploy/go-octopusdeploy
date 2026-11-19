@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 )
 
 func TestAnonymousGitCredentialNew(t *testing.T) {
@@ -27,7 +28,7 @@ func TestAnonymousGitCredentialMarshalJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, anonymousGitCredentialAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(anonymousGitCredentialAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(anonymousGitCredentialAsJSON))
 }
 
 func TestAnonymousGitCredentialUnmarshalJSON(t *testing.T) {

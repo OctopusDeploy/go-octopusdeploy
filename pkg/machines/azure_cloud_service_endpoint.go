@@ -41,5 +41,7 @@ func (a *AzureCloudServiceEndpoint) SetDefaultWorkerPoolID(defaultWorkerPoolID s
 	a.DefaultWorkerPoolID = defaultWorkerPoolID
 }
 
-var _ IEndpointWithAccount = &AzureCloudServiceEndpoint{}
-var _ IRunsOnAWorker = &AzureCloudServiceEndpoint{}
+var (
+	_ IEndpointWithAccount = &AzureCloudServiceEndpoint{}
+	_ IRunsOnAWorker       = &AzureCloudServiceEndpoint{}
+)

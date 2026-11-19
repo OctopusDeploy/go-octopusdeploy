@@ -1,14 +1,15 @@
 package deployments_test
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"testing"
+
+	"github.com/dghubble/sling"
+	"github.com/stretchr/testify/require"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/require"
 )
 
 func createDeploymentProcessService(t *testing.T) *deployments.DeploymentProcessService {

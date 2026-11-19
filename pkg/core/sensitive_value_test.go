@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func ValidateRequiredSensitiveValue(propertyName string, sensitiveValue *SensitiveValue) error {

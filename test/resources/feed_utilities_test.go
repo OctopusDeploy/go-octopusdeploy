@@ -3,9 +3,10 @@ package resources
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/feeds"
-	"github.com/stretchr/testify/require"
 )
 
 func TestToFeed(t *testing.T) {

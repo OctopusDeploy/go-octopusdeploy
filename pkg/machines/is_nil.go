@@ -2,6 +2,8 @@ package machines
 
 func IsNil(i interface{}) bool {
 	switch v := i.(type) {
+	case *AwsEcsClusterEndpoint:
+		return v == nil
 	case *AzureCloudServiceEndpoint:
 		return v == nil
 	case *AzureServiceFabricEndpoint:
@@ -17,6 +19,8 @@ func IsNil(i interface{}) bool {
 	case *EndpointResource:
 		return v == nil
 	case *KubernetesEndpoint:
+		return v == nil
+	case *KubernetesTentacleEndpoint:
 		return v == nil
 	case *ListeningTentacleEndpoint:
 		return v == nil

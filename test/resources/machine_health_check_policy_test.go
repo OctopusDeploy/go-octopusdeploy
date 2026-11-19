@@ -5,10 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 )
 
 func TestMachineHealthCheckPolicyMarshalJSON(t *testing.T) {
@@ -31,7 +32,6 @@ func TestMachineHealthCheckPolicyMarshalJSON(t *testing.T) {
 	actual := string(jsonEncoding)
 
 	jsonassert.New(t).Assertf(actual, machineHealthCheckPolicyAsJSON)
-
 }
 
 func TestMachineHealthCheckPolicyUnmarshalJSON(t *testing.T) {

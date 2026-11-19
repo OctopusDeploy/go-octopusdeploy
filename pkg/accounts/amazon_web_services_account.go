@@ -1,12 +1,13 @@
 package accounts
 
 import (
+	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
-	"github.com/go-playground/validator/v10"
-	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // AmazonWebServicesAccount represents an Amazon Web Services (AWS) account.

@@ -1,12 +1,13 @@
 package dashboard
 
 import (
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
 )
 
 type DashboardService struct {
@@ -20,6 +21,24 @@ func NewDashboardService(sling *sling.Sling, uriTemplate string, dashboardDynami
 		dashboardDynamicPath: dashboardDynamicPath,
 		Service:              services.NewService(constants.ServiceDashboardService, sling, uriTemplate),
 	}
+}
+
+// GetDashboard returns the dashboard, optionally narrowed to a project or
+// release and to the given tenants and tenant tags.
+//
+// Like GetDynamicDashboard, the query filters on IDs rather than names.
+func (s *DashboardService) GetDashboard(query DashboardQuery) (*Dashboard, error) {
+	path, err := s.GetURITemplate().Expand(query)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := api.ApiGet(s.GetClient(), new(Dashboard), path)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.(*Dashboard), nil
 }
 
 // GetDynamicDashboard returns the release currently deployed to each

@@ -1,12 +1,14 @@
 package packages_test
 
 import (
-	"github.com/MakeNowJust/heredoc/v2"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"strings"
 	"testing"
+
+	"github.com/MakeNowJust/heredoc/v2"
+	"github.com/stretchr/testify/assert"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 )
 
 func TestMultipartStreaming(t *testing.T) {

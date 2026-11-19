@@ -14,12 +14,24 @@ type OIDCIdentityQuery struct {
 	Take             int    `uri:"take" url:"take"`
 }
 
+// OIDCIdentityClaimCondition is a condition a token claim must pass before Octopus exchanges the token for an access token.
+// The token passes the condition when its claim matches any one of the values. Values support the same wildcards as the subject.
+type OIDCIdentityClaimCondition struct {
+	Claim  string   `json:"Claim"`
+	Values []string `json:"Values"`
+}
+
 type OIDCIdentity struct {
 	Audience         string `json:"Audience,omitempty"`
 	Issuer           string `json:"Issuer"`
 	Name             string `json:"Name"`
 	ServiceAccountID string `json:"ServiceAccountId"`
 	Subject          string `json:"Subject"`
+
+	// ClaimConditions has no omitempty on purpose.
+	// On update, a nil slice is sent as null and Octopus keeps the existing conditions.
+	// An empty slice is sent as [] and Octopus removes them.
+	ClaimConditions []OIDCIdentityClaimCondition `json:"ClaimConditions"`
 	resources.Resource
 }
 

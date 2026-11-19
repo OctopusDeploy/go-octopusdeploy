@@ -3,12 +3,13 @@ package e2e
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func createActionTemplate(t *testing.T) *actiontemplates.ActionTemplate {
@@ -63,7 +64,7 @@ func TestActionTemplateServiceAdd(t *testing.T) {
 	resource, err = actiontemplates.Add(client, resource)
 	require.NoError(t, err)
 	require.NotNil(t, resource)
-	defer client.ActionTemplates.DeleteByID(resource.GetID())
+	defer func() { _ = client.ActionTemplates.DeleteByID(resource.GetID()) }()
 }
 
 func TestActionTemplateServiceGetCategories(t *testing.T) {

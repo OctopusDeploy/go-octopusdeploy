@@ -461,7 +461,7 @@
       "enum": [
         "Success",
         "ManualMergeRequired",
-        "DefaultParamterValueMissing",
+        "DefaultParameterValueMissing",
         "RemovedPackageInUse"
       ],
       "type": "string"
@@ -2556,7 +2556,7 @@
         }
       }
     },
-    "DeploymentPromomotionTenant": {
+    "DeploymentPromotionTenant": {
       "type": "object",
       "properties": {
         "Id": {
@@ -3037,7 +3037,7 @@
         "TenantPromotions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/DeploymentPromomotionTenant"
+            "$ref": "#/definitions/DeploymentPromotionTenant"
           }
         }
       }
@@ -8127,7 +8127,7 @@
         "TenantPromotions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/DeploymentPromomotionTenant"
+            "$ref": "#/definitions/DeploymentPromotionTenant"
           }
         }
       }

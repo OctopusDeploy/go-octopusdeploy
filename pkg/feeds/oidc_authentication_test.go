@@ -9,13 +9,13 @@ import (
 
 func TestOidcAuthentication_NewAzureOidcAuthentication(t *testing.T) {
 	oidc := NewAzureOidcAuthentication("client-id", "tenant-id", "audience", []string{"subject1", "subject2"})
-	
+
 	assert.Equal(t, OidcAuthenticationTypeAzure, oidc.Type)
 	assert.Equal(t, "client-id", oidc.ClientId)
 	assert.Equal(t, "tenant-id", oidc.TenantId)
 	assert.Equal(t, "audience", oidc.Audience)
 	assert.Equal(t, []string{"subject1", "subject2"}, oidc.SubjectKeys)
-	
+
 	azure, ok := oidc.GetAzure()
 	assert.True(t, ok)
 	assert.Equal(t, "client-id", azure.ClientId)
@@ -26,13 +26,13 @@ func TestOidcAuthentication_NewAzureOidcAuthentication(t *testing.T) {
 
 func TestOidcAuthentication_NewAwsOidcAuthentication(t *testing.T) {
 	oidc := NewAwsOidcAuthentication("3600", "audience", "role-arn", []string{"subject1", "subject2"})
-	
+
 	assert.Equal(t, OidcAuthenticationTypeAWS, oidc.Type)
 	assert.Equal(t, "3600", oidc.SessionDuration)
 	assert.Equal(t, "audience", oidc.Audience)
 	assert.Equal(t, "role-arn", oidc.RoleArn)
 	assert.Equal(t, []string{"subject1", "subject2"}, oidc.SubjectKeys)
-	
+
 	aws, ok := oidc.GetAWS()
 	assert.True(t, ok)
 	assert.Equal(t, "3600", aws.SessionDuration)
@@ -43,11 +43,11 @@ func TestOidcAuthentication_NewAwsOidcAuthentication(t *testing.T) {
 
 func TestOidcAuthentication_NewGoogleOidcAuthentication(t *testing.T) {
 	oidc := NewGoogleOidcAuthentication("audience", []string{"subject1", "subject2"})
-	
+
 	assert.Equal(t, OidcAuthenticationTypeGoogle, oidc.Type)
 	assert.Equal(t, "audience", oidc.Audience)
 	assert.Equal(t, []string{"subject1", "subject2"}, oidc.SubjectKeys)
-	
+
 	google, ok := oidc.GetGoogle()
 	assert.True(t, ok)
 	assert.Equal(t, "audience", google.Audience)
@@ -56,61 +56,61 @@ func TestOidcAuthentication_NewGoogleOidcAuthentication(t *testing.T) {
 
 func TestOidcAuthentication_MarshalJSON_Azure(t *testing.T) {
 	oidc := NewAzureOidcAuthentication("client-id", "tenant-id", "audience", []string{"subject1"})
-	
+
 	data, err := json.Marshal(oidc)
 	assert.NoError(t, err)
-	
+
 	// Verify the JSON structure is flattened
 	var result map[string]interface{}
 	err = json.Unmarshal(data, &result)
 	assert.NoError(t, err)
-	
+
 	assert.Equal(t, "Azure", result["Type"])
 	assert.Equal(t, "client-id", result["ClientId"])
 	assert.Equal(t, "tenant-id", result["TenantId"])
 	assert.Equal(t, "audience", result["Audience"])
 	assert.Equal(t, []interface{}{"subject1"}, result["SubjectKeys"])
-	
+
 	// Should not have nested Data field
 	assert.Nil(t, result["Data"])
 }
 
 func TestOidcAuthentication_MarshalJSON_AWS(t *testing.T) {
 	oidc := NewAwsOidcAuthentication("3600", "audience", "role-arn", []string{"subject1"})
-	
+
 	data, err := json.Marshal(oidc)
 	assert.NoError(t, err)
-	
+
 	// Verify the JSON structure is flattened
 	var result map[string]interface{}
 	err = json.Unmarshal(data, &result)
 	assert.NoError(t, err)
-	
+
 	assert.Equal(t, "AWS", result["Type"])
 	assert.Equal(t, "3600", result["SessionDuration"])
 	assert.Equal(t, "audience", result["Audience"])
 	assert.Equal(t, "role-arn", result["RoleArn"])
 	assert.Equal(t, []interface{}{"subject1"}, result["SubjectKeys"])
-	
+
 	// Should not have nested Data field
 	assert.Nil(t, result["Data"])
 }
 
 func TestOidcAuthentication_MarshalJSON_Google(t *testing.T) {
 	oidc := NewGoogleOidcAuthentication("audience", []string{"subject1"})
-	
+
 	data, err := json.Marshal(oidc)
 	assert.NoError(t, err)
-	
+
 	// Verify the JSON structure is flattened
 	var result map[string]interface{}
 	err = json.Unmarshal(data, &result)
 	assert.NoError(t, err)
-	
+
 	assert.Equal(t, "Google", result["Type"])
 	assert.Equal(t, "audience", result["Audience"])
 	assert.Equal(t, []interface{}{"subject1"}, result["SubjectKeys"])
-	
+
 	// Should not have nested Data field
 	assert.Nil(t, result["Data"])
 }
@@ -118,16 +118,16 @@ func TestOidcAuthentication_MarshalJSON_Google(t *testing.T) {
 func TestOidcAuthentication_UnmarshalJSON_Azure(t *testing.T) {
 	// Create Azure OIDC using constructor
 	expectedOidc := NewAzureOidcAuthentication("client-id", "tenant-id", "audience", []string{"subject1", "subject2"})
-	
+
 	// Marshal to JSON
 	data, err := json.Marshal(expectedOidc)
 	assert.NoError(t, err)
-	
+
 	// Unmarshal back
 	var oidc OidcAuthentication
 	err = json.Unmarshal(data, &oidc)
 	assert.NoError(t, err)
-	
+
 	// Verify the unmarshaled data matches the original
 	assert.Equal(t, expectedOidc.Type, oidc.Type)
 	assert.Equal(t, expectedOidc.ClientId, oidc.ClientId)
@@ -139,16 +139,16 @@ func TestOidcAuthentication_UnmarshalJSON_Azure(t *testing.T) {
 func TestOidcAuthentication_UnmarshalJSON_AWS(t *testing.T) {
 	// Create AWS OIDC using constructor
 	expectedOidc := NewAwsOidcAuthentication("3600", "audience", "role-arn", []string{"subject1", "subject2"})
-	
+
 	// Marshal to JSON
 	data, err := json.Marshal(expectedOidc)
 	assert.NoError(t, err)
-	
+
 	// Unmarshal back
 	var oidc OidcAuthentication
 	err = json.Unmarshal(data, &oidc)
 	assert.NoError(t, err)
-	
+
 	// Verify the unmarshaled data matches the original
 	assert.Equal(t, expectedOidc.Type, oidc.Type)
 	assert.Equal(t, expectedOidc.SessionDuration, oidc.SessionDuration)
@@ -160,16 +160,16 @@ func TestOidcAuthentication_UnmarshalJSON_AWS(t *testing.T) {
 func TestOidcAuthentication_UnmarshalJSON_Google(t *testing.T) {
 	// Create Google OIDC using constructor
 	expectedOidc := NewGoogleOidcAuthentication("audience", []string{"subject1", "subject2"})
-	
+
 	// Marshal to JSON
 	data, err := json.Marshal(expectedOidc)
 	assert.NoError(t, err)
-	
+
 	// Unmarshal back
 	var oidc OidcAuthentication
 	err = json.Unmarshal(data, &oidc)
 	assert.NoError(t, err)
-	
+
 	// Verify the unmarshaled data matches the original
 	assert.Equal(t, expectedOidc.Type, oidc.Type)
 	assert.Equal(t, expectedOidc.Audience, oidc.Audience)
@@ -178,12 +178,12 @@ func TestOidcAuthentication_UnmarshalJSON_Google(t *testing.T) {
 
 func TestOidcAuthentication_GetWrongType(t *testing.T) {
 	oidc := NewAzureOidcAuthentication("client-id", "tenant-id", "audience", []string{"subject1"})
-	
+
 	// Try to get AWS data from Azure OIDC
 	aws, ok := oidc.GetAWS()
 	assert.False(t, ok)
 	assert.Nil(t, aws)
-	
+
 	// Try to get Google data from Azure OIDC
 	google, ok := oidc.GetGoogle()
 	assert.False(t, ok)
@@ -235,4 +235,4 @@ func TestOidcAuthentication_UnmarshalJSON_OnlyAudienceAndSubjectKeys_IsGoogle(t 
 	assert.Equal(t, OidcAuthenticationTypeGoogle, oidc.Type)
 	assert.Equal(t, "audience", oidc.Audience)
 	assert.Equal(t, []string{"subject1"}, oidc.SubjectKeys)
-} 
+}

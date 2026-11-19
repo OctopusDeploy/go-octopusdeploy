@@ -3,9 +3,10 @@ package environments
 import (
 	"encoding/json"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/extensions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/go-playground/validator/v10"
 )
 
 type Environment struct {
@@ -94,7 +95,7 @@ func (e *Environment) UnmarshalJSON(data []byte) error {
 
 			if extensionSettingsItem["ExtensionId"] != nil {
 				var extensionID extensions.ExtensionID
-				json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
+				_ = json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
 
 				switch extensionID {
 				case extensions.JiraExtensionID:

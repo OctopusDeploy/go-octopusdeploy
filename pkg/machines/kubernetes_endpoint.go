@@ -5,11 +5,12 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 )
 
 type KubernetesEndpoint struct {
@@ -164,7 +165,7 @@ func (k *KubernetesEndpoint) UnmarshalJSON(data []byte) error {
 
 		if authenticationProperties["AuthenticationType"] != nil {
 			at := authenticationProperties["AuthenticationType"]
-			json.Unmarshal(*at, &authenticationType)
+			_ = json.Unmarshal(*at, &authenticationType)
 		}
 	}
 
@@ -216,6 +217,8 @@ func (k *KubernetesEndpoint) Validate() error {
 	return validator.New().Struct(k)
 }
 
-var _ IEndpoint = &KubernetesEndpoint{}
-var _ IEndpointWithProxy = &KubernetesEndpoint{}
-var _ IRunsOnAWorker = &KubernetesEndpoint{}
+var (
+	_ IEndpoint          = &KubernetesEndpoint{}
+	_ IEndpointWithProxy = &KubernetesEndpoint{}
+	_ IRunsOnAWorker     = &KubernetesEndpoint{}
+)

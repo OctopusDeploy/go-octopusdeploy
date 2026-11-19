@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/gitdependencies"
-
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/packages"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
@@ -24,6 +23,7 @@ type Release struct {
 	SpaceID                            string                                   `json:"SpaceId,omitempty"`
 	Version                            string                                   `json:"Version"`
 	CustomFields                       map[string]string                        `json:"CustomFields,omitempty"`
+	VariableSnapshotConcurrencyToken   string                                   `json:"VariableSnapshotConcurrencyToken,omitempty"`
 
 	resources.Resource
 }

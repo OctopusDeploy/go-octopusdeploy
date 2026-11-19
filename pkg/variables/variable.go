@@ -10,8 +10,12 @@ type Variable struct {
 	Prompt      *VariablePromptOptions `json:"Prompt,omitempty"`
 	Scope       VariableScope          `json:"Scope"`
 	Type        string                 `json:"Type"`
-	Value       string                 `json:"Value"`
-	SpaceID     string                 `json:"SpaceId,omitempty"`
+	// Value is never populated for a sensitive variable: the server returns null and it reads
+	// back as an empty string. Preserving an existing secret across an update therefore depends
+	// on sending the variable's ID, not on the value. Writing a sensitive variable with an empty
+	// Value and no ID replaces the stored secret with an empty string.
+	Value   string `json:"Value"`
+	SpaceID string `json:"SpaceId,omitempty"`
 
 	resources.Resource
 }

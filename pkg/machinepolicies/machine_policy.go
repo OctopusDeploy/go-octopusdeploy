@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type MachinePolicy struct {
@@ -67,18 +68,18 @@ func (m *MachinePolicy) MarshalJSON() ([]byte, error) {
 		SpaceID                                       string                              `json:"SpaceId,omitempty"`
 		resources.Resource
 	}{
-		ConnectionConnectTimeout:                      ToTimeSpan(m.ConnectionConnectTimeout),
-		ConnectionRetryCountLimit:                     m.ConnectionRetryCountLimit,
-		ConnectionRetrySleepInterval:                  ToTimeSpan(m.ConnectionRetrySleepInterval),
-		ConnectionRetryTimeLimit:                      ToTimeSpan(m.ConnectionRetryTimeLimit),
-		Description:                                   m.Description,
-		IsDefault:                                     m.IsDefault,
-		MachineCleanupPolicy:                          m.MachineCleanupPolicy,
-		MachineConnectivityPolicy:                     m.MachineConnectivityPolicy,
-		MachineHealthCheckPolicy:                      m.MachineHealthCheckPolicy,
-		MachineUpdatePolicy:                           m.MachineUpdatePolicy,
-		MachinePackageCacheRetentionPolicy:            m.MachinePackageCacheRetentionPolicy,
-		Name:                                          m.Name,
+		ConnectionConnectTimeout:           ToTimeSpan(m.ConnectionConnectTimeout),
+		ConnectionRetryCountLimit:          m.ConnectionRetryCountLimit,
+		ConnectionRetrySleepInterval:       ToTimeSpan(m.ConnectionRetrySleepInterval),
+		ConnectionRetryTimeLimit:           ToTimeSpan(m.ConnectionRetryTimeLimit),
+		Description:                        m.Description,
+		IsDefault:                          m.IsDefault,
+		MachineCleanupPolicy:               m.MachineCleanupPolicy,
+		MachineConnectivityPolicy:          m.MachineConnectivityPolicy,
+		MachineHealthCheckPolicy:           m.MachineHealthCheckPolicy,
+		MachineUpdatePolicy:                m.MachineUpdatePolicy,
+		MachinePackageCacheRetentionPolicy: m.MachinePackageCacheRetentionPolicy,
+		Name:                               m.Name,
 		PollingRequestMaximumMessageProcessingTimeout: ToTimeSpan(m.PollingRequestMaximumMessageProcessingTimeout),
 		PollingRequestQueueTimeout:                    ToTimeSpan(m.PollingRequestQueueTimeout),
 		SpaceID:                                       m.SpaceID,

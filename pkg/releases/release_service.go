@@ -1,16 +1,20 @@
 package releases
 
 import (
+	"fmt"
+
+	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/channels"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 )
 
 type ReleaseService struct {
@@ -125,7 +129,6 @@ func GetMissingPackages(client newclient.Client, release *Release) ([]MissingPac
 		"spaceId":   spaceID,
 		"releaseId": release.ID,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +156,6 @@ func GetReleaseDeploymentTemplate(client newclient.Client, spaceID string, relea
 		"spaceId":   spaceID,
 		"releaseId": releaseID,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -164,6 +166,30 @@ func GetReleaseDeploymentTemplate(client newclient.Client, spaceID string, relea
 	}
 
 	return res, nil
+}
+
+// UpdateSnapshotVariables refreshes (re-snapshots) the variable snapshot for an existing release.
+// It POSTs to /api/{spaceId}/releases/{releaseId}/snapshot-variables and returns the updated release.
+func UpdateSnapshotVariables(client newclient.Client, spaceID string, releaseID string) (*Release, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "client")
+	}
+	if spaceID == "" {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "spaceID")
+	}
+	if releaseID == "" {
+		return nil, internal.CreateInvalidParameterError("UpdateSnapshotVariables", "releaseID")
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseSnapshotVariables, map[string]any{
+		"spaceId":   spaceID,
+		"releaseId": releaseID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return newclient.Post[Release](client.HttpSession(), expandedUri, nil)
 }
 
 // ----- Experimental ---------------------------------------------------------
@@ -232,4 +258,42 @@ func GetReleaseInProject(client newclient.Client, spaceID string, projectID stri
 		return nil, err
 	}
 	return newclient.Get[Release](client.HttpSession(), expandedUri)
+}
+
+// SnapshotVariablesByName requires octopus feature toggle partial-updates-on-variables = true
+func SnapshotVariablesByName(client newclient.Client, release *Release, variables []core.VariableIdentifier, concurrencyToken *string) (*Release, error) {
+	if client == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "client")
+	}
+	if release == nil {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "release")
+	}
+	if len(variables) == 0 {
+		return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", "variables")
+	}
+
+	for i, v := range variables {
+		if v.Name == "" {
+			return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", fmt.Sprintf("variables[%d].Name", i))
+		}
+		if v.OwnerID == "" {
+			return nil, internal.CreateInvalidParameterError("SnapshotVariablesByName", fmt.Sprintf("variables[%d].OwnerId", i))
+		}
+	}
+
+	spaceId, err := internal.GetSpaceID(release.SpaceID, client.GetSpaceID())
+	if err != nil {
+		return nil, err
+	}
+
+	expandedUri, err := client.URITemplateCache().Expand(uritemplates.ReleaseSnapshotVariablesByName, map[string]any{
+		"spaceId":   spaceId,
+		"releaseId": release.ID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	command := core.SnapshotVariablesByNameCommand{Variables: variables, VariableSnapshotConcurrencyToken: concurrencyToken}
+	return newclient.Post[Release](client.HttpSession(), expandedUri, command)
 }

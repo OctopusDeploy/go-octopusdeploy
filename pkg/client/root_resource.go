@@ -1,10 +1,12 @@
 package client
 
 import (
+	"github.com/go-playground/validator/v10"
+
+	uuid "github.com/google/uuid"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/go-playground/validator/v10"
-	uuid "github.com/google/uuid"
 )
 
 type RootResource struct {

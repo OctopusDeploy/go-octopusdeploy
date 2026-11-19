@@ -8,9 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/dghubble/sling"
 	"github.com/google/uuid"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -26,7 +27,7 @@ func GetRandomString(length int) string {
 
 func GetRandomName() string {
 	fullName := fmt.Sprintf("test-id %s", uuid.New())
-	fullName = fullName[0:44] //Some names in Octopus have a max limit of 50 characters (such as Environment Name)
+	fullName = fullName[0:44] // Some names in Octopus have a max limit of 50 characters (such as Environment Name)
 	return fullName
 }
 

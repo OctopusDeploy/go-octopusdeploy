@@ -1,12 +1,13 @@
 package accounts
 
 import (
+	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
-	"github.com/go-playground/validator/v10"
-	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // ISSHKeyAccount defines the interface for SSH key accounts.
@@ -54,7 +55,7 @@ func NewSSHKeyAccount(name string, username string, privateKeyFile *core.Sensiti
 	return &account, nil
 }
 
-// SetPrivateKeyPassphrase sets the private key [assphrase of this SSH key pair account.
+// SetPrivateKeyPassphrase sets the private key passphrase of this SSH key pair account.
 func (s *SSHKeyAccount) SetPrivateKeyPassphrase(privateKeyPassphrase *core.SensitiveValue) {
 	s.PrivateKeyPassphrase = privateKeyPassphrase
 }

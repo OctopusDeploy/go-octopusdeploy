@@ -3,16 +3,11 @@ package runbooks
 import (
 	"testing"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/dghubble/sling"
 )
-
-func createRunbookProcessService(t *testing.T) *RunbookProcessService {
-	service := NewRunbookProcessService(nil, constants.TestURIRunbookProcesses)
-	services.NewServiceTests(t, service, constants.TestURIRunbookProcesses, constants.ServiceRunbookProcessService)
-	return service
-}
 
 func TestRunbookProcessServiceNew(t *testing.T) {
 	ServiceFunction := NewRunbookProcessService

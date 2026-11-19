@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kinbiko/jsonassert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/extensions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
-	"github.com/kinbiko/jsonassert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestExtensionSettingsMarshalJSON(t *testing.T) {
@@ -64,5 +65,5 @@ func TestExtensionSettingsMarshalJSON(t *testing.T) {
 		standardChangeTemplateName,
 	)
 
-	jsonassert.New(t).Assertf(expectedJson, string(serviceNowExtensionSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(serviceNowExtensionSettingsAsJSON))
 }

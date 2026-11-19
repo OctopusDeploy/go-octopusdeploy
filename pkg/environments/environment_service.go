@@ -1,13 +1,14 @@
 package environments
 
 import (
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
-	"github.com/dghubble/sling"
 )
 
 type EnvironmentService struct {
@@ -134,7 +135,7 @@ func (s *EnvironmentService) GetByName(name string) ([]*Environment, error) {
 	return services.GetPagedResponse[Environment](s, path)
 }
 
-// GetByPartialName performs a lookup and returns enironments with a matching
+// GetByPartialName performs a lookup and returns environments with a matching
 // partial name.
 func (s *EnvironmentService) GetByPartialName(partialName string) ([]*Environment, error) {
 	if internal.IsEmpty(partialName) {

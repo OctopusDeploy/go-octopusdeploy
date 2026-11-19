@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"sync/atomic"
 	"testing"
+
+	"github.com/dghubble/sling"
+	"github.com/stretchr/testify/assert"
 )
 
 func GoBegin[TResult any](action func() TResult) chan TResult {
@@ -52,7 +53,7 @@ type MockHttpServer struct {
 	Response chan responseOrError
 
 	// so test code can detect unanswered requests or responses at the end.
-	// Not strictly neccessary as unanswered req/resp results in a channel deadlock
+	// Not strictly necessary as unanswered req/resp results in a channel deadlock
 	// and go panics and kills the process, so we find out about it, but this is a bit
 	// less confusing to troubleshoot
 	pendingMsgCount int32
@@ -139,7 +140,7 @@ type RequestWrapper struct {
 func (r *RequestWrapper) RespondWithText(body string) {
 	r.Server.Respond(&http.Response{
 		StatusCode:    http.StatusOK,
-		Body:          ioutil.NopCloser(strings.NewReader(body)),
+		Body:          io.NopCloser(strings.NewReader(body)),
 		ContentLength: int64(len(body)),
 	}, nil)
 }
@@ -157,7 +158,7 @@ func (r *RequestWrapper) RespondWith(responseObject any) {
 	// appropriate status code
 	r.Server.Respond(&http.Response{
 		StatusCode:    http.StatusOK,
-		Body:          ioutil.NopCloser(bytes.NewReader(body)),
+		Body:          io.NopCloser(bytes.NewReader(body)),
 		ContentLength: int64(len(body)),
 	}, nil)
 }

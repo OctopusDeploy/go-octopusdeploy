@@ -1,8 +1,9 @@
 package machines
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 // IEndpoint defines the interface for endpoints.
@@ -15,7 +16,7 @@ type IEndpoint interface {
 // endpoint is the base definition of an endpoint and describes its
 // communication style (SSH, Kubernetes, etc.)
 type endpoint struct {
-	CommunicationStyle string `json:"CommunicationStyle,omitempty" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster AzureWebApp Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive KubernetesTentacle"`
+	CommunicationStyle string `json:"CommunicationStyle,omitempty" validate:"required,oneof=AzureCloudService AzureServiceFabricCluster AzureWebApp Ftp Kubernetes None OfflineDrop Ssh TentacleActive TentaclePassive KubernetesTentacle AwsEcsCluster"`
 
 	resources.Resource
 }

@@ -3,9 +3,10 @@ package e2e
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/retention"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
-	"github.com/stretchr/testify/require"
 )
 
 func TestReadLifecycleReleaseRetentionDefaultPolicy(t *testing.T) {

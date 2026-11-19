@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 )
 
 func TestDefectAsJSON(t *testing.T) {
@@ -28,7 +29,7 @@ func TestDefectAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, actualJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(actualJSON))
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(actualJSON))
 }
 
 func TestDefectWithStatusAsJSON(t *testing.T) {
@@ -53,6 +54,5 @@ func TestDefectWithStatusAsJSON(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, actualJSON)
 
-	jsonassert.New(t).Assertf(expectedJSON, string(actualJSON))
-
+	jsonassert.New(t).Assertf(expectedJSON, "%s", string(actualJSON))
 }

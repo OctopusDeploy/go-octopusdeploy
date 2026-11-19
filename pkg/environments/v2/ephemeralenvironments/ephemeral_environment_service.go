@@ -61,7 +61,6 @@ func Add(client newclient.Client, spaceID string, projectID string, environmentN
 		"projectId": projectID,
 		"spaceId":   spaceID,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +76,6 @@ func DeprovisionForProject(client newclient.Client, spaceID string, environmentI
 		"projectId": projectId,
 		"spaceId":   spaceID,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +90,6 @@ func Deprovision(client newclient.Client, spaceID string, environmentId string) 
 		"id":      environmentId,
 		"spaceId": spaceID,
 	})
-
 	if err != nil {
 		return nil, err
 	}

@@ -3,10 +3,11 @@ package resources
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/certificates"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	"github.com/stretchr/testify/require"
 )
 
 func TestEmptyCertificateResource(t *testing.T) {

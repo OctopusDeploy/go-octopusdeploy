@@ -1,8 +1,9 @@
 package resources
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/dghubble/sling"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 )
 
 type IResources[T any] interface {
@@ -15,7 +16,7 @@ type Resources[T any] struct {
 	PagedResults
 }
 
-// GetNextPage retrives the next page from the links collection. If no next page
+// GetNextPage retrieves the next page from the links collection. If no next page
 // exists it will return nill
 func (r *Resources[T]) GetNextPage(client *sling.Sling) (*Resources[T], error) {
 	if r.Links.PageNext == "" {
@@ -28,7 +29,7 @@ func (r *Resources[T]) GetNextPage(client *sling.Sling) (*Resources[T], error) {
 	return response.(*Resources[T]), nil
 }
 
-// GetAllPages will retrive all remaining next pages in the link collection
+// GetAllPages will retrieve all remaining next pages in the link collection
 // and return the result as list of concatenated Items; Including the items
 // from the base Resource.
 func (r *Resources[T]) GetAllPages(client *sling.Sling) ([]T, error) {

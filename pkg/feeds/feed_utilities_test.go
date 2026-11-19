@@ -71,7 +71,6 @@ func TestECR(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -93,7 +92,6 @@ func TestECR(t *testing.T) {
 	if *typedFeed.SecretKey.NewValue != secretKey {
 		t.Fatalf("SecretKey does not match")
 	}
-
 }
 
 func TestBuiltIn(t *testing.T) {
@@ -122,7 +120,6 @@ func TestBuiltIn(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -148,7 +145,6 @@ func TestBuiltIn(t *testing.T) {
 	if !typedFeed.IsBuiltInRepoSyncEnabled {
 		t.Fatalf("IsBuiltInRepoSyncEnabled does not match")
 	}
-
 }
 
 func TestDocker(t *testing.T) {
@@ -177,7 +173,6 @@ func TestDocker(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -227,7 +222,6 @@ func TestGitHub(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -277,7 +271,6 @@ func TestHelm(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -319,7 +312,6 @@ func TestMaven(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -369,7 +361,6 @@ func TestNpm(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -407,7 +398,6 @@ func TestNpmToResource(t *testing.T) {
 	feed.SetUsername("testuser")
 
 	feedResource, err := ToFeedResource(&feed)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned. %s", err)
 	}
@@ -463,7 +453,6 @@ func TestNuget(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -489,7 +478,6 @@ func TestNuget(t *testing.T) {
 	if typedFeed.FeedURI != "http://example.com" {
 		t.Fatalf("FeedURI does not match")
 	}
-
 }
 
 func TestOctopusProject(t *testing.T) {
@@ -518,7 +506,6 @@ func TestOctopusProject(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -528,7 +515,6 @@ func TestOctopusProject(t *testing.T) {
 	if typedFeed.Name != "MyFeed" {
 		t.Fatalf("Name does not match")
 	}
-
 }
 
 func TestArtifactory(t *testing.T) {
@@ -557,7 +543,6 @@ func TestArtifactory(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -579,7 +564,6 @@ func TestArtifactory(t *testing.T) {
 	if typedFeed.FeedURI != "http://example.com" {
 		t.Fatalf("FeedURI does not match")
 	}
-
 }
 
 func TestS3(t *testing.T) {
@@ -614,7 +598,6 @@ func TestS3(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned")
 	}
@@ -664,7 +647,6 @@ func TestOCIRegistry(t *testing.T) {
 	}
 
 	feed, err := ToFeed(&feedResource)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned. %s", err)
 	}
@@ -691,7 +673,6 @@ func TestOCIRegistryToResource(t *testing.T) {
 	}
 
 	feedResource, err := ToFeedResource(&feed)
-
 	if err != nil {
 		t.Fatalf("Error should not have been returned. %s", err)
 	}

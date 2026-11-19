@@ -12,12 +12,12 @@ type ResourceEventsSessionId string
 // BeginResourceEventsSessionRequest represents a request to begin a resource events session
 // Request to start monitoring events for a specific Kubernetes resource
 type BeginResourceEventsSessionRequest struct {
-	SpaceID                            string `json:"spaceId" validate:"required"`
-	ProjectID                          string `json:"projectId" validate:"required"`
-	EnvironmentID                      string `json:"environmentId" validate:"required"`
-	TenantID                          *string `json:"tenantId,omitempty"`
-	MachineID                         string `json:"machineId" validate:"required"`
-	DesiredOrKubernetesMonitoredResourceID string `json:"desiredOrKubernetesMonitoredResourceId" validate:"required"`
+	SpaceID                                string  `json:"spaceId" validate:"required"`
+	ProjectID                              string  `json:"projectId" validate:"required"`
+	EnvironmentID                          string  `json:"environmentId" validate:"required"`
+	TenantID                               *string `json:"tenantId,omitempty"`
+	MachineID                              string  `json:"machineId" validate:"required"`
+	DesiredOrKubernetesMonitoredResourceID string  `json:"desiredOrKubernetesMonitoredResourceId" validate:"required"`
 }
 
 // BeginResourceEventsSessionResponse represents the response for beginning a resource events session
@@ -64,10 +64,10 @@ type MonitorErrorResource struct {
 // NewBeginResourceEventsSessionRequest creates a new BeginResourceEventsSessionRequest
 func NewBeginResourceEventsSessionRequest(spaceID, projectID, environmentID, machineID, desiredOrKubernetesMonitoredResourceID string) *BeginResourceEventsSessionRequest {
 	return &BeginResourceEventsSessionRequest{
-		SpaceID:                            spaceID,
-		ProjectID:                          projectID,
-		EnvironmentID:                      environmentID,
-		MachineID:                         machineID,
+		SpaceID:                                spaceID,
+		ProjectID:                              projectID,
+		EnvironmentID:                          environmentID,
+		MachineID:                              machineID,
 		DesiredOrKubernetesMonitoredResourceID: desiredOrKubernetesMonitoredResourceID,
 	}
 }

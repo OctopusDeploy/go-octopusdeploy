@@ -72,5 +72,7 @@ func (j *JiraServiceManagementExtensionSettings) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-var _ extensions.ExtensionSettings = &JiraServiceManagementExtensionSettings{}
-var _ extensions.ChangeControlExtensionSettings = &JiraServiceManagementExtensionSettings{}
+var (
+	_ extensions.ExtensionSettings              = &JiraServiceManagementExtensionSettings{}
+	_ extensions.ChangeControlExtensionSettings = &JiraServiceManagementExtensionSettings{}
+)

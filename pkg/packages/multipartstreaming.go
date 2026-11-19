@@ -32,7 +32,7 @@ func NewMultipartFileStreamingReader(fileName string, fileReader io.Reader) *Mul
 // internally we generate multipart header/boundary data, and write it, combined with the file contents.
 func (m *MultipartFileStreamingReader) Read(p []byte) (int, error) {
 	pWriter := byteSliceWriter{Buf: p} // it's called pWriter because it writes to p
-	var err error = nil
+	var err error
 
 	// spillover from previous packet
 	if m.spill != nil {

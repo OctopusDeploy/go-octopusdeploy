@@ -3,8 +3,9 @@ package resources
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 )
 
 func TestVariableScope(t *testing.T) {

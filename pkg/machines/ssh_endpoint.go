@@ -5,8 +5,9 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 type IEndpointWithFingerprint interface {
@@ -75,7 +76,7 @@ func (s *SSHEndpoint) GetProxyID() string {
 func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 	sshEndpoint := struct {
 		AccountID          string `json:"AccountId,omitempty"`
-		ComunicationStyle  string `json:"CommunicationStyle" validate:"required,eq=Ssh"`
+		CommunicationStyle string `json:"CommunicationStyle" validate:"required,eq=Ssh"`
 		DotNetCorePlatform string
 		Fingerprint        string
 		Host               string
@@ -85,7 +86,7 @@ func (s *SSHEndpoint) MarshalJSON() ([]byte, error) {
 		resources.Resource
 	}{
 		AccountID:          s.AccountID,
-		ComunicationStyle:  s.CommunicationStyle,
+		CommunicationStyle: s.CommunicationStyle,
 		DotNetCorePlatform: s.DotNetCorePlatform,
 		Fingerprint:        s.Fingerprint,
 		Host:               s.Host,
@@ -154,8 +155,10 @@ func (s *SSHEndpoint) Validate() error {
 	return validator.New().Struct(s)
 }
 
-var _ IEndpoint = &SSHEndpoint{}
-var _ IEndpointWithAccount = &SSHEndpoint{}
-var _ IEndpointWithFingerprint = &SSHEndpoint{}
-var _ IEndpointWithHostname = &SSHEndpoint{}
-var _ IEndpointWithProxy = &SSHEndpoint{}
+var (
+	_ IEndpoint                = &SSHEndpoint{}
+	_ IEndpointWithAccount     = &SSHEndpoint{}
+	_ IEndpointWithFingerprint = &SSHEndpoint{}
+	_ IEndpointWithHostname    = &SSHEndpoint{}
+	_ IEndpointWithProxy       = &SSHEndpoint{}
+)

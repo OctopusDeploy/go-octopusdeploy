@@ -6,10 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/deployments"
 )
 
 func CreateTestKubernetesAwsEndpoint(t *testing.T) *KubernetesEndpoint {
@@ -114,7 +115,7 @@ func TestKubernetesEndpointMarshalJSON(t *testing.T) {
 		}
 	}`
 
-	jsonassert.New(t).Assertf(actual, expected)
+	jsonassert.New(t).Assertf(actual, "%s", expected)
 }
 
 func TestKubernetesEndpointUnmarshalJSON(t *testing.T) {

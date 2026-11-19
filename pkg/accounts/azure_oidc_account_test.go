@@ -3,10 +3,12 @@ package accounts
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
+	uuid "github.com/google/uuid"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
-	uuid "github.com/google/uuid"
-	"github.com/stretchr/testify/require"
 )
 
 func TestAzureOIDCAccount(t *testing.T) {

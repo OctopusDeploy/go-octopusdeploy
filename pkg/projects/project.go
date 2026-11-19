@@ -3,12 +3,13 @@ package projects
 import (
 	"encoding/json"
 
+	"github.com/go-playground/validator/v10"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actiontemplates"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/extensions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
-	"github.com/go-playground/validator/v10"
 )
 
 type Project struct {
@@ -176,7 +177,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 
 			if extensionSettingsItem["ExtensionId"] != nil {
 				var extensionID extensions.ExtensionID
-				json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
+				_ = json.Unmarshal(*extensionSettingsItem["ExtensionId"], &extensionID)
 
 				switch extensionID {
 				case extensions.JiraServiceManagementExtensionID:
@@ -213,7 +214,7 @@ func (p *Project) UnmarshalJSON(data []byte) error {
 
 		if persistenceSettingsProperties["Type"] != nil {
 			pst := persistenceSettingsProperties["Type"]
-			json.Unmarshal(*pst, &persistenceSettingsType)
+			_ = json.Unmarshal(*pst, &persistenceSettingsType)
 		}
 	}
 

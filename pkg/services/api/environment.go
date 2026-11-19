@@ -6,8 +6,7 @@ type Environment interface {
 	Getenv(key string) string
 }
 
-type OsEnvironment struct {
-}
+type OsEnvironment struct{}
 
 type MockEnvironment struct {
 	values map[string]string

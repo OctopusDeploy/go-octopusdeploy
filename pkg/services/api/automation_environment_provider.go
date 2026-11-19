@@ -44,7 +44,7 @@ var knownEnvironments = map[string][]string{
 }
 
 func GetAutomationEnvironment(e Environment) string {
-	var environment = "NoneOrUnknown"
+	environment := "NoneOrUnknown"
 	for key, variables := range knownEnvironments {
 		for _, v := range variables {
 			if e.Getenv(v) != "" {

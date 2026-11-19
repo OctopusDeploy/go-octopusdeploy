@@ -2,6 +2,7 @@ package credentials
 
 import (
 	"encoding/json"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
@@ -86,7 +87,7 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 
 		if credentialsProperties["Type"] != nil {
 			t := credentialsProperties["Type"]
-			json.Unmarshal(*t, &gitCredentialType)
+			_ = json.Unmarshal(*t, &gitCredentialType)
 		}
 	}
 

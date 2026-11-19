@@ -7,9 +7,9 @@ import (
 
 // RegisterKubernetesMonitorCommand represents a command to register a Kubernetes monitor.
 type RegisterKubernetesMonitorCommand struct {
-	InstallationID             *uuid.UUID `json:"InstallationId" validate:"required"`
-	MachineID                  string     `json:"MachineId" validate:"required"`
-	SpaceID                    string     `json:"SpaceId,omitempty"`
+	InstallationID              *uuid.UUID `json:"InstallationId" validate:"required"`
+	MachineID                   string     `json:"MachineId" validate:"required"`
+	SpaceID                     string     `json:"SpaceId,omitempty"`
 	PreserveAuthenticationToken *bool      `json:"PreserveAuthenticationToken,omitempty"`
 }
 

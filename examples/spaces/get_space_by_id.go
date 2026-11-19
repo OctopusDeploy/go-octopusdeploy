@@ -2,10 +2,10 @@ package examples
 
 import (
 	"fmt"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"net/url"
 
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 )
 
 // GetSpaceByIDExample provides an example of how to get a space from Octopus

@@ -3,11 +3,12 @@ package users
 import (
 	"testing"
 
+	"github.com/dghubble/sling"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
-	"github.com/dghubble/sling"
-	"github.com/stretchr/testify/require"
 )
 
 func createUserService(t *testing.T) *UserService {
@@ -56,7 +57,8 @@ func TestUserService(t *testing.T) {
 		userAuthenticationPath    string
 		userIdentityMetadataPath  string
 	}{
-		{"NilClient",
+		{
+			"NilClient",
 			ServiceFunction,
 			nil,
 			uriTemplate,
@@ -68,8 +70,10 @@ func TestUserService(t *testing.T) {
 			signInPath,
 			signOutPath,
 			userAuthenticationPath,
-			userIdentityMetadataPath},
-		{"EmptyURITemplate",
+			userIdentityMetadataPath,
+		},
+		{
+			"EmptyURITemplate",
 			ServiceFunction,
 			client,
 			"",
@@ -81,8 +85,10 @@ func TestUserService(t *testing.T) {
 			signInPath,
 			signOutPath,
 			userAuthenticationPath,
-			userIdentityMetadataPath},
-		{"URITemplateWithWhitespace",
+			userIdentityMetadataPath,
+		},
+		{
+			"URITemplateWithWhitespace",
 			ServiceFunction,
 			client,
 			" ",
@@ -94,7 +100,8 @@ func TestUserService(t *testing.T) {
 			signInPath,
 			signOutPath,
 			userAuthenticationPath,
-			userIdentityMetadataPath},
+			userIdentityMetadataPath,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

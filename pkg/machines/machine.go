@@ -3,8 +3,9 @@ package machines
 import (
 	"encoding/json"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 	"github.com/go-playground/validator/v10"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/resources"
 )
 
 // machine represents a machine on which Octopus can orchestrate actions. May
@@ -140,7 +141,7 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 
 		if endpointProperties["CommunicationStyle"] != nil {
 			cs := endpointProperties["CommunicationStyle"]
-			json.Unmarshal(*cs, &communicationStyle)
+			_ = json.Unmarshal(*cs, &communicationStyle)
 		}
 	}
 
@@ -205,6 +206,12 @@ func (m *machine) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		m.Endpoint = kubernetesTentacleEndpoint
+	case "AwsEcsCluster":
+		var awsEcsClusterEndpoint *AwsEcsClusterEndpoint
+		if err := json.Unmarshal(*endpoint, &awsEcsClusterEndpoint); err != nil {
+			return err
+		}
+		m.Endpoint = awsEcsClusterEndpoint
 	}
 
 	return nil

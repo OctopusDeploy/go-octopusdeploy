@@ -1,11 +1,12 @@
 package e2e
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 )
 
 func TestGetRoot(t *testing.T) {

@@ -3,8 +3,9 @@ package e2e
 import (
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
 )
 
 func TestTenantVariablesServiceGetAll(t *testing.T) {

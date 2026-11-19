@@ -5,8 +5,9 @@ import (
 	"log"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 )
 
 func TestDeploymentTargetMarshalJSON(t *testing.T) {

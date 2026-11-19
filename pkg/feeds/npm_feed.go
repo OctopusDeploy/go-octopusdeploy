@@ -1,18 +1,19 @@
 package feeds
 
 import (
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 )
 
 // NpmFeed represents an NPM feed.
 type NpmFeed struct {
-	DownloadAttempts            int                `json:"DownloadAttempts"`
-	DownloadRetryBackoffSeconds int                `json:"DownloadRetryBackoffSeconds"`
-	FeedURI                     string             `json:"FeedUri,omitempty"`
-	Username                    string             `json:"Username,omitempty"`
+	DownloadAttempts            int                  `json:"DownloadAttempts"`
+	DownloadRetryBackoffSeconds int                  `json:"DownloadRetryBackoffSeconds"`
+	FeedURI                     string               `json:"FeedUri,omitempty"`
+	Username                    string               `json:"Username,omitempty"`
 	Password                    *core.SensitiveValue `json:"Password,omitempty"`
 
 	feed

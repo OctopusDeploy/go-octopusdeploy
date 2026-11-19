@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/dghubble/sling"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
@@ -18,7 +20,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
 )
 
 type PackageService struct {
@@ -55,7 +56,6 @@ func (s *PackageService) GetAll() ([]*Package, error) {
 	loadNextPage := true
 	for loadNextPage {
 		resp, err := api.ApiGet(s.GetClient(), new(resources.Resources[*Package]), path)
-
 		if err != nil {
 			return packages, err
 		}
@@ -212,7 +212,6 @@ func UploadV2(client newclient.Client, spaceID string, fileName string, reader i
 // httpUploadFile creates a multipart POST to upload a file and sends it to the server for either a full package upload
 // or a delta upload. Both have the same response type so we deserialize that too
 func httpUploadPackageFile(client newclient.Client, url string, fileName string, reader io.Reader) (response *PackageUploadResponse, createdNewFile bool, err error) {
-
 	multipartWriter := NewMultipartFileStreamingReader(fileName, reader)
 
 	req, err := http.NewRequest(http.MethodPost, url, multipartWriter)

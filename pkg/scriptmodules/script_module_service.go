@@ -30,7 +30,7 @@ func Add(client newclient.Client, scriptModule *variables.ScriptModule) (*variab
 		return nil, err
 	}
 
-	scriptModuleResponse, err := newclient.Post[variables.ScriptModule](client.HttpSession(), expandedUri, scriptModule)
+	scriptModuleResponse, _ := newclient.Post[variables.ScriptModule](client.HttpSession(), expandedUri, scriptModule)
 
 	// update associated variable set; add script body and syntax
 	variablesPath, err := client.URITemplateCache().Expand(uritemplates.Variables, map[string]any{
@@ -113,7 +113,7 @@ func GetByID(client newclient.Client, spaceID string, id string) (*variables.Scr
 		return nil, err
 	}
 
-	expandedUri, err := client.URITemplateCache().Expand(uritemplates.LibraryVariableSets, map[string]any{
+	expandedUri, _ := client.URITemplateCache().Expand(uritemplates.LibraryVariableSets, map[string]any{
 		"spaceId":     spaceID,
 		"id":          id,
 		"contentType": contentType,
@@ -183,7 +183,7 @@ func Update(client newclient.Client, scriptModule *variables.ScriptModule) (*var
 		}
 	}
 
-	updatedVariableSet, err := newclient.Put[variables.VariableSet](client.HttpSession(), variablesPath, variableSet)
+	updatedVariableSet, _ := newclient.Put[variables.VariableSet](client.HttpSession(), variablesPath, variableSet)
 
 	for _, variable := range updatedVariableSet.Variables {
 		if strings.HasPrefix(variable.Name, "Octopus.Script.Module[") {
@@ -217,7 +217,7 @@ func DeleteByID(client newclient.Client, spaceID string, id string) error {
 
 func populateScriptModuleSyntaxAndBody(client newclient.Client, spaceID string, scriptModuleResponse *variables.ScriptModule) error {
 	// get associated variable set
-	variablesPath, err := client.URITemplateCache().Expand(uritemplates.Variables, map[string]any{
+	variablesPath, _ := client.URITemplateCache().Expand(uritemplates.Variables, map[string]any{
 		"spaceId": spaceID,
 		"id":      scriptModuleResponse.VariableSetID,
 	})

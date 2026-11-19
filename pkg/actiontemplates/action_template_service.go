@@ -3,6 +3,9 @@ package actiontemplates
 import (
 	"strings"
 
+	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -10,8 +13,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 )
 
 // ActionTemplateService handles communication for any operations in the
@@ -182,8 +183,10 @@ func (s *ActionTemplateService) Update(actionTemplate *ActionTemplate) (*ActionT
 
 // --- new ---
 
-const template = "/api/{spaceId}/actiontemplates{/id}{?skip,take,ids,partialName}"
-const templateVersions = "/api/{spaceId}/actiontemplates/{id}/versions/{version}"
+const (
+	template         = "/api/{spaceId}/actiontemplates{/id}{?skip,take,ids,partialName}"
+	templateVersions = "/api/{spaceId}/actiontemplates/{id}/versions/{version}"
+)
 
 // Add creates a new action template.
 func Add(client newclient.Client, actionTemplate *ActionTemplate) (*ActionTemplate, error) {

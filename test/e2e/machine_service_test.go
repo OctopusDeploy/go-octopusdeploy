@@ -6,12 +6,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments"
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/machines"
 )
 
 func CreateTestDeploymentTarget(t *testing.T, client *client.Client, environment *environments.Environment) *machines.DeploymentTarget {
@@ -42,6 +44,7 @@ func CreateTestDeploymentTarget(t *testing.T, client *client.Client, environment
 
 	endpoint.ApplicationsDirectory = "C:\\Applications"
 	endpoint.WorkingDirectory = "C:\\Octopus"
+	endpoint.SensitiveVariablesEncryptionPassword = core.NewSensitiveValue("encryption-password")
 
 	deploymentTarget := machines.NewDeploymentTarget(name, endpoint, environmentIDs, roles)
 	deploymentTarget.IsDisabled = true
@@ -300,6 +303,7 @@ func CreateTestDeploymentTarget_NewClient(t *testing.T, client *client.Client, e
 
 	endpoint.ApplicationsDirectory = "C:\\Applications"
 	endpoint.WorkingDirectory = "C:\\Octopus"
+	endpoint.SensitiveVariablesEncryptionPassword = core.NewSensitiveValue("encryption-password")
 
 	deploymentTarget := machines.NewDeploymentTarget(name, endpoint, environmentIDs, roles)
 	deploymentTarget.IsDisabled = true

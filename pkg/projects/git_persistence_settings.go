@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"net/url"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/exp/slices"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 )
 
 type GitPersistenceSettings interface {
@@ -57,7 +58,8 @@ func NewGitPersistenceSettings(
 	credentials credentials.GitCredential,
 	defaultBranch string,
 	protectedBranchNamePatterns []string,
-	url *url.URL) GitPersistenceSettings {
+	url *url.URL,
+) GitPersistenceSettings {
 	return &gitPersistenceSettings{
 		basePath:                    basePath,
 		credential:                  credentials,
@@ -225,7 +227,7 @@ func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 
 		if credentialsProperties["Type"] != nil {
 			t := credentialsProperties["Type"]
-			json.Unmarshal(*t, &gitCredentialType)
+			_ = json.Unmarshal(*t, &gitCredentialType)
 		}
 	}
 

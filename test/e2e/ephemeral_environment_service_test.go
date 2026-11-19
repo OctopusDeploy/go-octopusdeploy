@@ -3,11 +3,12 @@ package e2e
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/environments/v2/ephemeralenvironments"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
-	"github.com/stretchr/testify/require"
 )
 
 func TestEnvironmentServiceCreateEphemeralEnvironment(t *testing.T) {

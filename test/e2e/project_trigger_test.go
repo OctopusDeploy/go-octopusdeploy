@@ -4,6 +4,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/actions"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
@@ -11,8 +14,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/filters"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/triggers"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func AssertEqualProjectTriggers(t *testing.T, expected *triggers.ProjectTrigger, actual *triggers.ProjectTrigger) {
@@ -51,8 +52,7 @@ func CreateTestProjectTrigger(t *testing.T, client *client.Client, project *proj
 	start := time.Date(now.Year(), now.Month(), now.Day(), 9, 0, 0, 0, time.UTC)
 	// days := []filters.Weekday{filters.Sunday, filters.Monday}
 
-	action := actions.NewAutoDeployAction(createRandomBoolean())
-	// action := actions.NewDeployLatestReleaseAction(internal.GetRandomName(), createRandomBoolean(), []string{internal.GetRandomName()}, "")
+	action := actions.NewDeployLatestReleaseAction(environment.GetID(), createRandomBoolean(), []string{environment.GetID()}, "")
 	// action := actions.NewDeployNewReleaseAction(environment.GetID(), "", nil)
 	// filter := filters.NewDeploymentTargetFilter([]string{}, []string{}, []string{"MachineAvailableForDeployment"}, []string{})
 

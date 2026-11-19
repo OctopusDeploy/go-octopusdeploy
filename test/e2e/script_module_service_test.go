@@ -3,12 +3,13 @@ package e2e
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/client"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/scriptmodules"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/variables"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestScriptModuleAddGetAndDelete_NewClient(t *testing.T) {
@@ -51,7 +52,7 @@ func TestScriptModuleAddGetAndDelete_NewClient(t *testing.T) {
 		IsEqualScriptModules(t, resource, resourceToCompare)
 	}
 
-	DeleteTestScriptModule(t, client, space.GetID(), createdScriptModule)
+	_ = DeleteTestScriptModule(t, client, space.GetID(), createdScriptModule)
 }
 
 func IsEqualScriptModules(t *testing.T, expected *variables.ScriptModule, actual *variables.ScriptModule) {

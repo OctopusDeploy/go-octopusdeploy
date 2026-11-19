@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/subscriptions"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/subscriptions"
 )
 
 func TestNewSubscriptionSlackDefaults(t *testing.T) {
@@ -31,6 +32,8 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 		"SlackChannelNames": ["general", "releases"],
 		"SlackFrequencyPeriod": "01:00:00",
 		"SlackDigestFormat": "Detailed",
+		"TeamsFrequencyPeriod": "",
+		"TeamsChannels": null,
 		"WebhookHeaderKey": "",
 		"WebhookHeaderValue": "",
 		"WebhookTeams": [],
@@ -49,5 +52,103 @@ func TestEventNotificationSubscriptionSlackFieldsJSON(t *testing.T) {
 	outputJSON, err := json.Marshal(sub)
 	require.NoError(t, err)
 
-	jsonassert.New(t).Assertf(inputJSON, string(outputJSON))
+	jsonassert.New(t).Assertf(inputJSON, "%s", string(outputJSON))
+}
+
+func TestNewSubscriptionTeamsDefaults(t *testing.T) {
+	s := subscriptions.NewSubscription("my-subscription")
+
+	require.NotNil(t, s.EventNotificationSubscription.TeamsChannels)
+	require.Empty(t, s.EventNotificationSubscription.TeamsChannels)
+	require.Equal(t, "01:00:00", s.EventNotificationSubscription.TeamsFrequencyPeriod)
+}
+
+func TestEventNotificationSubscriptionTeamsFieldsJSON(t *testing.T) {
+	// The server never returns the URL value, WebhookUrl is HasValue: true with no NewValue.
+	inputJSON := `{
+		"TeamsChannels": [
+			{"Id": "id-1", "Name": "general", "WebhookUrl": {"HasValue": true}},
+			{"Id": "id-2", "Name": "releases", "WebhookUrl": {"HasValue": true}}
+		],
+		"TeamsFrequencyPeriod": "01:00:00"
+	}`
+
+	var sub subscriptions.EventNotificationSubscription
+	err := json.Unmarshal([]byte(inputJSON), &sub)
+	require.NoError(t, err)
+
+	require.Len(t, sub.TeamsChannels, 2)
+	require.Equal(t, "id-1", sub.TeamsChannels[0].Id)
+	require.Equal(t, "general", sub.TeamsChannels[0].Name)
+	require.NotNil(t, sub.TeamsChannels[0].WebhookUrl)
+	require.True(t, sub.TeamsChannels[0].WebhookUrl.HasValue)
+	require.Nil(t, sub.TeamsChannels[0].WebhookUrl.NewValue)
+	require.Equal(t, "01:00:00", sub.TeamsFrequencyPeriod)
+}
+
+func TestEventNotificationSubscriptionTeamsAppChannelJSON(t *testing.T) {
+	channelId := "19:abc123@thread.tacv2"
+	teamId := "team-guid-1234"
+	teamName := "Octopus Deploy"
+
+	inputJSON := `{
+		"TeamsChannels": [
+			{"Id": "id-1", "Type": "AppChannel", "Name": "general", "ChannelId": "19:abc123@thread.tacv2", "TeamId": "team-guid-1234", "TeamName": "Octopus Deploy"}
+		],
+		"TeamsFrequencyPeriod": "01:00:00"
+	}`
+
+	var sub subscriptions.EventNotificationSubscription
+	err := json.Unmarshal([]byte(inputJSON), &sub)
+	require.NoError(t, err)
+
+	require.Len(t, sub.TeamsChannels, 1)
+	ch := sub.TeamsChannels[0]
+	require.Equal(t, "id-1", ch.Id)
+	require.Equal(t, "AppChannel", ch.Type)
+	require.Equal(t, "general", ch.Name)
+	require.Nil(t, ch.WebhookUrl)
+	require.NotNil(t, ch.ChannelId)
+	require.Equal(t, channelId, *ch.ChannelId)
+	require.NotNil(t, ch.TeamId)
+	require.Equal(t, teamId, *ch.TeamId)
+	require.NotNil(t, ch.TeamName)
+	require.Equal(t, teamName, *ch.TeamName)
+}
+
+func TestEventNotificationSubscriptionFilterAiFieldsJSON(t *testing.T) {
+	inputJSON := `{"ApiKeyIds": ["ApiKeys-1"], "AiEventsOnly": true}`
+
+	var filter subscriptions.EventNotificationSubscriptionFilter
+	err := json.Unmarshal([]byte(inputJSON), &filter)
+	require.NoError(t, err)
+	require.Equal(t, []string{"ApiKeys-1"}, filter.ApiKeyIds)
+	require.NotNil(t, filter.AiEventsOnly)
+	require.True(t, *filter.AiEventsOnly)
+}
+
+// The server keeps a filter sent as null or left out, so unset fields must not be sent as empty values. ApiKeyIds
+// is sent as null and AiEventsOnly is left out.
+func TestEventNotificationSubscriptionFilterLeavesUnsetAiFieldsForTheServerToKeep(t *testing.T) {
+	outputJSON, err := json.Marshal(subscriptions.NewSubscription("my-subscription").EventNotificationSubscription.Filter)
+	require.NoError(t, err)
+
+	var sent map[string]any
+	require.NoError(t, json.Unmarshal(outputJSON, &sent))
+	require.Contains(t, sent, "ApiKeyIds")
+	require.Nil(t, sent["ApiKeyIds"])
+	require.NotContains(t, sent, "AiEventsOnly")
+}
+
+func TestEventNotificationSubscriptionFilterSendsAnEmptyApiKeyListToClearIt(t *testing.T) {
+	aiEventsOnly := false
+	filter := subscriptions.EventNotificationSubscriptionFilter{ApiKeyIds: []string{}, AiEventsOnly: &aiEventsOnly}
+
+	outputJSON, err := json.Marshal(filter)
+	require.NoError(t, err)
+
+	var sent map[string]any
+	require.NoError(t, json.Unmarshal(outputJSON, &sent))
+	require.Equal(t, []any{}, sent["ApiKeyIds"])
+	require.Equal(t, false, sent["AiEventsOnly"])
 }

@@ -6,12 +6,13 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/kinbiko/jsonassert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
-	"github.com/kinbiko/jsonassert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGitPersistenceSettingsNew(t *testing.T) {
@@ -96,7 +97,7 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranch(t *testing.
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(gitPersistenceSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(gitPersistenceSettingsAsJSON))
 }
 
 func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranchAsLastItem(t *testing.T) {
@@ -129,7 +130,7 @@ func TestGitPersistenceSettingsMarshalJSONWithProtectedDefaultBranchAsLastItem(t
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(gitPersistenceSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(gitPersistenceSettingsAsJSON))
 }
 
 func TestGitPersistenceSettingsMarshalJSONWithoutProtectedDefaultBranch(t *testing.T) {
@@ -163,7 +164,7 @@ func TestGitPersistenceSettingsMarshalJSONWithoutProtectedDefaultBranch(t *testi
 	require.NoError(t, err)
 	require.NotNil(t, gitPersistenceSettingsAsJSON)
 
-	jsonassert.New(t).Assertf(expectedJson, string(gitPersistenceSettingsAsJSON))
+	jsonassert.New(t).Assertf(expectedJson, "%s", string(gitPersistenceSettingsAsJSON))
 }
 
 func TestGitPersistenceSettingsMarshalJSON_OmitsConversionState(t *testing.T) {

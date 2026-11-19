@@ -143,7 +143,6 @@ func (p *PodManifestSummary) Validate() error {
 
 // UnmarshalJSON custom unmarshaling for KubernetesLiveStatusDetailedResource
 func (r *KubernetesLiveStatusDetailedResource) UnmarshalJSON(data []byte) error {
-
 	type manifestSummaryDiscriminator struct {
 		Kind string `json:"Kind"`
 	}

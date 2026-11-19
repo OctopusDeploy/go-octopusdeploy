@@ -1,6 +1,9 @@
 package users
 
 import (
+	"github.com/dghubble/sling"
+	"github.com/google/go-querystring/query"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/newclient"
@@ -10,8 +13,6 @@ import (
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/services/api"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/spaces"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/uritemplates"
-	"github.com/dghubble/sling"
-	"github.com/google/go-querystring/query"
 )
 
 type UserService struct {
@@ -43,8 +44,8 @@ func NewUserService(
 	signInPath string,
 	signOutPath string,
 	userAuthenticationPath string,
-	userIdentityMetadataPath string) *UserService {
-
+	userIdentityMetadataPath string,
+) *UserService {
 	return &UserService{
 		apiKeysPath:               apiKeysPath,
 		authenticateOctopusIDPath: authenticateOctopusIDPath,

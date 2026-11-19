@@ -61,7 +61,7 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 
 		if credentialsProperties["Type"] != nil {
 			t := credentialsProperties["Type"]
-			json.Unmarshal(*t, &credentialType)
+			_ = json.Unmarshal(*t, &credentialType)
 		}
 	}
 
@@ -78,7 +78,15 @@ func (r *Resource) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		r.Credentials = usernamePasswordCredential
+	case credentials.GitCredentialTypeGitHubApp:
+		var gitHubAppCredential *credentials.GitHubApp
+		if err := json.Unmarshal(*credentialsRaw, &gitHubAppCredential); err != nil {
+			return err
+		}
+		r.Credentials = gitHubAppCredential
 	}
+	// GitCredentialTypeReference isn't handled as using a reference credential
+	// (ReferencePlatformHubGitCredentialUsageResource) isn't fully supported yet
 
 	return nil
 }

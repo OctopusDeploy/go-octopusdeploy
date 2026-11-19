@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/buildinformation"
 	"github.com/kinbiko/jsonassert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/buildinformation"
 )
 
 func TestBuildInformationCommand(t *testing.T) {
@@ -57,7 +58,7 @@ func TestCreateBuildInformationCommandMarshalJSON(t *testing.T) {
 	commandAsJSON, err := json.Marshal(createBuildInformationCommand)
 	require.NoError(t, err)
 	require.NotNil(t, commandAsJSON)
-	jsonassert.New(t).Assertf(string(commandAsJSON), expectedJson)
+	jsonassert.New(t).Assertf(string(commandAsJSON), "%s", expectedJson)
 }
 
 func TestCreateBuildInformationCommandUnmarshalJSON(t *testing.T) {

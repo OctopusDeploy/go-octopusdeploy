@@ -6,12 +6,13 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/kinbiko/jsonassert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/credentials"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/projects"
-	"github.com/kinbiko/jsonassert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestProjectNew(t *testing.T) {
@@ -48,7 +49,7 @@ func TestProjectMarshalJSON(t *testing.T) {
 	projectAsJSON, err := json.Marshal(project)
 	require.NoError(t, err)
 	require.NotNil(t, projectAsJSON)
-	jsonassert.New(t).Assertf(string(projectAsJSON), expectedJson)
+	jsonassert.New(t).Assertf(string(projectAsJSON), "%s", expectedJson)
 
 	connectivityPolicy := core.NewConnectivityPolicy()
 	connectivityPolicyAsJSON, err := json.Marshal(connectivityPolicy)
@@ -73,7 +74,7 @@ func TestProjectMarshalJSON(t *testing.T) {
 		"CombineHealthAndSyncStatusInDashboardLiveStatus": false
 	}`, lifecycleID, name, connectivityPolicyAsJSON, projectGroupID)
 
-	jsonassert.New(t).Assertf(string(projectAsJSON), expectedJson)
+	jsonassert.New(t).Assertf(string(projectAsJSON), "%s", expectedJson)
 }
 
 func TestProjectUnmarshalJSON(t *testing.T) {

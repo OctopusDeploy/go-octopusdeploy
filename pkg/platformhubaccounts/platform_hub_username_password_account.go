@@ -1,12 +1,13 @@
 package platformhubaccounts
 
 import (
+	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator/v10/non-standard/validators"
+
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/internal"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/constants"
 	"github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/core"
 	validation "github.com/OctopusDeploy/go-octopusdeploy/v2/pkg/validation"
-	"github.com/go-playground/validator/v10"
-	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
 // PlatformHubUsernamePasswordAccount represents a Platform Hub Username-Password account.
