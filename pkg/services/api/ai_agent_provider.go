@@ -22,7 +22,8 @@ type aiAgent struct {
 	// aiAgentPrefix, when set, matches the start of a normalised AI_AGENT value. Vendors don't agree
 	// on a format (e.g. "claude-code_2-1-322_agent", "github_copilot_vscode_agent", "devin@1"), so
 	// values are lowercased and runs of underscores and whitespace replaced with a single hyphen
-	// before matching.
+	// before matching. The prefix must be followed by the end of the value or a separator, so a short
+	// prefix such as "amp" doesn't match an unrelated identifier such as "amplitude-mcp".
 	aiAgentPrefix string
 	// variables are vendor-specific environment variables that identify the agent.
 	variables []aiAgentRule
@@ -99,11 +100,24 @@ func findAIAgentByPrefix(value string) *aiAgent {
 	}
 	normalised := strings.Join(strings.Fields(strings.ReplaceAll(strings.ToLower(value), "_", " ")), "-")
 	for i, agent := range knownAIAgents {
-		if agent.aiAgentPrefix != "" && strings.HasPrefix(normalised, agent.aiAgentPrefix) {
+		if agent.aiAgentPrefix != "" && matchesAIAgentPrefix(normalised, agent.aiAgentPrefix) {
 			return &knownAIAgents[i]
 		}
 	}
 	return nil
+}
+
+// matchesAIAgentPrefix reports whether value starts with prefix followed by the end of the value, or by
+// a separator ("-", "@", ".") or digit.
+func matchesAIAgentPrefix(value, prefix string) bool {
+	if !strings.HasPrefix(value, prefix) {
+		return false
+	}
+	if len(value) == len(prefix) {
+		return true
+	}
+	next := value[len(prefix)]
+	return next == '-' || next == '@' || next == '.' || (next >= '0' && next <= '9')
 }
 
 func findAIAgentByVariables(e Environment) *aiAgent {

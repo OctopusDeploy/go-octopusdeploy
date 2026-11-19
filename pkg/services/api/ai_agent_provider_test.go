@@ -66,6 +66,7 @@ func TestGetAIAgent_MapsAIAgentToAKnownName(t *testing.T) {
 		{"github_copilot_vscode_agent", "AIAgent/GitHubCopilot"},
 		{"devin@1", "AIAgent/Devin"},
 		{"custom-agent@2.0", "AIAgent/Other"},
+		{"amplitude-mcp", "AIAgent/Other"},
 	}
 
 	for _, c := range cases {
