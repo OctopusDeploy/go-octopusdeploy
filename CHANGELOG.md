@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.124.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.123.0...v2.124.0) (2026-11-22)
+
+
+### Features
+
+* detect AI coding agents in the user agent ([#419](https://github.com/OctopusDeploy/go-octopusdeploy/issues/419)) ([d22c1f8](https://github.com/OctopusDeploy/go-octopusdeploy/commit/d22c1f87bc27bbb0ebf9d7809b0c4b752275b795))
+
 ## [2.123.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.122.0...v2.123.0) (2026-11-10)
 
 
