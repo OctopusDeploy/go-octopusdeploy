@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.124.1](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.124.0...v2.124.1) (2026-11-23)
+
+
+### Bug Fixes
+
+* don't duplicate the default branch in protected branch patterns ([#504](https://github.com/OctopusDeploy/go-octopusdeploy/issues/504)) ([c8adcf0](https://github.com/OctopusDeploy/go-octopusdeploy/commit/c8adcf0aa7bf1bbe7015b1382b7e40a485b1a7cc))
+
 ## [2.124.0](https://github.com/OctopusDeploy/go-octopusdeploy/compare/v2.123.0...v2.124.0) (2026-11-22)
 
 
