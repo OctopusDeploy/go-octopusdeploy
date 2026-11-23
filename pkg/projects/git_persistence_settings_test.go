@@ -366,6 +366,23 @@ func TestGitPersistenceSettingsUnmarshalJSONWithProtectedBranchIsDefault(t *test
 	require.Equal(t, []string{defaultBranch}, gitPersistenceSettings.ProtectedBranchNamePatterns())
 }
 
+func TestGitPersistenceSettingsUnmarshalJSONWithProtectedDefaultBranchAlsoInPatterns(t *testing.T) {
+	defaultBranch := internal.GetRandomName()
+
+	inputJSON := fmt.Sprintf(`{
+		"DefaultBranch": "%s",
+		"ProtectedBranchNamePatterns": ["%s", "foo"],
+		"ProtectedDefaultBranch": true,
+		"Type": "%s",
+		"Url": "https://example.com/"
+	}`, defaultBranch, defaultBranch, projects.PersistenceSettingsTypeVersionControlled)
+
+	gitPersistenceSettings := projects.NewGitPersistenceSettings("", nil, "", []string{}, nil)
+	err := json.Unmarshal([]byte(inputJSON), &gitPersistenceSettings)
+	require.NoError(t, err)
+	require.Equal(t, []string{defaultBranch, "foo"}, gitPersistenceSettings.ProtectedBranchNamePatterns())
+}
+
 func TestGitPersistenceSettingsUnmarshalJSON_ConversionState(t *testing.T) {
 	password := core.NewSensitiveValue(internal.GetRandomName())
 	username := internal.GetRandomName()
