@@ -195,7 +195,7 @@ func (p *gitPersistenceSettings) UnmarshalJSON(b []byte) error {
 	p.defaultBranch = fields.DefaultBranch
 	p.protectedBranchNamePatterns = fields.ProtectedBranchNamePatterns
 
-	if isDefaultBranchProtected {
+	if isDefaultBranchProtected && !slices.Contains(p.protectedBranchNamePatterns, p.defaultBranch) {
 		p.protectedBranchNamePatterns = append(p.protectedBranchNamePatterns, p.defaultBranch)
 	}
 
