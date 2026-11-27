@@ -7,4 +7,5 @@ const (
 	GitCredentialTypeGitHubApp        = Type("GitHub")
 	GitCredentialTypeReference        = Type("Reference")
 	GitCredentialTypeUsernamePassword = Type("UsernamePassword")
+	GitCredentialTypeSshKey           = Type("SshKey")
 )
