@@ -8,7 +8,7 @@ import (
 
 func TestGetResourceManifestRequest_IsTenanted(t *testing.T) {
 	// Test untenanted request
-	untenanteRequest := &GetResourceManifestRequest{
+	untenantedRequest := &GetResourceManifestRequest{
 		SpaceID:                                "Spaces-1",
 		ProjectID:                              "Projects-1",
 		EnvironmentID:                          "Environments-1",
@@ -17,7 +17,7 @@ func TestGetResourceManifestRequest_IsTenanted(t *testing.T) {
 		DesiredOrKubernetesMonitoredResourceID: "Resources-1",
 	}
 
-	assert.False(t, untenanteRequest.IsTenanted())
+	assert.False(t, untenantedRequest.IsTenanted())
 
 	// Test tenanted request
 	tenantedRequest := &GetResourceManifestRequest{

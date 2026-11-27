@@ -334,7 +334,7 @@ func TestFeedServiceSearchPackages(t *testing.T) {
 	defer DeleteTestFeed(t, client, feed)
 
 	searchPackagesQuery := feeds.SearchPackagesQuery{
-		Term: "ngnix",
+		Term: "nginx",
 		Take: 10,
 	}
 
